@@ -119,24 +119,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				get;
 				set;
 			}
-
-			/// <summary>
-			/// Property to set or return whether this node is selected or not.
-			/// </summary>
-			public bool IsSelected
-			{
-				get;
-				set;
-			}
-
-			/// <summary>
-			/// Property to set or return whether this node is interactive or not.
-			/// </summary>
-			public bool IsInteractive
-			{
-				get;
-				set;
-			}
 			#endregion
 
 			#region Methods.
@@ -170,7 +152,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			/// </summary>
 			/// <param name="g">Graphics context.</param>
 			/// <param name="region">Region containing the weight node.</param>
-			public void Draw(System.Drawing.Graphics g, Rectangle region)
+			/// <param name="isInteractive">TRUE to draw as an interactive node, FALSE to draw as a static node.</param>
+			/// <param name="isSelected">TRUE to draw the node as selected, FALSE to draw as unselected.</param>
+			public void Draw(System.Drawing.Graphics g, Rectangle region, bool isInteractive, bool isSelected)
 			{
 				float horizontalPosition = (region.Width - 1) * Weight;
 
@@ -180,7 +164,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				using (Brush brush = new SolidBrush(Color))
 				{
-					if (IsInteractive)
+					if (isInteractive)
 					{
 						g.FillPolygon(brush, _trianglePoints);
 					}
@@ -190,11 +174,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					}
 				}
 
-				Color outlineColor = IsSelected ? System.Drawing.Color.Blue : System.Drawing.Color.Black;
+				Color outlineColor = isSelected ? System.Drawing.Color.Blue : System.Drawing.Color.Black;
 
 				using (var pen = new Pen(outlineColor))
 				{
-					if (IsInteractive)
+					if (isInteractive)
 					{
 						g.DrawPolygon(pen, _trianglePoints);
 					}
@@ -373,6 +357,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				OnChanged();
 			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
 			finally
 			{
 				DrawGradientDisplay();
@@ -414,7 +402,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			for (int i = 0; i < _handles.Count; ++i)
 			{
-				_handles[i].IsInteractive = (i > 0) && (i < _handles.Count - 1);
 				_handles[i].Index = i;
 			}
 		}
@@ -508,12 +495,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			{
 				g.Clear(panelGradControls.BackColor);
 
-				_handles[0].Draw(g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height));
-				_handles[_handles.Count - 1].Draw(g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height));
+				_handles[0].Draw(g,
+				                 new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height),
+				                 false,
+				                 _selectedNode == _handles[0]);
+				_handles[_handles.Count - 1].Draw(g,
+				                                  new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height),
+				                                  false,
+				                                  _selectedNode == _handles[_handles.Count - 1]);
 
 				for (int i = 1; i < _handles.Count - 1; ++i)
 				{
-					_handles[i].Draw(g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height));
+					_handles[i].Draw(g,
+					                 new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height),
+					                 true,
+					                 _selectedNode == _handles[i]);
 				}
 			}
 
@@ -778,16 +774,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				// Get the color of the pixel at the selected point.
 				GorgonColor color = _gradientImage.GetPixel(e.X, panelGradientDisplay.ClientSize.Height / 2);
 
-				if (_selectedNode != null)
-				{
-					_selectedNode.IsSelected = false;
-				}
-
 				_selectedNode = new WeightHandle(weight, color, -1);
 				_handles.Add(_selectedNode);
 				SortWeightHandles();
-
-				_selectedNode.IsSelected = true;
 
 				OnChanged();
 			}
@@ -831,11 +820,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					weightPosition = (weightPosition - 16.0f) / _controlPanelImage.Width;
 				}
 
-				_selectedNode.IsSelected = false;
-				_selectedNode = new WeightHandle(weightPosition, _selectedNode.Color, -1)
-				                {
-					                IsSelected = true
-				                };
+				_selectedNode = new WeightHandle(weightPosition, _selectedNode.Color, -1);
 				_handles.Add(_selectedNode);
 				SortWeightHandles();
 
@@ -933,26 +918,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				                                                    && item.Index > 0 && item.Index < _handles.Count - 1);
 
 
-				if (_selectedNode != null)
-				{
-					_selectedNode.IsSelected = false;
-				}
-
-				_selectedNode = selectedNode;
-
-				if (_selectedNode == null)
-				{
-					// Check to see if we've selected the static nodes.
-					_selectedNode = _handles.FirstOrDefault(item =>
-					                                        item.HitTest(e.Location, panelGradControls.ClientRectangle)
-					                                        && (item.Index == 0 || item.Index <= _handles.Count - 1));
-
-				}
-
-				if (_selectedNode != null)
-				{
-					_selectedNode.IsSelected = true;
-				}
+				_selectedNode = selectedNode ?? _handles.FirstOrDefault(item =>
+				                                                        item.HitTest(e.Location, panelGradControls.ClientRectangle)
+				                                                        && (item.Index == 0 || item.Index <= _handles.Count - 1));
 
 				switch (e.Button)
 				{
@@ -970,6 +938,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 						popupNodeEdit.Show(panelGradControls, e.Location);
 						break;
 				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
 			finally
 			{

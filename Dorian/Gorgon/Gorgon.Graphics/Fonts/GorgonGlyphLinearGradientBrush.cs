@@ -25,7 +25,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using GorgonLibrary.Graphics.Fonts;
@@ -57,15 +56,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return GlyphBrushType.LinearGradient;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the wrapping mode for the gradient fill.
-		/// </summary>
-		public WrapMode WrapMode
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -114,15 +104,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the linear colors for the gradient.
-		/// </summary>
-		public IList<GorgonColor> LinearColors 
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the interpolation colors for the gradient.
 		/// </summary>
 		public IList<GorgonGlyphBrushInterpolator> Interpolation
@@ -143,14 +124,8 @@ namespace GorgonLibrary.Graphics
 		{
 			var result = new LinearGradientBrush(GradientRegion, StartColor, EndColor, Angle, ScaleAngle)
 			             {
-				             GammaCorrection = GammaCorrection,
-							 WrapMode = WrapMode
+				             GammaCorrection = GammaCorrection
 			             };
-
-			if (LinearColors.Count > 0)
-			{
-				result.LinearColors = LinearColors.Select(item => item.ToColor()).ToArray();
-			}
 
 			if (Interpolation.Count < 2)
 			{
@@ -178,19 +153,11 @@ namespace GorgonLibrary.Graphics
 		{
 			chunk.Begin("BRSHDATA");
 			chunk.Write(BrushType);
-			chunk.Write(WrapMode);
 			chunk.Write(GammaCorrection);
 			chunk.Write(Angle);
 			chunk.Write(ScaleAngle);
 			chunk.Write(StartColor);
 			chunk.Write(EndColor);
-
-			chunk.Write(LinearColors.Count);
-			
-			foreach (GorgonColor color in LinearColors)
-			{
-				chunk.Write(color);
-			}
 
 			chunk.Write(Interpolation.Count);
 
@@ -209,9 +176,7 @@ namespace GorgonLibrary.Graphics
 		internal override void Read(IO.GorgonChunkReader chunk)
 		{
 			Interpolation.Clear();
-			LinearColors.Clear();
 
-			WrapMode = chunk.Read<WrapMode>();
 			GammaCorrection = chunk.ReadBoolean();
 			Angle = chunk.ReadFloat();
 			ScaleAngle = chunk.ReadBoolean();
@@ -219,13 +184,6 @@ namespace GorgonLibrary.Graphics
 			EndColor = chunk.Read<GorgonColor>();
 
 			int counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				LinearColors.Add(chunk.Read<GorgonColor>());
-			}
-
-			counter = chunk.ReadInt32();
 
 			for (int i = 0; i < counter; i++)
 			{
@@ -241,7 +199,6 @@ namespace GorgonLibrary.Graphics
 		public GorgonGlyphLinearGradientBrush()
 		{
 			Interpolation = new List<GorgonGlyphBrushInterpolator>();
-			LinearColors = new List<GorgonColor>();
 		}
 		#endregion
 	}
