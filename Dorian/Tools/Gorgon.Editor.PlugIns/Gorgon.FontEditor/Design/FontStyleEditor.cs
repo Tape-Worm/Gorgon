@@ -81,14 +81,5 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			return UITypeEditorEditStyle.DropDown;
 		}
 		#endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FontStyleEditor"/> class.
-		/// </summary>
-		public FontStyleEditor()
-		{
-		}
-		#endregion
 	}
 }

@@ -777,7 +777,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void gradEditor_BrushChanged(object sender, EventArgs e)
+		private void BrushChanged(object sender, EventArgs e)
 		{
 			ValidateCommands();
 		}
@@ -1449,8 +1449,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	                        };
 	        PatternBrush = new GorgonGlyphHatchBrush
 	                       {
-		                       ForegroundColor = GorgonColor.White,
-		                       BackgroundColor = GorgonColor.Black,
+		                       ForegroundColor = GorgonColor.Black,
+		                       BackgroundColor = GorgonColor.White,
 		                       HatchStyle = HatchStyle.BackwardDiagonal
 	                       };
         }

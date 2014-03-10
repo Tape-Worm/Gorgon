@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -68,13 +69,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			listBoxFont fonts = null;
+			ListBoxFont fonts = null;
+		    string fontFamily = string.Empty;
 
 			try
 			{
-				fonts = new listBoxFont();
-				fonts.SelectedItem = value.ToString();
-				fonts.Service = editorSerivce;
+			    if (value != null)
+			    {
+			        fontFamily = value.ToString();
+			    }
+
+			    fonts = new ListBoxFont
+			            {
+			                DrawMode = DrawMode.OwnerDrawVariable,
+			                ItemHeight = 19,
+			                SelectedItem = fontFamily,
+                            Service = editorSerivce
+			            };
 
 				if (_listBoxSize != Size.Empty)
 				{
@@ -85,15 +96,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_listBoxSize = fonts.Size;
 
-				if ((fonts.SelectedItem != null) && (!string.Equals(fonts.SelectedItem.ToString(), value.ToString(), StringComparison.OrdinalIgnoreCase)))
-					return fonts.SelectedItem.ToString();
+			    if ((fonts.SelectedItem != null)
+			        && (!string.Equals(fonts.SelectedItem.ToString(), fontFamily, StringComparison.OrdinalIgnoreCase)))
+			    {
+			        fontFamily = fonts.SelectedItem.ToString();
+			    }
 
-				return value;
+			    return fontFamily;
 			}
 			finally
 			{
-				if (fonts != null)
-					fonts.Dispose();
+			    if (fonts != null)
+			    {
+			        fonts.Dispose();
+			    }
 			}
 		}
 
@@ -107,15 +123,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.DropDown;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FontFamilyEditor"/> class.
-		/// </summary>
-		public FontFamilyEditor()
-		{
 		}
 		#endregion
 	}

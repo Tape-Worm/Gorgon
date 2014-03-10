@@ -34,7 +34,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// A combo box for displaying fonts.
 	/// </summary>
-	class comboFonts
+	class ComboFonts
 		: ComboBox
 	{		
 		#region Properties.
@@ -137,9 +137,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="comboFonts"/> class.
+		/// Initializes a new instance of the <see cref="ComboFonts"/> class.
 		/// </summary>
-		public comboFonts()
+		public ComboFonts()
 			: base()
 		{
 			base.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;

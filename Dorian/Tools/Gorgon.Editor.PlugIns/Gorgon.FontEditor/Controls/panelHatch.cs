@@ -30,10 +30,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
@@ -47,9 +49,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		: UserControl
 	{
 		#region Variables.
-		private GorgonGlyphHatchBrush _brush;						// Current brush being edited.
 		private GorgonColor _foregroundColor;						// Foreground hatch color.
 		private GorgonColor _backgroundColor;						// Background hatch color.
+	    private Bitmap _previewBitmap;                              // Bitmap used to draw the preview.
+	    private Bitmap _foreColorBitmap;                            // Bitmap used to draw the foreground color.
+	    private Bitmap _backColorBitmap;                            // Bitmap used to draw the background color.
 		#endregion
 
 		#region Properties.
@@ -58,41 +62,149 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		public GorgonGlyphHatchBrush Brush
 		{
-			get
-			{
-				return _brush;
-			}
-			set
-			{
-				_brush = value;
-
-				if (_brush == null)
-				{
-					comboHatch.Style = HatchStyle.BackwardDiagonal;
-					_foregroundColor = Color.Black;
-					_backgroundColor = Color.White;
-					return;
-				}
-
-				comboHatch.Style = _brush.HatchStyle;
-				_foregroundColor = _brush.ForegroundColor;
-				_backgroundColor = _brush.BackgroundColor;
-
-				DrawPreview();
-			}
+			get;
+			set;
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the comboHatch control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void comboHatch_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                DrawPreview();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Handles the Paint event of the panelForegroundColor control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void panelForegroundColor_Paint(object sender, PaintEventArgs e)
+        {
+            DrawForeColor(e.Graphics);
+        }
+
+        /// <summary>
+        /// Handles the Paint event of the panelBackgroundColor control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void panelBackgroundColor_Paint(object sender, PaintEventArgs e)
+        {
+            DrawBackColor(e.Graphics);
+        }
+
+        /// <summary>
+        /// Handles the Paint event of the panelPreview control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+        private void panelPreview_Paint(object sender, PaintEventArgs e)
+        {
+            DrawPreview(e.Graphics);
+        }
+
+        /// <summary>
+        /// Function to draw the foreground color.
+        /// </summary>
+        /// <param name="graphics">The graphics interface to use.</param>
+	    private void DrawForeColor(System.Drawing.Graphics graphics = null)
+	    {
+            using (Brush brush = new SolidBrush(_foregroundColor),
+                backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
+            {
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_foreColorBitmap))
+                {
+                    g.FillRectangle(backBrush, panelForegroundColor.ClientRectangle);
+                    g.FillRectangle(brush, panelForegroundColor.ClientRectangle);
+                }
+            }
+
+            System.Drawing.Graphics panelGraphics = graphics;
+
+            try
+            {
+                if (panelGraphics == null)
+                {
+                    panelGraphics = panelForegroundColor.CreateGraphics();
+                }
+
+                panelGraphics.DrawImage(_foreColorBitmap, Point.Empty);
+            }
+            finally
+            {
+                if ((panelGraphics != null)
+                    && (graphics == null))
+                {
+                    panelGraphics.Dispose();
+                }
+            }
+	    }
+
+        /// <summary>
+        /// Function to draw the background color.
+        /// </summary>
+        /// <param name="graphics">The graphics interface to use.</param>
+	    private void DrawBackColor(System.Drawing.Graphics graphics = null)
+	    {
+            using (Brush brush = new SolidBrush(_backgroundColor),
+                backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
+            {
+                using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_backColorBitmap))
+                {
+                    g.FillRectangle(backBrush, panelBackgroundColor.ClientRectangle);
+                    g.FillRectangle(brush, panelBackgroundColor.ClientRectangle);
+                }
+            }
+
+            System.Drawing.Graphics panelGraphics = graphics;
+
+            try
+            {
+                if (panelGraphics == null)
+                {
+                    panelGraphics = panelBackgroundColor.CreateGraphics();
+                }
+
+                panelGraphics.DrawImage(_backColorBitmap, Point.Empty);
+            }
+            finally
+            {
+                if ((panelGraphics != null)
+                    && (graphics == null))
+                {
+                    panelGraphics.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
 		/// Function to draw the preview window.
 		/// </summary>
 		/// <param name="graphics">Graphics interface to use.</param>
 		private void DrawPreview(System.Drawing.Graphics graphics = null)
 		{
-			using (Brush brush = new HatchBrush(comboHatch.Style, _foregroundColor, _backgroundColor))
+
+			using (Brush brush = new HatchBrush(comboHatch.Style, _foregroundColor, _backgroundColor),
+                backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
 			{
-				// TODO: Paint the brush.
+			    using(System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_previewBitmap))
+			    {
+                    g.FillRectangle(backBrush, panelPreview.ClientRectangle);
+                    g.FillRectangle(brush, panelPreview.ClientRectangle);
+			    }
 			}
 
 			System.Drawing.Graphics panelGraphics = graphics;
@@ -104,7 +216,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					panelGraphics = panelPreview.CreateGraphics();
 				}
 
-				// TODO: Draw to panel.
+				panelGraphics.DrawImage(_previewBitmap, Point.Empty);
 			}
 			finally
 			{
@@ -126,7 +238,30 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			try
 			{
+			    _previewBitmap = new Bitmap(panelPreview.ClientSize.Width,
+			                                panelPreview.ClientSize.Height,
+			                                PixelFormat.Format32bppArgb);
+			    _foreColorBitmap = new Bitmap(panelForegroundColor.ClientSize.Width,
+			                                  panelForegroundColor.ClientSize.Height,
+			                                  PixelFormat.Format32bppArgb);
+			    _backColorBitmap = new Bitmap(panelBackgroundColor.ClientSize.Width,
+			                                  panelBackgroundColor.ClientSize.Height,
+			                                  PixelFormat.Format32bppArgb);
+
 				comboHatch.RefreshPatterns();
+
+			    if (Brush == null)
+			    {
+			        comboHatch.Style = HatchStyle.BackwardDiagonal;
+			        _foregroundColor = Color.Black;
+			        _backgroundColor = Color.White;
+			    }
+			    else
+			    {
+			        comboHatch.Style = Brush.HatchStyle;
+			        _foregroundColor = Brush.ForegroundColor;
+			        _backgroundColor = Brush.BackgroundColor;
+			    }
 			}
 			catch (Exception ex)
 			{

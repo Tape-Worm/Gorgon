@@ -212,7 +212,7 @@
 			this.panelGradEditor.Name = "panelGradEditor";
 			this.panelGradEditor.Size = new System.Drawing.Size(608, 303);
 			this.panelGradEditor.TabIndex = 0;
-			this.panelGradEditor.BrushChanged += new System.EventHandler(this.gradEditor_BrushChanged);
+			this.panelGradEditor.BrushChanged += new System.EventHandler(this.BrushChanged);
 			// 
 			// pageTexture
 			// 
