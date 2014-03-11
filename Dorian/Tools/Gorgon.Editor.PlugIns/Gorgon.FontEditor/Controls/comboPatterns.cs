@@ -113,7 +113,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				if ((i == 0)
 				    || ((!char.IsUpper(enumName[i]))
-				        && (!char.IsNumber(enumName[i]))))
+				        && (!char.IsNumber(enumName[i])))
+				    || ((char.IsNumber(enumName[i]))
+				        && (char.IsNumber(enumName[i - 1]))))
 				{
 					_properName.Append(enumName[i]);
 					continue;

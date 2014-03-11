@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
@@ -35,7 +36,9 @@ using Fetze.WinFormsColor;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Fonts;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -985,8 +988,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						numericWidth.Enabled = numericX.Enabled = numericY.Enabled = comboWrapMode.Enabled = _texture != null;
 
 					break;
+				case GlyphBrushType.Hatched:
+					buttonOK.Enabled = ((PatternBrush.ForegroundColor != panelHatchEditor.HatchForegroundColor)
+					                    || (PatternBrush.BackgroundColor != panelHatchEditor.HatchBackgroundColor)
+					                    || (PatternBrush.HatchStyle != panelHatchEditor.HatchStyle)
+										|| (BrushType != _originalBrushType));
+					break;
 				case GlyphBrushType.LinearGradient:
-					buttonOK.Enabled = panelGradEditor.HasChanged;
+					GorgonGlyphBrushInterpolator[] interpolators = panelGradEditor.GetInterpolators().ToArray();
+
+					buttonOK.Enabled = ((GradientBrush.ScaleAngle != panelGradEditor.ScaleAngle)
+					                    || (GradientBrush.GammaCorrection != panelGradEditor.UseGammaCorrection)
+					                    || (!GradientBrush.Angle.EqualsEpsilon(panelGradEditor.Angle))
+					                    || (interpolators.Length != GradientBrush.Interpolation.Count)
+					                    || interpolators.Where((item, index) =>
+					                                           !item.Weight.EqualsEpsilon(GradientBrush.Interpolation[index].Weight)
+					                                           || !item.Color.Equals(GradientBrush.Interpolation[index].Color)).Any()
+					                    || (BrushType != _originalBrushType));
 					break;
 			}
 	    }
@@ -1130,8 +1148,31 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 							               TextureRegion = _texture.ToTexel(region)
 						               };
 						break;
+					case GlyphBrushType.Hatched:
+						PatternBrush = new GorgonGlyphHatchBrush
+						               {
+										   ForegroundColor = panelHatchEditor.HatchForegroundColor,
+										   BackgroundColor = panelHatchEditor.HatchBackgroundColor,
+										   HatchStyle = panelHatchEditor.HatchStyle
+						               };
+						break;
 					case GlyphBrushType.LinearGradient:
-						GradientBrush = panelGradEditor.GetUpdatedBrush();
+						GradientBrush = new GorgonGlyphLinearGradientBrush
+						                {
+							                Angle = panelGradEditor.Angle,
+							                ScaleAngle = panelGradEditor.ScaleAngle,
+							                GammaCorrection = panelGradEditor.UseGammaCorrection
+						                };
+
+						IEnumerable<GorgonGlyphBrushInterpolator> interpolators = panelGradEditor.GetInterpolators();
+
+						GradientBrush.Interpolation.Clear();
+
+						foreach (GorgonGlyphBrushInterpolator interpolator in interpolators)
+						{
+							GradientBrush.Interpolation.Add(interpolator);
+						}
+
 						break;
 				}
 			}
@@ -1356,19 +1397,27 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    colorSolidBrush.OldColor = SolidBrush.Color;
 			    colorSolidBrush.SelectedColor = SolidBrush.Color;
 
-				panelGradEditor.Brush = GradientBrush;
-			    panelHatchEditor.Brush = PatternBrush;
-
 			    _originalBrushType = BrushType;
 
 			    switch (BrushType)
 			    {
 				    case GlyphBrushType.LinearGradient:
 					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;
+
+					    panelGradEditor.Angle = GradientBrush.Angle;
+					    panelGradEditor.UseGammaCorrection = GradientBrush.GammaCorrection;
+					    panelGradEditor.ScaleAngle = GradientBrush.ScaleAngle;
+						panelGradEditor.SetInterpolation(GradientBrush.Interpolation);
+
 					    tabBrushEditor.SelectedTab = pageGradient;
 					    break;
 				    case GlyphBrushType.Hatched:
 					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH;
+
+					    panelHatchEditor.HatchForegroundColor = PatternBrush.ForegroundColor;
+					    panelHatchEditor.HatchBackgroundColor = PatternBrush.BackgroundColor;
+					    panelHatchEditor.HatchStyle = PatternBrush.HatchStyle;
+
 					    tabBrushEditor.SelectedTab = pagePattern;
 					    break;
 				    case GlyphBrushType.Texture:

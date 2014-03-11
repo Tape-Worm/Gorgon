@@ -63,8 +63,31 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonColor StartColor
 		{
-			get;
-			set;
+			get
+			{
+				// ReSharper disable once InvertIf
+				if (Interpolation.Count == 0)
+				{
+					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.White));
+				}
+
+				return Interpolation[0].Color;
+			}
+			set
+			{
+				var newValue = new GorgonGlyphBrushInterpolator(0, value);
+
+				if (Interpolation.Count == 0)
+				{
+					Interpolation.Add(newValue);
+					Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
+				}
+				else
+				{
+					Interpolation[0] = newValue;
+				}
+			}
 		}
 
 		/// <summary>
@@ -72,8 +95,38 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonColor EndColor
 		{
-			get;
-			set;
+			get
+			{
+				if (Interpolation.Count == 0)
+				{
+					Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+				}
+
+				if (Interpolation.Count == 1)
+				{
+					Interpolation.Add(new GorgonGlyphBrushInterpolator(1, GorgonColor.White));
+				}
+
+				return Interpolation[Interpolation.Count - 1].Color;
+			}
+			set
+			{
+				var newValue = new GorgonGlyphBrushInterpolator(1, value);
+
+				switch (Interpolation.Count)
+				{
+					case 0:
+						Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+						Interpolation.Add(newValue);
+						break;
+					case 1:
+						Interpolation.Add(newValue);
+						break;
+					default:
+						Interpolation[Interpolation.Count - 1] = newValue;
+						break;
+				}
+			}
 		}
 
 		/// <summary>
@@ -127,11 +180,6 @@ namespace GorgonLibrary.Graphics
 				             GammaCorrection = GammaCorrection
 			             };
 
-			if (Interpolation.Count < 2)
-			{
-				return result;
-			}
-
 			var interpColors = new ColorBlend(Interpolation.Count);
 
 			for (int i = 0; i < Interpolation.Count; i++)
@@ -156,8 +204,6 @@ namespace GorgonLibrary.Graphics
 			chunk.Write(GammaCorrection);
 			chunk.Write(Angle);
 			chunk.Write(ScaleAngle);
-			chunk.Write(StartColor);
-			chunk.Write(EndColor);
 
 			chunk.Write(Interpolation.Count);
 
@@ -180,8 +226,6 @@ namespace GorgonLibrary.Graphics
 			GammaCorrection = chunk.ReadBoolean();
 			Angle = chunk.ReadFloat();
 			ScaleAngle = chunk.ReadBoolean();
-			StartColor = chunk.Read<GorgonColor>();
-			EndColor = chunk.Read<GorgonColor>();
 
 			int counter = chunk.ReadInt32();
 
@@ -198,7 +242,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonGlyphLinearGradientBrush()
 		{
-			Interpolation = new List<GorgonGlyphBrushInterpolator>();
+			Interpolation = new List<GorgonGlyphBrushInterpolator>
+			                {
+				                new GorgonGlyphBrushInterpolator(0, GorgonColor.Black),
+				                new GorgonGlyphBrushInterpolator(1, GorgonColor.White)
+			                };
 		}
 		#endregion
 	}

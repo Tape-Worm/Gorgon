@@ -215,8 +215,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		#endregion
 
 		#region Variables.
+		private bool _scaleAngle;								// Flag to scale the angle.
+		private float _angle;									// Angle for the gradient.
+		private bool _useGammaCorrection;						// Flag to use gamma correction.
 		private readonly WeightHandleComparer _sorter;			// Weight handle sorter.
-		private GorgonGlyphLinearGradientBrush _glyphBrush;		// Glyph brush.
 		private List<WeightHandle> _handles;					// Weight handles.
 		private WeightHandle _selectedNode;						// Selected node handle.
 		private bool _nodeDrag;									// Flag to indicate that the node is being dragged.
@@ -238,88 +240,67 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the brush to use when drawing the gradient.
+		/// Property to set or return whether to scale the angle for the gradient.
 		/// </summary>
-		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public GorgonGlyphLinearGradientBrush Brush
+		[Browsable(false)]
+		public bool ScaleAngle
 		{
 			get
 			{
-				return _glyphBrush;
+				return IsHandleCreated ? checkScaleAngle.Checked : _scaleAngle;
 			}
 			set
 			{
-				// Do not set this value at design time.
-				if (DesignMode)
+				_scaleAngle = value;
+
+				if (IsHandleCreated)
 				{
-					return;
+					checkScaleAngle.Checked = value;
 				}
-
-				_handles.Clear();
-				_selectedNode = null;
-
-				if (value == null)
-				{
-					// If we don't have a brush set up, then use a default black -> white gradient.
-					GetDefaultBrush();
-				}
-				else
-				{
-					_glyphBrush = value;
-
-					if (_glyphBrush.Interpolation.Count > 2)
-					{
-						_handles.AddRange(_glyphBrush.Interpolation.Select((item, index) => new WeightHandle(item.Weight, item.Color, index)));
-						SortWeightHandles();
-					}
-					else
-					{
-						_handles = new List<WeightHandle>
-						           {
-									   new WeightHandle(0, _glyphBrush.StartColor, 0), 
-									   new WeightHandle(1, _glyphBrush.EndColor, 1)
-						           };
-					}
-				}
-
-				checkScaleAngle.Checked = _glyphBrush.ScaleAngle;
-				checkUseGamma.Checked = _glyphBrush.GammaCorrection;
-				numericAngle.Value = (decimal)_glyphBrush.Angle;
-
-				DrawControls();
-				DrawGradientDisplay();
-				DrawPreview();
-				DrawSelectedColor();
-				ValidateControls();
-				numericSelectedWeight.Value = 0;
 			}
 		}
 
 		/// <summary>
-		/// Property to return whether the gradient has changed or not.
+		/// Property to set or return whether to use gamma correction for the gradient.
 		/// </summary>
 		[Browsable(false)]
-		public bool HasChanged
+		public bool UseGammaCorrection
 		{
 			get
 			{
-				if (Brush == null)
-				{
-					return true;
-				}
+				return IsHandleCreated ? checkUseGamma.Checked : _useGammaCorrection;
+			}
+			set
+			{
+				_useGammaCorrection = value;
 
-				if (Brush.GammaCorrection != checkUseGamma.Checked
-				    || Brush.ScaleAngle != checkScaleAngle.Checked
-				    || (!Brush.Angle.EqualsEpsilon((float)numericAngle.Value))
-				    || ((_handles.Count == 2) && ((!Brush.StartColor.Equals(_handles[0].Color))
-				                                  || (!Brush.EndColor.Equals(_handles[0].Color))))
-				    || (_handles.Count != Brush.Interpolation.Count))
+				if (IsHandleCreated)
 				{
-					return true;
+					checkUseGamma.Checked = value;
 				}
+			}
+		}
 
-				return _handles.Where((t, i) => (!t.Color.Equals(Brush.Interpolation[i].Color))
-				                                || (!t.Weight.EqualsEpsilon(Brush.Interpolation[i].Weight))).Any();
+		/// <summary>
+		/// Property to set or return the angle for the gradient.
+		/// </summary>
+		[Browsable(false)]
+		public float Angle
+		{
+			get
+			{
+				return IsHandleCreated ? (float)numericAngle.Value : _angle;
+			}
+			set
+			{
+				value = value.Min(359.9f).Max(0);
+
+				_angle = value;
+
+				if (IsHandleCreated)
+				{
+					numericAngle.Value = (decimal)value;
+				}
 			}
 		}
 		#endregion
@@ -352,8 +333,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					return;
 				}
 
+				_handles = new List<WeightHandle>
+			           {
+				           new WeightHandle(0, Color.Black, 0),
+				           new WeightHandle(1, Color.White, 1)
+			           };
+
 				_selectedNode = null;
-				GetDefaultBrush();
 
 				OnChanged();
 			}
@@ -539,8 +525,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <param name="panelGraphics">Graphics interface for the panel.</param>
 		private void DrawGradientDisplay(System.Drawing.Graphics panelGraphics = null)
 		{
-			if ((_gradDisplayImage == null)
-				|| (Brush == null))
+			if (_gradDisplayImage == null)
 			{
 				return;
 			}
@@ -599,8 +584,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <param name="panelGraphics">Graphics interface for the panel.</param>
 		private void DrawPreview(System.Drawing.Graphics panelGraphics = null)
 		{
-			if ((_gradPreviewImage == null)
-				|| (Brush == null))
+			if (_gradPreviewImage == null)
 			{
 				return;
 			}
@@ -1044,24 +1028,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Function to retrieve a default linear gradient brush.
-		/// </summary>
-		/// <returns>The default linear gradient brush.</returns>
-		private void GetDefaultBrush()
-		{
-			_glyphBrush = new GorgonGlyphLinearGradientBrush
-			              {
-				              StartColor = Color.Black,
-				              EndColor = Color.White
-			              };
-			_handles = new List<WeightHandle>
-			           {
-						   new WeightHandle(0, Color.Black, 0), 
-						   new WeightHandle(1, Color.White, 1)
-			           };
-		}
-
-		/// <summary>
 		/// Handles the Paint event of the panelBrushPreview control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1163,11 +1129,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				_selectedColorImage = new Bitmap(panelSelectedColor.ClientSize.Width,
 				                                 panelSelectedColor.ClientSize.Height,
 				                                 PixelFormat.Format32bppArgb);
-
-				if (Brush == null)
-				{
-					GetDefaultBrush();
-				}
 			}
 			catch (Exception ex)
 			{
@@ -1180,26 +1141,63 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Function to build the updated brush.
+		/// Function to set the interpolation parameters for the brush.
 		/// </summary>
-		/// <returns></returns>
-		public GorgonGlyphLinearGradientBrush GetUpdatedBrush()
+		/// <param name="interpolators">The list of interpolation values.</param>
+		public void SetInterpolation(ICollection<GorgonGlyphBrushInterpolator> interpolators)
 		{
-			var result = new GorgonGlyphLinearGradientBrush
-			       {
-					   Angle = (float)numericAngle.Value,
-					   StartColor = _handles[0].Color,
-					   EndColor = _handles[_handles.Count - 1].Color,
-					   GammaCorrection = checkUseGamma.Checked,
-					   ScaleAngle = checkScaleAngle.Checked
-			       };
-
-			foreach (WeightHandle handle in _handles)
+			try
 			{
-				result.Interpolation.Add(new GorgonGlyphBrushInterpolator(handle.Weight, handle.Color));
+				if ((interpolators == null)
+				    || (interpolators.Count == 0))
+				{
+					_handles = new List<WeightHandle>
+					           {
+						           new WeightHandle(0, Color.Black, 0),
+						           new WeightHandle(1, Color.White, 1)
+					           };
+
+					return;
+				}
+
+				if (interpolators.Count == 1)
+				{
+					GorgonGlyphBrushInterpolator first = interpolators.First();
+
+					_handles = new List<WeightHandle>
+					           {
+						           new WeightHandle(0, first.Color, 0),
+						           new WeightHandle(1, Color.White, 1)
+					           };
+					return;
+				}
+
+				_handles.Clear();
+				_handles.AddRange(interpolators.OrderBy(item => item.Weight)
+				                               .Select((item, index) => new WeightHandle(item.Weight, item.Color, index)));
+				SortWeightHandles();
+			}
+			finally
+			{
+				if (IsHandleCreated)
+				{
+					DrawGradientDisplay();
+					DrawSelectedColor();
+					DrawPreview();
+					DrawControls();
+					ValidateControls();
+				}
 			}
 
-			return result;
+		}
+
+		/// <summary>
+		/// Function to return the interpolation values for the brush.
+		/// </summary>
+		/// <returns>A list of interpolators for the brush.</returns>
+		public IEnumerable<GorgonGlyphBrushInterpolator> GetInterpolators()
+		{
+			return _handles.Select(item => new GorgonGlyphBrushInterpolator(item.Weight, item.Color));
 		}
 		#endregion
 
@@ -1210,7 +1208,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		public panelGradient()
 		{
 			InitializeComponent();
-			_handles = new List<WeightHandle>();
+			_handles = new List<WeightHandle>
+			           {
+				           new WeightHandle(0, Color.Black, 0),
+				           new WeightHandle(1, Color.White, 1)
+			           };
 			_sorter = new WeightHandleComparer();
 		}
 		#endregion
