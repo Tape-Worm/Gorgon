@@ -25,16 +25,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Fetze.WinFormsColor;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
@@ -49,26 +45,200 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		: UserControl
 	{
 		#region Variables.
-		private GorgonColor _foregroundColor;						// Foreground hatch color.
-		private GorgonColor _backgroundColor;						// Background hatch color.
-	    private Bitmap _previewBitmap;                              // Bitmap used to draw the preview.
-	    private Bitmap _foreColorBitmap;                            // Bitmap used to draw the foreground color.
-	    private Bitmap _backColorBitmap;                            // Bitmap used to draw the background color.
+	    private Bitmap _previewBitmap;									// Bitmap used to draw the preview.
+	    private Bitmap _foreColorBitmap;								// Bitmap used to draw the foreground color.
+	    private Bitmap _backColorBitmap;								// Bitmap used to draw the background color.
+		private HatchStyle _hatchStyle = HatchStyle.BackwardDiagonal;	// Hatch style.
+		#endregion
+
+		#region Events.
+		/// <summary>
+		/// Event fired when the brush has changed.
+		/// </summary>
+		public event EventHandler BrushChanged;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the current pattern brush.
+		/// Property to set or return the hatching foreground color.
 		/// </summary>
-		public GorgonGlyphHatchBrush Brush
+		[Browsable(false)]
+		public GorgonColor HatchForegroundColor
 		{
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the hatching background color.
+		/// </summary>
+		[Browsable(false)]
+		public GorgonColor HatchBackgroundColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current hatch style.
+		/// </summary>
+		[Browsable(false)]
+		public HatchStyle HatchStyle
+		{
+			get
+			{
+				return _hatchStyle;
+			}
+			set
+			{
+				_hatchStyle = value;
+
+				if (IsHandleCreated)
+				{
+					comboHatch.Style = value;
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
+		/// Function called when the brush has changed.
+		/// </summary>
+		private void OnChanged()
+		{
+			if (BrushChanged == null)
+			{
+				return;
+			}
+
+			BrushChanged(this, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Function to retrieve a color for the hatch pattern.
+		/// </summary>
+		/// <returns>The selected color or NULL (Nothing in VB.Net) if canceled.</returns>
+		private GorgonColor? GetColor(GorgonColor oldColor)
+		{
+			ColorPickerDialog colorDialog = null;
+
+			try
+			{
+				colorDialog = new ColorPickerDialog
+				{
+					SelectedColor = oldColor,
+					OldColor = oldColor
+				};
+
+				if (colorDialog.ShowDialog(ParentForm) == DialogResult.OK)
+				{
+					return colorDialog.SelectedColor;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				if (colorDialog != null)
+				{
+					colorDialog.Dispose();
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Handles the DoubleClick event of the panelBackgroundColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelBackgroundColor_DoubleClick(object sender, EventArgs e)
+		{
+			try
+			{
+				GorgonColor? color = GetColor(HatchBackgroundColor);
+
+				if (color == null)
+				{
+					return;
+				}
+
+				HatchBackgroundColor = color.Value;
+
+				OnChanged();
+			}
+			finally
+			{
+				DrawPreview();
+				DrawBackColor();
+			}
+		}
+
+		/// <summary>
+		/// Handles the PreviewKeyDown event of the panelBackgroundColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+		private void panelBackgroundColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if ((e.KeyCode != Keys.Enter)
+				&& (e.KeyCode != Keys.Space))
+			{
+				return;
+			}
+
+			panelBackgroundColor_DoubleClick(sender, EventArgs.Empty);
+		}
+
+		/// <summary>
+		/// Handles the DoubleClick event of the panelForegroundColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelForegroundColor_DoubleClick(object sender, EventArgs e)
+		{
+			try
+			{
+				GorgonColor? color = GetColor(HatchForegroundColor);
+
+				if (color == null)
+				{
+					return;
+				}
+
+				HatchForegroundColor = color.Value;
+
+				OnChanged();
+			}
+			finally
+			{
+				DrawPreview();
+				DrawForeColor();
+			}
+		}
+
+		/// <summary>
+		/// Handles the PreviewKeyDown event of the panelForegroundColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+		private void panelForegroundColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if ((e.KeyCode != Keys.Space)
+				&& (e.KeyCode != Keys.Enter))
+			{
+				return;
+			}
+
+			panelForegroundColor_DoubleClick(this, EventArgs.Empty);
+			e.IsInputKey = true;
+		}
+
+		/// <summary>
         /// Handles the SelectedIndexChanged event of the comboHatch control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -78,6 +248,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             try
             {
                 DrawPreview();
+	            _hatchStyle = comboHatch.Style;
+				OnChanged();
             }
             catch (Exception ex)
             {
@@ -122,7 +294,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
         /// <param name="graphics">The graphics interface to use.</param>
 	    private void DrawForeColor(System.Drawing.Graphics graphics = null)
 	    {
-            using (Brush brush = new SolidBrush(_foregroundColor),
+            using (Brush brush = new SolidBrush(HatchForegroundColor),
                 backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
             {
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_foreColorBitmap))
@@ -159,7 +331,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
         /// <param name="graphics">The graphics interface to use.</param>
 	    private void DrawBackColor(System.Drawing.Graphics graphics = null)
 	    {
-            using (Brush brush = new SolidBrush(_backgroundColor),
+            using (Brush brush = new SolidBrush(HatchBackgroundColor),
                 backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
             {
                 using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_backColorBitmap))
@@ -197,7 +369,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private void DrawPreview(System.Drawing.Graphics graphics = null)
 		{
 
-			using (Brush brush = new HatchBrush(comboHatch.Style, _foregroundColor, _backgroundColor),
+			using (Brush brush = new HatchBrush(comboHatch.Style, HatchForegroundColor, HatchBackgroundColor),
                 backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile))
 			{
 			    using(System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_previewBitmap))
@@ -249,19 +421,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			                                  PixelFormat.Format32bppArgb);
 
 				comboHatch.RefreshPatterns();
+				comboHatch.Style = HatchStyle;
 
-			    if (Brush == null)
-			    {
-			        comboHatch.Style = HatchStyle.BackwardDiagonal;
-			        _foregroundColor = Color.Black;
-			        _backgroundColor = Color.White;
-			    }
-			    else
-			    {
-			        comboHatch.Style = Brush.HatchStyle;
-			        _foregroundColor = Brush.ForegroundColor;
-			        _backgroundColor = Brush.BackgroundColor;
-			    }
+				comboHatch.SelectedIndexChanged += comboHatch_SelectedIndexChanged;
 			}
 			catch (Exception ex)
 			{
@@ -276,6 +438,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		public panelHatch()
 		{
+			HatchForegroundColor = Color.Black;
+			HatchBackgroundColor = Color.White;
+
 			InitializeComponent();
 		}
 		#endregion
