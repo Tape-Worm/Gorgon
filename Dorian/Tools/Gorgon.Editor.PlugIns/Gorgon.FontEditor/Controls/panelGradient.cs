@@ -32,6 +32,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -305,6 +306,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to provide localized control labels.
+        /// </summary>
+	    private void LocalizeControls()
+        {
+            itemAddNode.Text = buttonAddNode.Text = buttonAddNode.ToolTipText = Resources.GORFNT_PROP_VALUE_ADDNODE;
+            itemRemoveNode.Text = buttonRemoveNode.Text = buttonRemoveNode.ToolTipText = Resources.GORFNT_PROP_VALUE_ADDNODE;
+            buttonClearNodes.Text = buttonClearNodes.ToolTipText = Resources.GORFNT_PROP_VALUE_CLEARNODES;
+            itemDuplicateNode.Text = buttonDuplicateNode.Text = buttonDuplicateNode.ToolTipText = Resources.GORFNT_PROP_VALUE_DUPENODE;
+
+        }
+
 		/// <summary>
 		/// Function called when the values on the brush have changed.
 		/// </summary>
@@ -1108,6 +1121,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			try
 			{
+                LocalizeControls();
+
 				// Create bitmaps for flicker free painting.
 				_controlPanelImage = new Bitmap(panelGradControls.ClientSize.Width,
 				                                panelGradControls.ClientSize.Height,
