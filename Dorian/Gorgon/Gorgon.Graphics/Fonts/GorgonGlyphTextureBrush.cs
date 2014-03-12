@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the region for a single gradient run.
 		/// </summary>
 		/// <remarks>This value is in texture coordinates.  To use image coordinates, use one of the <see cref="GorgonTexture2D.ToTexel(SlimMath.Vector2)"/> functions to convert.</remarks>
-		public RectangleF? TextureRegion
+		public RectangleF TextureRegion
 		{
 			get;
 			set;
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			var textureRect = new RectangleF(0, 0, Texture.Settings.Width, Texture.Settings.Height);
-			var imageRect = TextureRegion != null ? Texture.ToPixel(TextureRegion.Value) : textureRect;
+			var imageRect = Texture.ToPixel(TextureRegion);
 
 			imageRect = RectangleF.Intersect(textureRect, imageRect);
 			
@@ -184,7 +184,7 @@ namespace GorgonLibrary.Graphics
 			chunk.Write(BrushType);
 			chunk.Write(WrapMode);
 
-			chunk.WriteRectangle(TextureRegion != null ? TextureRegion.Value : new RectangleF(0, 0, 1, 1));
+			chunk.WriteRectangle(TextureRegion);
 			chunk.WriteString(_texture.Name);
 			chunk.Write(_texture.Settings.Width);
 			chunk.Write(_texture.Settings.Height);
@@ -251,6 +251,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			Texture = textureImage;
+			TextureRegion = new RectangleF(0, 0, 1, 1);
 			_textureSettings = textureImage.Settings;
 			_graphics = Texture.Graphics.ImmediateContext;
 		}

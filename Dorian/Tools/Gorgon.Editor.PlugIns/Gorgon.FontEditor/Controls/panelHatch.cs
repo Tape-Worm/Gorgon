@@ -37,11 +37,10 @@ using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 {
-	// ReSharper disable once InconsistentNaming
 	/// <summary>
 	/// A panel used to dislpay hatch patterns for font glyphs.
 	/// </summary>
-	public partial class panelHatch 
+	public partial class PanelHatch 
 		: UserControl
 	{
 		#region Variables.
@@ -62,7 +61,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return the hatching foreground color.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public GorgonColor HatchForegroundColor
 		{
 			get;
@@ -72,7 +71,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return the hatching background color.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public GorgonColor HatchBackgroundColor
 		{
 			get;
@@ -82,7 +81,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return the current hatch style.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public HatchStyle HatchStyle
 		{
 			get
@@ -434,9 +433,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="panelHatch"/> class.
+		/// Initializes a new instance of the <see cref="PanelHatch"/> class.
 		/// </summary>
-		public panelHatch()
+		public PanelHatch()
 		{
 			HatchForegroundColor = Color.Black;
 			HatchBackgroundColor = Color.White;

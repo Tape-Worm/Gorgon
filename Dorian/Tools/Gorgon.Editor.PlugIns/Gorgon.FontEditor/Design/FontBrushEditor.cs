@@ -138,8 +138,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    {
 				    var textureBrush = (GorgonGlyphTextureBrush)document.Brush;
 
-					if (((brushEditor.BrushType != GlyphBrushType.Texture)
-						|| (brushEditor.TextureBrush.Texture != textureBrush.Texture))
+					if ((brushEditor.BrushType != GlyphBrushType.Texture)
 						&& (textureBrush.Texture != null))
 					{
 						textureBrush.Texture.Dispose();
@@ -236,12 +235,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		                e.Graphics.DrawImage(gdiImage,
 		                                     e.Bounds,
-		                                     textureBrush.TextureRegion != null
-			                                     ? textureBrush.Texture.ToPixel(textureBrush.TextureRegion.Value)
-			                                     : new Rectangle(0,
-			                                                     0,
-			                                                     textureBrush.Texture.Settings.Width,
-			                                                     textureBrush.Texture.Settings.Height),
+			                                 textureBrush.Texture.ToPixel(textureBrush.TextureRegion),
 		                                     GraphicsUnit.Pixel);
 
 		                gdiImage.Dispose();

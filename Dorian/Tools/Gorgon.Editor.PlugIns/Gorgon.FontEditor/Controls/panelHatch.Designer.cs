@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 {
-	partial class panelHatch
+	partial class PanelHatch
 	{
 		/// <summary> 
 		/// Required designer variable.
