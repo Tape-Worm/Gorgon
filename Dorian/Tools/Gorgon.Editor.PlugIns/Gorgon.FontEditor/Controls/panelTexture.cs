@@ -799,7 +799,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		{
 			_infoText.Length = 0;
 
-			if (_selectionArea == null)
+			if ((_selectionArea == null)
+                || (Texture == null))
 			{
 				labelInfo.Text = _infoText.ToString();
 				return;
@@ -944,6 +945,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		private void ValidateCommands()
 		{
+		    buttonOpen.Enabled = ImageEditor != null;
 			numericHeight.Enabled = numericWidth.Enabled = numericX.Enabled = numericY.Enabled = comboWrapMode.Enabled = Texture != null;
 		}
 

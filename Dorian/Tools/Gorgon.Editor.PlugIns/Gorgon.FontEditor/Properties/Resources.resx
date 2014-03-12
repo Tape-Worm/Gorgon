@@ -484,4 +484,19 @@ Height:{5:####0}</value>
   <data name="PROP_OUTLINECOLOR2_NAME" xml:space="preserve">
     <value>Outline Color 2</value>
   </data>
+  <data name="GORFNT_PROP_VALUE_ADDNODE" xml:space="preserve">
+    <value>&amp;Add node</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_ANGLE" xml:space="preserve">
+    <value>Angle</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_CLEARNODES" xml:space="preserve">
+    <value>&amp;Clear nodes</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_DUPENODE" xml:space="preserve">
+    <value>&amp;Duplicate nodes</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_REMOVENODE" xml:space="preserve">
+    <value>&amp;Remove node</value>
+  </data>
 </root>
