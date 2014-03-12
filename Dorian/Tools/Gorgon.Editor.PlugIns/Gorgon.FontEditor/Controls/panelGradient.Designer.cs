@@ -2,7 +2,7 @@
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 {
-	partial class panelGradient
+	partial class PanelGradient
 	{
 		/// <summary> 
 		/// Required designer variable.

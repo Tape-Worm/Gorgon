@@ -83,6 +83,13 @@
     <Compile Include="Controls\panelHatch.Designer.cs">
       <DependentUpon>panelHatch.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\panelTexture.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\panelTexture.Designer.cs">
+      <DependentUpon>panelTexture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WrapModeComboItem.cs" />
     <Compile Include="Design\CharacterSetEditor.cs" />
     <Compile Include="Design\CharacterSetTypeConverter.cs" />
     <Compile Include="Design\FontBrushTypeConverter.cs" />
@@ -187,6 +194,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\panelHatch.resx">
       <DependentUpon>panelHatch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\panelTexture.resx">
+      <DependentUpon>panelTexture.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formBrushEditor.resx">
       <DependentUpon>formBrushEditor.cs</DependentUpon>

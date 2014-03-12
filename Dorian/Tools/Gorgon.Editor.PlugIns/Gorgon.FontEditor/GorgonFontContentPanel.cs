@@ -1709,6 +1709,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     buttonEditGlyph.PerformClick();
                     return;
                 }
+
+				ValidateControls();
             }
 
             for (int i = 0; i < _textureSprites.Count; ++i)

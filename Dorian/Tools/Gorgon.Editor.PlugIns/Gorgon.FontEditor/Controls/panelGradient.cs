@@ -44,8 +44,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 	/// <summary>
 	/// A panel that will allow for editing of a linear gradient brush.
 	/// </summary>
-	// ReSharper disable once InconsistentNaming
-	partial class panelGradient 
+	partial class PanelGradient 
 		: UserControl
 	{
 		#region Classes.
@@ -242,7 +241,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return whether to scale the angle for the gradient.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool ScaleAngle
 		{
 			get
@@ -263,7 +262,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return whether to use gamma correction for the gradient.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool UseGammaCorrection
 		{
 			get
@@ -284,7 +283,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Property to set or return the angle for the gradient.
 		/// </summary>
-		[Browsable(false)]
+		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public float Angle
 		{
 			get
@@ -1203,9 +1202,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="panelGradient"/> class.
+		/// Initializes a new instance of the <see cref="PanelGradient"/> class.
 		/// </summary>
-		public panelGradient()
+		public PanelGradient()
 		{
 			InitializeComponent();
 			_handles = new List<WeightHandle>
