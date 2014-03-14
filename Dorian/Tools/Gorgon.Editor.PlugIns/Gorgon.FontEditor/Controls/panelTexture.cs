@@ -1129,76 +1129,83 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				return;
 			}
 
-			Gorgon.ApplicationIdleLoopMethod = null;
-
-			if ((_renderer != null) && (_renderer != renderer))
+			try
 			{
-				if (_lastState != null)
+				Gorgon.ApplicationIdleLoopMethod = null;
+
+				if ((_renderer != null) && (_renderer != renderer))
 				{
-					_renderer.End2D(_lastState);
-					_lastState = null;
+					if (_lastState != null)
+					{
+						_renderer.End2D(_lastState);
+						_lastState = null;
+					}
+
+					if (_texture != null)
+					{
+						_texture.Dispose();
+						_texture = null;
+					}
+
+					if (_defaultTexture != null)
+					{
+						_defaultTexture.Dispose();
+						_defaultTexture = null;
+					}
+
+					if (_swapChain != null)
+					{
+						_swapChain.Dispose();
+						_swapChain = null;
+					}
+
+					_selectionArea = null;
+					_graphics = null;
 				}
 
-				if (_texture != null)
+				if (renderer == null)
 				{
-					_texture.Dispose();
-					_texture = null;
+					return;
 				}
 
-				if (_defaultTexture != null)
+				_renderer = renderer;
+				_graphics = renderer.Graphics;
+
+				if (_swapChain == null)
 				{
-					_defaultTexture.Dispose();
-					_defaultTexture = null;
+					_swapChain = _graphics.Output.CreateSwapChain("ImageDisplay",
+					                                              new GorgonSwapChainSettings
+					                                              {
+						                                              Window = panelTextureDisplay,
+						                                              Format = BufferFormat.R8G8B8A8_UIntNormal
+					                                              });
 				}
 
-				if (_swapChain != null)
+				if (_lastState == null)
 				{
-					_swapChain.Dispose();
-					_swapChain = null;
+					_lastState = renderer.Begin2D();
 				}
 
-				_selectionArea = null;
-				_graphics = null;
-			}
+				if (_defaultTexture == null)
+				{
+					_defaultTexture = _graphics.Textures.CreateTexture<GorgonTexture2D>("DefaultPattern", Resources.Pattern);
+				}
 
-			if (renderer == null)
+				if (_selectionArea == null)
+				{
+					_selectionArea = new SelectionArea(renderer, _defaultTexture, panelTextureDisplay);
+				}
+
+				_region = new RectangleF(0, 0, 1, 1);
+
+				_renderer.Target = _swapChain;
+
+				Gorgon.ApplicationIdleLoopMethod = Idle;
+			}
+			finally
 			{
-				return;
+				ValidateCommands();
 			}
-
-			_renderer = renderer;
-			_graphics = renderer.Graphics;
-
-			if (_swapChain == null)
-			{
-				_swapChain = _graphics.Output.CreateSwapChain("ImageDisplay",
-				                                             new GorgonSwapChainSettings
-				                                             {
-					                                             Window = panelTextureDisplay,
-					                                             Format = BufferFormat.R8G8B8A8_UIntNormal
-				                                             });
-			}
-
-			if (_lastState == null)
-			{
-				_lastState = renderer.Begin2D();
-			}
-
-			if (_defaultTexture == null)
-			{
-				_defaultTexture = _graphics.Textures.CreateTexture<GorgonTexture2D>("DefaultPattern", Resources.Pattern);
-			}
-
-			if (_selectionArea == null)
-			{
-				_selectionArea = new SelectionArea(renderer, _defaultTexture, panelTextureDisplay);
-			}
-
-			_region = new RectangleF(0, 0, 1, 1);
-
-			_renderer.Target = _swapChain;
-
-			Gorgon.ApplicationIdleLoopMethod = Idle;
 		}
 		#endregion
 

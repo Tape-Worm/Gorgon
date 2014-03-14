@@ -469,8 +469,20 @@ namespace GorgonLibrary.Editor
 				Current.Persist(contentStream);
 			}
 
-			Program.EditorMetaData.Dependencies[file.FullPath] = Current.Dependencies;
-			Program.EditorMetaData.Save();
+			if ((Current.Dependencies.Count == 0) 
+				&& (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath)))
+			{
+				Program.EditorMetaData.Dependencies.Remove(file.FullPath);
+				Program.EditorMetaData.Save();
+			}
+			else
+			{
+				if (Current.Dependencies.Count > 0)
+				{
+					Program.EditorMetaData.Dependencies[file.FullPath] = Current.Dependencies;
+					Program.EditorMetaData.Save();
+				}
+			}
 
 			_contentChanged = false;
 

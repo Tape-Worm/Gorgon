@@ -257,26 +257,19 @@ namespace GorgonLibrary.Editor
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (_disposed)
+			if (!_disposed)
 			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (_logo != null)
+				if (disposing)
 				{
-					_logo.Dispose();
-				}
+					if (_logo != null)
+					{
+						_logo.Dispose();
+					}
 
-				if (_2D != null)
-				{
-					_2D.Dispose();						
-				}
-
-				if (_container != null)
-				{
-					_container.Dispose();						
+					if (_2D != null)
+					{
+						_2D.Dispose();
+					}
 				}
 			}
 
@@ -284,6 +277,8 @@ namespace GorgonLibrary.Editor
 			_2D = null;
 			_logo = null;
 			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 		#endregion
 	}

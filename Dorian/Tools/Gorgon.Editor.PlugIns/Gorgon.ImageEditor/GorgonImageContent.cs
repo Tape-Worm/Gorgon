@@ -24,11 +24,13 @@
 // 
 #endregion
 
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -39,11 +41,23 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         : ContentObject, IImageEditorContent
     {
         #region Variables.
+	    private bool _disposed;													// Flag to indicate that the object was disposed.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
         private readonly GorgonImageCodec _codec;								// Codec used for the image.
+	    private GorgonSwapChain _swap;											// The swap chain to display our texture.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the renderer interface.
+		/// </summary>
+		[Browsable(false)]
+	    public Gorgon2D Renderer
+	    {
+		    get;
+		    private set;
+	    }
+
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
@@ -79,7 +93,40 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+	    protected override void Dispose(bool disposing)
+	    {
+		    if (!_disposed)
+		    {
+			    if (Image != null)
+			    {
+				    Image.Dispose();
+			    }
+
+			    if (Renderer != null)
+			    {
+				    Renderer.Dispose();
+			    }
+
+			    if (_swap != null)
+			    {
+				    _swap.Dispose();
+			    }
+
+			    _swap = null;
+				Renderer = null;
+			    Image = null;
+		    }
+
+		    _disposed = true;
+
+		    base.Dispose(disposing);
+	    }
+
+	    /// <summary>
         /// Function to persist the content data to a stream.
         /// </summary>
         /// <param name="stream">Stream that will receive the data.</param>
@@ -104,12 +151,37 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentPanel OnInitialize()
         {
-            _contentPanel = new GorgonImageContentPanel();
+	        _contentPanel = new GorgonImageContentPanel
+	                        {
+		                        Content = this
+	                        };
+
+	        _swap = Graphics.Output.CreateSwapChain("TextureDisplay",
+	                                                new GorgonSwapChainSettings
+	                                                {
+														Window = _contentPanel.panelTextureDisplay,
+														Format = BufferFormat.R8G8B8A8_UIntNormal
+	                                                });
+
+			Renderer = Graphics.Output.Create2DRenderer(_swap);
+
+	        _contentPanel.CreateResources();
 
             return _contentPanel;
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to draw the interface for the content editor.
+		/// </summary>
+	    public override void Draw()
+		{
+			Renderer.Target = _swap;
+			_contentPanel.Draw();
+
+			Renderer.Render(1);
+		}
+
+	    /// <summary>
         /// Function to retrieve a thumbnail image for the content plug-in.
         /// </summary>
         /// <returns>
@@ -230,6 +302,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the image held in the content object.
         /// </summary>
+        [Browsable(false)]
         public GorgonImageData Image
         {
             get;

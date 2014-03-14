@@ -343,7 +343,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Solid, Resources.GORFNT_PROP_VALUE_SOLID_BRUSH));
 			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.LinearGradient, Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH));
 			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Hatched, Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH));
-			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Texture, Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH));
+	        if (_currentContent.ImageEditor != null)
+	        {
+		        comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Texture,
+		                                                        Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH));
+	        }
 
 	        comboBrushType.SelectedItem = 0;
 	    }
@@ -419,11 +423,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    colorSolidBrush.OldColor = SolidBrush.Color;
 			    colorSolidBrush.SelectedColor = SolidBrush.Color;
 
-			    panelTextureEditor.ImageEditor = _currentContent.ImageEditor;
+				panelTextureEditor.ImageEditor = _currentContent.ImageEditor;
 
 			    _originalBrushType = BrushType;
-
-				// panelTextureEditor.Renderer = fontContent.Renderer;
 
 			    switch (BrushType)
 			    {
@@ -447,9 +449,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					    tabBrushEditor.SelectedTab = pagePattern;
 					    break;
 				    case GlyphBrushType.Texture:
+						if (_currentContent.ImageEditor == null)
+						{
+							GorgonDialogs.WarningBox(this, Resources.GORFNT_BRUSH_NO_IMG_EDITOR);
+							comboBrushType.SelectedIndex = 0;
+							break;
+						}
+
 					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH;
 					    tabBrushEditor.SelectedTab = pageTexture;
-
+						
 					    panelTextureEditor.Texture = TextureBrush.Texture;
 					    panelTextureEditor.WrapMode = TextureBrush.WrapMode;
 						panelTextureEditor.TextureRegion = TextureBrush.TextureRegion;

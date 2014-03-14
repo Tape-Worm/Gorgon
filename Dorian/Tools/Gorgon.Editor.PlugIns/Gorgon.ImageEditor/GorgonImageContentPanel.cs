@@ -25,7 +25,13 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Security.Cryptography;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
+using SlimMath;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -36,7 +42,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		: ContentPanel
 	{
 		#region Variables.
+		// Image content.
         private GorgonImageContent _content;
+		// Texture to display.
+	    private GorgonTexture2D _texture;
+		// Background texture.
+	    private GorgonTexture2D _backgroundTexture;
+		// The texture region in screen space.
+	    private RectangleF _textureRegion;
         #endregion
 
         #region Methods.
@@ -56,7 +69,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			Text = Resources.GORIMG_DESC;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function called when the content has changed.
 		/// </summary>
 		public override void RefreshContent()
@@ -70,7 +83,45 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new InvalidCastException(string.Format(Resources.GORIMG_CONTENT_NOT_IMAGE, Content.Name));
 			}
 
+		    if (_content.Image != null)
+		    {
+				_texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
+				_textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
+		    }
+
 			ValidateControls();
+		}
+
+		/// <summary>
+		/// Function to draw the texture.
+		/// </summary>
+	    public void Draw()
+	    {
+		    _content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+
+			_content.Renderer.Drawing.Blit(_backgroundTexture,
+			                               panelTextureDisplay.ClientRectangle,
+			                               _backgroundTexture.ToTexel(panelTextureDisplay.ClientRectangle));
+
+			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;
+			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Clamp;
+
+			if (_texture == null)
+			{
+				return;
+			}
+
+			_content.Renderer.Drawing.Blit(_texture, _textureRegion);
+	    }
+
+		/// <summary>
+		/// Function to create the resources used by the content.
+		/// </summary>
+	    public void CreateResources()
+		{
+			_backgroundTexture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
 		}
 		#endregion
 
