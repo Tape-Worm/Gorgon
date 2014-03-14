@@ -692,11 +692,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					{
 						_swap.Dispose();
 					}
-
-					if (_panel != null)
-					{
-						_panel.Dispose();						
-					}
                 }
 
 				_swap = null;
@@ -946,7 +941,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public override void Draw()
 		{
-            Renderer.Target = (GorgonRenderTarget2D)_swap;
+            Renderer.Target = _swap;
 			Renderer.Clear(_panel.panelTextures.BackColor);
 
 			switch (CurrentState)

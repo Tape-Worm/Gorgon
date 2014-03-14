@@ -503,6 +503,12 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
+			if ((_contentControl != null)
+				&& (!_contentControl.IsDisposed))
+			{
+				_contentControl.Dispose();
+			}
+
 			_disposed = true;
             _contentControl = null;
 		}

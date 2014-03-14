@@ -398,9 +398,6 @@ Note: If 'No' is selected, then the image will be clipped to the texture dimensi
   <data name="GORFNT_BUTTON_CLIP_GLYPH_TIP" xml:space="preserve">
     <value>Clip the glyph from a texture.</value>
   </data>
-  <data name="GORFNT_ANTIALIAS_HQ" xml:space="preserve">
-    <value>Anti-alias (High quality)</value>
-  </data>
   <data name="shadow_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\shadow_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -498,5 +495,8 @@ Height:{5:####0}</value>
   </data>
   <data name="GORFNT_PROP_VALUE_REMOVENODE" xml:space="preserve">
     <value>&amp;Remove node</value>
+  </data>
+  <data name="GORFNT_BRUSH_NO_IMG_EDITOR" xml:space="preserve">
+    <value>A texture brush is assigned to the glyphs for this font, but no image editor plug-in was found.  Texture brushes will not be available.</value>
   </data>
 </root>

@@ -752,11 +752,14 @@ namespace GorgonLibrary.Editor
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs"/> instance containing the event data.</param>
 		private void treeFiles_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
-		{
+        {
+	        var editNode = e.Node as TreeNodeEditor;
 			Cursor.Current = Cursors.WaitCursor;
 			
 			// Only open files.
-	        if ((((TreeNodeEditor)e.Node).NodeType & NodeType.File) != NodeType.File)
+	        if ((editNode == null)
+				|| (((editNode.NodeType & NodeType.File) != NodeType.File)
+				&& ((editNode.NodeType & NodeType.Dependency) != NodeType.Dependency)))
 	        {
 		        return;
 	        }
@@ -1294,6 +1297,11 @@ namespace GorgonLibrary.Editor
 		private static void GetDependencyNodes(TreeNodeFile fileNode)
 		{
 			fileNode.Nodes.Clear();
+
+			if (!Program.EditorMetaData.Dependencies.ContainsKey(fileNode.File.FullPath))
+			{
+				return;
+			}
 
 			DependencyCollection dependencies = Program.EditorMetaData.Dependencies[fileNode.File.FullPath];
 

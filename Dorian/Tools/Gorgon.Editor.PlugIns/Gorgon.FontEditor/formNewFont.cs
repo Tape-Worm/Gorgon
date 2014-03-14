@@ -219,38 +219,62 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 		    if (string.IsNullOrEmpty(comboAA.Text))
 		    {
-		        comboAA.Text = "Anti-Alias (High Quality)";
+				comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
 		    }
 
-		    buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
-
 			if (string.IsNullOrEmpty(comboFonts.Text))
-				buttonCharacterList.Enabled = buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+			{
+				buttonCharacterList.Enabled =
+					buttonOK.Enabled =
+					checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+			}
 			else
 			{
-				var family = FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, comboFonts.Text, StringComparison.OrdinalIgnoreCase));
+				var family = FontFamily.Families.SingleOrDefault(item =>
+				                                                 string.Equals(item.Name,
+				                                                               comboFonts.Text,
+				                                                               StringComparison.OrdinalIgnoreCase));
 
 				buttonCharacterList.Enabled = true;
 
-				if ((family == null) || (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(family.Name.ToLower())))
+				if (family == null)
+				{
 					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = false;
+				}
 				else
 				{
-					Font font = GorgonFontEditorPlugIn.CachedFonts[family.Name.ToLower()];
-
 					checkBold.Enabled = family.IsStyleAvailable(FontStyle.Bold) && family.IsStyleAvailable(FontStyle.Regular);
 					checkUnderline.Enabled = family.IsStyleAvailable(FontStyle.Underline) && family.IsStyleAvailable(FontStyle.Regular);
 					checkItalic.Enabled = family.IsStyleAvailable(FontStyle.Italic) && family.IsStyleAvailable(FontStyle.Regular);
 					checkStrikeThrough.Enabled = family.IsStyleAvailable(FontStyle.Strikeout);
 
-					checkBold.Checked = ((font.Style & FontStyle.Bold) == FontStyle.Bold);
-					checkUnderline.Checked = ((font.Style & FontStyle.Underline) == FontStyle.Underline);
-					checkItalic.Checked = ((font.Style & FontStyle.Italic) == FontStyle.Italic);
-					checkStrikeThrough.Checked = false;
-
 					buttonOK.Enabled = textName.Text.Length > 0;
 				}
-			}			
+			}
+
+			if ((!checkBold.Enabled)
+				&& (checkBold.Checked))
+			{
+				checkBold.Checked = false;
+			}
+
+			if ((!checkUnderline.Enabled)
+				&& (checkUnderline.Checked))
+			{
+				checkUnderline.Checked = false;
+			}
+
+			if ((!checkItalic.Enabled)
+				&& (checkItalic.Checked))
+			{
+				checkItalic.Checked = false;
+			}
+
+			if ((!checkStrikeThrough.Enabled)
+				&& (checkStrikeThrough.Checked))
+			{
+				checkStrikeThrough.Checked = false;
+			}
 		}
 
 		/// <summary>
@@ -266,15 +290,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_font = null;
 
 			if (checkBold.Checked)
+			{
 				style |= FontStyle.Bold;
+			}
 			if (checkUnderline.Checked)
+			{
 				style |= FontStyle.Underline;
+			}
 			if (checkItalic.Checked)
+			{
 				style |= FontStyle.Italic;
+			}
 			if (checkStrikeThrough.Checked)
+			{
 				style |= FontStyle.Strikeout;
+			}
 
-			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase) ? GraphicsUnit.Point : GraphicsUnit.Pixel));
+			_font = new Font(comboFonts.Text,
+			                 (float)numericSize.Value,
+			                 style,
+			                 (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)
+				                  ? GraphicsUnit.Point
+				                  : GraphicsUnit.Pixel));
 			labelPreview.Font = _font;
 		}
 
@@ -284,8 +321,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private void RestrictTexture()
 		{
 			var fontSize = (float)numericSize.Value;
+
 			if (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase))
+			{
 				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, 0));
+			}
 
 			if ((fontSize > (float)numericTextureHeight.Value) || (fontSize > (float)numericTextureWidth.Value))
 			{
@@ -294,7 +334,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			if (fontSize > 16)
+			{
 				numericTextureHeight.Minimum = numericTextureWidth.Minimum = (decimal)fontSize;
+			}
 		}
 
 		/// <summary>
@@ -307,19 +349,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			try
 			{
 				if (sender == comboFonts)
+				{
 					ValidateControls();
+				}
 
 				if (sender == numericSize)
+				{
 					RestrictTexture();
+				}
+
+				// We call validate controls here because we need the preview to be capable of showing
+				// the styles we select for the font.  If the font doesn't support the style we select,
+				// then an exception occurs.  We don't want that.
+				ValidateControls();
 
 				UpdatePreview();
+
+				GorgonFontEditorPlugIn.Settings.FontAntiAliasMode = string.Equals(comboAA.Text,
+				                                                                  Resources.GORFNT_ANTIALIAS_NONE,
+				                                                                  StringComparison.OrdinalIgnoreCase)
+					                                                    ? FontAntiAliasMode.None
+					                                                    : FontAntiAliasMode.AntiAlias;
+
+				GorgonFontEditorPlugIn.Settings.FontSizeType = string.Equals(comboSizeType.Text,
+				                                                             "points",
+				                                                             StringComparison.OrdinalIgnoreCase)
+					                                               ? FontHeightMode.Points
+					                                               : FontHeightMode.Pixels;
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
-			}
-			finally
-			{
 				ValidateControls();
 			}
 		}
@@ -343,7 +403,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			base.OnFormClosing(e);
 
 			if (_font != null)
+			{
 				_font.Dispose();
+			}
 		}
 
 		/// <summary>
@@ -357,7 +419,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             comboAA.Items.Clear();
 		    comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_NONE);
             comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_STANDARD);
-            comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_HQ);
 
 			comboSizeType.Text = GorgonFontEditorPlugIn.Settings.FontSizeType.ToString();
 
@@ -366,11 +427,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				case FontAntiAliasMode.None:
 					comboAA.Text = Resources.GORFNT_ANTIALIAS_NONE;
 					break;
-				case FontAntiAliasMode.AntiAlias:
-					comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
-					break;
 				default:
-					comboAA.Text = Resources.GORFNT_ANTIALIAS_HQ;
+					comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
 					break;
 			}
 
