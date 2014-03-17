@@ -505,4 +505,22 @@ Height:{5:####0}</value>
   <data name="GORFNT_MENU_LOAD_GLYPH_IMAGE" xml:space="preserve">
     <value>&amp;Load an image for the glyph...</value>
   </data>
+  <data name="GORFNT_LABEL_GLYPHREGION" xml:space="preserve">
+    <value>Region</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_HEIGHT" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_LEFT" xml:space="preserve">
+    <value>Left</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_TOP" xml:space="preserve">
+    <value>Top</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_WIDTH" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="GORFNT_LABEL_MOUSE_POS" xml:space="preserve">
+    <value>Cursor position</value>
+  </data>
 </root>

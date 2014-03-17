@@ -108,6 +108,8 @@ namespace GorgonLibrary.Editor
 		private SizeF _dragNodeHalfSize;
 		// Default cursor for the control.
 		private Cursor _defaultCursor;
+        // Offset of the texture relative to the control size.
+	    private Vector2 _offset;
 		#endregion
 
 		#region Properties.
@@ -132,12 +134,12 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the current dragging mode operation.
+		/// Property to set or return the current dragging mode operation.
 		/// </summary>
 		public ClipSelectionDragMode DragMode
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -244,8 +246,21 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public Vector2 Offset
 		{
-			get;
-			set;
+		    get
+		    {
+		        return _offset;
+		    }
+		    set
+		    {
+                if (_clipRegion != null)
+                {
+                    _clipRegion = ClipRegion;
+                }
+
+                _offset = value;
+
+                UpdateRegions();
+		    }
 		}
 
 		/// <summary>
@@ -619,6 +634,16 @@ namespace GorgonLibrary.Editor
 			return new MouseEventArgs(buttons, args.ClickCount, (int)args.Position.X, (int)args.Position.Y, args.WheelDelta);
 		}
 
+        /// <summary>
+        /// Function to call in the mouse up event of the control being rendered into.
+        /// </summary>
+        /// <param name="e">Event parameters.</param>
+        /// <returns>TRUE if handled, FALSE if not.</returns>
+        public bool OnMouseUp(PointingDeviceEventArgs e)
+        {
+            return OnMouseUp(Convert(e));
+        }
+
 		/// <summary>
 		/// Function to call in the mouse up event of the control being rendered into.
 		/// </summary>
@@ -638,6 +663,16 @@ namespace GorgonLibrary.Editor
 
 			return true;
 		}
+        
+        /// <summary>
+        /// Function to call in the mouse down event of the control being rendered into.
+        /// </summary>
+        /// <param name="e">Event parameters.</param>
+        /// <returns>TRUE if handled, FALSE if not.</returns>
+        public bool OnMouseDown(PointingDeviceEventArgs e)
+	    {
+	        return OnMouseDown(Convert(e));
+	    }
 
 		/// <summary>
 		/// Function to call in the mouse down event of the control being rendered into.
@@ -663,8 +698,12 @@ namespace GorgonLibrary.Editor
 				return true;
 			}
 
-			if ((_selectedDragNode == -1) 
-				&& (_selectorRegion.Contains(e.Location)))
+		    if ((!_selectorRegion.Contains(e.Location)) && (_selectedDragNode == -1))
+		    {
+		        return false;
+		    }
+
+			if (_selectedDragNode == -1) 
 			{
 				_dragOffset = new Vector2(_selectorRegion.Left - e.Location.X, _selectorRegion.Top - e.Location.Y);
 				DragMode = ClipSelectionDragMode.Move;
@@ -819,7 +858,7 @@ namespace GorgonLibrary.Editor
 			_selectionSprite = renderer.Renderables.CreateSprite("SelectionSprite",
 																  new GorgonSpriteSettings
 																  {
-																	  Color = new GorgonColor(0, 0, 0.8f, 0.4f),
+																	  Color = new GorgonColor(0, 0, 0.8f, 0.5f),
 																	  Size = new Vector2(1)
 																  });
 
