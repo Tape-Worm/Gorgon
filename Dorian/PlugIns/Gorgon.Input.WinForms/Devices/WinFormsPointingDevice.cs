@@ -224,9 +224,6 @@ namespace GorgonLibrary.Input.WinForms
 			: base(owner, "Win Forms Mouse")
 		{			
 			Gorgon.Log.Print("Raw input pointing device interface created.", LoggingLevel.Verbose);
-
-			// Default the position to the current screen position.
-			Position = BoundControl.PointToClient(System.Windows.Forms.Cursor.Position);
 		}
 		#endregion
 	}

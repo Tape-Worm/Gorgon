@@ -25,18 +25,11 @@
 #endregion
 
 using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using GorgonLibrary.Input;
 using GorgonLibrary.Renderers;
 using SlimMath;
 
@@ -113,9 +106,31 @@ namespace GorgonLibrary.Editor
 		private Size _dragNodeSize;
 		// Half size of the draggable node areas.
 		private SizeF _dragNodeHalfSize;
+		// Default cursor for the control.
+		private Cursor _defaultCursor;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the default cursor for the clipper.
+		/// </summary>
+		public Cursor DefaultCursor
+		{
+			get
+			{
+				if (_defaultCursor != null)
+				{
+					return _defaultCursor;
+				}
+
+				return _renderControl == null ? Cursors.Arrow : _renderControl.Cursor;
+			}
+			set
+			{
+				_defaultCursor = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the current dragging mode operation.
 		/// </summary>
@@ -409,7 +424,7 @@ namespace GorgonLibrary.Editor
 					_renderControl.Cursor = Cursors.SizeNESW;
 					break;
 				default:
-					_renderControl.Cursor = Cursors.Default;
+					_renderControl.Cursor = DefaultCursor;
 					break;
 			}
 		}
@@ -578,6 +593,33 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to convert raw input pointing device args to win forms event args.
+		/// </summary>
+		/// <param name="args">Raw input device args.</param>
+		/// <returns>Winforms event args.</returns>
+		private static MouseEventArgs Convert(PointingDeviceEventArgs args)
+		{
+			var buttons = MouseButtons.None;
+
+			if (args.Buttons.HasFlag(PointingDeviceButtons.Button1))
+			{
+				buttons |= MouseButtons.Left;
+			}
+
+			if (args.Buttons.HasFlag(PointingDeviceButtons.Button2))
+			{
+				buttons |= MouseButtons.Right;
+			}
+
+			if (args.Buttons.HasFlag(PointingDeviceButtons.Button3))
+			{
+				buttons |= MouseButtons.Middle;
+			}
+
+			return new MouseEventArgs(buttons, args.ClickCount, (int)args.Position.X, (int)args.Position.Y, args.WheelDelta);
+		}
+
+		/// <summary>
 		/// Function to call in the mouse up event of the control being rendered into.
 		/// </summary>
 		/// <param name="e">Event parameters.</param>
@@ -639,6 +681,16 @@ namespace GorgonLibrary.Editor
 
 			return true;
 		}
+
+		/// <summary>
+		/// Function to call in the mouse move event of the control being rendered into.
+		/// </summary>
+		/// <param name="e">Event parameters.</param>
+		/// <returns>TRUE if handled, FALSE if not.</returns>
+		public bool OnMouseMove(PointingDeviceEventArgs e)
+		{
+			return OnMouseMove(Convert(e));
+		}
 		
 		/// <summary>
 		/// Function to call in the mouse move event of the control being rendered into.
@@ -651,11 +703,6 @@ namespace GorgonLibrary.Editor
 			{
 				return false;
 			}
-
-			/*if (DragMode != ClipSelectionDragMode.Resize)
-			{
-				DragMode = ClipSelectionDragMode.None;
-			}*/
 
 			switch (DragMode)
 			{
@@ -680,7 +727,7 @@ namespace GorgonLibrary.Editor
 					else
 					{
 						// If we're inside the selection area
-						_renderControl.Cursor = _selectorRegion.Contains(e.Location) ? Cursors.SizeAll : Cursors.Default;
+						_renderControl.Cursor = _selectorRegion.Contains(e.Location) ? Cursors.SizeAll : DefaultCursor;
 					}
 					break;
 			}
@@ -757,6 +804,7 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentNullException("renderControl");
 			}
 
+			_scale = new Vector2(1);
 			_dragAreas = new RectangleF[8]; 
 			SelectorAnimateSpeed = 0.5f;
 			DragNodeSize = new Size(8, 8);
@@ -771,7 +819,7 @@ namespace GorgonLibrary.Editor
 			_selectionSprite = renderer.Renderables.CreateSprite("SelectionSprite",
 																  new GorgonSpriteSettings
 																  {
-																	  Color = new GorgonColor(0, 1, 1, 1.0f),
+																	  Color = new GorgonColor(0, 0, 0.8f, 0.4f),
 																	  Size = new Vector2(1)
 																  });
 
