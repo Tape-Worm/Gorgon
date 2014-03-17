@@ -28,6 +28,11 @@
 		            _rawKeyboard.Dispose();
 	            }
 
+	            if (_rawMouse != null)
+	            {
+		            _rawMouse.Dispose();
+	            }
+
                 if (_pattern != null)
                 {
                     _pattern.Dispose();
@@ -38,6 +43,7 @@
 		            _editGlyph.Dispose();
 	            }
 
+	            _rawMouse = null;
 	            _rawKeyboard = null;
 	            _editGlyph = null;
                 _pattern = null;
@@ -56,23 +62,29 @@
         {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonFontContentPanel));
 			this.panelTextures = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.panelGlyphSet = new System.Windows.Forms.Panel();
+			this.panel4 = new System.Windows.Forms.Panel();
+			this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label1 = new System.Windows.Forms.Label();
+			this.labelTextureInfo = new System.Windows.Forms.Label();
+			this.panel3 = new System.Windows.Forms.Panel();
+			this.buttonOK = new System.Windows.Forms.Button();
+			this.buttonCancel = new System.Windows.Forms.Button();
 			this.panelText = new System.Windows.Forms.Panel();
 			this.splitContent = new System.Windows.Forms.Splitter();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.panelToolbar = new System.Windows.Forms.Panel();
-			this.stripGlyphs = new System.Windows.Forms.ToolStrip();
-			this.buttonEditGlyph = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-			this.buttonGlyphSizeSpace = new System.Windows.Forms.ToolStripButton();
-			this.buttonGlyphKern = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-			this.buttonGlyphClip = new System.Windows.Forms.ToolStripButton();
-			this.buttonRemoveCustomTexture = new System.Windows.Forms.ToolStripButton();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
 			this.labelTextureCount = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNextTexture = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.dropDownZoom = new System.Windows.Forms.ToolStripDropDownButton();
 			this.menuItem1600 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem800 = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,10 +97,21 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemToWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.labelSelectedGlyphInfo = new System.Windows.Forms.ToolStripLabel();
 			this.separatorGlyphInfo = new System.Windows.Forms.ToolStripSeparator();
 			this.labelHoverGlyphInfo = new System.Windows.Forms.ToolStripLabel();
+			this.panelToolbar = new System.Windows.Forms.Panel();
+			this.stripGlyphs = new System.Windows.Forms.ToolStrip();
+			this.buttonEditGlyph = new System.Windows.Forms.ToolStripButton();
+			this.sepGlyphSpacing = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonGlyphSizeSpace = new System.Windows.Forms.ToolStripButton();
+			this.buttonGlyphKern = new System.Windows.Forms.ToolStripButton();
+			this.sepGlyphTools = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonGlyphTools = new System.Windows.Forms.ToolStripSplitButton();
+			this.menuItemSetGlyph = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemLoadGlyphImage = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuItemRemoveGlyphImage = new System.Windows.Forms.ToolStripMenuItem();
 			this.stripCommands = new System.Windows.Forms.ToolStrip();
 			this.menuTextColor = new System.Windows.Forms.ToolStripDropDownButton();
 			this.itemSampleTextForeground = new System.Windows.Forms.ToolStripMenuItem();
@@ -103,14 +126,23 @@
 			this.textPreviewText = new System.Windows.Forms.ToolStripTextBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+			this.panel5 = new System.Windows.Forms.Panel();
 			this.PanelDisplay.SuspendLayout();
+			this.panelGlyphSet.SuspendLayout();
+			this.panel4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+			this.panel3.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.panelToolbar.SuspendLayout();
-			this.stripGlyphs.SuspendLayout();
 			this.panelControls.SuspendLayout();
 			this.stripFontDisplay.SuspendLayout();
+			this.panelToolbar.SuspendLayout();
+			this.stripGlyphs.SuspendLayout();
 			this.stripCommands.SuspendLayout();
 			this.panel2.SuspendLayout();
+			this.panel5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// PanelDisplay
@@ -124,7 +156,7 @@
 			// 
 			this.panelTextures.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.panelTextures.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelTextures.Location = new System.Drawing.Point(0, 25);
+			this.panelTextures.Location = new System.Drawing.Point(0, 0);
 			this.panelTextures.Name = "panelTextures";
 			this.panelTextures.ShowFocus = false;
 			this.panelTextures.Size = new System.Drawing.Size(806, 347);
@@ -132,8 +164,198 @@
 			this.panelTextures.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.panelTextures.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDoubleClick);
 			this.panelTextures.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDown);
+			this.panelTextures.MouseEnter += new System.EventHandler(this.panelTextures_MouseEnter);
+			this.panelTextures.MouseLeave += new System.EventHandler(this.panelTextures_MouseLeave);
 			this.panelTextures.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseMove);
 			this.panelTextures.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
+			// 
+			// panelGlyphSet
+			// 
+			this.panelGlyphSet.Controls.Add(this.panel4);
+			this.panelGlyphSet.Controls.Add(this.labelTextureInfo);
+			this.panelGlyphSet.Controls.Add(this.panel3);
+			this.panelGlyphSet.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelGlyphSet.Location = new System.Drawing.Point(0, 311);
+			this.panelGlyphSet.Name = "panelGlyphSet";
+			this.panelGlyphSet.Size = new System.Drawing.Size(806, 36);
+			this.panelGlyphSet.TabIndex = 4;
+			this.panelGlyphSet.Visible = false;
+			// 
+			// panel4
+			// 
+			this.panel4.Controls.Add(this.numericUpDown4);
+			this.panel4.Controls.Add(this.numericUpDown3);
+			this.panel4.Controls.Add(this.numericUpDown2);
+			this.panel4.Controls.Add(this.numericUpDown1);
+			this.panel4.Controls.Add(this.label4);
+			this.panel4.Controls.Add(this.label3);
+			this.panel4.Controls.Add(this.label2);
+			this.panel4.Controls.Add(this.label1);
+			this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel4.Location = new System.Drawing.Point(245, 0);
+			this.panel4.Name = "panel4";
+			this.panel4.Size = new System.Drawing.Size(490, 36);
+			this.panel4.TabIndex = 7;
+			// 
+			// numericUpDown4
+			// 
+			this.numericUpDown4.Location = new System.Drawing.Point(384, 9);
+			this.numericUpDown4.Maximum = new decimal(new int[] {
+            20000000,
+            0,
+            0,
+            0});
+			this.numericUpDown4.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numericUpDown4.Name = "numericUpDown4";
+			this.numericUpDown4.Size = new System.Drawing.Size(57, 23);
+			this.numericUpDown4.TabIndex = 7;
+			this.numericUpDown4.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericUpDown4.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			// 
+			// numericUpDown3
+			// 
+			this.numericUpDown3.Location = new System.Drawing.Point(269, 9);
+			this.numericUpDown3.Maximum = new decimal(new int[] {
+            20000000,
+            0,
+            0,
+            0});
+			this.numericUpDown3.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numericUpDown3.Name = "numericUpDown3";
+			this.numericUpDown3.Size = new System.Drawing.Size(57, 23);
+			this.numericUpDown3.TabIndex = 6;
+			this.numericUpDown3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericUpDown3.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			// 
+			// numericUpDown2
+			// 
+			this.numericUpDown2.Location = new System.Drawing.Point(142, 9);
+			this.numericUpDown2.Maximum = new decimal(new int[] {
+            20000000,
+            0,
+            0,
+            0});
+			this.numericUpDown2.Name = "numericUpDown2";
+			this.numericUpDown2.Size = new System.Drawing.Size(57, 23);
+			this.numericUpDown2.TabIndex = 5;
+			this.numericUpDown2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			// 
+			// numericUpDown1
+			// 
+			this.numericUpDown1.Location = new System.Drawing.Point(42, 9);
+			this.numericUpDown1.Maximum = new decimal(new int[] {
+            20000000,
+            0,
+            0,
+            0});
+			this.numericUpDown1.Name = "numericUpDown1";
+			this.numericUpDown1.Size = new System.Drawing.Size(57, 23);
+			this.numericUpDown1.TabIndex = 4;
+			this.numericUpDown1.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(332, 11);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(46, 15);
+			this.label4.TabIndex = 3;
+			this.label4.Text = "Height:";
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(221, 11);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(42, 15);
+			this.label3.TabIndex = 2;
+			this.label3.Text = "Width:";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(105, 11);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(31, 15);
+			this.label2.TabIndex = 1;
+			this.label2.Text = "Top:";
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(6, 11);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(30, 15);
+			this.label1.TabIndex = 0;
+			this.label1.Text = "Left:";
+			// 
+			// labelTextureInfo
+			// 
+			this.labelTextureInfo.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelTextureInfo.Location = new System.Drawing.Point(0, 0);
+			this.labelTextureInfo.Name = "labelTextureInfo";
+			this.labelTextureInfo.Size = new System.Drawing.Size(245, 36);
+			this.labelTextureInfo.TabIndex = 5;
+			this.labelTextureInfo.Text = "Info";
+			this.labelTextureInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// panel3
+			// 
+			this.panel3.Controls.Add(this.buttonOK);
+			this.panel3.Controls.Add(this.buttonCancel);
+			this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
+			this.panel3.Location = new System.Drawing.Point(735, 0);
+			this.panel3.Name = "panel3";
+			this.panel3.Size = new System.Drawing.Size(71, 36);
+			this.panel3.TabIndex = 8;
+			// 
+			// buttonOK
+			// 
+			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonOK.ForeColor = System.Drawing.Color.White;
+			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Location = new System.Drawing.Point(3, 4);
+			this.buttonOK.Name = "buttonOK";
+			this.buttonOK.Size = new System.Drawing.Size(28, 28);
+			this.buttonOK.TabIndex = 3;
+			this.buttonOK.UseVisualStyleBackColor = false;
+			// 
+			// buttonCancel
+			// 
+			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonCancel.ForeColor = System.Drawing.Color.White;
+			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Location = new System.Drawing.Point(37, 4);
+			this.buttonCancel.Name = "buttonCancel";
+			this.buttonCancel.Size = new System.Drawing.Size(28, 28);
+			this.buttonCancel.TabIndex = 4;
+			this.buttonCancel.UseVisualStyleBackColor = false;
 			// 
 			// panelText
 			// 
@@ -162,7 +384,7 @@
 			// panel1
 			// 
 			this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.panel1.Controls.Add(this.panelTextures);
+			this.panel1.Controls.Add(this.panel5);
 			this.panel1.Controls.Add(this.panelToolbar);
 			this.panel1.Controls.Add(this.panelControls);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -170,99 +392,6 @@
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(806, 398);
 			this.panel1.TabIndex = 3;
-			// 
-			// panelToolbar
-			// 
-			this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.panelToolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelToolbar.Controls.Add(this.stripGlyphs);
-			this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panelToolbar.Location = new System.Drawing.Point(0, 0);
-			this.panelToolbar.Name = "panelToolbar";
-			this.panelToolbar.Size = new System.Drawing.Size(806, 25);
-			this.panelToolbar.TabIndex = 3;
-			// 
-			// stripGlyphs
-			// 
-			this.stripGlyphs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.stripGlyphs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonEditGlyph,
-            this.toolStripSeparator6,
-            this.buttonGlyphSizeSpace,
-            this.buttonGlyphKern,
-            this.toolStripSeparator7,
-            this.buttonGlyphClip,
-            this.buttonRemoveCustomTexture});
-			this.stripGlyphs.Location = new System.Drawing.Point(0, 0);
-			this.stripGlyphs.Name = "stripGlyphs";
-			this.stripGlyphs.Size = new System.Drawing.Size(804, 25);
-			this.stripGlyphs.Stretch = true;
-			this.stripGlyphs.TabIndex = 0;
-			this.stripGlyphs.Text = "GlyphEditing";
-			// 
-			// buttonEditGlyph
-			// 
-			this.buttonEditGlyph.AutoToolTip = false;
-			this.buttonEditGlyph.CheckOnClick = true;
-			this.buttonEditGlyph.Enabled = false;
-			this.buttonEditGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
-			this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonEditGlyph.Name = "buttonEditGlyph";
-			this.buttonEditGlyph.Size = new System.Drawing.Size(81, 22);
-			this.buttonEditGlyph.Text = "&Edit Glyph";
-			this.buttonEditGlyph.Click += new System.EventHandler(this.buttonEditGlyph_Click);
-			// 
-			// toolStripSeparator6
-			// 
-			this.toolStripSeparator6.Name = "toolStripSeparator6";
-			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
-			// 
-			// buttonGlyphSizeSpace
-			// 
-			this.buttonGlyphSizeSpace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonGlyphSizeSpace.Enabled = false;
-			this.buttonGlyphSizeSpace.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_sizing_16x16;
-			this.buttonGlyphSizeSpace.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonGlyphSizeSpace.Name = "buttonGlyphSizeSpace";
-			this.buttonGlyphSizeSpace.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphSizeSpace.Text = "Sets the advancement placement values for the selected glyph.";
-			// 
-			// buttonGlyphKern
-			// 
-			this.buttonGlyphKern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonGlyphKern.Enabled = false;
-			this.buttonGlyphKern.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_kerning_16x16;
-			this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonGlyphKern.Name = "buttonGlyphKern";
-			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
-			// 
-			// toolStripSeparator7
-			// 
-			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
-			// 
-			// buttonGlyphClip
-			// 
-			this.buttonGlyphClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonGlyphClip.Enabled = false;
-			this.buttonGlyphClip.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
-			this.buttonGlyphClip.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonGlyphClip.Name = "buttonGlyphClip";
-			this.buttonGlyphClip.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphClip.Text = "Clip Glyph";
-			this.buttonGlyphClip.Click += new System.EventHandler(this.buttonGlyphClip_Click);
-			// 
-			// buttonRemoveCustomTexture
-			// 
-			this.buttonRemoveCustomTexture.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonRemoveCustomTexture.Enabled = false;
-			this.buttonRemoveCustomTexture.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_image_16x16;
-			this.buttonRemoveCustomTexture.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonRemoveCustomTexture.Name = "buttonRemoveCustomTexture";
-			this.buttonRemoveCustomTexture.Size = new System.Drawing.Size(23, 22);
-			this.buttonRemoveCustomTexture.Text = "Remove glyph from custom texture.";
-			this.buttonRemoveCustomTexture.Click += new System.EventHandler(this.buttonRemoveCustomTexture_Click);
 			// 
 			// panelControls
 			// 
@@ -467,6 +596,125 @@
 			this.labelHoverGlyphInfo.Size = new System.Drawing.Size(13, 22);
 			this.labelHoverGlyphInfo.Text = "  ";
 			// 
+			// panelToolbar
+			// 
+			this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.panelToolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelToolbar.Controls.Add(this.stripGlyphs);
+			this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panelToolbar.Location = new System.Drawing.Point(0, 0);
+			this.panelToolbar.Name = "panelToolbar";
+			this.panelToolbar.Size = new System.Drawing.Size(806, 25);
+			this.panelToolbar.TabIndex = 3;
+			// 
+			// stripGlyphs
+			// 
+			this.stripGlyphs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripGlyphs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonEditGlyph,
+            this.sepGlyphSpacing,
+            this.buttonGlyphSizeSpace,
+            this.buttonGlyphKern,
+            this.sepGlyphTools,
+            this.buttonGlyphTools});
+			this.stripGlyphs.Location = new System.Drawing.Point(0, 0);
+			this.stripGlyphs.Name = "stripGlyphs";
+			this.stripGlyphs.Size = new System.Drawing.Size(804, 25);
+			this.stripGlyphs.Stretch = true;
+			this.stripGlyphs.TabIndex = 0;
+			this.stripGlyphs.Text = "GlyphEditing";
+			// 
+			// buttonEditGlyph
+			// 
+			this.buttonEditGlyph.AutoToolTip = false;
+			this.buttonEditGlyph.CheckOnClick = true;
+			this.buttonEditGlyph.Enabled = false;
+			this.buttonEditGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
+			this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonEditGlyph.Name = "buttonEditGlyph";
+			this.buttonEditGlyph.Size = new System.Drawing.Size(81, 22);
+			this.buttonEditGlyph.Text = "&Edit Glyph";
+			this.buttonEditGlyph.Click += new System.EventHandler(this.buttonEditGlyph_Click);
+			// 
+			// sepGlyphSpacing
+			// 
+			this.sepGlyphSpacing.Name = "sepGlyphSpacing";
+			this.sepGlyphSpacing.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonGlyphSizeSpace
+			// 
+			this.buttonGlyphSizeSpace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphSizeSpace.Enabled = false;
+			this.buttonGlyphSizeSpace.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_sizing_16x16;
+			this.buttonGlyphSizeSpace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphSizeSpace.Name = "buttonGlyphSizeSpace";
+			this.buttonGlyphSizeSpace.Size = new System.Drawing.Size(23, 22);
+			this.buttonGlyphSizeSpace.Text = "Sets the advancement placement values for the selected glyph.";
+			// 
+			// buttonGlyphKern
+			// 
+			this.buttonGlyphKern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphKern.Enabled = false;
+			this.buttonGlyphKern.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_kerning_16x16;
+			this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphKern.Name = "buttonGlyphKern";
+			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
+			this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
+			// 
+			// sepGlyphTools
+			// 
+			this.sepGlyphTools.Name = "sepGlyphTools";
+			this.sepGlyphTools.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonGlyphTools
+			// 
+			this.buttonGlyphTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphTools.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemSetGlyph,
+            this.toolStripSeparator8,
+            this.menuItemLoadGlyphImage,
+            this.menuItemRemoveGlyphImage});
+			this.buttonGlyphTools.Enabled = false;
+			this.buttonGlyphTools.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
+			this.buttonGlyphTools.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphTools.Name = "buttonGlyphTools";
+			this.buttonGlyphTools.Size = new System.Drawing.Size(32, 22);
+			this.buttonGlyphTools.Text = "Glyph tools";
+			this.buttonGlyphTools.ToolTipText = "Glyph tools.";
+			this.buttonGlyphTools.ButtonClick += new System.EventHandler(this.menuItemSetGlyph_Click);
+			// 
+			// menuItemSetGlyph
+			// 
+			this.menuItemSetGlyph.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.menuItemSetGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
+			this.menuItemSetGlyph.Name = "menuItemSetGlyph";
+			this.menuItemSetGlyph.Size = new System.Drawing.Size(224, 22);
+			this.menuItemSetGlyph.Text = "&Set glyph";
+			this.menuItemSetGlyph.Click += new System.EventHandler(this.menuItemSetGlyph_Click);
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(221, 6);
+			// 
+			// menuItemLoadGlyphImage
+			// 
+			this.menuItemLoadGlyphImage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.menuItemLoadGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
+			this.menuItemLoadGlyphImage.Name = "menuItemLoadGlyphImage";
+			this.menuItemLoadGlyphImage.Size = new System.Drawing.Size(224, 22);
+			this.menuItemLoadGlyphImage.Text = "&Load image for glyph...";
+			this.menuItemLoadGlyphImage.Click += new System.EventHandler(this.menuItemLoadGlyphImage_Click);
+			// 
+			// menuItemRemoveGlyphImage
+			// 
+			this.menuItemRemoveGlyphImage.Enabled = false;
+			this.menuItemRemoveGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_image_16x16;
+			this.menuItemRemoveGlyphImage.Name = "menuItemRemoveGlyphImage";
+			this.menuItemRemoveGlyphImage.Size = new System.Drawing.Size(224, 22);
+			this.menuItemRemoveGlyphImage.Text = "Remove image from glyph...";
+			this.menuItemRemoveGlyphImage.Click += new System.EventHandler(this.menuItemRemoveGlyphImage_Click);
+			// 
 			// stripCommands
 			// 
 			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -590,6 +838,16 @@
 			this.imageFileBrowser.StartDirectory = null;
 			this.imageFileBrowser.Text = "Open Image";
 			// 
+			// panel5
+			// 
+			this.panel5.Controls.Add(this.panelGlyphSet);
+			this.panel5.Controls.Add(this.panelTextures);
+			this.panel5.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel5.Location = new System.Drawing.Point(0, 25);
+			this.panel5.Name = "panel5";
+			this.panel5.Size = new System.Drawing.Size(806, 347);
+			this.panel5.TabIndex = 5;
+			// 
 			// GorgonFontContentPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -600,19 +858,28 @@
 			this.Load += new System.EventHandler(this.GorgonFontContentPanel_Load);
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.PanelDisplay.ResumeLayout(false);
+			this.panelGlyphSet.ResumeLayout(false);
+			this.panel4.ResumeLayout(false);
+			this.panel4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+			this.panel3.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
-			this.panelToolbar.ResumeLayout(false);
-			this.panelToolbar.PerformLayout();
-			this.stripGlyphs.ResumeLayout(false);
-			this.stripGlyphs.PerformLayout();
 			this.panelControls.ResumeLayout(false);
 			this.panelControls.PerformLayout();
 			this.stripFontDisplay.ResumeLayout(false);
 			this.stripFontDisplay.PerformLayout();
+			this.panelToolbar.ResumeLayout(false);
+			this.panelToolbar.PerformLayout();
+			this.stripGlyphs.ResumeLayout(false);
+			this.stripGlyphs.PerformLayout();
 			this.stripCommands.ResumeLayout(false);
 			this.stripCommands.PerformLayout();
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
+			this.panel5.ResumeLayout(false);
 			this.ResumeLayout(false);
 
         }
@@ -650,11 +917,9 @@
 		private System.Windows.Forms.ToolStripButton buttonGlyphSizeSpace;
 		private System.Windows.Forms.ToolStripButton buttonEditGlyph;
 		private System.Windows.Forms.ToolStripButton buttonGlyphKern;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-		private System.Windows.Forms.ToolStripButton buttonGlyphClip;
+		private System.Windows.Forms.ToolStripSeparator sepGlyphSpacing;
+		private System.Windows.Forms.ToolStripSeparator sepGlyphTools;
 		private EditorFileBrowser imageFileBrowser;
-        private System.Windows.Forms.ToolStripButton buttonRemoveCustomTexture;
 		private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
 		private System.Windows.Forms.ToolStripMenuItem menuItem1600;
 		private System.Windows.Forms.ToolStripMenuItem menuItem800;
@@ -667,5 +932,25 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripSplitButton buttonGlyphTools;
+		private System.Windows.Forms.ToolStripMenuItem menuItemSetGlyph;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripMenuItem menuItemLoadGlyphImage;
+		private System.Windows.Forms.Panel panelGlyphSet;
+		private System.Windows.Forms.Label labelTextureInfo;
+		private System.Windows.Forms.Panel panel4;
+		private System.Windows.Forms.NumericUpDown numericUpDown4;
+		private System.Windows.Forms.NumericUpDown numericUpDown3;
+		private System.Windows.Forms.NumericUpDown numericUpDown2;
+		private System.Windows.Forms.NumericUpDown numericUpDown1;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Panel panel3;
+		private System.Windows.Forms.Button buttonOK;
+		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.ToolStripMenuItem menuItemRemoveGlyphImage;
+		private System.Windows.Forms.Panel panel5;
     }
 }

@@ -71,7 +71,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Draw the transition when moving between textures.
         /// </summary>
-        PrevTexture = 5
+        PrevTexture = 5,
+		/// <summary>
+		/// Glyph clipper interface.
+		/// </summary>
+		ClipGlyph = 6
 	}
 
 	/// <summary>
@@ -960,6 +964,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_panel.DrawFontTexture();
 			        Renderer.Render(1);
 			        break;
+				case DrawState.ClipGlyph:
+					_panel.DrawGlyphClip();
+					Renderer.Render(1);
+					break;
 				default:
 					_panel.DrawFontTexture();
 					Renderer.Render(2);

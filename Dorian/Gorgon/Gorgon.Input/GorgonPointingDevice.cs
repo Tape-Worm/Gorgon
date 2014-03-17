@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Input
@@ -263,6 +264,14 @@ namespace GorgonLibrary.Input
 			set
 			{
 				_position = value;
+
+				if ((!Exclusive)
+					&& (BoundControl != null))
+				{
+					Cursor.Position = BoundControl.PointToScreen(new Point((int)value.X, (int)value.Y));
+				}
+
+				ConstrainData();
 			}
 		}
 

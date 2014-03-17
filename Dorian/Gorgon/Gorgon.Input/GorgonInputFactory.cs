@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
@@ -383,16 +384,14 @@ namespace GorgonLibrary.Input
 				Devices.Add(pointingDevice.UUID, pointingDevice);
 			}
 
-			// Default to center of the window on initial creation.
-			pointingDevice.Position = new PointF(window.ClientSize.Width / 2, window.ClientSize.Height / 2);
+			// Default to the last position for the mouse cursor.
+			pointingDevice.Position = window.PointToClient(Cursor.Position);
 			pointingDevice.PositionRange = RectangleF.Empty;
 			pointingDevice.WheelRange = Point.Empty;
 			pointingDevice.ResetButtons();
 			pointingDevice.Bind(window);
 			pointingDevice.Enabled = true;
 			pointingDevice.ShowCursor();
-			
-			System.Windows.Forms.Cursor.Position = Point.Truncate(pointingDevice.Position);
 
 			return pointingDevice;
 		}

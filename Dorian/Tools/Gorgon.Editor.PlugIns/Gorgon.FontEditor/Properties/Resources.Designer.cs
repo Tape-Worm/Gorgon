@@ -235,15 +235,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clip the glyph from a texture..
-        /// </summary>
-        internal static string GORFNT_BUTTON_CLIP_GLYPH_TIP {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_CLIP_GLYPH_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Sets the advancement placement values for the selected glyph..
         /// </summary>
         internal static string GORFNT_BUTTON_EDIT_ADVANCE_TIP {
@@ -276,6 +267,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_BUTTON_END_EDIT_GLYPH {
             get {
                 return ResourceManager.GetString("GORFNT_BUTTON_END_EDIT_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glyph tools..
+        /// </summary>
+        internal static string GORFNT_BUTTON_GLYPH_TOOLS {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_TOOLS", resourceCulture);
             }
         }
         
@@ -567,6 +567,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_MENU_FOREGROUND_COLOR {
             get {
                 return ResourceManager.GetString("GORFNT_MENU_FOREGROUND_COLOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Load an image for the glyph....
+        /// </summary>
+        internal static string GORFNT_MENU_LOAD_GLYPH_IMAGE {
+            get {
+                return ResourceManager.GetString("GORFNT_MENU_LOAD_GLYPH_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Set glyph.
+        /// </summary>
+        internal static string GORFNT_MENU_SET_GLYPH {
+            get {
+                return ResourceManager.GetString("GORFNT_MENU_SET_GLYPH", resourceCulture);
             }
         }
         

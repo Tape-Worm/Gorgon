@@ -31,7 +31,6 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
@@ -59,6 +58,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #region Variables.
         private Vector2 _panelMidPoint = Vector2.Zero;
         private GorgonKeyboard _rawKeyboard;
+	    private GorgonPointingDevice _rawMouse;
 		private bool _disposed;
 	    private GorgonTexture2D _pattern;
 	    private float _currentZoom = -1;
@@ -83,6 +83,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private IEnumerable<GorgonSprite> _sortedTextures;
         private DrawState _nextState = DrawState.DrawFontTextures;
 	    private Point _lastScrollPoint = Point.Empty;
+	    private Clipper _glyphClipper;
         #endregion
 
         #region Methods.
@@ -98,6 +99,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_rawKeyboard = RawInput.CreateKeyboard(panelTextures);
 				_rawKeyboard.Enabled = true;
 				_rawKeyboard.KeyUp += GorgonFontContentPanel_KeyUp;
+
+				Point lastPosition = Cursor.Position;
+				_rawMouse = RawInput.CreatePointingDevice(panelTextures);
+				_rawMouse.Acquired = false;
+				_rawMouse.Enabled = true;
+				_rawMouse.PointingDeviceMove += ClipMouseMove;
+				Cursor.Position = lastPosition;
+
+				_glyphClipper = new Clipper(_content.Renderer, panelTextures)
+				                {
+					                DefaultCursor = Cursors.Cross
+				                };
 			}
 			catch (Exception ex)
 			{
@@ -107,6 +120,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Function called when the mouse is moved in clipping mode.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="pointingDeviceEventArgs">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
+	    private void ClipMouseMove(object sender, PointingDeviceEventArgs pointingDeviceEventArgs)
+		{
+			_glyphClipper.OnMouseMove(pointingDeviceEventArgs);
+		}
+
+	    /// <summary>
 		/// Handles the KeyUp event of the GorgonFontContentPanel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -121,34 +144,61 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				return;
 			}
 
-			switch (e.Key)
+			try
 			{
-				case KeyboardKeys.Left:
-					buttonPrevTexture.PerformClick();
-					break;
-				case KeyboardKeys.Right:
-					buttonNextTexture.PerformClick();
-					break;
-				case KeyboardKeys.Enter:
-					if ((_selectedGlyph == null)
-						|| (_content.CurrentState == DrawState.ToGlyphEdit)
-                        || (_content.CurrentState == DrawState.GlyphEdit))
-					{
-						return;
-					}
+				switch (e.Key)
+				{
+					case KeyboardKeys.Left:
+						buttonPrevTexture.PerformClick();
+						break;
+					case KeyboardKeys.Right:
+						buttonNextTexture.PerformClick();
+						break;
+					case KeyboardKeys.Enter:
+						if ((_selectedGlyph == null)
+						    || (_content.CurrentState == DrawState.ToGlyphEdit)
+						    || (_content.CurrentState == DrawState.GlyphEdit))
+						{
+							return;
+						}
 
-					buttonEditGlyph.PerformClick();
-					break;
-				case KeyboardKeys.Escape:
-					if ((_selectedGlyph == null)
-                        || ((_content.CurrentState != DrawState.GlyphEdit)
-                        && (_content.CurrentState != DrawState.ToGlyphEdit)))
-                    {
-						return;
-					}
+						buttonEditGlyph.PerformClick();
+						break;
+					case KeyboardKeys.Escape:
+						if (_selectedGlyph == null)
+						{
+							return;
+						}
 
-					buttonEditGlyph.PerformClick();
-					break;
+						switch (_content.CurrentState)
+						{
+							case DrawState.ClipGlyph:
+								panelTextures.MouseClick += GorgonFontContentPanel_MouseClick;
+								panelTextures.MouseDoubleClick += panelTextures_MouseDoubleClick;
+								panelTextures.MouseDown += panelTextures_MouseDown;
+								panelTextures.MouseMove += panelTextures_MouseMove;
+
+								if (_rawMouse != null)
+								{
+									_rawMouse.Acquired = false;
+								}
+
+								_content.CurrentState = DrawState.GlyphEdit;
+
+								panelTextures.Cursor = DefaultCursor;
+								break;
+							case DrawState.GlyphEdit:
+							case DrawState.ToGlyphEdit:
+								buttonEditGlyph.PerformClick();
+								break;
+						}
+						break;
+				}
+
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 
@@ -181,11 +231,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
         /// <summary>
-        /// Handles the Click event of the buttonRemoveCustomTexture control.
+		/// Handles the Click event of the menuItemRemoveGlyphImage control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void buttonRemoveCustomTexture_Click(object sender, EventArgs e)
+        private void menuItemRemoveGlyphImage_Click(object sender, EventArgs e)
         {
             try
             {
@@ -315,12 +365,52 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			return texture;
 	    }
 
-        /// <summary>
-		/// Handles the Click event of the buttonGlyphClip control.
+		/// <summary>
+		/// Handles the Click event of the menuItemSetGlyph control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void buttonGlyphClip_Click(object sender, EventArgs e)
+		private void menuItemSetGlyph_Click(object sender, EventArgs e)
+		{
+			if ((_selectedGlyph == null)
+				|| (_content.CurrentState != DrawState.GlyphEdit))
+			{
+				return;
+			}
+
+			_content.CurrentState = DrawState.ClipGlyph;
+			if ((_selectedGlyph.Texture.Settings.Width > panelTextures.ClientSize.Width)
+			    || (_selectedGlyph.Texture.Settings.Height > panelTextures.ClientSize.Height))
+			{
+				panelTextures.AutoScrollMinSize = _selectedGlyph.Texture.Settings.Size;
+			}
+
+			// Disable previous events.
+			panelTextures.MouseClick -= GorgonFontContentPanel_MouseClick;
+			panelTextures.MouseDoubleClick -= panelTextures_MouseDoubleClick;
+			panelTextures.MouseDown -= panelTextures_MouseDown;
+			panelTextures.MouseMove -= panelTextures_MouseMove;
+
+			var cursorPosition = new Point(_selectedGlyph.GlyphCoordinates.Right, _selectedGlyph.GlyphCoordinates.Bottom);
+
+			_rawMouse.Acquired = true;
+			_rawMouse.Position = cursorPosition;
+			Cursor.Position = panelTextures.PointToScreen(cursorPosition);
+
+			_glyphClipper.ClipRegion = _selectedGlyph.GlyphCoordinates;
+			_glyphClipper.TextureSize = _selectedGlyph.Texture.Settings.Size;
+			_glyphClipper.Offset = panelTextures.AutoScrollPosition;
+			_glyphClipper.SelectorPattern = _pattern;
+
+			ValidateControls();
+		}
+
+        /// <summary>
+		/// Handles the Click event of the menuItemLoadGlyphImage control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void menuItemLoadGlyphImage_Click(object sender, EventArgs e)
 		{
 		    try
 		    {
@@ -328,6 +418,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    {
 				    imageFileBrowser.StartDirectory = GorgonFontEditorPlugIn.Settings.LastTextureImportPath;
 			    }
+
 		        imageFileBrowser.FileExtensions.Clear();
 		        foreach (var extension in _content.ImageEditor.FileExtensions)
 		        {
@@ -375,12 +466,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						newGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
 					}
 
+					var textureRegion = new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height);
+				    var glyphRegion = _selectedGlyph.GlyphCoordinates;
+
+					// Ensure the glyph fits on the loaded texture.
+				    if (!textureRegion.Contains(glyphRegion))
+				    {
+					    glyphRegion.X = 0;
+					    glyphRegion.Y = 0;
+
+					    if (glyphRegion.Right > textureRegion.Right)
+					    {
+						    glyphRegion.Width = textureRegion.Width;
+					    }
+
+					    if (glyphRegion.Bottom > textureRegion.Bottom)
+					    {
+						    glyphRegion.Height = textureRegion.Height;
+					    }
+				    }
+
 					// Default to the full size of the texture.
 					newGlyph = new GorgonGlyph(_selectedGlyph.Character,
 												texture,
-												new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
-												Vector2.Zero,
-												Vector3.Zero);
+												glyphRegion,
+												_selectedGlyph.Offset,
+												_selectedGlyph.Advance);
 
 					_content.Font.Settings.Glyphs.Add(newGlyph);
 					_content.UpdateFont();
@@ -670,6 +781,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT, _currentTextureIndex + 1, _textures.Length);
 
+
+				panelTextures.SuspendLayout();
+				panelToolbar.SuspendLayout();
+				panelGlyphSet.SuspendLayout();
+
+				panelToolbar.Visible = _content.CurrentState != DrawState.ClipGlyph;
+				panelGlyphSet.Visible = _content.CurrentState == DrawState.ClipGlyph;
+
+				panelGlyphSet.ResumeLayout(true);
+				panelToolbar.ResumeLayout(true);
+				panelTextures.ResumeLayout(true);
+
 				UpdateGlyphInfo();
             }
             else
@@ -694,21 +817,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        buttonEditGlyph.Checked = false;
 	        }
 
-	        buttonGlyphClip.Enabled =
+	        buttonGlyphTools.Enabled =
 		        buttonGlyphKern.Enabled =
 		        buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
 
-			buttonRemoveCustomTexture.Visible = buttonGlyphClip.Visible = _content.ImageEditor != null;
-	        buttonRemoveCustomTexture.Enabled = (_content.ImageEditor != null) && (_selectedGlyph != null) &&
+			menuItemRemoveGlyphImage.Visible = buttonGlyphTools.Visible = _content.ImageEditor != null;
+			menuItemRemoveGlyphImage.Enabled = (_selectedGlyph != null) &&
 	                                            (_selectedGlyph.IsExternalTexture) &&
 	                                            (_content.CurrentState == DrawState.GlyphEdit);
 
 	        if ((_content.CurrentState == DrawState.ToGlyphEdit)
-	            || (_content.CurrentState == DrawState.GlyphEdit))
+	            || (_content.CurrentState == DrawState.GlyphEdit)
+				|| (_content.CurrentState == DrawState.ClipGlyph))
 	        {
 	            buttonEditGlyph.Checked = true;
 		        buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
 		        buttonEditGlyph.Image = Resources.stop_16x16;
+
+				// Disable the edit button until we're done clipping.
+		        if (_content.CurrentState == DrawState.ClipGlyph)
+		        {
+			        buttonEditGlyph.Enabled = false;
+		        }
 	        }
 	        else
 	        {
@@ -909,6 +1039,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					case DrawState.FromGlyphEdit:
 					case DrawState.ToGlyphEdit:
 			            break;
+					case DrawState.ClipGlyph:
+						// TODO: Do clipping stuff.
+			            break;
 					case DrawState.GlyphEdit:
 	                    if (!_textureRegion.Contains(e.Location))
 	                    {
@@ -957,8 +1090,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				case DrawState.FromGlyphEdit:
 				case DrawState.ToGlyphEdit:
-					break;
 				case DrawState.GlyphEdit:
+				case DrawState.ClipGlyph:
 					break;
 				default:
 					_hoverGlyph = null;
@@ -1126,21 +1259,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_editGlyphAnimation.Stop();
 				}
 
-				if ((_content.CurrentState == DrawState.ToGlyphEdit)
-				    || (_content.CurrentState == DrawState.GlyphEdit))
-				{
-					UpdateGlyphEditor();
-				}
-				else
-				{
-					if (_editGlyph != null)
-					{
-						_editGlyph.Dispose();
-						_editGlyph = null;
-					}
-					_content.CurrentState = DrawState.DrawFontTextures;
-                    _nextState = DrawState.DrawFontTextures;
-				}
+			    switch (_content.CurrentState)
+			    {
+					case DrawState.ToGlyphEdit:
+					case DrawState.GlyphEdit:
+						UpdateGlyphEditor();
+					    break;
+					case DrawState.ClipGlyph:
+					    if (_selectedGlyph == null)
+					    {
+						    _content.CurrentState = DrawState.GlyphEdit;
+						    UpdateGlyphEditor();
+						    return;
+					    }
+
+						// Adjust scrolling if the texture is too large for the area.
+						if ((_selectedGlyph.Texture.Settings.Width > panelTextures.ClientSize.Width)
+							|| (_selectedGlyph.Texture.Settings.Height > panelTextures.ClientSize.Height))
+						{
+							panelTextures.AutoScrollMinSize = _selectedGlyph.Texture.Settings.Size;
+						}
+					    break;
+					default:
+						if (_editGlyph != null)
+						{
+							_editGlyph.Dispose();
+							_editGlyph = null;
+						}
+						_content.CurrentState = DrawState.DrawFontTextures;
+						_nextState = DrawState.DrawFontTextures;
+					    break;
+			    }
 			}
 			catch (Exception ex)
 			{
@@ -1161,7 +1310,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
 			buttonGlyphSizeSpace.Text = Resources.GORFNT_BUTTON_EDIT_ADVANCE_TIP;
 			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
-			buttonGlyphClip.Text = Resources.GORFNT_BUTTON_CLIP_GLYPH_TIP;
+			buttonGlyphTools.ToolTipText = Resources.GORFNT_BUTTON_GLYPH_TOOLS;
+			menuItemSetGlyph.Text = Resources.GORFNT_MENU_SET_GLYPH;
+			menuItemLoadGlyphImage.Text = Resources.GORFNT_MENU_LOAD_GLYPH_IMAGE;
 			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS;
 			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR;
 			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR;
@@ -1355,6 +1506,40 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Handles the MouseEnter event of the panelTextures control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelTextures_MouseEnter(object sender, EventArgs e)
+		{
+			if ((_rawMouse == null)
+				|| (_content == null)
+				|| (_content.CurrentState != DrawState.ClipGlyph))
+			{
+				return;
+			}
+
+			_rawMouse.Acquired = true;
+		}
+
+		/// <summary>
+		/// Handles the MouseLeave event of the panelTextures control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelTextures_MouseLeave(object sender, EventArgs e)
+		{
+			if ((_rawMouse == null)
+				|| (_content == null)
+				|| (_content.CurrentState != DrawState.ClipGlyph))
+			{
+				return;
+			}
+
+			_rawMouse.Acquired = false;
 		}
 
 		/// <summary>
@@ -1751,6 +1936,48 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        _sortedTextures = _textureSprites.OrderBy(item => item.Scale.X);
 	        }
         }
+
+		/// <summary>
+		/// Function to draw the glyph clipping.
+		/// </summary>
+	    public void DrawGlyphClip()
+	    {
+			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+			
+			// Draw the background.
+		    _content.Renderer.Drawing.FilledRectangle(panelTextures.ClientRectangle, GorgonColor.White, _pattern, _pattern.ToTexel(panelTextures.ClientRectangle));
+
+			BlendingMode previousMode = _content.Renderer.Drawing.BlendingMode;
+
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+
+			_content.Renderer.Drawing.FilledRectangle(new RectangleF(0, 0, _selectedGlyph.Texture.Settings.Width, _selectedGlyph.Texture.Settings.Height), new GorgonColor(0, 0, 0, 0.3f));
+
+			_content.Renderer.Drawing.DrawLine(new Vector2(0, _selectedGlyph.Texture.Settings.Height),
+											   new Vector2(_selectedGlyph.Texture.Settings.Width,
+														   _selectedGlyph.Texture.Settings.Height),
+											   GorgonColor.Black);
+
+			_content.Renderer.Drawing.DrawLine(new Vector2(_selectedGlyph.Texture.Settings.Width, 0),
+											   new Vector2(_selectedGlyph.Texture.Settings.Width,
+														   _selectedGlyph.Texture.Settings.Height),
+											   GorgonColor.Black);
+
+			_content.Renderer.Drawing.Blit(_selectedGlyph.Texture, panelTextures.AutoScrollPosition);
+
+
+			// Draw selected area.
+			_glyphClipper.Draw();
+			
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Inverted;
+			_content.Renderer.Drawing.DrawLine(new Vector2(_rawMouse.Position.X, 0), new Vector2(_rawMouse.Position.X, panelTextures.ClientSize.Height), GorgonColor.White);
+			_content.Renderer.Drawing.DrawLine(new Vector2(0, _rawMouse.Position.Y), new Vector2(panelTextures.ClientSize.Width, _rawMouse.Position.Y), GorgonColor.White);
+
+			_content.Renderer.Drawing.BlendingMode = previousMode;
+			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;
+			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Clamp;
+	    }
 
         /// <summary>
         /// Function to draw the font texture(s).
