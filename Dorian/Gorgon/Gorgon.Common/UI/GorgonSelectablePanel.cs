@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
+using GorgonLibrary.Native;
 using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI
@@ -135,7 +136,21 @@ namespace GorgonLibrary.UI
 			newRect.Inflate(-2, -2);
 			ControlPaint.DrawFocusRectangle(e.Graphics, newRect);
 		}
-		#endregion
+
+	    /// <summary>
+        /// </summary>
+        /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
+	    protected override void WndProc(ref Message m)
+	    {
+            // Turn off mouse wheel scrolling if auto scroll is on.
+	        if ((m.Msg == (int)WindowMessages.MouseWheel) && (AutoScroll) && (AutoScrollMinSize.Height > 0))
+	        {
+	            return;
+	        }
+
+	        base.WndProc(ref m);
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
