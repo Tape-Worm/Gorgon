@@ -25,17 +25,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Drawing.Drawing2D;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -51,532 +46,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 	public partial class PanelTexture 
 		: UserControl
 	{
-		#region Classes.
-		/// <summary>
-		/// A value type for the corner nodes.
-		/// </summary>
-		private class CornerNode
-		{
-			#region Variables.
-			private RectangleF _nodeBounds;				// Bounding area for the node.
-			private Vector2 _nodePosition;				// Position for the node.
-			private GorgonColor _nodeColor;				// Color of the node.
-			private RectangleF _drawBounds;				// Bounding area for the view.
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to set or return the cursor associated with this node point.
-			/// </summary>
-			public Cursor NodeCursor
-			{
-				get;
-				private set;
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to set the node position.
-			/// </summary>
-			/// <param name="nodePosition">Position of the node.</param>
-			public void SetNodePosition(Vector2 nodePosition)
-			{
-				_nodePosition = nodePosition;
-				_nodeBounds = new RectangleF(_nodePosition.X - 4, _nodePosition.Y - 4, 8, 8);
-			}
-
-			/// <summary>
-			/// Function to perform a hit test on the node.
-			/// </summary>
-			/// <param name="cursorPosition">Position of the mouse cursor.</param>
-			/// <returns>TRUE if the mouse is over the node, FALSE if not.</returns>
-			public bool HitTest(Point cursorPosition)
-			{
-				bool result = _nodeBounds.Contains(cursorPosition);
-				_nodeColor = result ? new GorgonColor(1, 0, 0, 0.5f) : new GorgonColor(0, 1, 1, 0.5f);
-				return result;
-			}
-
-			/// <summary>
-			/// Function to render the node point.
-			/// </summary>
-			/// <param name="renderer">Renderer used to render the node point.</param>
-			public void Draw(Gorgon2D renderer)
-			{
-				RectangleF bounds = _nodeBounds;
-
-				// Ensure that we can see the nodes.
-				if ((!_drawBounds.Contains(bounds.Location))
-					|| (!_drawBounds.Contains(new PointF(bounds.Right, bounds.Bottom))))
-				{
-					bounds.Inflate(2, 2);
-				}
-
-				renderer.Drawing.FilledEllipse(bounds, _nodeColor);
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="CornerNode"/> class.
-			/// </summary>
-			/// <param name="cursor">The cursor.</param>
-			/// <param name="areaBounds">The area to display the node within.</param>
-			public CornerNode(Cursor cursor, RectangleF areaBounds)
-			{
-				NodeCursor = cursor;
-				_nodePosition = Vector2.Zero;
-				_nodeColor = new GorgonColor(0, 1, 1, 0.5f);
-				_drawBounds = areaBounds;
-			}
-			#endregion
-		}
-
-		/// <summary>
-		/// Selection area interface.
-		/// </summary>
-		private class SelectionArea
-		{
-			#region Variables.
-			private readonly Panel _container;									// Container being drawn in.
-			private readonly Gorgon2D _renderer;								// Renderer to draw with.
-			private readonly GorgonSprite _selectionSprite;						// Selection sprite.
-			private Vector2 _textureSize;										// Size of the texture that is being selected.
-			private RectangleF _drawRegion = RectangleF.Empty;					// Region to draw.
-			private Rectangle _selectionRegion = Rectangle.Empty;				// Selection area.
-			private RectangleF _textureRegion = RectangleF.Empty;				// The screen space texture area.
-			private Vector2 _dragOffset = Vector2.Zero;							// Offset for dragging.
-			private Vector2 _imageScale = Vector2.Zero;							// Image scaling.
-			private readonly CornerNode[] _corners = new CornerNode[4];			// Corner nodes.
-			private int _dragNodeIndex = -1;									// The current node index that we're dragging.
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return whether we're in the middle of a drag operation or not.
-			/// </summary>
-			public bool IsDragging
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return whether a node is being dragged.
-			/// </summary>
-			public bool IsDraggingNode
-			{
-				get
-				{
-					return _dragNodeIndex != -1;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the texture region in client space.
-			/// </summary>
-			public RectangleF TextureRegion
-			{
-				get
-				{
-					return _textureRegion;
-				}
-			}
-
-			/// <summary>
-			/// Property to set or return the region for selection.
-			/// </summary>
-			public Rectangle SelectionRegion
-			{
-				get
-				{
-					return _selectionRegion;
-				}
-				set
-				{
-					_selectionRegion = value;
-
-					_drawRegion = new RectangleF((_selectionRegion.X * _imageScale.X) + _textureRegion.X,
-												 (_selectionRegion.Y * _imageScale.Y) + _textureRegion.Y,
-												 _selectionRegion.Width * _imageScale.X,
-												 _selectionRegion.Height * _imageScale.Y);
-
-					UpdateNodes();
-				}
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to update the corner codes.
-			/// </summary>
-			private void UpdateNodes()
-			{
-				// Set the new positions.
-				_corners[0].SetNodePosition(_drawRegion.Location);
-				_corners[1].SetNodePosition(new Vector2(_drawRegion.Right, _drawRegion.Top));
-				_corners[2].SetNodePosition(new Vector2(_drawRegion.Right, _drawRegion.Bottom));
-				_corners[3].SetNodePosition(new Vector2(_drawRegion.Left, _drawRegion.Bottom));
-			}
-
-			/// <summary>
-			/// Function to move the entire as a result of a click in the body of the selection rectangle.
-			/// </summary>
-			/// <param name="mousePosition">The coordinates of the mouse cursor in the client area.</param>
-			private void MoveSelection(Point mousePosition)
-			{
-				if (!IsDragging)
-				{
-					return;
-				}
-
-				_drawRegion = new RectangleF(mousePosition.X + _dragOffset.X, mousePosition.Y + _dragOffset.Y, _drawRegion.Width, _drawRegion.Height);
-
-				if (_drawRegion.X < _textureRegion.X)
-				{
-					_drawRegion.X = _textureRegion.X;
-				}
-
-				if (_drawRegion.Y < _textureRegion.Y)
-				{
-					_drawRegion.Y = _textureRegion.Y;
-				}
-
-				if (_drawRegion.Right > _textureRegion.Right)
-				{
-					_drawRegion.X = (_textureRegion.Width - _drawRegion.Width) + _textureRegion.X;
-				}
-
-				if (_drawRegion.Bottom > _textureRegion.Bottom)
-				{
-					_drawRegion.Y = (_textureRegion.Height - _drawRegion.Height) + _textureRegion.Y;
-				}
-
-				UpdateFromDrawingRegion();
-				UpdateNodes();
-			}
-
-			/// <summary>
-			/// Function to set the texture parameters for the selection region.
-			/// </summary>
-			/// <param name="texture">The texture to select from.</param>
-			/// <param name="selectedRegion">The initial selected region.</param>
-			public void SetTexture(GorgonTexture2D texture, Rectangle selectedRegion)
-			{
-				float imageRatio;
-				Vector2 imagePosition;
-				Vector2 imageSize = _container.Size;
-
-				// Get the texture size in client space for the container.
-				if (texture.Settings.Width > texture.Settings.Height)
-				{
-					imageRatio = (float)texture.Settings.Height / texture.Settings.Width;
-					imageSize.Y *= imageRatio;
-					imagePosition = new Vector2(0, _container.Size.Height / 2.0f - imageSize.Y / 2.0f);
-				}
-				else
-				{
-					imageRatio = (float)texture.Settings.Width / texture.Settings.Height;
-					imageSize.X *= imageRatio;
-					imagePosition = new Vector2(_container.Size.Width / 2.0f - imageSize.X / 2.0f, 0);
-				}
-
-				_textureRegion = new RectangleF(imagePosition, imageSize);
-				_textureSize = texture.Settings.Size;
-
-				_imageScale = new Vector2(_textureRegion.Width / _textureSize.X, _textureRegion.Height / _textureSize.Y);
-
-				SelectionRegion = Rectangle.Intersect(selectedRegion,
-													  new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height));
-			}
-
-			/// <summary>
-			/// Function to begin a dragging operation on the main selection region.
-			/// </summary>
-			/// <param name="mousePosition">Mouse position.</param>
-			private void StartDrag(Point mousePosition)
-			{
-				IsDragging = true;
-				_dragOffset = new Vector2(_drawRegion.X - mousePosition.X, _drawRegion.Y - mousePosition.Y);
-
-				MouseMove(mousePosition, MouseButtons.Left);
-			}
-
-			/// <summary>
-			/// Function to end a drag operation on the selection area.
-			/// </summary>
-			private void EndDrag()
-			{
-				IsDragging = false;
-			}
-
-			/// <summary>
-			/// Function to retrieve the selected corner node.
-			/// </summary>
-			/// <param name="mousePosition">The position of the mouse cursor.</param>
-			/// <returns>The node if selected, NULL if none are selected.</returns>
-			private CornerNode GetSelectedNode(Point mousePosition)
-			{
-				CornerNode hitNode = null;
-
-				// ReSharper disable once ForCanBeConvertedToForeach
-				// ReSharper disable once LoopCanBeConvertedToQuery
-				for (int i = 0; i < _corners.Length; ++i)
-				{
-					// ReSharper disable once InvertIf
-					if (_corners[i].HitTest(mousePosition))
-					{
-						hitNode = _corners[i];
-						break;
-					}
-				}
-
-				return hitNode;
-			}
-
-			/// <summary>
-			/// Function to update the selection based on the drawn rectangle.
-			/// </summary>
-			private void UpdateFromDrawingRegion()
-			{
-				_selectionRegion = Rectangle.Intersect(Rectangle.FromLTRB((int)((_drawRegion.X - _textureRegion.X) / _imageScale.X),
-																		  (int)((_drawRegion.Y - _textureRegion.Y) / _imageScale.Y),
-																		  (int)((_drawRegion.Right - _textureRegion.X) / _imageScale.X),
-																		  (int)((_drawRegion.Bottom - _textureRegion.Y) / _imageScale.Y)),
-													   new Rectangle(0,
-																	 0,
-																	 (int)_textureSize.X,
-																	 (int)_textureSize.Y));
-			}
-
-			/// <summary>
-			/// Function to drag the selected node around by the mouse cursor.
-			/// </summary>
-			/// <param name="mousePosition">Position of the mouse cursor.</param>
-			private void MoveNode(Point mousePosition)
-			{
-				if (_dragNodeIndex == -1)
-				{
-					return;
-				}
-
-				// Update the drawing region based on the selected node.
-				switch (_dragNodeIndex)
-				{
-					case 0:
-						if ((mousePosition.X <= _drawRegion.Right - 4)
-							&& (mousePosition.Y <= _drawRegion.Bottom - 4))
-						{
-							_drawRegion = RectangleF.FromLTRB(mousePosition.X, mousePosition.Y, _drawRegion.Right, _drawRegion.Bottom);
-						}
-						break;
-					case 1:
-						if ((mousePosition.X >= _drawRegion.Left + 4)
-							&& (mousePosition.Y <= _drawRegion.Bottom - 4))
-						{
-							_drawRegion = RectangleF.FromLTRB(_drawRegion.X, mousePosition.Y, mousePosition.X, _drawRegion.Bottom);
-						}
-						break;
-					case 2:
-						if ((mousePosition.X >= _drawRegion.Left + 4)
-							&& (mousePosition.Y >= _drawRegion.Top + 4))
-						{
-							_drawRegion = RectangleF.FromLTRB(_drawRegion.X, _drawRegion.Y, mousePosition.X, mousePosition.Y);
-						}
-						break;
-					case 3:
-						if ((mousePosition.X <= _drawRegion.Right - 4)
-							&& (mousePosition.Y >= _drawRegion.Top + 4))
-						{
-							_drawRegion = RectangleF.FromLTRB(mousePosition.X, _drawRegion.Y, _drawRegion.Right, mousePosition.Y);
-						}
-						break;
-				}
-
-				_drawRegion = RectangleF.Intersect(_textureRegion, _drawRegion);
-				UpdateFromDrawingRegion();
-				UpdateNodes();
-			}
-
-			/// <summary>
-			/// Function handle a mouse down in the selection region.
-			/// </summary>
-			/// <param name="mousePosition">Mouse cursor position.</param>
-			/// <param name="buttons">Button that was pressed.</param>
-			/// <returns>TRUE if handled here, FALSE if not.</returns>
-			public bool MouseDown(Point mousePosition, MouseButtons buttons)
-			{
-				if (buttons != MouseButtons.Left)
-				{
-					return false;
-				}
-
-				if (!IsDragging)
-				{
-					CornerNode hitNode = GetSelectedNode(mousePosition);
-
-					if (hitNode != null)
-					{
-						_dragNodeIndex = Array.IndexOf(_corners, hitNode);
-
-						if (_dragNodeIndex != -1)
-						{
-							return true;
-						}
-					}
-				}
-
-				if (!_drawRegion.Contains(mousePosition))
-				{
-					return false;
-				}
-
-				StartDrag(mousePosition);
-				return true;
-			}
-
-			/// <summary>
-			/// Function handle a mouse up in the selection region.
-			/// </summary>
-			/// <param name="buttons">Button that was pressed.</param>
-			/// <returns>TRUE if handled here, FALSE if not.</returns>
-			public bool MouseUp(MouseButtons buttons)
-			{
-				if (buttons != MouseButtons.Left)
-				{
-					return false;
-				}
-
-				if (_dragNodeIndex != -1)
-				{
-					_dragNodeIndex = -1;
-					return true;
-				}
-
-				if (!IsDragging)
-				{
-					return false;
-				}
-
-				EndDrag();
-				return true;
-			}
-
-			/// <summary>
-			/// Function called when the mouse moves.
-			/// </summary>
-			/// <param name="mousePosition">Position of the mouse cursor.</param>
-			/// <param name="buttons">Currently pressed mouse buttons.</param>
-			public void MouseMove(Point mousePosition, MouseButtons buttons)
-			{
-				// Only select the nodes when we're not dragging the main selection around.
-				if ((!IsDragging) && (_dragNodeIndex == -1))
-				{
-					CornerNode hitNode = GetSelectedNode(mousePosition);
-
-					// Change the cursor.
-					if (hitNode != null)
-					{
-						if (_container.Cursor == Cursors.Default)
-						{
-							_container.Cursor = hitNode.NodeCursor;
-						}
-						return;
-					}
-
-					_container.Cursor = Cursors.Default;
-				}
-
-				if (buttons != MouseButtons.Left)
-				{
-					return;
-				}
-
-				if (_dragNodeIndex != -1)
-				{
-					// Mode the node to match the cursor.
-					MoveNode(mousePosition);
-					return;
-				}
-
-				MoveSelection(mousePosition);
-			}
-
-			/// <summary>
-			/// Function to draw the selection area.
-			/// </summary>
-			public void Draw()
-			{
-				RectangleF region = _drawRegion;
-
-				// Animate the sprite texture.
-				Vector2 textureOffset = _selectionSprite.TextureOffset;
-				textureOffset.X += 0.25f * GorgonTiming.Delta;
-				textureOffset.Y += 0.25f * GorgonTiming.Delta;
-
-				if (textureOffset.X > 1)
-				{
-					textureOffset.X = textureOffset.X - 1.0f;
-				}
-
-				if (textureOffset.Y > 1)
-				{
-					textureOffset.Y = textureOffset.Y - 1.0f;
-				}
-
-				_selectionSprite.Size = _drawRegion.Size;
-				_selectionSprite.Position = region.Location;
-				_selectionSprite.TextureRegion = new RectangleF(textureOffset,
-																new Vector2(
-																	_drawRegion.Width / _selectionSprite.Texture.Settings.Width,
-																	_drawRegion.Height / _selectionSprite.Texture.Settings.Height));
-
-				_selectionSprite.Draw();
-
-				// Draw node corners.
-				// ReSharper disable once ForCanBeConvertedToForeach
-				for (int i = 0; i < _corners.Length; ++i)
-				{
-					_corners[i].Draw(_renderer);
-				}
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="SelectionArea"/> class.
-			/// </summary>
-			/// <param name="renderer">The renderer used to draw the selection area.</param>
-			/// <param name="selectionTexture">The selection texture.</param>
-			/// <param name="container">The container for the drawing area.</param>
-			public SelectionArea(Gorgon2D renderer, GorgonTexture2D selectionTexture, Panel container)
-			{
-				_renderer = renderer;
-				_selectionSprite = renderer.Renderables.CreateSprite("SelectionSprite",
-																	  new GorgonSpriteSettings
-																	  {
-																		  Texture = selectionTexture,
-																		  Color = new GorgonColor(0, 0, 1, 0.4f),
-																		  Size = new Vector2(32, 32),
-																		  TextureRegion = new RectangleF(0, 0, 1, 1)
-																	  });
-
-				_selectionSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
-				_selectionSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
-
-				// Use clock wise orientation the corners.
-				_corners[0] = new CornerNode(Cursors.SizeNWSE, container.ClientRectangle);
-				_corners[1] = new CornerNode(Cursors.SizeNESW, container.ClientRectangle);
-				_corners[2] = new CornerNode(Cursors.SizeNWSE, container.ClientRectangle);
-				_corners[3] = new CornerNode(Cursors.SizeNESW, container.ClientRectangle);
-
-				_container = container;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Events.
 		/// <summary>
 		/// Event fired when the brush has been changed.
@@ -589,12 +58,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private WrapMode _wrapMode = WrapMode.Tile;							// Current wrapping mode.
 		private RectangleF _region = RectangleF.Empty;						// The selected texture region.
 		private GorgonTexture2D _texture;									// Selected texture.
-		private SelectionArea _selectionArea;								// Selection area.
 		private GorgonTexture2D _defaultTexture;							// Default texture.
 		private GorgonSwapChain _swapChain;									// The swap chain to use for displaying images.
 		private Gorgon2DStateRecall _lastState;								// Last 2D state.
 		private Gorgon2D _renderer;											// Renderer.
 		private GorgonGraphics _graphics;									// Graphics interface.
+		private Clipper _clipper;											// Clipper interface.
+		private RectangleF _displayRegion;									// The display region for the texture.
 		#endregion
 
 		#region Properties.
@@ -698,7 +168,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			}
 			set
 			{
-				if (_selectionArea == null)
+				if (_clipper == null)
 				{
 					return;
 				}
@@ -715,8 +185,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				numericWidth.Value = (decimal)_region.Width;
 				numericHeight.Value = (decimal)_region.Height;
 
-				_selectionArea.SetTexture(Texture,
-										  new Rectangle((int)_region.X, (int)_region.Y, (int)_region.Width, (int)_region.Height));
+				InitializeClipper(_texture, new Rectangle((int)_region.X, (int)_region.Y, (int)_region.Width, (int)_region.Height));
+
+				UpdateLabelInfo();
 			}
 		}
 		#endregion
@@ -751,15 +222,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		private void EnableNumericLimits()
 		{
-			if (_texture == null)
+			if ((_texture == null)
+				|| (_clipper == null))
 			{
 				return;
 			}
 
-			numericWidth.Maximum = _texture.Settings.Width - _selectionArea.SelectionRegion.X;
-			numericHeight.Maximum = _texture.Settings.Height - _selectionArea.SelectionRegion.Y;
-			numericX.Maximum = _texture.Settings.Width - _selectionArea.SelectionRegion.Width;
-			numericY.Maximum = _texture.Settings.Height - _selectionArea.SelectionRegion.Height;
+			RectangleF selected = _clipper.ClipRegion;
+
+			numericWidth.Maximum = _texture.Settings.Width - (int)selected.X;
+			numericHeight.Maximum = _texture.Settings.Height - (int)selected.Y;
+			numericX.Maximum = _texture.Settings.Width - (int)selected.Width;
+			numericY.Maximum = _texture.Settings.Height - (int)selected.Height;
 		}
 
 		/// <summary>
@@ -771,12 +245,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		{
 			try
 			{
-				if (_selectionArea == null)
+				if (_clipper == null)
 				{
 					return;
 				}
 
-				if (_selectionArea.MouseDown(e.Location, e.Button))
+				if (_clipper.OnMouseDown(e))
 				{
 					DisableNumericLimits();
 				}
@@ -799,20 +273,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		{
 			_infoText.Length = 0;
 
-			if ((_selectionArea == null)
+			if ((_clipper == null)
                 || (Texture == null))
 			{
-				labelInfo.Text = _infoText.ToString();
+				labelInfo.Text = string.Empty;
 				return;
 			}
 
+			RectangleF selected = _clipper.ClipRegion;
+
 			_infoText.AppendFormat(Resources.GORFNT_PROP_VALUE_SELECTLABEL,
-								   _selectionArea.SelectionRegion.X,
-								   _selectionArea.SelectionRegion.Y,
-								   _selectionArea.SelectionRegion.Right,
-								   _selectionArea.SelectionRegion.Bottom,
-								   _selectionArea.SelectionRegion.Width,
-								   _selectionArea.SelectionRegion.Height);
+								   selected.X,
+								   selected.Y,
+								   selected.Right,
+								   selected.Bottom,
+								   selected.Width,
+								   selected.Height);
 
 			labelInfo.Text = _infoText.ToString();
 		}
@@ -824,25 +300,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (_selectionArea == null)
+			if (_clipper == null)
 			{
 				return;
 			}
 
-			_selectionArea.MouseMove(e.Location, e.Button);
-
-			if ((!_selectionArea.IsDragging) && (!_selectionArea.IsDraggingNode))
+			if (!_clipper.OnMouseMove(e))
 			{
 				return;
 			}
 
-			Rectangle numericValues = Rectangle.Intersect(Rectangle.Round(_selectionArea.SelectionRegion),
-														  new Rectangle(0, 0, _texture.Settings.Width, _texture.Settings.Height));
+			Rectangle numericValues = Rectangle.Intersect(Rectangle.Round(_clipper.ClipRegion),
+			                                              new Rectangle(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
 			numericX.Value = numericValues.X;
 			numericY.Value = numericValues.Y;
 			numericWidth.Value = numericValues.Width;
 			numericHeight.Value = numericValues.Height;
+
+			UpdateLabelInfo();
 
 			OnBrushChanged();
 		}
@@ -854,14 +330,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_MouseUp(object sender, MouseEventArgs e)
 		{
-			if (_selectionArea == null)
+			if (_clipper == null)
 			{
 				return;
 			}
 
 			try
 			{
-				if (_selectionArea.MouseUp(e.Button))
+				if (_clipper.OnMouseUp(e))
 				{
 					EnableNumericLimits();
 				}
@@ -897,15 +373,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		{
 			try
 			{
-				if ((_selectionArea == null) || (_selectionArea.IsDragging) || (_selectionArea.IsDraggingNode))
+				if ((_clipper == null)
+					|| (_clipper.DragMode != ClipSelectionDragMode.None))
 				{
 					return;
 				}
 
-				_selectionArea.SelectionRegion = new Rectangle((int)numericX.Value,
-															   (int)numericY.Value,
-															   (int)numericWidth.Value,
-															   (int)numericHeight.Value);
+				_clipper.ClipRegion = new Rectangle((int)numericX.Value,
+				                                    (int)numericY.Value,
+				                                    (int)numericWidth.Value,
+				                                    (int)numericHeight.Value);
 				EnableNumericLimits();
 			}
 			catch (Exception ex)
@@ -947,6 +424,53 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		{
 		    buttonOpen.Enabled = ImageEditor != null;
 			numericHeight.Enabled = numericWidth.Enabled = numericX.Enabled = numericY.Enabled = comboWrapMode.Enabled = Texture != null;
+		}
+
+		/// <summary>
+		/// Function to initialize the clipper.
+		/// </summary>
+		/// <param name="texture">Texture to use with the clipper.</param>
+		/// <param name="selectedRegion">The currently selected region.</param>
+		private void InitializeClipper(GorgonTexture2D texture, RectangleF selectedRegion)
+		{
+			var offset = new Vector2(panelTextureDisplay.ClientSize.Width / 2.0f, panelTextureDisplay.ClientSize.Height / 2.0f);
+			var scale = new Vector2(1);
+
+			if (texture != null)
+			{
+				scale.X = panelTextureDisplay.ClientSize.Width / (float)texture.Settings.Width;
+				scale.Y = panelTextureDisplay.ClientSize.Height / (float)texture.Settings.Height ;
+
+				if (texture.Settings.Width > texture.Settings.Height)
+				{
+					scale.Y *= (float)texture.Settings.Height / texture.Settings.Width;
+				}
+				else
+				{
+					scale.X *= (float)texture.Settings.Width / texture.Settings.Height;
+				}
+
+				var textureSize = new Vector2(texture.Settings.Width * scale.X, texture.Settings.Height * scale.Y);
+
+				offset.X = offset.X - (textureSize.X * 0.5f);
+				offset.Y = offset.Y - (textureSize.Y * 0.5f);
+
+				_displayRegion = new RectangleF(offset, textureSize);
+			}
+
+			if (_clipper == null)
+			{
+				_clipper = new Clipper(_renderer, panelTextureDisplay)
+				           {
+					           SelectorColor = new GorgonColor(0, 0, 0.8f, 0.4f),
+					           SelectorPattern = _defaultTexture
+				           };
+			}
+
+			_clipper.TextureSize = texture == null ? new Size(1, 1) : texture.Settings.Size;
+			_clipper.ClipRegion = selectedRegion;
+			_clipper.Offset = offset;
+			_clipper.Scale = scale;
 		}
 
 		/// <summary>
@@ -1026,7 +550,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 							comboWrapMode.Text = Resources.GORFNT_PROP_VALUE_TILE;
 
 							// Function to retrieve the transformation and node point values from the image.
-							_selectionArea.SetTexture(_texture, new Rectangle(0, 0, settings.Width, settings.Height));
+							InitializeClipper(_texture, new RectangleF(0, 0, settings.Width, settings.Height));
 
 							TextureBrushPath = imageFileBrowser.Files[0].FullPath;
 
@@ -1082,10 +606,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			}
 
 			_renderer.Drawing.Blit(Texture,
-								   _selectionArea.TextureRegion,
+								   _displayRegion,
 								   new RectangleF(0, 0, 1, 1));
 
-			_selectionArea.Draw();
+			_clipper.Draw();
 
 			_renderer.Render(2);
 			return true;
@@ -1159,7 +683,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 						_swapChain = null;
 					}
 
-					_selectionArea = null;
+					_clipper = null;
 					_graphics = null;
 				}
 
@@ -1191,9 +715,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					_defaultTexture = _graphics.Textures.CreateTexture<GorgonTexture2D>("DefaultPattern", Resources.Pattern);
 				}
 
-				if (_selectionArea == null)
+				if (_clipper == null)
 				{
-					_selectionArea = new SelectionArea(renderer, _defaultTexture, panelTextureDisplay);
+					InitializeClipper(null, RectangleF.Empty);
 				}
 
 				_region = new RectangleF(0, 0, 1, 1);
