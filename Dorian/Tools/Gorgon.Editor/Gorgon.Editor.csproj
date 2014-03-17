@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Clipper.cs" />
     <Compile Include="ContentManagement.cs" />
     <Compile Include="ContentObject.cs" />
     <Compile Include="ContentSettings.cs" />
