@@ -176,7 +176,7 @@ namespace GorgonLibrary.Animation
 					case "SLIMMATH.VECTOR4":
 						Add(new GorgonTrackVector4<T>(item.Value));
 						break;
-					case "GORGONLIBRARY.GRAPHICS.GROGONTEXTURE2D":
+					case "GORGONLIBRARY.GRAPHICS.GORGONTEXTURE2D":
 						// We need grab an additional property for texture animation.
 						var property = new GorgonAnimatedProperty(_animation.AnimationController.AnimatedObjectType.GetProperty("TextureRegion"));
 						Add(new GorgonTrackTexture2D<T>(item.Value, property));
