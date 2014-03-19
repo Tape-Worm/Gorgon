@@ -93,12 +93,13 @@ namespace GorgonLibrary.Input
 			}
 			set
 			{
-				_acquired = value;
-
-				if (!_enabled)
+				if ((_acquired == value)
+					|| (!_enabled))
 				{
 					return;
 				}
+
+				_acquired = value;
 
 				if (value)
 				{
@@ -122,9 +123,16 @@ namespace GorgonLibrary.Input
 			}
 			set
 			{
+				if (_exclusive == value)
+				{
+					return;
+				}
+
 				_exclusive = value;
-				if (_enabled)
+				if ((_enabled) && (_acquired))
+				{
 					BindDevice();
+				}
 			}
 		}
 
@@ -139,8 +147,13 @@ namespace GorgonLibrary.Input
 			}
 			set
 			{
+				if (_background == value)
+				{
+					return;
+				}
+
 				_background = value;
-				if (_enabled)
+				if ((_enabled) && (_acquired))
 				{
 					BindDevice();
 				}
@@ -158,7 +171,13 @@ namespace GorgonLibrary.Input
 			}
 			set
 			{
-				Acquired = value;
+				if (value == _enabled)
+				{
+					return;
+				}
+
+				_enabled = value;
+				_acquired = value;
 
 				if (value)
 				{
@@ -168,8 +187,6 @@ namespace GorgonLibrary.Input
 				{
 					UnbindDevice();
 				}
-
-				_enabled = value;
 			}
 		}
 		#endregion
