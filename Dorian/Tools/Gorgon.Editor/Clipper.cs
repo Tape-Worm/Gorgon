@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using SlimMath;
 
@@ -125,7 +126,7 @@ namespace GorgonLibrary.Editor
 					return _defaultCursor;
 				}
 
-				return _renderControl == null ? Cursors.Arrow : _renderControl.Cursor;
+				return Cursors.Default;
 			}
 			set
 			{
@@ -658,6 +659,12 @@ namespace GorgonLibrary.Editor
 				return false;
 			}
 
+			if (DragMode == ClipSelectionDragMode.Resize)
+			{
+				_selectorRegion = RectangleF.Intersect(_textureDisplayRegion, _selectorRegion);
+				UpdateNodeRegions();
+			}
+
 			DragMode = ClipSelectionDragMode.None;
 			_dragOffset = Vector2.Zero;
 
@@ -688,19 +695,22 @@ namespace GorgonLibrary.Editor
 
 			HitTestNodes(e.Location);
 
-			if (e.Button != MouseButtons.Left)
+			if ((e.Button != MouseButtons.Left)
+			    || (DragMode != ClipSelectionDragMode.None)
+			    || ((!_textureDisplayRegion.Contains(e.Location))
+			        && (_selectedDragNode == -1)))
 			{
 				return false;
 			}
 
-			if (DragMode != ClipSelectionDragMode.None)
-			{
-				return true;
-			}
-
-		    if ((!_selectorRegion.Contains(e.Location)) && (_selectedDragNode == -1))
+			// Create a new clip selection if we click on the outside of the current selection area (and nodes).
+			if ((!_selectorRegion.Contains(e.Location)) && (_selectedDragNode == -1))
 		    {
-		        return false;
+				DragMode = ClipSelectionDragMode.Resize;
+				_selectorRegion = new RectangleF(e.Location, new SizeF(DragNodeSize.Width, DragNodeSize.Height));
+			    _selectedDragNode = DragSE;
+				UpdateNodeRegions();
+		        return true;
 		    }
 
 			if (_selectedDragNode == -1) 
@@ -710,11 +720,6 @@ namespace GorgonLibrary.Editor
 				
 				return true;
 			}
-
-			RectangleF node = _dragAreas[_selectedDragNode];
-
-			_dragOffset = new Vector2(node.X - e.Location.X, node.Y - e.Location.Y);
-			_dragOffset = Vector2.Zero;
 
 			DragMode = ClipSelectionDragMode.Resize;
 

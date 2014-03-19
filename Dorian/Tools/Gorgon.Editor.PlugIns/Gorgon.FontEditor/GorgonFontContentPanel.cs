@@ -34,7 +34,6 @@ using System.Windows.Forms;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
@@ -113,6 +112,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                {
 					                DefaultCursor = Cursors.Cross,
 				                };
+
+				// Default scrolling to off.
+				CheckForScroll(Size.Empty);
 			}
 			catch (Exception ex)
 			{
@@ -249,8 +251,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 								panelTextures.MouseDoubleClick += panelTextures_MouseDoubleClick;
 								panelTextures.MouseDown += panelTextures_MouseDown;
 								panelTextures.MouseMove += panelTextures_MouseMove;
-						        panelTextures.AutoScrollMinSize = Size.Empty;
-						        panelTextures.AutoScroll = false;
 
 								if (_rawMouse != null)
 								{
@@ -453,12 +453,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			_content.CurrentState = DrawState.ClipGlyph;
-			if ((_selectedGlyph.Texture.Settings.Width > panelTextures.ClientSize.Width)
-			    || (_selectedGlyph.Texture.Settings.Height > panelTextures.ClientSize.Height))
-			{
-                panelTextures.AutoScroll = true;
-				panelTextures.AutoScrollMinSize = _selectedGlyph.Texture.Settings.Size;
-			}
+
+			// Turn on scrollbars if necessary.
+			CheckForScroll(_selectedGlyph.Texture.Settings.Size);
 
 			// Disable previous events.
 			panelTextures.MouseClick -= GorgonFontContentPanel_MouseClick;
@@ -474,7 +471,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_glyphClipper.ClipRegion = _selectedGlyph.GlyphCoordinates;
 			_glyphClipper.TextureSize = _selectedGlyph.Texture.Settings.Size;
-			_glyphClipper.Offset = panelTextures.AutoScrollPosition;
+
+			// TODO: Fix this to use proper scrolling.
+			_glyphClipper.Offset = Vector2.Zero;
 			_glyphClipper.SelectorPattern = _pattern;
 
 			ValidateControls();
@@ -862,8 +861,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 // There is some strangeness when hiding the panels, the z-order looks to be getting messed up, this corrects that.
                 panelGlyphSet.SendToBack();
                 panelGlyphSet.BringToFront();
-                panelTextures.SendToBack();
-                panelTextures.BringToFront();
+                panelInnerDisplay.SendToBack();
+				panelInnerDisplay.BringToFront();
 
                 buttonEditGlyph.Enabled = _selectedGlyph != null;
 
@@ -900,25 +899,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     buttonEditGlyph.Checked = false;
                     buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
                     buttonEditGlyph.Image = Resources.edit_16x16;
-                }
-
-                if ((_textures != null) && (_content.CurrentState == DrawState.DrawFontTextures) && (_currentTextureIndex > -1) && (_currentTextureIndex <= _textures.Length))
-                {
-                    var scrollSize = new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
-                                 (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
-
-                    if ((!panelTextures.AutoScroll)
-                        && ((scrollSize.Width > panelTextures.ClientSize.Width)
-                            || (scrollSize.Height > panelTextures.ClientSize.Height)))
-                    {
-                        panelText.AutoScroll = true;
-                    }
-                    else if ((scrollSize.Width <= panelTextures.ClientSize.Width) && (scrollSize.Height <= panelTextures.ClientSize.Height))
-                    {
-                        panelText.AutoScroll = false;
-                    }
-
-                    panelTextures.AutoScrollMinSize = scrollSize;
                 }
 
 				UpdateGlyphInfo();
@@ -1113,22 +1093,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, selectedItem.Text);
 
 
-			    if (_content.Font != null)
-			    {
-			        var scrollSize = new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
-			                     (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
-                    
-			        panelTextures.AutoScroll = scrollSize.Width > panelTextures.ClientSize.Width || scrollSize.Height > panelTextures.ClientSize.Height;
-			        panelTextures.AutoScrollMinSize = scrollSize;
-			    }
-
 			    UpdateGlyphRegions();
 
                 _sortedTextures = null;
+				
 
-				if (_content.CurrentState != DrawState.DrawFontTextures)
+				switch (_content.CurrentState)
 				{
-					UpdateGlyphEditor();
+					case DrawState.DrawFontTextures:
+						GorgonTexture2D texture = _textures[_currentTextureIndex];
+
+						Size newSize = texture.Settings.Size;
+						newSize.Width = (int)(newSize.Width * _currentZoom);
+						newSize.Height = (int)(newSize.Height * _currentZoom);
+
+						CheckForScroll(newSize);
+						break;
+					default:
+						UpdateGlyphEditor();
+						break;
 				}
 			}
 			catch (Exception ex)
@@ -1238,11 +1221,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
         /// <summary>
-        /// Handles the Scroll event of the panelTextures control.
+        /// Handles the Scroll event of the clipper control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
-        private void panelTextures_Scroll(object sender, ScrollEventArgs e)
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void ClipperOffsetScroll(object sender, EventArgs e)
         {
             if ((_content == null)
                 || (_content.CurrentState != DrawState.ClipGlyph))
@@ -1250,7 +1233,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 return;
             }
 
-            _glyphClipper.Offset = panelTextures.AutoScrollPosition;
+            _glyphClipper.Offset = new Vector2(-scrollHorizontal.Value, -scrollVertical.Value);
         }
 
 		/// <summary>
@@ -1326,11 +1309,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
 		/// <summary>
-		/// Handles the Resize event of the GorgonFontContentPanel control.
+		/// Handles the Scroll event of the scrollVertical control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+		private void scrollVertical_Scroll(object sender, ScrollEventArgs e)
+		{
+			var scroller = (ScrollBar)sender;
+
+			if (scroller == scrollVertical)
+			{
+				scrollVertical.Value = e.NewValue;
+			}
+
+			if (scroller == scrollHorizontal)
+			{
+				scrollHorizontal.Value = e.NewValue;
+			}
+
+			switch (_content.CurrentState)
+			{
+				case DrawState.DrawFontTextures:
+				case DrawState.ClipGlyph:
+					_content.Draw();
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Resize event of the texture display panel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void GorgonFontContentPanel_Resize(object sender, EventArgs e)
+		private void TextureDisplayResize(object sender, EventArgs e)
 		{
 		    try
 		    {
@@ -1373,6 +1384,29 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Disable any animations for the font textures.
 				_indexTransition = _currentTextureIndex;
 
+				// Turn on scrolling if we need it.
+			    switch (_content.CurrentState)
+			    {
+					case DrawState.DrawFontTextures:
+						GorgonTexture2D texture = _textures[_currentTextureIndex];
+
+						var fontTextureSize = texture.Settings.Size;
+						fontTextureSize.Width = (int)(fontTextureSize.Width * _currentZoom);
+						fontTextureSize.Height = (int)(fontTextureSize.Height * _currentZoom);
+
+						CheckForScroll(fontTextureSize);
+					    break;
+					case DrawState.ClipGlyph:
+					    if (_selectedGlyph == null)
+					    {
+						    _content.CurrentState = DrawState.GlyphEdit;
+						    break;
+					    }
+
+						CheckForScroll(_selectedGlyph.Texture.Settings.Size);
+					    break;
+			    }
+
 				UpdateGlyphRegions();
                 InitializeTextureSprites();
 
@@ -1395,27 +1429,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			    switch (_content.CurrentState)
 			    {
+
 					case DrawState.ToGlyphEdit:
 					case DrawState.GlyphEdit:
 						UpdateGlyphEditor();
 					    break;
-					case DrawState.ClipGlyph:
-					    if (_selectedGlyph == null)
-					    {
-						    _content.CurrentState = DrawState.GlyphEdit;
-						    UpdateGlyphEditor();
-						    return;
-					    }
-
-						// Adjust scrolling if the texture is too large for the area.
-						if ((_selectedGlyph.Texture.Settings.Width > panelTextures.ClientSize.Width)
-							|| (_selectedGlyph.Texture.Settings.Height > panelTextures.ClientSize.Height))
-						{
-                            panelTextures.AutoScroll = true;
-							panelTextures.AutoScrollMinSize = _selectedGlyph.Texture.Settings.Size;
-						}
-					    break;
-					default:
+					case DrawState.FromGlyphEdit:
+					case DrawState.NextTexture:
+					case DrawState.PrevTexture:
+					case DrawState.DrawFontTextures:
 						if (_editGlyph != null)
 						{
 							_editGlyph.Dispose();
@@ -1423,12 +1445,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						}
 						_content.CurrentState = DrawState.DrawFontTextures;
 						_nextState = DrawState.DrawFontTextures;
-
-			            var scrollSize = new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
-			                            (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
-                    
-			            panelTextures.AutoScroll = scrollSize.Width > panelTextures.ClientSize.Width || scrollSize.Height > panelTextures.ClientSize.Height;
-			            panelTextures.AutoScrollMinSize = scrollSize;
 
 					    break;
 			    }
@@ -1486,7 +1502,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			base.OnContentPropertyChanged(propertyName, value);
 
 			// Refresh the font display.
-			GorgonFontContentPanel_Resize(this, EventArgs.Empty);
+			TextureDisplayResize(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -1500,7 +1516,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             Debug.Assert(_content != null, "The content is not font content.");
 
-			GorgonFontContentPanel_Resize(this, EventArgs.Empty);
+			TextureDisplayResize(this, EventArgs.Empty);
 
 			ValidateControls();
 		}
@@ -1791,14 +1807,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		    Vector2.Subtract(ref _panelMidPoint, ref textureMidpoint, out _textureOffset);
 
-			if (panelTextures.HorizontalScroll.Visible)
+			if (panelHorzScroll.Visible)
 			{
-				_textureOffset.X = panelTextures.AutoScrollPosition.X;
+				_textureOffset.X = -scrollHorizontal.Value;
 			}
 
-			if (panelTextures.VerticalScroll.Visible)
+			if (panelVertScroll.Visible)
 			{
-				_textureOffset.Y = panelTextures.AutoScrollPosition.Y;
+				_textureOffset.Y = -scrollVertical.Value;
 			}
 
 			_textureRegion = new RectangleF(_textureOffset, ((Vector2)currentTexture.Settings.Size) * _currentZoom);
@@ -1811,7 +1827,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    {
 			GorgonTexture2D currentTexture = _selectedGlyph.Texture;
 
-            panelTextures.AutoScroll = false;
+			CheckForScroll(Size.Empty);
 
 			UpdateTextureRegion(currentTexture);
 
@@ -1860,6 +1876,67 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
 		/// <summary>
+		/// Function to check and see if a scroll bar is required.
+		/// </summary>
+		/// <param name="proposedSize">The requested size of the object to display in the panel.</param>
+	    private void CheckForScroll(Size proposedSize)
+	    {
+			// Turn off resizing until we get the window straightened out.
+			panelTextures.Resize -= TextureDisplayResize;
+
+			try
+			{
+				Size clientSize = panelInnerDisplay.ClientSize;
+
+				scrollHorizontal.Scroll -= scrollVertical_Scroll;
+				scrollVertical.Scroll -= scrollVertical_Scroll;
+
+				if (proposedSize.Width > panelTextures.ClientSize.Width)
+				{
+					panelHorzScroll.Visible = true;
+					clientSize.Height = clientSize.Height - panelHorzScroll.ClientSize.Height;
+				}
+				else
+				{
+					scrollHorizontal.Value = 0;
+					panelHorzScroll.Visible = false;
+				}
+
+				if (proposedSize.Height > panelTextures.ClientSize.Height)
+				{
+					panelVertScroll.Visible = true;
+					clientSize.Width = clientSize.Width - panelVertScroll.ClientSize.Width;
+					
+				}
+				else
+				{
+					scrollVertical.Value = 0;
+					panelVertScroll.Visible = false;
+				}
+
+				if (panelHorzScroll.Visible)
+				{
+					scrollHorizontal.Maximum = ((proposedSize.Width - clientSize.Width) + (scrollHorizontal.LargeChange)).Max(0);
+					scrollHorizontal.Scroll += scrollVertical_Scroll;
+				}
+
+				if (panelVertScroll.Visible)
+				{
+					scrollVertical.Maximum = ((proposedSize.Height - clientSize.Height) + (scrollVertical.LargeChange)).Max(0);
+					scrollVertical.Scroll += scrollVertical_Scroll;
+				}
+
+				panelTextures.ClientSize = clientSize;
+				_panelMidPoint = new Vector2(clientSize.Width * 0.5f, clientSize.Height * 0.5f);
+			}
+			finally
+			{
+				// Re-enable resizing.
+				panelTextures.Resize += TextureDisplayResize;
+			}
+	    }
+
+		/// <summary>
 		/// Function to retrieve the size of the glyph edit region.
 		/// </summary>
 		/// <returns>The rectangle containing the glyph.</returns>
@@ -1884,6 +1961,65 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			return textureRegion;
 	    }
 
+		/// <summary>
+		/// Funciton to calculate the position and scale of the texture sprites.
+		/// </summary>
+		private void ArrangeTextureSprites()
+		{
+			if ((_indexTransition.EqualsEpsilon(_currentTextureIndex, 0.01f))
+				&& ((_content.CurrentState == DrawState.PrevTexture)
+				|| (_content.CurrentState == DrawState.NextTexture)))
+			{
+				_content.CurrentState = DrawState.DrawFontTextures;
+
+				if (_nextState == DrawState.ToGlyphEdit)
+				{
+					buttonEditGlyph.PerformClick();
+					return;
+				}
+
+				ValidateControls();
+			}
+
+			for (int i = 0; i < _textureSprites.Count; ++i)
+			{
+				GorgonSprite sprite = _textureSprites[i];
+
+				if ((i == _currentTextureIndex)
+					&& (_content.CurrentState != DrawState.NextTexture)
+					&& (_content.CurrentState != DrawState.PrevTexture))
+				{
+					sprite.Scale = new Vector2(1);
+					continue;
+				}
+
+				float delta = (i - _indexTransition) / _textureSprites.Count;
+				float deltaAbs = delta.Abs();
+
+				sprite.Scale = new Vector2((1.0f - deltaAbs * 0.5f) * _currentZoom);
+				sprite.Position = new Vector2(_panelMidPoint.X + delta * _content.FontTextureSize.Width * 2.0f * _currentZoom,
+											  _panelMidPoint.Y);
+
+				sprite.Color = new GorgonColor(0.753f,
+											   0.753f,
+											   0.753f,
+											   (1.0f - deltaAbs));
+
+				sprite.SmoothingMode = SmoothingMode.Smooth;
+			}
+
+			if ((_content.CurrentState != DrawState.NextTexture)
+				&& (_content.CurrentState != DrawState.PrevTexture))
+			{
+				_sortedTextures = _textureSprites.Where(item => item.Texture != _textures[_currentTextureIndex])
+												 .OrderBy(item => item.Scale.X);
+			}
+			else
+			{
+				_sortedTextures = _textureSprites.OrderBy(item => item.Scale.X);
+			}
+		}
+
 	    /// <summary>
 		/// Function to initialize the editor transition.
 		/// </summary>
@@ -1905,19 +2041,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		    if (!editOn)
 		    {
-			    panelTextures.AutoScroll = true;
-			    panelTextures.AutoScrollMinSize =
-				    new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
-				             (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
-			    panelTextures.AutoScrollPosition = _lastScrollPoint;
-			    glyphScreenRegion.X += _textureRegion.X + panelTextures.AutoScrollPosition.X;
-			    glyphScreenRegion.Y += _textureRegion.Y + panelTextures.AutoScrollPosition.Y;
+				// When we return from the editor screen, restore the scrollbars.
+			    Size newSize = currentTexture.Settings.Size;
+
+			    newSize.Width = (int)(newSize.Width * _currentZoom);
+				newSize.Height = (int)(newSize.Height * _currentZoom);
+
+				CheckForScroll(newSize);
+
+				scrollHorizontal.Value = _lastScrollPoint.X.Max(0).Min(scrollHorizontal.Maximum);
+				scrollVertical.Value = _lastScrollPoint.Y.Max(0).Min(scrollVertical.Maximum);
+
+				// The panel may have been resized, we'll need to update our region.
+			    if ((panelVertScroll.Visible)
+			        || (panelHorzScroll.Visible))
+			    {
+				    UpdateTextureRegion(currentTexture);
+					textureRegion = GetGlyphEditRegion();
+			    }
 		    }
-		    else
-		    {
-				glyphScreenRegion.X += _textureRegion.X;
-				glyphScreenRegion.Y += _textureRegion.Y;
-		    }
+
+			glyphScreenRegion.X += _textureRegion.X;
+			glyphScreenRegion.Y += _textureRegion.Y;
 
 		    if ((_editGlyph != null) && (editOn))
 			{
@@ -1992,11 +2137,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			
 			if (_content.CurrentState == DrawState.ToGlyphEdit)
 			{
-				_lastScrollPoint = new Point(-panelTextures.AutoScrollPosition.X, -panelTextures.AutoScrollPosition.Y);
-				panelTextures.AutoScroll = false;
-				// Reset the state because the resize event triggerd by the auto scroll change 
-				// will mess up the state.
-				_content.CurrentState = DrawState.ToGlyphEdit;
+				_lastScrollPoint.X = scrollHorizontal.Value;
+				_lastScrollPoint.Y = scrollVertical.Value;
+
+				CheckForScroll(Size.Empty);
 			}
 
 			_content.CurrentState = _content.CurrentState == DrawState.ToGlyphEdit
@@ -2026,65 +2170,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_glyphSprite.Draw();
 		}
 
-        /// <summary>
-        /// Funciton to calculate the position and scale of the texture sprites.
-        /// </summary>
-        private void ArrangeTextureSprites()
-        {
-            if ((_indexTransition.EqualsEpsilon(_currentTextureIndex, 0.01f))
-                && ((_content.CurrentState == DrawState.PrevTexture)
-                || (_content.CurrentState == DrawState.NextTexture)))
-            {
-                _content.CurrentState = DrawState.DrawFontTextures;
-
-                if (_nextState == DrawState.ToGlyphEdit)
-                {
-                    buttonEditGlyph.PerformClick();
-                    return;
-                }
-
-				ValidateControls();
-            }
-
-            for (int i = 0; i < _textureSprites.Count; ++i)
-            {
-                GorgonSprite sprite = _textureSprites[i];
-
-                if ((i == _currentTextureIndex)
-					&& (_content.CurrentState != DrawState.NextTexture)
-					&& (_content.CurrentState != DrawState.PrevTexture))
-                {
-                    sprite.Scale = new Vector2(1);
-                    continue;
-                }
-                
-                float delta = (i - _indexTransition) / _textureSprites.Count;
-                float deltaAbs = delta.Abs();
-                
-                sprite.Scale = new Vector2((1.0f - deltaAbs * 0.5f) * _currentZoom);
-                sprite.Position = new Vector2(_panelMidPoint.X + delta * _content.FontTextureSize.Width * 2.0f * _currentZoom,
-                                              _panelMidPoint.Y);
-
-                sprite.Color = new GorgonColor(0.753f,
-                                               0.753f,
-                                               0.753f,
-                                               (1.0f - deltaAbs));
-                
-                sprite.SmoothingMode = SmoothingMode.Smooth;
-            }
-
-	        if ((_content.CurrentState != DrawState.NextTexture)
-	            && (_content.CurrentState != DrawState.PrevTexture))
-	        {
-		        _sortedTextures = _textureSprites.Where(item => item.Texture != _textures[_currentTextureIndex])
-		                                         .OrderBy(item => item.Scale.X);
-	        }
-	        else
-	        {
-		        _sortedTextures = _textureSprites.OrderBy(item => item.Scale.X);
-	        }
-        }
-
 		/// <summary>
 		/// Function to draw the glyph clipping.
 		/// </summary>
@@ -2112,7 +2197,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 														   _selectedGlyph.Texture.Settings.Height),
 											   GorgonColor.Black);
 
-			_content.Renderer.Drawing.Blit(_selectedGlyph.Texture, panelTextures.AutoScrollPosition);
+			// TODO: Fix this to use proper scrolling.
+			_content.Renderer.Drawing.Blit(_selectedGlyph.Texture, new Vector2(-scrollHorizontal.Value, -scrollVertical.Value));
 
 
 			// Draw selected area.
@@ -2147,6 +2233,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                 foreach (GorgonSprite backSprite in _sortedTextures)
                 {
+	                if (panelVertScroll.Visible)
+	                {
+		                backSprite.Position = new Vector2(backSprite.Position.X, -scrollVertical.Value + (backSprite.Anchor.Y * backSprite.Scale.Y));
+	                }
+
                     float color = backSprite.Color.Red * (1.0f - backSprite.Color.Alpha) * 0.5f;
                     _content.Renderer.Drawing.FilledRectangle(new RectangleF(backSprite.Position - (Vector2.Modulate(backSprite.Anchor, backSprite.Scale)), backSprite.ScaledSize),
                                                               new GorgonColor(color, color, color, backSprite.Opacity));
@@ -2196,8 +2287,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             sprite.Scale = new Vector2(_currentZoom);
 
             // If the scroller is active, then position it based on that.
-            if ((!panelTextures.HorizontalScroll.Visible)
-                && (!panelTextures.VerticalScroll.Visible))
+            if ((!panelHorzScroll.Visible)
+                && (!panelVertScroll.Visible))
             {
                 sprite.Position = _panelMidPoint;
             }
