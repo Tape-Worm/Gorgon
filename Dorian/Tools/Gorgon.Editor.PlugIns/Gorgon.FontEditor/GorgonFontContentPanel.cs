@@ -200,7 +200,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="pointingDeviceEventArgs">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
 	    private void ClipMouseMove(object sender, PointingDeviceEventArgs pointingDeviceEventArgs)
 		{
+	        if ((_content.CurrentState != DrawState.ClipGlyph)
+				|| (_zoomWindow == null)
+				|| (_glyphClipper == null))
+	        {
+		        return;
+	        }
+
 			_glyphClipper.OnMouseMove(pointingDeviceEventArgs);
+
+			_zoomWindow.Position = pointingDeviceEventArgs.Position;
+
+	        var zoomPosition = new Vector2(pointingDeviceEventArgs.Position.X + 4,
+	                                       pointingDeviceEventArgs.Position.Y + 4);
+
+	        if ((zoomPosition.X + _zoomWindow.ZoomWindowSize.X) > panelTextures.ClientSize.Width - 4)
+	        {
+		        zoomPosition.X = pointingDeviceEventArgs.Position.X - _zoomWindow.ZoomWindowSize.X - 4;
+	        }
+
+			_zoomWindow.ZoomWindowLocation = zoomPosition;
 
             UpdateGlyphInfo();
 		}
@@ -2227,8 +2246,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 											   new Vector2(_selectedGlyph.Texture.Settings.Width,
 														   _selectedGlyph.Texture.Settings.Height),
 											   GorgonColor.Black);
-
-			// TODO: Fix this to use proper scrolling.
+			
 			_content.Renderer.Drawing.Blit(_selectedGlyph.Texture, new Vector2(-scrollHorizontal.Value, -scrollVertical.Value));
 
 
@@ -2239,8 +2257,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_content.Renderer.Drawing.DrawLine(new Vector2(_rawMouse.Position.X, 0), new Vector2(_rawMouse.Position.X, panelTextures.ClientSize.Height), GorgonColor.White);
 			_content.Renderer.Drawing.DrawLine(new Vector2(0, _rawMouse.Position.Y), new Vector2(panelTextures.ClientSize.Width, _rawMouse.Position.Y), GorgonColor.White);
 
-			_zoomWindow.Position = _rawMouse.Position;
-			_zoomWindow.ZoomWindowLocation = new Vector2(_rawMouse.Position.X + 4, _rawMouse.Position.Y + 4);
 			_zoomWindow.Draw();
 
 			_content.Renderer.Drawing.BlendingMode = previousMode;
