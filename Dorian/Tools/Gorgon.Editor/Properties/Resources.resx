@@ -661,4 +661,7 @@ The following characters are not allowed:
   <data name="GOREDIT_CLIPPER_TEXTURE_SIZE_INVALID" xml:space="preserve">
     <value>The texture must be at least 1x1 or less than {0}x{1}.  The current size is {2}x{3}.</value>
   </data>
+  <data name="GOREDIT_ZOOMWINDOW_TEXT" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
 </root>

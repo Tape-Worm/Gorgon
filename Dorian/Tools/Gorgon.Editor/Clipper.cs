@@ -93,8 +93,6 @@ namespace GorgonLibrary.Editor
 		private RectangleF _selectorRegion;
 		// The current clipping region.
 		private RectangleF? _clipRegion;
-		// The sprite that will represent our clipping rectangle.
-		private readonly GorgonSprite _selectionSprite;
 		// Areas that can be dragged.
 		private readonly RectangleF[] _dragAreas;
 		// The currently selected drag node.
@@ -114,6 +112,15 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the sprite that represents our selection region.
+		/// </summary>
+		internal GorgonSprite SelectionSprite
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to set or return the default cursor for the clipper.
 		/// </summary>
@@ -271,12 +278,12 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return _selectionSprite.Texture;
+				return SelectionSprite.Texture;
 			}
 			set
 			{
-				_selectionSprite.Texture = value;
-				_selectionSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
+				SelectionSprite.Texture = value;
+				SelectionSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
 			}
 		}
 
@@ -307,11 +314,11 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return _selectionSprite.Color;
+				return SelectionSprite.Color;
 			}
 			set
 			{
-				_selectionSprite.Color = value;
+				SelectionSprite.Color = value;
 			}
 		}
 
@@ -790,12 +797,12 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Animate the sprite texture.
-			_selectionSprite.Size = _selectorRegion.Size;
-			_selectionSprite.Position = _selectorRegion.Location;
+			SelectionSprite.Size = _selectorRegion.Size;
+			SelectionSprite.Position = _selectorRegion.Location;
 
-			if (_selectionSprite.Texture != null)
+			if (SelectionSprite.Texture != null)
 			{
-				Vector2 textureOffset = _selectionSprite.TextureOffset;
+				Vector2 textureOffset = SelectionSprite.TextureOffset;
 				float offset = SelectorAnimateSpeed * GorgonTiming.Delta;
 				
 				textureOffset.X += offset;
@@ -811,15 +818,14 @@ namespace GorgonLibrary.Editor
 					textureOffset.Y = textureOffset.Y - 1.0f;
 				}
 
-				_selectionSprite.TextureOffset = new Vector2((int)textureOffset.X, (int)textureOffset.Y);
-				_selectionSprite.TextureRegion = new RectangleF(textureOffset,
+				SelectionSprite.TextureRegion = new RectangleF(textureOffset,
 				                                                new Vector2(_selectorRegion.Width /
-				                                                            _selectionSprite.Texture.Settings.Width,
+				                                                            SelectionSprite.Texture.Settings.Width,
 				                                                            _selectorRegion.Height /
-				                                                            _selectionSprite.Texture.Settings.Height));
+				                                                            SelectionSprite.Texture.Settings.Height));
 			}
 
-			_selectionSprite.Draw();
+			SelectionSprite.Draw();
 
 			// Draw our nodes.
 			_renderer.Drawing.FilledRectangle(_dragAreas[DragNW], _selectedDragNode == DragNW ? DragNodeHoverColor : DragNodeColor);
@@ -860,15 +866,15 @@ namespace GorgonLibrary.Editor
 
 			_textureSize = new Size(1, 1);
 
-			_selectionSprite = renderer.Renderables.CreateSprite("SelectionSprite",
+			SelectionSprite = renderer.Renderables.CreateSprite("SelectionSprite",
 																  new GorgonSpriteSettings
 																  {
 																	  Color = new GorgonColor(0, 0, 0.8f, 0.5f),
 																	  Size = new Vector2(1)
 																  });
 
-			_selectionSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
-			_selectionSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+			SelectionSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			SelectionSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 		}
 		#endregion
 	}

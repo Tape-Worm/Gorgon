@@ -20,6 +20,12 @@
 
             if (!_disposed)
             {
+	            if (_zoomFont != null)
+	            {
+					_zoomFont.Dispose();
+		            _zoomFont = null;
+	            }
+
 				this.MouseWheel -= PanelDisplay_MouseWheel;
 
 	            if (_rawKeyboard != null)
