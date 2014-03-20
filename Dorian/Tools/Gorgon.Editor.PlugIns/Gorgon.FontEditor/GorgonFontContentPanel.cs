@@ -83,6 +83,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private DrawState _nextState = DrawState.DrawFontTextures;
 	    private Point _lastScrollPoint = Point.Empty;
 	    private Clipper _glyphClipper;
+	    private ZoomWindow _zoomWindow;
+	    private GorgonFont _zoomFont;
         #endregion
 
         #region Methods.
@@ -237,6 +239,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						}
 
 						buttonEditGlyph.PerformClick();
+						break;
+					case KeyboardKeys.F4:
+						if (!e.Alt)
+						{
+							ParentForm.Close();
+						}
 						break;
 					case KeyboardKeys.Escape:
 						if (_selectedGlyph == null)
@@ -472,9 +480,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_glyphClipper.ClipRegion = _selectedGlyph.GlyphCoordinates;
 			_glyphClipper.TextureSize = _selectedGlyph.Texture.Settings.Size;
 
-			// TODO: Fix this to use proper scrolling.
 			_glyphClipper.Offset = Vector2.Zero;
 			_glyphClipper.SelectorPattern = _pattern;
+
+			_zoomWindow = new ZoomWindow(_content.Renderer, _selectedGlyph.Texture)
+			              {
+				              Clipper = _glyphClipper,
+							  ZoomAmount = 4.0f,
+							  ZoomWindowSize = new Vector2(200, 200)
+			              };
+
+			if (_zoomFont == null)
+			{
+				_zoomFont = _content.Graphics.Fonts.CreateFont("Arial 16px Bold",
+				                                               new GorgonFontSettings
+				                                               {
+					                                               AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+					                                               Characters = _zoomWindow.ZoomWindowText + ":.01234567890x ",
+					                                               FontFamilyName = "Arial",
+					                                               FontHeightMode = FontHeightMode.Points,
+					                                               FontStyle = FontStyle.Bold,
+					                                               Size = 9.0f,
+					                                               TextureSize = new Size(128, 32)
+				                                               });
+			}
+
+			_zoomWindow.ZoomWindowFont = _zoomFont;
 
 			ValidateControls();
 		}
@@ -2207,6 +2238,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.Inverted;
 			_content.Renderer.Drawing.DrawLine(new Vector2(_rawMouse.Position.X, 0), new Vector2(_rawMouse.Position.X, panelTextures.ClientSize.Height), GorgonColor.White);
 			_content.Renderer.Drawing.DrawLine(new Vector2(0, _rawMouse.Position.Y), new Vector2(panelTextures.ClientSize.Width, _rawMouse.Position.Y), GorgonColor.White);
+
+			_zoomWindow.Position = _rawMouse.Position;
+			_zoomWindow.ZoomWindowLocation = new Vector2(_rawMouse.Position.X + 4, _rawMouse.Position.Y + 4);
+			_zoomWindow.Draw();
 
 			_content.Renderer.Drawing.BlendingMode = previousMode;
 			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;

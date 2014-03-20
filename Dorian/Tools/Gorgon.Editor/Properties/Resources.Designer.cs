@@ -1451,6 +1451,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Zoom.
+        /// </summary>
+        internal static string GOREDIT_ZOOMWINDOW_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ZOOMWINDOW_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Gorgon_2_Logo_Full {

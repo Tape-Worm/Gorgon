@@ -1298,6 +1298,15 @@ namespace GorgonLibrary.Graphics
 					while (charIndex < availableCharacters.Count)
 					{
 						char c = availableCharacters[charIndex];
+
+						// If we've already put this glyph in, then skip it.
+						if (Glyphs.Contains(c))
+						{
+							availableCharacters.Remove(c);
+							++charIndex;
+							continue;
+						}
+
 						Rectangle charRect = charBounds[c];
 					    
 						Size size = charRect.Size;
@@ -1355,18 +1364,14 @@ namespace GorgonLibrary.Graphics
 						else
 						{
 							// Add whitespace glyph, this will never be rendered, but we need the size in order to determine how much space is required.
-							availableCharacters.Remove(c);
-						    if (!Glyphs.Contains(settings.DefaultCharacter))
-						    {
-						        Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter,
-						                                   currentTexture,
-						                                   new Rectangle(0, 0, size.Width, size.Height),
-						                                   Vector2.Zero,
-						                                   Vector3.Zero)
-						                   {
-						                       IsExternalTexture = false
-						                   });
-						    }
+						    Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter,
+						                                currentTexture,
+						                                new Rectangle(0, 0, size.Width, size.Height),
+						                                Vector2.Zero,
+						                                Vector3.Zero)
+						                {
+						                    IsExternalTexture = false
+						                });
 						}
 					}
 
