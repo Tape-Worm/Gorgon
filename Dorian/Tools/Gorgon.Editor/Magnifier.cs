@@ -70,6 +70,15 @@ namespace GorgonLibrary.Editor
 			set;
 		}
 
+        /// <summary>
+        /// Property to set or return the texture to use in the background.
+        /// </summary>
+	    public GorgonTexture2D BackgroundTexture
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the size of the zoom window.
 		/// </summary>
@@ -226,42 +235,79 @@ namespace GorgonLibrary.Editor
 
 			_renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			//Vector2.Divide(ref texturePosition, _zoom, out texturePosition);
-			
-			_renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation, ZoomWindowSize), GorgonColor.Black);
-			_renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, ZoomWindowSize.X - 2, _captionHeight - 2), GorgonColor.White);
+            _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation, ZoomWindowSize), GorgonColor.Black);
+
+		    if (BackgroundTexture != null)
+		    {
+		        _renderer.Drawing.FilledRectangle(clientRect,
+		                                          GorgonColor.White,
+		                                          BackgroundTexture,
+		                                          new RectangleF(Vector2.Zero, BackgroundTexture.ToTexel(ZoomWindowSize)));
+
+                // Only draw the overlay if it's in view of the clip region.
+                var overlayRegion = new RectangleF(-texturePosition.X * _zoom + clientRect.X,
+                                                   -texturePosition.Y * _zoom + clientRect.Y,
+                                                   _texture.Settings.Width * _zoom,
+                                                   _texture.Settings.Height * _zoom);
+
+		        if (overlayRegion.IntersectsWith(clientRect))
+		        {
+		            overlayRegion = RectangleF.Intersect(overlayRegion, clientRect);
+
+		            _renderer.Drawing.FilledRectangle(overlayRegion, new GorgonColor(0, 0, 0, 0.25f));
+		        }
+		    }
+
+		    _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, ZoomWindowSize.X - 2, _captionHeight - 2), GorgonColor.White);
 			_renderer.Drawing.DrawString(ZoomWindowFont ?? _renderer.Graphics.Fonts.DefaultFont,
 										 string.Format("{0}: {1:0.0}x", ZoomWindowText, _zoom),
 			                             ZoomWindowLocation,
 			                             GorgonColor.Black);
-		
-			_sprite.TextureOffset = _texture.ToTexel(texturePosition);
-			_sprite.Position = clientRect.Location;
-			_sprite.Draw();
 
-			if (Clipper == null)
+		    _sprite.TextureOffset = _texture.ToTexel(texturePosition);
+		    _sprite.Position = clientRect.Location;
+		    _sprite.Draw();
+
+		    BlendingMode prevBlend = _renderer.Drawing.BlendingMode;
+
+            _renderer.Drawing.BlendingMode = BlendingMode.Inverted;
+
+		    var halfWindow = new Vector2((clientRect.Width * 0.5f) + clientRect.Left, (clientRect.Height * 0.5f) + clientRect.Top);
+            _renderer.Drawing.DrawLine(new Vector2(halfWindow.X, clientRect.Top), new Vector2(halfWindow.X, clientRect.Bottom), GorgonColor.White);
+            _renderer.Drawing.DrawLine(new Vector2(clientRect.Left, halfWindow.Y), new Vector2(clientRect.Right, halfWindow.Y), GorgonColor.White);
+
+		    _renderer.Drawing.BlendingMode = prevBlend;
+
+		    if (Clipper == null)
 			{
 				return;
 			}
-
-			Vector2 prevPosition = Clipper.SelectionSprite.Position;
-			Vector2 prevSize = Clipper.SelectionSprite.Size;
 
 			var clipArea = new RectangleF((Clipper.ClipRegion.X - texturePosition.X) * _zoom + clientRect.X,
 			                              (Clipper.ClipRegion.Y - texturePosition.Y) * _zoom + clientRect.Y,
 			                              Clipper.ClipRegion.Width * _zoom,
 			                              Clipper.ClipRegion.Height * _zoom);
 
-			clipArea = RectangleF.Intersect(clipArea, clientRect);
+            // Only draw the clip area if it intersects with the client area.
+		    if (!clipArea.IntersectsWith(clientRect))
+		    {
+		        return;
+		    }
 
-			Clipper.SelectionSprite.Size = clipArea.Size;
-			Clipper.SelectionSprite.Position = clipArea.Location;
-			Clipper.SelectionSprite.Draw();
+		    Vector2 prevPosition = Clipper.SelectionSprite.Position;
+		    Vector2 prevSize = Clipper.SelectionSprite.Size;
 
-			_renderer.Drawing.DrawRectangle(new RectangleF(clipArea.X, clipArea.Y, clipArea.Width, clipArea.Height - 1), new GorgonColor(Clipper.SelectorColor, 1.0f));
+		    clipArea = RectangleF.Intersect(clipArea, clientRect);
 
-			Clipper.SelectionSprite.Size = prevSize;
-			Clipper.SelectionSprite.Position = prevPosition;
+		    Clipper.SelectionSprite.Size = clipArea.Size;
+		    Clipper.SelectionSprite.Position = clipArea.Location;
+		    Clipper.SelectionSprite.Draw();
+
+		    _renderer.Drawing.DrawRectangle(new RectangleF(clipArea.X, clipArea.Y, clipArea.Width, clipArea.Height - 1),
+		                                    new GorgonColor(Clipper.SelectorColor, 1.0f));
+
+		    Clipper.SelectionSprite.Size = prevSize;
+		    Clipper.SelectionSprite.Position = prevPosition;
 		}
 		#endregion
 
@@ -301,7 +347,8 @@ namespace GorgonLibrary.Editor
 
 			_sprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
 			_sprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
-			_sprite.TextureSampler.BorderColor = GorgonColor.Black;
+			_sprite.TextureSampler.BorderColor = GorgonColor.Transparent;
+            
 			_zoomWindowText = Resources.GOREDIT_ZOOMWINDOW_TEXT;
 			_zoomFont = renderer.Graphics.Fonts.DefaultFont;
 
