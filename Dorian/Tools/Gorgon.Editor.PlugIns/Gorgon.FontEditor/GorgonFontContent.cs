@@ -210,11 +210,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            }
 
 				// Show the secondardy outline color if we have enough space in our outline.
-		        if (TypeDescriptor.Contains("OutlineColor2"))
+		        if (HasProperty("OutlineColor2"))
 		        {
-			        ContentProperty prop = TypeDescriptor["OutlineColor2"];
-
-			        prop.IsReadOnly = value < 3;
+		            DisableProperty("OutlineColor2", value < 3);
 		        }
 				
 	            _settings.OutlineSize = value;
@@ -736,7 +734,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                                                                                           Filter = ImageFilter.Point
 			                                                                                           })));
 		    _settings = Font.Settings;
-			TypeDescriptor["OutlineColor2"].IsReadOnly = _settings.OutlineSize < 3;
+	        DisableProperty("OutlineColor2", _settings.OutlineSize < 3);
+	        DisableProperty("FontTextureSize", _settings.Glyphs.Count > 0);
 	    }
 
         /// <summary>
@@ -995,7 +994,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
 	        HasThumbnail = true;
-	        TypeDescriptor["OutlineColor2"].IsReadOnly = initialSettings.Settings.OutlineSize < 3;
+            DisableProperty("OutlineColor2", initialSettings.Settings.OutlineSize < 3);
+            DisableProperty("FontTextureSize", initialSettings.Settings.Glyphs.Count > 0);
         }
         #endregion
     }

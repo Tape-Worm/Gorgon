@@ -344,7 +344,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_content.Font.Settings.Glyphs.Add(_newGlyph);
 				_content.UpdateFont();
-			}
+                _content.DisableProperty("FontTextureSize", true);
+            }
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
@@ -482,6 +483,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    }
 
 			glyph.Texture.Dispose();
+
+            _content.DisableProperty("FontTextureSize", _content.Font.Settings.Glyphs.Count > 0);
 	    }
 
         /// <summary>
@@ -520,6 +523,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 }
 
                 _content.UpdateFont();
+                _content.DisableProperty("FontTextureSize", _content.Font.Settings.Glyphs.Count > 0);
             }
             catch (Exception ex)
             {

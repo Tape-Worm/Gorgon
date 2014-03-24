@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -59,6 +60,15 @@ namespace GorgonLibrary.Editor
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return whether we should repaint the property or not.
+        /// </summary>
+        public bool Repaint
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -67,10 +77,12 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
-        public ContentPropertyChangedEventArgs(string propertyName, object value)
+        /// <param name="repaint">TRUE to repaint the property, FALSE to leave alone.</param>
+        public ContentPropertyChangedEventArgs(string propertyName, object value, bool repaint)
         {
             PropertyName = propertyName;
             Value = value;
+            Repaint = repaint;
         }
         #endregion
     }
@@ -101,7 +113,7 @@ namespace GorgonLibrary.Editor
         /// Property to return the type descriptor for this content.
         /// </summary>
         [Browsable(false)]
-        protected internal ContentTypeDescriptor TypeDescriptor
+        internal ContentTypeDescriptor TypeDescriptor
         {
             get;
             private set;
@@ -311,7 +323,7 @@ namespace GorgonLibrary.Editor
 
             if (ContentPropertyChanged != null)
             {
-                ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value));
+                ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value, false));
             }
         }
 
@@ -413,6 +425,64 @@ namespace GorgonLibrary.Editor
 				_contentControl.ContentPersisted();
 			}
 		}
+
+        /// <summary>
+        /// Function to determine if a content property is available to the UI.
+        /// </summary>
+        /// <param name="propertyName">The name of the property to look up.</param>
+        /// <returns>TRUE if found, FALSE if not.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
+        public bool HasProperty(string propertyName)
+        {
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException("propertyName");
+            }
+
+            if (string.IsNullOrWhiteSpace("propertyName"))
+            {
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+            }
+
+            return TypeDescriptor.Contains(propertyName);
+        }
+
+        /// <summary>
+        /// Function to set a property as disabled.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="disabled">TRUE if disabled, FALSE if not.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="propertyName"/> does not exist as a property for this content.</exception>
+        public void DisableProperty(string propertyName, bool disabled)
+        {
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException("propertyName");
+            }
+
+            if (string.IsNullOrWhiteSpace("propertyName"))
+            {
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+            }
+
+            if (!TypeDescriptor.Contains(propertyName))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GOREDIT_PROPERTY_NOT_FOUND, propertyName));
+            }
+
+            TypeDescriptor[propertyName].IsReadOnly = disabled;
+
+            if (ContentPropertyChanged != null)
+            {
+                ContentPropertyChanged(this,
+                                       new ContentPropertyChangedEventArgs(propertyName,
+                                                                           TypeDescriptor[propertyName].GetValue<object>(),
+                                                                           true));
+            }
+        }
 
 		/// <summary>
 		/// Function to retrieve a thumbnail image for the content plug-in.

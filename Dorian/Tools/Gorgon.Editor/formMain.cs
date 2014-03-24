@@ -921,7 +921,14 @@ namespace GorgonLibrary.Editor
         {
 			try
 			{
-				// If we change the name of an item, we must rename it.
+                // Only repaint the property grid in this case.
+                if (changedArgs.Repaint)
+                {
+                    propertyItem.Refresh();
+                    return;
+                }
+
+                // If we change the name of an item, we must rename it.
 				if (changedArgs.PropertyName.Equals("name", StringComparison.OrdinalIgnoreCase))
 				{
 					// Find our node that corresponds to this content.
