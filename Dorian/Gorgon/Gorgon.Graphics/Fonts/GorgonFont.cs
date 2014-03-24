@@ -1299,11 +1299,17 @@ namespace GorgonLibrary.Graphics
 					{
 						char c = availableCharacters[charIndex];
 
+						// Skip whitespace characters.
+						if (char.IsWhiteSpace(c))
+						{
+							availableCharacters.Remove(c);
+							c = Settings.DefaultCharacter;
+						}
+
 						// If we've already put this glyph in, then skip it.
 						if (Glyphs.Contains(c))
 						{
 							availableCharacters.Remove(c);
-							++charIndex;
 							continue;
 						}
 
