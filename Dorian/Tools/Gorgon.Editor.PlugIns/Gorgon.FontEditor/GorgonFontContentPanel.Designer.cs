@@ -79,8 +79,8 @@
 			this.labelGlyphTop = new System.Windows.Forms.Label();
 			this.labelGlyphLeft = new System.Windows.Forms.Label();
 			this.panel3 = new System.Windows.Forms.Panel();
-			this.buttonOK = new System.Windows.Forms.Button();
-			this.buttonCancel = new System.Windows.Forms.Button();
+			this.buttonGlyphClipOK = new System.Windows.Forms.Button();
+			this.buttonGlyphClipCancel = new System.Windows.Forms.Button();
 			this.panelText = new System.Windows.Forms.Panel();
 			this.splitContent = new System.Windows.Forms.Splitter();
 			this.panel1 = new System.Windows.Forms.Panel();
@@ -321,45 +321,47 @@
 			// 
 			// panel3
 			// 
-			this.panel3.Controls.Add(this.buttonOK);
-			this.panel3.Controls.Add(this.buttonCancel);
+			this.panel3.Controls.Add(this.buttonGlyphClipOK);
+			this.panel3.Controls.Add(this.buttonGlyphClipCancel);
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Right;
 			this.panel3.Location = new System.Drawing.Point(735, 0);
 			this.panel3.Name = "panel3";
 			this.panel3.Size = new System.Drawing.Size(71, 46);
 			this.panel3.TabIndex = 8;
 			// 
-			// buttonOK
+			// buttonGlyphClipOK
 			// 
-			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.buttonOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
-			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
-			this.buttonOK.Location = new System.Drawing.Point(6, 13);
-			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(28, 28);
-			this.buttonOK.TabIndex = 1;
-			this.buttonOK.UseVisualStyleBackColor = false;
+			this.buttonGlyphClipOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipOK.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.buttonGlyphClipOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonGlyphClipOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonGlyphClipOK.ForeColor = System.Drawing.Color.White;
+			this.buttonGlyphClipOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonGlyphClipOK.Location = new System.Drawing.Point(6, 13);
+			this.buttonGlyphClipOK.Name = "buttonGlyphClipOK";
+			this.buttonGlyphClipOK.Size = new System.Drawing.Size(28, 28);
+			this.buttonGlyphClipOK.TabIndex = 1;
+			this.buttonGlyphClipOK.UseVisualStyleBackColor = false;
+			this.buttonGlyphClipOK.Click += new System.EventHandler(this.buttonGlyphClipOK_Click);
 			// 
-			// buttonCancel
+			// buttonGlyphClipCancel
 			// 
-			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
-			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
-			this.buttonCancel.Location = new System.Drawing.Point(40, 13);
-			this.buttonCancel.Name = "buttonCancel";
-			this.buttonCancel.Size = new System.Drawing.Size(28, 28);
-			this.buttonCancel.TabIndex = 4;
-			this.buttonCancel.UseVisualStyleBackColor = false;
+			this.buttonGlyphClipCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonGlyphClipCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonGlyphClipCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonGlyphClipCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonGlyphClipCancel.ForeColor = System.Drawing.Color.White;
+			this.buttonGlyphClipCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonGlyphClipCancel.Location = new System.Drawing.Point(40, 13);
+			this.buttonGlyphClipCancel.Name = "buttonGlyphClipCancel";
+			this.buttonGlyphClipCancel.Size = new System.Drawing.Size(28, 28);
+			this.buttonGlyphClipCancel.TabIndex = 4;
+			this.buttonGlyphClipCancel.UseVisualStyleBackColor = false;
+			this.buttonGlyphClipCancel.Click += new System.EventHandler(this.buttonGlyphClipCancel_Click);
 			// 
 			// panelText
 			// 
@@ -752,7 +754,7 @@
 			this.buttonGlyphTools.Size = new System.Drawing.Size(32, 22);
 			this.buttonGlyphTools.Text = "Glyph tools";
 			this.buttonGlyphTools.ToolTipText = "Glyph tools.";
-			this.buttonGlyphTools.ButtonClick += new System.EventHandler(this.menuItemSetGlyph_Click);
+			this.buttonGlyphTools.ButtonClick += new System.EventHandler(this.buttonGlyphTools_ButtonClick);
 			// 
 			// menuItemSetGlyph
 			// 
@@ -1011,8 +1013,8 @@
 		private System.Windows.Forms.Label labelGlyphTop;
 		private System.Windows.Forms.Label labelGlyphLeft;
 		private System.Windows.Forms.Panel panel3;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Button buttonCancel;
+		private System.Windows.Forms.Button buttonGlyphClipOK;
+		private System.Windows.Forms.Button buttonGlyphClipCancel;
         private System.Windows.Forms.ToolStripMenuItem menuItemRemoveGlyphImage;
         private System.Windows.Forms.Panel panel5;
 		private System.Windows.Forms.Panel panelInnerDisplay;

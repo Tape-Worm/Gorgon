@@ -158,6 +158,7 @@ namespace GorgonLibrary.Editor
 				_zoomFont = value ?? _renderer.Graphics.Fonts.DefaultFont;
 
 				CalculateCaptionHeight();
+				UpdateTextureCoordinates();
 			}
 		}
 
@@ -180,6 +181,7 @@ namespace GorgonLibrary.Editor
 				_zoomWindowText = value;
 
 				CalculateCaptionHeight();
+				UpdateTextureCoordinates();
 			}
 		}
 
@@ -204,7 +206,7 @@ namespace GorgonLibrary.Editor
 			                                               false,
 			                                               new SizeF(ZoomWindowSize.X - 2, 30));
 
-			_captionHeight = size.Y.FastFloor() + 2;
+			_captionHeight = (int)size.Y + 2;
 		}
 
 		/// <summary>
@@ -212,14 +214,17 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void UpdateTextureCoordinates()
 		{
-			_sprite.Size = new Vector2(_windowSize.X - 2, _windowSize.Y - 17);
+			if (_captionHeight < 1)
+			{
+				CalculateCaptionHeight();
+			}
+
+			_sprite.Size = new Vector2(_windowSize.X - 2, _windowSize.Y - _captionHeight - 1);
 
 			Vector2 textureSize = _sprite.Size;
 			Vector2.Divide(ref textureSize, _zoom, out _zoomSize);
 
 			_sprite.TextureSize = _texture.ToTexel(_zoomSize);
-
-			CalculateCaptionHeight();
 		}
 
 		/// <summary>
@@ -235,7 +240,7 @@ namespace GorgonLibrary.Editor
 
 			_renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
-            _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation, ZoomWindowSize), GorgonColor.Black);
+            _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation, _windowSize), GorgonColor.Black);
 
 		    if (BackgroundTexture != null)
 		    {
@@ -258,7 +263,7 @@ namespace GorgonLibrary.Editor
 		        }
 		    }
 
-		    _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, ZoomWindowSize.X - 2, _captionHeight - 2), GorgonColor.White);
+		    _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, _windowSize.X - 2, _captionHeight - 2), GorgonColor.White);
 			_renderer.Drawing.DrawString(ZoomWindowFont ?? _renderer.Graphics.Fonts.DefaultFont,
 										 string.Format("{0}: {1:0.0}x", ZoomWindowText, _zoom),
 			                             ZoomWindowLocation,
@@ -348,6 +353,7 @@ namespace GorgonLibrary.Editor
 			_sprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
 			_sprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
 			_sprite.TextureSampler.BorderColor = GorgonColor.Transparent;
+			_sprite.TextureSampler.TextureFilter = TextureFilter.Point;
             
 			_zoomWindowText = Resources.GOREDIT_ZOOMWINDOW_TEXT;
 			_zoomFont = renderer.Graphics.Fonts.DefaultFont;
