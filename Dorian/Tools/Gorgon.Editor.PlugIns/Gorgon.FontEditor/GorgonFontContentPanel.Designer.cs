@@ -30,6 +30,7 @@
 
 	            if (_rawKeyboard != null)
 	            {
+		            _rawKeyboard.KeyDown -= GorgonFontContentPanel_KeyDown;
 					_rawKeyboard.KeyUp -= GorgonFontContentPanel_KeyUp;
 		            _rawKeyboard.Dispose();
 	            }
@@ -70,10 +71,15 @@
 			this.panelTextures = new GorgonLibrary.UI.GorgonSelectablePanel();
 			this.panelGlyphSet = new System.Windows.Forms.Panel();
 			this.panel4 = new System.Windows.Forms.Panel();
+			this.checkZoomSnap = new System.Windows.Forms.CheckBox();
+			this.numericZoomAmount = new System.Windows.Forms.NumericUpDown();
+			this.numericZoomWindowSize = new System.Windows.Forms.NumericUpDown();
 			this.numericGlyphHeight = new System.Windows.Forms.NumericUpDown();
 			this.numericGlyphWidth = new System.Windows.Forms.NumericUpDown();
 			this.numericGlyphTop = new System.Windows.Forms.NumericUpDown();
 			this.numericGlyphLeft = new System.Windows.Forms.NumericUpDown();
+			this.label1 = new System.Windows.Forms.Label();
+			this.labelZoomWindowSize = new System.Windows.Forms.Label();
 			this.labelGlyphHeight = new System.Windows.Forms.Label();
 			this.labelGlyphWidth = new System.Windows.Forms.Label();
 			this.labelGlyphTop = new System.Windows.Forms.Label();
@@ -140,6 +146,8 @@
 			this.PanelDisplay.SuspendLayout();
 			this.panelGlyphSet.SuspendLayout();
 			this.panel4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomAmount)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomWindowSize)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphWidth)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphTop)).BeginInit();
@@ -197,10 +205,15 @@
 			// 
 			// panel4
 			// 
+			this.panel4.Controls.Add(this.checkZoomSnap);
+			this.panel4.Controls.Add(this.numericZoomAmount);
+			this.panel4.Controls.Add(this.numericZoomWindowSize);
 			this.panel4.Controls.Add(this.numericGlyphHeight);
 			this.panel4.Controls.Add(this.numericGlyphWidth);
 			this.panel4.Controls.Add(this.numericGlyphTop);
 			this.panel4.Controls.Add(this.numericGlyphLeft);
+			this.panel4.Controls.Add(this.label1);
+			this.panel4.Controls.Add(this.labelZoomWindowSize);
 			this.panel4.Controls.Add(this.labelGlyphHeight);
 			this.panel4.Controls.Add(this.labelGlyphWidth);
 			this.panel4.Controls.Add(this.labelGlyphTop);
@@ -211,9 +224,83 @@
 			this.panel4.Size = new System.Drawing.Size(735, 46);
 			this.panel4.TabIndex = 7;
 			// 
+			// checkZoomSnap
+			// 
+			this.checkZoomSnap.AutoSize = true;
+			this.checkZoomSnap.Location = new System.Drawing.Point(532, 19);
+			this.checkZoomSnap.Name = "checkZoomSnap";
+			this.checkZoomSnap.Size = new System.Drawing.Size(186, 19);
+			this.checkZoomSnap.TabIndex = 8;
+			this.checkZoomSnap.Text = "Snap zoom window to corners";
+			this.checkZoomSnap.UseVisualStyleBackColor = true;
+			this.checkZoomSnap.Click += new System.EventHandler(this.checkZoomSnap_Click);
+			// 
+			// numericZoomAmount
+			// 
+			this.numericZoomAmount.DecimalPlaces = 1;
+			this.numericZoomAmount.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+			this.numericZoomAmount.Location = new System.Drawing.Point(440, 18);
+			this.numericZoomAmount.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.Name = "numericZoomAmount";
+			this.numericZoomAmount.Size = new System.Drawing.Size(86, 23);
+			this.numericZoomAmount.TabIndex = 6;
+			this.numericZoomAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericZoomAmount.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.ValueChanged += new System.EventHandler(this.numericZoomAmount_ValueChanged);
+			this.numericZoomAmount.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericZoomAmount.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
+			// 
+			// numericZoomWindowSize
+			// 
+			this.numericZoomWindowSize.Increment = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Location = new System.Drawing.Point(325, 18);
+			this.numericZoomWindowSize.Maximum = new decimal(new int[] {
+            384,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Minimum = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Name = "numericZoomWindowSize";
+			this.numericZoomWindowSize.Size = new System.Drawing.Size(109, 23);
+			this.numericZoomWindowSize.TabIndex = 4;
+			this.numericZoomWindowSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericZoomWindowSize.Value = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.ValueChanged += new System.EventHandler(this.numericZoomWindowSize_ValueChanged);
+			this.numericZoomWindowSize.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericZoomWindowSize.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
+			// 
 			// numericGlyphHeight
 			// 
-			this.numericGlyphHeight.Location = new System.Drawing.Point(257, 18);
+			this.numericGlyphHeight.Location = new System.Drawing.Point(232, 18);
 			this.numericGlyphHeight.Maximum = new decimal(new int[] {
             20000000,
             0,
@@ -233,10 +320,13 @@
             0,
             0,
             0});
+			this.numericGlyphHeight.ValueChanged += new System.EventHandler(this.numericGlyphLeft_ValueChanged);
+			this.numericGlyphHeight.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericGlyphHeight.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
 			// 
 			// numericGlyphWidth
 			// 
-			this.numericGlyphWidth.Location = new System.Drawing.Point(183, 18);
+			this.numericGlyphWidth.Location = new System.Drawing.Point(157, 18);
 			this.numericGlyphWidth.Maximum = new decimal(new int[] {
             20000000,
             0,
@@ -256,6 +346,9 @@
             0,
             0,
             0});
+			this.numericGlyphWidth.ValueChanged += new System.EventHandler(this.numericGlyphLeft_ValueChanged);
+			this.numericGlyphWidth.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericGlyphWidth.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
 			// 
 			// numericGlyphTop
 			// 
@@ -269,6 +362,9 @@
 			this.numericGlyphTop.Size = new System.Drawing.Size(68, 23);
 			this.numericGlyphTop.TabIndex = 1;
 			this.numericGlyphTop.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericGlyphTop.ValueChanged += new System.EventHandler(this.numericGlyphLeft_ValueChanged);
+			this.numericGlyphTop.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericGlyphTop.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
 			// 
 			// numericGlyphLeft
 			// 
@@ -282,11 +378,32 @@
 			this.numericGlyphLeft.Size = new System.Drawing.Size(68, 23);
 			this.numericGlyphLeft.TabIndex = 0;
 			this.numericGlyphLeft.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericGlyphLeft.ValueChanged += new System.EventHandler(this.numericGlyphLeft_ValueChanged);
+			this.numericGlyphLeft.Enter += new System.EventHandler(this.numericGlyphLeft_Enter);
+			this.numericGlyphLeft.Leave += new System.EventHandler(this.numericGlyphLeft_Leave);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(440, 0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(89, 15);
+			this.label1.TabIndex = 7;
+			this.label1.Text = "Zoom Amount:";
+			// 
+			// labelZoomWindowSize
+			// 
+			this.labelZoomWindowSize.AutoSize = true;
+			this.labelZoomWindowSize.Location = new System.Drawing.Point(322, 0);
+			this.labelZoomWindowSize.Name = "labelZoomWindowSize";
+			this.labelZoomWindowSize.Size = new System.Drawing.Size(112, 15);
+			this.labelZoomWindowSize.TabIndex = 5;
+			this.labelZoomWindowSize.Text = "Zoom Window Size:";
 			// 
 			// labelGlyphHeight
 			// 
 			this.labelGlyphHeight.AutoSize = true;
-			this.labelGlyphHeight.Location = new System.Drawing.Point(254, 0);
+			this.labelGlyphHeight.Location = new System.Drawing.Point(229, 0);
 			this.labelGlyphHeight.Name = "labelGlyphHeight";
 			this.labelGlyphHeight.Size = new System.Drawing.Size(46, 15);
 			this.labelGlyphHeight.TabIndex = 3;
@@ -295,7 +412,7 @@
 			// labelGlyphWidth
 			// 
 			this.labelGlyphWidth.AutoSize = true;
-			this.labelGlyphWidth.Location = new System.Drawing.Point(180, 0);
+			this.labelGlyphWidth.Location = new System.Drawing.Point(154, 0);
 			this.labelGlyphWidth.Name = "labelGlyphWidth";
 			this.labelGlyphWidth.Size = new System.Drawing.Size(42, 15);
 			this.labelGlyphWidth.TabIndex = 2;
@@ -924,6 +1041,8 @@
 			this.panelGlyphSet.ResumeLayout(false);
 			this.panel4.ResumeLayout(false);
 			this.panel4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomAmount)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomWindowSize)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphHeight)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphWidth)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericGlyphTop)).EndInit();
@@ -1022,5 +1141,10 @@
 		private System.Windows.Forms.VScrollBar scrollVertical;
 		private System.Windows.Forms.Panel panelHorzScroll;
 		private System.Windows.Forms.HScrollBar scrollHorizontal;
+		private System.Windows.Forms.NumericUpDown numericZoomWindowSize;
+		private System.Windows.Forms.Label labelZoomWindowSize;
+		private System.Windows.Forms.NumericUpDown numericZoomAmount;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.CheckBox checkZoomSnap;
     }
 }

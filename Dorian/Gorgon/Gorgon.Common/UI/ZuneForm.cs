@@ -95,6 +95,8 @@ namespace GorgonLibrary.UI
 		private int _borderWidth = 1;
 		private bool _border;
 		private Color _borderColor = Color.Black;
+		private FormWindowState _windowState = FormWindowState.Normal;
+		private Rectangle _restoreRect;
 		#endregion
 
 		#region Properties.
@@ -361,6 +363,81 @@ namespace GorgonLibrary.UI
 			set
 			{
 				// Do nothing.
+			}
+		}
+
+		/// <summary>
+		/// Gets the location and size of the form in its normal window state.
+		/// </summary>
+		/// <returns>A <see cref="T:System.Drawing.Rectangle" /> that contains the location and size of the form in the normal window state.</returns>
+		public new Rectangle RestoreBounds
+		{
+			get
+			{
+				return _restoreRect;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a value that indicates whether form is minimized, maximized, or normal.
+		/// </summary>
+		/// <returns>A <see cref="T:System.Windows.Forms.FormWindowState" /> that represents whether form is minimized, maximized, or normal. The default is FormWindowState.Normal.</returns>
+		/// <PermissionSet>
+		///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		/// </PermissionSet>
+		public new FormWindowState WindowState
+		{
+			get
+			{
+				return _windowState;
+			}
+			set
+			{
+				if (_windowState == value)
+				{
+					return;
+				}
+
+				_windowState = value;
+
+				if ((IsHandleCreated) && (value != FormWindowState.Normal))
+				{
+					_restoreRect = Bounds;
+				}
+
+				if ((!IsHandleCreated) || (DesignMode))
+				{
+					return;
+				}
+
+				if (value == FormWindowState.Normal)
+				{
+					SetBounds(_restoreRect.Left, _restoreRect.Top, _restoreRect.Width, _restoreRect.Height, BoundsSpecified.All);
+				}
+
+				if (value != FormWindowState.Maximized)
+				{
+					base.WindowState = value;
+					return;
+				}
+
+				// Security issue.
+				if ((TopLevel) && (IsRestrictedWindow))
+				{
+					_windowState = base.WindowState = FormWindowState.Normal;
+					return;
+				}
+
+				Screen currentScreen = Screen.FromControl(this);
+
+				SetBounds(currentScreen.Bounds.Left,
+				          currentScreen.Bounds.Top,
+				          currentScreen.WorkingArea.Width,
+				          currentScreen.WorkingArea.Height,
+						  BoundsSpecified.All);
 			}
 		}
 		#endregion
@@ -783,8 +860,8 @@ namespace GorgonLibrary.UI
 				{
 					return;
 				}
-
-				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize))
+				
+				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize) && (WindowState == FormWindowState.Normal))
 				{
 					Win32API.ReleaseCapture();
 					Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
@@ -897,15 +974,20 @@ namespace GorgonLibrary.UI
 			        return;
 			    }
 
-			    if (WindowState == FormWindowState.Maximized)
-			    {
-			        _currentPadding = Padding;
-			        Padding = new Padding(0);
-			    }
-			    else
-			    {
-		            Padding = _currentPadding.Value;
-			    }
+				switch (WindowState)
+				{
+					case FormWindowState.Maximized:
+						_currentPadding = Padding;
+						Padding = new Padding(0);
+						break;
+					case FormWindowState.Normal:
+						_restoreRect = DesktopBounds;
+						Padding = _currentPadding.Value;
+						break;
+					default:
+						Padding = _currentPadding.Value;
+						break;
+				}
 			}
 			finally
 			{
@@ -969,6 +1051,8 @@ namespace GorgonLibrary.UI
 			SetStyle(ControlStyles.ResizeRedraw, true);
 
 			InitializeComponent();
+
+			_restoreRect = Bounds;
 
 			ValidateWindowControls();
 		}

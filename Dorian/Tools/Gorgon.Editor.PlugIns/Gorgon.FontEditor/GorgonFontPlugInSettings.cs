@@ -157,6 +157,33 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the size of the zoom window when editing glyphs.
+		/// </summary>
+		[ApplicationSetting("ZoomWindowSize", 256, typeof(int), "FontEditor")]
+		public int ZoomWindowSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling factor for the zoom window.
+		/// </summary>
+		[ApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "FontEditor")]
+		public float ZoomWindowScaleFactor
+		{
+			get;
+			set;
+		}
+
+		[ApplicationSetting("ZoomWindowSnap", false, typeof(bool), "FontEditor")]
+		public bool ZoomWindowSnap
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -166,6 +193,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public GorgonFontPlugInSettings()
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
+			ZoomWindowSnap = false;
+			ZoomWindowScaleFactor = 2.0f;
+			ZoomWindowSize = 256;
 			FontTextureSize = new Size(256, 256);
 			TextColor = Color.White.ToArgb();            
 			BackgroundColor = Color.FromArgb(255, DarkFormsRenderer.WindowBackground).ToArgb();
