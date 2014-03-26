@@ -43,7 +43,6 @@ using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
-// TODO: Add texture clipping for glyphs.
 // TODO: Add spacing/kerning interfaces for glyphs.
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -102,6 +101,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_rawKeyboard = RawInput.CreateKeyboard(panelTextures);
 				_rawKeyboard.Enabled = true;
 				_rawKeyboard.KeyUp += GorgonFontContentPanel_KeyUp;
+				_rawKeyboard.KeyDown += GorgonFontContentPanel_KeyDown;
 
 				Point lastPosition = Cursor.Position;
 				_rawMouse = RawInput.CreatePointingDevice(panelTextures);
@@ -128,6 +128,348 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 		}
 
+		/// <summary>
+		/// Handles the KeyDown event of the GorgonFontContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyboardEventArgs"/> instance containing the event data.</param>
+	    private void GorgonFontContentPanel_KeyDown(object sender, KeyboardEventArgs e)
+	    {
+			switch (e.Key)
+			{
+				case KeyboardKeys.Space:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					var args = new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                       PointingDeviceButtons.None,
+					                                       _mousePosition,
+					                                       0,
+					                                       Vector2.Zero,
+					                                       0,
+					                                       1);
+
+					if (_glyphClipper.DragMode == ClipSelectionDragMode.None)
+					{
+						ClipMouseDown(sender, args);
+					}
+					else
+					{
+						ClipMouseUp(sender, args);
+					}
+					break;
+				case KeyboardKeys.NumPad3:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.X += 100;
+						_mousePosition.Y += 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X += 10;
+						_mousePosition.Y += 10;
+					}
+					else
+					{
+						_mousePosition.X += 1;
+						_mousePosition.Y += 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad1:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.X -= 100;
+						_mousePosition.Y += 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X -= 10;
+						_mousePosition.Y += 10;
+					}
+					else
+					{
+						_mousePosition.X -= 1;
+						_mousePosition.Y += 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad9:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.X += 100;
+						_mousePosition.Y -= 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X += 10;
+						_mousePosition.Y -= 10;
+					}
+					else
+					{
+						_mousePosition.X += 1;
+						_mousePosition.Y -= 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad7:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.X -= 100;
+						_mousePosition.Y -= 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X -= 10;
+						_mousePosition.Y -= 10;
+					}
+					else
+					{
+						_mousePosition.X -= 1;
+						_mousePosition.Y -= 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad6:
+				case KeyboardKeys.Right:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.X += 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X += 10;
+					}
+					else
+					{
+						_mousePosition.X += 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad4:
+				case KeyboardKeys.Left:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+
+					if (e.Shift)
+					{
+						_mousePosition.X -= 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.X -= 10;
+					}
+					else
+					{
+						_mousePosition.X -= 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad2:
+				case KeyboardKeys.Down:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.Y += 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.Y += 10;
+					}
+					else
+					{
+						_mousePosition.Y += 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+				case KeyboardKeys.NumPad8:
+				case KeyboardKeys.Up:
+					if (_content.CurrentState != DrawState.ClipGlyph)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelTextures)
+					{
+						panelTextures.Focus();
+					}
+
+					if (e.Shift)
+					{
+						_mousePosition.Y -= 100;
+					}
+					else if (e.Ctrl)
+					{
+						_mousePosition.Y -= 10;
+					}
+					else
+					{
+						_mousePosition.Y -= 1;
+					}
+
+					MoveClipperDrag(new PointingDeviceEventArgs(PointingDeviceButtons.Left,
+					                                            PointingDeviceButtons.None,
+					                                            _mousePosition,
+					                                            0,
+					                                            Vector2.Zero,
+					                                            0,
+					                                            1));
+					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
+					break;
+			}
+	    }
+
+	    /// <summary>
+		/// Function to enable or disable the clipper numeric control limits.
+		/// </summary>
+		/// <param name="enable">TRUE to enable the control limits, FALSE to turn off the limits.</param>
+	    private void EnableClipNumericLimits(bool enable)
+	    {
+			if ((!enable)
+				|| (_glyphClipper == null)
+				|| (_newGlyph == null))
+			{
+				numericGlyphHeight.Maximum = numericGlyphWidth.Maximum = numericGlyphLeft.Maximum = numericGlyphTop.Maximum = Int32.MaxValue;
+				numericGlyphHeight.Minimum = numericGlyphWidth.Minimum = numericGlyphLeft.Minimum = numericGlyphTop.Minimum = 0;
+				return;
+			}
+
+			RectangleF clipRegion = _glyphClipper.ClipRegion;
+
+			numericGlyphLeft.Maximum = (decimal)(_newGlyph.Texture.Settings.Width - clipRegion.Width);
+			numericGlyphTop.Maximum = (decimal)(_newGlyph.Texture.Settings.Height - clipRegion.Height);
+
+			numericGlyphWidth.Maximum = (decimal)(_newGlyph.Texture.Settings.Width - clipRegion.Left);
+			numericGlyphHeight.Maximum = (decimal)(_newGlyph.Texture.Settings.Height - clipRegion.Top);
+			numericGlyphWidth.Minimum = 1;
+			numericGlyphHeight.Minimum = 1;
+	    }
+
         /// <summary>
         /// Function called when the mouse wheel is moved.
         /// </summary>
@@ -148,12 +490,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	        }
 
 	        if (pointingDeviceEventArgs.WheelDelta < 0)
-            {
-                _zoomWindow.ZoomAmount -= 0.5f;
-            }
+	        {
+				if ((numericZoomAmount.Value - 0.5M) >= numericZoomAmount.Minimum)
+		        {
+			        numericZoomAmount.Value -= 0.5M;
+		        }
+	        }
             else if (pointingDeviceEventArgs.WheelDelta > 0)
             {
-                _zoomWindow.ZoomAmount += 0.5f;
+	            if (numericZoomAmount.Value + 0.5M <= numericZoomAmount.Maximum)
+	            {
+		            numericZoomAmount.Value += 0.5M;
+	            }
             }
         }
 
@@ -178,10 +526,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     return;
                 }
 
-                if (!_glyphClipper.OnMouseUp(pointingDeviceEventArgs))
-                {
-                    return;
-                }
+	            if (!_glyphClipper.OnMouseUp(pointingDeviceEventArgs))
+	            {
+		            return;
+	            }
+
+	            RectangleF clipRectangle = _glyphClipper.ClipRegion;
+
+	            numericGlyphTop.Value = (decimal)clipRectangle.Top;
+	            numericGlyphLeft.Value = (decimal)clipRectangle.Left;
+	            numericGlyphWidth.Value = (decimal)clipRectangle.Width;
+	            numericGlyphHeight.Value = (decimal)clipRectangle.Height;
             }
             catch (Exception ex)
             {
@@ -189,6 +544,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
             finally
             {
+				EnableClipNumericLimits(true);
                 UpdateGlyphInfo();
             }
         }
@@ -219,7 +575,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     return;
                 }
 
-
+				EnableClipNumericLimits(false);
             }
             catch (Exception ex)
             {
@@ -236,35 +592,61 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         private void UpdateMagnifierWindow()
         {
+	        Vector2 zoomPosition;
             _zoomWindow.Position = _mousePosition;
 
-            var zoomPosition = new Vector2(_mousePosition.X + 4,
-                                           _mousePosition.Y + 4);
+	        if (!checkZoomSnap.Checked)
+	        {
+		        zoomPosition = new Vector2(_mousePosition.X + 4,
+		                                   _mousePosition.Y + 4);
 
-            if ((zoomPosition.X + _zoomWindow.ZoomWindowSize.X) > panelTextures.ClientSize.Width - 4)
-            {
-                zoomPosition.X = _mousePosition.X - _zoomWindow.ZoomWindowSize.X - 4;
-            }
+		        if ((zoomPosition.X + _zoomWindow.ZoomWindowSize.X) > panelTextures.ClientSize.Width - 4)
+		        {
+			        zoomPosition.X = _mousePosition.X - _zoomWindow.ZoomWindowSize.X - 4;
+		        }
 
-            if ((zoomPosition.Y + _zoomWindow.ZoomWindowSize.Y) > panelTextures.ClientSize.Height - 4)
-            {
-                zoomPosition.Y = _mousePosition.Y - _zoomWindow.ZoomWindowSize.Y - 4;
-            }
+		        if ((zoomPosition.Y + _zoomWindow.ZoomWindowSize.Y) > panelTextures.ClientSize.Height - 4)
+		        {
+			        zoomPosition.Y = _mousePosition.Y - _zoomWindow.ZoomWindowSize.Y - 4;
+		        }
+	        }
+	        else
+	        {
+		        zoomPosition = new Vector2(panelTextures.ClientSize.Width - _zoomWindow.ZoomWindowSize.X, 0);
 
-            /*var zoomPosition = new Vector2(panelTextures.ClientSize.Width - _zoomWindow.ZoomWindowSize.X, 0);
+		        if ((_mousePosition.Y < _zoomWindow.ZoomWindowSize.Y) &&
+		            (_mousePosition.X > panelTextures.ClientSize.Width * 0.5f))
+		        {
+			        zoomPosition.Y = panelTextures.ClientSize.Height - _zoomWindow.ZoomWindowSize.Y;
+		        }
 
-            if ((position.Y < _zoomWindow.ZoomWindowSize.Y) && (position.X > panelTextures.ClientSize.Width * 0.5f))
-            {
-                zoomPosition.Y = panelTextures.ClientSize.Height - _zoomWindow.ZoomWindowSize.Y;
-            }
+		        if ((_mousePosition.X >= zoomPosition.X) && (_mousePosition.Y > panelTextures.ClientSize.Height * 0.5f))
+		        {
+			        zoomPosition.X = 0;
+		        }
+	        }
 
-            if ((position.X >= zoomPosition.X) && (position.Y > panelTextures.ClientSize.Height * 0.5f))
-            {
-                zoomPosition.X = 0;
-            }*/
-
-            _zoomWindow.ZoomWindowLocation = zoomPosition;
+	        _zoomWindow.ZoomWindowLocation = zoomPosition;
         }
+
+		/// <summary>
+		/// Function to move the clipper when in a drag operation.
+		/// </summary>
+		/// <param name="pointingDeviceEventArgs">Event parameters specifying movement.</param>
+	    private void MoveClipperDrag(PointingDeviceEventArgs pointingDeviceEventArgs)
+	    {
+			if (_glyphClipper.OnMouseMove(pointingDeviceEventArgs))
+			{
+				RectangleF clipRectangle = _glyphClipper.ClipRegion;
+
+				numericGlyphTop.Value = (decimal)clipRectangle.Top;
+				numericGlyphLeft.Value = (decimal)clipRectangle.Left;
+				numericGlyphWidth.Value = (decimal)clipRectangle.Width;
+				numericGlyphHeight.Value = (decimal)clipRectangle.Height;
+			}
+
+			UpdateMagnifierWindow();
+	    }
 
         /// <summary>
 		/// Function called when the mouse is moved in clipping mode.
@@ -282,9 +664,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	        _mousePosition = pointingDeviceEventArgs.Position;
 
-			_glyphClipper.OnMouseMove(pointingDeviceEventArgs);
-
-            UpdateMagnifierWindow();
+			MoveClipperDrag(pointingDeviceEventArgs);
 		}
 
 		/// <summary>
@@ -405,7 +785,30 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				return;
 			}
 
-			try
+		    if (_content.CurrentState == DrawState.ClipGlyph)
+		    {
+				// Disable control validate when clipping and we're using the keyboard.
+				// This avoids ugly flashing on the panel with the numeric controls.
+			    switch (e.Key)
+			    {
+				    case KeyboardKeys.Up:
+					case KeyboardKeys.Down:
+					case KeyboardKeys.Left:
+					case KeyboardKeys.Right:
+					case KeyboardKeys.NumPad1:
+					case KeyboardKeys.NumPad2:
+					case KeyboardKeys.NumPad3:
+					case KeyboardKeys.NumPad4:
+					case KeyboardKeys.NumPad6:
+					case KeyboardKeys.NumPad7:
+					case KeyboardKeys.NumPad8:
+					case KeyboardKeys.NumPad9:
+					case KeyboardKeys.Space:
+					    return;
+			    }
+		    }
+
+		    try
 			{
 				switch (e.Key)
 				{
@@ -416,14 +819,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						buttonNextTexture.PerformClick();
 						break;
 					case KeyboardKeys.Enter:
-						if ((_selectedGlyph == null)
-						    || (_content.CurrentState == DrawState.ToGlyphEdit)
-						    || (_content.CurrentState == DrawState.GlyphEdit))
+						if (_selectedGlyph == null)
 						{
 							return;
 						}
 
-						buttonEditGlyph.PerformClick();
+						switch (_content.CurrentState)
+						{
+							case DrawState.DrawFontTextures:
+								buttonEditGlyph.PerformClick();
+								break;
+							case DrawState.ClipGlyph:
+								buttonGlyphClipOK.PerformClick();
+								break;
+						}
+						
 						break;
 					case KeyboardKeys.F4:
 						if (!e.Alt)
@@ -667,8 +1077,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_zoomWindow = new ZoomWindow(_content.Renderer, _newGlyph.Texture)
 			              {
 				              Clipper = _glyphClipper,
-							  ZoomAmount = 4.0f,
-							  ZoomWindowSize = new Vector2(256, 256),
+							  ZoomAmount = GorgonFontEditorPlugIn.Settings.ZoomWindowScaleFactor,
+							  ZoomWindowSize = new Vector2(GorgonFontEditorPlugIn.Settings.ZoomWindowSize, GorgonFontEditorPlugIn.Settings.ZoomWindowSize),
                               BackgroundTexture = _pattern,
                               Position = cursorPosition
 			              };
@@ -690,6 +1100,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_zoomWindow.ZoomWindowFont = _zoomFont;
 
             UpdateMagnifierWindow();
+
+			numericGlyphTop.Value = _newGlyph.GlyphCoordinates.Top;
+			numericGlyphLeft.Value = _newGlyph.GlyphCoordinates.Left;
+			numericGlyphWidth.Value = _newGlyph.GlyphCoordinates.Width;
+			numericGlyphHeight.Value = _newGlyph.GlyphCoordinates.Height;
+			numericZoomWindowSize.Value = GorgonFontEditorPlugIn.Settings.ZoomWindowSize;
+			numericZoomAmount.Value = (decimal)GorgonFontEditorPlugIn.Settings.ZoomWindowScaleFactor;
+			checkZoomSnap.Checked = GorgonFontEditorPlugIn.Settings.ZoomWindowSnap;
+
+			EnableClipNumericLimits(true);
 
 			ValidateControls();
 		}
@@ -1416,9 +1836,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					case DrawState.PrevTexture:
 					case DrawState.FromGlyphEdit:
 					case DrawState.ToGlyphEdit:
-			            break;
 					case DrawState.ClipGlyph:
-						// TODO: Do clipping stuff.
 			            break;
 					case DrawState.GlyphEdit:
 	                    if (!_textureRegion.Contains(e.Location))
@@ -1512,6 +1930,170 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             _glyphClipper.Offset = new Vector2(-scrollHorizontal.Value, -scrollVertical.Value);
         }
+
+		/// <summary>
+		/// Handles the ValueChanged event of the numericZoomWindowSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericZoomWindowSize_ValueChanged(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_zoomWindow == null))
+			{
+				return;
+			}
+
+			_zoomWindow.ZoomWindowSize = new Vector2((float)numericZoomWindowSize.Value, (float)numericZoomWindowSize.Value);
+			UpdateMagnifierWindow();
+			
+			GorgonFontEditorPlugIn.Settings.ZoomWindowSize = (int)numericZoomWindowSize.Value;
+		}
+
+		/// <summary>
+		/// Handles the ValueChanged event of the numericZoomAmount control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericZoomAmount_ValueChanged(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_zoomWindow == null))
+			{
+				return;
+			}
+
+			_zoomWindow.ZoomAmount = (float)numericZoomAmount.Value;
+			UpdateMagnifierWindow();
+
+			GorgonFontEditorPlugIn.Settings.ZoomWindowScaleFactor = _zoomWindow.ZoomAmount;
+		}
+
+		/// <summary>
+		/// Handles the Leave event of the numericGlyphLeft control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericGlyphLeft_Leave(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_glyphClipper == null)
+				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None))
+			{
+				return;
+			}
+
+			_rawKeyboard.KeyDown += GorgonFontContentPanel_KeyDown;
+		}
+
+		/// <summary>
+		/// Handles the Enter event of the numericGlyphLeft control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericGlyphLeft_Enter(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_glyphClipper == null)
+				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None))
+			{
+				return;
+			}
+
+			_rawKeyboard.KeyDown -= GorgonFontContentPanel_KeyDown;
+
+			// Snap the cursor when we enter one of the numeric areas.
+			if ((sender == numericGlyphLeft)
+				|| (sender == numericGlyphTop))
+			{
+				_mousePosition = _glyphClipper.ClipRegion.Location;
+				UpdateMagnifierWindow();
+			}
+			else
+			{
+				RectangleF clipRectangle = _glyphClipper.ClipRegion;
+
+				_mousePosition = new Vector2(clipRectangle.Right, clipRectangle.Bottom);
+				UpdateMagnifierWindow();
+			}
+		}
+
+		/// <summary>
+		/// Handles the ValueChanged event of the numericGlyphLeft control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericGlyphLeft_ValueChanged(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_glyphClipper == null)
+				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None))
+			{
+				return;
+			}
+
+			try
+			{
+				var clipRegion = new RectangleF((float)numericGlyphLeft.Value,
+				                                (float)numericGlyphTop.Value,
+				                                (float)numericGlyphWidth.Value,
+				                                (float)numericGlyphHeight.Value);
+
+				_glyphClipper.ClipRegion = clipRegion;
+
+				// Readjust the limits.
+				numericGlyphLeft.Maximum = _newGlyph.Texture.Settings.Width - numericGlyphWidth.Value;
+				numericGlyphTop.Maximum = _newGlyph.Texture.Settings.Height - numericGlyphHeight.Value;
+
+				numericGlyphWidth.Maximum = _newGlyph.Texture.Settings.Width - numericGlyphLeft.Value;
+				numericGlyphHeight.Maximum = _newGlyph.Texture.Settings.Height - numericGlyphTop.Value;
+
+				if (sender == numericGlyphLeft)
+				{
+					_mousePosition.X = clipRegion.Left;
+				}
+
+				if (sender == numericGlyphTop)
+				{
+					_mousePosition.Y = clipRegion.Top;
+				}
+
+				if (sender == numericGlyphWidth)
+				{
+					_mousePosition.X = clipRegion.Right;
+				}
+
+				if (sender == numericGlyphHeight)
+				{
+					_mousePosition.Y = clipRegion.Bottom;
+				}
+
+				// Snap the magnifier to the mouse.
+				UpdateMagnifierWindow();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the checkZoomSnap control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void checkZoomSnap_Click(object sender, EventArgs e)
+		{
+			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
+				|| (_zoomWindow == null))
+			{
+				return;
+			}
+
+			UpdateMagnifierWindow();
+
+			GorgonFontEditorPlugIn.Settings.ZoomWindowSnap = checkZoomSnap.Checked;
+		}
 
 		/// <summary>
 		/// Function to calculate the current zoom factor when scaling to the size of the window.
@@ -2463,7 +3045,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(panelTextures.ClientSize));
 
 			_glyphBackgroundSprite.Draw();
-			// TODO: Make an option to show or hide the alpha.
 			_glyphSprite.Draw();
 		}
 
