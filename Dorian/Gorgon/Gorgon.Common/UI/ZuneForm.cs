@@ -96,6 +96,7 @@ namespace GorgonLibrary.UI
 		private bool _border;
 		private Color _borderColor = Color.Black;
 		private FormWindowState _windowState = FormWindowState.Normal;
+		private FormWindowState _prevMinState = FormWindowState.Normal;
 		private Rectangle _restoreRect;
 		#endregion
 
@@ -401,9 +402,10 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
+				_prevMinState = _windowState;
 				_windowState = value;
 
-				if ((IsHandleCreated) && (value != FormWindowState.Normal))
+				if ((IsHandleCreated) && (value == FormWindowState.Maximized))
 				{
 					_restoreRect = Bounds;
 				}
@@ -413,7 +415,7 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				if (value == FormWindowState.Normal)
+				if ((value == FormWindowState.Normal) && (_prevMinState == FormWindowState.Maximized))
 				{
 					SetBounds(_restoreRect.Left, _restoreRect.Top, _restoreRect.Width, _restoreRect.Height, BoundsSpecified.All);
 				}
@@ -427,7 +429,7 @@ namespace GorgonLibrary.UI
 				// Security issue.
 				if ((TopLevel) && (IsRestrictedWindow))
 				{
-					_windowState = base.WindowState = FormWindowState.Normal;
+					_prevMinState = _windowState = base.WindowState = FormWindowState.Normal;
 					return;
 				}
 
@@ -775,6 +777,11 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Activated(object sender, EventArgs e)
 		{
+			if (base.WindowState == FormWindowState.Minimized)
+			{
+				_windowState = _prevMinState;	
+			}
+
 			panelCaptionArea.ForeColor = ForeColor;
 			labelMinimize.ForeColor = ForeColor;
 			labelMaxRestore.ForeColor = ForeColor;
@@ -977,10 +984,20 @@ namespace GorgonLibrary.UI
 				switch (WindowState)
 				{
 					case FormWindowState.Maximized:
+						if (base.WindowState == FormWindowState.Minimized)
+						{
+							_windowState = FormWindowState.Maximized;
+						}
+
 						_currentPadding = Padding;
 						Padding = new Padding(0);
 						break;
 					case FormWindowState.Normal:
+						if (base.WindowState == FormWindowState.Minimized)
+						{
+							_windowState = FormWindowState.Normal;	
+						}
+
 						_restoreRect = DesktopBounds;
 						Padding = _currentPadding.Value;
 						break;
