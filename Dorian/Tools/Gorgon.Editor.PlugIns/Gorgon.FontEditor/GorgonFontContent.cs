@@ -91,6 +91,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Texture is scaled.
 		/// </summary>
 		Scaled = 1,
+        /// <summary>
+        /// Texture is scaled, but aspect ratio is kept.
+        /// </summary>
+        ScaledAspect = 2,
 		/// <summary>
 		/// Texture is clipped.
 		/// </summary>

@@ -776,6 +776,12 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+			    if ((ContentManagement.Changed) && (CurrentOpenFile != null))
+                {
+                    // Persist the currently open content back to the file system.
+			        ContentManagement.Save(CurrentOpenFile);
+			    }
+
                 ContentManagement.Load(fileNode.File);
                 CurrentOpenFile = fileNode.File;
                 treeFiles.Refresh();
