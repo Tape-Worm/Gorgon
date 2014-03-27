@@ -682,9 +682,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_rawMouse.Acquired = false;
 			}
 
+            // Turn off any drag operation that is active.
+		    if (_glyphClipper != null)
+		    {
+		        _glyphClipper.DragMode = ClipSelectionDragMode.None;
+		    }
+
 			_content.CurrentState = DrawState.GlyphEdit;
 
 			panelTextures.Cursor = DefaultCursor;
+
+		    panelInnerDisplay.BorderStyle = BorderStyle.None;
 	    }
 
 		/// <summary>
@@ -993,20 +1001,59 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 						transform = result == ConfirmationResult.Yes ? GlyphTextureTransform.Scaled : GlyphTextureTransform.Clipped;
 
+					    if ((transform == GlyphTextureTransform.Scaled)
+                            && (GorgonFontEditorPlugIn.Settings.TextureResizeKeepAspect))
+					    {
+					        transform = GlyphTextureTransform.ScaledAspect;
+					    }
+
+					    Size textureSize = _content.Font.Settings.TextureSize;
+
+                        // Preserve the texture aspect ratio.
+					    if (transform == GlyphTextureTransform.ScaledAspect)
+					    {
+                            float aspect = imageContent.Image.Settings.Width < imageContent.Image.Settings.Height
+                                               ? (float)imageContent.Image.Settings.Width / imageContent.Image.Settings.Height
+                                               : (float)imageContent.Image.Settings.Height / imageContent.Image.Settings.Width;
+
+					        Vector2 newSize = textureSize;
+
+					        if (textureSize.Width > textureSize.Height)
+					        {
+					            newSize.X = newSize.Y * aspect;
+					        }
+					        else
+					        {
+					            newSize.Y = newSize.X * aspect;
+					        }
+
+					        textureSize = (Size)newSize;
+
+                            // Resize or clip the image.
+                            imageContent.Image.Resize(textureSize.Width,
+                                                      textureSize.Height,
+                                                      false,
+                                                      ImageFilter.Point);
+
+                            // We need to expand the image back to the size of the texture.
+                            textureSize = _content.Font.Settings.TextureSize;
+                            result = ConfirmationResult.No;
+					    }
+
 						// Resize or clip the image.
-						imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
-						                          _content.Font.Settings.TextureSize.Height,
+						imageContent.Image.Resize(textureSize.Width,
+						                          textureSize.Height,
 						                          result == ConfirmationResult.No,
 						                          ImageFilter.Point);
 					}
-
-
+                    
 					// Remove any array indices from the texture, we don't need them for font glyphs.
 					var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
 					settings.ArrayCount = 1;
 
 					texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name, imageContent.Image, settings);
 
+                    // Attach the dependency to link the texture to this font.
 					var dependency = new Dependency(textureFile.FullPath, GorgonFontContent.GlyphTextureType)
 					                        {
 						                        DependencyObject = texture
@@ -1099,8 +1146,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_zoomWindow.ZoomWindowFont = _zoomFont;
 
-            UpdateMagnifierWindow();
-
 			numericGlyphTop.Value = _newGlyph.GlyphCoordinates.Top;
 			numericGlyphLeft.Value = _newGlyph.GlyphCoordinates.Left;
 			numericGlyphWidth.Value = _newGlyph.GlyphCoordinates.Width;
@@ -1110,6 +1155,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			checkZoomSnap.Checked = GorgonFontEditorPlugIn.Settings.ZoomWindowSnap;
 
 			EnableClipNumericLimits(true);
+
+            panelInnerDisplay.BorderStyle = BorderStyle.FixedSingle;
+
+            UpdateMagnifierWindow();
 
 			ValidateControls();
 		}
@@ -1978,7 +2027,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
 				|| (_glyphClipper == null)
-				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None))
+				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None)
+                || (_rawKeyboard == null))
 			{
 				return;
 			}
@@ -1995,7 +2045,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if (((_content != null) && (_content.CurrentState != DrawState.ClipGlyph))
 				|| (_glyphClipper == null)
-				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None))
+				|| (_glyphClipper.DragMode != ClipSelectionDragMode.None)
+                || (_rawKeyboard == null))
 			{
 				return;
 			}

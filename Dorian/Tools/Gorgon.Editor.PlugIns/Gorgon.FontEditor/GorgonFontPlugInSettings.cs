@@ -178,12 +178,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			set;
 		}
 
+        /// <summary>
+        /// Property to set or return whether to snap the zoom window to the corners of the editor window, or to follow the cursor.
+        /// </summary>
 		[ApplicationSetting("ZoomWindowSnap", false, typeof(bool), "FontEditor")]
 		public bool ZoomWindowSnap
 		{
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return whether to keep the aspect ratio of the texture being loaded if it needs resizing.
+        /// </summary>
+        [ApplicationSetting("TextureResizeKeepAspect", true, typeof(bool), "FontEditor")]
+	    public bool TextureResizeKeepAspect
+	    {
+	        get;
+	        set;
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -193,6 +206,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public GorgonFontPlugInSettings()
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
+		    TextureResizeKeepAspect = true;
 			ZoomWindowSnap = false;
 			ZoomWindowScaleFactor = 2.0f;
 			ZoomWindowSize = 256;

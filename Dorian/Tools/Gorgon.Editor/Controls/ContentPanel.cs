@@ -257,6 +257,12 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">Event parameters.</param>
 		private void _content_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
 		{
+            // Don't call the event when we're just repainting the property panel.
+		    if (e.Repaint)
+		    {
+		        return;
+		    }
+
 			OnContentPropertyChanged(e.PropertyName, e.Value);
 		}
 
