@@ -75,22 +75,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the ABC kerning advance for the glyph.
+		/// Property to set or return the ABC kerning advance for the glyph.
 		/// </summary>
 		/// <remarks>The A part is the distance added to the current position before placing the glyph, the B part is the width of the glyph and the C part is the distance added to the current position (this is white space on the right of the glyph).</remarks>
 		public Vector3 Advance
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
-		/// Property to return the horizontal and vertical offset of the glyph.
+		/// Property to set or return the horizontal and vertical offset of the glyph.
 		/// </summary>
 		public Vector2 Offset
 		{
 			get;
-			private set;
+			set;
 		}
 
         /// <summary>

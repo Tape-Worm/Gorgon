@@ -202,7 +202,7 @@
     <value>..\Resources\edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE" xml:space="preserve">
-    <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{2}' files.</value>
+    <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{1}' files.</value>
   </data>
   <data name="GOREDIT_VERSION" xml:space="preserve">
     <value>Version: {0} - {1}</value>

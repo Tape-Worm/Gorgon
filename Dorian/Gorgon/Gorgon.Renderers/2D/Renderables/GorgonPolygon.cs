@@ -1211,6 +1211,17 @@ namespace GorgonLibrary.Renderers
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to force an update to the renderable object.
+		/// </summary>
+		/// <remarks>
+		/// Take care when calling this method repeatedly.  It will have a significant performance impact.
+		/// </remarks>
+	    public void Refresh()
+		{
+			_needsTransformUpdate = true;
+		}
+
         /// <summary>
         /// Function to draw the object.
         /// </summary>

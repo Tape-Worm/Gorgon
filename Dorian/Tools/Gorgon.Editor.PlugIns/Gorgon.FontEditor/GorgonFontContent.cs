@@ -78,29 +78,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		ClipGlyph = 6
 	}
 
-	/// <summary>
-	/// Transform state for importing glyph textures.
-	/// </summary>
-	enum GlyphTextureTransform
-	{
-		/// <summary>
-		/// No transform required.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Texture is scaled.
-		/// </summary>
-		Scaled = 1,
-        /// <summary>
-        /// Texture is scaled, but aspect ratio is kept.
-        /// </summary>
-        ScaledAspect = 2,
-		/// <summary>
-		/// Texture is clipped.
-		/// </summary>
-		Clipped = 2
-	}
-
     /// <summary>
     /// The main content interface.
     /// </summary>
@@ -108,10 +85,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentObject
 	{
 		#region Constants.
-		/// <summary>
-		/// The type of transformation to apply to a glyph texture.
-		/// </summary>
-	    public const string GlyphTextureTransformProp = "TransformType";
 		/// <summary>
 		/// The size of the transformed texture.
 		/// </summary>
@@ -356,21 +329,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
             set
             {
-                if (value.Width < 16)
-                    value.Width = 16;
-                if (value.Height < 16)
-                    value.Height = 16;
-                if (value.Width >= Graphics.Textures.MaxWidth)
-                    value.Width = Graphics.Textures.MaxWidth - 1;
-                if (value.Height >= Graphics.Textures.MaxHeight)
-                    value.Height = Graphics.Textures.MaxHeight - 1;
-
 	            if (_settings.TextureSize == value)
 	            {
 		            return;
 	            }
 
+				if ((value.Width < 16)
+					|| (value.Height < 16)
+					|| (value.Width >= Graphics.Textures.MaxWidth)
+					|| (value.Height >= Graphics.Textures.MaxHeight))
+				{
+					throw new NotSupportedException(string.Format(Resources.GORFNT_TEXTURE_SIZE_INVALID,
+																  Graphics.Textures.MaxWidth,
+																  Graphics.Textures.MaxHeight));
+				}
+
 	            _settings.TextureSize = value;
+
 	            CheckTextureSize();
 	            OnContentUpdated();
 	            OnContentPropertyChanged("FontTextureSize", value);
@@ -827,37 +802,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				var newSize = Size.Empty;
-				var transform = GlyphTextureTransform.Clipped;
+				Size newSize = Size.Empty;
 
 				// We need to load the image as transformed (either clipped or stretched).
 				if (string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase))
 				{
-					if (!Enum.TryParse(dependency.Properties[GlyphTextureTransformProp].Value, out transform))
+					var converter = new SizeConverter();
+					var sizeObject = converter.ConvertFromInvariantString(dependency.Properties[GlyphTextureSizeProp].Value);
+
+					if (!(sizeObject is Size))
 					{
-						throw new GorgonException(GorgonResult.CannotRead,
-						                          string.Format(Resources.GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM,
-						                                        dependency.Properties[GlyphTextureTransformProp].Value));
+						throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM);
+						
 					}
 
-					if (transform != GlyphTextureTransform.None)
-					{
-						var converter = new SizeConverter();
-						var sizeObject = converter.ConvertFromInvariantString(dependency.Properties[GlyphTextureSizeProp].Value);
-
-						if (sizeObject != null)
-						{
-							newSize = (Size)sizeObject;
-						}
-					}
-					
+					newSize = (Size)sizeObject;
 				}
 
 				imageContent = ImageEditor.ImportContent(dependency.Path,
 				                                         stream,
 				                                         newSize.Width,
 				                                         newSize.Height,
-				                                         transform == GlyphTextureTransform.Clipped,
+				                                         true,
 				                                         BufferFormat.R8G8B8A8_UIntNormal);
 
 				if (imageContent.Image == null)
