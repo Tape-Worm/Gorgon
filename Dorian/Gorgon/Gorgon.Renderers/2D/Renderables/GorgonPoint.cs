@@ -472,6 +472,17 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Function to force an update to the renderable object.
+		/// </summary>
+		/// <remarks>
+		/// Take care when calling this method repeatedly.  It will have a significant performance impact.
+		/// </remarks>
+		public void Refresh()
+		{
+			// Do nothing since we don't care about redundant calls.
+		}
+
+		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 

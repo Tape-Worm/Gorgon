@@ -306,7 +306,7 @@ The current video device '{0}' has a feature level of {1}.</value>
     <value>Sets the starting outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
   </data>
   <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
-    <value>The transform type '{0}' is not valid for a glyph texture transformation.</value>
+    <value>Could not read the texture size from the dependency information.</value>
   </data>
   <data name="GORFNT_CONTENT_EXTENSION_DESC" xml:space="preserve">
     <value>Gorgon Font File</value>
@@ -385,9 +385,7 @@ Continue?</value>
     <value>The font family to use for the font.</value>
   </data>
   <data name="GORFNT_IMAGE_SIZE_MISMATCH_MSG" xml:space="preserve">
-    <value>The image being loaded has a size of {0}x{1}, but the font requires textures sized to {2}x{3}.  Would you like to resize the image?
-
-Note: If 'No' is selected, then the image will be clipped to the texture dimensions.</value>
+    <value>The image being loaded has a size of {0}x{1}, but the font requires textures sized to {2}x{3}.  Would you like to clip the image to match the font texture size?</value>
   </data>
   <data name="glyph_kerning_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\glyph_kerning_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -522,5 +520,8 @@ Height:{5:####0}</value>
   </data>
   <data name="GORFNT_LABEL_MOUSE_POS" xml:space="preserve">
     <value>Cursor position</value>
+  </data>
+  <data name="GORFNT_TEXTURE_SIZE_INVALID" xml:space="preserve">
+    <value>The minimum texture size is 16x16 and the largest is {0}x{1}.</value>
   </data>
 </root>
