@@ -569,7 +569,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="lineLength">The length of the line of text when alignment is active.</param>
 		/// <param name="cosValue">Cosine value for rotation.</param>
 		/// <param name="sinValue">Sin value for rotation.</param>
-		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, Vector2 textOffset, float lineLength, float cosValue, float sinValue)
+		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, ref Vector2 textOffset, float lineLength, float cosValue, float sinValue)
 		{
 			Vector2 ltCorner = Vector2.Subtract(textOffset, Anchor);
 			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
@@ -667,10 +667,12 @@ namespace GorgonLibrary.Renderers
 
 				for (int i = 0; i < currentLine.Length; i++)
 				{
-					char c = currentLine[i];									
+					char c = currentLine[i];
 
 					if (!_font.Glyphs.Contains(c))
+					{
 						c = _font.Settings.DefaultCharacter;
+					}
 
 					GorgonGlyph glyph = _font.Glyphs[c];
 
@@ -680,44 +682,43 @@ namespace GorgonLibrary.Renderers
 						continue;
 					}
 
+					var vertexPosition = new Vector2(pos.X + glyph.Offset.X, pos.Y + glyph.Offset.Y);
+
 					// Add shadow character.
 					if (_shadowEnabled)
 					{
-						UpdateTransform(glyph, vertexIndex, Vector2.Add(Vector2.Add(pos, glyph.Offset), _shadowOffset), lineLength, cosVal, sinVal);
+						Vector2 shadowPosition;
+
+						Vector2.Add(ref vertexPosition, ref _shadowOffset, out shadowPosition);
+						UpdateTransform(glyph, vertexIndex, ref shadowPosition, lineLength, cosVal, sinVal);
 						vertexIndex += 4;
 						_colliderVertexCount += 4;
 					}
 
-					UpdateTransform(glyph, vertexIndex, Vector2.Add(pos, glyph.Offset), lineLength, cosVal, sinVal);
+					UpdateTransform(glyph, vertexIndex, ref vertexPosition, lineLength, cosVal, sinVal);
 					vertexIndex += 4;
 					_colliderVertexCount += 4;
+
+					float kern = glyph.GlyphCoordinates.Width;
 
 					// Apply kerning pairs.
 					if (_useKerning)
 					{
-						pos.X += glyph.Advance.X + glyph.Advance.Y + outlineOffset.X;
+						pos.X += glyph.Advance.X + glyph.Advance.Y;
+
+						kern = glyph.Advance.Z;
 
 						if ((i < currentLine.Length - 1) && (_font.KerningPairs.Count > 0))
 						{
 							var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
 							if (_font.KerningPairs.ContainsKey(kerning))
 							{
-								pos.X += _font.KerningPairs[kerning];
-							}
-							else
-							{
-								pos.X += glyph.Advance.Z;
+								kern += _font.KerningPairs[kerning];
 							}
 						}
-						else
-						{
-							pos.X += glyph.Advance.Z;
-						}
 					}
-					else
-					{
-						pos.X += glyph.GlyphCoordinates.Width + outlineOffset.X;
-					}
+
+					pos.X += kern + outlineOffset.X;
 				}
 
 				// If we have texture filtering on, this is going to look weird because it's a sub-pixel.
@@ -926,8 +927,8 @@ namespace GorgonLibrary.Renderers
 		/// <returns>The width, pixels, of a single line of text.</returns>
 		private float LineMeasure(string line, float outlineOffset)
 		{
-			bool offsetApplied = false;
 			float size = 0;
+			bool firstChar = true;
 
 			for (int i = 0; i < line.Length; i++)
 			{
@@ -951,38 +952,32 @@ namespace GorgonLibrary.Renderers
 				}
 
 				// Include the initial offset.
-				if (!offsetApplied)
+				if (firstChar)
 				{
-					size += glyph.Offset.X + outlineOffset;
-					offsetApplied = true;
+					size += glyph.Offset.X;
+					firstChar = false;
 				}
 
 				// Apply kerning pairs.
+				float kernOffset = glyph.GlyphCoordinates.Width;
+
 				if (_useKerning)
 				{
-					size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
+					size += glyph.Advance.X + glyph.Advance.Y;
+
+					kernOffset = glyph.Advance.Z;
 
 					if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
 					{
 						var kerning = new GorgonKerningPair(c, line[i + 1]);
 						if (_font.KerningPairs.ContainsKey(kerning))
 						{
-							size += _font.KerningPairs[kerning];
-						}
-						else
-						{
-							size += glyph.Advance.Z;
+							kernOffset += _font.KerningPairs[kerning];
 						}
 					}
-					else
-					{
-						size += glyph.Advance.Z;
-					}
 				}
-				else
-				{
-					size += glyph.GlyphCoordinates.Width + outlineOffset;
-				}
+
+				size += kernOffset + outlineOffset;
 			}
 			return size;
 		}
@@ -1221,6 +1216,11 @@ namespace GorgonLibrary.Renderers
 				{
 					char c = _text[i];
 
+					if (!_font.Glyphs.Contains(c))
+					{
+						c = _font.Settings.DefaultCharacter;
+					}
+
 				    if ((c == '\n')
 				        || (c == '\t')
 				        || (c == ' ')
@@ -1229,10 +1229,6 @@ namespace GorgonLibrary.Renderers
 				        continue;
 				    }
 
-				    if (!_font.Glyphs.Contains(c))
-				    {
-				        c = _font.Settings.DefaultCharacter;
-				    }
 
 				    GorgonGlyph glyph = _font.Glyphs[c];
 
@@ -1256,6 +1252,11 @@ namespace GorgonLibrary.Renderers
 			{
 				char c = _text[i];
 
+				if (!_font.Glyphs.Contains(c))
+				{
+					c = _font.Settings.DefaultCharacter;
+				}
+
 			    if ((c == '\n')
 			        || (c == '\t')
 			        || (c == ' ')
@@ -1264,12 +1265,7 @@ namespace GorgonLibrary.Renderers
 			        continue;
 			    }
 
-			    if (!_font.Glyphs.Contains(c))
-			    {
-			        c = _font.Settings.DefaultCharacter;
-			    }
-
-			    GorgonGlyph glyph = _font.Glyphs[c];
+				GorgonGlyph glyph = _font.Glyphs[c];
 
 			    // Change to the current texture.
 			    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))

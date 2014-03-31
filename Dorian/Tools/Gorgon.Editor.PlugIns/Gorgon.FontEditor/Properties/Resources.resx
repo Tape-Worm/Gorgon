@@ -524,4 +524,10 @@ Height:{5:####0}</value>
   <data name="GORFNT_TEXTURE_SIZE_INVALID" xml:space="preserve">
     <value>The minimum texture size is 16x16 and the largest is {0}x{1}.</value>
   </data>
+  <data name="PROP_USEKERNING_DESC" xml:space="preserve">
+    <value>Sets whether to retrieve and use kerning pair information when generating the font.</value>
+  </data>
+  <data name="PROP_USEKERNING_NAME" xml:space="preserve">
+    <value>Use Kerning Pairs</value>
+  </data>
 </root>

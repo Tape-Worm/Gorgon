@@ -187,15 +187,9 @@ namespace Fonts
 												   FontStyle = FontStyle.Bold,
 												   Size = 24.0f,
 												   Brush = textBrush,
-												   KerningPairs =
-												   {
-													   {
-														   new GorgonKerningPair('T', 'e'), -10
-													   }
-												   },
 												   Glyphs =
 												   {
-														new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Vector2(3, -8), new Vector3(-7, 104, 0))
+														new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Point(-3, -8), new Vector3(-7, 104, 0))
 												   }
 			                                   });
 

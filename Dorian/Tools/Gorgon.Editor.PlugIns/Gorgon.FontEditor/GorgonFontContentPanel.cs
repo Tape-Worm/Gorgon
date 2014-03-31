@@ -763,16 +763,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 
 				_content.Font.Settings.Glyphs.Add(_newGlyph);
-				_content.UpdateFont();
+				_content.UpdateFontGlyphs();
                 _content.DisableProperty("FontTextureSize", true);
 
 				_selectedGlyph = _newGlyph;
 
-				numericOffsetX.Value = (decimal)_newGlyph.Offset.X;
-				numericOffsetY.Value = (decimal)_newGlyph.Offset.Y;
-				numericAdvanceA.Value = (decimal)_newGlyph.Advance.X;
-				labelAdvanceB.Text = _newGlyph.Advance.Y.ToString("0", CultureInfo.CurrentCulture);
-				numericAdvanceC.Value = (decimal)_newGlyph.Advance.Z;
+				GetGlyphAdvancementAndOffset();
 
 				EndGlyphClipping();
 			}
@@ -982,7 +978,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					currentGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
                 }
 
-                _content.UpdateFont();
+                _content.UpdateFontGlyphs();
                 _content.DisableProperty("FontTextureSize", _content.Font.Settings.Glyphs.Count > 0);
             }
             catch (Exception ex)
@@ -1551,6 +1547,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            panelGlyphAdvance.Visible = _content.CurrentState == DrawState.GlyphEdit
 	                                        || _content.CurrentState == DrawState.ToGlyphEdit;
+
+	            numericOffsetX.Enabled =
+		            numericOffsetY.Enabled =
+		            numericAdvanceA.Enabled = numericAdvanceC.Enabled = _content.CurrentState == DrawState.GlyphEdit
+		                                                                && _selectedGlyph != null;
+
 	            panelGlyphClip.Visible = _content.CurrentState == DrawState.ClipGlyph;
 
 				buttonEditGlyph.Enabled = _selectedGlyph != null;
@@ -1561,8 +1563,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 }
 
                 buttonGlyphTools.Enabled =
-                    buttonGlyphKern.Enabled =
                     buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
+
+	            buttonGlyphKern.Enabled = buttonGlyphTools.Enabled && _content.UseKerningPairs;
 
 
 	            menuItemLoadGlyphImage.Visible =
@@ -2058,7 +2061,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                                     _selectedGlyph.Advance.Y,
 				                                     (float)numericAdvanceC.Value);
 
-				OnContentPropertyChanged("SelectedGlyphAdvance", _selectedGlyph.Advance);
+				_content.UpdateFontGlyphAdvance(_selectedGlyph.Advance);
 
 				_text.Refresh();
 			}
@@ -2087,9 +2090,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				_selectedGlyph.Offset = new Vector2((float)numericOffsetX.Value, (float)numericOffsetY.Value);
+				_selectedGlyph.Offset = new Point((int)numericOffsetX.Value, (int)numericOffsetY.Value);
 
-				OnContentPropertyChanged("SelectedGlyphOffset", _selectedGlyph.Offset);
+				_content.UpdateFontGlyphOffset(_selectedGlyph.Offset);
 
 				_text.Refresh();
 			}
@@ -2495,8 +2498,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnContentPropertyChanged(propertyName, value);
 
-			// Refresh the font display.
-			TextureDisplayResize(this, EventArgs.Empty);
+			switch (propertyName)
+			{
+				// Skip the resize functionality when updating the glyph advancement, offset and kerning.
+				case "SelectedGlyphAdvance":
+				case "SelectedGlyphOffset":
+					break;
+				default:
+					TextureDisplayResize(this, EventArgs.Empty);
+					break;
+			}
+
+			GetGlyphAdvancementAndOffset();
 		}
 
 		/// <summary>
@@ -2950,7 +2963,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			scale = GetGlyphEditScale(panelTextures.ClientSize, glyphDimensions);
 
-			var textureRegion = new Rectangle((int)_textureRegion.X,
+			var textureRegion = new Rectangle((int)_textureRegion.X ,
 			                                  (int)_textureRegion.Y,
 			                                  (int)(glyphDimensions.X * scale).Min(panelTextures.ClientSize.Width),
 											  (int)(glyphDimensions.Y * scale).Min(panelTextures.ClientSize.Height));
@@ -3037,6 +3050,44 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_sortedTextures = _textureSprites.OrderBy(item => item.Scale.X);
 			}
 		}
+
+		/// <summary>
+		/// Function to retrieve the current glyph advancement and offset values.
+		/// </summary>
+	    private void GetGlyphAdvancementAndOffset()
+	    {
+			numericOffsetX.ValueChanged -= numericOffsetX_ValueChanged;
+			numericOffsetY.ValueChanged -= numericOffsetX_ValueChanged;
+			numericAdvanceA.ValueChanged -= numericAdvanceA_ValueChanged;
+			numericAdvanceC.ValueChanged -= numericAdvanceA_ValueChanged;
+
+			try
+			{
+				if (_selectedGlyph == null)
+				{
+					numericOffsetX.Value = 0;
+					numericOffsetY.Value = 0;
+					numericAdvanceA.Value = 0;
+					labelAdvanceB.Text = @"0";
+					numericAdvanceC.Value = 0;
+					return;
+				}
+
+				// Set the numeric values.
+				numericOffsetX.Value = _selectedGlyph.Offset.X.Min(2048).Max(-2048);
+				numericOffsetY.Value = _selectedGlyph.Offset.Y.Min(2048).Max(-2048);
+				numericAdvanceA.Value = (decimal)_selectedGlyph.Advance.X.Min(2048).Max(-2048);
+				labelAdvanceB.Text = _selectedGlyph.Advance.Y.ToString("0", CultureInfo.CurrentCulture);
+				numericAdvanceC.Value = (decimal)_selectedGlyph.Advance.Z.Min(2048).Max(-2048);
+			}
+			finally
+			{
+				numericOffsetX.ValueChanged += numericOffsetX_ValueChanged;
+				numericOffsetY.ValueChanged += numericOffsetX_ValueChanged;
+				numericAdvanceA.ValueChanged += numericAdvanceA_ValueChanged;
+				numericAdvanceC.ValueChanged += numericAdvanceA_ValueChanged;
+			}
+	    }
 
 	    /// <summary>
 		/// Function to initialize the editor transition.
@@ -3144,12 +3195,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				panelTextures.Resize += TextureDisplayResize;
 				UpdateTextureRegion(_selectedGlyph.Texture);
 
-				// Set the numeric values.
-				numericOffsetX.Value = (decimal)_selectedGlyph.Offset.X.Min(_content.FontTextureSize.Width).Max(0);
-				numericOffsetY.Value = (decimal)_selectedGlyph.Offset.Y.Min(_content.FontTextureSize.Width).Max(0);
-				numericAdvanceA.Value = (decimal)_selectedGlyph.Advance.X.Min(_content.FontTextureSize.Width).Max(0);
-				labelAdvanceB.Text = _selectedGlyph.Advance.Y.ToString("0", CultureInfo.CurrentCulture);
-				numericAdvanceC.Value = (decimal)_selectedGlyph.Advance.Z.Min(_content.FontTextureSize.Width).Max(0);
+				GetGlyphAdvancementAndOffset();
 			}
 			else
 			{
@@ -3214,17 +3260,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_glyphSprite.Draw();
 
-			var aLine = new RectangleF(((_selectedGlyph.Offset.X - (_selectedGlyph.Advance.X > 0 ? _selectedGlyph.Advance.X : (_selectedGlyph.Advance.X + 1))) * scale) + region.Left,
+			var aLine = new RectangleF(((((_selectedGlyph.Advance.X > 0 ? _selectedGlyph.Advance.X : (_selectedGlyph.Advance.X + 1))) + _selectedGlyph.Offset.X) * scale) + region.Left,
 			                           (region.Bottom - scale),
 			                           (_selectedGlyph.Advance.X > 0 ? _selectedGlyph.Advance.X : -_selectedGlyph.Advance.X) * scale,
 			                           scale);
 
-			var bLine = new RectangleF((_selectedGlyph.Offset.X * scale) + region.Left,
+			var bLine = new RectangleF(region.Left + (_selectedGlyph.Offset.X * scale),
 									   (region.Bottom - scale),
 									   (_selectedGlyph.Advance.Y) * scale,
 									   scale);
 
-			var cLine = new RectangleF(((_selectedGlyph.Offset.X + _selectedGlyph.Advance.Y) * scale) + region.Left,
+			var cLine = new RectangleF(((_selectedGlyph.Advance.Y + _selectedGlyph.Offset.X) * scale) + region.Left,
 									   (region.Bottom - scale),
 									   (_selectedGlyph.Advance.Z) * scale,
 									   scale);

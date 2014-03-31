@@ -85,9 +85,11 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the horizontal and vertical offset of the glyph.
+		/// Property to set or return the offset of the glyph.
 		/// </summary>
-		public Vector2 Offset
+		/// <remarks>The offset of a glyph is the distance from the glyph black box (i.e. the bounds of the glyph pixels) to the actual starting point of the glyph.  For example, if 'g' has an offset of 
+		/// 4, 6 and we change the offset to 3, 4 then the 'g' glyph will be shifted left by 1 pixel and up by 2 pixels when rendering.</remarks>
+		public Point Offset
 		{
 			get;
 			set;
@@ -134,12 +136,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="character">The character that the glyph represents.</param>
 		/// <param name="texture">The texture that the glyph can be found on.</param>
 		/// <param name="glyphCoordinates">Coordinates on the texture to indicate where the glyph is stored.</param>
-		/// <param name="glyphOffset">Vertical offset of the glyph.</param>
+		/// <param name="offset">The <see cref="Offset"/> of the glyph.</param>
 		/// <param name="glyphAdvancing">Advancement kerning data for the glyph.</param>
 		/// <remarks>The <paramref name="glyphCoordinates"/> parameter is in pixel coordinates (i.e. 0 .. Width/Height).</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).
 		/// </exception>
-		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Vector2 glyphOffset, Vector3 glyphAdvancing)
+		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Point offset, Vector3 glyphAdvancing)
 		{
 			GorgonDebug.AssertNull(texture, "texture");
 
@@ -150,7 +152,7 @@ namespace GorgonLibrary.Graphics
 												glyphCoordinates.Right / (float)texture.Settings.Width,
 												glyphCoordinates.Bottom / (float)texture.Settings.Height);
 			Texture = texture;
-			Offset = glyphOffset;
+			Offset = offset;
 			Advance = glyphAdvancing;
 		    IsExternalTexture = true;
 		}

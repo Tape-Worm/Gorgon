@@ -1224,6 +1224,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets whether to retrieve and use kerning pair information when generating the font..
+        /// </summary>
+        internal static string PROP_USEKERNING_DESC {
+            get {
+                return ResourceManager.GetString("PROP_USEKERNING_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use Kerning Pairs.
+        /// </summary>
+        internal static string PROP_USEKERNING_NAME {
+            get {
+                return ResourceManager.GetString("PROP_USEKERNING_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap remove_16x16 {
