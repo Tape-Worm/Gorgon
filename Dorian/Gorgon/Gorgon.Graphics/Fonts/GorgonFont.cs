@@ -736,7 +736,7 @@ namespace GorgonLibrary.Graphics
 				    var glyph = new GorgonGlyph(glyphChar,
 				                                texture,
 				                                chunk.ReadRectangle(),
-				                                chunk.Read<Vector2>(),
+				                                new Point(chunk.ReadInt32(), chunk.ReadInt32()), 
 				                                chunk.Read<Vector3>())
 				                {
 				                    IsExternalTexture = !_internalTextures.Contains(texture)
@@ -775,7 +775,7 @@ namespace GorgonLibrary.Graphics
 						var glyph = new GorgonGlyph(glyphChar,
 													texture,
 													chunk.ReadRectangle(),
-													chunk.Read<Vector2>(),
+													new Point(chunk.ReadInt32(), chunk.ReadInt32()), 
 													chunk.Read<Vector3>());
 						Settings.Glyphs.Add(glyph);
 					}
@@ -784,33 +784,78 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Read optional kerning information.
-			if (!chunk.HasChunk("KERNDATA"))
-			{
-				return;
-			}
+			int kernCount;
 
-			chunk.Begin("KERNDATA");
-			int kernCount = chunk.ReadInt32();
-			for (int i = 0; i < kernCount; i++)
+			Dictionary<GorgonKerningPair, int> kerningPairs = null;
+
+			if (chunk.HasChunk("KERNDATA"))
 			{
-				Settings.KerningPairs.Add(new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar()), chunk.ReadInt32());
+				kerningPairs = new Dictionary<GorgonKerningPair, int>();
+				chunk.Begin("KERNDATA");
+				kernCount = chunk.ReadInt32();
+				for (int i = 0; i < kernCount; i++)
+				{
+					kerningPairs.Add(new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar()), chunk.ReadInt32());
+				}
+				chunk.End();
 			}
-			chunk.End();
 
 			// Check for custom kerning information metadata.
-			if (!chunk.HasChunk("CUSTKERN"))
+			if (chunk.HasChunk("CUSTKERN"))
+			{
+				if (kerningPairs == null)
+				{
+					kerningPairs = new Dictionary<GorgonKerningPair, int>();	
+				}
+
+				Settings.KerningPairs.Clear();
+
+				// Restore the custom meta data.
+				chunk.Begin("CUSTKERN");
+				kernCount = chunk.ReadInt32();
+				for (int i = 0; i < kernCount; ++i)
+				{
+					var kerningPair = new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar());
+
+					kerningPairs[kerningPair] = Settings.KerningPairs[kerningPair] = chunk.ReadInt32();
+				}
+				chunk.End();
+			}
+
+			if ((kerningPairs != null) && (Settings.UseKerningPairs))
+			{
+				KerningPairs = new ReadOnlyDictionary<GorgonKerningPair, int>(kerningPairs);
+			}
+
+			// Check for custom advancements.
+			if (chunk.HasChunk("CUSTABCS"))
+			{
+				Settings.ABCWidths.Clear();
+
+				chunk.Begin("CUSTABCS");
+				int abcCount = chunk.ReadInt32();
+
+				for (int i = 0; i < abcCount; ++i)
+				{
+					Settings.ABCWidths.Add(chunk.ReadChar(), chunk.Read<Vector3>());
+				}
+				chunk.End();
+			}
+
+			// Check for custom vertical offsets.
+			if (!chunk.HasChunk("CUSTVOFF"))
 			{
 				return;
 			}
 
-			Settings.KerningPairs.Clear();
+			Settings.Offsets.Clear();
 
-			// Restore the custom meta data.
-			chunk.Begin("CUSTKERN");
-			kernCount = chunk.ReadInt32();
-			for (int i = 0; i < kernCount; ++i)
+			chunk.Begin("CUSTVOFF");
+			int offsetCount = chunk.ReadInt32();
+
+			for (int i = 0; i < offsetCount; ++i)
 			{
-				Settings.KerningPairs.Add(new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar()), chunk.ReadInt32());
+				Settings.Offsets.Add(chunk.ReadChar(), new Point(chunk.ReadInt32(), chunk.ReadInt32()));
 			}
 			chunk.End();
 		}
@@ -991,34 +1036,62 @@ namespace GorgonLibrary.Graphics
 				}
 
 				// Write out optional kerning information.
-				if (KerningPairs.Count == 0)
+				if (Settings.UseKerningPairs)
+				{
+					if (KerningPairs.Count > 0)
+					{
+						chunk.Begin("KERNDATA");
+						chunk.WriteInt32(KerningPairs.Count);
+						foreach (var kernInfo in KerningPairs)
+						{
+							chunk.WriteChar(kernInfo.Key.LeftCharacter);
+							chunk.WriteChar(kernInfo.Key.RightCharacter);
+							chunk.WriteInt32(kernInfo.Value);
+						}
+						chunk.End();
+					}
+
+					// Write custom kerning information if it exists.
+					if (Settings.KerningPairs.Count > 0)
+					{
+						chunk.Begin("CUSTKERN");
+						chunk.WriteInt32(Settings.KerningPairs.Count);
+						foreach (var kernPair in Settings.KerningPairs)
+						{
+							chunk.WriteChar(kernPair.Key.LeftCharacter);
+							chunk.WriteChar(kernPair.Key.RightCharacter);
+							chunk.WriteInt32(kernPair.Value);
+						}
+						chunk.End();
+					}
+				}
+
+				if (Settings.ABCWidths.Count > 0)
+				{
+					chunk.Begin("CUSTABCS");
+					chunk.WriteInt32(Settings.ABCWidths.Count);
+					foreach (var abc in Settings.ABCWidths)
+					{
+						chunk.WriteChar(abc.Key);
+						chunk.WriteFloat(abc.Value.X);
+						chunk.WriteFloat(abc.Value.Y);
+						chunk.WriteFloat(abc.Value.Z);
+					}
+					chunk.End();
+				}
+
+				if (Settings.Offsets.Count == 0)
 				{
 					return;
 				}
 
-				chunk.Begin("KERNDATA");
-				chunk.WriteInt32(KerningPairs.Count);
-				foreach (var kernInfo in KerningPairs)
+				chunk.Begin("CUSTVOFF");
+				chunk.WriteInt32(Settings.Offsets.Count);
+				foreach (var offset in Settings.Offsets)
 				{
-					chunk.WriteChar(kernInfo.Key.LeftCharacter);
-					chunk.WriteChar(kernInfo.Key.RightCharacter);
-					chunk.WriteInt32(kernInfo.Value);
-				}
-				chunk.End();
-
-				// Write custom kerning information if it exists.
-				if ((Settings.KerningPairs == null) || (Settings.KerningPairs.Count == 0))
-				{
-					return;
-				}
-
-				chunk.Begin("CUSTKERN");
-				chunk.WriteInt32(Settings.KerningPairs.Count);
-				foreach (var kernPair in Settings.KerningPairs)
-				{
-					chunk.WriteChar(kernPair.Key.LeftCharacter);
-					chunk.WriteChar(kernPair.Key.RightCharacter);
-					chunk.WriteInt32(kernPair.Value);
+					chunk.WriteChar(offset.Key);
+					chunk.WriteInt32(offset.Value.X);
+					chunk.WriteInt32(offset.Value.Y);
 				}
 				chunk.End();
 			}
@@ -1077,28 +1150,29 @@ namespace GorgonLibrary.Graphics
 
 				IList<KERNINGPAIR> kerningPairs = Win32API.GetKerningPairs();
 
-				// Copy the custom kern settings.
-				if (Settings.KerningPairs != null)
-				{
-					foreach (var customKern in Settings.KerningPairs)
-					{
-						newKernData[customKern.Key] = customKern.Value;
-					}
-				}
-
 				foreach (var pair in kerningPairs.Where(item => item.KernAmount != 0))
 				{
 					var newPair = new GorgonKerningPair(Convert.ToChar(pair.First), Convert.ToChar(pair.Second));
 
-					if (!allowedCharacters.All(item => item != newPair.LeftCharacter && item != newPair.RightCharacter))
+					if ((!allowedCharacters.Contains(newPair.LeftCharacter)) || 
+						(!allowedCharacters.Contains(newPair.RightCharacter)))
 					{
 						continue;
 					}
 
-					if (!KerningPairs.ContainsKey(newPair))
+					newKernData[newPair] = pair.KernAmount;
+				}
+
+				// Copy the custom kern settings.
+				foreach (var customKern in Settings.KerningPairs)
+				{
+					if ((!allowedCharacters.Contains(customKern.Key.LeftCharacter)) ||
+						(!allowedCharacters.Contains(customKern.Key.RightCharacter)))
 					{
-						newKernData[newPair] = pair.KernAmount;
+						continue;
 					}
+
+					newKernData[customKern.Key] = customKern.Value;
 				}
 			}
 			finally
@@ -1355,14 +1429,31 @@ namespace GorgonLibrary.Graphics
 							
 						    graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charRect.Location, size), GraphicsUnit.Pixel);
 
-							ABC advanceData;
-							charABC.TryGetValue(c, out advanceData);
+							// If we've defined a vertical offset override, then use it.
+							if (Settings.Offsets.ContainsKey(c))
+							{
+								charRect.Location = Settings.Offsets[c];
+							}
 
-						    Glyphs.Add(new GorgonGlyph(c,
+							Vector3 advance;
+
+							// Get the ABC override if one exists.
+							if (Settings.ABCWidths.ContainsKey(c))
+							{
+								advance = Settings.ABCWidths[c];
+							}
+							else
+							{
+								ABC advanceData;
+								charABC.TryGetValue(c, out advanceData);
+								advance = new Vector3(advanceData.A, advanceData.B, advanceData.C);
+							}
+
+							Glyphs.Add(new GorgonGlyph(c,
 						                               currentTexture,
 						                               new Rectangle(location, size),
 						                               charRect.Location,
-						                               new Vector3(advanceData.A, advanceData.B, advanceData.C))
+						                               advance)
 						               {
 						                   IsExternalTexture = false
 						               });
@@ -1373,7 +1464,7 @@ namespace GorgonLibrary.Graphics
 						    Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter,
 						                                currentTexture,
 						                                new Rectangle(0, 0, size.Width, size.Height),
-						                                Vector2.Zero,
+						                                Point.Empty,
 						                                Vector3.Zero)
 						                {
 						                    IsExternalTexture = false

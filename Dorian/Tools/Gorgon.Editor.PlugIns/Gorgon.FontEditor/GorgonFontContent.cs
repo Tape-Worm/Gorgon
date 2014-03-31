@@ -33,12 +33,14 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using SlimMath;
 using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -495,6 +497,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
         }
 
+		/// <summary>
+		/// Property to set or return whether to use kerning pairs when generating the font or not.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDisplayName(typeof(Resources), "PROP_USEKERNING_NAME"),
+		LocalDescription(typeof(Resources), "PROP_USEKERNING_DESC"),
+		DefaultValue(true)]
+		public bool UseKerningPairs
+	    {
+		    get
+		    {
+			    return _settings.UseKerningPairs;
+		    }
+		    set
+		    {
+			    if (_settings.UseKerningPairs == value)
+			    {
+				    return;
+			    }
+
+			    _settings.UseKerningPairs = value;
+				OnContentUpdated();
+			    OnContentPropertyChanged("UseKerningPairs", value);
+		    }
+	    }
+
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
@@ -848,13 +876,31 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
 	    /// <summary>
-        /// Function to update the font object.
+        /// Function to update the glyph regions/textures in the font object.
         /// </summary>
-        public void UpdateFont()
+        public void UpdateFontGlyphs()
         {
             OnContentUpdated();
             OnContentPropertyChanged("Glyphs", Font.Settings.Glyphs);
         }
+
+		/// <summary>
+		/// Function to update a font glyph advancement.
+		/// </summary>
+		/// <param name="advance">The advancement that was updated.</param>
+	    public void UpdateFontGlyphAdvance(Vector3 advance)
+	    {
+			OnContentPropertyChanged("SelectedGlyphAdvance", advance);
+	    }
+
+		/// <summary>
+		/// Function to update a font glyph offset.
+		/// </summary>
+		/// <param name="offset">Offset to update.</param>
+	    public void UpdateFontGlyphOffset(Point offset)
+	    {
+		    OnContentPropertyChanged("SelectedGlyphOffset", offset);
+	    }
 
 		/// <summary>
 		/// Function to retrieve a thumbnail image for the content plug-in.
