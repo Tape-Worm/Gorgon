@@ -407,10 +407,12 @@ namespace GorgonLibrary.Animation
 		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
-			if (KeyFrames.Times.ContainsKey(time))
-			{
-				return KeyFrames.Times[time];
-			}
+		    IKeyFrame result;
+
+		    if (KeyFrames.Times.TryGetValue(time, out result))
+		    {
+		        return result;
+		    }
 
 			if (time >= KeyFrames[KeyFrames.Count - 1].Time)
 			{

@@ -40,7 +40,6 @@ namespace GorgonLibrary.Collections
 	{
 		#region Variables.
 		private readonly Dictionary<string, T> _list;			// Internal collection to hold our objects.
-		private readonly StringComparison _caseSensitivity;		// Case sensivity flag for key names.
 		#endregion
 
 		#region Properties.
@@ -108,7 +107,7 @@ namespace GorgonLibrary.Collections
 		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
 		    }
 
-		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToUpperInvariant() : value.Name, value);
+		    _list.Add(value.Name, value);
 		}
 
 		/// <summary>
@@ -117,8 +116,10 @@ namespace GorgonLibrary.Collections
 		/// <param name="items">IEnumerable containing the items to copy.</param>
 		protected virtual void AddItems(IEnumerable<T> items)
 		{
-			foreach (T item in items)
-				AddItem(item);
+		    foreach (T item in items)
+		    {
+		        AddItem(item);
+		    }
 		}
 
 		/// <summary>
@@ -128,7 +129,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-			return !KeysAreCaseSensitive ? _list[name.ToUpperInvariant()] : _list[name];
+			return _list[name];
 		}
 
 		/// <summary>
@@ -138,16 +139,9 @@ namespace GorgonLibrary.Collections
 		/// <param name="value">Value to set to the item.</param>
 		protected virtual void SetItem(string name, T value)
 		{
-			if (string.Equals(name, value.Name, _caseSensitivity))
+			if (string.Equals(name, value.Name, !KeysAreCaseSensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
 			{
-				if (KeysAreCaseSensitive)
-				{
-					_list[name] = value;
-				}
-				else
-				{
-					_list[name.ToUpperInvariant()] = value;
-				}
+			    _list[name] = value;
 			}
 			else
 			{
@@ -162,7 +156,7 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to remove.</param>
 		protected virtual void RemoveItem(string name)
 		{
-		    _list.Remove(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
+		    _list.Remove(name);
 		}
 
 	    /// <summary>
@@ -189,7 +183,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-			return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
+			return _list.ContainsKey(name);
 		}
 
 		/// <summary>
@@ -228,9 +222,11 @@ namespace GorgonLibrary.Collections
 		/// <param name="caseSensitive">TRUE if the key names are case sensitive, FALSE if not.</param>
 		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
 		{
-			_list = new Dictionary<string, T>(53);
-			KeysAreCaseSensitive = caseSensitive;
-			_caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+		    _list = caseSensitive
+		                ? new Dictionary<string, T>()
+		                : new Dictionary<string, T>(new GorgonCaseInsensitiveComparer());
+
+		    KeysAreCaseSensitive = caseSensitive;
 		}
 		#endregion
 
@@ -360,14 +356,17 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		public bool TryGetValue(string key, out T value)
 		{
-			if (!Contains(key))
-			{
-				value = default(T);
-				return false;
-			}
+		    if (key == null)
+		    {
+		        throw new ArgumentNullException("key");
+		    }
 
-			value = GetItem(key);
-			return true;
+		    if (string.IsNullOrWhiteSpace(key))
+		    {
+		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "key");
+		    }
+
+		    return _list.TryGetValue(key, out value);
 		}
 
 		/// <summary>

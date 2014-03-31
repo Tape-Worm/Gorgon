@@ -37,9 +37,8 @@ namespace GorgonLibrary.Collections
 	public abstract class GorgonBaseNamedObjectCollection<T>
 		: IList<T>, IReadOnlyList<T>
 		where T : INamedObject
-	{
-		#region Variables.
-		private readonly StringComparison _caseSensitivity;		// Case sensitivity for key names.
+    {
+        #region Variables.
 		private readonly SortedList<string, T> _list;			// Internal collection to hold our objects.
 		#endregion
 
@@ -96,7 +95,7 @@ namespace GorgonLibrary.Collections
 		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
 		    }
 
-		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToUpperInvariant() : value.Name, value);
+		    _list.Add(value.Name, value);
 		}
 
 		/// <summary>
@@ -118,7 +117,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-		    return !KeysAreCaseSensitive ? _list[name.ToUpperInvariant()] : _list[name];
+		    return _list[name];
 		}
 
 	    /// <summary>
@@ -127,24 +126,19 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to set.</param>
 		/// <param name="value">Value to set to the item.</param>
 		protected virtual void SetItem(string name, T value)
-		{
-			if (string.Equals(name, value.Name, _caseSensitivity))
-			{
-				if (KeysAreCaseSensitive)
-				{
-					_list[name] = value;
-				}
-				else
-				{
-					_list[name.ToUpperInvariant()] = value;
-				}
-			}
-			else
-			{
-				RemoveItem(name);
-				AddItem(value);
-			}
-		}
+	    {
+	        if (string.Equals(name,
+	                          value.Name,
+	                          !KeysAreCaseSensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+	        {
+	            _list[name] = value;
+	        }
+	        else
+	        {
+	            RemoveItem(name);
+	            AddItem(value);
+	        }
+	    }
 
 		/// <summary>
 		/// Function to remove an item from the collection.
@@ -161,7 +155,7 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to remove.</param>
 		protected virtual void RemoveItem(string name)
 		{
-		    _list.Remove(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
+		    _list.Remove(name);
 		}
 
 	    /// <summary>
@@ -203,7 +197,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-		    return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
+		    return _list.ContainsKey(name);
 		}
 
 	    /// <summary>
@@ -217,6 +211,27 @@ namespace GorgonLibrary.Collections
 			
 			return array;
 		}
+
+        /// <summary>
+        /// Function to retrieve a value based on the name provided.
+        /// </summary>
+        /// <param name="name">Name of the item to retrieve.</param>
+        /// <param name="value">Item to retrieve.</param>
+        /// <returns>TRUE if the item was found, FALSE if not.</returns>
+	    public bool TryGetValue(string name, out T value)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return _list.TryGetValue(name, out value);
+        }
 		#endregion
 
 		#region Constructor
@@ -226,11 +241,13 @@ namespace GorgonLibrary.Collections
 		/// <param name="caseSensitive">TRUE if the key names are case sensitive, FALSE if not.</param>
 		protected GorgonBaseNamedObjectCollection(bool caseSensitive)
 		{
-			_list = new SortedList<string, T>();
-			KeysAreCaseSensitive = caseSensitive;
-			_caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
+		    _list = caseSensitive
+		                ? new SortedList<string, T>()
+		                : new SortedList<string, T>(new GorgonCaseInsensitiveComparer());
+		    KeysAreCaseSensitive = caseSensitive;
 		}
-		#endregion
+
+	    #endregion
 
 		#region IList<T> Members
 		/// <summary>
