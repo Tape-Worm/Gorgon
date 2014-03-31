@@ -69,12 +69,11 @@ namespace GorgonLibrary.Input.WinForms
 		        return;
 		    }
 
-		    if (!_mapper.KeyMapping.ContainsKey(keyEventArgs.KeyCode))
+		    KeyboardKeys keyCode;
+            if (!_mapper.KeyMapping.TryGetValue(keyEventArgs.KeyCode, out keyCode))
 		    {
 		        return;
 		    }
-		    
-		    KeyboardKeys keyCode = _mapper.KeyMapping[keyEventArgs.KeyCode];
 
 		    // Check for modifiers.
 			switch(keyCode)

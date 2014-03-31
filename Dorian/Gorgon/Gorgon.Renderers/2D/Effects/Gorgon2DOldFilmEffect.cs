@@ -368,18 +368,20 @@ namespace GorgonLibrary.Renderers
 		private void GenerateRandomNoise()
 		{
 			int textureSize = 128;
+		    object parameter;
 
-			if ((Parameters.ContainsKey("TextureSize")) && (Parameters["TextureSize"] != null))
-			{
-				var size = (int)Parameters["TextureSize"];
-				
-				if (size > 16)
-				{
-					textureSize = size;
-				}
-			}
-		    
-			using(var image = new GorgonImageData(new GorgonTexture2DSettings
+		    if ((Parameters.TryGetValue("TextureSize", out parameter))
+		        && (parameter != null))
+		    {
+		        var size = (int)parameter;
+
+		        if (size > 16)
+		        {
+		            textureSize = size;
+		        }
+		    }
+
+		    using(var image = new GorgonImageData(new GorgonTexture2DSettings
 			{
 				Width = textureSize,
 				Height = textureSize,

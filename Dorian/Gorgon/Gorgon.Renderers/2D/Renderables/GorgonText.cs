@@ -479,12 +479,14 @@ namespace GorgonLibrary.Renderers
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _text.Length; i++)
 			{
-				if (!_font.Glyphs.Contains(_text[i]))
+			    GorgonGlyph glyph;
+
+				if (!_font.Glyphs.TryGetValue(_text[i], out glyph))
 				{
 					continue;
 				}
 
-				_currentTexture = _font.Glyphs[_text[i]].Texture;
+				_currentTexture = glyph.Texture;
 				break;
 			}
 
@@ -669,13 +671,13 @@ namespace GorgonLibrary.Renderers
 				for (int i = 0; i < currentLine.Length; i++)
 				{
 					char c = currentLine[i];
+				    GorgonGlyph glyph;
 
-					if (!_font.Glyphs.Contains(c))
+					if (!_font.Glyphs.TryGetValue(c, out glyph))
 					{
 						c = _font.Settings.DefaultCharacter;
+                        _font.Glyphs.TryGetValue(c, out glyph);
 					}
-
-					GorgonGlyph glyph = _font.Glyphs[c];
 
 					if (c == ' ')
 					{
@@ -714,9 +716,10 @@ namespace GorgonLibrary.Renderers
 				        }
 
 				        var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
-				        if (_font.KerningPairs.ContainsKey(kerning))
+				        int kernAmount;
+				        if (_font.KerningPairs.TryGetValue(kerning, out kernAmount))
 				        {
-				            pos.X += _font.KerningPairs[kerning];
+				            pos.X += kernAmount;
 				        }
 				    }
 				    else
@@ -819,12 +822,13 @@ namespace GorgonLibrary.Renderers
 					continue;
 				}
 
-				if (!_font.Glyphs.Contains(character))
+			    GorgonGlyph glyph;
+
+				if (!_font.Glyphs.TryGetValue(character, out glyph))
 				{
 					character = _font.Settings.DefaultCharacter;
+                    _font.Glyphs.TryGetValue(character, out glyph);
 				}
-
-				GorgonGlyph glyph = _font.Glyphs[character];
 
 				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
 				if (glyph.GlyphCoordinates.Width > region.Width)
@@ -845,10 +849,11 @@ namespace GorgonLibrary.Renderers
 							if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
 							{
 								var kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
+							    int kernAmount;
 
-								if (_font.KerningPairs.ContainsKey(kernPair))
+								if (_font.KerningPairs.TryGetValue(kernPair, out kernAmount))
 								{
-									pos += _font.KerningPairs[kernPair];
+									pos += kernAmount;
 								}
 							}
 						}
@@ -935,13 +940,13 @@ namespace GorgonLibrary.Renderers
 			for (int i = 0; i < line.Length; i++)
 			{
 				char c = line[i];
+			    GorgonGlyph glyph;
 
-				if (!_font.Glyphs.Contains(c))
+				if (!_font.Glyphs.TryGetValue(c, out glyph))
 				{
 					c = _font.Settings.DefaultCharacter;
+                    _font.Glyphs.TryGetValue(c, out glyph);
 				}
-
-				GorgonGlyph glyph = _font.Glyphs[c];
 
 				switch (c)
 				{
@@ -973,9 +978,11 @@ namespace GorgonLibrary.Renderers
 			        }
 
 			        var kerning = new GorgonKerningPair(c, line[i + 1]);
-			        if (_font.KerningPairs.ContainsKey(kerning))
+			        int kernAmount;
+
+			        if (_font.KerningPairs.TryGetValue(kerning, out kernAmount))
 			        {
-			            size += _font.KerningPairs[kerning];
+			            size += kernAmount;
 			        }
 			    }
 			    else
@@ -1213,17 +1220,14 @@ namespace GorgonLibrary.Renderers
 				_needsShadowUpdate = false;
 			}
 
+            GorgonGlyph glyph;
+
 			if (_shadowEnabled)
 			{
 			    // ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < _text.Length; i++)
 				{
 					char c = _text[i];
-
-					if (!_font.Glyphs.Contains(c))
-					{
-						c = _font.Settings.DefaultCharacter;
-					}
 
 				    if ((c == '\n')
 				        || (c == '\t')
@@ -1233,8 +1237,11 @@ namespace GorgonLibrary.Renderers
 				        continue;
 				    }
 
-
-				    GorgonGlyph glyph = _font.Glyphs[c];
+                    if (!_font.Glyphs.TryGetValue(c, out glyph))
+                    {
+                        c = _font.Settings.DefaultCharacter;
+                        _font.Glyphs.TryGetValue(c, out glyph);
+                    }
 
 				    // Change to the current texture.
 				    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
@@ -1256,11 +1263,6 @@ namespace GorgonLibrary.Renderers
 			{
 				char c = _text[i];
 
-				if (!_font.Glyphs.Contains(c))
-				{
-					c = _font.Settings.DefaultCharacter;
-				}
-
 			    if ((c == '\n')
 			        || (c == '\t')
 			        || (c == ' ')
@@ -1269,7 +1271,11 @@ namespace GorgonLibrary.Renderers
 			        continue;
 			    }
 
-				GorgonGlyph glyph = _font.Glyphs[c];
+                if (!_font.Glyphs.TryGetValue(c, out glyph))
+                {
+                    c = _font.Settings.DefaultCharacter;
+                    _font.Glyphs.TryGetValue(c, out glyph);
+                }
 
 			    // Change to the current texture.
 			    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))

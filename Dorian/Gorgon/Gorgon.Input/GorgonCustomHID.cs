@@ -121,9 +121,11 @@ namespace GorgonLibrary.Input
 			GorgonDebug.AssertParamString(propertyName, "propertyName");
             GorgonDebug.AssertNull(Data[propertyName], "propertyName");
 
-		    if (Data.Contains(propertyName))
+		    GorgonCustomHIDProperty property;
+
+		    if (Data.TryGetValue(propertyName, out property))
 		    {
-		        Data[propertyName].SetValue(value);
+		        property.SetValue(value);
 		    }
 		    else
 		    {

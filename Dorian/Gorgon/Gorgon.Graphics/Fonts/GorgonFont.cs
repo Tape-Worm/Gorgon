@@ -1429,24 +1429,22 @@ namespace GorgonLibrary.Graphics
 						    graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charRect.Location, size), GraphicsUnit.Pixel);
 
 							// If we've defined a vertical offset override, then use it.
-							if (Settings.Offsets.ContainsKey(c))
+						    Point offset;
+
+                            if (Settings.Offsets.TryGetValue(c, out offset))
 							{
-								charRect.Location = Settings.Offsets[c];
+								charRect.Location = offset;
 							}
 
 							int advance;
 
 							// Get the ABC override if one exists.
-							if (Settings.Advances.ContainsKey(c))
+							if (!Settings.Advances.TryGetValue(c, out advance))
 							{
-								advance = Settings.Advances[c];
-							}
-							else
-							{
-								ABC advanceData;
-								charABC.TryGetValue(c, out advanceData);
-								advance = advanceData.A + (int)advanceData.B + advanceData.C;
-							}
+                                ABC advanceData;
+                                charABC.TryGetValue(c, out advanceData);
+                                advance = advanceData.A + (int)advanceData.B + advanceData.C;
+                            }
 
 							Glyphs.Add(new GorgonGlyph(c,
 						                               currentTexture,

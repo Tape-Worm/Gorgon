@@ -93,9 +93,14 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The error code info.</returns>
 		public static D3DError GetError(long code)
 		{
-		    return _errors.ContainsKey(code)
-		               ? _errors[code]
-		               : new D3DError(code, code.ToString(CultureInfo.InvariantCulture), "Unknown");
+		    D3DError result;
+
+		    if (!_errors.TryGetValue(code, out result))
+		    {
+		        result = new D3DError(code, code.ToString(CultureInfo.InvariantCulture), "Unknown");
+		    }
+
+		    return result;
 		}
 	    #endregion
 

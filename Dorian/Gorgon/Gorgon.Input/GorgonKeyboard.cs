@@ -617,12 +617,14 @@ namespace GorgonLibrary.Input
 			{
 				get
 				{
-				    if (!_keys.ContainsKey(key))
+				    KeyCharMap result;
+
+				    if (!_keys.TryGetValue(key, out result))
 				    {
                         throw new KeyNotFoundException(string.Format(Resources.GORINP_KEYBOARD_KEY_NO_MAPPING, key));
 				    }
 
-				    return _keys[key];
+				    return result;
 				}
 				set
 				{
@@ -679,6 +681,17 @@ namespace GorgonLibrary.Input
 			{
 				_keys.Clear();
 			}
+
+            /// <summary>
+            /// Function to attempt to retrieve a key character mapping from the list.
+            /// </summary>
+            /// <param name="key">Key to look up.</param>
+            /// <param name="value">Value in the list.</param>
+            /// <returns>TRUE if the value was found, FALSE if not.</returns>
+		    public bool TryGetValue(KeyboardKeys key, out KeyCharMap value)
+		    {
+		        return _keys.TryGetValue(key, out value);
+		    }
 			#endregion
 
 			#region Constructor.
@@ -700,6 +713,7 @@ namespace GorgonLibrary.Input
 			/// </returns>
 			public IEnumerator<KeyCharMap> GetEnumerator()
 			{
+			    // ReSharper disable once LoopCanBeConvertedToQuery
 			    foreach (KeyValuePair<KeyboardKeys, KeyCharMap> value in _keys)
 			    {
 			        yield return value.Value;
@@ -838,23 +852,18 @@ namespace GorgonLibrary.Input
 			{
 				get
 				{
-				    if (!_keys.ContainsKey(key))
+				    KeyState result;
+
+				    if (!_keys.TryGetValue(key, out result))
 				    {
 				        _keys.Add(key, KeyState.Up);
 				    }
 
-				    return _keys[key];
+				    return result;
 				}
 				set
 				{
-				    if (!_keys.ContainsKey(key))
-				    {
-				        _keys.Add(key, value);
-				    }
-				    else
-				    {
-				        _keys[key] = value;
-				    }
+				    _keys[key] = value;
 				}
 			}
 			#endregion
@@ -996,6 +1005,7 @@ namespace GorgonLibrary.Input
             /// </returns>
             public IEnumerator<KeyState> GetEnumerator()
             {
+                // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (KeyValuePair<KeyboardKeys, KeyState> state in _keys)
                 {
                     yield return state.Value;
@@ -1145,7 +1155,9 @@ namespace GorgonLibrary.Input
 		        return;
 		    }
 
-		    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    KeyCharMap character;
+            
+            KeyMappings.TryGetValue(key, out character);
 		    var e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 
 		    KeyDown(this, e);
@@ -1163,7 +1175,9 @@ namespace GorgonLibrary.Input
 		        return;
 		    }
 
-		    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    KeyCharMap character;
+                
+            KeyMappings.TryGetValue(key, out character);
 		    var e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 
 		    KeyUp(this, e);

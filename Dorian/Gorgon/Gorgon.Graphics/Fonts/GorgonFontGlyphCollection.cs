@@ -121,6 +121,17 @@ namespace GorgonLibrary.Graphics
 
 			return _list.IndexOfValue(glyph);
 		}
+
+        /// <summary>
+        /// Function to attempt to retrieve a glyph from the list.
+        /// </summary>
+        /// <param name="character">Character for the glyph.</param>
+        /// <param name="glyph">The glyph in the list.</param>
+        /// <returns>TRUE if found, FALSE if not.</returns>
+	    public bool TryGetValue(char character, out GorgonGlyph glyph)
+        {
+            return _list.TryGetValue(character, out glyph);
+        }
 		#endregion
 
 		#region Constructor/Destructor.
