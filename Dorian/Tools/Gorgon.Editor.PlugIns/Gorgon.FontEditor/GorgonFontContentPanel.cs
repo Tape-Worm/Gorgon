@@ -744,7 +744,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                            _newGlyph.Texture,
 				                            Rectangle.Truncate(_glyphClipper.ClipRegion),
 				                            _newGlyph.Offset,
-				                            new Vector3(_newGlyph.Advance.X, _glyphClipper.ClipRegion.Width, _newGlyph.Advance.Z));
+                                            (int)_glyphClipper.ClipRegion.Width);
 
 				// If we've customized this glyph before, remove it from the customization list.
 				GorgonGlyph existingCustomGlyph =
@@ -1650,7 +1650,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		                                                    .Replace("&", "&&");
                         break;
                     default:
-					    labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: A={10}, B={11}, C={12}",
+					    labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: {10}",
 						    Resources.GORFNT_LABEL_SELECTED_GLYPH,
 						    _selectedGlyph.Character,
 						    ((ushort)_selectedGlyph.Character).FormatHex(),
@@ -1661,9 +1661,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						    _selectedGlyph.GlyphCoordinates.Width,
 						    _selectedGlyph.GlyphCoordinates.Height,
 						    Resources.GORFNT_LABEL_ADVANCE,
-						    _selectedGlyph.Advance.X,
-						    _selectedGlyph.Advance.Y,
-						    _selectedGlyph.Advance.Z).Replace("&", "&&");
+						    _selectedGlyph.Advance).Replace("&", "&&");
 		                _hoverGlyph = null;
                         break;
                 }
@@ -1680,7 +1678,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     separatorGlyphInfo.Visible = true;
                 }
 
-                labelHoverGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: A={10}, B={11}, C={12}",
+                labelHoverGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: {10}",
 					Resources.GORFNT_LABEL_HOVER_GLYPH,
                     _hoverGlyph.Character,
                     ((ushort)_hoverGlyph.Character).FormatHex(),
@@ -1691,9 +1689,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     _hoverGlyph.GlyphCoordinates.Width,
                     _hoverGlyph.GlyphCoordinates.Height,
 					Resources.GORFNT_LABEL_ADVANCE,
-                    _hoverGlyph.Advance.X,
-                    _hoverGlyph.Advance.Y,
-					_hoverGlyph.Advance.Z).Replace("&", "&&");
+                    _hoverGlyph.Advance).Replace("&", "&&");
             }
             else
             {
@@ -2057,9 +2053,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				_selectedGlyph.Advance = new Vector3((float)numericAdvanceA.Value,
-				                                     _selectedGlyph.Advance.Y,
-				                                     (float)numericAdvanceC.Value);
+			    _selectedGlyph.Advance = (int)numericAdvanceA.Value;
 
 				_content.UpdateFontGlyphAdvance(_selectedGlyph.Advance);
 
@@ -3076,9 +3070,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Set the numeric values.
 				numericOffsetX.Value = _selectedGlyph.Offset.X.Min(2048).Max(-2048);
 				numericOffsetY.Value = _selectedGlyph.Offset.Y.Min(2048).Max(-2048);
-				numericAdvanceA.Value = (decimal)_selectedGlyph.Advance.X.Min(2048).Max(-2048);
-				labelAdvanceB.Text = _selectedGlyph.Advance.Y.ToString("0", CultureInfo.CurrentCulture);
-				numericAdvanceC.Value = (decimal)_selectedGlyph.Advance.Z.Min(2048).Max(-2048);
+				numericAdvanceA.Value = _selectedGlyph.Advance.Min(2048).Max(-2048);
 			}
 			finally
 			{
@@ -3260,24 +3252,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_glyphSprite.Draw();
 
-			var aLine = new RectangleF(((((_selectedGlyph.Advance.X > 0 ? _selectedGlyph.Advance.X : (_selectedGlyph.Advance.X + 1))) + _selectedGlyph.Offset.X) * scale) + region.Left,
-			                           (region.Bottom - scale),
-			                           (_selectedGlyph.Advance.X > 0 ? _selectedGlyph.Advance.X : -_selectedGlyph.Advance.X) * scale,
-			                           scale);
-
-			var bLine = new RectangleF(region.Left + (_selectedGlyph.Offset.X * scale),
+			var advanceLine = new RectangleF(region.Left + (_selectedGlyph.Offset.X * scale),
 									   (region.Bottom - scale),
-									   (_selectedGlyph.Advance.Y) * scale,
+									   _selectedGlyph.Advance * scale,
 									   scale);
 
-			var cLine = new RectangleF(((_selectedGlyph.Advance.Y + _selectedGlyph.Offset.X) * scale) + region.Left,
-									   (region.Bottom - scale),
-									   (_selectedGlyph.Advance.Z) * scale,
-									   scale);
-
-			_content.Renderer.Drawing.FilledRectangle(aLine, new GorgonColor(Color.Red, 0.5f));
-			_content.Renderer.Drawing.FilledRectangle(bLine, new GorgonColor(Color.Green, 0.5f));
-			_content.Renderer.Drawing.FilledRectangle(cLine, new GorgonColor(Color.Blue, 0.5f));
+			_content.Renderer.Drawing.FilledRectangle(advanceLine, new GorgonColor(Color.Green, 0.5f));
 		}
 
 		/// <summary>

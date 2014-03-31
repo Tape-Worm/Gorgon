@@ -304,19 +304,19 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return ABC advancement widths for the glyphs in the font.
+		/// Property to return custom advancement widths for the glyph.
 		/// </summary>
 		/// <remarks>
-		/// Use this to define custom ABC glyph advancements.  Fonts with ABC widths previously defined will use the advancement amounts in this list instead.
+		/// Use this to define custom glyph width advancements.  Fonts with advancement widths previously defined will use the advancement amounts in this list instead.
 		/// </remarks>
-		public Dictionary<char, Vector3> ABCWidths
+		public Dictionary<char, int> Advances
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the offsets for the glyphs in the font.
+		/// Property to return custom offsets for the glyphs in the font.
 		/// </summary>
 		/// <remarks>Use this to define custom horizontal and vertical offsets for glyphs in the font.  This offset defines the empty space between the top and left of a glyph and the 
 		/// top and left of the glyph black box (i.e. the area containing the pixels) region.  For example, if the glyph for 'g' is offset vertically by 6 pixels and horizontally by 4 pixels, then 
@@ -366,7 +366,7 @@ namespace GorgonLibrary.Graphics
 		{
 			Glyphs = new List<GorgonGlyph>();
 			KerningPairs = new Dictionary<GorgonKerningPair, int>();
-			ABCWidths = new Dictionary<char, Vector3>();
+			Advances = new Dictionary<char, int>();
 			Offsets = new Dictionary<char, Point>();
 			
 			UseKerningPairs = true;

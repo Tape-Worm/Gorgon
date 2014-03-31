@@ -736,8 +736,8 @@ namespace GorgonLibrary.Graphics
 				    var glyph = new GorgonGlyph(glyphChar,
 				                                texture,
 				                                chunk.ReadRectangle(),
-				                                new Point(chunk.ReadInt32(), chunk.ReadInt32()), 
-				                                chunk.Read<Vector3>())
+				                                new Point(chunk.ReadInt32(), chunk.ReadInt32()),
+                                                chunk.ReadInt32())
 				                {
 				                    IsExternalTexture = !_internalTextures.Contains(texture)
 				                };
@@ -776,7 +776,7 @@ namespace GorgonLibrary.Graphics
 													texture,
 													chunk.ReadRectangle(),
 													new Point(chunk.ReadInt32(), chunk.ReadInt32()), 
-													chunk.Read<Vector3>());
+													chunk.ReadInt32());
 						Settings.Glyphs.Add(glyph);
 					}
 				}
@@ -830,14 +830,14 @@ namespace GorgonLibrary.Graphics
 			// Check for custom advancements.
 			if (chunk.HasChunk("CUSTABCS"))
 			{
-				Settings.ABCWidths.Clear();
+				Settings.Advances.Clear();
 
 				chunk.Begin("CUSTABCS");
 				int abcCount = chunk.ReadInt32();
 
 				for (int i = 0; i < abcCount; ++i)
 				{
-					Settings.ABCWidths.Add(chunk.ReadChar(), chunk.Read<Vector3>());
+                    Settings.Advances.Add(chunk.ReadChar(), chunk.ReadInt32());
 				}
 				chunk.End();
 			}
@@ -1028,8 +1028,9 @@ namespace GorgonLibrary.Graphics
 						{
 							chunk.WriteChar(glyph.Character);
 							chunk.WriteRectangle(glyph.GlyphCoordinates);
-							chunk.Write(glyph.Offset);
-							chunk.Write(glyph.Advance);
+							chunk.WriteInt32(glyph.Offset.X);
+                            chunk.WriteInt32(glyph.Offset.Y);
+							chunk.WriteInt32(glyph.Advance);
 						}
 					}
 					chunk.End();
@@ -1066,16 +1067,14 @@ namespace GorgonLibrary.Graphics
 					}
 				}
 
-				if (Settings.ABCWidths.Count > 0)
+				if (Settings.Advances.Count > 0)
 				{
 					chunk.Begin("CUSTABCS");
-					chunk.WriteInt32(Settings.ABCWidths.Count);
-					foreach (var abc in Settings.ABCWidths)
+					chunk.WriteInt32(Settings.Advances.Count);
+					foreach (var abc in Settings.Advances)
 					{
 						chunk.WriteChar(abc.Key);
-						chunk.WriteFloat(abc.Value.X);
-						chunk.WriteFloat(abc.Value.Y);
-						chunk.WriteFloat(abc.Value.Z);
+						chunk.WriteInt32(abc.Value);
 					}
 					chunk.End();
 				}
@@ -1435,18 +1434,18 @@ namespace GorgonLibrary.Graphics
 								charRect.Location = Settings.Offsets[c];
 							}
 
-							Vector3 advance;
+							int advance;
 
 							// Get the ABC override if one exists.
-							if (Settings.ABCWidths.ContainsKey(c))
+							if (Settings.Advances.ContainsKey(c))
 							{
-								advance = Settings.ABCWidths[c];
+								advance = Settings.Advances[c];
 							}
 							else
 							{
 								ABC advanceData;
 								charABC.TryGetValue(c, out advanceData);
-								advance = new Vector3(advanceData.A, advanceData.B, advanceData.C);
+								advance = advanceData.A + (int)advanceData.B + advanceData.C;
 							}
 
 							Glyphs.Add(new GorgonGlyph(c,
@@ -1465,7 +1464,7 @@ namespace GorgonLibrary.Graphics
 						                                currentTexture,
 						                                new Rectangle(0, 0, size.Width, size.Height),
 						                                Point.Empty,
-						                                Vector3.Zero)
+						                                size.Width)
 						                {
 						                    IsExternalTexture = false
 						                });

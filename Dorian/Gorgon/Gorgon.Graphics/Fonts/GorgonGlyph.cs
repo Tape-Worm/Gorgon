@@ -75,10 +75,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the ABC kerning advance for the glyph.
+		/// Property to set or return the horizontal advance for the glyph.
 		/// </summary>
-		/// <remarks>The A part is the distance added to the current position before placing the glyph, the B part is the width of the glyph and the C part is the distance added to the current position (this is white space on the right of the glyph).</remarks>
-		public Vector3 Advance
+		/// <remarks>
+        /// This value defines the exact width of the glyph and is a total of the left bearing (A), black box width (B), and right bearing (C) for a glyph.
+		/// </remarks>
+		public int Advance
 		{
 			get;
 			set;
@@ -137,11 +139,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="texture">The texture that the glyph can be found on.</param>
 		/// <param name="glyphCoordinates">Coordinates on the texture to indicate where the glyph is stored.</param>
 		/// <param name="offset">The <see cref="Offset"/> of the glyph.</param>
-		/// <param name="glyphAdvancing">Advancement kerning data for the glyph.</param>
+		/// <param name="advance">Advancement width for the glyph.</param>
 		/// <remarks>The <paramref name="glyphCoordinates"/> parameter is in pixel coordinates (i.e. 0 .. Width/Height).</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).
 		/// </exception>
-		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Point offset, Vector3 glyphAdvancing)
+		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Point offset, int advance)
 		{
 			GorgonDebug.AssertNull(texture, "texture");
 
@@ -153,7 +155,7 @@ namespace GorgonLibrary.Graphics
 												glyphCoordinates.Bottom / (float)texture.Settings.Height);
 			Texture = texture;
 			Offset = offset;
-			Advance = glyphAdvancing;
+			Advance = advance;
 		    IsExternalTexture = true;
 		}
 		#endregion
