@@ -888,7 +888,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Function to update a font glyph advancement.
 		/// </summary>
 		/// <param name="advance">The advancement that was updated.</param>
-	    public void UpdateFontGlyphAdvance(Vector3 advance)
+	    public void UpdateFontGlyphAdvance(int advance)
 	    {
 			OnContentPropertyChanged("SelectedGlyphAdvance", advance);
 	    }

@@ -643,15 +643,16 @@ namespace GorgonLibrary.Renderers
 		{
 			int vertexIndex = 0;
 			Vector2 pos = Vector2.Zero;
-			Vector2 outlineOffset = Vector2.Zero;
+			float outlineOffset = 0;
 			float angle = _angle.Radians();						// Angle in radians.
 			float cosVal = angle.Cos();							// Cached cosine.
 			float sinVal = angle.Sin();							// Cached sine.
 
-			if (_font.HasOutline)
-			{
-				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
-			}
+		    if ((_font.Settings.OutlineSize > 0)
+		        && (_font.Settings.OutlineColor1.Alpha > 0))
+		    {
+		        outlineOffset = _font.Settings.OutlineSize;
+		    }
 
 			_colliderVertexCount = 0;
 			// ReSharper disable once ForCanBeConvertedToForeach
@@ -662,7 +663,7 @@ namespace GorgonLibrary.Renderers
 
 				if ((_alignment != Alignment.UpperLeft) && (_textRect.HasValue))
 				{
-					lineLength = LineMeasure(_lines[line], outlineOffset.X);
+					lineLength = LineMeasure(_lines[line], outlineOffset);
 				}
 
 				for (int i = 0; i < currentLine.Length; i++)
@@ -682,9 +683,9 @@ namespace GorgonLibrary.Renderers
 						continue;
 					}
 
-					var vertexPosition = new Vector2(pos.X + glyph.Offset.X, pos.Y + glyph.Offset.Y);
+                    var vertexPosition = new Vector2(pos.X + glyph.Offset.X, pos.Y + glyph.Offset.Y);
 
-					// Add shadow character.
+				    // Add shadow character.
 					if (_shadowEnabled)
 					{
 						Vector2 shadowPosition;
@@ -699,33 +700,36 @@ namespace GorgonLibrary.Renderers
 					vertexIndex += 4;
 					_colliderVertexCount += 4;
 
-					float kern = glyph.GlyphCoordinates.Width;
+				    pos.X += outlineOffset;
 
 					// Apply kerning pairs.
-					if (_useKerning)
-					{
-						pos.X += glyph.Advance.X + glyph.Advance.Y;
+				    if (_useKerning)
+				    {
+				        pos.X += glyph.Advance;
 
-						kern = glyph.Advance.Z;
+				        if ((i == currentLine.Length - 1)
+				            || (_font.KerningPairs.Count == 0))
+				        {
+				            continue;
+				        }
 
-						if ((i < currentLine.Length - 1) && (_font.KerningPairs.Count > 0))
-						{
-							var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
-							if (_font.KerningPairs.ContainsKey(kerning))
-							{
-								kern += _font.KerningPairs[kerning];
-							}
-						}
-					}
-
-					pos.X += kern + outlineOffset.X;
+				        var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
+				        if (_font.KerningPairs.ContainsKey(kerning))
+				        {
+				            pos.X += _font.KerningPairs[kerning];
+				        }
+				    }
+				    else
+				    {
+				        pos.X += glyph.GlyphCoordinates.Width;
+				    }
 				}
 
 				// If we have texture filtering on, this is going to look weird because it's a sub-pixel.
 				// In order to get the font to look right on a second line, we need to use point filtering.
 				// We -could- use a Floor here, but then movement becomes very jerky.  We're better off turning
 				// off texture filtering even just for an increase in speed.
-				pos.Y += (_font.FontHeight + outlineOffset.Y) * _lineSpace;
+				pos.Y += (_font.FontHeight + _font.Settings.OutlineSize) * _lineSpace;
 				pos.X = 0;
 			}
 
@@ -834,21 +838,19 @@ namespace GorgonLibrary.Renderers
 						pos += glyph.GlyphCoordinates.Width - 1;
 						break;
 					default:
-						float kernValue = glyph.Advance.Z;
-
 						if (_useKerning)
 						{
+                            pos += glyph.Advance + outlineSize;
+
 							if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
 							{
 								var kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
 
 								if (_font.KerningPairs.ContainsKey(kernPair))
 								{
-									kernValue = _font.KerningPairs[kernPair];
+									pos += _font.KerningPairs[kernPair];
 								}
 							}
-
-							pos += glyph.Advance.X + glyph.Advance.Y + kernValue + outlineSize;
 						}
 						else
 						{
@@ -958,26 +960,28 @@ namespace GorgonLibrary.Renderers
 					firstChar = false;
 				}
 
-				// Apply kerning pairs.
-				float kernOffset = glyph.GlyphCoordinates.Width;
+			    size += outlineOffset;
 
-				if (_useKerning)
-				{
-					size += glyph.Advance.X + glyph.Advance.Y;
+			    if (_useKerning)
+			    {
+			        size += glyph.Advance;
 
-					kernOffset = glyph.Advance.Z;
+			        if ((i == line.Length - 1)
+			            || (_font.KerningPairs.Count == 0))
+			        {
+			            continue;
+			        }
 
-					if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
-					{
-						var kerning = new GorgonKerningPair(c, line[i + 1]);
-						if (_font.KerningPairs.ContainsKey(kerning))
-						{
-							kernOffset += _font.KerningPairs[kerning];
-						}
-					}
-				}
-
-				size += kernOffset + outlineOffset;
+			        var kerning = new GorgonKerningPair(c, line[i + 1]);
+			        if (_font.KerningPairs.ContainsKey(kerning))
+			        {
+			            size += _font.KerningPairs[kerning];
+			        }
+			    }
+			    else
+			    {
+			        size += glyph.GlyphCoordinates.Width;
+			    }
 			}
 			return size;
 		}

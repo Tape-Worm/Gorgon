@@ -189,7 +189,7 @@ namespace Fonts
 												   Brush = textBrush,
 												   Glyphs =
 												   {
-														new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Point(-3, -8), new Vector3(-7, 104, 0))
+														new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Point(-3, -8), 97)
 												   }
 			                                   });
 
