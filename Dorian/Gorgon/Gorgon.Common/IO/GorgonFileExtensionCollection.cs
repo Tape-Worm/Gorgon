@@ -125,60 +125,6 @@ namespace GorgonLibrary.IO
 			RemoveItem(extension);
 		}
 
-        /// <summary>
-        /// Function to retrieve all extensions and descriptions as a file dialog filter string.
-        /// </summary>
-        /// <returns>The file dialog filter string.</returns>
-	    public string GetFilters()
-	    {
-	        var result = new StringBuilder(512);
-
-	        foreach (var extension in this)
-	        {
-	            if (result.Length > 0)
-	            {
-	                result.Append("|");
-	            }
-
-	            result.Append(extension.GetFilter());
-	        }
-
-	        return result.ToString();
-	    }
-
-        /// <summary>
-        /// Function to return the all files extension filter.
-        /// </summary>
-        /// <returns>The all files extension filter.</returns>
-	    public string GetAllFiles()
-        {
-            return "All Files (*.*)|*.*";
-        }
-
-        /// <summary>
-        /// Function to retrieve all extensions with a single description as a filter.
-        /// </summary>
-        /// <param name="description">Description to apply to all filters.</param>
-        /// <returns>The file dialog filter string.</returns>
-	    public string GetExtensionsFilter(string description)
-	    {
-            var result = new StringBuilder(512);
-
-            foreach (var extension in this)
-            {
-                if (result.Length > 0)
-                {
-                    result.Append(";");
-                }
-
-                result.Append(extension.GetFilter());
-            }
-
-            result.AppendFormat("{0}|{1}", description ?? "Unknown Files", result);
-
-            return result.ToString();
-        }
-
 		/// <summary>
 		/// Function to clear all items from the list.
 		/// </summary>

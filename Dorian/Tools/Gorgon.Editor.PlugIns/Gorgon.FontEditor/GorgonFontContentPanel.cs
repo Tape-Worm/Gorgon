@@ -1550,7 +1550,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            numericOffsetX.Enabled =
 		            numericOffsetY.Enabled =
-		            numericAdvanceA.Enabled = numericAdvanceC.Enabled = _content.CurrentState == DrawState.GlyphEdit
+		            numericGlyphAdvance.Enabled = _content.CurrentState == DrawState.GlyphEdit
 		                                                                && _selectedGlyph != null;
 
 	            panelGlyphClip.Visible = _content.CurrentState == DrawState.ClipGlyph;
@@ -1562,10 +1562,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     buttonEditGlyph.Checked = false;
                 }
 
-                buttonGlyphTools.Enabled =
-                    buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
+                buttonGlyphTools.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
 
 	            buttonGlyphKern.Enabled = buttonGlyphTools.Enabled && _content.UseKerningPairs;
+
+	            buttonResetGlyphAdvance.Enabled = numericGlyphAdvance.Enabled && _selectedGlyph != null &&
+	                                              _content.Font.Settings.Advances.ContainsKey(_selectedGlyph.Character);
+
+				buttonResetGlyphOffset.Enabled = numericGlyphAdvance.Enabled && _selectedGlyph != null &&
+												  _content.Font.Settings.Offsets.ContainsKey(_selectedGlyph.Character);
 
 
 	            menuItemLoadGlyphImage.Visible =
@@ -2039,11 +2044,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
-		/// Handles the ValueChanged event of the numericAdvanceA control.
+		/// Handles the ValueChanged event of the numericGlyphAdvance control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void numericAdvanceA_ValueChanged(object sender, EventArgs e)
+		private void numericGlyphAdvance_ValueChanged(object sender, EventArgs e)
 		{
 			if ((_content == null)
 				|| (_content.CurrentState != DrawState.GlyphEdit))
@@ -2053,9 +2058,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-			    _selectedGlyph.Advance = (int)numericAdvanceA.Value;
+			    _selectedGlyph.Advance = (int)numericGlyphAdvance.Value;
+				_content.Font.Settings.Advances[_selectedGlyph.Character] = _selectedGlyph.Advance;
 
-				_content.UpdateFontGlyphAdvance(_selectedGlyph.Advance);
+				_content.UpdateFontGlyphAdvance(_selectedGlyph.Advance, false);
 
 				_text.Refresh();
 			}
@@ -2085,8 +2091,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			try
 			{
 				_selectedGlyph.Offset = new Point((int)numericOffsetX.Value, (int)numericOffsetY.Value);
+				_content.Font.Settings.Offsets[_selectedGlyph.Character] = _selectedGlyph.Offset;
 
-				_content.UpdateFontGlyphOffset(_selectedGlyph.Offset);
+				_content.UpdateFontGlyphOffset(_selectedGlyph.Offset, false);
 
 				_text.Refresh();
 			}
@@ -2457,7 +2464,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			Text = Resources.GORFNT_TITLE;
 			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
-			buttonGlyphSizeSpace.Text = Resources.GORFNT_BUTTON_EDIT_ADVANCE_TIP;
 			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
 			buttonGlyphTools.ToolTipText = Resources.GORFNT_BUTTON_GLYPH_TOOLS;
 			menuItemSetGlyph.Text = Resources.GORFNT_MENU_SET_GLYPH;
@@ -2666,6 +2672,72 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			finally
 			{
 				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonResetGlyphOffset control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonResetGlyphOffset_Click(object sender, EventArgs e)
+		{
+			if ((_content == null)
+				|| (_content.CurrentState != DrawState.GlyphEdit)
+				|| (_selectedGlyph == null)
+				|| (!_content.Font.Settings.Offsets.ContainsKey(_selectedGlyph.Character)))
+			{
+				return;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				_content.Font.Settings.Offsets.Remove(_selectedGlyph.Character);
+				_content.UpdateFontGlyphOffset(Point.Empty, true);
+				_text.Refresh();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonResetGlyphAdvance control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonResetGlyphAdvance_Click(object sender, EventArgs e)
+		{
+			if ((_content == null)
+				|| (_content.CurrentState != DrawState.GlyphEdit)
+				|| (_selectedGlyph == null)
+				|| (!_content.Font.Settings.Advances.ContainsKey(_selectedGlyph.Character)))
+			{
+				return;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				_content.Font.Settings.Advances.Remove(_selectedGlyph.Character);
+				_content.UpdateFontGlyphAdvance(0, true);
+				_text.Refresh();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
 			}
 		}
 
@@ -3052,8 +3124,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    {
 			numericOffsetX.ValueChanged -= numericOffsetX_ValueChanged;
 			numericOffsetY.ValueChanged -= numericOffsetX_ValueChanged;
-			numericAdvanceA.ValueChanged -= numericAdvanceA_ValueChanged;
-			numericAdvanceC.ValueChanged -= numericAdvanceA_ValueChanged;
+			numericGlyphAdvance.ValueChanged -= numericGlyphAdvance_ValueChanged;
 
 			try
 			{
@@ -3061,23 +3132,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					numericOffsetX.Value = 0;
 					numericOffsetY.Value = 0;
-					numericAdvanceA.Value = 0;
-					labelAdvanceB.Text = @"0";
-					numericAdvanceC.Value = 0;
+					numericGlyphAdvance.Value = 0;
 					return;
 				}
 
 				// Set the numeric values.
 				numericOffsetX.Value = _selectedGlyph.Offset.X.Min(2048).Max(-2048);
 				numericOffsetY.Value = _selectedGlyph.Offset.Y.Min(2048).Max(-2048);
-				numericAdvanceA.Value = _selectedGlyph.Advance.Min(2048).Max(-2048);
+				numericGlyphAdvance.Value = _selectedGlyph.Advance.Min(2048).Max(-2048);
 			}
 			finally
 			{
 				numericOffsetX.ValueChanged += numericOffsetX_ValueChanged;
 				numericOffsetY.ValueChanged += numericOffsetX_ValueChanged;
-				numericAdvanceA.ValueChanged += numericAdvanceA_ValueChanged;
-				numericAdvanceC.ValueChanged += numericAdvanceA_ValueChanged;
+				numericGlyphAdvance.ValueChanged += numericGlyphAdvance_ValueChanged;
 			}
 	    }
 
@@ -3247,6 +3315,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(panelTextures.ClientSize));
 
 			_glyphBackgroundSprite.Draw();
+
+			region.Width = (int)((_selectedGlyph.Offset.X + _selectedGlyph.Advance) * scale);
 			
 			_content.Renderer.Drawing.FilledRectangle(region, new GorgonColor(Color.Gray, 0.35f));
 

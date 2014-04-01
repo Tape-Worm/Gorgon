@@ -177,15 +177,6 @@ namespace GorgonLibrary.IO
 			return 281.GenerateHash(Extension.ToUpperInvariant());
 		}
 
-        /// <summary>
-        /// Function to retrieve a file dialog filter string.
-        /// </summary>
-        /// <returns>The file dialog filter string.</returns>
-	    public string GetFilter()
-	    {
-	        return string.Format("{0}|*.{1}", Description ?? "Unknown file", Extension);
-	    }
-
 		/// <summary>
 		/// Returns a <see cref="System.String" /> that represents this instance.
 		/// </summary>

@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using GorgonLibrary.Collections;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -195,6 +196,7 @@ namespace GorgonLibrary.Editor
 		{
 			var allTypes = new StringBuilder(256);
 			var filter = new StringBuilder(256);
+			var extensionList = new StringBuilder(512);
 			int currentIndex = 0;
 
 			dialog.Filter = string.Empty;
@@ -204,46 +206,61 @@ namespace GorgonLibrary.Editor
 			// Build the extension filter(s).
 		    if (extensions != null)
 		    {
-		        foreach (var extension in extensions)
+			    var groupedExtensions = extensions.GroupBy(item => item.Description, new GorgonCaseInsensitiveComparer());
+
+		        foreach (var extensionGroup in groupedExtensions)
 		        {
-		            if (filter.Length > 0)
-		            {
-		                filter.Append("|");
-		            }
+			        extensionList.Length = 0;
 
-		            if ((!string.IsNullOrWhiteSpace(allSupportedDesc))
-		                && (allTypes.Length > 0))
-		            {
-		                allTypes.Append(";");
-		            }
+					if (filter.Length > 0)
+					{
+						filter.Append("|");
+					}
 
-		            // If we supply a default filter expression, then apply it to the dialog box.
-		            if (defaultFilterExpr != null)
-		            {
-		                if (defaultFilterExpr(extension))
-		                {
-		                    dialog.FilterIndex = currentIndex + 1;
-		                    dialog.DefaultExt = extension.Extension;
-		                }
-		            }
-		            else
-		            {
-		                // Assign the default extension if requested.
-		                if ((defaultExt != null)
-		                    && (defaultExt.Value == extension))
-		                {
-		                    dialog.DefaultExt = defaultExt.Value.Extension;
-		                }
-		            }
+			        filter.Append(extensionGroup.Key);
 
-		            filter.Append(extension.GetFilter());
+					foreach (var extension in extensionGroup)
+			        {
+				        if ((!string.IsNullOrWhiteSpace(allSupportedDesc))
+				            && (allTypes.Length > 0))
+				        {
+					        allTypes.Append(";");
+				        }
 
-		            if (!string.IsNullOrWhiteSpace(allSupportedDesc))
-		            {
-		                allTypes.AppendFormat("*.{0}", extension.Extension);
-		            }
+				        if (extensionList.Length > 0)
+				        {
+					        extensionList.Append(";");
+				        }
 
-		            currentIndex++;
+				        // If we supply a default filter expression, then apply it to the dialog box.
+				        if (defaultFilterExpr != null)
+				        {
+					        if (defaultFilterExpr(extension))
+					        {
+						        dialog.FilterIndex = currentIndex + 1;
+						        dialog.DefaultExt = extension.Extension;
+					        }
+				        }
+				        else
+				        {
+					        // Assign the default extension if requested.
+					        if ((defaultExt != null)
+					            && (defaultExt.Value == extension))
+					        {
+						        dialog.DefaultExt = defaultExt.Value.Extension;
+					        }
+				        }
+
+				        extensionList.AppendFormat("*.{0}", extension.Extension);
+
+				        if (!string.IsNullOrWhiteSpace(allSupportedDesc))
+				        {
+					        allTypes.AppendFormat("*.{0}", extension.Extension);
+				        }
+			        }
+
+			        filter.AppendFormat("|{0}", extensionList);
+					currentIndex++;
 		        }
 		    }
 
