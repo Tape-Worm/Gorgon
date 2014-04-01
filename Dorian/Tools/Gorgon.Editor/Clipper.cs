@@ -30,7 +30,6 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
-using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using SlimMath;
 

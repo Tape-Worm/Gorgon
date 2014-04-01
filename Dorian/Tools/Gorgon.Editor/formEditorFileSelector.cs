@@ -37,6 +37,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary.Collections;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -1624,8 +1625,7 @@ namespace GorgonLibrary.Editor
 				{
 					panelFilters.Visible = true;
 
-					var filterGroups = from fileExtension in (IEnumerable<GorgonFileExtension>)_fileExtensions
-					                   group fileExtension by fileExtension.Description.ToLower(CultureInfo.CurrentUICulture);
+					var filterGroups = _fileExtensions.GroupBy(item => item.Description, new GorgonCaseInsensitiveComparer());
 
 					// Add extensions to the list.
 					foreach (var filterGroup in filterGroups)

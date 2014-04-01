@@ -74,6 +74,8 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		private bool _forceClose;					// Flag to indicate that we should force the window to shut down.
 		private readonly ProcessType _processType;	// Type of process.
+		private int _progressPercent;				// Progress percentage.
+		private string _progressText;				// Progress text.
 		#endregion
 
 		#region Properties.
@@ -185,6 +187,11 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">Value to set.</param>
 		public void SetProgress(int value)
 		{
+			if (value == _progressPercent)
+			{
+				return;
+			}
+
 			if (InvokeRequired)
 			{
 				BeginInvoke(new MethodInvoker(() => SetProgress(value)));
@@ -205,7 +212,7 @@ namespace GorgonLibrary.Editor
 			        return;
 			    }
 
-			    progressMeter.Value = value;
+				_progressPercent = progressMeter.Value = value;
 			}
 		}
 
@@ -215,6 +222,11 @@ namespace GorgonLibrary.Editor
 		/// <param name="text">Text to put into the status label.</param>
 		public void UpdateStatusText(string text)
 		{
+			if (string.Equals(_progressText, text, StringComparison.CurrentCulture))
+			{
+				return;
+			}
+
 			if (InvokeRequired)
 			{
 				BeginInvoke(new MethodInvoker(() => UpdateStatusText(text)));
@@ -235,7 +247,7 @@ namespace GorgonLibrary.Editor
 			        return;
 			    }
 
-			    labelStatus.Text = text;
+			    _progressText = labelStatus.Text = text;
 			}
 		}
 
@@ -282,18 +294,18 @@ namespace GorgonLibrary.Editor
 			{
 				case ProcessType.FileWriter:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
+					_progressText = labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
 					break;
                 case ProcessType.FileMove:
 				case ProcessType.FileCopy:
                 case ProcessType.FileExporter:
 				case ProcessType.FileImporter:
 					progressMeter.Style = ProgressBarStyle.Continuous;
-					labelStatus.Text = string.Empty;
+					_progressText = labelStatus.Text = string.Empty;
 					break;
 				case ProcessType.FileInfo:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					labelStatus.Text = Resources.GOREDIT_IMPORT_INFO_LABEL;
+					_progressText = labelStatus.Text = Resources.GOREDIT_IMPORT_INFO_LABEL;
 					break;
 			}
 		}

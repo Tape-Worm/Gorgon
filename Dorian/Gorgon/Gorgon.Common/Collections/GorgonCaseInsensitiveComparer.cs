@@ -26,24 +26,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GorgonLibrary.Collections
 {
     /// <summary>
     /// A case insensitive comparer for the Gorgon collections.
     /// </summary>
-    class GorgonCaseInsensitiveComparer
+    public class GorgonCaseInsensitiveComparer
         : IEqualityComparer<string>, IComparer<string>
     {
         #region IEqualityComparer<string> Members
         /// <summary>
         /// Determines whether the specified objects are equal.
         /// </summary>
-        /// <param name="x">The first object of type <paramref name="T" /> to compare.</param>
-        /// <param name="y">The second object of type <paramref name="T" /> to compare.</param>
+        /// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
+        /// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
         /// <returns>
         /// true if the specified objects are equal; otherwise, false.
         /// </returns>

@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using SlimMath;
 

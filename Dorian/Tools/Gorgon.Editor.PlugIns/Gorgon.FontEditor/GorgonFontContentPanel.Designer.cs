@@ -67,17 +67,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonFontContentPanel));
 			this.panelTextures = new GorgonLibrary.UI.GorgonSelectablePanel();
 			this.panelGlyphEdit = new System.Windows.Forms.Panel();
 			this.panelGlyphAdvance = new System.Windows.Forms.Panel();
-			this.labelAdvanceB = new System.Windows.Forms.Label();
-			this.numericAdvanceC = new System.Windows.Forms.NumericUpDown();
-			this.numericAdvanceA = new System.Windows.Forms.NumericUpDown();
+			this.buttonResetGlyphOffset = new System.Windows.Forms.Button();
+			this.buttonResetGlyphAdvance = new System.Windows.Forms.Button();
+			this.numericGlyphAdvance = new System.Windows.Forms.NumericUpDown();
 			this.numericOffsetY = new System.Windows.Forms.NumericUpDown();
 			this.numericOffsetX = new System.Windows.Forms.NumericUpDown();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
@@ -131,9 +130,7 @@
 			this.stripGlyphs = new System.Windows.Forms.ToolStrip();
 			this.buttonEditGlyph = new System.Windows.Forms.ToolStripButton();
 			this.sepGlyphSpacing = new System.Windows.Forms.ToolStripSeparator();
-			this.buttonGlyphSizeSpace = new System.Windows.Forms.ToolStripButton();
 			this.buttonGlyphKern = new System.Windows.Forms.ToolStripButton();
-			this.sepGlyphTools = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonGlyphTools = new System.Windows.Forms.ToolStripSplitButton();
 			this.menuItemSetGlyph = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
@@ -153,11 +150,11 @@
 			this.textPreviewText = new System.Windows.Forms.ToolStripTextBox();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+			this.tipButtons = new System.Windows.Forms.ToolTip(this.components);
 			this.PanelDisplay.SuspendLayout();
 			this.panelGlyphEdit.SuspendLayout();
 			this.panelGlyphAdvance.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericAdvanceC)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericAdvanceA)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericGlyphAdvance)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericOffsetY)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericOffsetX)).BeginInit();
 			this.panelGlyphClip.SuspendLayout();
@@ -219,13 +216,11 @@
 			// 
 			// panelGlyphAdvance
 			// 
-			this.panelGlyphAdvance.Controls.Add(this.labelAdvanceB);
-			this.panelGlyphAdvance.Controls.Add(this.numericAdvanceC);
-			this.panelGlyphAdvance.Controls.Add(this.numericAdvanceA);
+			this.panelGlyphAdvance.Controls.Add(this.buttonResetGlyphOffset);
+			this.panelGlyphAdvance.Controls.Add(this.buttonResetGlyphAdvance);
+			this.panelGlyphAdvance.Controls.Add(this.numericGlyphAdvance);
 			this.panelGlyphAdvance.Controls.Add(this.numericOffsetY);
 			this.panelGlyphAdvance.Controls.Add(this.numericOffsetX);
-			this.panelGlyphAdvance.Controls.Add(this.label3);
-			this.panelGlyphAdvance.Controls.Add(this.label4);
 			this.panelGlyphAdvance.Controls.Add(this.label5);
 			this.panelGlyphAdvance.Controls.Add(this.label6);
 			this.panelGlyphAdvance.Controls.Add(this.label7);
@@ -236,56 +231,68 @@
 			this.panelGlyphAdvance.TabIndex = 1;
 			this.panelGlyphAdvance.Visible = false;
 			// 
-			// labelAdvanceB
+			// buttonResetGlyphOffset
 			// 
-			this.labelAdvanceB.Location = new System.Drawing.Point(6, 123);
-			this.labelAdvanceB.Name = "labelAdvanceB";
-			this.labelAdvanceB.Size = new System.Drawing.Size(71, 23);
-			this.labelAdvanceB.TabIndex = 6;
-			this.labelAdvanceB.Text = "0";
-			this.labelAdvanceB.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonResetGlyphOffset.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphOffset.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphOffset.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphOffset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonResetGlyphOffset.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonResetGlyphOffset.ForeColor = System.Drawing.Color.White;
+			this.buttonResetGlyphOffset.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonResetGlyphOffset.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonResetGlyphOffset.Location = new System.Drawing.Point(83, 40);
+			this.buttonResetGlyphOffset.Name = "buttonResetGlyphOffset";
+			this.buttonResetGlyphOffset.Size = new System.Drawing.Size(68, 23);
+			this.buttonResetGlyphOffset.TabIndex = 2;
+			this.buttonResetGlyphOffset.Text = "Reset";
+			this.buttonResetGlyphOffset.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.tipButtons.SetToolTip(this.buttonResetGlyphOffset, "Reset the current glyph offset to the original values.");
+			this.buttonResetGlyphOffset.UseVisualStyleBackColor = false;
+			this.buttonResetGlyphOffset.Click += new System.EventHandler(this.buttonResetGlyphOffset_Click);
 			// 
-			// numericAdvanceC
+			// buttonResetGlyphAdvance
 			// 
-			this.numericAdvanceC.Location = new System.Drawing.Point(9, 165);
-			this.numericAdvanceC.Maximum = new decimal(new int[] {
+			this.buttonResetGlyphAdvance.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphAdvance.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphAdvance.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonResetGlyphAdvance.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonResetGlyphAdvance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonResetGlyphAdvance.ForeColor = System.Drawing.Color.White;
+			this.buttonResetGlyphAdvance.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonResetGlyphAdvance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonResetGlyphAdvance.Location = new System.Drawing.Point(83, 123);
+			this.buttonResetGlyphAdvance.Name = "buttonResetGlyphAdvance";
+			this.buttonResetGlyphAdvance.Size = new System.Drawing.Size(68, 23);
+			this.buttonResetGlyphAdvance.TabIndex = 4;
+			this.buttonResetGlyphAdvance.Text = "Reset";
+			this.buttonResetGlyphAdvance.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.tipButtons.SetToolTip(this.buttonResetGlyphAdvance, "Reset the current glyph advance to the original value.");
+			this.buttonResetGlyphAdvance.UseVisualStyleBackColor = false;
+			this.buttonResetGlyphAdvance.Click += new System.EventHandler(this.buttonResetGlyphAdvance_Click);
+			// 
+			// numericGlyphAdvance
+			// 
+			this.numericGlyphAdvance.Location = new System.Drawing.Point(9, 123);
+			this.numericGlyphAdvance.Maximum = new decimal(new int[] {
             2048,
             0,
             0,
             0});
-			this.numericAdvanceC.Minimum = new decimal(new int[] {
+			this.numericGlyphAdvance.Minimum = new decimal(new int[] {
             2048,
             0,
             0,
             -2147483648});
-			this.numericAdvanceC.Name = "numericAdvanceC";
-			this.numericAdvanceC.Size = new System.Drawing.Size(68, 23);
-			this.numericAdvanceC.TabIndex = 4;
-			this.numericAdvanceC.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.numericAdvanceC.ValueChanged += new System.EventHandler(this.numericAdvanceA_ValueChanged);
-			// 
-			// numericAdvanceA
-			// 
-			this.numericAdvanceA.Location = new System.Drawing.Point(9, 77);
-			this.numericAdvanceA.Maximum = new decimal(new int[] {
-            2048,
-            0,
-            0,
-            0});
-			this.numericAdvanceA.Minimum = new decimal(new int[] {
-            2048,
-            0,
-            0,
-            -2147483648});
-			this.numericAdvanceA.Name = "numericAdvanceA";
-			this.numericAdvanceA.Size = new System.Drawing.Size(68, 23);
-			this.numericAdvanceA.TabIndex = 2;
-			this.numericAdvanceA.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this.numericAdvanceA.ValueChanged += new System.EventHandler(this.numericAdvanceA_ValueChanged);
+			this.numericGlyphAdvance.Name = "numericGlyphAdvance";
+			this.numericGlyphAdvance.Size = new System.Drawing.Size(68, 23);
+			this.numericGlyphAdvance.TabIndex = 3;
+			this.numericGlyphAdvance.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericGlyphAdvance.ValueChanged += new System.EventHandler(this.numericGlyphAdvance_ValueChanged);
 			// 
 			// numericOffsetY
 			// 
-			this.numericOffsetY.Location = new System.Drawing.Point(83, 18);
+			this.numericOffsetY.Location = new System.Drawing.Point(9, 62);
 			this.numericOffsetY.Maximum = new decimal(new int[] {
             20000000,
             0,
@@ -311,37 +318,19 @@
 			this.numericOffsetX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericOffsetX.ValueChanged += new System.EventHandler(this.numericOffsetX_ValueChanged);
 			// 
-			// label3
-			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(6, 147);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(67, 15);
-			this.label3.TabIndex = 5;
-			this.label3.Text = "Advance C:";
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(6, 103);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(66, 15);
-			this.label4.TabIndex = 3;
-			this.label4.Text = "Advance B:";
-			// 
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(6, 59);
+			this.label5.Location = new System.Drawing.Point(6, 105);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(67, 15);
+			this.label5.Size = new System.Drawing.Size(90, 15);
 			this.label5.TabIndex = 2;
-			this.label5.Text = "Advance A:";
+			this.label5.Text = "Glyph Advance:";
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(80, 0);
+			this.label6.Location = new System.Drawing.Point(6, 44);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(66, 15);
 			this.label6.TabIndex = 1;
@@ -951,9 +940,7 @@
 			this.stripGlyphs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonEditGlyph,
             this.sepGlyphSpacing,
-            this.buttonGlyphSizeSpace,
             this.buttonGlyphKern,
-            this.sepGlyphTools,
             this.buttonGlyphTools});
 			this.stripGlyphs.Location = new System.Drawing.Point(0, 0);
 			this.stripGlyphs.Name = "stripGlyphs";
@@ -979,16 +966,6 @@
 			this.sepGlyphSpacing.Name = "sepGlyphSpacing";
 			this.sepGlyphSpacing.Size = new System.Drawing.Size(6, 25);
 			// 
-			// buttonGlyphSizeSpace
-			// 
-			this.buttonGlyphSizeSpace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonGlyphSizeSpace.Enabled = false;
-			this.buttonGlyphSizeSpace.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_sizing_16x16;
-			this.buttonGlyphSizeSpace.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonGlyphSizeSpace.Name = "buttonGlyphSizeSpace";
-			this.buttonGlyphSizeSpace.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphSizeSpace.Text = "Sets the advancement placement values for the selected glyph.";
-			// 
 			// buttonGlyphKern
 			// 
 			this.buttonGlyphKern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -998,11 +975,6 @@
 			this.buttonGlyphKern.Name = "buttonGlyphKern";
 			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
 			this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
-			// 
-			// sepGlyphTools
-			// 
-			this.sepGlyphTools.Name = "sepGlyphTools";
-			this.sepGlyphTools.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonGlyphTools
 			// 
@@ -1189,8 +1161,7 @@
 			this.panelGlyphEdit.ResumeLayout(false);
 			this.panelGlyphAdvance.ResumeLayout(false);
 			this.panelGlyphAdvance.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericAdvanceC)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericAdvanceA)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericGlyphAdvance)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericOffsetY)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericOffsetX)).EndInit();
 			this.panelGlyphClip.ResumeLayout(false);
@@ -1252,11 +1223,9 @@
 		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 		private System.Windows.Forms.ToolStripTextBox textPreviewText;
 		private System.Windows.Forms.ToolStrip stripGlyphs;
-		private System.Windows.Forms.ToolStripButton buttonGlyphSizeSpace;
 		private System.Windows.Forms.ToolStripButton buttonEditGlyph;
 		private System.Windows.Forms.ToolStripButton buttonGlyphKern;
 		private System.Windows.Forms.ToolStripSeparator sepGlyphSpacing;
-		private System.Windows.Forms.ToolStripSeparator sepGlyphTools;
 		private EditorFileBrowser imageFileBrowser;
 		private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
 		private System.Windows.Forms.ToolStripMenuItem menuItem1600;
@@ -1299,15 +1268,14 @@
 		private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox checkZoomSnap;
 		private System.Windows.Forms.Panel panelGlyphAdvance;
-		private System.Windows.Forms.NumericUpDown numericAdvanceC;
-		private System.Windows.Forms.NumericUpDown numericAdvanceA;
+		private System.Windows.Forms.NumericUpDown numericGlyphAdvance;
 		private System.Windows.Forms.NumericUpDown numericOffsetY;
 		private System.Windows.Forms.NumericUpDown numericOffsetX;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.Label labelAdvanceB;
+		private System.Windows.Forms.Button buttonResetGlyphOffset;
+		private System.Windows.Forms.ToolTip tipButtons;
+		private System.Windows.Forms.Button buttonResetGlyphAdvance;
     }
 }

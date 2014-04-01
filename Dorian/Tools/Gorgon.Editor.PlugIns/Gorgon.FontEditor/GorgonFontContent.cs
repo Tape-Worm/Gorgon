@@ -33,15 +33,12 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
-using SlimMath;
-using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -888,8 +885,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Function to update a font glyph advancement.
 		/// </summary>
 		/// <param name="advance">The advancement that was updated.</param>
-	    public void UpdateFontGlyphAdvance(int advance)
+		/// <param name="resetFont">TRUE to rebuild the font, FALSE to leave alone.</param>
+	    public void UpdateFontGlyphAdvance(int advance, bool resetFont)
 	    {
+			if (resetFont)
+			{
+				OnContentUpdated();
+				OnContentPropertyChanged("ResetGlyphAdvance", advance);
+				return;
+			}
+
 			OnContentPropertyChanged("SelectedGlyphAdvance", advance);
 	    }
 
@@ -897,9 +902,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Function to update a font glyph offset.
 		/// </summary>
 		/// <param name="offset">Offset to update.</param>
-	    public void UpdateFontGlyphOffset(Point offset)
+		/// <param name="resetFont">TRUE to rebuild the font, FALSE to leave alone.</param>
+	    public void UpdateFontGlyphOffset(Point offset, bool resetFont)
 	    {
-		    OnContentPropertyChanged("SelectedGlyphOffset", offset);
+			if (resetFont)
+			{
+				OnContentUpdated();
+				OnContentPropertyChanged("ResetGlyphOffset", offset);
+				return;
+			}
+
+			OnContentPropertyChanged("SelectedGlyphOffset", offset);
 	    }
 
 		/// <summary>
@@ -944,7 +957,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						size.Width *= aspect;
 					}
 
-					graphics.SmoothingMode = SmoothingMode.HighQuality;
+					graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 					graphics.DrawImage(sourceImage,
 					                   new RectangleF(position, size),
 					                   new RectangleF(0, 0, sourceImage.Width, sourceImage.Height),
