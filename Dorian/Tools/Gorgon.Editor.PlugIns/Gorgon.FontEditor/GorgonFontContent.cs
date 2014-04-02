@@ -74,7 +74,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Glyph clipper interface.
 		/// </summary>
-		ClipGlyph = 6
+		ClipGlyph = 6,
+        /// <summary>
+        /// The kerning pair interface.
+        /// </summary>
+        KernPair = 7
 	}
 
     /// <summary>
@@ -983,6 +987,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_panel.DrawGlyphEditTransition();
 					Renderer.Render(1);
 					break;
+                case DrawState.KernPair:
 				case DrawState.GlyphEdit:
 					_panel.DrawGlyphEdit();
 					Renderer.Render(2);
