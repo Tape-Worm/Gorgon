@@ -506,7 +506,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Kerning Pair: {0}, {1}.
+        ///   Looks up a localized string similar to {0}/{1}.
         /// </summary>
         internal static string GORGFX_FONT_KERNING_PAIR_TOSTR {
             get {

@@ -485,7 +485,7 @@ Log file location: "{0}"</value>
     <value>Gorgon Font Glyph: {0}</value>
   </data>
   <data name="GORGFX_FONT_KERNING_PAIR_TOSTR" xml:space="preserve">
-    <value>Gorgon Kerning Pair: {0}, {1}</value>
+    <value>{0}/{1}</value>
   </data>
   <data name="GORGFX_IMAGE_BMP_CODEC_DESC" xml:space="preserve">
     <value>Windows Bitmap</value>
