@@ -94,6 +94,20 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return whether to allow embedded color codes in the string.
+        /// </summary>
+        /// <remarks>Setting this value to TRUE will allow parts of the text to be colored by using a special code in the text.  The format 
+        /// of the code must be of the form: [RRGGBBAA:characters] in hexadecimal.
+        /// <para>For example, if we a string of "The quick brown fox", and we want to change the word "quick" to yellow we would do the following: "The [FFFF00FF quick] brown fox".</para>
+        /// <para>There will be a slight performance penalty for text rendering when this flag is enabled.</para>
+        /// </remarks>
+	    public bool AllowColorCodes
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return whether kerning should be used.
 		/// </summary>
@@ -638,7 +652,79 @@ namespace GorgonLibrary.Renderers
 			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to retrieve an embedded color from the string.
+        /// </summary>
+        /// <param name="line">Line containing the embedded color.</param>
+        /// <param name="index">Current index of the embedded color.</param>
+        /// <param name="colorEndIndex">The index where the color formatting ends.</param>
+        /// <returns>A new color if embedded correctly, NULL (Nothing in VB.Net) if not.</returns>
+	    private GorgonColor? GetEmbeddedColor(string line, ref int index, out int colorEndIndex)
+        {
+            GorgonColor? result = null;
+            int currentIndex = index;
+            int textIndex = 0;
+
+            colorEndIndex = index;
+
+            if (index == line.Length - 1)
+            {
+                return null;
+            }
+
+            // We've escaped the square bracket so leave.
+            if (line[index + 1] == '[')
+            {
+                ++index;
+                return null;
+            }
+
+            // If it's an empty set of brackets, then leave.
+            if (line[index + 1] == ']')
+            {
+                return null;
+            }
+
+            // Find the end.
+            while (line[currentIndex] != ']')
+            {
+                if (line[currentIndex] == ' ')
+                {
+                    textIndex = currentIndex;
+                }
+
+                ++currentIndex;
+            }
+
+            // We didn't close the bracket, leave.
+            if ((currentIndex == line.Length)
+                || (textIndex == 0))
+            {
+                return null;
+            }
+
+            // Get the color.
+            //for ()
+            
+            // Parse out the string.
+            while ((line[currentIndex] != ']')
+                && (currentIndex < line.Length))
+            {
+                // We're at the end of the color, begin counting the characters.
+                if (line[currentIndex] == ':')
+                {
+                    colorEndIndex
+                }
+
+                ++currentIndex;
+            }
+
+            index = currentIndex;
+
+            return result;
+        }
+
+	    /// <summary>
 		/// Function to perform a vertex update for the text.
 		/// </summary>
 		private void UpdateVertices()
@@ -668,9 +754,19 @@ namespace GorgonLibrary.Renderers
 					lineLength = LineMeasure(_lines[line], outlineOffset);
 				}
 
-				for (int i = 0; i < currentLine.Length; i++)
+			    int i = 0;
+			    GorgonColor? embeddedColor = null;
+
+                while (i < currentLine.Length)
 				{
 					char c = currentLine[i];
+
+                    // If we hit a formatting
+				    if ((AllowColorCodes) && (c == '['))
+				    {
+				        embeddedColor = GetEmbeddedColor(currentLine, ref i);
+				    }
+
 				    GorgonGlyph glyph;
 
 					if (!_font.Glyphs.TryGetValue(c, out glyph))
@@ -682,6 +778,7 @@ namespace GorgonLibrary.Renderers
 					if (c == ' ')
 					{
 						pos.X += glyph.GlyphCoordinates.Width - 1;
+					    ++i;
 						continue;
 					}
 
@@ -712,6 +809,7 @@ namespace GorgonLibrary.Renderers
 				        if ((i == currentLine.Length - 1)
 				            || (_font.KerningPairs.Count == 0))
 				        {
+				            ++i;
 				            continue;
 				        }
 
@@ -726,6 +824,7 @@ namespace GorgonLibrary.Renderers
 				    {
 				        pos.X += glyph.GlyphCoordinates.Width;
 				    }
+				    ++i;
 				}
 
 				// If we have texture filtering on, this is going to look weird because it's a sub-pixel.
