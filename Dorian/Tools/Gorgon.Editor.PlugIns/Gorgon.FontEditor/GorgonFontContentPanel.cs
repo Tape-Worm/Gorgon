@@ -996,6 +996,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 						switch (_content.CurrentState)
 						{
+                            case DrawState.KernPair:
+                                buttonGlyphKern.PerformClick();
+						        break;
 							case DrawState.ClipGlyph:
 								buttonGlyphClipCancel.PerformClick();
 								break;
@@ -1659,24 +1662,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 panelKerningPairs.Visible = _content.CurrentState == DrawState.KernPair;
 
                 if ((panelKerningPairs.Visible)
-                    && (_selectedGlyph != null)
+                    && (comboSecondGlyph.SelectedItem != null)
                     && (comboSecondGlyph.Items.Count > 0))
                 {
-                    var kernValue = new GorgonKerningPair(_selectedGlyph.Character, comboSecondGlyph.Text[0]);
+                    GorgonKerningPair kernValue = (KernPairComboItem)comboSecondGlyph.SelectedItem;
                     int kernAmount;
 
                     // If we don't have a kerning value applied, then allow us to add it.
                     if (!_content.Font.Settings.KerningPairs.TryGetValue(kernValue, out kernAmount))
                     {
-                        buttonKernOK.Enabled = true;
-                        buttonKernCancel.Enabled = false;
+                        _content.Font.KerningPairs.TryGetValue(kernValue, out kernAmount);
                     }
-                    else
-                    {
-                        // Otherwise, ensure the value has changed.
-                        buttonKernOK.Enabled = kernAmount != numericKerningOffset.Value;
-                        buttonKernCancel.Enabled = true;
-                    }
+
+                    // Check current kerning values.
+                    buttonKernOK.Enabled = kernAmount != numericKerningOffset.Value;
+                    buttonKernCancel.Enabled = true;
                 }
                 else
                 {
@@ -2014,6 +2014,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					case DrawState.FromGlyphEdit:
 					case DrawState.ToGlyphEdit:
 					case DrawState.ClipGlyph:
+	                    break;
+                    case DrawState.KernPair:
+	                    if (ActiveControl != panelTextures)
+	                    {
+	                        panelTextures.Focus();
+	                    }
 			            break;
 					case DrawState.GlyphEdit:
 			            if (!_textureRegion.Contains(e.Location))
@@ -2072,6 +2078,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				case DrawState.ToGlyphEdit:
 				case DrawState.GlyphEdit:
 				case DrawState.ClipGlyph:
+                case DrawState.KernPair:
 					break;
 				default:
 					_hoverGlyph = null;
@@ -2404,6 +2411,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 
 				UpdateKernGlyph();
+
+			    if (_kernGlyph == null)
+			    {
+			        return;
+			    }
+
+                // Get the current kerning value.
+                GetCurrentKerningValue();
 			}
 			catch (Exception ex)
 			{
@@ -2689,6 +2704,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 	    private void SetKerningComboFont()
 		{
+            Debug.Assert(ParentForm != null, "No parent form!!");
+
 			comboSecondGlyph.Font = Font;
 
 			// Recreate the kerning combo font.
@@ -2711,7 +2728,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			                          currentStyle,
 			                          _content.FontHeightMode == FontHeightMode.Pixels ? GraphicsUnit.Pixel : GraphicsUnit.Point);
 			comboSecondGlyph.Font = _kernComboFont;
-	    }
+
+		    comboSecondGlyph.MaxDropDownItems = ((ParentForm.ClientSize.Height / 2) / (_kernComboFont.Height)).Max(8);
+		}
 
 		/// <summary>
 		/// Function called when a property is changed on the related content.
@@ -2735,6 +2754,29 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			GetGlyphAdvancementAndOffset();
 			SetKerningComboFont();
+
+            // Get the current kerning value for the font face (if we've not customized it already).
+		    if (_content == null)
+		    {
+		        return;
+		    }
+
+		    if (_content.CurrentState != DrawState.KernPair)
+		    {
+		        return;
+		    }
+
+            // If we're editing the kerning for a glyph, and we've disabled kerning, then 
+            // reset the editor state.
+		    if (_content.UseKerningPairs)
+		    {
+		        GetCurrentKerningValue();
+		    }
+		    else
+		    {
+		        buttonGlyphKern.Checked = false;
+		        buttonGlyphKern_Click(this, EventArgs.Empty);
+		    }
 		}
 
 		/// <summary>
@@ -2854,6 +2896,50 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.Draw();
 		}
 
+        /// <summary>
+        /// Handles the Click event of the buttonKernCancel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonKernCancel_Click(object sender, EventArgs e)
+        {
+            if ((_content == null)
+                || (_content.CurrentState != DrawState.KernPair)
+                || (_content.Font == null)
+                || (comboSecondGlyph.SelectedItem == null))
+            {
+                return;
+            }
+
+            Cursor.Current = Cursors.WaitCursor;
+            try
+            {
+                GorgonKerningPair pair = (KernPairComboItem)comboSecondGlyph.SelectedItem;
+
+                if (_content.Font.Settings.KerningPairs.ContainsKey(pair))
+                {
+                    _content.Font.Settings.KerningPairs.Remove(pair);
+                }
+
+                _content.UpdateFontGlyphs();
+
+                int actualKernValue;
+
+                // Reset the drop down.
+                _content.Font.KerningPairs.TryGetValue(pair, out actualKernValue);
+                numericKerningOffset.Value = actualKernValue;
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+            finally
+            {
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
 		/// <summary>
 		/// Handles the Click event of the buttonKernOK control.
 		/// </summary>
@@ -2863,7 +2949,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if ((_content == null)
 				|| (_content.CurrentState != DrawState.KernPair)
-				|| (_content.Font == null))
+				|| (_content.Font == null)
+                || (comboSecondGlyph.SelectedItem == null))
 			{
 				return;
 			}
@@ -2871,11 +2958,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				if (comboSecondGlyph.SelectedItem == null)
-				{
-					return;
-				}
-
 				GorgonKerningPair pair = (KernPairComboItem)comboSecondGlyph.SelectedItem;
 
 				_content.Font.Settings.KerningPairs[pair] = (int)numericKerningOffset.Value;
@@ -2894,6 +2976,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
         /// <summary>
+        /// Function to retrieve the current kerning value.
+        /// </summary>
+        private void GetCurrentKerningValue()
+        {
+            // Try to see if we already have a kerning amount defined.
+            GorgonKerningPair pair = (KernPairComboItem)comboSecondGlyph.SelectedItem;
+
+            int kernAmount;
+            if (!_content.Font.Settings.KerningPairs.TryGetValue(pair, out kernAmount))
+            {
+                _content.Font.KerningPairs.TryGetValue(pair, out kernAmount);
+            }
+
+            numericKerningOffset.Value = kernAmount;
+        }
+
+        /// <summary>
         /// Handles the Click event of the buttonGlyphKern control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -2903,7 +3002,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             if ((_content == null)
                 || ((_content.CurrentState != DrawState.GlyphEdit) 
                     && (_content.CurrentState != DrawState.KernPair))
-                || (_selectedGlyph == null))
+                || (_selectedGlyph == null)
+                || (ParentForm == null))
             {
                 return;
             }
@@ -2943,16 +3043,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	                comboSecondGlyph.SelectedIndex = 0;
                 }
 
-                // Try to see if we already have a kerning amount defined.
-	            pair = (KernPairComboItem)comboSecondGlyph.SelectedItem;
-
-                int kernAmount;
-                if (!_content.Font.Settings.KerningPairs.TryGetValue(pair, out kernAmount))
-                {
-                    _content.Font.KerningPairs.TryGetValue(pair, out kernAmount);
-                }
-
-                numericKerningOffset.Value = kernAmount;
+                GetCurrentKerningValue();
             }
             catch (Exception ex)
             {
@@ -3589,16 +3680,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			UpdateTextureRegion(_selectedGlyph.Texture);
 
 			float scale;
-			Vector2 scaleArea = panelTextures.ClientSize;
-
-			if (_content.CurrentState == DrawState.KernPair)
-			{
-				scaleArea.X = scaleArea.X * 0.5f;
-			}
+		    Vector2 scaleArea = _content.CurrentState != DrawState.KernPair
+		                            ? panelTextures.ClientSize
+		                            : new Vector2(panelTextures.ClientSize.Width * 0.5f, panelTextures.ClientSize.Height);
 
 			Rectangle region = GetGlyphEditRegion(_selectedGlyph, scaleArea, out scale);
-			Rectangle glyphBounds = GetScaledGlyphBounds(_selectedGlyph, region, scale);
+
+            // Put the left glyph near to center, but offset by its width.
+            if (_content.CurrentState == DrawState.KernPair)
+            {
+                region.X = (int)PanelMidPoint.X - region.Width;
+            }
+            
+            Rectangle glyphBounds = GetScaledGlyphBounds(_selectedGlyph, region, scale);
             region.Width = (int)((_selectedGlyph.Offset.X + _selectedGlyph.Advance) * scale);
+
 
             _glyphBackgroundSprite.Position = Vector2.Zero;
             _glyphBackgroundSprite.ScaledSize = panelTextures.ClientSize;
@@ -3623,14 +3719,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 			else
 			{
-				// TODO: The math for the outline is not quite right, not getting accurate distances.
 				// We need the same scale so we can accurately measure the distance.
 				float dummy;
 				var kernValue = (float)numericKerningOffset.Value;
-				var offset = (int)((_selectedGlyph.Offset.X + _selectedGlyph.Advance + (_content.OutlineSize * 3 - 1) + kernValue - _kernGlyph.Offset.X) * scale) + region.Left;
+				var offset = (int)((_content.OutlineSize + _selectedGlyph.Advance  + kernValue) * scale) + region.Left;
+			    Rectangle leftRegion = region;
 
 				region = GetGlyphEditRegion(_kernGlyph, scaleArea, out dummy);
 				region.X = offset;
+			    region.Y = leftRegion.Y;
+			    region.Height = leftRegion.Height;
 				glyphBounds = GetScaledGlyphBounds(_kernGlyph, region, scale);
 
 				region.Width = (int)((_kernGlyph.Offset.X + _kernGlyph.Advance) * scale);
@@ -3852,5 +3950,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			MouseWheel += PanelDisplay_MouseWheel;
 	    }
         #endregion
+
 	}
 }
