@@ -2812,6 +2812,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.ShadowOpacity = GorgonFontEditorPlugIn.Settings.ShadowOpacity;
 			_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
 			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
+		    _text.AllowColorCodes = true;
 
             _pattern = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
 
