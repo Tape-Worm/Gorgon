@@ -3389,17 +3389,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
 		/// <summary>
-		/// Function to retrieve the scaling value for the glyph region.
-		/// </summary>
-		/// <param name="panelSize">The current panel size to scale into.</param>
-		/// <param name="glyphRegionSize">Size of the glyph region to scale.</param>
-		/// <returns>The scale factor.</returns>
-	    private static float GetGlyphEditScale(Vector2 panelSize, Vector2 glyphRegionSize)
-	    {
-			return panelSize.X > panelSize.Y ? panelSize.Y / glyphRegionSize.Y : panelSize.X / glyphRegionSize.X;
-	    }
-
-		/// <summary>
 		/// Function to retrieve the size of the glyph edit region.
 		/// </summary>
 		/// <param name="glyph">The glyph to retrieve a region for.</param>
@@ -3411,12 +3400,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			var glyphDimensions = new Vector2(glyph.GlyphCoordinates.Size.Width + glyph.Offset.X,
 			                                  glyph.GlyphCoordinates.Size.Height + glyph.Offset.Y);
 
-			scale = GetGlyphEditScale(scaleRegion, glyphDimensions);
+			scale = scaleRegion.Y / glyphDimensions.Y;
 
 			var textureRegion = new Rectangle(0,
 			                                  0,
-			                                  (int)((glyphDimensions.X * scale).Min(scaleRegion.X)),
-											  (int)((glyphDimensions.Y * scale).Min(scaleRegion.Y)));
+			                                  (int)(glyphDimensions.X * scale),
+											  (int)(glyphDimensions.Y * scale));
 
 			textureRegion.Y = (int)((scaleRegion.Y * 0.5f) - (textureRegion.Height * 0.5f));
 			textureRegion.X = (int)((scaleRegion.X * 0.5f) - (textureRegion.Width * 0.5f));
@@ -3431,14 +3420,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="editRegion">The size of the edit region.</param>
 		/// <param name="scale">Current scale level.</param>
 		/// <returns>The scaled glyph bounds.</returns>
-	    private Rectangle GetScaledGlyphBounds(GorgonGlyph glyph, Rectangle editRegion, float scale)
+	    private static Rectangle GetScaledGlyphBounds(GorgonGlyph glyph, Rectangle editRegion, float scale)
 	    {
 			var glyphDimensions = glyph.GlyphCoordinates.Size;
 
 			var textureRegion = new Rectangle((int)(editRegion.Left + (glyph.Offset.X * scale)),
 											  (int)(editRegion.Top + (glyph.Offset.Y * scale)),
-											  (int)(glyphDimensions.Width * scale).Min(panelTextures.ClientSize.Width),
-											  (int)(glyphDimensions.Height * scale).Min(panelTextures.ClientSize.Height));
+											  (int)(glyphDimensions.Width * scale),
+											  (int)(glyphDimensions.Height * scale));
 
 			return textureRegion;
 	    }
