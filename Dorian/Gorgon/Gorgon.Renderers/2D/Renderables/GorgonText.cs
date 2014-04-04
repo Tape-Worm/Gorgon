@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Text;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
@@ -44,9 +45,43 @@ namespace GorgonLibrary.Renderers
 	/// objects in order to render the glyphs used in the text.</remarks>
 	public class GorgonText
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
-	{
-		#region Variables.
-		private readonly StringBuilder _tabText;								// Tab spacing text.
+    {
+        #region Value Types.
+        /// <summary>
+        /// Color code used for rendering multicolored text.
+        /// </summary>
+	    private struct ColorCode
+	    {
+            /// <summary>
+            /// Starting index of the text to color.
+            /// </summary>
+	        public readonly int StartIndex;
+            /// <summary>
+            /// Ending index of the text to color.
+            /// </summary>
+	        public readonly int EndIndex;
+            /// <summary>
+            /// Color to use.
+            /// </summary>
+	        public readonly GorgonColor Color;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ColorCode"/> struct.
+            /// </summary>
+            /// <param name="color">The color.</param>
+            /// <param name="startIndex">The start index.</param>
+            /// <param name="endIndex">The end index.</param>
+            public ColorCode(Color color, int startIndex, int endIndex)
+            {
+                Color = color;
+                StartIndex = startIndex;
+                EndIndex = endIndex;
+            }
+	    }
+        #endregion
+
+        #region Variables.
+        private readonly StringBuilder _tabText;								// Tab spacing text.
 	    private readonly Gorgon2DVertexCache _vertexCache;                      // The internal vertex cache used by the renderer.
 		private Gorgon2DCollider _collider;                                     // Collision object.
 		private int _colliderVertexCount;                                       // Collider vertex count.
@@ -80,6 +115,7 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _shadowOffset = new Vector2(1);							// Shadow offset.
 		private bool _shadowEnabled;											// Flag to indicate whether shadowing is enabled or not.
 		private bool _useKerning = true;										// Flag to indicate that kerning should be used.
+	    private readonly List<ColorCode> _colorCodes = new List<ColorCode>();   // List of color code points.
 		#endregion
 
 		#region Properties.
@@ -93,6 +129,12 @@ namespace GorgonLibrary.Renderers
 				return _textRect == null ? (RectangleF)Gorgon2D.DefaultViewport : _textRect.Value;
 			}
 		}
+
+	    public bool AllowColorCodes
+	    {
+	        get;
+	        set;
+	    }
 
 		/// <summary>
 		/// Property to set or return whether kerning should be used.
@@ -347,8 +389,16 @@ namespace GorgonLibrary.Renderers
 
 				if (string.Compare(value, _text, StringComparison.CurrentCulture) != 0)
 				{
-					_text = value;
-					UpdateText();
+				    if (AllowColorCodes)
+				    {
+				        _text = ParseCodes(value);
+				    }
+				    else
+				    {
+				        _text = value;
+				    }
+
+				    UpdateText();
 				}
 
 				// Update the colors for the rest of the string if the text length is longer.
@@ -405,6 +455,80 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to parse the codes from the text.
+        /// </summary>
+        /// <param name="text">Text to parse.</param>
+        /// <returns>The text without the codes.</returns>
+	    private string ParseCodes(string text)
+	    {
+            _colorCodes.Clear();
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            int startIndex = text.IndexOf("[c=", StringComparison.OrdinalIgnoreCase);
+
+            while ((startIndex > -1)
+                   && ((startIndex + 3) != text.Length))
+            {
+                int codeStart = startIndex;
+
+                // Find the closing bracket.
+                int endBracket = text.IndexOf(']', startIndex);
+
+                // Locate the closing tag.
+                int endIndex = text.IndexOf("[/c]", startIndex + 1, StringComparison.OrdinalIgnoreCase);
+
+                startIndex = text.IndexOf("[c=", startIndex, StringComparison.OrdinalIgnoreCase);
+
+                if (startIndex > -1)
+                {
+                    startIndex += 3;
+                }
+
+                if (endBracket > -1)
+                {
+                    --endBracket;
+                }
+
+                int colorLength = endBracket - codeStart;
+
+                if ((endBracket == -1)
+                    || (startIndex == -1)
+                    || (startIndex >= text.Length)
+                    || (endIndex == -1)
+                    || (colorLength <= 0))
+                {
+                    continue;
+                }
+
+                int colorValue;
+                string colorText = text.Substring(codeStart, colorLength);
+
+                if (!int.TryParse(colorText,
+                                  NumberStyles.HexNumber,
+                                  CultureInfo.InvariantCulture,
+                                  out colorValue))
+                {
+                    continue;
+                }
+
+                GorgonColor color = GorgonColor.FromRGBA(colorValue);
+
+                // Remove the codes from the text so it doesn't get used in calculations 
+                // or actual rendering.
+                text = text.Remove(codeStart, (endBracket + 1 - codeStart));
+                text = text.Remove(endIndex, 4);
+
+                _colorCodes.Add(new ColorCode(color, codeStart, endIndex + 4));
+            }
+
+            return text;
+	    }
+
         /// <summary>
         /// Function to handle the font changing event.
         /// </summary>
@@ -571,7 +695,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="lineLength">The length of the line of text when alignment is active.</param>
 		/// <param name="cosValue">Cosine value for rotation.</param>
 		/// <param name="sinValue">Sin value for rotation.</param>
-		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, ref Vector2 textOffset, float lineLength, float cosValue, float sinValue)
+		private void UpdateTransform(GorgonGlyph glyph, int vertexIndex, ref Vector2 textOffset, float lineLength, float cosValue, float sinValue, ColorCode? colorCode)
 		{
 			Vector2 ltCorner = Vector2.Subtract(textOffset, Anchor);
 			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
@@ -636,6 +760,16 @@ namespace GorgonLibrary.Renderers
 			// Set depth.
 			_vertices[vertexIndex + 3].Position.Z = _vertices[vertexIndex + 2].Position.Z = _vertices[vertexIndex + 1].Position.Z = _vertices[vertexIndex].Position.Z = -Depth;
 			// ReSharper restore CompareOfFloatsByEqualityOperator
+
+		    if (colorCode == null)
+		    {
+		        return;
+		    }
+
+		    _vertices[vertexIndex + 3].Color =
+		        _vertices[vertexIndex + 2].Color =
+		        _vertices[vertexIndex + 1].Color = 
+                _vertices[vertexIndex].Color = colorCode.Value.Color;
 		}
 
 	    /// <summary>
@@ -671,6 +805,22 @@ namespace GorgonLibrary.Renderers
 				for (int i = 0; i < currentLine.Length; ++i)
 				{
 					char c = currentLine[i];
+				    ColorCode? colorCode = null;
+
+				    if (AllowColorCodes)
+				    {
+				        for (int code = 0; code < _colorCodes.Count; ++code)
+				        {
+				            if ((i < _colorCodes[code].StartIndex)
+				                || (i > _colorCodes[code].EndIndex))
+				            {
+				                continue;
+				            }
+
+				            colorCode = _colorCodes[code];
+				            break;
+				        }
+				    }
 
 				    GorgonGlyph glyph;
 
@@ -694,12 +844,12 @@ namespace GorgonLibrary.Renderers
 						Vector2 shadowPosition;
 
 						Vector2.Add(ref vertexPosition, ref _shadowOffset, out shadowPosition);
-						UpdateTransform(glyph, vertexIndex, ref shadowPosition, lineLength, cosVal, sinVal);
+						UpdateTransform(glyph, vertexIndex, ref shadowPosition, lineLength, cosVal, sinVal, colorCode);
 						vertexIndex += 4;
 						_colliderVertexCount += 4;
 					}
 
-					UpdateTransform(glyph, vertexIndex, ref vertexPosition, lineLength, cosVal, sinVal);
+					UpdateTransform(glyph, vertexIndex, ref vertexPosition, lineLength, cosVal, sinVal, colorCode);
 					vertexIndex += 4;
 					_colliderVertexCount += 4;
 
