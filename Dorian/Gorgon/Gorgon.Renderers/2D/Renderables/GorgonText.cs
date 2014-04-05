@@ -175,9 +175,6 @@ namespace GorgonLibrary.Renderers
 				}
 				_needsTextUpdate = true;
 				_needsVertexUpdate = true;
-
-				_text = string.Empty;
-				Text = _encodedText;
 			}
 	    }
 
@@ -432,7 +429,7 @@ namespace GorgonLibrary.Renderers
 					value = string.Empty;
 				}
 
-				if (string.Compare(value, _text, StringComparison.CurrentCulture) != 0)
+				if (string.Compare(value, AllowColorCodes ? _text : _encodedText, StringComparison.CurrentCulture) != 0)
 				{
 					if (AllowColorCodes)
 					{
