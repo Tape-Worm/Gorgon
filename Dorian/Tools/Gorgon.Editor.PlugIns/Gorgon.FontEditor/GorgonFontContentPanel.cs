@@ -43,8 +43,6 @@ using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
-// TODO: Add spacing/kerning interfaces for glyphs.
-
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     /// <summary>
@@ -255,6 +253,132 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
 				_content.CloseContent();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonEditPreviewText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonEditPreviewText_Click(object sender, EventArgs e)
+		{
+			FormEditPreviewText textEditor = null;
+			try
+			{
+				textEditor = new FormEditPreviewText
+				             {
+					             PreviewText = textPreviewText.Text
+				             };
+
+				if (textEditor.ShowDialog(ParentForm) != DialogResult.OK)
+				{
+					return;
+				}
+
+				GorgonFontEditorPlugIn.Settings.SampleText = textPreviewText.Text = textEditor.PreviewText;
+				textPreviewText.SelectAll();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				if (textEditor != null)
+				{
+					textEditor.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonSearchGlyph control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonSearchGlyph_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				if ((string.IsNullOrEmpty(comboSearchGlyph.Text)) || (!_content.Font.Glyphs.Contains(comboSearchGlyph.Text[0])))
+				{
+					return;
+				}
+
+				if ((_selectedGlyph != null)
+				    && (_selectedGlyph.Character == comboSearchGlyph.Text[0]))
+				{
+					return;
+				}
+
+				_selectedGlyph = _content.Font.Glyphs[comboSearchGlyph.Text[0]];
+
+				if (_selectedGlyph.Texture == _textures[_currentTextureIndex])
+				{
+					return;
+				}
+
+				_currentTextureIndex = Array.IndexOf(_textures, _selectedGlyph.Texture);
+
+				if (_currentTextureIndex == -1)
+				{
+					return;
+				}
+
+				_content.CurrentState = DrawState.NextTexture;
+				_nextState = DrawState.DrawFontTextures;
+				ActiveControl = panelTextures;
+				UpdateGlyphRegions();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the TextUpdate event of the comboSearchGlyph control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void comboSearchGlyph_TextUpdate(object sender, EventArgs e)
+		{
+			ValidateControls();
+		}
+
+		/// <summary>
+		/// Handles the KeyDown event of the textSearchGlyph control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private void comboSearchGlyph_KeyDown(object sender, KeyEventArgs e)
+		{
+			
+			try
+			{
+				if ((string.IsNullOrEmpty(comboSearchGlyph.Text))
+					|| (e.KeyCode != Keys.Enter))
+				{
+					return;
+				}
+
+				buttonSearchGlyph.PerformClick();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
 			}
 		}
 
@@ -1390,11 +1514,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			GorgonFontEditorPlugIn.Settings.SampleText = formattedText;
 
-			formattedText = formattedText.Replace("\\n", "\n");
-			formattedText = formattedText.Replace("\\t", "\t");
-
 			_text.Text = formattedText;
 		}
+		
+		/// <summary>
+		/// Function to populate the search character autocomplete list.
+		/// </summary>
+	    private void PopulateSearchCharacterList()
+		{
+			comboSearchGlyph.Items.Clear();
+
+			if ((_content == null)
+			    || (_content.Font == null))
+			{
+				return;
+			}
+
+			comboSearchGlyph.Items.AddRange(_content.Characters.Where(item => !char.IsWhiteSpace(item))
+			                                        .Select(item => (object)item.ToString(CultureInfo.CurrentUICulture))
+			                                        .ToArray());
+	    }
 
 		/// <summary>
 		/// Handles the MouseClick event of the GorgonFontContentPanel control.
@@ -1631,6 +1770,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_currentTextureIndex = _textures.Length - 1;
 				}
 
+	            labelFindGlyph.Enabled = comboSearchGlyph.Enabled = _content.CurrentState == DrawState.DrawFontTextures;
+	            buttonSearchGlyph.Enabled = comboSearchGlyph.Text.Length > 0 && _content.CurrentState == DrawState.DrawFontTextures;
+
+	            sepGlyphEditing.Visible = buttonSearchGlyph.Visible =
+	                                      labelFindGlyph.Visible =
+	                                      comboSearchGlyph.Visible = _content.CurrentState == DrawState.DrawFontTextures
+	                                                                 || _content.CurrentState == DrawState.NextTexture ||
+	                                                                 _content.CurrentState == DrawState.PrevTexture
+	                                                                 || _content.CurrentState == DrawState.FromGlyphEdit;
+
 	            buttonPrevTexture.Enabled = _currentTextureIndex > 0 &&
 	                                        ((_content.CurrentState == DrawState.DrawFontTextures) ||
 	                                         _content.CurrentState == DrawState.NextTexture ||
@@ -1684,16 +1833,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     buttonKernCancel.Enabled = false;
                 }
 
-                buttonEditGlyph.Enabled = _selectedGlyph != null && !panelKerningPairs.Visible;
+                buttonEditGlyph.Enabled = _selectedGlyph != null;
 
-                if ((!buttonEditGlyph.Enabled) && (buttonEditGlyph.Checked))
-                {
-                    buttonEditGlyph.Checked = false;
-                }
+				buttonGlyphKern.Enabled = _content.UseKerningPairs && (_content.CurrentState == DrawState.GlyphEdit || _content.CurrentState == DrawState.KernPair);
+	            buttonGlyphTools.Enabled = _content.CurrentState == DrawState.GlyphEdit;
 
-                buttonGlyphTools.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
+	            sepGlyphSpacing.Visible =
+					buttonGlyphTools.Visible = (_content.CurrentState == DrawState.GlyphEdit || _content.CurrentState == DrawState.ToGlyphEdit);
+	            buttonGlyphKern.Visible = (_content.CurrentState == DrawState.GlyphEdit ||
+	                                       _content.CurrentState == DrawState.ToGlyphEdit ||
+	                                       _content.CurrentState == DrawState.KernPair);
 
-	            buttonGlyphKern.Enabled = _content.UseKerningPairs && (_content.CurrentState == DrawState.GlyphEdit || _content.CurrentState == DrawState.KernPair);
+	            buttonGlyphKern.Checked = _content.CurrentState == DrawState.KernPair && buttonGlyphKern.Enabled &&
+	                                      buttonGlyphKern.Visible;
 
 	            buttonResetGlyphAdvance.Enabled = numericGlyphAdvance.Enabled && _selectedGlyph != null &&
 	                                              _content.Font.Settings.Advances.ContainsKey(_selectedGlyph.Character);
@@ -1702,21 +1854,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 												  _content.Font.Settings.Offsets.ContainsKey(_selectedGlyph.Character);
 
 
-	            menuItemLoadGlyphImage.Visible =
-		            menuItemSetGlyph.Visible =
-		            menuItemRemoveGlyphImage.Visible = buttonGlyphTools.Visible = _content.ImageEditor != null;
-				menuItemSetGlyph.Enabled = menuItemRemoveGlyphImage.Enabled = (_selectedGlyph != null) &&
-                                                    (_selectedGlyph.IsExternalTexture) &&
-                                                    (_content.CurrentState == DrawState.GlyphEdit);
+	            if (buttonGlyphTools.Visible)
+	            {
+		            menuItemLoadGlyphImage.Visible =
+			            menuItemSetGlyph.Visible =
+			            menuItemRemoveGlyphImage.Visible = buttonGlyphTools.Visible = _content.ImageEditor != null;
+		            menuItemSetGlyph.Enabled = menuItemRemoveGlyphImage.Enabled = (_selectedGlyph != null) &&
+		                                                                          (_selectedGlyph.IsExternalTexture) &&
+		                                                                          (_content.CurrentState ==
+		                                                                           DrawState.GlyphEdit);
+	            }
 
-                if ((_content.CurrentState == DrawState.ToGlyphEdit)
+	            if ((_content.CurrentState == DrawState.ToGlyphEdit)
                     || (_content.CurrentState == DrawState.GlyphEdit)
                     || (_content.CurrentState == DrawState.ClipGlyph)
 					|| (_content.CurrentState == DrawState.KernPair))
                 {
-                    buttonEditGlyph.Checked = true;
-                    buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
-                    buttonEditGlyph.Image = Resources.stop_16x16;
+					buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+	                buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
+                    buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_END_EDIT_TIP;
+                    buttonEditGlyph.Image = Resources.back_16x16png;
 
                     // Disable the edit button until we're done clipping.
                     if (_content.CurrentState == DrawState.ClipGlyph)
@@ -1725,9 +1882,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     }
                 }
                 else
-                {
-                    buttonEditGlyph.Checked = false;
-                    buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+	            {
+		            buttonEditGlyph.Text = string.Empty;
+					buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.Image;
+                    buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
                     buttonEditGlyph.Image = Resources.edit_16x16;
                 }
 
@@ -2673,7 +2831,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORFNT_TITLE;
-			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+			buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
 			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
 			buttonGlyphTools.ToolTipText = Resources.GORFNT_BUTTON_GLYPH_TOOLS;
 			menuItemSetGlyph.Text = Resources.GORFNT_MENU_SET_GLYPH;
@@ -2747,6 +2905,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				case "SelectedGlyphAdvance":
 				case "SelectedGlyphOffset":
 					break;
+				case "Characters":
+					PopulateSearchCharacterList();
+					TextureDisplayResize(this, EventArgs.Empty);
+					break;
 				default:
 					TextureDisplayResize(this, EventArgs.Empty);
 					break;
@@ -2790,6 +2952,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             Debug.Assert(_content != null, "The content is not font content.");
 
+			// Populate the character search list.
+			PopulateSearchCharacterList();
+
 			TextureDisplayResize(this, EventArgs.Empty);
 
 			ValidateControls();
@@ -2830,7 +2995,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
 			textPreviewText.Select();
-			textPreviewText.Select(0, textPreviewText.Text.Length);
 
 			// Create the glyph sprite.
 			_glyphSprite = _content.Renderer.Renderables.CreateSprite("GlyphSprite", new GorgonSpriteSettings());
@@ -3021,14 +3185,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				SetKerningComboFont();
 
-                GorgonKerningPair pair;
-
-                // Rebuild the glyph list.
+	            // Rebuild the glyph list.
                 comboSecondGlyph.Items.Clear();
 
                 foreach(char secondChar in _content.Font.Settings.Characters.Where(item => !char.IsWhiteSpace(item)))
                 {
-                    pair = new GorgonKerningPair(_selectedGlyph.Character, secondChar);
+                    var pair = new GorgonKerningPair(_selectedGlyph.Character, secondChar);
                     comboSecondGlyph.Items.Add((KernPairComboItem)pair);
 
                     if ((_content.Font.Settings.KerningPairs.ContainsKey(pair))
@@ -3080,7 +3242,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    }
 
 				if ((_content.CurrentState != DrawState.GlyphEdit)
-				    && ((_content.CurrentState != DrawState.ToGlyphEdit)))
+				    && ((_content.CurrentState != DrawState.ToGlyphEdit))
+					&& ((_content.CurrentState != DrawState.KernPair)))
 				{
 					InitializeGlyphEditTransition(true);
 				}
@@ -3220,7 +3383,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				if ((_textureRegion.Contains(e.Location))
 					&& (_selectedGlyph != null))
 				{
-					buttonEditGlyph.Checked = true;
 					InitializeGlyphEditTransition(true);
 					return;
 				}
@@ -3606,8 +3768,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_editBackgroundAnimation[0].Speed = 1.0f;
 				transitionAnimation.Speed = 1.0f;
 
+				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
 				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
-				buttonEditGlyph.Image = Resources.stop_16x16;
+				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_END_EDIT_TIP;
+				buttonEditGlyph.Image = Resources.back_16x16png;
 
 				_lastScrollPoint.X = scrollHorizontal.Value;
 				_lastScrollPoint.Y = scrollVertical.Value;
@@ -3626,7 +3790,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				_editBackgroundAnimation[0].Speed = -1.0f;
 				transitionAnimation.Speed = -1.0f;
-				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+				buttonEditGlyph.Text = string.Empty;
+				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.Image;
+				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
 				buttonEditGlyph.Image = Resources.edit_16x16;
 			}
 
@@ -3938,8 +4104,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             InitializeComponent();
 
 			MouseWheel += PanelDisplay_MouseWheel;
-	    }
+        }
         #endregion
-
 	}
 }

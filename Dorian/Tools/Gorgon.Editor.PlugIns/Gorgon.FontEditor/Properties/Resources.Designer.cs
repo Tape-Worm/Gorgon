@@ -73,6 +73,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_16x16png {
+            get {
+                object obj = ResourceManager.GetObject("back_16x16png", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bad_glyph_256x256 {
             get {
                 object obj = ResourceManager.GetObject("bad_glyph_256x256", resourceCulture);
@@ -161,6 +171,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap find_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("find_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap font_document_16x16 {
             get {
                 object obj = ResourceManager.GetObject("font_document_16x16", resourceCulture);
@@ -235,7 +255,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Edit glyph.
+        ///   Looks up a localized string similar to Edit the selected glyph..
         /// </summary>
         internal static string GORFNT_BUTTON_EDIT_GLYPH {
             get {
@@ -253,11 +273,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;End editing.
+        ///   Looks up a localized string similar to Go back.
         /// </summary>
         internal static string GORFNT_BUTTON_END_EDIT_GLYPH {
             get {
                 return ResourceManager.GetString("GORFNT_BUTTON_END_EDIT_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go back to the glyph selection screen..
+        /// </summary>
+        internal static string GORFNT_BUTTON_END_EDIT_TIP {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_END_EDIT_TIP", resourceCulture);
             }
         }
         
@@ -289,7 +318,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&amp;*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz.
+        ///   Looks up a localized string similar to The quick brown fox jumps over the lazy dog.
+        ///1234567890 !@#$%^&amp;*()
+        ///ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        ///abcdefghijklmnopqrstuvwxyz.
         /// </summary>
         internal static string GORFNT_DEFAULT_TEXT {
             get {
