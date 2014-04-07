@@ -299,7 +299,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return whether the window caption, including the system menu, max/min buttons and the close button are visible.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "Window Style"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_WINDOWSTYLE"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
 		public bool ShowWindowCaption
 		{
 			get

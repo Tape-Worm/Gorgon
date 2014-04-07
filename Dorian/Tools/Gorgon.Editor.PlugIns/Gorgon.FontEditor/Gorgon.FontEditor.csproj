@@ -102,6 +102,12 @@
     <Compile Include="formBrushEditor.Designer.cs">
       <DependentUpon>formBrushEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormEditPreviewText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormEditPreviewText.Designer.cs">
+      <DependentUpon>FormEditPreviewText.cs</DependentUpon>
+    </Compile>
     <Compile Include="GorgonFontContentSettings.cs" />
     <Compile Include="formCharacterPicker.cs">
       <SubType>Form</SubType>
@@ -134,6 +140,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\back_16x16png.png" />
+    <None Include="Resources\find_16x16.png" />
     <None Include="Resources\clear_16x16.png" />
     <None Include="Resources\add_16x16.png" />
     <None Include="Resources\remove_16x16.png" />
@@ -203,6 +211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formCharacterPicker.resx">
       <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormEditPreviewText.resx">
+      <DependentUpon>FormEditPreviewText.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formNewFont.resx">
       <DependentUpon>formNewFont.cs</DependentUpon>

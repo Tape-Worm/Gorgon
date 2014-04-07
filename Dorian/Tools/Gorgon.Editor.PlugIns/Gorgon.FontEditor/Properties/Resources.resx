@@ -117,18 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORFNT_MENU_CREATE_FONT" xml:space="preserve">
+    <value>Create new font...</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_TOP" xml:space="preserve">
+    <value>Top</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\stop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_OUTLINESIZE_DESC" xml:space="preserve">
-    <value>Sets the size, in pixels, of an outline to apply to each glyph.  Please note that the outline color must have an alpha greater than 0 before the outline is applied.</value>
+  <data name="GORFNT_LABEL_GLYPHREGION_LEFT" xml:space="preserve">
+    <value>Left</value>
   </data>
   <data name="GORFNT_DLG_ALL_FILES" xml:space="preserve">
     <value>All files (*.*)</value>
-  </data>
-  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="glyph_select_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\glyph_select_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,11 +139,20 @@
   <data name="PROP_CHARACTERS_NAME" xml:space="preserve">
     <value>Characters</value>
   </data>
+  <data name="PROP_USEKERNING_DESC" xml:space="preserve">
+    <value>Sets whether to retrieve and use kerning pair information when generating the font.</value>
+  </data>
   <data name="GORFNT_ANTIALIAS_STANDARD" xml:space="preserve">
     <value>Anti-alias</value>
   </data>
   <data name="GORFNT_DEFAULT_TEXT" xml:space="preserve">
-    <value>The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&amp;*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz</value>
+    <value>The quick brown fox jumps over the lazy dog.
+1234567890 !@#$%^&amp;*()
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+abcdefghijklmnopqrstuvwxyz</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_ANGLE" xml:space="preserve">
+    <value>Angle</value>
   </data>
   <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -151,17 +163,20 @@
   <data name="GORFNT_MENU_SHADOW_OFFSET" xml:space="preserve">
     <value>Shadow o&amp;ffset...</value>
   </data>
+  <data name="GORFNT_TEXTURE_SIZE_INVALID" xml:space="preserve">
+    <value>The minimum texture size is 16x16 and the largest is {0}x{1}.</value>
+  </data>
   <data name="GORFNT_BUTTON_OK_TEXT" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
-  <data name="PROP_OUTLINECOLOR1_NAME" xml:space="preserve">
-    <value>Outline Color 1</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_LEFT" xml:space="preserve">
-    <value>Left:</value>
+  <data name="PROP_OUTLINECOLOR1_DESC" xml:space="preserve">
+    <value>Sets the starting outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
   </data>
   <data name="GORFNT_DESC" xml:space="preserve">
     <value>Gorgon Font Editor</value>
+  </data>
+  <data name="PROP_FONTFAMILY_DESC" xml:space="preserve">
+    <value>The font family to use for the font.</value>
   </data>
   <data name="GORFNT_PROP_VALUE_WRAP_MODE" xml:space="preserve">
     <value>Wrapping mode:</value>
@@ -169,11 +184,17 @@
   <data name="GORFNT_MENU_BACKGROUND_COLOR" xml:space="preserve">
     <value>&amp;Background color...</value>
   </data>
-  <data name="GORFNT_DLG_BRUSH_GRAD_DROP_NODE" xml:space="preserve">
-    <value>Do you wish to remove this node from the gradient?</value>
+  <data name="GORFNT_DLG_SHADOW_ALPHA_TEXT" xml:space="preserve">
+    <value>Select the opacity for the preview text shadow</value>
+  </data>
+  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_CLEARNODES" xml:space="preserve">
+    <value>&amp;Clear nodes</value>
   </data>
   <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -190,6 +211,9 @@
   <data name="GORFNT_EXTERN_IMAGE_MISSING" xml:space="preserve">
     <value>Unable to load the image data for the external texture assigned to this font.</value>
   </data>
+  <data name="GORFNT_TITLE" xml:space="preserve">
+    <value>Gorgon Font</value>
+  </data>
   <data name="PROP_PACKINGSIZE_NAME" xml:space="preserve">
     <value>Packing Size</value>
   </data>
@@ -198,10 +222,6 @@
   </data>
   <data name="GORFNT_DLG_SHADOW_OFFSET_TEXT" xml:space="preserve">
     <value>Edit preview text shadow offset</value>
-  </data>
-  <data name="GORFNT_PLUGIN_INVALID_SM" xml:space="preserve">
-    <value>This plug-in requires a video device with feature level SM4 or above.
-The current video device '{0}' has a feature level of {1}.</value>
   </data>
   <data name="GORFNT_PROP_VALUE_TILEFLIPBOTH" xml:space="preserve">
     <value>Tile and flip</value>
@@ -212,9 +232,6 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_IMAGE_NOT_2D" xml:space="preserve">
     <value>The file '{0}' must be a 2D image.</value>
   </data>
-  <data name="GORFNT_MENU_TO_WINDOW" xml:space="preserve">
-    <value>To window</value>
-  </data>
   <data name="GORFNT_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
@@ -224,14 +241,17 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_PROP_VALUE_OPEN_TEXTURE" xml:space="preserve">
     <value>Open texture</value>
   </data>
+  <data name="GORFNT_BRUSH_NO_IMG_EDITOR" xml:space="preserve">
+    <value>A texture brush is assigned to the glyphs for this font, but no image editor plug-in was found.  Texture brushes will not be available.</value>
+  </data>
   <data name="PROP_STYLE_DESC" xml:space="preserve">
     <value>Sets whether the font should be bolded, underlined, italicized, or strike through.</value>
   </data>
   <data name="PROP_FONTSIZE_DESC" xml:space="preserve">
     <value>The size of the font.  This value may be in Points or in Pixels depending on the font height mode.</value>
   </data>
-  <data name="GORFNT_PROP_VALUE_UNKNOWN_BRUSH" xml:space="preserve">
-    <value>Unknown brush</value>
+  <data name="GORFNT_PROP_VALUE_LEFT" xml:space="preserve">
+    <value>Left:</value>
   </data>
   <data name="GORFNT_PROP_VALUE_NONE" xml:space="preserve">
     <value>None</value>
@@ -260,8 +280,8 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_BUTTON_EDIT_KERNING_TIP" xml:space="preserve">
     <value>Sets the kerning values for the selected glyph.</value>
   </data>
-  <data name="glyph_sizing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\glyph_sizing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORFNT_BUTTON_GLYPH_TOOLS" xml:space="preserve">
+    <value>Glyph tools.</value>
   </data>
   <data name="GORFNT_MENU_FOREGROUND_COLOR" xml:space="preserve">
     <value>&amp;Foreground color...</value>
@@ -281,36 +301,48 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_LABEL_ADVANCE" xml:space="preserve">
     <value>Advancement</value>
   </data>
-  <data name="UnicodeBlocks" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\UnicodeBlocks.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="PROP_TEXTCONTRAST_NAME" xml:space="preserve">
-    <value>Text Contrast</value>
+  <data name="PROP_PACKINGSIZE_DESC" xml:space="preserve">
+    <value>Specifies the number of pixels between each glyph on the texture.</value>
   </data>
   <data name="PROP_TEXTCONTRAST_DESC" xml:space="preserve">
     <value>Sets the contrast for anti-aliased glyphs.</value>
   </data>
-  <data name="GORFNT_PROP_VALUE_TILEFLIPX" xml:space="preserve">
-    <value>Tile and flip horizontally</value>
+  <data name="GORFNT_LABEL_GLYPHREGION" xml:space="preserve">
+    <value>Region</value>
   </data>
-  <data name="GORFNT_EXTERN_IMAGE_EDITOR_MISSING" xml:space="preserve">
-    <value>There is no image editor loaded to handle the external texture for this font.</value>
+  <data name="GORFNT_PROP_VALUE_REMOVENODE" xml:space="preserve">
+    <value>&amp;Remove node</value>
   </data>
   <data name="GORFNT_LABEL_HOVER_GLYPH" xml:space="preserve">
     <value>Glyph</value>
   </data>
-  <data name="PROP_OUTLINECOLOR1_DESC" xml:space="preserve">
-    <value>Sets the starting outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
+  <data name="open_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
-    <value>Could not read the texture size from the dependency information.</value>
+  <data name="PROP_OUTLINECOLOR2_NAME" xml:space="preserve">
+    <value>Outline Color 2</value>
+  </data>
+  <data name="GORFNT_MENU_LOAD_GLYPH_IMAGE" xml:space="preserve">
+    <value>&amp;Load an image for the glyph...</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_UNKNOWN_BRUSH" xml:space="preserve">
+    <value>Unknown brush</value>
   </data>
   <data name="GORFNT_CONTENT_EXTENSION_DESC" xml:space="preserve">
     <value>Gorgon Font File</value>
   </data>
-  <data name="GORFNT_DLG_BRUSH_NODES_CLEAR" xml:space="preserve">
-    <value>This will clear all the nodes for the gradient.
-Continue?</value>
+  <data name="GORFNT_LABEL_PREVIEW_TEXT" xml:space="preserve">
+    <value>Preview text</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_HEIGHT" xml:space="preserve">
+    <value>Height</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_ADDNODE" xml:space="preserve">
+    <value>&amp;Add node</value>
+  </data>
+  <data name="GORFNT_PLUGIN_INVALID_SM" xml:space="preserve">
+    <value>This plug-in requires a video device with feature level SM4 or above.
+The current video device '{0}' has a feature level of {1}.</value>
   </data>
   <data name="GORFNT_PROP_VALUE_SOLID_BRUSH" xml:space="preserve">
     <value>Solid brush</value>
@@ -327,26 +359,35 @@ Continue?</value>
   <data name="PROP_TEXTURESIZE_NAME" xml:space="preserve">
     <value>Texture Size</value>
   </data>
-  <data name="GORFNT_DLG_SHADOW_ALPHA_TEXT" xml:space="preserve">
-    <value>Select the opacity for the preview text shadow</value>
+  <data name="clear_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\clear_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_MENU_TO_WINDOW" xml:space="preserve">
+    <value>To window</value>
   </data>
   <data name="GORFNT_MENU_SHADOW_OPACITY" xml:space="preserve">
     <value>Shadow &amp;opacity...</value>
   </data>
-  <data name="PROP_STYLE_NAME" xml:space="preserve">
-    <value>Style</value>
-  </data>
   <data name="GORFNT_PROP_VALUE_TILE" xml:space="preserve">
     <value>Tile</value>
   </data>
-  <data name="PROP_PACKINGSIZE_DESC" xml:space="preserve">
-    <value>Specifies the number of pixels between each glyph on the texture.</value>
+  <data name="GORFNT_LABEL_TEXTURE_COUNT" xml:space="preserve">
+    <value>Texture</value>
+  </data>
+  <data name="PROP_STYLE_NAME" xml:space="preserve">
+    <value>Style</value>
   </data>
   <data name="PROP_ANTIALIASMODE_DESC" xml:space="preserve">
     <value>Sets the type of anti-aliasing to use for the font.  High Quality (HQ) produces the best output, but doesn't get applied to fonts at certain sizes.  Non HQ, will attempt to anti-alias regardless, but the result will be worse.</value>
   </data>
-  <data name="GORFNT_MENU_SHADOW_SETTINGS" xml:space="preserve">
-    <value>Sets display text shadowing options.</value>
+  <data name="GORFNT_LABEL_GLYPHREGION_WIDTH" xml:space="preserve">
+    <value>Width</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_DUPENODE" xml:space="preserve">
+    <value>&amp;Duplicate nodes</value>
+  </data>
+  <data name="UnicodeData" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UnicodeData.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="PROP_FONTSIZE_NAME" xml:space="preserve">
     <value>Font Size</value>
@@ -366,6 +407,15 @@ Continue?</value>
   <data name="cut_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cut_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PROP_FONTFAMILY_NAME" xml:space="preserve">
+    <value>Family Name</value>
+  </data>
+  <data name="PROP_CHARACTERS_DESC" xml:space="preserve">
+    <value>Sets the list of characters to convert into glyphs.</value>
+  </data>
+  <data name="GORFNT_EXTERN_IMAGE_EDITOR_MISSING" xml:space="preserve">
+    <value>There is no image editor loaded to handle the external texture for this font.</value>
+  </data>
   <data name="Color" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Color.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -378,8 +428,8 @@ Continue?</value>
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_FONTFAMILY_DESC" xml:space="preserve">
-    <value>The font family to use for the font.</value>
+  <data name="UnicodeBlocks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UnicodeBlocks.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="GORFNT_IMAGE_SIZE_MISMATCH_MSG" xml:space="preserve">
     <value>The image being loaded has a size of {0}x{1}, but the font requires textures sized to {2}x{3}.  Would you like to clip the image to match the font texture size?</value>
@@ -387,41 +437,54 @@ Continue?</value>
   <data name="glyph_kerning_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\glyph_kerning_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_MENU_CREATE_FONT" xml:space="preserve">
-    <value>Create new font...</value>
+  <data name="GORFNT_LABEL_MOUSE_POS" xml:space="preserve">
+    <value>Cursor position</value>
   </data>
-  <data name="GORFNT_MENU_SET_GLYPH" xml:space="preserve">
-    <value>&amp;Set glyph</value>
+  <data name="PROP_TEXTCONTRAST_NAME" xml:space="preserve">
+    <value>Text Contrast</value>
   </data>
-  <data name="shadow_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\shadow_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORFNT_DLG_FOREGROUND_COLOR_TEXT" xml:space="preserve">
+    <value>Select a color for the preview text</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR1_NAME" xml:space="preserve">
+    <value>Outline Color 1</value>
   </data>
   <data name="GORFNT_PROP_VALUE_TILEFLIPY" xml:space="preserve">
     <value>Tile and flip vertically</value>
   </data>
+  <data name="GORFNT_MENU_SET_GLYPH" xml:space="preserve">
+    <value>&amp;Set glyph</value>
+  </data>
   <data name="PROP_ANTIALIASMODE_NAME" xml:space="preserve">
     <value>Anti Aliasing</value>
   </data>
-  <data name="UnicodeData" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\UnicodeData.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="GORFNT_MENU_SHADOW_SETTINGS" xml:space="preserve">
+    <value>Sets display text shadowing options.</value>
   </data>
-  <data name="GORFNT_LABEL_TEXTURE_COUNT" xml:space="preserve">
-    <value>Texture</value>
+  <data name="GORFNT_DLG_BRUSH_NODES_CLEAR" xml:space="preserve">
+    <value>This will clear all the nodes for the gradient.
+Continue?</value>
   </data>
   <data name="GORFNT_BUTTON_EDIT_GLYPH" xml:space="preserve">
-    <value>&amp;Edit glyph</value>
+    <value>Edit the selected glyph.</value>
   </data>
   <data name="bad_glyph_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\bad_glyph_256x256.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_TITLE" xml:space="preserve">
-    <value>Gorgon Font</value>
+  <data name="GORFNT_DLG_BRUSH_GRAD_DROP_NODE" xml:space="preserve">
+    <value>Do you wish to remove this node from the gradient?</value>
   </data>
-  <data name="open_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\open_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORFNT_PROP_VALUE_TILEFLIPX" xml:space="preserve">
+    <value>Tile and flip horizontally</value>
   </data>
   <data name="GORFNT_BUTTON_CANCEL_TEXT" xml:space="preserve">
     <value>&amp;Cancel</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_WIDTH" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR2_DESC" xml:space="preserve">
+    <value>Sets the ending outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
   </data>
   <data name="PROP_OUTLINESIZE_NAME" xml:space="preserve">
     <value>Outline Size</value>
@@ -435,11 +498,11 @@ Continue?</value>
   <data name="PROP_BRUSH_DESC" xml:space="preserve">
     <value>Sets the brush used to paint the glyphs for the font.</value>
   </data>
-  <data name="GORFNT_DLG_FOREGROUND_COLOR_TEXT" xml:space="preserve">
-    <value>Select a color for the preview text</value>
+  <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
+    <value>Could not read the texture size from the dependency information.</value>
   </data>
-  <data name="GORFNT_LABEL_PREVIEW_TEXT" xml:space="preserve">
-    <value>Preview text</value>
+  <data name="PROP_USEKERNING_NAME" xml:space="preserve">
+    <value>Use Kerning Pairs</value>
   </data>
   <data name="GORFNT_PROP_VALUE_SELECTLABEL" xml:space="preserve">
     <value>Selection area: {0:####0}x{1:####0} - {2:####0}x{3:####0}
@@ -450,16 +513,16 @@ Height:{5:####0}</value>
     <value>Gradient brush</value>
   </data>
   <data name="GORFNT_BUTTON_END_EDIT_GLYPH" xml:space="preserve">
-    <value>&amp;End editing</value>
+    <value>Go back</value>
   </data>
-  <data name="PROP_FONTFAMILY_NAME" xml:space="preserve">
-    <value>Family Name</value>
+  <data name="glyph_sizing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\glyph_sizing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_CHARACTERS_DESC" xml:space="preserve">
-    <value>Sets the list of characters to convert into glyphs.</value>
+  <data name="shadow_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\shadow_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_PROP_VALUE_WIDTH" xml:space="preserve">
-    <value>Width:</value>
+  <data name="PROP_OUTLINESIZE_DESC" xml:space="preserve">
+    <value>Sets the size, in pixels, of an outline to apply to each glyph.  Please note that the outline color must have an alpha greater than 0 before the outline is applied.</value>
   </data>
   <data name="GORFNT_LABEL_SELECTED_GLYPH" xml:space="preserve">
     <value>Selected glyph</value>
@@ -467,64 +530,13 @@ Height:{5:####0}</value>
   <data name="GORFNT_PROP_VALUE_HEIGHT" xml:space="preserve">
     <value>Height:</value>
   </data>
-  <data name="clear_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\clear_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_OUTLINECOLOR2_DESC" xml:space="preserve">
-    <value>Sets the ending outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
+  <data name="back_16x16png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\back_16x16png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_OUTLINECOLOR2_NAME" xml:space="preserve">
-    <value>Outline Color 2</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_ADDNODE" xml:space="preserve">
-    <value>&amp;Add node</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_ANGLE" xml:space="preserve">
-    <value>Angle</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_CLEARNODES" xml:space="preserve">
-    <value>&amp;Clear nodes</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_DUPENODE" xml:space="preserve">
-    <value>&amp;Duplicate nodes</value>
-  </data>
-  <data name="GORFNT_PROP_VALUE_REMOVENODE" xml:space="preserve">
-    <value>&amp;Remove node</value>
-  </data>
-  <data name="GORFNT_BRUSH_NO_IMG_EDITOR" xml:space="preserve">
-    <value>A texture brush is assigned to the glyphs for this font, but no image editor plug-in was found.  Texture brushes will not be available.</value>
-  </data>
-  <data name="GORFNT_BUTTON_GLYPH_TOOLS" xml:space="preserve">
-    <value>Glyph tools.</value>
-  </data>
-  <data name="GORFNT_MENU_LOAD_GLYPH_IMAGE" xml:space="preserve">
-    <value>&amp;Load an image for the glyph...</value>
-  </data>
-  <data name="GORFNT_LABEL_GLYPHREGION" xml:space="preserve">
-    <value>Region</value>
-  </data>
-  <data name="GORFNT_LABEL_GLYPHREGION_HEIGHT" xml:space="preserve">
-    <value>Height</value>
-  </data>
-  <data name="GORFNT_LABEL_GLYPHREGION_LEFT" xml:space="preserve">
-    <value>Left</value>
-  </data>
-  <data name="GORFNT_LABEL_GLYPHREGION_TOP" xml:space="preserve">
-    <value>Top</value>
-  </data>
-  <data name="GORFNT_LABEL_GLYPHREGION_WIDTH" xml:space="preserve">
-    <value>Width</value>
-  </data>
-  <data name="GORFNT_LABEL_MOUSE_POS" xml:space="preserve">
-    <value>Cursor position</value>
-  </data>
-  <data name="GORFNT_TEXTURE_SIZE_INVALID" xml:space="preserve">
-    <value>The minimum texture size is 16x16 and the largest is {0}x{1}.</value>
-  </data>
-  <data name="PROP_USEKERNING_DESC" xml:space="preserve">
-    <value>Sets whether to retrieve and use kerning pair information when generating the font.</value>
-  </data>
-  <data name="PROP_USEKERNING_NAME" xml:space="preserve">
-    <value>Use Kerning Pairs</value>
+  <data name="GORFNT_BUTTON_END_EDIT_TIP" xml:space="preserve">
+    <value>Go back to the glyph selection screen.</value>
   </data>
 </root>
