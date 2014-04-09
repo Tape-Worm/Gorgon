@@ -1492,6 +1492,29 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    }
 		}
 
+        /// <summary>
+        /// Function to check the text preview scroll state.
+        /// </summary>
+        private void CheckTextPreviewScroll()
+        {
+            if (_text == null)
+            {
+                return;
+            }
+
+            if (_text.Size.Y <= panelText.ClientSize.Height)
+            {
+                scrollTextVertical.Value = 0;
+                panelTextVertScroll.Visible = false;
+                return;
+            }
+            
+            panelTextVertScroll.Visible = true;
+            scrollTextVertical.Maximum =(int)((_text.Size.Y - panelText.ClientSize.Height) + (scrollTextVertical.LargeChange)).Max(0);
+            scrollTextVertical.LargeChange = (int)_content.Font.LineHeight.Max(1);
+            scrollTextVertical.SmallChange = (int)(_content.Font.LineHeight / 4.0f).Max(1);
+        }
+
 		/// <summary>
 		/// Handles the TextChanged event of the textPreviewText control.
 		/// </summary>
@@ -1515,6 +1538,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			GorgonFontEditorPlugIn.Settings.SampleText = formattedText;
 
 			_text.Text = formattedText;
+
+		    CheckTextPreviewScroll();
 		}
 		
 		/// <summary>
@@ -2004,6 +2029,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    }
 
 		    _text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
+            CheckTextPreviewScroll();
 		}
 
 		/// <summary>
@@ -2671,6 +2697,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 	    }
 
+        /// <summary>
+        /// Handles the Scroll event of the scrollTextVertical control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+        private void scrollTextVertical_Scroll(object sender, ScrollEventArgs e)
+        {
+            scrollTextVertical.Value = e.NewValue;
+            _content.DrawPreviewText();
+        }
+
 		/// <summary>
 		/// Handles the Scroll event of the scrollVertical control.
 		/// </summary>
@@ -2777,6 +2814,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 InitializeTextureSprites();
 
 				_text.Font = _content.Font;
+
+                CheckTextPreviewScroll();
 
 				// Kill any transition.
 				if (_editGlyphAnimation.CurrentAnimation != null)
@@ -3050,11 +3089,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_text.Color = new GorgonColor(GorgonFontEditorPlugIn.Settings.TextColor);		
 
-			panelText.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_text.Size.X - (SystemInformation.VerticalScrollBarWidth * 1.5f)), (int)System.Math.Ceiling(_text.Size.Y));
-
-			if (panelText.VerticalScroll.Visible)
+			if (scrollTextVertical.Visible)
 			{
-				textPosition.Y = panelText.AutoScrollPosition.Y;
+			    textPosition.Y = -scrollTextVertical.Value;
 			}
 
 			_text.Position = textPosition;
