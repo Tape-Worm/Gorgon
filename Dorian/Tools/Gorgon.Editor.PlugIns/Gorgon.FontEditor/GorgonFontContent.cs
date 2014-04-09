@@ -972,6 +972,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			return result;
 	    }
 
+        /// <summary>
+        /// Function to draw the preview text.
+        /// </summary>
+        public void DrawPreviewText()
+        {
+            Renderer.Target = (GorgonRenderTarget2D)_textDisplay;
+
+            _panel.DrawText();
+
+            Renderer.Render(2);
+        }
+
 	    /// <summary>
 		/// Function to draw the interface for the content editor.
 		/// </summary>
@@ -1007,11 +1019,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					break;
 			}
 
-            Renderer.Target = (GorgonRenderTarget2D)_textDisplay;
-
-			_panel.DrawText();
-            
-			Renderer.Render(2);
+            DrawPreviewText();
 		}
         #endregion
 
