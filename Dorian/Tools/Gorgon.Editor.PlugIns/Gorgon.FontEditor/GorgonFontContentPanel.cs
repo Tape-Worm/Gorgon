@@ -1128,7 +1128,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 								break;
 							case DrawState.GlyphEdit:
 							case DrawState.ToGlyphEdit:
-								buttonEditGlyph.PerformClick();
+								buttonGoHome.PerformClick();
 								break;
 						}
 						break;
@@ -1815,7 +1815,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				dropDownZoom.Enabled = (_content.CurrentState == DrawState.DrawFontTextures);
 
-				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT, _currentTextureIndex + 1, _textures.Length);
+				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT, _currentTextureIndex + 1, _textures.Length);
 
 				panelToolbar.Visible = _content.CurrentState != DrawState.ClipGlyph;
 
@@ -1858,7 +1858,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     buttonKernCancel.Enabled = false;
                 }
 
-                buttonEditGlyph.Enabled = _selectedGlyph != null;
+                buttonGoHome.Enabled = buttonEditGlyph.Enabled = _selectedGlyph != null;
 
 				buttonGlyphKern.Enabled = _content.UseKerningPairs && (_content.CurrentState == DrawState.GlyphEdit || _content.CurrentState == DrawState.KernPair);
 	            buttonGlyphTools.Enabled = _content.CurrentState == DrawState.GlyphEdit;
@@ -1894,24 +1894,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     || (_content.CurrentState == DrawState.GlyphEdit)
                     || (_content.CurrentState == DrawState.ClipGlyph)
 					|| (_content.CurrentState == DrawState.KernPair))
-                {
-					buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-	                buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
-                    buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_END_EDIT_TIP;
-                    buttonEditGlyph.Image = Resources.back_16x16png;
+	            {
+	                buttonGoHome.Enabled = true;
+	                buttonGoHome.Visible = true;
+	                buttonEditGlyph.Visible = false;
 
                     // Disable the edit button until we're done clipping.
                     if (_content.CurrentState == DrawState.ClipGlyph)
                     {
-                        buttonEditGlyph.Enabled = false;
+                        buttonGoHome.Enabled = false;
                     }
                 }
                 else
 	            {
-		            buttonEditGlyph.Text = string.Empty;
-					buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.Image;
-                    buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
-                    buttonEditGlyph.Image = Resources.edit_16x16;
+	                buttonGoHome.Visible = true;
+	                buttonEditGlyph.Visible = true;
                 }
 
 				UpdateGlyphInfo();
@@ -1920,7 +1917,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
 				buttonPrevTexture.Enabled = false;
 				buttonNextTexture.Enabled = false;
-                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
+                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT);
             }
 
 			itemShadowOffset.Enabled = itemShadowOpacity.Enabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
@@ -1944,41 +1941,41 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                         labelSelectedGlyphInfo.Text =
                             string.Format("{0}: {1}x{2}  {3}: {4} (U+{5}), {6}: {7}x{8}-{9}x{10} ({11}: {12}, {13}: {14})",
-                                          Resources.GORFNT_LABEL_MOUSE_POS,
+                                          Resources.GORFNT_LABEL_MOUSE_POS_TEXT,
                                           _mousePosition.X,
                                           _mousePosition.Y,
-                                          Resources.GORFNT_LABEL_SELECTED_GLYPH,
+                                          Resources.GORFNT_LABEL_SELECTED_GLYPH_TEXT,
                                           _selectedGlyph.Character,
                                           ((ushort)_selectedGlyph.Character).FormatHex(),
-                                          Resources.GORFNT_LABEL_GLYPHREGION,
+                                          Resources.GORFNT_LABEL_GLYPHREGION_TEXT,
                                           _glyphClipper.ClipRegion.Left,
 										  _glyphClipper.ClipRegion.Top,
 										  _glyphClipper.ClipRegion.Right,
 										  _glyphClipper.ClipRegion.Bottom,
-                                          Resources.GORFNT_LABEL_GLYPHREGION_WIDTH,
+                                          Resources.GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT,
 										  _glyphClipper.ClipRegion.Width,
-                                          Resources.GORFNT_LABEL_GLYPHREGION_HEIGHT,
+                                          Resources.GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT,
 										  _glyphClipper.ClipRegion.Height);
                         break;
                     case DrawState.DrawFontTextures:
 		                labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2})",
-																    Resources.GORFNT_LABEL_SELECTED_GLYPH,
+																    Resources.GORFNT_LABEL_SELECTED_GLYPH_TEXT,
 		                                                            _selectedGlyph.Character,
 		                                                            ((ushort)_selectedGlyph.Character).FormatHex())
 		                                                    .Replace("&", "&&");
                         break;
                     default:
 					    labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: {10}",
-						    Resources.GORFNT_LABEL_SELECTED_GLYPH,
+						    Resources.GORFNT_LABEL_SELECTED_GLYPH_TEXT,
 						    _selectedGlyph.Character,
 						    ((ushort)_selectedGlyph.Character).FormatHex(),
-						    Resources.GORFNT_LABEL_GLYPH_LOCATION,
+						    Resources.GORFNT_LABEL_GLYPH_LOCATION_TEXT,
 						    _selectedGlyph.GlyphCoordinates.X,
 						    _selectedGlyph.GlyphCoordinates.Y,
-						    Resources.GORFNT_LABEL_GLYPH_SIZE,
+						    Resources.GORFNT_LABEL_GLYPH_SIZE_TEXT,
 						    _selectedGlyph.GlyphCoordinates.Width,
 						    _selectedGlyph.GlyphCoordinates.Height,
-						    Resources.GORFNT_LABEL_ADVANCE,
+						    Resources.GORFNT_LABEL_ADVANCE_TEXT,
 						    _selectedGlyph.Advance).Replace("&", "&&");
 		                _hoverGlyph = null;
                         break;
@@ -1997,16 +1994,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 }
 
                 labelHoverGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: {10}",
-					Resources.GORFNT_LABEL_HOVER_GLYPH,
+					Resources.GORFNT_LABEL_HOVER_GLYPH_TEXT,
                     _hoverGlyph.Character,
                     ((ushort)_hoverGlyph.Character).FormatHex(),
-					Resources.GORFNT_LABEL_GLYPH_LOCATION,
+					Resources.GORFNT_LABEL_GLYPH_LOCATION_TEXT,
                     _hoverGlyph.GlyphCoordinates.X,
                     _hoverGlyph.GlyphCoordinates.Y,
-					Resources.GORFNT_LABEL_GLYPH_SIZE,
+					Resources.GORFNT_LABEL_GLYPH_SIZE_TEXT,
                     _hoverGlyph.GlyphCoordinates.Width,
                     _hoverGlyph.GlyphCoordinates.Height,
-					Resources.GORFNT_LABEL_ADVANCE,
+					Resources.GORFNT_LABEL_ADVANCE_TEXT,
                     _hoverGlyph.Advance).Replace("&", "&&");
             }
             else
@@ -2145,7 +2142,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                           NumberStyles.Float,
 				                           NumberFormatInfo.InvariantInfo);
 
-				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, selectedItem.Text);
+				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM_TEXT, selectedItem.Text);
 
 				if (menuItemToWindow.Checked)
 				{
@@ -2870,22 +2867,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORFNT_TITLE;
-			buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
-			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
-			buttonGlyphTools.ToolTipText = Resources.GORFNT_BUTTON_GLYPH_TOOLS;
-			menuItemSetGlyph.Text = Resources.GORFNT_MENU_SET_GLYPH;
-			menuItemLoadGlyphImage.Text = Resources.GORFNT_MENU_LOAD_GLYPH_IMAGE;
-			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS;
-			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR;
-			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR;
-			menuShadow.Text = Resources.GORFNT_MENU_SHADOW_SETTINGS;
-			itemPreviewShadowEnable.Text = Resources.GORFNT_MENU_ENABLE_SHADOW;
-			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY;
-			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET;
+		    labelFindGlyph.Text = Resources.GORFNT_LABEL_FIND_GLYPH_TEXT;
+		    buttonSearchGlyph.Text = Resources.GORFNT_BUTTON_SEARCH_GLYPH_TEXT;
+			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH_TEXT;
+		    buttonGoHome.Text = Resources.GORFNT_BUTTON_GO_BACK_TEXT;
+		    buttonGoHome.ToolTipText = Resources.GORFNT_BUTTON_GO_BACK_TIP;
+			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TEXT;
+			buttonGlyphTools.ToolTipText = Resources.GORFNT_BUTTON_GLYPH_TOOLS_TEXT;
+			menuItemSetGlyph.Text = Resources.GORFNT_MENU_SET_GLYPH_TEXT;
+			menuItemLoadGlyphImage.Text = Resources.GORFNT_MENU_LOAD_GLYPH_IMAGE_TEXT;
+			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS_TEXT;
+			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR_TEXT;
+			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR_TEXT;
+			menuShadow.Text = Resources.GORFNT_MENU_SHADOW_SETTINGS_TEXT;
+			itemPreviewShadowEnable.Text = Resources.GORFNT_MENU_ENABLE_SHADOW_TEXT;
+			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY_TEXT;
+			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET_TEXT;
 			toolStripLabel1.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PREVIEW_TEXT);
-			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
-			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, Resources.GORFNT_MENU_TO_WINDOW);
-			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW;
+			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT);
+			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM_TEXT, Resources.GORFNT_MENU_TO_WINDOW_TEXT);
+			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW_TEXT;
 			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
@@ -3806,8 +3807,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				transitionAnimation.Speed = 1.0f;
 
 				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
-				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_END_EDIT_TIP;
+				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_GO_BACK_TEXT;
+				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_GO_BACK_TIP;
 				buttonEditGlyph.Image = Resources.back_16x16png;
 
 				_lastScrollPoint.X = scrollHorizontal.Value;
@@ -3829,7 +3830,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				transitionAnimation.Speed = -1.0f;
 				buttonEditGlyph.Text = string.Empty;
 				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.Image;
-				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_EDIT_GLYPH_TEXT;
 				buttonEditGlyph.Image = Resources.edit_16x16;
 			}
 
