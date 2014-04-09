@@ -196,7 +196,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override ToolStripMenuItem GetCreateMenuItem()
 		{
 		    return _createItem
-		           ?? (_createItem = CreateMenuItem("itemCreateGorgonFont", Resources.GORFNT_MENU_CREATE_FONT, GetContentIcon()));
+		           ?? (_createItem = CreateMenuItem("itemCreateGorgonFont", Resources.GORFNT_MENU_CREATE_FONT_TEXT, GetContentIcon()));
 		}
 
         /// <summary>
