@@ -124,16 +124,16 @@
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_LABEL_GLYPH_SIZE_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE" xml:space="preserve">
     <value>Size</value>
   </data>
   <data name="GORFNT_DLG_ALL_FILES" xml:space="preserve">
     <value>All files (*.*)</value>
   </data>
-  <data name="GORFNT_LABEL_MOUSE_POS_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_MOUSE_POS" xml:space="preserve">
     <value>Cursor position</value>
   </data>
-  <data name="GORFNT_LABEL_GLYPHREGION_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_GLYPH_REGION" xml:space="preserve">
     <value>Region</value>
   </data>
   <data name="PROP_CHARACTERS_NAME" xml:space="preserve">
@@ -377,8 +377,8 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_PROP_VALUE_TILE" xml:space="preserve">
     <value>Tile</value>
   </data>
-  <data name="GORFNT_MENU_SET_GLYPH_TEXT" xml:space="preserve">
-    <value>&amp;Set glyph</value>
+  <data name="GORFNT_MENU_UPDATE_GLYPH_RGN_TEXT" xml:space="preserve">
+    <value>&amp;Update glyph region...</value>
   </data>
   <data name="PROP_PACKINGSIZE_DESC" xml:space="preserve">
     <value>Specifies the number of pixels between each glyph on the texture.</value>
@@ -386,7 +386,7 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="PROP_ANTIALIASMODE_DESC" xml:space="preserve">
     <value>Sets the type of anti-aliasing to use for the font.  High Quality (HQ) produces the best output, but doesn't get applied to fonts at certain sizes.  Non HQ, will attempt to anti-alias regardless, but the result will be worse.</value>
   </data>
-  <data name="GORFNT_LABEL_ADVANCE_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_ADVANCE" xml:space="preserve">
     <value>Advancement</value>
   </data>
   <data name="stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -481,7 +481,7 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORFNT_LABEL_SELECTED_GLYPH_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH" xml:space="preserve">
     <value>Selected glyph</value>
   </data>
   <data name="GORFNT_TITLE" xml:space="preserve">
@@ -506,7 +506,7 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_LABEL_FIND_GLYPH_TEXT" xml:space="preserve">
     <value>Find glyph:</value>
   </data>
-  <data name="GORFNT_LABEL_GLYPH_LOCATION_TEXT" xml:space="preserve">
+  <data name="GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION" xml:space="preserve">
     <value>Location</value>
   </data>
   <data name="CATEGORY_DESIGN" xml:space="preserve">
@@ -554,5 +554,50 @@ The current video device '{0}' has a feature level of {1}.</value>
   </data>
   <data name="glyph_tools_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\glyph_tools_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORFNT_BUTTON_EDIT_PREVIEW_TEXT" xml:space="preserve">
+    <value>Edit the preview text.</value>
+  </data>
+  <data name="GORFNT_BUTTON_GLYPHREGION_CANCEL_TIP" xml:space="preserve">
+    <value>Cancel the glyph region editing.</value>
+  </data>
+  <data name="GORFNT_BUTTON_GLYPHREGION_OK_TIP" xml:space="preserve">
+    <value>Click to accept the defined glyph region.</value>
+  </data>
+  <data name="GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT" xml:space="preserve">
+    <value>Reset</value>
+  </data>
+  <data name="GORFNT_BUTTON_KERN_RESET_TEXT" xml:space="preserve">
+    <value>&amp;Reset</value>
+  </data>
+  <data name="GORFNT_BUTTON_KERN_UPDATE_TEXT" xml:space="preserve">
+    <value>&amp;Update</value>
+  </data>
+  <data name="GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT" xml:space="preserve">
+    <value>Snap zoom window to corners.</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT" xml:space="preserve">
+    <value>Zoom amount</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT" xml:space="preserve">
+    <value>Zoom window size</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPH_ADV_ADVANCE_TEXT" xml:space="preserve">
+    <value>Advance</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT" xml:space="preserve">
+    <value>Left offset</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT" xml:space="preserve">
+    <value>Top offset</value>
+  </data>
+  <data name="GORFNT_LABEL_KERN_OFFSET_TEXT" xml:space="preserve">
+    <value>Kerning offset</value>
+  </data>
+  <data name="GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT" xml:space="preserve">
+    <value>Secondary glyph</value>
   </data>
 </root>
