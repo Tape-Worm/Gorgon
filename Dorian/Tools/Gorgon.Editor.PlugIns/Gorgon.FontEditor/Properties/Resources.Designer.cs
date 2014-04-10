@@ -283,11 +283,56 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit the preview text..
+        /// </summary>
+        internal static string GORFNT_BUTTON_EDIT_PREVIEW_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_EDIT_PREVIEW_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit the glyph image..
         /// </summary>
         internal static string GORFNT_BUTTON_GLYPH_TOOLS_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_TOOLS_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel the glyph region editing..
+        /// </summary>
+        internal static string GORFNT_BUTTON_GLYPHREGION_CANCEL_TIP {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_GLYPHREGION_CANCEL_TIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click to accept the defined glyph region..
+        /// </summary>
+        internal static string GORFNT_BUTTON_GLYPHREGION_OK_TIP {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_GLYPHREGION_OK_TIP", resourceCulture);
             }
         }
         
@@ -310,6 +355,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Reset.
+        /// </summary>
+        internal static string GORFNT_BUTTON_KERN_RESET_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_KERN_RESET_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Update.
+        /// </summary>
+        internal static string GORFNT_BUTTON_KERN_UPDATE_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_KERN_UPDATE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;OK.
         /// </summary>
         internal static string GORFNT_BUTTON_OK_TEXT {
@@ -324,6 +387,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_BUTTON_SEARCH_GLYPH_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_BUTTON_SEARCH_GLYPH_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Snap zoom window to corners..
+        /// </summary>
+        internal static string GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT", resourceCulture);
             }
         }
         
@@ -503,15 +575,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Advancement.
-        /// </summary>
-        internal static string GORFNT_LABEL_ADVANCE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_ADVANCE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Find glyph:.
         /// </summary>
         internal static string GORFNT_LABEL_FIND_GLYPH_TEXT {
@@ -521,20 +584,83 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Advance.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPH_ADV_ADVANCE_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_ADV_ADVANCE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left offset.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top offset.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advancement.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHINFO_ADVANCE {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_ADVANCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location.
         /// </summary>
-        internal static string GORFNT_LABEL_GLYPH_LOCATION_TEXT {
+        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION {
             get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_LOCATION_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Region.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_REGION {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_REGION", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
-        internal static string GORFNT_LABEL_GLYPH_SIZE_TEXT {
+        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE {
             get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_SIZE_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cursor position.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHINFO_MOUSE_POS {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_MOUSE_POS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected glyph.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH", resourceCulture);
             }
         }
         
@@ -557,15 +683,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Top.
         /// </summary>
         internal static string GORFNT_LABEL_GLYPHREGION_TOP_TEXT {
@@ -584,6 +701,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Zoom amount.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom window size.
+        /// </summary>
+        internal static string GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Glyph.
         /// </summary>
         internal static string GORFNT_LABEL_HOVER_GLYPH_TEXT {
@@ -593,11 +728,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cursor position.
+        ///   Looks up a localized string similar to Kerning offset.
         /// </summary>
-        internal static string GORFNT_LABEL_MOUSE_POS_TEXT {
+        internal static string GORFNT_LABEL_KERN_OFFSET_TEXT {
             get {
-                return ResourceManager.GetString("GORFNT_LABEL_MOUSE_POS_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_LABEL_KERN_OFFSET_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary glyph.
+        /// </summary>
+        internal static string GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT", resourceCulture);
             }
         }
         
@@ -607,15 +751,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_LABEL_PREVIEW_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_LABEL_PREVIEW_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected glyph.
-        /// </summary>
-        internal static string GORFNT_LABEL_SELECTED_GLYPH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_SELECTED_GLYPH_TEXT", resourceCulture);
             }
         }
         
@@ -683,15 +818,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Set glyph.
-        /// </summary>
-        internal static string GORFNT_MENU_SET_GLYPH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_MENU_SET_GLYPH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Shadow o&amp;ffset....
         /// </summary>
         internal static string GORFNT_MENU_SHADOW_OFFSET_TEXT {
@@ -724,6 +850,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_MENU_TO_WINDOW_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_MENU_TO_WINDOW_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Update glyph region....
+        /// </summary>
+        internal static string GORFNT_MENU_UPDATE_GLYPH_RGN_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_MENU_UPDATE_GLYPH_RGN_TEXT", resourceCulture);
             }
         }
         
