@@ -1625,7 +1625,7 @@ namespace GorgonLibrary.Editor
 				{
 					panelFilters.Visible = true;
 
-					var filterGroups = _fileExtensions.GroupBy(item => item.Description, new GorgonCaseInsensitiveComparer());
+					var filterGroups = _fileExtensions.GroupBy(item => item.Description, StringComparer.OrdinalIgnoreCase);
 
 					// Add extensions to the list.
 					foreach (var filterGroup in filterGroups)

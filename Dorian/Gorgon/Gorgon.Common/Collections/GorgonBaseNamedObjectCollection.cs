@@ -243,7 +243,7 @@ namespace GorgonLibrary.Collections
 		{
 		    _list = caseSensitive
 		                ? new SortedList<string, T>()
-		                : new SortedList<string, T>(new GorgonCaseInsensitiveComparer());
+		                : new SortedList<string, T>(StringComparer.OrdinalIgnoreCase);
 		    KeysAreCaseSensitive = caseSensitive;
 		}
 

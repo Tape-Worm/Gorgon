@@ -206,7 +206,7 @@ namespace GorgonLibrary.Editor
 			// Build the extension filter(s).
 		    if (extensions != null)
 		    {
-			    var groupedExtensions = extensions.GroupBy(item => item.Description, new GorgonCaseInsensitiveComparer());
+			    var groupedExtensions = extensions.GroupBy(item => item.Description, StringComparer.OrdinalIgnoreCase);
 
 		        foreach (var extensionGroup in groupedExtensions)
 		        {

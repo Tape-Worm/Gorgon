@@ -224,7 +224,7 @@ namespace GorgonLibrary.Collections
 		{
 		    _list = caseSensitive
 		                ? new Dictionary<string, T>()
-		                : new Dictionary<string, T>(new GorgonCaseInsensitiveComparer());
+		                : new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
 
 		    KeysAreCaseSensitive = caseSensitive;
 		}
