@@ -266,13 +266,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonResetGlyphOffset.ForeColor = System.Drawing.Color.White;
             this.buttonResetGlyphOffset.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
             this.buttonResetGlyphOffset.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonResetGlyphOffset.Location = new System.Drawing.Point(83, 91);
+            this.buttonResetGlyphOffset.Location = new System.Drawing.Point(11, 91);
             this.buttonResetGlyphOffset.Name = "buttonResetGlyphOffset";
-            this.buttonResetGlyphOffset.Size = new System.Drawing.Size(68, 23);
+            this.buttonResetGlyphOffset.Size = new System.Drawing.Size(140, 23);
             this.buttonResetGlyphOffset.TabIndex = 2;
-            this.buttonResetGlyphOffset.Text = "Reset";
-            this.buttonResetGlyphOffset.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.tipButtons.SetToolTip(this.buttonResetGlyphOffset, "Reset the current glyph offset to the original values.");
+            this.buttonResetGlyphOffset.Text = "reset offset";
+            this.tipButtons.SetToolTip(this.buttonResetGlyphOffset, "reset the current glyph offset to the original values.");
             this.buttonResetGlyphOffset.UseVisualStyleBackColor = false;
             this.buttonResetGlyphOffset.Click += new System.EventHandler(this.buttonResetGlyphOffset_Click);
             // 
@@ -286,13 +285,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonResetGlyphAdvance.ForeColor = System.Drawing.Color.White;
             this.buttonResetGlyphAdvance.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
             this.buttonResetGlyphAdvance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonResetGlyphAdvance.Location = new System.Drawing.Point(83, 167);
+            this.buttonResetGlyphAdvance.Location = new System.Drawing.Point(11, 167);
             this.buttonResetGlyphAdvance.Name = "buttonResetGlyphAdvance";
-            this.buttonResetGlyphAdvance.Size = new System.Drawing.Size(68, 23);
+            this.buttonResetGlyphAdvance.Size = new System.Drawing.Size(140, 23);
             this.buttonResetGlyphAdvance.TabIndex = 4;
-            this.buttonResetGlyphAdvance.Text = "Reset";
-            this.buttonResetGlyphAdvance.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.tipButtons.SetToolTip(this.buttonResetGlyphAdvance, "Reset the current glyph advance to the original value.");
+            this.buttonResetGlyphAdvance.Text = "reset advance";
+            this.tipButtons.SetToolTip(this.buttonResetGlyphAdvance, "reset the current glyph advance to the original value.");
             this.buttonResetGlyphAdvance.UseVisualStyleBackColor = false;
             this.buttonResetGlyphAdvance.Click += new System.EventHandler(this.buttonResetGlyphAdvance_Click);
             // 
@@ -351,27 +349,27 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.labelGlyphAdvance.AutoSize = true;
             this.labelGlyphAdvance.Location = new System.Drawing.Point(6, 120);
             this.labelGlyphAdvance.Name = "labelGlyphAdvance";
-            this.labelGlyphAdvance.Size = new System.Drawing.Size(88, 15);
+            this.labelGlyphAdvance.Size = new System.Drawing.Size(86, 15);
             this.labelGlyphAdvance.TabIndex = 2;
-            this.labelGlyphAdvance.Text = "Glyph advance:";
+            this.labelGlyphAdvance.Text = "alyph advance:";
             // 
             // labelGlyphOffsetTop
             // 
             this.labelGlyphOffsetTop.AutoSize = true;
             this.labelGlyphOffsetTop.Location = new System.Drawing.Point(6, 44);
             this.labelGlyphOffsetTop.Name = "labelGlyphOffsetTop";
-            this.labelGlyphOffsetTop.Size = new System.Drawing.Size(64, 15);
+            this.labelGlyphOffsetTop.Size = new System.Drawing.Size(49, 15);
             this.labelGlyphOffsetTop.TabIndex = 1;
-            this.labelGlyphOffsetTop.Text = "Top offset:";
+            this.labelGlyphOffsetTop.Text = "y offset:";
             // 
             // labelGlyphOffsetLeft
             // 
             this.labelGlyphOffsetLeft.AutoSize = true;
             this.labelGlyphOffsetLeft.Location = new System.Drawing.Point(6, 0);
             this.labelGlyphOffsetLeft.Name = "labelGlyphOffsetLeft";
-            this.labelGlyphOffsetLeft.Size = new System.Drawing.Size(63, 15);
+            this.labelGlyphOffsetLeft.Size = new System.Drawing.Size(48, 15);
             this.labelGlyphOffsetLeft.TabIndex = 0;
-            this.labelGlyphOffsetLeft.Text = "Left offset:";
+            this.labelGlyphOffsetLeft.Text = "x offset:";
             // 
             // panelGlyphClip
             // 
@@ -399,7 +397,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             // buttonGlyphClipCancel
             // 
-            this.buttonGlyphClipCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonGlyphClipCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.buttonGlyphClipCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.buttonGlyphClipCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
@@ -408,17 +405,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonGlyphClipCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGlyphClipCancel.ForeColor = System.Drawing.Color.White;
             this.buttonGlyphClipCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
-            this.buttonGlyphClipCancel.Location = new System.Drawing.Point(126, 313);
+            this.buttonGlyphClipCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonGlyphClipCancel.Location = new System.Drawing.Point(82, 236);
             this.buttonGlyphClipCancel.Name = "buttonGlyphClipCancel";
-            this.buttonGlyphClipCancel.Size = new System.Drawing.Size(28, 28);
+            this.buttonGlyphClipCancel.Size = new System.Drawing.Size(70, 28);
             this.buttonGlyphClipCancel.TabIndex = 8;
-            this.tipButtons.SetToolTip(this.buttonGlyphClipCancel, "Cancel glyph region editing.");
+            this.buttonGlyphClipCancel.Text = "cancel";
+            this.buttonGlyphClipCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.tipButtons.SetToolTip(this.buttonGlyphClipCancel, "cancel glyph region editing.");
             this.buttonGlyphClipCancel.UseVisualStyleBackColor = false;
             this.buttonGlyphClipCancel.Click += new System.EventHandler(this.buttonGlyphClipCancel_Click);
             // 
             // buttonGlyphClipOK
             // 
-            this.buttonGlyphClipOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.buttonGlyphClipOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.buttonGlyphClipOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.buttonGlyphClipOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
@@ -427,11 +426,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonGlyphClipOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.buttonGlyphClipOK.ForeColor = System.Drawing.Color.White;
             this.buttonGlyphClipOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
-            this.buttonGlyphClipOK.Location = new System.Drawing.Point(92, 313);
+            this.buttonGlyphClipOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.buttonGlyphClipOK.Location = new System.Drawing.Point(9, 236);
             this.buttonGlyphClipOK.Name = "buttonGlyphClipOK";
-            this.buttonGlyphClipOK.Size = new System.Drawing.Size(28, 28);
+            this.buttonGlyphClipOK.Size = new System.Drawing.Size(70, 28);
             this.buttonGlyphClipOK.TabIndex = 7;
-            this.tipButtons.SetToolTip(this.buttonGlyphClipOK, "Click to accept the glyph region.");
+            this.buttonGlyphClipOK.Text = "update";
+            this.buttonGlyphClipOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.tipButtons.SetToolTip(this.buttonGlyphClipOK, "click to accept the glyph region.");
             this.buttonGlyphClipOK.UseVisualStyleBackColor = false;
             this.buttonGlyphClipOK.Click += new System.EventHandler(this.buttonGlyphClipOK_Click);
             // 
@@ -441,7 +443,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.checkZoomSnap.Name = "checkZoomSnap";
             this.checkZoomSnap.Size = new System.Drawing.Size(143, 34);
             this.checkZoomSnap.TabIndex = 6;
-            this.checkZoomSnap.Text = "Snap zoom window to corners";
+            this.checkZoomSnap.Text = "snap zoom window to corners";
             this.checkZoomSnap.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
             this.checkZoomSnap.UseVisualStyleBackColor = true;
             this.checkZoomSnap.Click += new System.EventHandler(this.checkZoomSnap_Click);
@@ -604,54 +606,54 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.labelZoomAmount.AutoSize = true;
             this.labelZoomAmount.Location = new System.Drawing.Point(8, 149);
             this.labelZoomAmount.Name = "labelZoomAmount";
-            this.labelZoomAmount.Size = new System.Drawing.Size(87, 15);
+            this.labelZoomAmount.Size = new System.Drawing.Size(85, 15);
             this.labelZoomAmount.TabIndex = 7;
-            this.labelZoomAmount.Text = "Zoom amount:";
+            this.labelZoomAmount.Text = "zoom amount:";
             // 
             // labelZoomWindowSize
             // 
             this.labelZoomWindowSize.AutoSize = true;
             this.labelZoomWindowSize.Location = new System.Drawing.Point(8, 105);
             this.labelZoomWindowSize.Name = "labelZoomWindowSize";
-            this.labelZoomWindowSize.Size = new System.Drawing.Size(109, 15);
+            this.labelZoomWindowSize.Size = new System.Drawing.Size(107, 15);
             this.labelZoomWindowSize.TabIndex = 5;
-            this.labelZoomWindowSize.Text = "Zoom window size:";
+            this.labelZoomWindowSize.Text = "zoom window size:";
             // 
             // labelGlyphHeight
             // 
             this.labelGlyphHeight.AutoSize = true;
             this.labelGlyphHeight.Location = new System.Drawing.Point(81, 44);
             this.labelGlyphHeight.Name = "labelGlyphHeight";
-            this.labelGlyphHeight.Size = new System.Drawing.Size(46, 15);
+            this.labelGlyphHeight.Size = new System.Drawing.Size(14, 15);
             this.labelGlyphHeight.TabIndex = 3;
-            this.labelGlyphHeight.Text = "Height:";
+            this.labelGlyphHeight.Text = "h";
             // 
             // labelGlyphWidth
             // 
             this.labelGlyphWidth.AutoSize = true;
             this.labelGlyphWidth.Location = new System.Drawing.Point(6, 44);
             this.labelGlyphWidth.Name = "labelGlyphWidth";
-            this.labelGlyphWidth.Size = new System.Drawing.Size(42, 15);
+            this.labelGlyphWidth.Size = new System.Drawing.Size(16, 15);
             this.labelGlyphWidth.TabIndex = 2;
-            this.labelGlyphWidth.Text = "Width:";
+            this.labelGlyphWidth.Text = "w";
             // 
             // labelGlyphTop
             // 
             this.labelGlyphTop.AutoSize = true;
             this.labelGlyphTop.Location = new System.Drawing.Point(80, 0);
             this.labelGlyphTop.Name = "labelGlyphTop";
-            this.labelGlyphTop.Size = new System.Drawing.Size(31, 15);
+            this.labelGlyphTop.Size = new System.Drawing.Size(13, 15);
             this.labelGlyphTop.TabIndex = 1;
-            this.labelGlyphTop.Text = "Top:";
+            this.labelGlyphTop.Text = "y";
             // 
             // labelGlyphLeft
             // 
             this.labelGlyphLeft.AutoSize = true;
             this.labelGlyphLeft.Location = new System.Drawing.Point(6, 0);
             this.labelGlyphLeft.Name = "labelGlyphLeft";
-            this.labelGlyphLeft.Size = new System.Drawing.Size(30, 15);
+            this.labelGlyphLeft.Size = new System.Drawing.Size(12, 15);
             this.labelGlyphLeft.TabIndex = 0;
-            this.labelGlyphLeft.Text = "Left:";
+            this.labelGlyphLeft.Text = "x";
             // 
             // panelKerningPairs
             // 
@@ -713,7 +715,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonKernCancel.Name = "buttonKernCancel";
             this.buttonKernCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonKernCancel.TabIndex = 3;
-            this.buttonKernCancel.Text = "Reset";
+            this.buttonKernCancel.Text = "reset";
             this.buttonKernCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tipButtons.SetToolTip(this.buttonKernCancel, "Reset the glyph kerning value.");
             this.buttonKernCancel.UseVisualStyleBackColor = false;
@@ -733,7 +735,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonKernOK.Name = "buttonKernOK";
             this.buttonKernOK.Size = new System.Drawing.Size(75, 23);
             this.buttonKernOK.TabIndex = 2;
-            this.buttonKernOK.Text = "Update";
+            this.buttonKernOK.Text = "update";
             this.buttonKernOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.tipButtons.SetToolTip(this.buttonKernOK, "Updating kerning value.");
             this.buttonKernOK.UseVisualStyleBackColor = false;
@@ -745,9 +747,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.labelKerningOffset.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelKerningOffset.Location = new System.Drawing.Point(3, 3);
             this.labelKerningOffset.Name = "labelKerningOffset";
-            this.labelKerningOffset.Size = new System.Drawing.Size(67, 15);
+            this.labelKerningOffset.Size = new System.Drawing.Size(63, 15);
             this.labelKerningOffset.TabIndex = 1;
-            this.labelKerningOffset.Text = "Kern offset:";
+            this.labelKerningOffset.Text = "kern offset";
             // 
             // panel3
             // 
@@ -779,9 +781,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.labelKerningSecondaryGlyph.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelKerningSecondaryGlyph.Location = new System.Drawing.Point(3, 3);
             this.labelKerningSecondaryGlyph.Name = "labelKerningSecondaryGlyph";
-            this.labelKerningSecondaryGlyph.Size = new System.Drawing.Size(82, 15);
+            this.labelKerningSecondaryGlyph.Size = new System.Drawing.Size(78, 15);
             this.labelKerningSecondaryGlyph.TabIndex = 0;
-            this.labelKerningSecondaryGlyph.Text = "Second glyph:";
+            this.labelKerningSecondaryGlyph.Text = "second glyph";
             // 
             // panelText
             // 
@@ -933,8 +935,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // labelTextureCount
             // 
             this.labelTextureCount.Name = "labelTextureCount";
-            this.labelTextureCount.Size = new System.Drawing.Size(71, 22);
-            this.labelTextureCount.Text = "Texture N/A";
+            this.labelTextureCount.Size = new System.Drawing.Size(64, 22);
+            this.labelTextureCount.Text = "texture n/a";
             // 
             // buttonNextTexture
             // 
@@ -970,14 +972,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.dropDownZoom.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.zoom_16x16;
             this.dropDownZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.dropDownZoom.Name = "dropDownZoom";
-            this.dropDownZoom.Size = new System.Drawing.Size(135, 22);
-            this.dropDownZoom.Text = "Zoom: To Window";
+            this.dropDownZoom.Size = new System.Drawing.Size(128, 22);
+            this.dropDownZoom.Text = "zoom: to window";
             // 
             // menuItem1600
             // 
             this.menuItem1600.CheckOnClick = true;
             this.menuItem1600.Name = "menuItem1600";
-            this.menuItem1600.Size = new System.Drawing.Size(133, 22);
+            this.menuItem1600.Size = new System.Drawing.Size(130, 22);
             this.menuItem1600.Tag = "16";
             this.menuItem1600.Text = "1600%";
             this.menuItem1600.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -987,7 +989,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem800.CheckOnClick = true;
             this.menuItem800.Name = "menuItem800";
-            this.menuItem800.Size = new System.Drawing.Size(133, 22);
+            this.menuItem800.Size = new System.Drawing.Size(130, 22);
             this.menuItem800.Tag = "8";
             this.menuItem800.Text = "800%";
             this.menuItem800.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -997,7 +999,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem400.CheckOnClick = true;
             this.menuItem400.Name = "menuItem400";
-            this.menuItem400.Size = new System.Drawing.Size(133, 22);
+            this.menuItem400.Size = new System.Drawing.Size(130, 22);
             this.menuItem400.Tag = "4";
             this.menuItem400.Text = "400%";
             this.menuItem400.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -1007,7 +1009,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem200.CheckOnClick = true;
             this.menuItem200.Name = "menuItem200";
-            this.menuItem200.Size = new System.Drawing.Size(133, 22);
+            this.menuItem200.Size = new System.Drawing.Size(130, 22);
             this.menuItem200.Tag = "2";
             this.menuItem200.Text = "200%";
             this.menuItem200.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -1017,7 +1019,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem100.CheckOnClick = true;
             this.menuItem100.Name = "menuItem100";
-            this.menuItem100.Size = new System.Drawing.Size(133, 22);
+            this.menuItem100.Size = new System.Drawing.Size(130, 22);
             this.menuItem100.Tag = "1";
             this.menuItem100.Text = "100%";
             this.menuItem100.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -1027,7 +1029,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem75.CheckOnClick = true;
             this.menuItem75.Name = "menuItem75";
-            this.menuItem75.Size = new System.Drawing.Size(133, 22);
+            this.menuItem75.Size = new System.Drawing.Size(130, 22);
             this.menuItem75.Tag = "0.75";
             this.menuItem75.Text = "75%";
             this.menuItem75.Click += new System.EventHandler(this.zoomItem_Click);
@@ -1036,7 +1038,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem50.CheckOnClick = true;
             this.menuItem50.Name = "menuItem50";
-            this.menuItem50.Size = new System.Drawing.Size(133, 22);
+            this.menuItem50.Size = new System.Drawing.Size(130, 22);
             this.menuItem50.Tag = "0.5";
             this.menuItem50.Text = "50%";
             this.menuItem50.Click += new System.EventHandler(this.zoomItem_Click);
@@ -1045,7 +1047,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.menuItem25.CheckOnClick = true;
             this.menuItem25.Name = "menuItem25";
-            this.menuItem25.Size = new System.Drawing.Size(133, 22);
+            this.menuItem25.Size = new System.Drawing.Size(130, 22);
             this.menuItem25.Tag = "0.25";
             this.menuItem25.Text = "25%";
             this.menuItem25.Click += new System.EventHandler(this.zoomItem_Click);
@@ -1053,7 +1055,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(130, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(127, 6);
             this.toolStripSeparator1.Click += new System.EventHandler(this.zoomItem_Click);
             // 
             // menuItemToWindow
@@ -1062,9 +1064,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.menuItemToWindow.CheckOnClick = true;
             this.menuItemToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
             this.menuItemToWindow.Name = "menuItemToWindow";
-            this.menuItemToWindow.Size = new System.Drawing.Size(133, 22);
+            this.menuItemToWindow.Size = new System.Drawing.Size(130, 22);
             this.menuItemToWindow.Tag = "-1";
-            this.menuItemToWindow.Text = "To window";
+            this.menuItemToWindow.Text = "to window";
             this.menuItemToWindow.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
             this.menuItemToWindow.Click += new System.EventHandler(this.zoomItem_Click);
             // 
@@ -1126,8 +1128,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.labelFindGlyph.Enabled = false;
             this.labelFindGlyph.Name = "labelFindGlyph";
-            this.labelFindGlyph.Size = new System.Drawing.Size(66, 22);
-            this.labelFindGlyph.Text = "Find glyph:";
+            this.labelFindGlyph.Size = new System.Drawing.Size(64, 22);
+            this.labelFindGlyph.Text = "find glyph:";
             // 
             // comboSearchGlyph
             // 
@@ -1150,7 +1152,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonSearchGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonSearchGlyph.Name = "buttonSearchGlyph";
             this.buttonSearchGlyph.Size = new System.Drawing.Size(23, 22);
-            this.buttonSearchGlyph.Text = "Search for the selected glyph.";
+            this.buttonSearchGlyph.Text = "search for the selected glyph.";
             this.buttonSearchGlyph.Click += new System.EventHandler(this.buttonSearchGlyph_Click);
             // 
             // sepGlyphEditing
@@ -1163,8 +1165,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonGoHome.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.back_16x16png;
             this.buttonGoHome.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonGoHome.Name = "buttonGoHome";
-            this.buttonGoHome.Size = new System.Drawing.Size(76, 22);
-            this.buttonGoHome.Text = "Go home";
+            this.buttonGoHome.Size = new System.Drawing.Size(75, 22);
+            this.buttonGoHome.Text = "go home";
             this.buttonGoHome.Click += new System.EventHandler(this.buttonGoHome_Click);
             // 
             // buttonEditGlyph
@@ -1175,7 +1177,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonEditGlyph.Name = "buttonEditGlyph";
             this.buttonEditGlyph.Size = new System.Drawing.Size(23, 22);
-            this.buttonEditGlyph.ToolTipText = "Edit the selected glyph.";
+            this.buttonEditGlyph.Text = "edit the selected glyph.";
             this.buttonEditGlyph.Click += new System.EventHandler(this.buttonEditGlyph_Click);
             // 
             // sepGlyphSpacing
@@ -1192,7 +1194,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonGlyphKern.Name = "buttonGlyphKern";
             this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
-            this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
+            this.buttonGlyphKern.Text = "sets the kerning values for the selected glyph.";
             this.buttonGlyphKern.Click += new System.EventHandler(this.buttonGlyphKern_Click);
             // 
             // buttonGlyphTools
@@ -1208,7 +1210,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonGlyphTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonGlyphTools.Name = "buttonGlyphTools";
             this.buttonGlyphTools.Size = new System.Drawing.Size(32, 22);
-            this.buttonGlyphTools.Text = "Edit the glyph image.";
+            this.buttonGlyphTools.Text = "edit the glyph image.";
             this.buttonGlyphTools.ButtonClick += new System.EventHandler(this.buttonGlyphTools_ButtonClick);
             // 
             // menuItemLoadGlyphImage
@@ -1216,8 +1218,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.menuItemLoadGlyphImage.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.menuItemLoadGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
             this.menuItemLoadGlyphImage.Name = "menuItemLoadGlyphImage";
-            this.menuItemLoadGlyphImage.Size = new System.Drawing.Size(196, 22);
-            this.menuItemLoadGlyphImage.Text = "&Load image for glyph...";
+            this.menuItemLoadGlyphImage.Size = new System.Drawing.Size(193, 22);
+            this.menuItemLoadGlyphImage.Text = "&load image for glyph...";
             this.menuItemLoadGlyphImage.Click += new System.EventHandler(this.menuItemLoadGlyphImage_Click);
             // 
             // menuItemRemoveGlyphImage
@@ -1225,22 +1227,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.menuItemRemoveGlyphImage.Enabled = false;
             this.menuItemRemoveGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_image_16x16;
             this.menuItemRemoveGlyphImage.Name = "menuItemRemoveGlyphImage";
-            this.menuItemRemoveGlyphImage.Size = new System.Drawing.Size(196, 22);
-            this.menuItemRemoveGlyphImage.Text = "Reset glyph image...";
+            this.menuItemRemoveGlyphImage.Size = new System.Drawing.Size(193, 22);
+            this.menuItemRemoveGlyphImage.Text = "reset glyph image...";
             this.menuItemRemoveGlyphImage.Click += new System.EventHandler(this.menuItemRemoveGlyphImage_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(193, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(190, 6);
             // 
             // menuItemSetGlyph
             // 
             this.menuItemSetGlyph.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.menuItemSetGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
             this.menuItemSetGlyph.Name = "menuItemSetGlyph";
-            this.menuItemSetGlyph.Size = new System.Drawing.Size(196, 22);
-            this.menuItemSetGlyph.Text = "&Clip glyph from image";
+            this.menuItemSetGlyph.Size = new System.Drawing.Size(193, 22);
+            this.menuItemSetGlyph.Text = "&clip glyph from image";
             this.menuItemSetGlyph.Click += new System.EventHandler(this.menuItemSetGlyph_Click);
             // 
             // stripCommands
@@ -1270,20 +1272,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.menuTextColor.Name = "menuTextColor";
             this.menuTextColor.Size = new System.Drawing.Size(29, 22);
-            this.menuTextColor.Text = "Set the preview text display colors.";
+            this.menuTextColor.Text = "set the preview text display colors.";
             // 
             // itemSampleTextForeground
             // 
             this.itemSampleTextForeground.Name = "itemSampleTextForeground";
             this.itemSampleTextForeground.Size = new System.Drawing.Size(177, 22);
-            this.itemSampleTextForeground.Text = "&Foreground color...";
+            this.itemSampleTextForeground.Text = "&foreground color...";
             this.itemSampleTextForeground.Click += new System.EventHandler(this.buttonTextColor_Click);
             // 
             // itemSampleTextBackground
             // 
             this.itemSampleTextBackground.Name = "itemSampleTextBackground";
             this.itemSampleTextBackground.Size = new System.Drawing.Size(177, 22);
-            this.itemSampleTextBackground.Text = "&Background color...";
+            this.itemSampleTextBackground.Text = "&background color...";
             this.itemSampleTextBackground.Click += new System.EventHandler(this.itemSampleTextBackground_Click);
             // 
             // menuShadow
@@ -1298,14 +1300,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.menuShadow.Name = "menuShadow";
             this.menuShadow.Size = new System.Drawing.Size(29, 22);
-            this.menuShadow.Text = "Set the preview text shadowing options.";
+            this.menuShadow.Text = "set the preview text shadowing options.";
             // 
             // itemPreviewShadowEnable
             // 
             this.itemPreviewShadowEnable.CheckOnClick = true;
             this.itemPreviewShadowEnable.Name = "itemPreviewShadowEnable";
             this.itemPreviewShadowEnable.Size = new System.Drawing.Size(175, 22);
-            this.itemPreviewShadowEnable.Text = "&Enable text shadow";
+            this.itemPreviewShadowEnable.Text = "&enable text shadow";
             this.itemPreviewShadowEnable.Click += new System.EventHandler(this.itemPreviewShadowEnable_Click);
             // 
             // toolStripSeparator4
@@ -1318,7 +1320,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.itemShadowOpacity.Enabled = false;
             this.itemShadowOpacity.Name = "itemShadowOpacity";
             this.itemShadowOpacity.Size = new System.Drawing.Size(175, 22);
-            this.itemShadowOpacity.Text = "Shadow &opacity...";
+            this.itemShadowOpacity.Text = "shadow &opacity...";
             this.itemShadowOpacity.Click += new System.EventHandler(this.itemShadowOpacity_Click);
             // 
             // itemShadowOffset
@@ -1326,7 +1328,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.itemShadowOffset.Enabled = false;
             this.itemShadowOffset.Name = "itemShadowOffset";
             this.itemShadowOffset.Size = new System.Drawing.Size(175, 22);
-            this.itemShadowOffset.Text = "Shadow o&ffset...";
+            this.itemShadowOffset.Text = "shadow o&ffset...";
             this.itemShadowOffset.Click += new System.EventHandler(this.itemShadowOffset_Click);
             // 
             // toolStripSeparator5
@@ -1338,7 +1340,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             this.labelPreviewText.Name = "labelPreviewText";
             this.labelPreviewText.Size = new System.Drawing.Size(73, 22);
-            this.labelPreviewText.Text = "Preview text:";
+            this.labelPreviewText.Text = "preview text:";
             // 
             // textPreviewText
             // 
@@ -1357,7 +1359,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.buttonEditPreviewText.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonEditPreviewText.Name = "buttonEditPreviewText";
             this.buttonEditPreviewText.Size = new System.Drawing.Size(23, 22);
-            this.buttonEditPreviewText.Text = "Edit the preview text.";
+            this.buttonEditPreviewText.Text = "edit the preview text.";
             this.buttonEditPreviewText.Click += new System.EventHandler(this.buttonEditPreviewText_Click);
             // 
             // panel2

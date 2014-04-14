@@ -32,7 +32,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -311,11 +310,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
         /// </summary>
 	    private void LocalizeControls()
         {
-            itemAddNode.Text = buttonAddNode.Text = buttonAddNode.ToolTipText = Resources.GORFNT_PROP_VALUE_ADDNODE;
-            itemRemoveNode.Text = buttonRemoveNode.Text = buttonRemoveNode.ToolTipText = Resources.GORFNT_PROP_VALUE_ADDNODE;
-            buttonClearNodes.Text = buttonClearNodes.ToolTipText = Resources.GORFNT_PROP_VALUE_CLEARNODES;
-            itemDuplicateNode.Text = buttonDuplicateNode.Text = buttonDuplicateNode.ToolTipText = Resources.GORFNT_PROP_VALUE_DUPENODE;
-
+            itemAddNode.Text = buttonAddNode.Text = Resources.GORFNT_ACC_TEXT_ADD_NODE;
+            itemRemoveNode.Text = buttonRemoveNode.Text = Resources.GORFNT_ACC_TEXT_REMOVE_NODE;
+            buttonClearNodes.Text = Resources.GORFNT_ACC_TEXT_CLEAR_NODES;
+            itemDuplicateNode.Text = buttonDuplicateNode.Text = Resources.GORFNT_ACC_TEXT_DUPLICATE_NODES;
+            labelAngle.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ANGLE);
+            labelSelectedWeight.Text = string.Format("{0}:", Resources.GORFNT_LABEL_SELECTED_WEIGHT_TEXT);
+            labelSelectedColor.Text = string.Format("{0}:", Resources.GORFNT_LABEL_SELECTED_COLOR_TEXT);
+            checkScaleAngle.Text = Resources.GORFNT_CHECK_SCALE_ANGLE_TEXT;
+            checkUseGamma.Text = Resources.GORFNT_CHECK_USE_GAMMA_TEXT;
+            labelPreview.Text = Resources.GORFNT_LABEL_BRUSH_PREVIEW_TEXT;
         }
 
 		/// <summary>

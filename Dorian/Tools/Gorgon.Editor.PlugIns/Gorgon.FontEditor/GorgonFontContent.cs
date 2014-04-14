@@ -841,7 +841,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					if (!(sizeObject is Size))
 					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM);
+						throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM);
 						
 					}
 

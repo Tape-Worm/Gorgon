@@ -219,7 +219,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 		    if (string.IsNullOrEmpty(comboAA.Text))
 		    {
-				comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
+				comboAA.Text = Resources.GORFNT_TEXT_ANTIALIAS;
 		    }
 
 			if (string.IsNullOrEmpty(comboFonts.Text))
@@ -418,7 +418,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             comboAA.Items.Clear();
 		    comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_NONE);
-            comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_STANDARD);
+            comboAA.Items.Add(Resources.GORFNT_TEXT_ANTIALIAS);
 
 			comboSizeType.Text = GorgonFontEditorPlugIn.Settings.FontSizeType.ToString();
 
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					comboAA.Text = Resources.GORFNT_ANTIALIAS_NONE;
 					break;
 				default:
-					comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
+					comboAA.Text = Resources.GORFNT_TEXT_ANTIALIAS;
 					break;
 			}
 

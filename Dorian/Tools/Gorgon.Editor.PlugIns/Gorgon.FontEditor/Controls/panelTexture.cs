@@ -282,12 +282,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			RectangleF selected = _clipper.ClipRegion;
 
-			_infoText.AppendFormat(Resources.GORFNT_PROP_VALUE_SELECTLABEL,
+            _infoText.AppendFormat("{0}: {1:####0}x{2:####0} - {3:####0}x{4:####0}\n{5}: {6:####0}\n{7}: {8:####0}", Resources.GORFNT_LABEL_SELECTION_REGION_TEXT,
 								   selected.X,
 								   selected.Y,
 								   selected.Right,
 								   selected.Bottom,
+                                   Resources.GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT,
 								   selected.Width,
+                                   Resources.GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT,
 								   selected.Height);
 
 			labelInfo.Text = _infoText.ToString();
@@ -403,18 +405,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private void PerformLocalization()
 		{
 			comboWrapMode.Items.Clear();
-			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.Tile, Resources.GORFNT_PROP_VALUE_TILE));
-			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.Clamp, Resources.GORFNT_PROP_VALUE_CLAMP));
-			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipX, Resources.GORFNT_PROP_VALUE_TILEFLIPX));
-			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipY, Resources.GORFNT_PROP_VALUE_TILEFLIPY));
-			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipXY, Resources.GORFNT_PROP_VALUE_TILEFLIPBOTH));
+			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.Tile, Resources.GORFNT_COMBOITEM_WRAP_TILE_TEXT));
+			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.Clamp, Resources.GORFNT_TEXT_CLAMP));
+			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipX, Resources.GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_X_TEXT));
+			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipY, Resources.GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_Y_TEXT));
+			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipXY, Resources.GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_TEXT));
 
-			labelTexHeight.Text = Resources.GORFNT_PROP_VALUE_HEIGHT;
-			labelTexWidth.Text = Resources.GORFNT_PROP_VALUE_WIDTH;
-			labelTexLeft.Text = Resources.GORFNT_PROP_VALUE_LEFT;
-			labelTexTop.Text = Resources.GORFNT_PROP_VALUE_TOP;
-			labelWrapMode.Text = Resources.GORFNT_PROP_VALUE_WRAP_MODE;
-			buttonOpen.Text = Resources.GORFNT_PROP_VALUE_OPEN_TEXTURE;
+			labelTexHeight.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT);
+			labelTexWidth.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT);
+			labelTexLeft.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_LEFT_TEXT);
+			labelTexTop.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_TOP_TEXT);
+			labelWrapMode.Text = string.Format("{0}:", Resources.GORFNT_LABEL_WRAPMODE_TEXT);
+			buttonOpen.Text = Resources.GORFNT_BUTTON_OPEN_TEXTURE_TEXT;
 		}
 
 		/// <summary>
@@ -547,7 +549,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 							numericHeight.Value = settings.Height;
 							numericX.Value = 0;
 							numericY.Value = 0;
-							comboWrapMode.Text = Resources.GORFNT_PROP_VALUE_TILE;
+							comboWrapMode.Text = Resources.GORFNT_COMBOITEM_WRAP_TILE_TEXT;
 
 							// Function to retrieve the transformation and node point values from the image.
 							InitializeClipper(_texture, new RectangleF(0, 0, settings.Width, settings.Height));

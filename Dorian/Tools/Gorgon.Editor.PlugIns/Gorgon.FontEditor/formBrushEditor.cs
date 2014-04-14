@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
@@ -332,21 +331,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 	    private void Localize()
         {
-	        Text = Resources.GORFNT_DLG_BRUSH_EDITOR_TEXT;
+	        Text = Resources.GORFNT_TEXT_BRUSH_EDITOR;
 
-	        buttonOK.Text = Resources.GORFNT_BUTTON_OK_TEXT;
-	        buttonCancel.Text = Resources.GORFNT_BUTTON_CANCEL_TEXT;
+	        buttonOK.Text = Resources.GORFNT_ACC_TEXT_OK;
+	        buttonCancel.Text = Resources.GORFNT_ACC_TEXT_CANCEL;
 
-	        labelBrushType.Text = Resources.GORFNT_PROP_VALUE_BRUSH_TYPE;
+	        labelBrushType.Text = Resources.GORFNT_TEXT_BRUSH_TYPE;
 
 		    comboBrushType.Items.Clear();
-			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Solid, Resources.GORFNT_PROP_VALUE_SOLID_BRUSH));
-			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.LinearGradient, Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH));
-			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Hatched, Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH));
+			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Solid, Resources.GORFNT_COMBOITEM_SOLID_BRUSH_TEXT));
+			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.LinearGradient, Resources.GORFNT_COMBOITEM_GRADIENT_BRUSH_TEXT));
+			comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Hatched, Resources.GORFNT_COMBOITEM_PATTERN_BRUSH_TEXT));
 	        if (_currentContent.ImageEditor != null)
 	        {
 		        comboBrushType.Items.Add(new BrushTypeComboItem(GlyphBrushType.Texture,
-		                                                        Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH));
+		                                                        Resources.GORFNT_COMBOITEM_TEXTURE_BRUSH_TEXT));
 	        }
 
 	        comboBrushType.SelectedItem = 0;
@@ -430,7 +429,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    switch (BrushType)
 			    {
 				    case GlyphBrushType.LinearGradient:
-					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;
+					    comboBrushType.Text = Resources.GORFNT_COMBOITEM_GRADIENT_BRUSH_TEXT;
 
 					    panelGradEditor.Angle = GradientBrush.Angle;
 					    panelGradEditor.UseGammaCorrection = GradientBrush.GammaCorrection;
@@ -440,7 +439,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					    tabBrushEditor.SelectedTab = pageGradient;
 					    break;
 				    case GlyphBrushType.Hatched:
-					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH;
+					    comboBrushType.Text = Resources.GORFNT_COMBOITEM_PATTERN_BRUSH_TEXT;
 
 					    panelHatchEditor.HatchForegroundColor = PatternBrush.ForegroundColor;
 					    panelHatchEditor.HatchBackgroundColor = PatternBrush.BackgroundColor;
@@ -451,12 +450,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				    case GlyphBrushType.Texture:
 						if (_currentContent.ImageEditor == null)
 						{
-							GorgonDialogs.WarningBox(this, Resources.GORFNT_BRUSH_NO_IMG_EDITOR);
+							GorgonDialogs.WarningBox(this, Resources.GORFNT_MSG_NO_IMG_EDITOR);
 							comboBrushType.SelectedIndex = 0;
 							break;
 						}
 
-					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH;
+					    comboBrushType.Text = Resources.GORFNT_COMBOITEM_TEXTURE_BRUSH_TEXT;
 					    tabBrushEditor.SelectedTab = pageTexture;
 						
 					    panelTextureEditor.Texture = TextureBrush.Texture;
@@ -464,7 +463,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						panelTextureEditor.TextureRegion = TextureBrush.TextureRegion;
 					    break;
 				    default:
-					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_SOLID_BRUSH;
+					    comboBrushType.Text = Resources.GORFNT_COMBOITEM_SOLID_BRUSH_TEXT;
 					    break;
 			    }
 		    }

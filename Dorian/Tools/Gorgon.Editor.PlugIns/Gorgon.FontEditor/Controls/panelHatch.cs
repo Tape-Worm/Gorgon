@@ -399,6 +399,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			}
 		}
 
+        /// <summary>
+        /// Function to localize the strings on the control.
+        /// </summary>
+	    private void PerformLocalization()
+        {
+            labelPreview.Text = Resources.GORFNT_LABEL_BRUSH_PREVIEW_TEXT;
+            labelPatternType.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PATTERN_TYPE_TEXT);
+            labelForegroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FOREGROUND);
+            labelBackgroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_BACKGROUND);
+        }
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
 		/// </summary>
@@ -409,6 +420,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			try
 			{
+			    PerformLocalization();
+
 			    _previewBitmap = new Bitmap(panelPreview.ClientSize.Width,
 			                                panelPreview.ClientSize.Height,
 			                                PixelFormat.Format32bppArgb);

@@ -83,16 +83,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.panel1 = new System.Windows.Forms.Panel();
             this.panelSelectedColor = new GorgonLibrary.UI.GorgonSelectablePanel();
             this.labelPreview = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.labelSelectedColor = new System.Windows.Forms.Label();
             this.numericSelectedWeight = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelSelectedWeight = new System.Windows.Forms.Label();
             this.panelPreview = new System.Windows.Forms.Panel();
             this.popupNodeEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.itemAddNode = new System.Windows.Forms.ToolStripMenuItem();
             this.itemRemoveNode = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.itemDuplicateNode = new System.Windows.Forms.ToolStripMenuItem();
-            this.tipButtons = new System.Windows.Forms.ToolTip(this.components);
             this.panelBrushGradient.SuspendLayout();
             this.stripCommands.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericAngle)).BeginInit();
@@ -148,7 +147,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.buttonAddNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonAddNode.Name = "buttonAddNode";
             this.buttonAddNode.Size = new System.Drawing.Size(23, 22);
-            this.buttonAddNode.Text = "&Add node";
+            this.buttonAddNode.Text = "add node";
             this.buttonAddNode.Click += new System.EventHandler(this.itemAddNode_Click);
             // 
             // buttonRemoveNode
@@ -159,7 +158,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.buttonRemoveNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonRemoveNode.Name = "buttonRemoveNode";
             this.buttonRemoveNode.Size = new System.Drawing.Size(23, 22);
-            this.buttonRemoveNode.Text = "&Remove node";
+            this.buttonRemoveNode.Text = "remove node";
             this.buttonRemoveNode.Click += new System.EventHandler(this.itemRemoveNode_Click);
             // 
             // toolStripSeparator1
@@ -173,8 +172,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.buttonDuplicateNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
             this.buttonDuplicateNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonDuplicateNode.Name = "buttonDuplicateNode";
-            this.buttonDuplicateNode.Size = new System.Drawing.Size(107, 22);
-            this.buttonDuplicateNode.Text = "&Duplicate node";
+            this.buttonDuplicateNode.Size = new System.Drawing.Size(106, 22);
+            this.buttonDuplicateNode.Text = "duplicate node";
             this.buttonDuplicateNode.Click += new System.EventHandler(this.itemDuplicateNode_Click);
             // 
             // toolStripSeparator2
@@ -188,8 +187,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.buttonClearNodes.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.clear_16x16;
             this.buttonClearNodes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonClearNodes.Name = "buttonClearNodes";
-            this.buttonClearNodes.Size = new System.Drawing.Size(89, 22);
-            this.buttonClearNodes.Text = "&Clear nodes";
+            this.buttonClearNodes.Size = new System.Drawing.Size(87, 22);
+            this.buttonClearNodes.Text = "clear nodes";
             this.buttonClearNodes.Click += new System.EventHandler(this.buttonClearNodes_Click);
             // 
             // panelGradControls
@@ -211,9 +210,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.labelAngle.AutoSize = true;
             this.labelAngle.Location = new System.Drawing.Point(6, 9);
             this.labelAngle.Name = "labelAngle";
-            this.labelAngle.Size = new System.Drawing.Size(37, 13);
+            this.labelAngle.Size = new System.Drawing.Size(33, 13);
             this.labelAngle.TabIndex = 1;
-            this.labelAngle.Text = "Angle:";
+            this.labelAngle.Text = "angle";
             // 
             // numericAngle
             // 
@@ -245,9 +244,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.checkScaleAngle.AutoSize = true;
             this.checkScaleAngle.Location = new System.Drawing.Point(9, 33);
             this.checkScaleAngle.Name = "checkScaleAngle";
-            this.checkScaleAngle.Size = new System.Drawing.Size(88, 17);
+            this.checkScaleAngle.Size = new System.Drawing.Size(86, 17);
             this.checkScaleAngle.TabIndex = 1;
-            this.checkScaleAngle.Text = "Scale angle?";
+            this.checkScaleAngle.Text = "scale angle?";
             this.checkScaleAngle.UseVisualStyleBackColor = true;
             this.checkScaleAngle.Click += new System.EventHandler(this.checkScaleAngle_Click);
             // 
@@ -256,9 +255,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.checkUseGamma.AutoSize = true;
             this.checkUseGamma.Location = new System.Drawing.Point(9, 56);
             this.checkUseGamma.Name = "checkUseGamma";
-            this.checkUseGamma.Size = new System.Drawing.Size(140, 17);
+            this.checkUseGamma.Size = new System.Drawing.Size(136, 17);
             this.checkUseGamma.TabIndex = 2;
-            this.checkUseGamma.Text = "Use Gamma correction?";
+            this.checkUseGamma.Text = "use gamma correction?";
             this.checkUseGamma.UseVisualStyleBackColor = true;
             this.checkUseGamma.CheckedChanged += new System.EventHandler(this.checkUseGamma_CheckedChanged);
             // 
@@ -266,9 +265,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             this.panel1.Controls.Add(this.panelSelectedColor);
             this.panel1.Controls.Add(this.labelPreview);
-            this.panel1.Controls.Add(this.label4);
+            this.panel1.Controls.Add(this.labelSelectedColor);
             this.panel1.Controls.Add(this.numericSelectedWeight);
-            this.panel1.Controls.Add(this.label3);
+            this.panel1.Controls.Add(this.labelSelectedWeight);
             this.panel1.Controls.Add(this.labelAngle);
             this.panel1.Controls.Add(this.checkUseGamma);
             this.panel1.Controls.Add(this.numericAngle);
@@ -302,17 +301,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.labelPreview.Name = "labelPreview";
             this.labelPreview.Size = new System.Drawing.Size(95, 22);
             this.labelPreview.TabIndex = 12;
-            this.labelPreview.Text = "Preview";
+            this.labelPreview.Text = "preview";
             this.labelPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label4
+            // labelSelectedColor
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(189, 35);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(79, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Selected Color:";
+            this.labelSelectedColor.AutoSize = true;
+            this.labelSelectedColor.Location = new System.Drawing.Point(189, 35);
+            this.labelSelectedColor.Name = "labelSelectedColor";
+            this.labelSelectedColor.Size = new System.Drawing.Size(73, 13);
+            this.labelSelectedColor.TabIndex = 10;
+            this.labelSelectedColor.Text = "selected color";
             // 
             // numericSelectedWeight
             // 
@@ -335,14 +334,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.numericSelectedWeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.numericSelectedWeight.ValueChanged += new System.EventHandler(this.numericSelectedWeight_ValueChanged);
             // 
-            // label3
+            // labelSelectedWeight
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(189, 9);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Selected Weight:";
+            this.labelSelectedWeight.AutoSize = true;
+            this.labelSelectedWeight.Location = new System.Drawing.Point(189, 9);
+            this.labelSelectedWeight.Name = "labelSelectedWeight";
+            this.labelSelectedWeight.Size = new System.Drawing.Size(81, 13);
+            this.labelSelectedWeight.TabIndex = 8;
+            this.labelSelectedWeight.Text = "selected weight";
             // 
             // panelPreview
             // 
@@ -363,40 +362,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.toolStripMenuItem1,
             this.itemDuplicateNode});
             this.popupNodeEdit.Name = "contextMenuStrip1";
-            this.popupNodeEdit.Size = new System.Drawing.Size(159, 76);
+            this.popupNodeEdit.Size = new System.Drawing.Size(154, 76);
             // 
             // itemAddNode
             // 
             this.itemAddNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.add_16x16;
             this.itemAddNode.Name = "itemAddNode";
-            this.itemAddNode.Size = new System.Drawing.Size(158, 22);
-            this.itemAddNode.Text = "Add Node";
+            this.itemAddNode.Size = new System.Drawing.Size(153, 22);
+            this.itemAddNode.Text = "add node";
             this.itemAddNode.Click += new System.EventHandler(this.itemAddNode_Click);
             // 
             // itemRemoveNode
             // 
             this.itemRemoveNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_16x16;
             this.itemRemoveNode.Name = "itemRemoveNode";
-            this.itemRemoveNode.Size = new System.Drawing.Size(158, 22);
-            this.itemRemoveNode.Text = "Remove Node...";
+            this.itemRemoveNode.Size = new System.Drawing.Size(153, 22);
+            this.itemRemoveNode.Text = "remove node...";
             this.itemRemoveNode.Click += new System.EventHandler(this.itemRemoveNode_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(155, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(150, 6);
             // 
             // itemDuplicateNode
             // 
             this.itemDuplicateNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
             this.itemDuplicateNode.Name = "itemDuplicateNode";
-            this.itemDuplicateNode.Size = new System.Drawing.Size(158, 22);
-            this.itemDuplicateNode.Text = "D&uplicate Node";
+            this.itemDuplicateNode.Size = new System.Drawing.Size(153, 22);
+            this.itemDuplicateNode.Text = "duplicate node";
             this.itemDuplicateNode.Click += new System.EventHandler(this.itemDuplicateNode_Click);
-            // 
-            // tipButtons
-            // 
-            this.tipButtons.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             // 
             // PanelGradient
             // 
@@ -430,17 +425,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panelGradientDisplay;
 		private System.Windows.Forms.Panel panelGradControls;
-		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label labelSelectedColor;
 		private System.Windows.Forms.NumericUpDown numericSelectedWeight;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label labelSelectedWeight;
 		private System.Windows.Forms.Panel panelPreview;
 		private System.Windows.Forms.Label labelPreview;
 		private System.Windows.Forms.ContextMenuStrip popupNodeEdit;
 		private System.Windows.Forms.ToolStripMenuItem itemDuplicateNode;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem itemRemoveNode;
-		private System.Windows.Forms.ToolStripMenuItem itemAddNode;
-		private System.Windows.Forms.ToolTip tipButtons;
+        private System.Windows.Forms.ToolStripMenuItem itemAddNode;
 		private System.Windows.Forms.ToolStrip stripCommands;
 		private System.Windows.Forms.ToolStripButton buttonAddNode;
 		private System.Windows.Forms.ToolStripButton buttonRemoveNode;
