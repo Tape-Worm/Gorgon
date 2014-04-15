@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms;
@@ -50,27 +51,41 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </returns>
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			formCharacterPicker picker = null;
+			FormCharacterPicker picker = null;
 			var descriptor = context.Instance as ContentTypeDescriptor;
+
+            Debug.Assert(descriptor != null, "Descriptor is null!");
+
             var content = descriptor.Content as GorgonFontContent;
+
+            Debug.Assert(content != null, "Content is null!");
+
 			Font currentFont = null;
 
 			try
 			{				
 				currentFont = new Font(content.FontFamily, 16.0f, content.FontStyle, GraphicsUnit.Pixel);
-				picker = new formCharacterPicker();
-				picker.CurrentFont = currentFont;
-				picker.Characters = content.Characters;
+				picker = new FormCharacterPicker
+				         {
+				             CurrentFont = currentFont,
+				             Characters = content.Characters
+				         };
 
-				if (picker.ShowDialog() == DialogResult.OK)
-					return picker.Characters;
+			    if (picker.ShowDialog() == DialogResult.OK)
+			    {
+			        return picker.Characters;
+			    }
 			}
 			finally
 			{
-				if (currentFont != null)
-					currentFont.Dispose();
-				if (picker != null)
-					picker.Dispose();
+			    if (currentFont != null)
+			    {
+			        currentFont.Dispose();
+			    }
+			    if (picker != null)
+			    {
+			        picker.Dispose();
+			    }
 			}
 			return base.EditValue(context, provider, value);
 		}

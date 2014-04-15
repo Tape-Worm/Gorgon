@@ -83,21 +83,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		        if (brush == null)
 		        {
-		            return Resources.GORFNT_NONE;
+		            return Resources.GORFNT_TEXT_NONE;
 		        }
 
 		        switch (brush.BrushType)
 		        {
 		            case GlyphBrushType.Hatched:
-		                return Resources.GORFNT_COMBOITEM_PATTERN_BRUSH_TEXT;
+		                return Resources.GORFNT_TEXT_PATTERN_BRUSH;
 		            case GlyphBrushType.LinearGradient:
-		                return Resources.GORFNT_COMBOITEM_GRADIENT_BRUSH_TEXT;
+		                return Resources.GORFNT_TEXT_GRADIENT_BRUSH;
 		            case GlyphBrushType.Solid:
-		                return Resources.GORFNT_COMBOITEM_SOLID_BRUSH_TEXT;
+		                return Resources.GORFNT_TEXT_SOLID_BRUSH;
 		            case GlyphBrushType.Texture:
-		                return Resources.GORFNT_COMBOITEM_TEXTURE_BRUSH_TEXT;
+		                return Resources.GORFNT_TEXT_TEXTURE_BRUSH;
 		            default:
-		                return Resources.GORFNT_UNKNOWN_BRUSH;
+		                return Resources.GORFNT_ERR_UNKNOWN_BRUSH;
 
 		        }
 		    }

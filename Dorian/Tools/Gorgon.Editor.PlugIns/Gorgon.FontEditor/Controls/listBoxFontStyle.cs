@@ -35,7 +35,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Listbox for font styles.
 	/// </summary>
-	class listBoxFontStyle
+	class ListBoxFontStyle
 		: CheckedListBox
 	{
 		#region Variables.
@@ -60,26 +60,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				var result = System.Drawing.FontStyle.Regular;
+				var result = FontStyle.Regular;
 
-				if (CheckedItems.Count == 0)
-					return FontStyle.Regular;
+			    if (CheckedItems.Count == 0)
+			    {
+			        return FontStyle.Regular;
+			    }
 
-				foreach (var item in CheckedItems)
+			    foreach (var item in CheckedItems)
 				{
-					switch (item.ToString().ToLower())
+					switch ((FontStyle)item)
 					{
-						case "bold":
-							result |= System.Drawing.FontStyle.Bold;
+						case FontStyle.Bold:
+							result |= FontStyle.Bold;
 							break;
-						case "italic":
-							result |= System.Drawing.FontStyle.Italic;
+						case FontStyle.Italic:
+							result |= FontStyle.Italic;
 							break;
-						case "underline":
-							result |= System.Drawing.FontStyle.Underline;
+						case FontStyle.Underline:
+							result |= FontStyle.Underline;
 							break;
-						case "strikeout":
-							result |= System.Drawing.FontStyle.Strikeout;
+						case FontStyle.Strikeout:
+							result |= FontStyle.Strikeout;
 							break;
 					}
 				}
@@ -100,8 +102,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				if (disposing)
 				{
-					if (_format != null)
-						_format.Dispose();
+				    if (_format != null)
+				    {
+				        _format.Dispose();
+				    }
 				}
 
 				_format = null;
@@ -118,40 +122,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnItemCheck(ice);
 
-			if (Items.Count < 2)
-				ice.NewValue = CheckState.Checked;
+		    if (Items.Count < 2)
+		    {
+		        ice.NewValue = CheckState.Checked;
+		    }
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="listBoxFontStyle"/> class.
+		/// Initializes a new instance of the <see cref="ListBoxFontStyle"/> class.
 		/// </summary>
-		public listBoxFontStyle()
+		public ListBoxFontStyle()
 		{
 		}
+
 		/// <summary>
-		/// Initializes a new instance of the <see cref="listBoxFontStyle"/> class.
+		/// Initializes a new instance of the <see cref="ListBoxFontStyle"/> class.
 		/// </summary>
 		/// <param name="fontFamily">Font family.</param>
 		/// <param name="currentStyles">Currently selected styles.</param>
-		public listBoxFontStyle(string fontFamily, FontStyle currentStyles)
+		public ListBoxFontStyle(FontFamily fontFamily, FontStyle currentStyles)
 			: this()
 		{
-			FontStyle[] fontStyles = ((FontStyle[])Enum.GetValues(typeof(FontStyle))).Where(item => item != FontStyle.Regular).ToArray();
-			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[fontFamily.ToLower()];
+			var fontStyles = ((FontStyle[])Enum.GetValues(typeof(FontStyle))).Where(item => item != FontStyle.Regular).ToArray();
 
 			Items.Clear();
 
-			for (int i = 0; i < fontStyles.Length; i++)
+			foreach (FontStyle style in fontStyles.Where(fontFamily.IsStyleAvailable))
 			{
-				if (cachedFont.FontFamily.IsStyleAvailable(fontStyles[i]))
-					Items.Add(fontStyles[i], (currentStyles & fontStyles[i]) == fontStyles[i]);
+			    Items.Add(style, (currentStyles & style) == style);
 			}
 
-			CheckOnClick = true;
-			BackColor = Color.FromArgb(255, 58, 58, 58);
-			ForeColor = Color.White;
+		    CheckOnClick = true;
 		}
 		#endregion
 	}

@@ -41,8 +41,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: ComboBox
 	{
 		#region Variables.
-		private SortedDictionary<string, HatchStyle> _patternList = new SortedDictionary<string, HatchStyle>();					// List of patterns.
-		private readonly StringBuilder _properName = new StringBuilder(128);													// Proper name buffer.
+		private SortedDictionary<string, HatchStyle> _patternList = new SortedDictionary<string, HatchStyle>(StringComparer.OrdinalIgnoreCase);		// List of patterns.
+		private readonly StringBuilder _properName = new StringBuilder(128);													                    // Proper name buffer.
 		#endregion
 
 		#region Properties.
@@ -143,8 +143,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				return;
 			}
 
-			// ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
-			if ((RightToLeft & RightToLeft.Yes) == RightToLeft.Yes)
+			if (GorgonFontEditorPlugIn.IsRightToLeft(this))
 			{
 				flags |= TextFormatFlags.RightToLeft;
 			}
@@ -157,8 +156,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			string patternName = Items[e.Index].ToString();
+		    HatchStyle style;
 
-			if (!_patternList.ContainsKey(patternName))
+			if (!_patternList.TryGetValue(patternName, out style))
 			{
 				return;
 			}
@@ -167,7 +167,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			var textBounds = new Rectangle(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 			var patternBounds = new Rectangle(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
 
-			using (Brush brush = new HatchBrush(_patternList[patternName], e.ForeColor, e.BackColor))
+			using (Brush brush = new HatchBrush(style, e.ForeColor, e.BackColor))
 			{
 				TextRenderer.DrawText(e.Graphics, patternName, Font, textBounds, e.ForeColor, e.BackColor, flags);
 				e.Graphics.FillRectangle(brush, patternBounds);

@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -36,9 +37,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// </summary>
 	class ComboFonts
 		: ComboBox
-	{		
-		#region Properties.
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
 		/// N/A
 		/// </summary>
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
@@ -46,8 +47,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				return System.Windows.Forms.DrawMode.OwnerDrawVariable;
+				return DrawMode.OwnerDrawVariable;
 			}
+		    // ReSharper disable once ValueParameterNotUsed
 			set
 			{
 			}
@@ -67,16 +69,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.ComboBox.MeasureItem"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="T:System.Windows.Forms.MeasureItemEventArgs"/> that was raised.</param>
-		protected override void OnMeasureItem(MeasureItemEventArgs e)
-		{
-			base.OnMeasureItem(e);			
-		}
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.ComboBox.MeasureItem" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="T:System.Windows.Forms.MeasureItemEventArgs" /> that was raised.</param>
+	    protected override void OnMeasureItem(MeasureItemEventArgs e)
+	    {
+	        base.OnMeasureItem(e);
 
-		/// <summary>
+            if ((e.Index < 0)
+                || (e.Index >= Items.Count))
+            {
+                return;
+            }
+
+            e.ItemHeight = 20;
+	    }
+
+	    /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ComboBox.DrawItem"/> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.DrawItemEventArgs"/> that contains the event data.</param>
@@ -84,29 +94,42 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnDrawItem(e);
 
-			TextFormatFlags flags = TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter;
-			
-			if ((e.Index < 0) || (e.Index >= Items.Count))
-				return;
-			
-			if ((this.RightToLeft & System.Windows.Forms.RightToLeft.Yes) == System.Windows.Forms.RightToLeft.Yes)
-				flags |= TextFormatFlags.RightToLeft;
-			
-			e.DrawBackground();
+	        TextFormatFlags flags = TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left
+	                                | TextFormatFlags.SingleLine
+	                                | TextFormatFlags.VerticalCenter;
 
-			if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
-				e.DrawFocusRectangle();
+	        if ((e.Index < 0)
+	            || (e.Index >= Items.Count))
+	        {
+	            return;
+	        }
 
-			string fontName = Items[e.Index].ToString();
-			if (GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName.ToLower()))
-			{
-				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
-				var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-				var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-				TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName.ToLower()], fontBounds, e.ForeColor, e.BackColor, flags);
-				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
-			}
+	        if (GorgonFontEditorPlugIn.IsRightToLeft(this))
+	        {
+	            flags |= TextFormatFlags.RightToLeft;
+	        }
+
+	        e.DrawBackground();
+
+	        if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+	        {
+	            e.DrawFocusRectangle();
+	        }
+
+	        string fontName = Items[e.Index].ToString();
+	        Font font;
+
+	        if (!GorgonFontEditorPlugIn.CachedFonts.TryGetValue(fontName, out font))
+	        {
+	            font = Font;
+	        }
+
+	        e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+	        Size measure = TextRenderer.MeasureText(e.Graphics, fontName, Font, e.Bounds.Size, flags);
+	        var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+	        var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+	        TextRenderer.DrawText(e.Graphics, fontName, font, fontBounds, e.ForeColor, e.BackColor, flags);
+	        TextRenderer.DrawText(e.Graphics, fontName, Font, textBounds, e.ForeColor, e.BackColor, flags);
 		}
 
 		/// <summary>
@@ -116,12 +139,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		protected override void OnDropDown(EventArgs e)
 		{
 			base.OnDropDown(e);
-			if (!DesignMode)
-			{
-				string previousSelection = Text;
-				RefreshFonts();
-				Text = previousSelection;
-			}
+
+		    if (DesignMode)
+		    {
+		        return;
+		    }
+
+		    string previousSelection = Text;
+		    RefreshFonts();
+		    Text = previousSelection;
 		}
 
 		/// <summary>
@@ -130,8 +156,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public void RefreshFonts()
 		{
 			Items.Clear();
-			foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
-				this.Items.Add(font.Value.FontFamily.Name);
+		    foreach (var font in FontFamily.Families)
+		    {
+		        Items.Add(font.Name);
+		    }
 		}
 		#endregion
 
@@ -140,9 +168,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Initializes a new instance of the <see cref="ComboFonts"/> class.
 		/// </summary>
 		public ComboFonts()
-			: base()
 		{
-			base.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+			base.DrawMode = DrawMode.OwnerDrawVariable;
 			base.Sorted = true;
 		}
 		#endregion

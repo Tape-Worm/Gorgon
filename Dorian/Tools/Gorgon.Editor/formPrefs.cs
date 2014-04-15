@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor
         : ZuneForm
     {
         #region Variables.
-        private List<PreferencePanel> _prefPanels;               // A list of our loaded preference panels.
+        private IList<PreferencePanel> _prefPanels;               // A list of our loaded preference panels.
         #endregion
 
         #region Properties.
@@ -53,16 +53,16 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void PopulateTabValues()
         {
-            for (int i = 0; i < _prefPanels.Count; i++)
+            foreach (PreferencePanel panel in _prefPanels)
             {
-                PreferencePanel panel = _prefPanels[i];
-                var page = new TabPageEx(panel.Text);
-
-                page.BackColor = DarkFormsRenderer.WindowBackground;
-                page.ForeColor = Color.White;
-                page.Text = panel.Text;
-                page.Font = tabPrefs.Font;
-                page.IsClosable = false;                
+                var page = new TabPageEx(panel.Text)
+                           {
+                               BackColor = DarkFormsRenderer.WindowBackground,
+                               ForeColor = Color.White,
+                               Text = panel.Text,
+                               Font = tabPrefs.Font,
+                               IsClosable = false
+                           };
 
                 tabPrefs.TabPages.Add(page);
 
@@ -92,10 +92,8 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                for (int i = 0; i < _prefPanels.Count; i++)
+                foreach (PreferencePanel panel in _prefPanels)
                 {
-                    PreferencePanel panel = _prefPanels[i];
-
                     if (!panel.ValidateSettings())
                     {
                         DialogResult = DialogResult.None;
@@ -122,12 +120,11 @@ namespace GorgonLibrary.Editor
 
             try
             {
-                _prefPanels = new List<PreferencePanel>();
-
-                // Add our default panel.
-                _prefPanels.Add(new EditorPreferencePanel());
-
-                // TODO: Get preference panels from plug-ins.
+                _prefPanels = new PreferencePanel[]
+                              {
+                                  new EditorPreferencePanel(),
+                                  new PanelPlugInPreferences()
+                              };
                 
                 PopulateTabValues();
             }

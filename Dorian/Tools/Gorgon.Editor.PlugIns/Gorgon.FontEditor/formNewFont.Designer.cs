@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
-	partial class formNewFont
+	partial class FormNewFont
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formNewFont));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormNewFont));
 			this.label1 = new System.Windows.Forms.Label();
 			this.checkBold = new System.Windows.Forms.CheckBox();
 			this.checkItalic = new System.Windows.Forms.CheckBox();

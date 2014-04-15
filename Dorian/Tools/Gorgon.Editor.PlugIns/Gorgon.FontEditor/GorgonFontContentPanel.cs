@@ -1179,7 +1179,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             try
             {
                 if (GorgonDialogs.ConfirmBox(ParentForm,
-                                             string.Format(Resources.GORFNT_REMOVE_TEXTURE_PROMPT,
+                                             string.Format(Resources.GORFNT_DLG_REMOVE_TEXTURE_PROMPT,
                                                            string.Format("{0} (0x{1})",
                                                                          _selectedGlyph.Character,
                                                                          ((ushort)_selectedGlyph.Character).FormatHex()),
@@ -1238,7 +1238,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					// We can only use 2D content.
 					if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 					{
-						GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
+						GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, imageContent.Name));
 						return null;
 					}
 
@@ -1253,7 +1253,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						{
 							ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
 							                                                     string.Format(
-							                                                                   Resources.GORFNT_IMAGE_SIZE_MISMATCH_MSG,
+							                                                                   Resources.GORFNT_ERR_IMAGE_SIZE_MISMATCH,
 							                                                                   imageContent.Image.Settings.Width,
 							                                                                   imageContent.Image.Settings.Height,
 							                                                                   _content.Font.Settings.TextureSize.Width,
@@ -1528,7 +1528,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			if (string.IsNullOrWhiteSpace(textPreviewText.Text))
 			{
-				textPreviewText.Text = Resources.GORFNT_DEFAULT_TEXT;
+				textPreviewText.Text = Resources.GORFNT_DEFAULT_PREVIEW_TEXT;
 			    return;
 			}
 
@@ -1612,7 +1612,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					                MinValue = -8,
 					                Value1 = GorgonFontEditorPlugIn.Settings.ShadowOffset.X,
 					                Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y,
-					                Text = Resources.GORFNT_DLG_SHADOW_OFFSET_TEXT
+					                Text = Resources.GORFNT_DLG_SHADOW_OFFSET_CAPTION
 				                };
 				componentEdit.ValueChanged += componentEdit_ValueChanged;
 
@@ -1666,7 +1666,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				picker = new formAlphaPicker
 				         {
-					         Text = Resources.GORFNT_DLG_SHADOW_ALPHA_TEXT,
+					         Text = Resources.GORFNT_DLG_SHADOW_ALPHA_CAPTION,
 					         SelectedAlphaValue = GorgonFontEditorPlugIn.Settings.ShadowOpacity
 				         };
 				if (picker.ShowDialog() == DialogResult.OK)
@@ -1714,7 +1714,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				picker = new ColorPickerDialog
 				         {
-					         Text = Resources.GORFNT_DLG_BACKGROUND_COLOR_TEXT,
+					         Text = Resources.GORFNT_DLG_BACKGROUND_COLOR_CAPTION,
 					         AlphaEnabled = false,
 					         OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor)
 				         };
@@ -1754,7 +1754,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				picker = new ColorPickerDialog
 				         {
-					         Text = Resources.GORFNT_DLG_FOREGROUND_COLOR_TEXT,
+					         Text = Resources.GORFNT_DLG_FOREGROUND_COLOR_CAPTION,
 					         OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.TextColor)
 				         };
 
@@ -1812,7 +1812,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				dropDownZoom.Enabled = (_content.CurrentState == DrawState.DrawFontTextures);
 
-				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT, _currentTextureIndex + 1, _textures.Length);
+				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_TEXT_TEXTURE, _currentTextureIndex + 1, _textures.Length);
 
 				panelToolbar.Visible = _content.CurrentState != DrawState.ClipGlyph;
 
@@ -1914,7 +1914,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
 				buttonPrevTexture.Enabled = false;
 				buttonNextTexture.Enabled = false;
-                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT);
+                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_TEXT_TEXTURE);
             }
 
 			itemShadowOffset.Enabled = itemShadowOpacity.Enabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
@@ -1941,34 +1941,34 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                                           Resources.GORFNT_TEXT_CURSOR_POSITION,
                                           _mousePosition.X,
                                           _mousePosition.Y,
-                                          Resources.GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH,
+                                          Resources.GORFNT_TEXT_SELECTED_GLYPH,
                                           _selectedGlyph.Character,
                                           ((ushort)_selectedGlyph.Character).FormatHex(),
-                                          Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_REGION,
+                                          Resources.GORFNT_TEXT_REGION,
                                           _glyphClipper.ClipRegion.Left,
 										  _glyphClipper.ClipRegion.Top,
 										  _glyphClipper.ClipRegion.Right,
 										  _glyphClipper.ClipRegion.Bottom,
-                                          Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE,
+                                          Resources.GORFNT_TEXT_SIZE,
 										  _glyphClipper.ClipRegion.Width,
 										  _glyphClipper.ClipRegion.Height);
                         break;
                     case DrawState.DrawFontTextures:
 		                labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2})",
-																    Resources.GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH,
+																    Resources.GORFNT_TEXT_SELECTED_GLYPH,
 		                                                            _selectedGlyph.Character,
 		                                                            ((ushort)_selectedGlyph.Character).FormatHex())
 		                                                    .Replace("&", "&&");
                         break;
                     default:
 					    labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7}, {8} {9}: {10}",
-						    Resources.GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH,
+						    Resources.GORFNT_TEXT_SELECTED_GLYPH,
 						    _selectedGlyph.Character,
 						    ((ushort)_selectedGlyph.Character).FormatHex(),
-						    Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION,
+						    Resources.GORFNT_TEXT_LOCATION,
 						    _selectedGlyph.GlyphCoordinates.X,
 						    _selectedGlyph.GlyphCoordinates.Y,
-						    Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE,
+						    Resources.GORFNT_TEXT_SIZE,
 						    _selectedGlyph.GlyphCoordinates.Width,
 						    _selectedGlyph.GlyphCoordinates.Height,
 						    Resources.GORFNT_TEXT_ADVANCEMENT,
@@ -1993,10 +1993,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					Resources.GORFNT_TEXT_GLYPH,
                     _hoverGlyph.Character,
                     ((ushort)_hoverGlyph.Character).FormatHex(),
-					Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION,
+					Resources.GORFNT_TEXT_LOCATION,
                     _hoverGlyph.GlyphCoordinates.X,
                     _hoverGlyph.GlyphCoordinates.Y,
-					Resources.GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE,
+					Resources.GORFNT_TEXT_SIZE,
                     _hoverGlyph.GlyphCoordinates.Width,
                     _hoverGlyph.GlyphCoordinates.Height,
 					Resources.GORFNT_TEXT_ADVANCEMENT,
@@ -2138,7 +2138,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                           NumberStyles.Float,
 				                           NumberFormatInfo.InvariantInfo);
 
-				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM_TEXT, selectedItem.Text);
+				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_TEXT_ZOOM, selectedItem.Text);
 
 				if (menuItemToWindow.Checked)
 				{
@@ -2864,35 +2864,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			Text = Resources.GORFNT_TITLE;
 		    menuItemRemoveGlyphImage.Text = Resources.GORFNT_ACC_TEXT_RESET_GLYPH_IMAGE;
-		    labelGlyphOffsetLeft.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT);
-		    labelGlyphOffsetTop.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT);
+		    labelGlyphOffsetLeft.Text = string.Format("{0}:", Resources.GORFNT_TEXT_LEFT_OFFSET);
+		    labelGlyphOffsetTop.Text = string.Format("{0}:", Resources.GORFNT_TEXT_TOP_OFFSET);
 		    labelGlyphAdvance.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ADVANCEMENT);
-		    buttonResetGlyphOffset.Text = Resources.GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT;
-            tipButtons.SetToolTip(buttonResetGlyphOffset, Resources.GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TIP);
-		    buttonResetGlyphAdvance.Text = Resources.GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT;
-            tipButtons.SetToolTip(buttonResetGlyphAdvance, Resources.GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TIP);
+		    buttonResetGlyphOffset.Text = Resources.GORFNT_TEXT_RESET_OFFSET;
+            tipButtons.SetToolTip(buttonResetGlyphOffset, Resources.GORFNT_TIP_RESET_OFFSET);
+		    buttonResetGlyphAdvance.Text = Resources.GORFNT_TEXT_RESET_ADVANCE;
+            tipButtons.SetToolTip(buttonResetGlyphAdvance, Resources.GORFNT_TIP_RESET_ADVANCE);
 		    buttonKernOK.Text = Resources.GORFNT_ACC_TEXT_UPDATE;
 		    buttonKernCancel.Text = Resources.GORFNT_ACC_TEXT_RESET;
-		    labelKerningSecondaryGlyph.Text = string.Format("{0}:", Resources.GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT);
-		    labelKerningOffset.Text = string.Format("{0}:", Resources.GORFNT_LABEL_KERN_OFFSET_TEXT);
+		    labelKerningSecondaryGlyph.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SECONDARY_GLYPH);
+		    labelKerningOffset.Text = string.Format("{0}:", Resources.GORFNT_TEXT_KERNING_OFFSET);
 		    buttonGlyphClipOK.Text = Resources.GORFNT_ACC_TEXT_UPDATE;
 		    tipButtons.SetToolTip(buttonGlyphClipOK, Resources.GORFNT_TIP_ACCEPT_GLYPH_REGION);
             buttonGlyphClipCancel.Text = Resources.GORFNT_ACC_TEXT_RESET;
             tipButtons.SetToolTip(buttonGlyphClipCancel, Resources.GORFNT_TIP_CANCEL_GLYPH_REGION);
-		    labelZoomWindowSize.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT);
-		    labelZoomAmount.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT);
-		    checkZoomSnap.Text = Resources.GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT;
-		    labelGlyphLeft.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_LEFT_TEXT);
-		    labelGlyphTop.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_TOP_TEXT);
-            labelGlyphWidth.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT);
-		    labelGlyphHeight.Text = string.Format("{0}:", Resources.GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT);
+		    labelZoomWindowSize.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ZOOM_WINSIZE);
+		    labelZoomAmount.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ZOOM_AMOUNT);
+		    checkZoomSnap.Text = Resources.GORFNT_TEXT_SNAP_ZOOM;
+		    labelGlyphLeft.Text = string.Format("{0}:", Resources.GORFNT_TEXT_LEFT);
+		    labelGlyphTop.Text = string.Format("{0}:", Resources.GORFNT_TEXT_TOP);
+            labelGlyphWidth.Text = string.Format("{0}:", Resources.GORFNT_TEXT_WIDTH);
+		    labelGlyphHeight.Text = string.Format("{0}:", Resources.GORFNT_TEXT_HEIGHT);
 		    buttonEditPreviewText.Text = Resources.GORFNT_TEXT_EDIT_PREVIEW_TEXT;
 		    labelFindGlyph.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FIND_GLYPH);
-		    buttonSearchGlyph.Text = Resources.GORFNT_BUTTON_SEARCH_GLYPH_TEXT;
+		    buttonSearchGlyph.Text = Resources.GORFNT_TEXT_SEARCH_GLYPH;
 			buttonEditGlyph.Text = Resources.GORFNT_TEXT_EDIT_SELECTED_GLYPH;
-		    buttonGoHome.Text = Resources.GORFNT_BUTTON_GO_BACK_TEXT;
-		    buttonGoHome.ToolTipText = Resources.GORFNT_BUTTON_GO_BACK_TIP;
-			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TEXT;
+		    buttonGoHome.Text = Resources.GORFNT_TEXT_GO_BACK;
+		    buttonGoHome.ToolTipText = Resources.GORFNT_TIP_GO_BACK;
+			buttonGlyphKern.Text = Resources.GORFNT_TIP_EDIT_KERNING;
 			buttonGlyphTools.ToolTipText = Resources.GORFNT_TEXT_EDIT_GLYPH_IMAGE;
 			menuItemSetGlyph.Text = Resources.GORFNT_ACC_TEXT_UPDATE_GLYPH_RGN;
 			menuItemLoadGlyphImage.Text = Resources.GORFNT_ACC_TEXT_LOAD_GLYPH_IMAGE;
@@ -2901,12 +2901,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			itemSampleTextBackground.Text = Resources.GORFNT_ACC_TEXT_BACKGROUND_COLOR;
 			menuShadow.Text = Resources.GORFNT_TEXT_EDIT_PREVIEW_TEXT_SHADOW;
 			itemPreviewShadowEnable.Text = Resources.GORFNT_ACC_TEXT_ENABLE_SHADOW;
-			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY_TEXT;
-			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET_TEXT;
-			labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PREVIEW_TEXT);
-			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT_TEXT);
-			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM_TEXT, Resources.GORFNT_MENU_TO_WINDOW_TEXT);
-			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW_TEXT;
+			itemShadowOpacity.Text = Resources.GORFNT_TEXT_SHADOW_OPACITY;
+			itemShadowOffset.Text = Resources.GORFNT_TEXT_SHADOW_OFFSET;
+			labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
+			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_TEXT_TEXTURE);
+			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_TEXT_ZOOM, Resources.GORFNT_TEXT_TO_WINDOW);
+			menuItemToWindow.Text = Resources.GORFNT_TEXT_TO_WINDOW;
 			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
@@ -3853,8 +3853,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				transitionAnimation.Speed = 1.0f;
 
 				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_GO_BACK_TEXT;
-				buttonEditGlyph.ToolTipText = Resources.GORFNT_BUTTON_GO_BACK_TIP;
+				buttonEditGlyph.Text = Resources.GORFNT_TEXT_GO_BACK;
+				buttonEditGlyph.ToolTipText = Resources.GORFNT_TIP_GO_BACK;
 				buttonEditGlyph.Image = Resources.back_16x16png;
 
 				_lastScrollPoint.X = scrollHorizontal.Value;

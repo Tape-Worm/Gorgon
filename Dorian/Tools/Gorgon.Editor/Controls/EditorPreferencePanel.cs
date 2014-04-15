@@ -37,7 +37,7 @@ namespace GorgonLibrary.Editor
     /// <summary>
     /// Preferences for the editor.
     /// </summary>
-    public partial class EditorPreferencePanel
+    partial class EditorPreferencePanel
         : PreferencePanel
     {
         #region Properties.

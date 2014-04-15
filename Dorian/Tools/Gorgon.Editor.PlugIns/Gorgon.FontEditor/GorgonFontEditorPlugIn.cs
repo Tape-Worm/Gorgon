@@ -24,8 +24,10 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
@@ -37,7 +39,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     /// Font editor plug-in interface.
     /// </summary>
     public class GorgonFontEditorPlugIn
-        : ContentPlugIn
+        : ContentPlugIn, IPlugInSettingsUI
 	{
 		#region Variables.
 		private ToolStripMenuItem _createItem;
@@ -62,7 +64,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			get;
 			private set;
 		}
-		#endregion
+        #endregion
 
 		#region Methods.
 		/// <summary>
@@ -73,18 +75,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// Clear the cached fonts.
 			if (CachedFonts != null)
 			{
-				foreach (var font in CachedFonts)
-					font.Value.Dispose();
+			    foreach (var font in CachedFonts)
+			    {
+			        font.Value.Dispose();
+			    }
 			}
 
-			var fonts = new SortedDictionary<string, Font>();
+			var fonts = new SortedDictionary<string, Font>(StringComparer.OrdinalIgnoreCase);
 
-			// Get font families.
-			foreach (var family in FontFamily.Families)
+			// Get font families for previewing - Only up to 1500, after that we have to use the default font for whatever control is making use of this.
+			foreach (var family in FontFamily.Families.Take(1500))
 			{
 				Font newFont = null;
 
-				if (fonts.ContainsKey(family.Name.ToLower()))
+				if (fonts.ContainsKey(family.Name))
 				{
 					continue;
 				}
@@ -105,7 +109,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Only add if we could use the regular, bold or italic style.
 				if (newFont != null)
 				{
-					fonts.Add(family.Name.ToLower(), newFont);
+					fonts.Add(family.Name, newFont);
 				}
 			}
 
@@ -125,7 +129,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
             if (Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)
             {
-	            invalidReasons.AppendFormat(Resources.GORFNT_PLUGIN_INVALID_SM,
+	            invalidReasons.AppendFormat(Resources.GORFNT_ERR_PLUGIN_INVALID_SM,
 	                                        Graphics.VideoDevice.Name,
 	                                        Graphics.VideoDevice.SupportedFeatureLevel);
             }
@@ -179,7 +183,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
         /// <summary>
-        /// Funciton to create settings for a content object.
+        /// Function to determine if right-to-left rendering is required for text.
+        /// </summary>
+        /// <param name="control">Control to examine.</param>
+        /// <returns>TRUE if RTL text is required, FALSE if not.</returns>
+        internal static bool IsRightToLeft(Control control)
+        {
+            switch (control.RightToLeft)
+            {
+                case RightToLeft.Yes:
+                    return true;
+                case RightToLeft.Inherit:
+                    return control.Parent != null && IsRightToLeft(control.Parent);
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve the settings for the content.
         /// </summary>
         /// <returns>
         /// The settings interface for the content.
@@ -224,6 +246,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			
 			Settings = new GorgonFontPlugInSettings();
 			Settings.Load();
+        }
+        #endregion
+
+        #region IPlugInSettingsUI Members
+        /// <summary>
+        /// Function to return the UI object for the settings.
+        /// </summary>
+        /// <returns>
+        /// The UI object for the settings.
+        /// </returns>
+        public PreferencePanel GetSettingsUI()
+        {
+            return new PanelFontPreferences();
         }
         #endregion
     }

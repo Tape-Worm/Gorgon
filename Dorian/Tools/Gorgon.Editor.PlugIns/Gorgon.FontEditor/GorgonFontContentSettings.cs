@@ -89,11 +89,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </returns>
         public override bool PerformSetup()
         {
-            formNewFont newFont = null;
+            FormNewFont newFont = null;
 
             try
             {
-                newFont = new formNewFont
+                newFont = new FormNewFont
                 {
                     MaxTextureSize = _maxTextureSize,
                     FontCharacters = Settings.Characters

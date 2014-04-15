@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -36,7 +38,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Dialog to pick characters for conversion into bitmap glyphs.
 	/// </summary>
-	partial class formCharacterPicker 
+	partial class FormCharacterPicker 
 		: ZuneForm
 	{
 		#region Variables.
@@ -116,10 +118,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				_page = 0;
 				scrollVertical.Value = 0;
-				if (listRanges.SelectedItems.Count > 0)
-					buttonSelectAll.Text = "Select all of " + listRanges.SelectedItems[0].SubItems[1].Text;
+			    if (listRanges.SelectedItems.Count > 0)
+			    {
+			        buttonSelectAll.Text = string.Format("{0} {1}",
+			                                             Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF,
+			                                             listRanges.SelectedItems[0].SubItems[1].Text);
+			    }
 
-				GetCharacterSets();
+			    GetCharacterSets();
 			}
 			catch (Exception ex)
 			{
@@ -136,11 +142,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void ValidateButtons()
 		{
-			buttonOK.Enabled = false;
-			if (textCharacters.Text != string.Empty)
-				buttonOK.Enabled = true;
-
-			buttonSelectAll.Enabled = listRanges.SelectedItems.Count > 0;
+			buttonOK.Enabled = textCharacters.Text != string.Empty;
+		    buttonSelectAll.Enabled = listRanges.SelectedItems.Count > 0;
 		}
 
 		/// <summary>
@@ -161,14 +164,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void fontControl_MouseEnter(object sender, EventArgs e)
 		{
-			var check = sender as CheckBox;
+			var check = (CheckBox)sender;
 
 			string name = Win32API.GetCodePointName(check.Text[0]);
 
-			if (string.IsNullOrEmpty(name))
-				name = "'" + check.Text + "'";
+		    if (string.IsNullOrEmpty(name))
+		    {
+		        name = string.Format("'{0}'", check.Text);
+		    }
 
-			tipChar.SetToolTip(check, "U+0x" + Convert.ToUInt16(check.Text[0]).FormatHex() + " (" + Convert.ToUInt16(check.Text[0]) + ", " + name + ")");
+		    tipChar.SetToolTip(check,
+		                       string.Format("U+0x{0} ({1}, {2})",
+		                                     Convert.ToUInt16(check.Text[0]).FormatHex(),
+		                                     Convert.ToUInt16(check.Text[0]),
+		                                     name));
 		}
 
 		/// <summary>
@@ -178,27 +187,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void fontControl_CheckedChanged(object sender, EventArgs e)
 		{
-			CheckBox fontControl = null;			// Font character.
-			string chars = textCharacters.Text;		// Characters.
-			int pos = -1;							// Character position.
+		    string chars = textCharacters.Text;		// Characters.
 
-			// Go through each character.
-			fontControl = (CheckBox)sender;
-			pos = chars.IndexOf(fontControl.Text, StringComparison.Ordinal);
+		    // Go through each character.
+			var fontControl = (CheckBox)sender;
+			int pos = chars.IndexOf(fontControl.Text, StringComparison.Ordinal);
+
 			if (pos > -1)
 			{
-				if (!fontControl.Checked)
-					chars = chars.Remove(pos, 1);
+			    if (!fontControl.Checked)
+			    {
+			        chars = chars.Remove(pos, 1);
+			    }
 			}
 			else
 			{
-				if (fontControl.Checked)
-					chars += fontControl.Text;
+			    if (fontControl.Checked)
+			    {
+			        chars += fontControl.Text;
+			    }
 			}
 
-			if ((chars.Length < 1) || (chars.IndexOf(" ", StringComparison.Ordinal) < 0))
-				chars += " ";
-			chars.Replace('\0', ' ');
+		    if ((chars.Length < 1)
+		        || (chars.IndexOf(" ", StringComparison.Ordinal) < 0))
+		    {
+		        chars += " ";
+		    }
+
+		    chars = chars.Replace('\0', ' ');
+
 			textCharacters.Text = chars;
 		}
 
@@ -207,22 +224,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void UpdateSelections()
 		{
-			CheckBox fontControl = null;		// Font character.
-
-			// Go through each character.			
+		    // Go through each character.			
 			for (int i = 1; i <= 48; i++)
 			{
-				fontControl = panelCharacters.Controls["checkBox" + i] as CheckBox;
-				
-				if (fontControl.Enabled)
-				{
-					fontControl.CheckedChanged -= new EventHandler(fontControl_CheckedChanged);
-					if (textCharacters.Text.IndexOf(fontControl.Text, StringComparison.Ordinal) > -1)
-						fontControl.Checked = true;
-					else
-						fontControl.Checked = false;
-					fontControl.CheckedChanged += new EventHandler(fontControl_CheckedChanged);
-				}
+			    var fontControl = (CheckBox)panelCharacters.Controls["checkBox" + i];		// Font character.
+
+			    if (!fontControl.Enabled)
+			    {
+			        continue;
+			    }
+
+			    fontControl.CheckedChanged -= fontControl_CheckedChanged;
+
+			    fontControl.Checked = textCharacters.Text.IndexOf(fontControl.Text, StringComparison.Ordinal) > -1;
+
+			    fontControl.CheckedChanged += fontControl_CheckedChanged;
 			}
 		}
 
@@ -248,9 +264,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void textCharacters_Leave(object sender, EventArgs e)
 		{
-			if (textCharacters.Text == string.Empty)
-				textCharacters.Text = " ";
-			UpdateSelections();
+		    if (textCharacters.Text == string.Empty)
+		    {
+		        textCharacters.Text = @" ";
+		    }
+
+		    UpdateSelections();
 			ValidateButtons();
 			panelCharacters.Focus();
 		}
@@ -262,10 +281,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonOK_Click(object sender, EventArgs e)
 		{
-			if (textCharacters.Text.IndexOf(" ", StringComparison.Ordinal) < 0)
-				textCharacters.Text += " ";
+		    if (textCharacters.Text.IndexOf(@" ", StringComparison.Ordinal) < 0)
+		    {
+		        textCharacters.Text += @" ";
+		    }
 
-			Characters = textCharacters.Text;
+		    Characters = textCharacters.Text;
 		}
 
 		/// <summary>
@@ -295,9 +316,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void GetCharacterSets()
 		{
-			CheckBox fontControl;					// Font character.			
-
-			if (CurrentFont == null)
+		    if (CurrentFont == null)
 				return;
 
 			if (listRanges.SelectedIndices.Count == 0)
@@ -325,17 +344,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				for (int i = 1; i <= 48; i++)
 				{
 					string checkBoxName = "checkBox" + i;
-					fontControl = panelCharacters.Controls[checkBoxName] as CheckBox;
+					var fontControl = (CheckBox)panelCharacters.Controls[checkBoxName];					// Font character.			
 
-					fontControl.MouseEnter -= new EventHandler(fontControl_MouseEnter);
-					fontControl.CheckedChanged -= new EventHandler(fontControl_CheckedChanged);
+					fontControl.MouseEnter -= fontControl_MouseEnter;
+					fontControl.CheckedChanged -= fontControl_CheckedChanged;
 
 					// If the range has less characters than our character list, then disable the rest of the check boxes.
 					if (i > range.Range)
 					{
 						fontControl.Enabled = false;
-						fontControl.Font = this.Font;
-						fontControl.BackColor = Color.FromArgb(255, 160, 160, 160);
+						fontControl.Font = Font;
+						fontControl.BackColor = DarkFormsRenderer.DisabledColor;
 						fontControl.Text = "";
 						fontControl.Checked = false;
 						continue;
@@ -347,27 +366,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					if ((!IsCharacterSupported(c)) || (Convert.ToInt32(c) > range.Maximum))
 					{
 						fontControl.Enabled = false;
-						fontControl.Font = this.Font;
-						fontControl.BackColor = Color.FromArgb(255, 160, 160, 160);
+						fontControl.Font = Font;
+						fontControl.BackColor = DarkFormsRenderer.DisabledColor;
 						fontControl.Text = "";
 						fontControl.Checked = false;
 						continue;
 					}
-					else
-					{
-						fontControl.Enabled = true;
-						fontControl.BackColor = Color.White;
-					}
 
-					fontControl.Font = CurrentFont;
-					fontControl.Text = c.ToString();
-					if (textCharacters.Text.IndexOf(c.ToString(), StringComparison.Ordinal) != -1)
-						fontControl.Checked = true;
-					else
-						fontControl.Checked = false;
+				    fontControl.Enabled = true;
+				    fontControl.BackColor = Color.White;
 
-					fontControl.CheckedChanged += new EventHandler(fontControl_CheckedChanged);
-					fontControl.MouseEnter += new EventHandler(fontControl_MouseEnter);
+				    fontControl.Font = CurrentFont;
+					fontControl.Text = c.ToString(CultureInfo.CurrentUICulture);
+				    fontControl.Checked = textCharacters.Text.IndexOf(fontControl.Text, StringComparison.Ordinal) != -1;
+
+				    fontControl.CheckedChanged += fontControl_CheckedChanged;
+					fontControl.MouseEnter += fontControl_MouseEnter;
 				}
 			}
 			finally
@@ -383,21 +397,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private void FillRanges()
 		{
 			listRanges.Items.Clear();
-			if (_characterRanges.Count > 0)
-			{
-				listRanges.BeginUpdate();
-				var sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
-				foreach (var range in sortedRanges)
-				{
-					var item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
-					item.SubItems.Add(range.Key);
-					item.Tag = range;
-					listRanges.Items.Add(item);
-				}
-				listRanges.EndUpdate();
-				listRanges.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-				listRanges.SelectedIndices.Add(0);
-			}
+		    if (_characterRanges.Count <= 0)
+		    {
+		        return;
+		    }
+
+		    listRanges.BeginUpdate();
+		    var sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
+		    foreach (var range in sortedRanges)
+		    {
+		        var item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
+		        item.SubItems.Add(range.Key);
+		        item.Tag = range;
+		        listRanges.Items.Add(item);
+		    }
+		    listRanges.EndUpdate();
+		    listRanges.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+		    listRanges.SelectedIndices.Add(0);
 		}
 
 		/// <summary>
@@ -405,14 +421,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void SelectFont()
 		{
-			if (_hDc == IntPtr.Zero)
-				_hDc = _graphics.GetHdc();
+		    if (_hDc == IntPtr.Zero)
+		    {
+		        _hDc = _graphics.GetHdc();
+		    }
 
-			if (_hFont == IntPtr.Zero)
-				_hFont = CurrentFont.ToHfont();
+		    if (_hFont == IntPtr.Zero)
+		    {
+		        _hFont = CurrentFont.ToHfont();
+		    }
 
-			if (_prevHObj == IntPtr.Zero)
-				_prevHObj = Win32API.SelectObject(_hDc, _hFont);
+		    if (_prevHObj == IntPtr.Zero)
+		    {
+		        _prevHObj = Win32API.SelectObject(_hDc, _hFont);
+		    }
 		}
 
 		/// <summary>
@@ -420,15 +442,30 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void DeselectFont()
 		{
-			if ((_hDc == IntPtr.Zero) || (_prevHObj == IntPtr.Zero))
-				return;
+		    if ((_hDc == IntPtr.Zero)
+		        || (_prevHObj == IntPtr.Zero))
+		    {
+		        return;
+		    }
 
-			Win32API.SelectObject(_hDc, _prevHObj);
+		    Win32API.SelectObject(_hDc, _prevHObj);
 			_prevHObj = IntPtr.Zero;
 
 			_graphics.ReleaseHdc();
 			_hDc = IntPtr.Zero;
 		}
+
+        /// <summary>
+        /// Function to localize the controls on the form.
+        /// </summary>
+	    private void LocalizeForm()
+        {
+            Text = Resources.GORFNT_DLG_CHARACTER_PICKER_CAPTION;
+            labelCharacters.Text = string.Format("{0}:", Resources.GORFNT_TEXT_CHARACTERS);
+            buttonOK.Text = Resources.GORFNT_ACC_TEXT_OK;
+            buttonCancel.Text = Resources.GORFNT_ACC_TEXT_CANCEL;
+            buttonSelectAll.Text = string.Format("{0} ???", Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF);
+        }
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
@@ -440,11 +477,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				_graphics = System.Drawing.Graphics.FromHwnd(this.Handle);
+                LocalizeForm();
+
+				_graphics = System.Drawing.Graphics.FromHwnd(Handle);
 
 				SelectFont();
 
-				textCharacters.Text = string.Join<char>(string.Empty, Characters);
+				textCharacters.Text = string.Join(string.Empty, Characters);
 				_characterRanges = Win32API.GetUnicodeRanges(CurrentFont, _hDc);
 				FillRanges();
 				GetCharacterSets();
@@ -470,16 +509,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			DeselectFont();
 
-			if (_graphics != null)
-				_graphics.Dispose();
+		    if (_graphics != null)
+		    {
+		        _graphics.Dispose();
+		    }
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formCharacterPicker"/> class.
+		/// Initializes a new instance of the <see cref="FormCharacterPicker"/> class.
 		/// </summary>
-		public formCharacterPicker()
+		public FormCharacterPicker()
 		{
 			InitializeComponent();
 		}

@@ -82,7 +82,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    fonts = new ListBoxFont
 			            {
 			                DrawMode = DrawMode.OwnerDrawVariable,
-			                ItemHeight = 19,
 			                SelectedItem = fontFamily,
                             Service = editorSerivce
 			            };

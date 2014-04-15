@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor
 		public abstract PlugInType PlugInType
 		{
 			get;
-		}        
+		}
 		#endregion
 
 		#region Methods.
