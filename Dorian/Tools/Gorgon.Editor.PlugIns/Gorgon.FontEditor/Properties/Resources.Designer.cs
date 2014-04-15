@@ -337,6 +337,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Select all of.
+        /// </summary>
+        internal static string GORFNT_ACC_TEXT_SELECT_ALL_OF {
+            get {
+                return ResourceManager.GetString("GORFNT_ACC_TEXT_SELECT_ALL_OF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Update.
         /// </summary>
         internal static string GORFNT_ACC_TEXT_UPDATE {
@@ -355,195 +364,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        internal static string GORFNT_ANTIALIAS_NONE {
-            get {
-                return ResourceManager.GetString("GORFNT_ANTIALIAS_NONE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the kerning values for the selected glyph..
-        /// </summary>
-        internal static string GORFNT_BUTTON_EDIT_KERNING_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_EDIT_KERNING_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset &amp;advance.
-        /// </summary>
-        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset the glyph to use its original advance value..
-        /// </summary>
-        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TIP {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_ADVANCE_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset &amp;offset.
-        /// </summary>
-        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Reset the glyph to use its original offset values..
-        /// </summary>
-        internal static string GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TIP {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GLYPH_ADV_RESET_OFFSET_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Go back.
-        /// </summary>
-        internal static string GORFNT_BUTTON_GO_BACK_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GO_BACK_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Go back to the glyph selection screen..
-        /// </summary>
-        internal static string GORFNT_BUTTON_GO_BACK_TIP {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_GO_BACK_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Open texture.
-        /// </summary>
-        internal static string GORFNT_BUTTON_OPEN_TEXTURE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_OPEN_TEXTURE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Search for the selected glyph..
-        /// </summary>
-        internal static string GORFNT_BUTTON_SEARCH_GLYPH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_BUTTON_SEARCH_GLYPH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Snap zoom window to corners..
-        /// </summary>
-        internal static string GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_CHECK_GLYPHREGION_ZOOM_SNAP_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scale angle?.
-        /// </summary>
-        internal static string GORFNT_CHECK_SCALE_ANGLE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_CHECK_SCALE_ANGLE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use gamma correction?.
-        /// </summary>
-        internal static string GORFNT_CHECK_USE_GAMMA_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_CHECK_USE_GAMMA_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gradient brush.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_GRADIENT_BRUSH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_GRADIENT_BRUSH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pattern brush.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_PATTERN_BRUSH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_PATTERN_BRUSH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Solid brush.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_SOLID_BRUSH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_SOLID_BRUSH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Texture brush.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_TEXTURE_BRUSH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_TEXTURE_BRUSH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tile and flip.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tile and flip horizontally.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_X_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_X_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tile and flip vertically.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_Y_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_WRAP_TILE_AND_FLIP_Y_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Tile.
-        /// </summary>
-        internal static string GORFNT_COMBOITEM_WRAP_TILE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_COMBOITEM_WRAP_TILE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Gorgon Font File.
         /// </summary>
         internal static string GORFNT_CONTENT_EXTENSION_DESC {
@@ -558,18 +378,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         ///ABCDEFGHIJKLMNOPQRSTUVWXYZ
         ///abcdefghijklmnopqrstuvwxyz.
         /// </summary>
-        internal static string GORFNT_DEFAULT_TEXT {
+        internal static string GORFNT_DEFAULT_PREVIEW_TEXT {
             get {
-                return ResourceManager.GetString("GORFNT_DEFAULT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid dependency type for a font..
-        /// </summary>
-        internal static string GORFNT_DEPENDENCY_UNKNOWN_TYPE {
-            get {
-                return ResourceManager.GetString("GORFNT_DEPENDENCY_UNKNOWN_TYPE", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DEFAULT_PREVIEW_TEXT", resourceCulture);
             }
         }
         
@@ -594,9 +405,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Select a background color for the preview text.
         /// </summary>
-        internal static string GORFNT_DLG_BACKGROUND_COLOR_TEXT {
+        internal static string GORFNT_DLG_BACKGROUND_COLOR_CAPTION {
             get {
-                return ResourceManager.GetString("GORFNT_DLG_BACKGROUND_COLOR_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DLG_BACKGROUND_COLOR_CAPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brush editor.
+        /// </summary>
+        internal static string GORFNT_DLG_BRUSH_EDITOR_CAPTION {
+            get {
+                return ResourceManager.GetString("GORFNT_DLG_BRUSH_EDITOR_CAPTION", resourceCulture);
             }
         }
         
@@ -620,38 +440,47 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select a color for the preview text.
+        ///   Looks up a localized string similar to Character picker.
         /// </summary>
-        internal static string GORFNT_DLG_FOREGROUND_COLOR_TEXT {
+        internal static string GORFNT_DLG_CHARACTER_PICKER_CAPTION {
             get {
-                return ResourceManager.GetString("GORFNT_DLG_FOREGROUND_COLOR_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DLG_CHARACTER_PICKER_CAPTION", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open image.
+        ///   Looks up a localized string similar to Select a color for the preview text.
         /// </summary>
-        internal static string GORFNT_DLG_IMAGE_TEXT {
+        internal static string GORFNT_DLG_FOREGROUND_COLOR_CAPTION {
             get {
-                return ResourceManager.GetString("GORFNT_DLG_IMAGE_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DLG_FOREGROUND_COLOR_CAPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will remove the glyph &apos;{0}&apos; from the texture {1}.  Do you wish to continue?.
+        /// </summary>
+        internal static string GORFNT_DLG_REMOVE_TEXTURE_PROMPT {
+            get {
+                return ResourceManager.GetString("GORFNT_DLG_REMOVE_TEXTURE_PROMPT", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Select the opacity for the preview text shadow.
         /// </summary>
-        internal static string GORFNT_DLG_SHADOW_ALPHA_TEXT {
+        internal static string GORFNT_DLG_SHADOW_ALPHA_CAPTION {
             get {
-                return ResourceManager.GetString("GORFNT_DLG_SHADOW_ALPHA_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DLG_SHADOW_ALPHA_CAPTION", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Edit preview text shadow offset.
         /// </summary>
-        internal static string GORFNT_DLG_SHADOW_OFFSET_TEXT {
+        internal static string GORFNT_DLG_SHADOW_OFFSET_CAPTION {
             get {
-                return ResourceManager.GetString("GORFNT_DLG_SHADOW_OFFSET_TEXT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_DLG_SHADOW_OFFSET_CAPTION", resourceCulture);
             }
         }
         
@@ -665,299 +494,56 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid dependency type for a font..
+        /// </summary>
+        internal static string GORFNT_ERR_DEPENDENCY_UNKNOWN_TYPE {
+            get {
+                return ResourceManager.GetString("GORFNT_ERR_DEPENDENCY_UNKNOWN_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There is no image editor loaded to handle the external texture for this font..
         /// </summary>
-        internal static string GORFNT_EXTERN_IMAGE_EDITOR_MISSING {
+        internal static string GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING {
             get {
-                return ResourceManager.GetString("GORFNT_EXTERN_IMAGE_EDITOR_MISSING", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to load the image data for the external texture assigned to this font..
         /// </summary>
-        internal static string GORFNT_EXTERN_IMAGE_MISSING {
+        internal static string GORFNT_ERR_EXTERN_IMAGE_MISSING {
             get {
-                return ResourceManager.GetString("GORFNT_EXTERN_IMAGE_MISSING", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_EXTERN_IMAGE_MISSING", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The font family &apos;{0}&apos; was not found..
         /// </summary>
-        internal static string GORFNT_FAMILY_NOT_FOUND {
+        internal static string GORFNT_ERR_FAMILY_NOT_FOUND {
             get {
-                return ResourceManager.GetString("GORFNT_FAMILY_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_FAMILY_NOT_FOUND", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; must be a 2D image..
         /// </summary>
-        internal static string GORFNT_IMAGE_NOT_2D {
+        internal static string GORFNT_ERR_IMAGE_NOT_2D {
             get {
-                return ResourceManager.GetString("GORFNT_IMAGE_NOT_2D", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_IMAGE_NOT_2D", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The image being loaded has a size of {0}x{1}, but the font requires textures sized to {2}x{3}.  Would you like to clip the image to match the font texture size?.
         /// </summary>
-        internal static string GORFNT_IMAGE_SIZE_MISMATCH_MSG {
+        internal static string GORFNT_ERR_IMAGE_SIZE_MISMATCH {
             get {
-                return ResourceManager.GetString("GORFNT_IMAGE_SIZE_MISMATCH_MSG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preview.
-        /// </summary>
-        internal static string GORFNT_LABEL_BRUSH_PREVIEW_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_BRUSH_PREVIEW_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Left offset.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_ADV_OFFSET_LEFT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Top offset.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPH_ADV_OFFSET_TOP_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Location.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_LOCATION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Region.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_REGION {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_REGION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Size.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_GLYPH_SIZE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected glyph.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHINFO_SELECTED_GLYPH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Height.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_HEIGHT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Left.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_LEFT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_LEFT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Top.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_TOP_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_TOP_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Width.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_WIDTH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zoom amount.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_ZOOM_AMOUNT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zoom window size.
-        /// </summary>
-        internal static string GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_GLYPHREGION_ZOOM_WIN_SIZE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Kerning offset.
-        /// </summary>
-        internal static string GORFNT_LABEL_KERN_OFFSET_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_KERN_OFFSET_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Secondary glyph.
-        /// </summary>
-        internal static string GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_KERN_SECOND_GLYPH_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pattern type.
-        /// </summary>
-        internal static string GORFNT_LABEL_PATTERN_TYPE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_PATTERN_TYPE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preview text.
-        /// </summary>
-        internal static string GORFNT_LABEL_PREVIEW_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_PREVIEW_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected color.
-        /// </summary>
-        internal static string GORFNT_LABEL_SELECTED_COLOR_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_SELECTED_COLOR_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected weight.
-        /// </summary>
-        internal static string GORFNT_LABEL_SELECTED_WEIGHT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_SELECTED_WEIGHT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selection area.
-        /// </summary>
-        internal static string GORFNT_LABEL_SELECTION_REGION_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_SELECTION_REGION_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Texture.
-        /// </summary>
-        internal static string GORFNT_LABEL_TEXTURE_COUNT_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_TEXTURE_COUNT_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Wrapping mode.
-        /// </summary>
-        internal static string GORFNT_LABEL_WRAPMODE_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_LABEL_WRAPMODE_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shadow o&amp;ffset....
-        /// </summary>
-        internal static string GORFNT_MENU_SHADOW_OFFSET_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_MENU_SHADOW_OFFSET_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Shadow &amp;opacity....
-        /// </summary>
-        internal static string GORFNT_MENU_SHADOW_OPACITY_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_MENU_SHADOW_OPACITY_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to To window.
-        /// </summary>
-        internal static string GORFNT_MENU_TO_WINDOW_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_MENU_TO_WINDOW_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zoom.
-        /// </summary>
-        internal static string GORFNT_MENU_ZOOM_TEXT {
-            get {
-                return ResourceManager.GetString("GORFNT_MENU_ZOOM_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A texture brush is assigned to the glyphs for this font, but no image editor plug-in was found.  Texture brushes will not be available..
-        /// </summary>
-        internal static string GORFNT_MSG_NO_IMG_EDITOR {
-            get {
-                return ResourceManager.GetString("GORFNT_MSG_NO_IMG_EDITOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to None.
-        /// </summary>
-        internal static string GORFNT_NONE {
-            get {
-                return ResourceManager.GetString("GORFNT_NONE", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_IMAGE_SIZE_MISMATCH", resourceCulture);
             }
         }
         
@@ -965,27 +551,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         ///   Looks up a localized string similar to This plug-in requires a video device with feature level SM4 or above.
         ///The current video device &apos;{0}&apos; has a feature level of {1}..
         /// </summary>
-        internal static string GORFNT_PLUGIN_INVALID_SM {
+        internal static string GORFNT_ERR_PLUGIN_INVALID_SM {
             get {
-                return ResourceManager.GetString("GORFNT_PLUGIN_INVALID_SM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This will remove the glyph &apos;{0}&apos; from the texture {1}.  Do you wish to continue?.
-        /// </summary>
-        internal static string GORFNT_REMOVE_TEXTURE_PROMPT {
-            get {
-                return ResourceManager.GetString("GORFNT_REMOVE_TEXTURE_PROMPT", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_PLUGIN_INVALID_SM", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The stream is read only..
         /// </summary>
-        internal static string GORFNT_STREAM_READ_ONLY {
+        internal static string GORFNT_ERR_STREAM_READ_ONLY {
             get {
-                return ResourceManager.GetString("GORFNT_STREAM_READ_ONLY", resourceCulture);
+                return ResourceManager.GetString("GORFNT_ERR_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum texture size is 16x16 and the largest is {0}x{1}..
+        /// </summary>
+        internal static string GORFNT_ERR_TEXTURE_SIZE_INVALID {
+            get {
+                return ResourceManager.GetString("GORFNT_ERR_TEXTURE_SIZE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown brush.
+        /// </summary>
+        internal static string GORFNT_ERR_UNKNOWN_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_ERR_UNKNOWN_BRUSH", resourceCulture);
             }
         }
         
@@ -1026,20 +621,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Brush editor.
-        /// </summary>
-        internal static string GORFNT_TEXT_BRUSH_EDITOR {
-            get {
-                return ResourceManager.GetString("GORFNT_TEXT_BRUSH_EDITOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Brush type.
         /// </summary>
         internal static string GORFNT_TEXT_BRUSH_TYPE {
             get {
                 return ResourceManager.GetString("GORFNT_TEXT_BRUSH_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Characters.
+        /// </summary>
+        internal static string GORFNT_TEXT_CHARACTERS {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_CHARACTERS", resourceCulture);
             }
         }
         
@@ -1134,11 +729,380 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The minimum texture size is 16x16 and the largest is {0}x{1}..
+        ///   Looks up a localized string similar to Go back.
         /// </summary>
-        internal static string GORFNT_TEXTURE_SIZE_INVALID {
+        internal static string GORFNT_TEXT_GO_BACK {
             get {
-                return ResourceManager.GetString("GORFNT_TEXTURE_SIZE_INVALID", resourceCulture);
+                return ResourceManager.GetString("GORFNT_TEXT_GO_BACK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gradient brush.
+        /// </summary>
+        internal static string GORFNT_TEXT_GRADIENT_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_GRADIENT_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Height.
+        /// </summary>
+        internal static string GORFNT_TEXT_HEIGHT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_HEIGHT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kerning offset.
+        /// </summary>
+        internal static string GORFNT_TEXT_KERNING_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_KERNING_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left.
+        /// </summary>
+        internal static string GORFNT_TEXT_LEFT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_LEFT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left offset.
+        /// </summary>
+        internal static string GORFNT_TEXT_LEFT_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_LEFT_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location.
+        /// </summary>
+        internal static string GORFNT_TEXT_LOCATION {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_LOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string GORFNT_TEXT_NONE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_NONE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open texture.
+        /// </summary>
+        internal static string GORFNT_TEXT_OPEN_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_OPEN_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pattern brush.
+        /// </summary>
+        internal static string GORFNT_TEXT_PATTERN_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_PATTERN_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pattern type.
+        /// </summary>
+        internal static string GORFNT_TEXT_PATTERN_TYPE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_PATTERN_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview.
+        /// </summary>
+        internal static string GORFNT_TEXT_PREVIEW {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_PREVIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preview text.
+        /// </summary>
+        internal static string GORFNT_TEXT_PREVIEW_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_PREVIEW_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Region.
+        /// </summary>
+        internal static string GORFNT_TEXT_REGION {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_REGION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset &amp;advance.
+        /// </summary>
+        internal static string GORFNT_TEXT_RESET_ADVANCE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_RESET_ADVANCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset &amp;offset.
+        /// </summary>
+        internal static string GORFNT_TEXT_RESET_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_RESET_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scale angle?.
+        /// </summary>
+        internal static string GORFNT_TEXT_SCALE_ANGLE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SCALE_ANGLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search for the selected glyph..
+        /// </summary>
+        internal static string GORFNT_TEXT_SEARCH_GLYPH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SEARCH_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary glyph.
+        /// </summary>
+        internal static string GORFNT_TEXT_SECONDARY_GLYPH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SECONDARY_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected color.
+        /// </summary>
+        internal static string GORFNT_TEXT_SELECTED_COLOR {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SELECTED_COLOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected glyph.
+        /// </summary>
+        internal static string GORFNT_TEXT_SELECTED_GLYPH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SELECTED_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selected weight.
+        /// </summary>
+        internal static string GORFNT_TEXT_SELECTED_WEIGHT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SELECTED_WEIGHT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shadow o&amp;ffset....
+        /// </summary>
+        internal static string GORFNT_TEXT_SHADOW_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SHADOW_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shadow &amp;opacity....
+        /// </summary>
+        internal static string GORFNT_TEXT_SHADOW_OPACITY {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SHADOW_OPACITY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string GORFNT_TEXT_SIZE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Snap zoom window to corners..
+        /// </summary>
+        internal static string GORFNT_TEXT_SNAP_ZOOM {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SNAP_ZOOM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solid brush.
+        /// </summary>
+        internal static string GORFNT_TEXT_SOLID_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_SOLID_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture.
+        /// </summary>
+        internal static string GORFNT_TEXT_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture brush.
+        /// </summary>
+        internal static string GORFNT_TEXT_TEXTURE_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TEXTURE_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile.
+        /// </summary>
+        internal static string GORFNT_TEXT_TILE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile and flip horizontally.
+        /// </summary>
+        internal static string GORFNT_TEXT_TILE_FILP_HORZ {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TILE_FILP_HORZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile and flip.
+        /// </summary>
+        internal static string GORFNT_TEXT_TILE_FLIP {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TILE_FLIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tile and flip vertically.
+        /// </summary>
+        internal static string GORFNT_TEXT_TILE_FLIP_VERT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TILE_FLIP_VERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To window.
+        /// </summary>
+        internal static string GORFNT_TEXT_TO_WINDOW {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TO_WINDOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top.
+        /// </summary>
+        internal static string GORFNT_TEXT_TOP {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TOP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top offset.
+        /// </summary>
+        internal static string GORFNT_TEXT_TOP_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_TOP_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use gamma correction?.
+        /// </summary>
+        internal static string GORFNT_TEXT_USE_GAMMA {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_USE_GAMMA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Width.
+        /// </summary>
+        internal static string GORFNT_TEXT_WIDTH {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_WIDTH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrapping mode.
+        /// </summary>
+        internal static string GORFNT_TEXT_WRAPPING_MODE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_WRAPPING_MODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom.
+        /// </summary>
+        internal static string GORFNT_TEXT_ZOOM {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_ZOOM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom amount.
+        /// </summary>
+        internal static string GORFNT_TEXT_ZOOM_AMOUNT {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_ZOOM_AMOUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom window size.
+        /// </summary>
+        internal static string GORFNT_TEXT_ZOOM_WINSIZE {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_ZOOM_WINSIZE", resourceCulture);
             }
         }
         
@@ -1170,6 +1134,42 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the kerning values for the selected glyph..
+        /// </summary>
+        internal static string GORFNT_TIP_EDIT_KERNING {
+            get {
+                return ResourceManager.GetString("GORFNT_TIP_EDIT_KERNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go back to the glyph selection screen..
+        /// </summary>
+        internal static string GORFNT_TIP_GO_BACK {
+            get {
+                return ResourceManager.GetString("GORFNT_TIP_GO_BACK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the glyph to use its original advance value..
+        /// </summary>
+        internal static string GORFNT_TIP_RESET_ADVANCE {
+            get {
+                return ResourceManager.GetString("GORFNT_TIP_RESET_ADVANCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reset the glyph to use its original offset values..
+        /// </summary>
+        internal static string GORFNT_TIP_RESET_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_TIP_RESET_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Font.
         /// </summary>
         internal static string GORFNT_TITLE {
@@ -1179,11 +1179,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unknown brush.
+        ///   Looks up a localized string similar to A texture brush is assigned to the glyphs for this font, but no image editor plug-in was found.  Texture brushes will not be available..
         /// </summary>
-        internal static string GORFNT_UNKNOWN_BRUSH {
+        internal static string GORFNT_WARN_NO_IMG_EDITOR {
             get {
-                return ResourceManager.GetString("GORFNT_UNKNOWN_BRUSH", resourceCulture);
+                return ResourceManager.GetString("GORFNT_WARN_NO_IMG_EDITOR", resourceCulture);
             }
         }
         

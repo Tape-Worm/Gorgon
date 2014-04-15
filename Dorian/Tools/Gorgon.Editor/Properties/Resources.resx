@@ -667,4 +667,7 @@ The following characters are not allowed:
   <data name="GOREDIT_PROPERTY_NOT_FOUND" xml:space="preserve">
     <value>The property '{0}' does not exist for this content.</value>
   </data>
+  <data name="GOREDIT_TEXT_PLUGINS" xml:space="preserve">
+    <value>Plug-ins</value>
+  </data>
 </root>

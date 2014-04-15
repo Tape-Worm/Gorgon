@@ -71,6 +71,12 @@
     <Compile Include="Controls\listBoxFontStyle.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\PanelFontPreferences.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PanelFontPreferences.Designer.cs">
+      <DependentUpon>PanelFontPreferences.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\panelGradient.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -198,6 +204,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\PanelFontPreferences.resx">
+      <DependentUpon>PanelFontPreferences.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\panelGradient.resx">
       <DependentUpon>panelGradient.cs</DependentUpon>
     </EmbeddedResource>

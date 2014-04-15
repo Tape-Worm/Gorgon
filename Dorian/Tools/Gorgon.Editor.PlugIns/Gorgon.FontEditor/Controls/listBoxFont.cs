@@ -35,11 +35,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Font list box control.
 	/// </summary>
-	class ListBoxFont
+	sealed class ListBoxFont
 		: ListBox
-	{
-		#region Properties.
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
 		/// Property to set or return the editor service to use.
 		/// </summary>
 		public IWindowsFormsEditorService Service
@@ -50,7 +50,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.ListBox.MeasureItem" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.MeasureItemEventArgs" /> that contains the event data.</param>
+	    protected override void OnMeasureItem(MeasureItemEventArgs e)
+	    {
+	        base.OnMeasureItem(e);
+
+	        e.ItemHeight = 20;
+	    }
+
+	    /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ListBox.DrawItem"/> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.DrawItemEventArgs"/> that contains the event data.</param>
@@ -79,21 +90,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    }
 
 		    string fontName = Items[e.Index].ToString();
+	        Font cachedFont;
 
-		    if (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName.ToLower()))
+		    if (!GorgonFontEditorPlugIn.CachedFonts.TryGetValue(fontName, out cachedFont))
 		    {
-		        return;
+		        cachedFont = Font;
 		    }
 
 		    e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 		    Size measure = TextRenderer.MeasureText(e.Graphics, fontName, Font, e.Bounds.Size, flags);
 		    var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 		    var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-		    TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName.ToLower()], fontBounds, e.ForeColor, e.BackColor, flags);
+		    TextRenderer.DrawText(e.Graphics, fontName, cachedFont, fontBounds, e.ForeColor, e.BackColor, flags);
 		    TextRenderer.DrawText(e.Graphics, fontName, Font, textBounds, e.ForeColor, e.BackColor, flags);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+	    protected override void OnResize(EventArgs e)
+	    {
+	        base.OnResize(e);
+
+	        Invalidate();
+	    }
+
+	    /// <summary>
 		/// </summary>
 		/// <param name="e">Event object with the details</param>
 		protected override void OnSelectedIndexChanged(EventArgs e)
@@ -113,15 +135,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public ListBoxFont()
 		{
+		    DoubleBuffered = true;
+
 			Items.Clear();
 
-		    foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
+		    foreach (var font in FontFamily.Families)
 		    {
-		        Items.Add(font.Value.FontFamily.Name);
+		        Items.Add(font.Name);
 		    }
-			Width = 256;
-		}
+            
+            Width = 256;
+        }
 		#endregion
-
 	}
 }

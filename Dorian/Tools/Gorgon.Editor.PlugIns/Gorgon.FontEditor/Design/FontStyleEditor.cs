@@ -25,7 +25,11 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Design;
+using System.Linq;
+using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -49,23 +53,50 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			listBoxFontStyle fonts = null;
+			ListBoxFontStyle fontStyles = null;
 			var descriptor = context.Instance as ContentTypeDescriptor;
-            var document = descriptor.Content as GorgonFontContent;
+
+            Debug.Assert(descriptor != null, "No descriptor!");
+
+            var content = descriptor.Content as GorgonFontContent;
+
+            Debug.Assert(content != null, "No content!!");
+
+		    if (value == null)
+		    {
+		        value = FontStyle.Regular;
+		    }
 
 			try
 			{
-				fonts = new listBoxFontStyle(document.FontFamily, (System.Drawing.FontStyle)value);				
-				fonts.Service = editorSerivce;
+			    FontFamily family = FontFamily.Families.FirstOrDefault(item =>
+			                                                           string.Equals(item.Name,
+			                                                                         content.FontFamily,
+			                                                                         StringComparison.OrdinalIgnoreCase));
 
-				editorSerivce.DropDownControl(fonts);
+			    if (family == null)
+			    {
+			        return value;
+			    }
 
-				return fonts.FontStyle != (System.Drawing.FontStyle)value ? fonts.FontStyle : value;
+			    fontStyles = new ListBoxFontStyle(family, (FontStyle)value)
+			                 {
+			                     Service = editorSerivce,
+			                     BackColor = DarkFormsRenderer.DarkBackground,
+			                     ForeColor = DarkFormsRenderer.ForeColor,
+			                     BorderStyle = BorderStyle.None
+			                 };
+
+			    editorSerivce.DropDownControl(fontStyles);
+
+				return fontStyles.FontStyle != (FontStyle)value ? fontStyles.FontStyle : value;
 			}
 			finally
 			{
-				if (fonts != null)
-					fonts.Dispose();
+			    if (fontStyles != null)
+			    {
+			        fontStyles.Dispose();
+			    }
 			}
 		}
 

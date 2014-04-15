@@ -38,7 +38,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Font creation form.
 	/// </summary>
-	partial class formNewFont 
+	partial class FormNewFont 
 		: ZuneForm
 	{
 		#region Variables.
@@ -177,13 +177,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private void buttonCharacterList_Click(object sender, EventArgs e)
 		{
 			Font currentFont = null;
-			formCharacterPicker picker = null;
+			FormCharacterPicker picker = null;
 
 			try
 			{
 				currentFont = new Font(FontFamilyName, 16.0f, GraphicsUnit.Pixel);
 
-				picker = new formCharacterPicker
+				picker = new FormCharacterPicker
 				         {
 				             Characters = FontCharacters,
 				             CurrentFont = currentFont
@@ -285,9 +285,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			var style = FontStyle.Regular;
 
 			labelPreview.Font = Font;
-			if (_font != null)
-				_font.Dispose();
-			_font = null;
+		    if (_font != null)
+		    {
+		        _font.Dispose();
+		    }
+
+		    _font = null;
 
 			if (checkBold.Checked)
 			{
@@ -366,7 +369,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				UpdatePreview();
 
 				GorgonFontEditorPlugIn.Settings.FontAntiAliasMode = string.Equals(comboAA.Text,
-				                                                                  Resources.GORFNT_ANTIALIAS_NONE,
+				                                                                  Resources.GORFNT_TEXT_NONE,
 				                                                                  StringComparison.OrdinalIgnoreCase)
 					                                                    ? FontAntiAliasMode.None
 					                                                    : FontAntiAliasMode.AntiAlias;
@@ -417,7 +420,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			base.OnLoad(e);
 
             comboAA.Items.Clear();
-		    comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_NONE);
+		    comboAA.Items.Add(Resources.GORFNT_TEXT_NONE);
             comboAA.Items.Add(Resources.GORFNT_TEXT_ANTIALIAS);
 
 			comboSizeType.Text = GorgonFontEditorPlugIn.Settings.FontSizeType.ToString();
@@ -425,7 +428,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			switch (GorgonFontEditorPlugIn.Settings.FontAntiAliasMode)
 			{
 				case FontAntiAliasMode.None:
-					comboAA.Text = Resources.GORFNT_ANTIALIAS_NONE;
+					comboAA.Text = Resources.GORFNT_TEXT_NONE;
 					break;
 				default:
 					comboAA.Text = Resources.GORFNT_TEXT_ANTIALIAS;
@@ -441,9 +444,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formNewFont"/> class.
+		/// Initializes a new instance of the <see cref="FormNewFont"/> class.
 		/// </summary>
-		public formNewFont()
+		public FormNewFont()
 		{			
 			InitializeComponent();			
 		}

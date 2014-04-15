@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -73,12 +74,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
 		{
-			if ((value == null) || (!(value is IEnumerable<char>)))
-				return base.ConvertTo(context, culture, value, destinationType);
-
-			return "(Characters)";
+		    return (!(value is IEnumerable<char>))
+		               ? base.ConvertTo(context, culture, value, destinationType)
+		               : string.Format(culture, "({0})", Resources.PROP_CHARACTERS_NAME);
 		}
-		#endregion
+
+	    #endregion
 
 		#region Constructor/Destructor.
 

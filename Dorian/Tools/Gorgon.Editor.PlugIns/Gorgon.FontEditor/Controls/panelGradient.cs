@@ -315,11 +315,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             buttonClearNodes.Text = Resources.GORFNT_ACC_TEXT_CLEAR_NODES;
             itemDuplicateNode.Text = buttonDuplicateNode.Text = Resources.GORFNT_ACC_TEXT_DUPLICATE_NODES;
             labelAngle.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ANGLE);
-            labelSelectedWeight.Text = string.Format("{0}:", Resources.GORFNT_LABEL_SELECTED_WEIGHT_TEXT);
-            labelSelectedColor.Text = string.Format("{0}:", Resources.GORFNT_LABEL_SELECTED_COLOR_TEXT);
-            checkScaleAngle.Text = Resources.GORFNT_CHECK_SCALE_ANGLE_TEXT;
-            checkUseGamma.Text = Resources.GORFNT_CHECK_USE_GAMMA_TEXT;
-            labelPreview.Text = Resources.GORFNT_LABEL_BRUSH_PREVIEW_TEXT;
+            labelSelectedWeight.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SELECTED_WEIGHT);
+            labelSelectedColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SELECTED_COLOR);
+            checkScaleAngle.Text = Resources.GORFNT_TEXT_SCALE_ANGLE;
+            checkUseGamma.Text = Resources.GORFNT_TEXT_USE_GAMMA;
+            labelPreview.Text = Resources.GORFNT_TEXT_PREVIEW;
         }
 
 		/// <summary>

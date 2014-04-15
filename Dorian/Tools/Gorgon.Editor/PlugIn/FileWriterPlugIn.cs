@@ -82,7 +82,7 @@ namespace GorgonLibrary.Editor
 			private set;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return whether the plug-in supports writing compressed files.
 		/// </summary>
 		public abstract bool SupportsCompression

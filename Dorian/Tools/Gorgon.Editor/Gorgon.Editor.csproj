@@ -112,6 +112,12 @@
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\PanelPlugInPreferences.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PanelPlugInPreferences.Designer.cs">
+      <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PreferencePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -193,6 +199,7 @@
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
     <Compile Include="PlugIn\IImageEditorContent.cs" />
     <Compile Include="PlugIn\IImageEditorPlugIn.cs" />
+    <Compile Include="PlugIn\IPlugInSettings.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />
     <Compile Include="PropertyGrid\ContentProperty.cs" />
     <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
@@ -231,6 +238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PanelPlugInPreferences.resx">
+      <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PreferencePanel.resx">
       <DependentUpon>PreferencePanel.cs</DependentUpon>

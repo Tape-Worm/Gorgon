@@ -216,7 +216,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			ShadowEnabled = false;
 			ShadowOffset = new Point(1, 1);
 			ShadowOpacity = 0.5f;
-            SampleText = Resources.GORFNT_DEFAULT_TEXT;
+            SampleText = Resources.GORFNT_DEFAULT_PREVIEW_TEXT;
             LastTextureImportDialogView = FileViews.Large;
 		}
 		#endregion

@@ -404,8 +404,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
         /// </summary>
 	    private void PerformLocalization()
         {
-            labelPreview.Text = Resources.GORFNT_LABEL_BRUSH_PREVIEW_TEXT;
-            labelPatternType.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PATTERN_TYPE_TEXT);
+            labelPreview.Text = Resources.GORFNT_TEXT_PREVIEW;
+            labelPatternType.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PATTERN_TYPE);
             labelForegroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FOREGROUND);
             labelBackgroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_BACKGROUND);
         }

@@ -342,7 +342,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					|| (value.Width >= Graphics.Textures.MaxWidth)
 					|| (value.Height >= Graphics.Textures.MaxHeight))
 				{
-					throw new NotSupportedException(string.Format(Resources.GORFNT_TEXTURE_SIZE_INVALID,
+					throw new NotSupportedException(string.Format(Resources.GORFNT_ERR_TEXTURE_SIZE_INVALID,
 																  Graphics.Textures.MaxWidth,
 																  Graphics.Textures.MaxHeight));
 				}
@@ -603,27 +603,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
 			GorgonFont newFont;
 
-			if (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(FontFamily.ToLower()))
-			{
-				throw new KeyNotFoundException(string.Format(Resources.GORFNT_FAMILY_NOT_FOUND, FontFamily));
-			}
+            // If the cache does not contain the font, then find the font family that does.
+            FontFamily family = System.Drawing.FontFamily.Families.FirstOrDefault(item =>
+                                                                                  string.Equals(item.Name,
+                                                                                                FontFamily,
+                                                                                                StringComparison.OrdinalIgnoreCase));
 
-			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[FontFamily.ToLower()];
+            if (family == null)
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORFNT_ERR_FAMILY_NOT_FOUND, FontFamily));
+            }
+
 			var styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
 
 			Debug.Assert(styles != null, "No styles!");
 
 			// Remove styles that won't work for this font family.
 			foreach (FontStyle style in styles.Where(item => (_settings.FontStyle & item) == item 
-															&& (!cachedFont.FontFamily.IsStyleAvailable(item))))
+															&& (!family.IsStyleAvailable(item))))
 			{
 				_settings.FontStyle &= ~style;
 			}
 
 	        // If we're left with regular and the font doesn't support it, then use the next available style.
-			if ((!cachedFont.FontFamily.IsStyleAvailable(FontStyle.Regular)) && (_settings.FontStyle == FontStyle.Regular))
+            if ((!family.IsStyleAvailable(FontStyle.Regular)) && (_settings.FontStyle == FontStyle.Regular))
 			{
-				_settings.FontStyle = styles.First(item => cachedFont.FontFamily.IsStyleAvailable(item));
+                _settings.FontStyle = styles.First(family.IsStyleAvailable);
 			}
 
 			try
@@ -818,13 +823,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			if (ImageEditor == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_EDITOR_MISSING);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING);
 			}
 
 			if ((!string.Equals(dependency.Type, TextureBrushTextureType, StringComparison.OrdinalIgnoreCase))
 			    && (!string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_DEPENDENCY_UNKNOWN_TYPE, dependency.Type));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_ERR_DEPENDENCY_UNKNOWN_TYPE, dependency.Type));
 			}
 
 			IImageEditorContent imageContent = null;
@@ -857,12 +862,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (imageContent.Image == null)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_MISSING);
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_EXTERN_IMAGE_MISSING);
 				}
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, dependency.Path));
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.Path));
 				}
 
 				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.Path, imageContent.Image);

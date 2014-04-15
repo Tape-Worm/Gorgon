@@ -84,6 +84,12 @@ namespace GorgonLibrary.Editor
 			return OnCreateContentObject(settings ?? GetContentSettings());
 		}
 
+        /// <summary>
+        /// Function to retrieve the settings for the content.
+        /// </summary>
+        /// <returns>The settings for the content.</returns>
+	    public abstract ContentSettings GetContentSettings();
+
 		/// <summary>
 		/// Function to create a tool strip menu item.
 		/// </summary>
@@ -101,12 +107,6 @@ namespace GorgonLibrary.Editor
 
 		    return result;
 		}
-
-        /// <summary>
-        /// Function to create settings for a content object.
-        /// </summary>
-        /// <returns>The settings interface for the content.</returns>
-	    public abstract ContentSettings GetContentSettings();
 
 		/// <summary>
 		/// Function to return the icon for the content.
