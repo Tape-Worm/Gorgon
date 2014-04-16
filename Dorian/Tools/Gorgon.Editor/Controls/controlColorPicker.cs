@@ -114,12 +114,16 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				picker = new ColorPickerDialog();
-				picker.OldColor = CurrentColor;
-				if (picker.ShowDialog() == DialogResult.OK)
-					CurrentColor = picker.SelectedColor;
+				picker = new ColorPickerDialog
+				         {
+				             OldColor = CurrentColor
+				         };
+			    if (picker.ShowDialog() == DialogResult.OK)
+			    {
+			        CurrentColor = picker.SelectedColor;
+			    }
 
-				EditorService.CloseDropDown();
+			    EditorService.CloseDropDown();
 			}
 			catch (Exception ex)
 			{

@@ -623,6 +623,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more settings are invalid.  Please correct the invalid settings and try again..
+        /// </summary>
+        internal static string GOREDIT_DLG_SETTINGS_INVALID {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_SETTINGS_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The export operation was cancelled.
         ///{0}/{1} files copied.
         ///{2}/{1} files skipped..

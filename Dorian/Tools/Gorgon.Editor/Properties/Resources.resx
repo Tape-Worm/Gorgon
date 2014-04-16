@@ -670,4 +670,7 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_PLUGINS" xml:space="preserve">
     <value>Plug-ins</value>
   </data>
+  <data name="GOREDIT_DLG_SETTINGS_INVALID" xml:space="preserve">
+    <value>One or more settings are invalid.  Please correct the invalid settings and try again.</value>
+  </data>
 </root>

@@ -2857,6 +2857,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 		}
 
+        /// <summary>
+        /// Function called when the settings for the content plug-in have changed.
+        /// </summary>
+        /// <remarks>
+        /// Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This 
+        /// only applies to plug-ins that implement 
+        /// <see cref="GorgonLibrary.Editor.IPlugInSettingsUI" />.
+        /// </remarks>
+        protected override void OnPlugInSettingsChanged()
+        {
+            if (_content == null)
+            {
+                return;
+            }
+
+            textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
+
+            itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
+            itemPreviewShadowEnable_Click(this, EventArgs.Empty);
+
+            if (_content.CurrentState != DrawState.ClipGlyph)
+            {
+                return;
+            }
+
+            checkZoomSnap.Checked = GorgonFontEditorPlugIn.Settings.ZoomWindowSnap;
+            checkZoomSnap_Click(this, EventArgs.Empty);
+            numericZoomAmount.Value = (decimal)GorgonFontEditorPlugIn.Settings.ZoomWindowScaleFactor;
+            numericZoomWindowSize.Value = GorgonFontEditorPlugIn.Settings.ZoomWindowSize;
+        }
+
 		/// <summary>
 		/// Function to localize the text of the controls on the form.
 		/// </summary>
@@ -2901,8 +2932,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			itemSampleTextBackground.Text = Resources.GORFNT_ACC_TEXT_BACKGROUND_COLOR;
 			menuShadow.Text = Resources.GORFNT_TEXT_EDIT_PREVIEW_TEXT_SHADOW;
 			itemPreviewShadowEnable.Text = Resources.GORFNT_ACC_TEXT_ENABLE_SHADOW;
-			itemShadowOpacity.Text = Resources.GORFNT_TEXT_SHADOW_OPACITY;
-			itemShadowOffset.Text = Resources.GORFNT_TEXT_SHADOW_OFFSET;
+			itemShadowOpacity.Text = Resources.GORFNT_ACC_TEXT_SHADOW_OPACITY;
+			itemShadowOffset.Text = Resources.GORFNT_ACC_TEXT_SHADOW_OFFSET;
 			labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
 			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_TEXT_TEXTURE);
 			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_TEXT_ZOOM, Resources.GORFNT_TEXT_TO_WINDOW);

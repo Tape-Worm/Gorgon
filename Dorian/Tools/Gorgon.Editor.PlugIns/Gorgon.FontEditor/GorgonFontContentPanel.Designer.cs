@@ -229,9 +229,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // 
             // panelGlyphEdit
             // 
-            this.panelGlyphEdit.Controls.Add(this.panelGlyphAdvance);
             this.panelGlyphEdit.Controls.Add(this.panelGlyphClip);
             this.panelGlyphEdit.Controls.Add(this.panelKerningPairs);
+            this.panelGlyphEdit.Controls.Add(this.panelGlyphAdvance);
             this.panelGlyphEdit.Dock = System.Windows.Forms.DockStyle.Right;
             this.panelGlyphEdit.Location = new System.Drawing.Point(646, 0);
             this.panelGlyphEdit.Name = "panelGlyphEdit";
@@ -464,7 +464,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             0,
             0});
             this.numericZoomAmount.Minimum = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             0});

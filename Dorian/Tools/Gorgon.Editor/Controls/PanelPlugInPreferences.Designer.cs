@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+
 namespace GorgonLibrary.Editor
 {
     partial class PanelPlugInPreferences
@@ -43,6 +45,20 @@ namespace GorgonLibrary.Editor
             {
                 components.Dispose();
             }
+
+            if (disposing)
+            {
+                if (_settingPanels != null)
+                {
+                    foreach (KeyValuePair<EditorPlugIn, PreferencePanel> panel in _settingPanels)
+                    {
+                        panel.Value.Dispose();
+                    }
+
+                    _settingPanels = null;
+                }
+            }
+
             base.Dispose(disposing);
         }
 

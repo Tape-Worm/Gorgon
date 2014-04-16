@@ -346,6 +346,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shadow o&amp;ffset....
+        /// </summary>
+        internal static string GORFNT_ACC_TEXT_SHADOW_OFFSET {
+            get {
+                return ResourceManager.GetString("GORFNT_ACC_TEXT_SHADOW_OFFSET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shadow &amp;opacity....
+        /// </summary>
+        internal static string GORFNT_ACC_TEXT_SHADOW_OPACITY {
+            get {
+                return ResourceManager.GetString("GORFNT_ACC_TEXT_SHADOW_OPACITY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Update.
         /// </summary>
         internal static string GORFNT_ACC_TEXT_UPDATE {
@@ -621,6 +639,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Background color.
+        /// </summary>
+        internal static string GORFNT_TEXT_BACKGROUND_COLOR {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_BACKGROUND_COLOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Brush type.
         /// </summary>
         internal static string GORFNT_TEXT_BRUSH_TYPE {
@@ -702,11 +729,29 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable text shadow.
+        /// </summary>
+        internal static string GORFNT_TEXT_ENABLE_SHADOW {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_ENABLE_SHADOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Find glyph.
         /// </summary>
         internal static string GORFNT_TEXT_FIND_GLYPH {
             get {
                 return ResourceManager.GetString("GORFNT_TEXT_FIND_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Font preview settings.
+        /// </summary>
+        internal static string GORFNT_TEXT_FONT_PREVIEW_SETTINGS {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_FONT_PREVIEW_SETTINGS", resourceCulture);
             }
         }
         
@@ -720,11 +765,29 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Foreground color.
+        /// </summary>
+        internal static string GORFNT_TEXT_FOREGROUND_COLOR {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_FOREGROUND_COLOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Glyph.
         /// </summary>
         internal static string GORFNT_TEXT_GLYPH {
             get {
                 return ResourceManager.GetString("GORFNT_TEXT_GLYPH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glyph editor settings.
+        /// </summary>
+        internal static string GORFNT_TEXT_GLYPH_EDIT_SETTINGS {
+            get {
+                return ResourceManager.GetString("GORFNT_TEXT_GLYPH_EDIT_SETTINGS", resourceCulture);
             }
         }
         
@@ -927,7 +990,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shadow o&amp;ffset....
+        ///   Looks up a localized string similar to Shadow offset.
         /// </summary>
         internal static string GORFNT_TEXT_SHADOW_OFFSET {
             get {
@@ -936,7 +999,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Shadow &amp;opacity....
+        ///   Looks up a localized string similar to Shadow opacity.
         /// </summary>
         internal static string GORFNT_TEXT_SHADOW_OPACITY {
             get {
