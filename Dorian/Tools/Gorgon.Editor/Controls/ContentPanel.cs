@@ -266,7 +266,6 @@ namespace GorgonLibrary.Editor
 			OnContentPropertyChanged(e.PropertyName, e.Value);
 		}
 
-
 		/// <summary>
 		/// Function to perform localization on the control text properties.
 		/// </summary>
@@ -316,6 +315,17 @@ namespace GorgonLibrary.Editor
 			HasChanged = true;
 			UpdateCaption();
 		}
+
+
+
+        /// <summary>
+        /// Function called when the settings for the content plug-in have changed.
+        /// </summary>
+        /// <remarks>Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This 
+        /// only applies to plug-ins that implement <see cref="GorgonLibrary.Editor.IPlugInSettingsUI"/>.</remarks>
+        protected internal virtual void OnPlugInSettingsChanged()
+        {
+        }
 
 		/// <summary>
 		/// Function called when the content data has been persisted.

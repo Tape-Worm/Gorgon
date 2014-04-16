@@ -206,7 +206,7 @@ abcdefghijklmnopqrstuvwxyz</value>
   <data name="GORFNT_TEXT_EDIT_GLYPH_IMAGE" xml:space="preserve">
     <value>Edit the glyph image.</value>
   </data>
-  <data name="GORFNT_TEXT_SHADOW_OFFSET" xml:space="preserve">
+  <data name="GORFNT_ACC_TEXT_SHADOW_OFFSET" xml:space="preserve">
     <value>Shadow o&amp;ffset...</value>
   </data>
   <data name="GORFNT_TEXT_CLAMP" xml:space="preserve">
@@ -498,7 +498,7 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_ERR_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
-  <data name="GORFNT_TEXT_SHADOW_OPACITY" xml:space="preserve">
+  <data name="GORFNT_ACC_TEXT_SHADOW_OPACITY" xml:space="preserve">
     <value>Shadow &amp;opacity...</value>
   </data>
   <data name="GORFNT_TEXT_GRADIENT_BRUSH" xml:space="preserve">
@@ -608,5 +608,26 @@ The current video device '{0}' has a feature level of {1}.</value>
   </data>
   <data name="GORFNT_TEXT_CHARACTERS" xml:space="preserve">
     <value>Characters</value>
+  </data>
+  <data name="GORFNT_TEXT_BACKGROUND_COLOR" xml:space="preserve">
+    <value>Background color</value>
+  </data>
+  <data name="GORFNT_TEXT_ENABLE_SHADOW" xml:space="preserve">
+    <value>Enable text shadow</value>
+  </data>
+  <data name="GORFNT_TEXT_FONT_PREVIEW_SETTINGS" xml:space="preserve">
+    <value>Font preview settings</value>
+  </data>
+  <data name="GORFNT_TEXT_FOREGROUND_COLOR" xml:space="preserve">
+    <value>Foreground color</value>
+  </data>
+  <data name="GORFNT_TEXT_GLYPH_EDIT_SETTINGS" xml:space="preserve">
+    <value>Glyph editor settings</value>
+  </data>
+  <data name="GORFNT_TEXT_SHADOW_OFFSET" xml:space="preserve">
+    <value>Shadow offset</value>
+  </data>
+  <data name="GORFNT_TEXT_SHADOW_OPACITY" xml:space="preserve">
+    <value>Shadow opacity</value>
   </data>
 </root>

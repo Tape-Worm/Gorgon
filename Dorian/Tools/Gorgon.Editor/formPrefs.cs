@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 using KRBTabControl;
 
@@ -90,12 +91,14 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonOK_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             try
             {
                 foreach (PreferencePanel panel in _prefPanels)
                 {
                     if (!panel.ValidateSettings())
                     {
+                        GorgonDialogs.ErrorBox(this, Resources.GOREDIT_DLG_SETTINGS_INVALID);
                         DialogResult = DialogResult.None;
                     }
                     else
@@ -104,9 +107,13 @@ namespace GorgonLibrary.Editor
                     }
                 }
             }
-            catch (Exception ex)          
+            catch (Exception ex)
             {
                 GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
         }
 

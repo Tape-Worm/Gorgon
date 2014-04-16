@@ -97,18 +97,16 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
+        #region Variables.
+        // Panels for the setting UI.
+        private Dictionary<EditorPlugIn, PreferencePanel> _settingPanels = new Dictionary<EditorPlugIn, PreferencePanel>();
+        #endregion
+
         #region Properties.
 
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to perform validation for the controls.
-        /// </summary>
-        private void ValidateControls()
-        {
-        }
-
         /// <summary>
         /// Function to localize the controls on the panel.
         /// </summary>
@@ -162,16 +160,25 @@ namespace GorgonLibrary.Editor
             Cursor.Current = Cursors.WaitCursor;
             try
             {
-                if ((listPlugIns.SelectedIndex < 0)
-                    && (panelPlugInPrefs.Controls.Count > 0))
+                if (panelPlugInPrefs.Controls.Count > 0)
                 {
                     panelPlugInPrefs.Controls.RemoveAt(0);
                     return;
                 }
 
-                var item = (PlugInListItem)listPlugIns.SelectedItem;
+                if (listPlugIns.SelectedIndex == -1)
+                {
+                    return;
+                }
 
-                PreferencePanel panel = item.SettingsUI.GetSettingsUI();
+                var item = (PlugInListItem)listPlugIns.SelectedItem;
+                PreferencePanel panel;
+
+                if (!_settingPanels.TryGetValue(item.PlugIn, out panel))
+                {
+                    panel = item.SettingsUI.GetSettingsUI();
+                    _settingPanels[item.PlugIn] = panel;
+                }
 
                 if (panel == null)
                 {
@@ -184,6 +191,8 @@ namespace GorgonLibrary.Editor
                 panel.ForeColor = DarkFormsRenderer.ForeColor;
                 panel.Dock = DockStyle.Fill;
                 panelPlugInPrefs.Controls.Add(panel);
+
+                panel.InitializeSettings();
             }
             catch (Exception ex)
             {
@@ -191,7 +200,6 @@ namespace GorgonLibrary.Editor
             }
             finally
             {
-                ValidateControls();
                 Cursor.Current = Cursors.Default;
             }
         }
@@ -214,9 +222,41 @@ namespace GorgonLibrary.Editor
             {
                 GorgonDialogs.ErrorBox(ParentForm, ex);
             }
-            finally
+        }
+
+        /// <summary>
+        /// Function to validate any settings on this panel.
+        /// </summary>
+        /// <returns>
+        /// TRUE if the settings are valid, FALSE if not.
+        /// </returns>
+        public override bool ValidateSettings()
+        {
+            return _settingPanels.All(panel => panel.Value.ValidateSettings());
+        }
+
+        /// <summary>
+        /// Function to commit any settings.
+        /// </summary>
+        public override void CommitSettings()
+        {
+            foreach (KeyValuePair<EditorPlugIn, PreferencePanel> panel in _settingPanels)
             {
-                ValidateControls();
+                try
+                {
+                    panel.Value.CommitSettings();
+
+                    // If we have content open that uses the plug-in that's been updated, notify its UI (if it has one).
+                    if ((ContentManagement.Current != null) 
+                        && (ContentManagement.Current.PlugIn == panel.Key))
+                    {
+                        ContentManagement.Current.OnSettingsUpdated();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GorgonDialogs.ErrorBox(ParentForm, ex);
+                }
             }
         }
         #endregion

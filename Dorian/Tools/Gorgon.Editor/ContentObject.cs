@@ -334,6 +334,19 @@ namespace GorgonLibrary.Editor
         protected abstract ContentPanel OnInitialize();
 
         /// <summary>
+        /// Function called when plug-in settings are updated.
+        /// </summary>
+        internal void OnSettingsUpdated()
+        {
+            if (_contentControl == null)
+            {
+                return;
+            }
+
+            _contentControl.OnPlugInSettingsChanged();
+        }
+
+        /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>
         internal void SetDefaults()
