@@ -24,16 +24,15 @@
 // 
 #endregion
 
-using System;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.IO.Properties;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.IO
 {
     /// <summary>
-    /// A dependency for content files.
+    /// Dependency for a content file.
     /// </summary>
-	public class Dependency
+	public sealed class GorgonEditorDependency
 		: INamedObject
 	{
 		#region Constants.
@@ -50,7 +49,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the list of properties associated with this dependency.
 		/// </summary>
-		public DependencyPropertyCollection Properties
+		public GorgonEditorDependencyPropertyCollection Properties
 		{
 			get;
 			private set;
@@ -73,38 +72,15 @@ namespace GorgonLibrary.Editor
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property set or return the object that was created because of this dependency.
-		/// </summary>
-		public object DependencyObject
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to serialize this dependency into an XML node.
-		/// </summary>
-		/// <returns>The XML node containing the serialized dependency.</returns>
-		internal XElement Serialize()
-		{
-			var result = new XElement(DependencyNode,
-				new XAttribute(DependencyTypeAttr, Type), new XElement(DependencyPathNode, Path));
-
-			result.Add(Properties.Serialize());
-
-			return result;
-		}
-
 		/// <summary>
 		/// Function to deserialize a dependency from an XML node.
 		/// </summary>
 		/// <param name="element">Element containing the serialized dependency.</param>
 		/// <returns>A dependency deserialized from the XML node.</returns>
-		internal static Dependency Deserialize(XElement element)
+		internal static GorgonEditorDependency Deserialize(XElement element)
 		{
 			XAttribute typeAttr = element.Attribute(DependencyTypeAttr);
 			XElement pathNode = element.Element(DependencyPathNode);
@@ -114,16 +90,16 @@ namespace GorgonLibrary.Editor
 				|| (string.IsNullOrWhiteSpace(typeAttr.Value))
 			    || (string.IsNullOrWhiteSpace(pathNode.Value)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_DEPENDENCY_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFS_ERR_DEPENDENCY_CORRUPT);
 			}
 
-			var result = new Dependency(pathNode.Value, typeAttr.Value);
+			var result = new GorgonEditorDependency(pathNode.Value, typeAttr.Value);
 
-			XElement propertiesNode = element.Element(DependencyPropertyCollection.PropertiesNode);
+			XElement propertiesNode = element.Element(GorgonEditorDependencyPropertyCollection.PropertiesNode);
 
 			if (propertiesNode != null)
 			{
-				result.Properties = DependencyPropertyCollection.Deserialize(propertiesNode);
+				result.Properties = GorgonEditorDependencyPropertyCollection.Deserialize(propertiesNode);
 			}
 
 			return result;
@@ -132,42 +108,14 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Dependency"/> class.
+		/// Initializes a new instance of the <see cref="GorgonEditorDependency"/> class.
 		/// </summary>
 		/// <param name="name">The name of the dependency.</param>
 		/// <param name="type">The type of dependency.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="name"/> parameter is an empty string.</para>
-		/// </exception>
-		public Dependency(string name, string type)
+		internal GorgonEditorDependency(string name, string type)
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException("name");
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-			}
-
-			if (type == null)
-			{
-				throw new ArgumentNullException("type");
-			}
-
-			if (string.IsNullOrWhiteSpace(type))
-			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "type");
-			}
-
 			Path = name;
-			Properties = new DependencyPropertyCollection();
+			Properties = new GorgonEditorDependencyPropertyCollection(null);
 			Type = type;
 		}
 		#endregion
