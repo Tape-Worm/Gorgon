@@ -1366,6 +1366,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_zoomWindow.ZoomWindowFont = _zoomFont;
 
+		    EnableClipNumericLimits(false);
+
 			numericGlyphTop.Value = _newGlyph.GlyphCoordinates.Top;
 			numericGlyphLeft.Value = _newGlyph.GlyphCoordinates.Left;
 			numericGlyphWidth.Value = _newGlyph.GlyphCoordinates.Width;
