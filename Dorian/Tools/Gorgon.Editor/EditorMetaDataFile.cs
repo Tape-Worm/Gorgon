@@ -44,12 +44,7 @@ namespace GorgonLibrary.Editor
 		#region Constants.
 		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
 		private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
-
-		/// <summary>
-		/// Meta data group for content file dependencies.
-		/// </summary>
-		public const string ContentDependencyFiles = "ContentFileDependencies";
-
+		private const string ContentDependencyFiles = "ContentFileDependencies";     // Content dependency files node.
 		private const string WriterPlugInNode = "WriterPlugIn";						// Node name for the writer plug-in used by this file.
 		private const string TypeNameAttr = "TypeName";								// Fully qualified type name for the plug-in interface.
 		private const string FileNode = "File";										// Name of the file node.
