@@ -607,17 +607,11 @@ The following characters are not allowed:
   <data name="GOREDIT_METADATA_NOT_FOUND" xml:space="preserve">
     <value>There is no meta data item with the name '{0}' in this collection.</value>
   </data>
-  <data name="GOREDIT_CANNOT_FIND_DEPENDENCY" xml:space="preserve">
-    <value>The file '{0}' has dependencies that could not be loaded.  The file was loaded normally, but may not render correctly.  Please see the details pane to see which dependency files are missing.</value>
+  <data name="GOREDIT_CANNOT_FIND_DEPENDENCY_WARN" xml:space="preserve">
+    <value>The file '{0}' has dependencies that could not be loaded.  The file was loaded normally, but may not function correctly.  Please see the details pane to see which dependency files did not load correctly.</value>
   </data>
   <data name="GOREDIT_CANNOT_FIND_DEPENDENCY_FILE" xml:space="preserve">
-    <value>File '{0}' is missing.</value>
-  </data>
-  <data name="GOREDIT_CANNOT_FIND_DEPENDENCY_MSG" xml:space="preserve">
-    <value>The following files are required, but are missing:</value>
-  </data>
-  <data name="GOREDIT_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
-    <value>Error loading dependency '{0}'. Error: {1}</value>
+    <value>A dependency file, '{0}' is missing and must exist to load the content.</value>
   </data>
   <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_missing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -672,5 +666,14 @@ The following characters are not allowed:
   </data>
   <data name="GOREDIT_DLG_SETTINGS_INVALID" xml:space="preserve">
     <value>One or more settings are invalid.  Please correct the invalid settings and try again.</value>
+  </data>
+  <data name="GOREDIT_CANNOT_LOAD_DEPENDENCY_ERR" xml:space="preserve">
+    <value>There was an error loading dependency '{0}'.  The content requires this dependency and cannot be loaded without it.\nError: {1}</value>
+  </data>
+  <data name="GOREDIT_CANNOT_LOAD_DEPENDENCY_WARN" xml:space="preserve">
+    <value>File: {0}\nError: {1}</value>
+  </data>
+  <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
+    <value>The {0} '{1}' has unsaved changes. Would you like to save the {0} now?</value>
   </data>
 </root>

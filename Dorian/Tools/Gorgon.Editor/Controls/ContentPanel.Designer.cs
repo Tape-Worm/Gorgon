@@ -18,11 +18,6 @@
 				components.Dispose();
 			}
 
-			if ((disposing) && (!IsDisposed))
-			{
-				OnCloseClicked();
-			}
-
 			base.Dispose(disposing);
 		}
 

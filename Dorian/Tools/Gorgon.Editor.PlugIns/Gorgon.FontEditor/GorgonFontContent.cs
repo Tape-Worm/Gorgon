@@ -817,19 +817,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-	    protected override void OnLoadDependencyFile(Dependency dependency, Stream stream)
+		/// <returns>
+		/// The result of the load operation.  If the dependency loaded correctly, then the developer should return NoError.  If the dependency 
+		/// is not vital to the content, then the developer can return CanContinue, otherwise the developer should return FatalError and the content will 
+		/// not continue loading.
+		/// </returns>
+	    protected override DependencyLoadResult OnLoadDependencyFile(Dependency dependency, Stream stream)
 	    {
 			Debug.Assert(!string.IsNullOrWhiteSpace("fileName"), "Could not retrieve the filename from the dependency path!");
 
 			if (ImageEditor == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING);
+				return new DependencyLoadResult(DependencyLoadState.FatalError, Resources.GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING);
 			}
 
 			if ((!string.Equals(dependency.Type, TextureBrushTextureType, StringComparison.OrdinalIgnoreCase))
 			    && (!string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_ERR_DEPENDENCY_UNKNOWN_TYPE, dependency.Type));
+				return new DependencyLoadResult(DependencyLoadState.ErrorContinue,
+				                                string.Format(Resources.GORFNT_ERR_DEPENDENCY_UNKNOWN_TYPE, dependency.Type));
 			}
 
 			IImageEditorContent imageContent = null;
@@ -846,8 +852,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					if (!(sizeObject is Size))
 					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM);
-						
+						return new DependencyLoadResult(DependencyLoadState.ErrorContinue,
+						                                Resources.GORFNT_ERR_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM);
 					}
 
 					newSize = (Size)sizeObject;
@@ -862,15 +868,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (imageContent.Image == null)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_ERR_EXTERN_IMAGE_MISSING);
+					return new DependencyLoadResult(DependencyLoadState.ErrorContinue, Resources.GORFNT_ERR_EXTERN_IMAGE_MISSING);
 				}
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.Path));
+					return new DependencyLoadResult(DependencyLoadState.ErrorContinue,
+					                                string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.Path));
 				}
 
 				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.Path, imageContent.Image);
+
+				return new DependencyLoadResult(DependencyLoadState.Successful, null);
 			}
 			finally
 			{
