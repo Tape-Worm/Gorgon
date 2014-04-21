@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
@@ -109,23 +108,6 @@ namespace GorgonLibrary.Editor
 	        textScratchLocation.Text = Program.Settings.ScratchPath;
 	        textScratchLocation.Select(0, textScratchLocation.Text.Length);
         }
-
-        /// <summary>
-        /// Handles the DoubleClick event of the listDisabledPlugIns control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void listDisabledPlugIns_DoubleClick(object sender, EventArgs e)
-        {
-            Point cursorLocation = listDisabledPlugIns.PointToClient(Cursor.Position);
-            ListViewHitTestInfo hitTest = listDisabledPlugIns.HitTest(cursorLocation);
-
-            if (hitTest.Item != null)
-            {
-                GorgonDialogs.ErrorBox(ParentForm, "Plug-In '" + hitTest.Item.Text + "' failed to load.  See details for information.", null, hitTest.Item.SubItems[1].Text);
-            }
-
-        }
         
         /// <summary>
         /// Function to read the current settings into their respective controls.
@@ -135,76 +117,6 @@ namespace GorgonLibrary.Editor
             textScratchLocation.Text = Program.Settings.ScratchPath;
             textPlugInLocation.Text = Program.Settings.PlugInDirectory;
             checkAutoLoadFile.Checked = Program.Settings.AutoLoadLastFile;
-
-            listContentPlugIns.BeginUpdate();
-            listDisabledPlugIns.BeginUpdate();
-
-            listDisabledPlugIns.Items.Clear();
-            listContentPlugIns.Items.Clear();
-
-            foreach (var plugIn in Gorgon.PlugIns)
-            {
-	            if ((!(plugIn is EditorPlugIn)) 
-					&& (!(plugIn is GorgonFileSystemProviderPlugIn)))
-	            {
-		            continue;
-	            }
-
-	            var item = new ListViewItem();
-	            var editorPlugIn = plugIn as EditorPlugIn;
-
-	            item.Name = plugIn.Name;
-	            item.Text = plugIn.Description;
-
-	            if (plugIn is ContentPlugIn)
-	            {
-		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_CONTENT);
-	            }
-
-	            if (plugIn is FileWriterPlugIn)
-	            {
-		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_WRITER);
-	            }
-
-	            if (plugIn is GorgonFileSystemProviderPlugIn)
-	            {
-		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
-	            }
-                    
-	            if ((editorPlugIn != null) && (PlugIns.IsDisabled(editorPlugIn)))
-	            {
-		            item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
-		            item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-		            item.Tag = null;
-
-		            // We've got a disabled plug-in, add to the secondary list view
-		            // to show why the plug-in was disabled.
-		            var disabledItem = new ListViewItem
-		                               {
-			                               Name = plugIn.Name,
-			                               Text = plugIn.Description,
-			                               Tag = plugIn
-		                               };
-
-		            disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
-		            disabledItem.SubItems.Add(plugIn.PlugInPath);
-
-		            listDisabledPlugIns.Items.Add(disabledItem);
-	            }
-	            else
-	            {
-		            item.Tag = plugIn;
-	            }
-
-	            item.SubItems.Add(plugIn.PlugInPath);
-
-	            listContentPlugIns.Items.Add(item);
-            }
-
-            listContentPlugIns.EndUpdate();
-            listContentPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            listDisabledPlugIns.EndUpdate();
-            listDisabledPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         /// <summary>

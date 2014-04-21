@@ -110,8 +110,9 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Function to localize the controls on the panel.
         /// </summary>
-        private void LocalizeControls()
+        protected internal override void LocalizeControls()
         {
+            Text = Resources.GOREDIT_TEXT_PLUGIN_PREFS;
             labelPlugIns.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_PLUGINS);
         }
 
@@ -186,6 +187,7 @@ namespace GorgonLibrary.Editor
                 }
 
                 // Add the plug-in settings interface.
+                panel.LocalizeControls();
                 panel.BorderStyle = BorderStyle.FixedSingle;
                 panel.BackColor = DarkFormsRenderer.DarkBackground;
                 panel.ForeColor = DarkFormsRenderer.ForeColor;
@@ -214,14 +216,23 @@ namespace GorgonLibrary.Editor
 
             try
             {
-                LocalizeControls();
-
                 FillList();
             }
             catch (Exception ex)
             {
                 GorgonDialogs.ErrorBox(ParentForm, ex);
             }
+        }
+
+        /// <summary>
+        /// Function to determine if this preference panel should be added as a tab.
+        /// </summary>
+        /// <returns>
+        /// TRUE if the panel can be added as a tab, FALSE if not.
+        /// </returns>
+        public override bool CanAddAsTab()
+        {
+            return PlugIns.ContentPlugIns.Any(item => !PlugIns.IsDisabled(item.Value) && item.Value is IPlugInSettingsUI);
         }
 
         /// <summary>

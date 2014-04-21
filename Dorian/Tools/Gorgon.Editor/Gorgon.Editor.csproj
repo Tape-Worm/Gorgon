@@ -118,6 +118,12 @@
     <Compile Include="Controls\PanelPlugInPreferences.Designer.cs">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\PanelPlugIns.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PanelPlugIns.Designer.cs">
+      <DependentUpon>PanelPlugIns.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PreferencePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -242,6 +248,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PanelPlugInPreferences.resx">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\PanelPlugIns.resx">
+      <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PreferencePanel.resx">
       <DependentUpon>PreferencePanel.cs</DependentUpon>

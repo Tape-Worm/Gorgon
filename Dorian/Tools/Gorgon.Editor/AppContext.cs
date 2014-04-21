@@ -134,7 +134,7 @@ namespace GorgonLibrary.Editor
                               select device).First();
             }
 
-            Program.Graphics = new GorgonGraphics(bestDevice);
+            Program.Graphics = new GorgonGraphics(bestDevice, DeviceFeatureLevel.SM2_a_b);
 	    }
 
         /// <summary>

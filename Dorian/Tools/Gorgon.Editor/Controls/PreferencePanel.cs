@@ -26,6 +26,7 @@
 
 using System.ComponentModel;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
@@ -59,7 +60,7 @@ namespace GorgonLibrary.Editor
                 base.Text = value;
             }
         }
-
+        
         /// <summary>
         /// Property to return whether to refresh the tree after the preferences are committed.
         /// </summary>
@@ -72,6 +73,24 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to localize the text on the controls for the panel.
+        /// </summary>
+        /// <remarks>Override this method to supply localized text for any controls on the panel.</remarks>
+        protected internal virtual void LocalizeControls()
+        {
+            Text = Resources.GOREDIT_TEXT_PREFERENCES;
+        }
+
+        /// <summary>
+        /// Function to determine if this preference panel should be added as a tab.
+        /// </summary>
+        /// <returns>TRUE if the panel can be added as a tab, FALSE if not.</returns>
+        public virtual bool CanAddAsTab()
+        {
+            return true;
+        }
+
         /// <summary>
         /// Function to validate any settings on this panel.
         /// </summary>
@@ -102,7 +121,6 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public PreferencePanel()
         {
-            Text = "Preferences";
             InitializeComponent();
         }
         #endregion

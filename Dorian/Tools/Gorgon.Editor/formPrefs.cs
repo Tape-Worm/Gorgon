@@ -27,7 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Controls;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 using KRBTabControl;
@@ -54,8 +56,10 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void PopulateTabValues()
         {
-            foreach (PreferencePanel panel in _prefPanels)
+            foreach (PreferencePanel panel in _prefPanels.Where(item => item.CanAddAsTab()))
             {
+                panel.LocalizeControls();
+
                 var page = new TabPageEx(panel.Text)
                            {
                                BackColor = DarkFormsRenderer.WindowBackground,
@@ -130,6 +134,7 @@ namespace GorgonLibrary.Editor
                 _prefPanels = new PreferencePanel[]
                               {
                                   new EditorPreferencePanel(),
+                                  new PanelPlugIns(), 
                                   new PanelPlugInPreferences()
                               };
                 
