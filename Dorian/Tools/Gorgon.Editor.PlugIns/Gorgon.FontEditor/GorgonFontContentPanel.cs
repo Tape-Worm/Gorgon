@@ -1496,7 +1496,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         private void CheckTextPreviewScroll()
         {
-            if (_text == null)
+            if ((_text == null)
+				|| (_content == null)
+				|| (_content.Font == null))
             {
                 return;
             }
@@ -2829,7 +2831,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			    switch (_content.CurrentState)
 			    {
-
 					case DrawState.ToGlyphEdit:
 					case DrawState.GlyphEdit:
 						UpdateGlyphEditor();

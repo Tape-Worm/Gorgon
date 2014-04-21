@@ -761,6 +761,37 @@ namespace GorgonLibrary.Editor
                                                                            treeFiles.SelectedNode.Bounds.X,
                                                                            treeFiles.SelectedNode.Bounds.Y));
         }
+
+		/// <summary>
+		/// Function to determine whether to save any changed content or not.
+		/// </summary>
+		private ConfirmationResult ConfirmSaveContent()
+		{
+			var result = ConfirmationResult.No;
+
+			if ((!ContentManagement.Changed)
+			    || (CurrentOpenFile == null))
+			{
+				return result;
+			}
+
+			result = GorgonDialogs.ConfirmBox(this,
+			                                  string.Format(Resources.GOREDIT_DLG_CONTENT_CHANGED_SAVE,
+			                                                ContentManagement.Current.ContentType,
+			                                                ContentManagement.Current.Name),
+			                                  null,
+			                                  true);
+
+			if (result != ConfirmationResult.Yes)
+			{
+				return result;
+			}
+
+			ContentManagement.Save(CurrentOpenFile);
+			FileManagement.FileChanged = true;
+
+			return result;
+		}
         
         /// <summary>
 		/// Handles the NodeMouseDoubleClick event of the treeFiles control.
@@ -792,13 +823,23 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-			    if ((ContentManagement.Changed) && (CurrentOpenFile != null))
-                {
-                    // Persist the currently open content back to the file system.
-			        ContentManagement.Save(CurrentOpenFile);
-			    }
+				ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(fileNode.File.Name);
 
-                ContentManagement.Load(fileNode.File);
+				// Ensure we can actually open this type.
+				if (plugIn == null)
+				{
+					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, fileNode.File.Name, fileNode.File.Extension));
+					return;
+				}
+
+				ConfirmationResult result = ConfirmSaveContent();
+
+				if (result == ConfirmationResult.Cancel)
+				{
+					return;
+				}
+
+                ContentManagement.Load(fileNode.File, plugIn);
                 CurrentOpenFile = fileNode.File;
                 treeFiles.Refresh();
 
@@ -951,21 +992,21 @@ namespace GorgonLibrary.Editor
                 }
 
                 // If we change the name of an item, we must rename it.
-				if (changedArgs.PropertyName.Equals("name", StringComparison.OrdinalIgnoreCase))
+				if (!changedArgs.PropertyName.Equals("name", StringComparison.OrdinalIgnoreCase))
 				{
-					// Find our node that corresponds to this content.
-					var node = treeFiles.GetCurrentContentNode(CurrentOpenFile);
-
-					// If the node isn't here, then it may not have been enumerated, so it's OK if we get out.
-					if (node == null)
-					{
-						return;
-					}
-
-					RenameFileNode(node, changedArgs.Value.ToString());
+					return;
 				}
 
-				FileManagement.FileChanged = true;
+				// Find our node that corresponds to this content.
+				var node = treeFiles.GetCurrentContentNode(CurrentOpenFile);
+
+				// If the node isn't here, then it may not have been enumerated, so it's OK if we get out.
+				if (node == null)
+				{
+					return;
+				}
+
+				RenameFileNode(node, changedArgs.Value.ToString());
 			}
 			catch (Exception ex)
 			{
@@ -981,26 +1022,29 @@ namespace GorgonLibrary.Editor
 		/// Function called when the content window is closed.
 		/// </summary>
 		/// <param name="sender">The sender.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void OnContentClose(object sender, EventArgs e)
+		/// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+		private void OnContentClose(object sender, CancelEventArgs e)
 		{
 			var panel = (ContentPanel)sender;
+
+			// Persist the content.
+			ConfirmationResult result = ConfirmSaveContent();
+
+			if (result == ConfirmationResult.Cancel)
+			{
+				e.Cancel = true;
+				return;
+			}
 
 			// Turn off the event.
 			panel.ContentClosed -= OnContentClose;
 
-			// If the content file does not exist, then persist it.
-			if ((CurrentOpenFile!= null) && (ContentManagement.Changed))
+			// Update the node dependencies if any exist.
+			TreeNodeFile currentNode = treeFiles.GetCurrentContentNode(CurrentOpenFile);
+
+			if (currentNode != null)
 			{
-                ContentManagement.Save(CurrentOpenFile);
-
-				// Update the node dependencies if any exist.
-				TreeNodeFile currentNode = treeFiles.GetCurrentContentNode(CurrentOpenFile);
-
-				if (currentNode != null)
-				{
-					GetDependencyNodes(currentNode);
-				}
+				GetDependencyNodes(currentNode);
 			}
 			
             CurrentOpenFile = null;
@@ -1182,21 +1226,14 @@ namespace GorgonLibrary.Editor
 				return false;
 			}
 
-			// If we have content open and it hasn't been persisted to the file system, 
-			// then persist those changes.
-			if ((CurrentOpenFile != null) && (ContentManagement.Changed))
-			{
-				ContentManagement.Save(CurrentOpenFile);
-			}
-
 			// If we haven't saved the file yet, then prompt us with a file name.
 			if (string.IsNullOrWhiteSpace(FileManagement.FilePath))
 			{
-				itemSaveAs_Click(this, EventArgs.Empty);
+				itemSaveAs.PerformClick();
 			}
 			else
 			{
-				itemSave_Click(this, EventArgs.Empty);
+				itemSave.PerformClick();
 			}
 
 			return false;
@@ -1502,6 +1539,16 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				if (ConfirmSaveContent() == ConfirmationResult.Cancel)
+				{
+					return;
+				}
+
+				if (CurrentOpenFile != null)
+				{
+					ContentManagement.LoadDefaultContentPane();
+				}
+
                 // Create the content object.
                 content = ContentManagement.Create(plugIn);
 
@@ -3047,10 +3094,9 @@ namespace GorgonLibrary.Editor
 				                                       }
 
 				                                       displayText.Insert(0, "\n");
-				                                       displayText.Insert(0, Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_MSG);
 
 				                                       GorgonDialogs.WarningBox(this,
-				                                                                string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY,
+				                                                                string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_WARN,
 				                                                                              sourceFile),
 				                                                                null,
 				                                                                displayText.ToString());

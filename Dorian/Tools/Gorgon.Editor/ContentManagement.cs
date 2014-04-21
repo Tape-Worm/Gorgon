@@ -28,9 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
@@ -362,22 +365,63 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
+		/// Function to load dependencies for a file.
+		/// </summary>
+		/// <param name="content">The content that is being loaded.</param>
+		/// <param name="metaData">Meta data containing the dependency information.</param>
+		/// <param name="filePath">Path to the file that may contain dependencies.</param>
+		/// <param name="missing">A list of dependencies that are missing.</param>
+	    private static void LoadDependencies(ContentObject content, EditorMetaDataFile metaData, string filePath, List<string> missing)
+	    {
+			foreach (Dependency dependencyFile in metaData.Dependencies[filePath])
+			{
+				GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Path);
+
+				if (externalFile == null)
+				{
+					throw new FileNotFoundException(string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_FILE,
+						                                                        dependencyFile.Path));
+				}
+
+				// If the dependency file contains any dependencies, then we need to load it them prior to loading the actual dependency.
+				if ((metaData.Dependencies.ContainsKey(dependencyFile.Path))
+					&& (metaData.Dependencies[dependencyFile.Path].Count > 0))
+				{
+					LoadDependencies(content, metaData, dependencyFile.Path, missing);
+				}
+
+				// Read the external content.
+				using (Stream dependencyStream = externalFile.OpenStream(false))
+				{
+					DependencyLoadResult result = content.LoadDependencyFile(dependencyFile, dependencyStream);
+					switch (result.State)
+					{
+						case DependencyLoadState.FatalError:
+							throw new GorgonException(GorgonResult.CannotRead,
+							                          string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY_ERR, dependencyFile.Path, result.Message));
+						case DependencyLoadState.ErrorContinue:
+							missing.Add(string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY_WARN, dependencyFile.Path, result.Message));
+							break;
+						default:
+							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;
+							break;
+					}
+					
+				}
+			}
+	    }
+
+		/// <summary>
 		/// Function to load content data from the file system.
 		/// </summary>
 		/// <param name="file">The file system file that contains the content data.</param>
-	    public static void Load(GorgonFileSystemFileEntry file)
+		/// <param name="plugIn">The plug-in used to open the file.</param>
+	    public static void Load(GorgonFileSystemFileEntry file, ContentPlugIn plugIn)
 	    {
 		    if (file == null)
 		    {
 		        throw new ArgumentNullException("file");
 		    }
-
-		    ContentPlugIn plugIn = GetContentPlugInForFile(file.Name);
-
-            if (plugIn == null)
-            {
-                throw new IOException(string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, file.Name, file.Extension));
-            }
 
 		    ContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
 
@@ -404,29 +448,31 @@ namespace GorgonLibrary.Editor
 			{
 				var missingDependencies = new List<string>();
 
-				foreach (Dependency dependencyFile in metaData.Dependencies[file.FullPath])
+				try
 				{
-					try
-					{
-						GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Path);
+					LoadDependencies(content, metaData, file.FullPath, missingDependencies);
+				}
+				catch
+				{
+					// If we have a major failure, ensure that any dependencies that were loaded 
+					// are cleaned up (if they require it).
+					var cleanUp = from dependency in metaData.Dependencies
+					              from dependencyObject in dependency.Value
+					              let disposable = dependencyObject.DependencyObject as IDisposable
+					              where disposable != null
+					              select new
+					                     {
+						                     Dependency = dependencyObject,
+						                     Disposer = disposable
+					                     };
 
-						if (externalFile == null)
-						{
-							missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_FILE, dependencyFile.Path));
-							continue;
-						}
-
-						// Read the external content.
-						using (Stream dependencyStream = externalFile.OpenStream(false))
-						{
-							content.LoadDependencyFile(dependencyFile, dependencyStream);
-							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;
-						}
-					}
-					catch (Exception ex)
+					foreach (var dependency in cleanUp)
 					{
-						missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, ex.Message));
+						dependency.Dependency.DependencyObject = null;
+						dependency.Disposer.Dispose();
 					}
+
+					throw;
 				}
 
 				if ((missingDependencies.Count > 0)

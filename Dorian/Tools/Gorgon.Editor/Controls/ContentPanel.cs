@@ -49,7 +49,7 @@ namespace GorgonLibrary.Editor
 		/// Event fired when the content has been closed from the interface.
 		/// </summary>
 		[Browsable(false)]
-		internal event EventHandler ContentClosed;
+		internal event EventHandler<CancelEventArgs> ContentClosed;
 		#endregion
 
 		#region Properties.
@@ -290,19 +290,56 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function called when the close button is clicked.
 		/// </summary>
-		protected virtual void OnCloseClicked()
+		private void OnCloseClicked()
 		{
 			if (Content == null)
 			{
 				return;
 			}
 
-			if (ContentClosed != null)
-			{
-				ContentClosed(this, EventArgs.Empty);
-			}
+			labelClose.Enabled = false;
 
-			ContentManagement.LoadDefaultContentPane();
+			try
+			{
+				var args = new CancelEventArgs();
+
+				OnContentClosing(args);
+
+				if (args.Cancel)
+				{
+					return;
+				}
+
+				if (ContentClosed != null)
+				{
+					args = new CancelEventArgs();
+					ContentClosed(this, args);
+
+					if (args.Cancel)
+					{
+						return;
+					}
+				}
+
+				ContentManagement.LoadDefaultContentPane();
+			}
+			finally
+			{
+				if (!labelClose.IsDisposed)
+				{
+					labelClose.Enabled = true;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function called when the content is closing.
+		/// </summary>
+		/// <param name="e">Event arguments.</param>
+		/// <remarks>Override this method to perform custom closing functionality for content.</remarks>
+		protected virtual void OnContentClosing(CancelEventArgs e)
+		{
+			
 		}
 
 		/// <summary>

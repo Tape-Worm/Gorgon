@@ -137,6 +137,7 @@
     <Compile Include="DefaultContent.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="DependencyCollection.cs" />
+    <Compile Include="DependencyLoadResult.cs" />
     <Compile Include="DependencyProperty.cs" />
     <Compile Include="DependencyPropertyCollection.cs" />
     <Compile Include="Designers\AlphaChannelEditor.cs" />

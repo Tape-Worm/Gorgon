@@ -295,8 +295,12 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-	    protected virtual void OnLoadDependencyFile(Dependency dependency, Stream stream)
+		/// <returns>The result of the load operation.  If the dependency loaded correctly, then the developer should return a successful result.  If the dependency 
+		/// is not vital to the content, then the developer can return a continue result, otherwise the developer should return fatal result and the content will 
+		/// not continue loading.</returns>
+	    protected virtual DependencyLoadResult OnLoadDependencyFile(Dependency dependency, Stream stream)
 	    {
+			return new DependencyLoadResult(DependencyLoadState.Successful, null);
 	    }
 
         /// <summary>
@@ -362,7 +366,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the file to read.</param>
-	    internal void LoadDependencyFile(Dependency dependency, Stream stream)
+		/// <returns>The result of the load operation.</returns>
+	    internal DependencyLoadResult LoadDependencyFile(Dependency dependency, Stream stream)
 	    {
 			if (stream == null)
 			{
@@ -379,7 +384,7 @@ namespace GorgonLibrary.Editor
 				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
 			}
 
-			OnLoadDependencyFile(dependency, stream);
+			return OnLoadDependencyFile(dependency, stream);
 		}
 
 		/// <summary>
