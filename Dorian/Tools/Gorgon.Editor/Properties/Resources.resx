@@ -676,4 +676,10 @@ The following characters are not allowed:
   <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
     <value>The {0} '{1}' has unsaved changes. Would you like to save the {0} now?</value>
   </data>
+  <data name="GOREDIT_TEXT_PLUGIN_PREFS" xml:space="preserve">
+    <value>Plug-in preferences</value>
+  </data>
+  <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
 </root>

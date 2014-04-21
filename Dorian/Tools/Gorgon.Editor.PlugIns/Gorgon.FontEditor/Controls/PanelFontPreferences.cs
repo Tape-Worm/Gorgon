@@ -285,7 +285,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to localize the controls on the form.
         /// </summary>
-        private void Localize()
+        protected override void LocalizeControls()
         {
             labelGlyphEdit.Text = Resources.GORFNT_TEXT_GLYPH_EDIT_SETTINGS;
             labelPreview.Text = Resources.GORFNT_TEXT_FONT_PREVIEW_SETTINGS;
@@ -298,17 +298,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             labelTextColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FOREGROUND_COLOR);
             labelBackgroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_BACKGROUND_COLOR);
             labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            Localize();
         }
 
         /// <summary>
