@@ -1544,11 +1544,6 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				if (CurrentOpenFile != null)
-				{
-					ContentManagement.LoadDefaultContentPane();
-				}
-
                 // Create the content object.
                 content = ContentManagement.Create(plugIn);
 
