@@ -828,7 +828,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			if (ImageEditor == null)
 			{
-				return new DependencyLoadResult(DependencyLoadState.FatalError, Resources.GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING);
+				return new DependencyLoadResult(DependencyLoadState.ErrorContinue, Resources.GORFNT_ERR_EXTERN_IMAGE_EDITOR_MISSING);
 			}
 
 			if ((!string.Equals(dependency.Type, TextureBrushTextureType, StringComparison.OrdinalIgnoreCase))

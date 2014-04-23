@@ -315,9 +315,17 @@ namespace GorgonLibrary.Editor
             FileChanged = false;
 
             // Add the new file system as a mount point.
-            packFileSystem.Providers.LoadAllProviders();
+	        var plugIns = from plugIn in Gorgon.PlugIns
+	                      where plugIn is GorgonFileSystemProviderPlugIn 
+						  && Program.Settings.DisabledPlugIns.All(name =>!string.Equals(name,plugIn.Name,StringComparison.OrdinalIgnoreCase))
+	                      select plugIn;
 
-            if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
+	        foreach (var plugIn in plugIns)
+	        {
+		        packFileSystem.Providers.LoadProvider(plugIn.Name);
+	        }
+
+	        if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
             {
                 throw new FileLoadException(string.Format(Resources.GOREDIT_NO_PROVIDERS_TO_READ_FILE,
                                                           Path.GetFileName(path)));

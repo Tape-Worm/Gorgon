@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Data;
 using System.Linq;
@@ -35,6 +36,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.Controls
@@ -46,15 +48,68 @@ namespace GorgonLibrary.Editor.Controls
         : PreferencePanel
     {
         #region Variables.
-
-        #endregion
-
-        #region Properties.
-
+		// List of pending disabled plug-ins.
+		private HashSet<string> _pendingDisabled;
+		// System disabled plug-ins.
+	    private HashSet<string> _sysDisabled;
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the Opening event of the popupPlugIns control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="CancelEventArgs"/> instance containing the event data.</param>
+		private void popupPlugIns_Opening(object sender, CancelEventArgs e)
+		{
+			try
+			{
+				if (listContentPlugIns.SelectedItems.Count == 0)
+				{
+					e.Cancel = true;
+					return;
+				}
+
+				var plugIn = (GorgonPlugIn)listContentPlugIns.SelectedItems[0].Tag;
+
+				if (!_pendingDisabled.Contains(plugIn.Name))
+				{
+					itemEnablePlugIn.Visible = false;
+					itemDisablePlugIn.Visible = true;
+					if (listContentPlugIns.SelectedItems.Count == 1)
+					{
+						itemDisablePlugIn.Text = string.Format("{0} '{1}'...",
+															   Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN,
+															   listContentPlugIns.SelectedItems[0].Text);
+					}
+					else
+					{
+						itemDisablePlugIn.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN);
+					}
+
+					return;
+				}
+
+				itemDisablePlugIn.Visible = false;
+				itemEnablePlugIn.Visible = true;
+				if (listContentPlugIns.SelectedItems.Count == 1)
+				{
+					itemEnablePlugIn.Text = string.Format("{0} '{1}'...",
+														   Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN,
+														   listContentPlugIns.SelectedItems[0].Text);
+				}
+				else
+				{
+					itemEnablePlugIn.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+
+		/// <summary>
         /// Handles the DoubleClick event of the listDisabledPlugIns control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -71,6 +126,87 @@ namespace GorgonLibrary.Editor.Controls
 
         }
 
+		/// <summary>
+		/// Handles the Click event of the itemEnablePlugIn control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemEnablePlugIn_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				var listView = (ListView)popupPlugIns.SourceControl;
+
+				foreach (ListViewItem item in listView.SelectedItems)
+				{
+					var plugIn = (GorgonPlugIn)item.Tag;
+
+					if (!_pendingDisabled.Contains(plugIn.Name))
+					{
+						continue;
+					}
+
+					_pendingDisabled.Remove(plugIn.Name);
+				}
+
+				InitializeSettings();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemDisablePlugIn control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemDisablePlugIn_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				var result = ConfirmationResult.None;
+
+				foreach (ListViewItem item in listContentPlugIns.SelectedItems)
+				{
+					var plugIn = (GorgonPlugIn)item.Tag;
+
+					if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+					{
+						result = GorgonDialogs.ConfirmBox(ParentForm,
+						                                  string.Format(Resources.GOREDIT_DLG_DISABLE_PLUGIN, item.Text),
+						                                  string.Empty,
+						                                  listContentPlugIns.SelectedItems.Count > 1,
+						                                  listContentPlugIns.SelectedItems.Count > 1);
+					}
+
+					if (result == ConfirmationResult.Cancel)
+					{
+						return;
+					}
+
+					if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+					{
+						continue;
+					}
+
+					if (_pendingDisabled.Contains(plugIn.Name))
+					{
+						continue;
+					}
+
+					_pendingDisabled.Add(plugIn.Name);
+				}
+
+				InitializeSettings();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+		}
+
         /// <summary>
         /// Function to localize the text on the controls for the panel.
         /// </summary>
@@ -80,6 +216,10 @@ namespace GorgonLibrary.Editor.Controls
         protected internal override void LocalizeControls()
         {
             Text = Resources.GOREDIT_TEXT_PLUGINS;
+	        itemEnablePlugIn.Text = Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN;
+	        itemDisablePlugIn.Text = Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN;
+	        pagePlugIns.Text = Resources.GOREDIT_TEXT_AVAILABLE_PLUGINS;
+	        pageDisabled.Text = Resources.GOREDIT_TEXT_FAILED_PLUGINS;
         }
 
         /// <summary>
@@ -87,6 +227,36 @@ namespace GorgonLibrary.Editor.Controls
         /// </summary>
         public override void InitializeSettings()
         {
+	        if (_pendingDisabled == null)
+	        {
+		        _pendingDisabled = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+				_sysDisabled = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+				// Get user plug-in disabled names.
+		        foreach (var plugInName in Program.Settings.DisabledPlugIns)
+		        {
+			        if (_pendingDisabled.Contains(plugInName))
+			        {
+				        continue;
+			        }
+
+			        _pendingDisabled.Add(plugInName);
+		        }
+
+				// Get system disabled plug-ins.
+		        foreach (var plugIn in Gorgon.PlugIns.Where(item => (item is GorgonFileSystemProviderPlugIn || item is EditorPlugIn)
+			                                                   && (!_pendingDisabled.Contains(item.Name))
+			                                                   && (PlugIns.IsDisabled(item))))
+		        {
+			        if (_sysDisabled.Contains(plugIn.Name))
+			        {
+				        continue;
+			        }
+
+			        _sysDisabled.Add(plugIn.Name);
+		        }
+	        }
+
             listContentPlugIns.BeginUpdate();
             listDisabledPlugIns.BeginUpdate();
 
@@ -101,13 +271,14 @@ namespace GorgonLibrary.Editor.Controls
                     continue;
                 }
 
-                var item = new ListViewItem();
-                var editorPlugIn = plugIn as EditorPlugIn;
+                var item = new ListViewItem
+                           {
+	                           Name = plugIn.Name,
+	                           Text = plugIn.Description,
+							   Tag = plugIn
+                           };
 
-                item.Name = plugIn.Name;
-                item.Text = plugIn.Description;
-
-                if (plugIn is ContentPlugIn)
+	            if (plugIn is ContentPlugIn)
                 {
                     item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_CONTENT);
                 }
@@ -122,32 +293,32 @@ namespace GorgonLibrary.Editor.Controls
                     item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
                 }
 
-                if ((editorPlugIn != null) && (PlugIns.IsDisabled(editorPlugIn)))
-                {
-                    item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
-                    item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-                    item.Tag = null;
+	            if (_pendingDisabled.Contains(plugIn.Name))
+	            {
+			        item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
+		            item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+	            }
+				else if (_sysDisabled.Contains(plugIn.Name))
+	            {
+			        item.SubItems[1].Text = Resources.GOREDIT_TEXT_ERROR;
+			        item.ForeColor = Color.DarkRed;
 
-                    // We've got a disabled plug-in, add to the secondary list view
-                    // to show why the plug-in was disabled.
-                    var disabledItem = new ListViewItem
-                    {
-                        Name = plugIn.Name,
-                        Text = plugIn.Description,
-                        Tag = plugIn
-                    };
+					// We've got a disabled plug-in, add to the secondary list view
+					// to show why the plug-in was disabled.
+					var disabledItem = new ListViewItem
+					{
+						Name = plugIn.Name,
+						Text = plugIn.Description,
+						Tag = plugIn
+					};
 
-                    disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
-                    disabledItem.SubItems.Add(plugIn.PlugInPath);
+			        disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
+			        disabledItem.SubItems.Add(plugIn.PlugInPath);
 
-                    listDisabledPlugIns.Items.Add(disabledItem);
-                }
-                else
-                {
-                    item.Tag = plugIn;
-                }
+			        listDisabledPlugIns.Items.Add(disabledItem);
+	            }
 
-                item.SubItems.Add(plugIn.PlugInPath);
+	            item.SubItems.Add(plugIn.PlugInPath);
 
                 listContentPlugIns.Items.Add(item);
             }
@@ -157,7 +328,38 @@ namespace GorgonLibrary.Editor.Controls
             listDisabledPlugIns.EndUpdate();
             listDisabledPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
-        #endregion
+
+		/// <summary>
+		/// Function to validate any settings on this panel.
+		/// </summary>
+		/// <returns>
+		/// TRUE if the settings are valid, FALSE if not.
+		/// </returns>
+	    public override bool ValidateSettings()
+	    {
+		    if (!_pendingDisabled.SetEquals(Program.Settings.DisabledPlugIns))
+		    {
+				GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_DLG_APP_NEEDS_RESTART);    
+		    }
+
+		    return base.ValidateSettings();
+	    }
+
+	    /// <summary>
+		/// Function to commit any settings.
+		/// </summary>
+	    public override void CommitSettings()
+	    {
+		    base.CommitSettings();
+
+			Program.Settings.DisabledPlugIns.Clear();
+
+		    foreach (string plugIn in _pendingDisabled)
+		    {
+			    Program.Settings.DisabledPlugIns.Add(plugIn);
+		    }
+	    }
+	    #endregion
 
         #region Constructor/Destructor.
         /// <summary>

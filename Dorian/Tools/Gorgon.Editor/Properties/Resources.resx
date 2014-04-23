@@ -671,7 +671,9 @@ The following characters are not allowed:
     <value>There was an error loading dependency '{0}'.  The content requires this dependency and cannot be loaded without it.\nError: {1}</value>
   </data>
   <data name="GOREDIT_CANNOT_LOAD_DEPENDENCY_WARN" xml:space="preserve">
-    <value>File: {0}\nError: {1}</value>
+    <value>File: {0}
+Error: {1}
+</value>
   </data>
   <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
     <value>The {0} '{1}' has unsaved changes. Would you like to save the {0} now?</value>
@@ -681,5 +683,29 @@ The following characters are not allowed:
   </data>
   <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
     <value>Preferences</value>
+  </data>
+  <data name="GOREDIT_ACC_TEXT_DISABLE_PLUGIN" xml:space="preserve">
+    <value>&amp;Disable</value>
+  </data>
+  <data name="GOREDIT_ACC_TEXT_ENABLE_PLUGIN" xml:space="preserve">
+    <value>&amp;Enable</value>
+  </data>
+  <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
+    <value>Disabled by user.</value>
+  </data>
+  <data name="GOREDIT_DLG_APP_NEEDS_RESTART" xml:space="preserve">
+    <value>Any changes to the plug-in list will not take effect until the application is restarted.</value>
+  </data>
+  <data name="GOREDIT_DLG_DISABLE_PLUGIN" xml:space="preserve">
+    <value>This will disable the plug in '{0}'.  Are you sure wish to do this?</value>
+  </data>
+  <data name="GOREDIT_TEXT_AVAILABLE_PLUGINS" xml:space="preserve">
+    <value>Available plug-ins</value>
+  </data>
+  <data name="GOREDIT_TEXT_ERROR" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="GOREDIT_TEXT_FAILED_PLUGINS" xml:space="preserve">
+    <value>Failed plug-ins</value>
   </data>
 </root>

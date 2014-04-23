@@ -33,6 +33,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
@@ -134,7 +135,7 @@ namespace GorgonLibrary.Editor
                               select device).First();
             }
 
-            Program.Graphics = new GorgonGraphics(bestDevice, DeviceFeatureLevel.SM2_a_b);
+            Program.Graphics = new GorgonGraphics(bestDevice);
 	    }
 
         /// <summary>
@@ -190,7 +191,17 @@ namespace GorgonLibrary.Editor
             }
 
             ScratchArea.InitializeScratch();
-            ScratchArea.ScratchFiles.Providers.LoadAllProviders();
+
+			// Get only the providers that are not disabled.
+			var plugIns = from plugIn in Gorgon.PlugIns
+						  where plugIn is GorgonFileSystemProviderPlugIn
+						  && Program.Settings.DisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
+						  select plugIn;
+
+	        foreach (GorgonPlugIn plugIn in plugIns)
+	        {
+		        ScratchArea.ScratchFiles.Providers.LoadProvider(plugIn.Name);
+	        }
 	    }
 
         /// <summary>
