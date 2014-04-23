@@ -287,6 +287,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         protected override void LocalizeControls()
         {
+	        labelFontEditorSettings.Text = Resources.GORFNT_TEXT_FONT_EDITOR_SETTINGS;
+	        checkShowAnimations.Text = Resources.GORFNT_TEXT_SHOW_ANIMATIONS;
             labelGlyphEdit.Text = Resources.GORFNT_TEXT_GLYPH_EDIT_SETTINGS;
             labelPreview.Text = Resources.GORFNT_TEXT_FONT_PREVIEW_SETTINGS;
             checkZoomSnap.Text = Resources.GORFNT_TEXT_SNAP_ZOOM;
@@ -307,6 +309,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             GorgonFontPlugInSettings settings = GorgonFontEditorPlugIn.Settings;
             float shadowOpacity = _shadowOpacity / 255.0f;
+
+	        settings.ShowAnimations = checkShowAnimations.Checked;
 
             settings.ZoomWindowSnap = checkZoomSnap.Checked;
             settings.ZoomWindowSize = (int)numericZoomWindowSize.Value;
@@ -337,6 +341,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             try
             {
+	            checkShowAnimations.Checked = GorgonFontEditorPlugIn.Settings.ShowAnimations;
                 checkZoomSnap.Checked = GorgonFontEditorPlugIn.Settings.ZoomWindowSnap;
                 numericZoomAmount.Value = (decimal)GorgonFontEditorPlugIn.Settings.ZoomWindowScaleFactor;
                 numericZoomWindowSize.Value = GorgonFontEditorPlugIn.Settings.ZoomWindowSize;

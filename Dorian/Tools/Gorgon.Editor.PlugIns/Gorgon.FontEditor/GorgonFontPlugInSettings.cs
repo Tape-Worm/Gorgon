@@ -99,6 +99,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return whether transition animations are shown for the editor.
+		/// </summary>
+		[ApplicationSetting("ShowAnimations", typeof(bool), "FontEditor")]
+		public bool ShowAnimations
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
 		[ApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
@@ -196,6 +206,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public GorgonFontPlugInSettings()
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
+			ShowAnimations = true;
 			ZoomWindowSnap = false;
 			ZoomWindowScaleFactor = 2.0f;
 			ZoomWindowSize = 256;

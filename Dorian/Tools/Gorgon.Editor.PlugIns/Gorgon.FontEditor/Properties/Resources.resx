@@ -630,4 +630,10 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_TEXT_SHADOW_OPACITY" xml:space="preserve">
     <value>Shadow opacity</value>
   </data>
+  <data name="GORFNT_TEXT_FONT_EDITOR_SETTINGS" xml:space="preserve">
+    <value>Font editor settings</value>
+  </data>
+  <data name="GORFNT_TEXT_SHOW_ANIMATIONS" xml:space="preserve">
+    <value>Show transition animations?</value>
+  </data>
 </root>

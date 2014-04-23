@@ -2074,9 +2074,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    {
 		        _sortedTextures = null;
 		        _currentTextureIndex++;
-		        _content.CurrentState = DrawState.NextTexture;
-		        _nextState = DrawState.DrawFontTextures;
-		        ActiveControl = panelTextures;
+			    if (GorgonFontEditorPlugIn.Settings.ShowAnimations)
+			    {
+				    _content.CurrentState = DrawState.NextTexture;
+				    _nextState = DrawState.DrawFontTextures;
+			    }
+			    ActiveControl = panelTextures;
 		        UpdateGlyphRegions();
 		    }
 		    catch (Exception ex)
@@ -2100,9 +2103,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    {
 		        _sortedTextures = null;
 		        _currentTextureIndex--;
-		        _content.CurrentState = DrawState.PrevTexture;
-		        _nextState = DrawState.DrawFontTextures;
-                ActiveControl = panelTextures;
+			    if (GorgonFontEditorPlugIn.Settings.ShowAnimations)
+			    {
+				    _content.CurrentState = DrawState.PrevTexture;
+				    _nextState = DrawState.DrawFontTextures;
+			    }
+			    ActiveControl = panelTextures;
 		        UpdateGlyphRegions();
 		    }
 		    catch (Exception ex)
@@ -3512,31 +3518,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 
 				// Move to the font texture that we clicked on.
-				foreach (GorgonSprite backSprite in _sortedTextures.Reverse())
+				var currentSprite = (from backSprite in _sortedTextures.Reverse()
+				                    let region =
+					                    new RectangleF(backSprite.Position - (Vector2.Modulate(backSprite.Anchor, backSprite.Scale)),
+					                                   backSprite.ScaledSize)
+				                    let textureIndex = Array.IndexOf(_textures, backSprite.Texture)
+				                    where region.Contains(e.Location) && textureIndex != -1
+				                    select new
+				                           {
+					                           Sprite = backSprite,
+					                           TextureIndex = textureIndex
+				                           }).FirstOrDefault();
+
+				if (currentSprite == null)
 				{
-					var spriteSpace = new RectangleF(backSprite.Position - (Vector2.Modulate(backSprite.Anchor, backSprite.Scale)),
-						                                backSprite.ScaledSize);
-
-					if (!spriteSpace.Contains(e.Location))
-					{
-						continue;
-					}
-
-					int arrayIndex = Array.IndexOf(_textures, backSprite.Texture);
-
-					if (arrayIndex == -1)
-					{
-						continue;
-					}
-
-					_sortedTextures = null;
-					_content.CurrentState = arrayIndex < _currentTextureIndex ? DrawState.PrevTexture : DrawState.NextTexture;
-                    _nextState = DrawState.DrawFontTextures;
-					_currentTextureIndex = arrayIndex;
-					UpdateGlyphRegions();
-
 					return;
 				}
+
+				_sortedTextures = null;
+				if (GorgonFontEditorPlugIn.Settings.ShowAnimations)
+				{
+					_content.CurrentState = currentSprite.TextureIndex < _currentTextureIndex ? DrawState.PrevTexture : DrawState.NextTexture;
+					_nextState = DrawState.DrawFontTextures;
+				}
+
+				_currentTextureIndex = currentSprite.TextureIndex;
+				UpdateGlyphRegions();
 			}
 			catch (Exception ex)
 			{
@@ -3817,6 +3824,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				UpdateGlyphRegions();
 			}
 
+			float scale;
+			var textureRegion = GetGlyphEditRegion(_selectedGlyph, panelTextures.ClientSize, out scale);
+
+			var glyphScreenRegion = _glyphRegions[_selectedGlyph];
+
 		    if (!editOn)
 		    {
 				panelTextures.Resize -= TextureDisplayResize;
@@ -3824,15 +3836,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				panelGlyphAdvance.Visible = false;
 				UpdateTextureRegion(_selectedGlyph.Texture);
 				panelTextures.Resize += TextureDisplayResize;
-		    }
-			
-		    float scale;
-			var textureRegion = GetGlyphEditRegion(_selectedGlyph, panelTextures.ClientSize, out scale);
-			
-			var glyphScreenRegion = _glyphRegions[_selectedGlyph];
 
-		    if (!editOn)
-		    {
 				// When we return from the editor screen, restore the scrollbars.
 			    Size newSize = _selectedGlyph.Texture.Settings.Size;
 
@@ -3859,19 +3863,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_editBackgroundAnimation.Stop();
 			_editGlyphAnimation.Stop();
 
-			var transitionAnimation = _editGlyphAnimation["TransitionTo"];
-
-		    Rectangle destination = GetScaledGlyphBounds(_selectedGlyph, textureRegion, scale);
-
-			transitionAnimation.Tracks["ScaledSize"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Size);
-			transitionAnimation.Tracks["Position"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Location);
-		    transitionAnimation.Tracks["Opacity"].KeyFrames[0] = new GorgonKeySingle(0.0f, 0.0f);
-			transitionAnimation.Tracks["ScaledSize"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
-			                                                                                destination.Size);
-			transitionAnimation.Tracks["Position"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
-			                                                                            destination.Location);
-			transitionAnimation.Tracks["Opacity"].KeyFrames[1] = new GorgonKeySingle(transitionAnimation.Length, 1.0f);
-
 		    _glyphSprite.Texture = _selectedGlyph.Texture;
 		    _glyphSprite.TextureRegion = _selectedGlyph.TextureCoordinates;
 		    _glyphSprite.Size = _selectedGlyph.GlyphCoordinates.Size;
@@ -3883,14 +3874,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			if (editOn)
 			{
-				_editBackgroundAnimation[0].Speed = 1.0f;
-				transitionAnimation.Speed = 1.0f;
-
-				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
-				buttonEditGlyph.Text = Resources.GORFNT_TEXT_GO_BACK;
-				buttonEditGlyph.ToolTipText = Resources.GORFNT_TIP_GO_BACK;
-				buttonEditGlyph.Image = Resources.back_16x16png;
-
 				_lastScrollPoint.X = scrollHorizontal.Value;
 				_lastScrollPoint.Y = scrollVertical.Value;
 
@@ -3904,20 +3887,49 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				GetGlyphAdvancementAndOffset();
 			}
+
+		    if (GorgonFontEditorPlugIn.Settings.ShowAnimations)
+		    {
+				Rectangle destination = GetScaledGlyphBounds(_selectedGlyph, textureRegion, scale);
+				var transitionAnimation = _editGlyphAnimation["TransitionTo"];
+
+				transitionAnimation.Tracks["ScaledSize"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Size);
+				transitionAnimation.Tracks["Position"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Location);
+				transitionAnimation.Tracks["Opacity"].KeyFrames[0] = new GorgonKeySingle(0.0f, 0.0f);
+				transitionAnimation.Tracks["ScaledSize"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
+																								destination.Size);
+				transitionAnimation.Tracks["Position"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
+																							destination.Location);
+				transitionAnimation.Tracks["Opacity"].KeyFrames[1] = new GorgonKeySingle(transitionAnimation.Length, 1.0f);
+
+				if (editOn)
+				{
+					_editBackgroundAnimation[0].Speed = 1.0f;
+					transitionAnimation.Speed = 1.0f;
+				}
+				else
+				{
+					_editBackgroundAnimation[0].Speed = -1.0f;
+					transitionAnimation.Speed = -1.0f;
+				}
+
+			    _editGlyphAnimation.Play(_glyphSprite, "TransitionTo");
+			    _editBackgroundAnimation.Play(_glyphBackgroundSprite, "GlyphBGColor");
+			    _content.CurrentState = editOn ? DrawState.ToGlyphEdit : DrawState.FromGlyphEdit;
+			    _nextState = DrawState.GlyphEdit;
+
+			    return;
+		    }
+
+			_glyphBackgroundSprite.Color = GorgonColor.White;
+			if (editOn)
+			{
+				_content.CurrentState = _nextState = DrawState.GlyphEdit;
+			}
 			else
 			{
-				_editBackgroundAnimation[0].Speed = -1.0f;
-				transitionAnimation.Speed = -1.0f;
-				buttonEditGlyph.Text = string.Empty;
-				buttonEditGlyph.DisplayStyle = ToolStripItemDisplayStyle.Image;
-				buttonEditGlyph.ToolTipText = Resources.GORFNT_TEXT_EDIT_SELECTED_GLYPH;
-				buttonEditGlyph.Image = Resources.edit_16x16;
+				_content.CurrentState = _nextState = DrawState.DrawFontTextures;
 			}
-
-		    _editGlyphAnimation.Play(_glyphSprite, "TransitionTo");
-			_editBackgroundAnimation.Play(_glyphBackgroundSprite, "GlyphBGColor");
-			_content.CurrentState = editOn ? DrawState.ToGlyphEdit : DrawState.FromGlyphEdit;
-            _nextState = DrawState.GlyphEdit;
 	    }
 
 		/// <summary>

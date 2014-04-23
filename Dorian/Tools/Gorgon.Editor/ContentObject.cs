@@ -266,9 +266,12 @@ namespace GorgonLibrary.Editor
 			// TODO: Or, we could allow the user to switch between editors in the interface.  This would make it so that only
 			// TODO: one image editor plug-in can be active at any given time (this is ideal because it wouldn't make sense to have
 			// TODO: multiple image editors available at once).
-			return Gorgon.PlugIns.FirstOrDefault(item => string.Equals(item.Name,
-			                                                           "GorgonLibrary.Editor.ImageEditorPlugIn.GorgonImageEditorPlugIn",
-			                                                           StringComparison.OrdinalIgnoreCase)) as IImageEditorPlugIn;
+			var firstImageEditor = from plugIn in PlugIns.ContentPlugIns
+			                       let editor = plugIn.Value as IImageEditorPlugIn
+			                       where editor != null
+			                       select editor;
+
+			return firstImageEditor.FirstOrDefault();
 		}
 
         /// <summary>

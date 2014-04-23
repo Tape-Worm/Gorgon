@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 
@@ -119,6 +120,17 @@ namespace GorgonLibrary.Editor
 			return results;
 		}
 
+		/// <summary>
+		/// Function to determine if a plug-in was disabled by a user.
+		/// </summary>
+		/// <param name="plugIn">Plug-in to check.</param>
+		/// <returns>TRUE if disabled, FALSE if not.</returns>
+		private static bool IsUserDisabled(GorgonPlugIn plugIn)
+		{
+			return Program.Settings.DisabledPlugIns.Any(item =>
+			                                            string.Equals(item, plugIn.Name, StringComparison.OrdinalIgnoreCase));
+		}
+
         /// <summary>
         /// Function to determine if a plug-in has been disabled.
         /// </summary>
@@ -166,12 +178,24 @@ namespace GorgonLibrary.Editor
 			// Process each plug-in.
 			foreach (var plugIn in plugIns)
 			{
+				if (IsUserDisabled(plugIn))
+				{
+					Program.LogFile.Print("Found plug-in: \"{0}\".  But it is disabled by the user.",
+											LoggingLevel.Verbose,
+											plugIn.Description);
+
+					_disabled.Add(new DisabledPlugIn(plugIn, Resources.GOREDIT_TEXT_DISABLED_BY_USER));
+					
+					continue;
+				}
+
 				// Check for a file system provider first.
 				var fileReader = plugIn as GorgonFileSystemProviderPlugIn;
 
 				if (fileReader != null)
 				{
 					Program.LogFile.Print("Found a file system provider plug-in: \"{0}\".", LoggingLevel.Verbose, fileReader.Name);
+
 
 					_readerPlugIns[fileReader.Name] = fileReader;
 					continue;
@@ -182,10 +206,13 @@ namespace GorgonLibrary.Editor
 
 				if (!string.IsNullOrWhiteSpace(validationData))
 				{
-					Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
+					Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:",
+					                      LoggingLevel.Verbose,
+					                      editorPlugIn.PlugInType,
+					                      editorPlugIn.Description);
 					Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
 
-					_disabled.Add(new DisabledPlugIn(editorPlugIn, validationData));
+					_disabled.Add(new DisabledPlugIn(plugIn, validationData));
 					continue;
 				}
 

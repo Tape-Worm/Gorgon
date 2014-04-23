@@ -152,7 +152,17 @@ namespace GorgonLibrary.Editor
             private set;
         }
 
-        /// <summary>
+		/// <summary>
+		/// Property to return the list of user disabled plug-ins.
+		/// </summary>
+		[ApplicationSetting("DisabledPlugIns", typeof(IList<string>), "PlugIns")]
+		public IList<string> DisabledPlugIns
+		{
+			get;
+			private set;
+		}
+
+			/// <summary>
         /// Property set or return whether to automatically load the last file opened by the editor on start up.
         /// </summary>
         [ApplicationSetting("AutoLoadLastFile", true, typeof(bool), "Options")]        
@@ -243,6 +253,7 @@ namespace GorgonLibrary.Editor
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
 
             RecentFiles = new List<string>();
+			DisabledPlugIns = new List<string>();
             PlugInDirectory = Gorgon.ApplicationDirectory + "PlugIns";
 
 			// Set the default scratch location.
