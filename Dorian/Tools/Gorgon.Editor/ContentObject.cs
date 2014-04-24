@@ -255,23 +255,35 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
 		/// Function to retrieve the registered image editor for the system.
 		/// </summary>
 		/// <returns>The registered image editor plug-in, or NULL (Nothing in VB.Net) if not found.</returns>
 	    protected IImageEditorPlugIn GetRegisteredImageEditor()
 		{
-			// TODO: We need to make this a little more dynamic.
-			// TODO: A couple of options are present.  We could make this a concrete class in the editor that's public. 
-			// TODO: Or, we could allow the user to switch between editors in the interface.  This would make it so that only
-			// TODO: one image editor plug-in can be active at any given time (this is ideal because it wouldn't make sense to have
-			// TODO: multiple image editors available at once).
-			var firstImageEditor = from plugIn in PlugIns.ContentPlugIns
-			                       let editor = plugIn.Value as IImageEditorPlugIn
-			                       where editor != null
-			                       select editor;
+            ContentPlugIn plugIn;
 
-			return firstImageEditor.FirstOrDefault();
+            // Use the first image editor if we haven't selected one.
+            if (string.IsNullOrWhiteSpace(Program.Settings.DefaultImageEditor))
+            {
+                // Find the first image editor plug-in.
+                plugIn = PlugIns.ContentPlugIns.FirstOrDefault(item => item.Value is IImageEditorPlugIn).Value;
+
+                if (plugIn == null)
+                {
+                    return null;
+                }
+
+                Program.Settings.DefaultImageEditor = plugIn.Name;
+                return (IImageEditorPlugIn)plugIn;
+            }
+
+            if (!PlugIns.ContentPlugIns.TryGetValue(Program.Settings.DefaultImageEditor, out plugIn))
+            {
+                return null;
+            }
+
+            return plugIn as IImageEditorPlugIn;
 		}
 
         /// <summary>

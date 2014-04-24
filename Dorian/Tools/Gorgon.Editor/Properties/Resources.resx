@@ -708,4 +708,7 @@ Error: {1}
   <data name="GOREDIT_TEXT_FAILED_PLUGINS" xml:space="preserve">
     <value>Failed plug-ins</value>
   </data>
+  <data name="GOREDIT_DLG_IMAGE_EDITOR_CHANGED" xml:space="preserve">
+    <value>You must close and re-open the current content to use the new image editor.</value>
+  </data>
 </root>

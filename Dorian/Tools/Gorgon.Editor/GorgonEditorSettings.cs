@@ -162,7 +162,16 @@ namespace GorgonLibrary.Editor
 			private set;
 		}
 
-			/// <summary>
+        /// <summary>
+        /// Property to set or return the default image editor plug-in to use when handling images in other plug-ins.
+        /// </summary>
+	    public string DefaultImageEditor
+	    {
+	        get;
+	        set;
+	    }
+
+            /// <summary>
         /// Property set or return whether to automatically load the last file opened by the editor on start up.
         /// </summary>
         [ApplicationSetting("AutoLoadLastFile", true, typeof(bool), "Options")]        
