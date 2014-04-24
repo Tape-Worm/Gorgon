@@ -37,6 +37,22 @@ namespace GorgonLibrary.Editor
     public interface IImageEditorPlugIn
     {
         /// <summary>
+        /// Property to return the name of the image editor plug-in.
+        /// </summary>
+	    string Name
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return the description of the image editor plug-in.
+        /// </summary>
+	    string Description
+	    {
+	        get;
+	    }
+
+        /// <summary>
         /// Property to return the file extensions supported by the image editor.
         /// </summary>
 	    GorgonFileExtensionCollection FileExtensions

@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -39,6 +41,73 @@ namespace GorgonLibrary.Editor
     partial class EditorPreferencePanel
         : PreferencePanel
     {
+        #region Value Types.
+        /// <summary>
+        /// An image editor drop down item.
+        /// </summary>
+        private struct ImageEditorDropDownItem 
+        {
+            #region Variables.
+            /// <summary>
+            /// The image editor plug-in.
+            /// </summary>
+            public readonly IImageEditorPlugIn PlugIn;
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
+            public override string ToString()
+            {
+                return string.IsNullOrWhiteSpace(PlugIn.Description) ? PlugIn.Name : PlugIn.Description;
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public override int GetHashCode()
+            {
+                return 281.GenerateHash(PlugIn);
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object"/>, is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                if (obj is ImageEditorDropDownItem)
+                {
+                    return ((ImageEditorDropDownItem)obj).PlugIn == PlugIn;
+                }
+
+                return base.Equals(obj);
+            }
+            #endregion
+
+            #region Constructor/Destructor.
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ImageEditorDropDownItem"/> struct.
+            /// </summary>
+            /// <param name="plugIn">The plug in.</param>
+            public ImageEditorDropDownItem(IImageEditorPlugIn plugIn)
+            {
+                PlugIn = plugIn;
+            }
+            #endregion
+        }
+        #endregion
+
         #region Properties.
 
         #endregion
@@ -108,6 +177,45 @@ namespace GorgonLibrary.Editor
 	        textScratchLocation.Text = Program.Settings.ScratchPath;
 	        textScratchLocation.Select(0, textScratchLocation.Text.Length);
         }
+
+        /// <summary>
+        /// Function to fill the image editor list.
+        /// </summary>
+        private void FillImageEditors()
+        {
+            comboImageEditor.Items.Clear();
+
+            foreach (KeyValuePair<string, ContentPlugIn> plugIn in
+                PlugIns.ContentPlugIns.Where(item => item.Value is IImageEditorPlugIn)
+                .OrderBy(item => item.Value.Name))
+            {
+                var result = new ImageEditorDropDownItem((IImageEditorPlugIn)plugIn.Value);
+                comboImageEditor.Items.Add(result);
+
+                if (string.Equals(result.PlugIn.Name,
+                                  Program.Settings.DefaultImageEditor,
+                                  StringComparison.OrdinalIgnoreCase))
+                {
+                    comboImageEditor.SelectedItem = result;
+                }
+            }
+
+            if ((string.IsNullOrWhiteSpace(Program.Settings.DefaultImageEditor))
+                && (comboImageEditor.Items.Count > 0))
+            {
+                comboImageEditor.SelectedIndex = 0;
+
+                // Default to the first image editor.
+                Program.Settings.DefaultImageEditor =
+                    ((ImageEditorDropDownItem)comboImageEditor.SelectedItem).PlugIn.Name;
+            }
+
+            // Don't bother selecting if we've only got 1 editor or no editors at all.
+            if (comboImageEditor.Items.Count < 2)
+            {
+                comboImageEditor.Enabled = false;
+            }
+        }
         
         /// <summary>
         /// Function to read the current settings into their respective controls.
@@ -117,6 +225,8 @@ namespace GorgonLibrary.Editor
             textScratchLocation.Text = Program.Settings.ScratchPath;
             textPlugInLocation.Text = Program.Settings.PlugInDirectory;
             checkAutoLoadFile.Checked = Program.Settings.AutoLoadLastFile;
+
+            FillImageEditors();
         }
 
         /// <summary>
@@ -133,6 +243,9 @@ namespace GorgonLibrary.Editor
             {
                 Program.Settings.PlugInDirectory = textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar);
             }
+
+            Program.Settings.DefaultImageEditor = comboImageEditor.Text;
+
 
             Program.Settings.AutoLoadLastFile = checkAutoLoadFile.Checked;
         }
@@ -154,6 +267,14 @@ namespace GorgonLibrary.Editor
 	        {
 		        GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG);
 	        }
+
+            if ((string.Equals(Program.Settings.DefaultImageEditor,
+                               comboImageEditor.Text,
+                               StringComparison.OrdinalIgnoreCase))
+                && (ContentManagement.Current != null))
+            {
+                GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_DLG_IMAGE_EDITOR_CHANGED);
+            }
 
 	        try
 	        {
