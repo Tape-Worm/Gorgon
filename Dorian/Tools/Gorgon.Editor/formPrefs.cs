@@ -121,6 +121,16 @@ namespace GorgonLibrary.Editor
             }
         }
 
+		/// <summary>
+		/// Function to localize the text in the controls on the form.
+		/// </summary>
+	    private void LocalizeControls()
+		{
+			buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
+			buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+			Text = Resources.GOREDIT_TEXT_PREFERENCES;
+		}
+
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
@@ -131,6 +141,8 @@ namespace GorgonLibrary.Editor
 
             try
             {
+				LocalizeControls();
+
                 _prefPanels = new PreferencePanel[]
                               {
                                   new EditorPreferencePanel(),

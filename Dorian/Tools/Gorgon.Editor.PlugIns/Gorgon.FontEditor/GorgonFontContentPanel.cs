@@ -2874,7 +2874,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// only applies to plug-ins that implement 
         /// <see cref="GorgonLibrary.Editor.IPlugInSettingsUI" />.
         /// </remarks>
-        protected override void OnPlugInSettingsChanged()
+        protected override void OnEditorSettingsChanged()
         {
             if (_content == null)
             {

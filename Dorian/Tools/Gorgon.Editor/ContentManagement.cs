@@ -29,11 +29,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
@@ -167,6 +165,24 @@ namespace GorgonLibrary.Editor
 				ContentPropertyChanged(e);
 			}
 		}
+
+		/// <summary>
+		/// Function to tell the content that the editor settings have changed.
+		/// </summary>
+	    public static void EditorSettingsUpdated()
+	    {
+			if (_currentContentObject == null)
+			{
+				return;
+			}
+
+			_currentContentObject.OnEditorSettingsUpdated();
+
+			if (_currentContentObject.ContentControl != null)
+			{
+				_currentContentObject.ContentControl.OnEditorSettingsChanged();
+			}
+	    }
 
 		/// <summary>
 		/// Function to update the content properties.

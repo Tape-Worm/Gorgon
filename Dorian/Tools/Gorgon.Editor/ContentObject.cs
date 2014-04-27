@@ -94,7 +94,6 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
-		private ContentPanel _contentControl;		// Control used to edit/display the content.
 		private string _name = "Content";			// Name of the content.
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
@@ -119,6 +118,15 @@ namespace GorgonLibrary.Editor
             private set;
         }
 
+	    /// <summary>
+	    /// Property to return the control used to edit/display content.
+	    /// </summary>
+	    internal ContentPanel ContentControl
+	    {
+		    get;
+		    private set;
+	    }
+
         /// <summary>
         /// Property to return the plug-in that can create this content.
         /// </summary>
@@ -137,7 +145,7 @@ namespace GorgonLibrary.Editor
         {
             get
             {
-                return _contentControl != null;
+                return ContentControl != null;
             }
         }
 
@@ -353,16 +361,10 @@ namespace GorgonLibrary.Editor
         protected abstract ContentPanel OnInitialize();
 
         /// <summary>
-        /// Function called when plug-in settings are updated.
+        /// Function called when editor or plug-in settings are updated.
         /// </summary>
-        internal void OnSettingsUpdated()
+        protected internal virtual void OnEditorSettingsUpdated()
         {
-            if (_contentControl == null)
-            {
-                return;
-            }
-
-            _contentControl.OnPlugInSettingsChanged();
         }
 
         /// <summary>
@@ -429,9 +431,9 @@ namespace GorgonLibrary.Editor
             SetDefaults();
 
             // Update the panel
-			if (_contentControl != null)
+			if (ContentControl != null)
 			{
-				_contentControl.RefreshContent();
+				ContentControl.RefreshContent();
 			}
 	    }
 
@@ -453,9 +455,9 @@ namespace GorgonLibrary.Editor
 
 			OnPersist(stream);
 
-			if (_contentControl != null)
+			if (ContentControl != null)
 			{
-				_contentControl.ContentPersisted();
+				ContentControl.ContentPersisted();
 			}
 		}
 
@@ -549,8 +551,8 @@ namespace GorgonLibrary.Editor
 		/// <returns>A control to place in the primary interface window.</returns>
         public ContentPanel InitializeContent()
 		{
-			_contentControl = OnInitialize();
-			return _contentControl;
+			ContentControl = OnInitialize();
+			return ContentControl;
 		}
 
 		/// <summary>
@@ -606,14 +608,14 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			if ((_contentControl != null)
-				&& (!_contentControl.IsDisposed))
+			if ((ContentControl != null)
+				&& (!ContentControl.IsDisposed))
 			{
-				_contentControl.Dispose();
+				ContentControl.Dispose();
 			}
 
 			_disposed = true;
-            _contentControl = null;
+            ContentControl = null;
 		}
 
 		/// <summary>

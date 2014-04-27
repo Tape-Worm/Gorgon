@@ -1196,10 +1196,10 @@ namespace GorgonLibrary.Editor
 			columnSize.Text = Resources.GOREDIT_DLG_COLUMN_SIZE;
 			buttonView.Text = Resources.GOREDIT_DLG_CHANGEVIEW_TEXT;
 			buttonGoUp.Text = Resources.GOREDIT_DLG_GOUP_BUTTON_TEXT;
-			buttonOK.Text = Resources.GOREDIT_BTN_OK;
+			buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
 			buttonBack.Text = Resources.GOREDIT_DLG_BACK_TEXT;
 			buttonForward.Text = Resources.GOREDIT_DLG_FORWARD_TEXT;
-			buttonCancel.Text = Resources.GOREDIT_BTN_CANCEL;
+			buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
 			labelSearchBanner.Text = Resources.GOREDIT_DLG_SEARCHLABEL;
 		}
 

@@ -261,7 +261,7 @@ namespace GorgonLibrary.Editor
                     if ((ContentManagement.Current != null) 
                         && (ContentManagement.Current.PlugIn == panel.Key))
                     {
-                        ContentManagement.Current.OnSettingsUpdated();
+						ContentManagement.EditorSettingsUpdated();
                     }
                 }
                 catch (Exception ex)

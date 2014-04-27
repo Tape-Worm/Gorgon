@@ -44,11 +44,13 @@
 			this.columnDisabledDescription = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnDisabledReason = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnDisablePath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.imagePlugInHelp = new System.Windows.Forms.PictureBox();
 			this.tabPlugIns.SuspendLayout();
 			this.pagePlugIns.SuspendLayout();
 			this.panelContentPlugIns.SuspendLayout();
 			this.popupPlugIns.SuspendLayout();
 			this.pageDisabled.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.imagePlugInHelp)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabPlugIns
@@ -115,8 +117,6 @@
 			this.listContentPlugIns.Name = "listContentPlugIns";
 			this.listContentPlugIns.Size = new System.Drawing.Size(655, 348);
 			this.listContentPlugIns.TabIndex = 0;
-			this.toolHelp.SetToolTip(this.listContentPlugIns, "Manages plug-ins that are responsible for creating/editing \r\nspecific types of co" +
-        "ntent.");
 			this.listContentPlugIns.UseCompatibleStateImageBehavior = false;
 			this.listContentPlugIns.View = System.Windows.Forms.View.Details;
 			// 
@@ -199,10 +199,23 @@
 			// 
 			this.columnDisablePath.Text = "path";
 			// 
+			// imagePlugInHelp
+			// 
+			this.imagePlugInHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.imagePlugInHelp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.imagePlugInHelp.Image = global::GorgonLibrary.Editor.Properties.Resources.info_16x16;
+			this.imagePlugInHelp.Location = new System.Drawing.Point(649, 6);
+			this.imagePlugInHelp.Name = "imagePlugInHelp";
+			this.imagePlugInHelp.Size = new System.Drawing.Size(16, 16);
+			this.imagePlugInHelp.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+			this.imagePlugInHelp.TabIndex = 7;
+			this.imagePlugInHelp.TabStop = false;
+			// 
 			// PanelPlugIns
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.imagePlugInHelp);
 			this.Controls.Add(this.tabPlugIns);
 			this.Name = "PanelPlugIns";
 			this.Size = new System.Drawing.Size(671, 389);
@@ -211,7 +224,9 @@
 			this.panelContentPlugIns.ResumeLayout(false);
 			this.popupPlugIns.ResumeLayout(false);
 			this.pageDisabled.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.imagePlugInHelp)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
 
@@ -232,6 +247,7 @@
 		private System.Windows.Forms.ContextMenuStrip popupPlugIns;
 		private System.Windows.Forms.ToolStripMenuItem itemDisablePlugIn;
 		private System.Windows.Forms.ToolStripMenuItem itemEnablePlugIn;
+		private System.Windows.Forms.PictureBox imagePlugInHelp;
 
     }
 }

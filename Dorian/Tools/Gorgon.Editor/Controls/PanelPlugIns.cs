@@ -121,9 +121,8 @@ namespace GorgonLibrary.Editor.Controls
 
             if (hitTest.Item != null)
             {
-                GorgonDialogs.ErrorBox(ParentForm, "Plug-In '" + hitTest.Item.Text + "' failed to load.  See details for information.", null, hitTest.Item.SubItems[1].Text);
+                GorgonDialogs.InfoBox(ParentForm, string.Format("{0}:\n{1}", string.Format(Resources.GOREDIT_DLG_PLUG_IN_FAIL_REASON, hitTest.Item.Text), hitTest.Item.SubItems[1].Text));
             }
-
         }
 
 		/// <summary>
@@ -137,15 +136,11 @@ namespace GorgonLibrary.Editor.Controls
 			{
 				var listView = (ListView)popupPlugIns.SourceControl;
 
-				foreach (ListViewItem item in listView.SelectedItems)
+				foreach (var plugIn in
+					listView.SelectedItems.Cast<ListViewItem>()
+					        .Select(item => (GorgonPlugIn)item.Tag)
+					        .Where(plugIn => _pendingDisabled.Contains(plugIn.Name)))
 				{
-					var plugIn = (GorgonPlugIn)item.Tag;
-
-					if (!_pendingDisabled.Contains(plugIn.Name))
-					{
-						continue;
-					}
-
 					_pendingDisabled.Remove(plugIn.Name);
 				}
 
@@ -220,6 +215,12 @@ namespace GorgonLibrary.Editor.Controls
 	        itemDisablePlugIn.Text = Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN;
 	        pagePlugIns.Text = Resources.GOREDIT_TEXT_AVAILABLE_PLUGINS;
 	        pageDisabled.Text = Resources.GOREDIT_TEXT_FAILED_PLUGINS;
+	        columnDisabledDescription.Text = columnDesc.Text = Resources.GOREDIT_TEXT_DESCRIPTION;
+	        columnDisablePath.Text = columnPath.Text = Resources.GOREDIT_TEXT_PATH;
+	        columnType.Text = Resources.GOREDIT_TEXT_TYPE;
+	        columnDisabledReason.Text = Resources.GOREDIT_TEXT_REASON;
+
+			toolHelp.SetToolTip(imagePlugInHelp, Resources.GOREDIT_TIP_PLUGINS);
         }
 
         /// <summary>
@@ -280,22 +281,22 @@ namespace GorgonLibrary.Editor.Controls
 
 	            if (plugIn is ContentPlugIn)
                 {
-                    item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_CONTENT);
+                    item.SubItems.Add(Resources.GOREDIT_TEXT_CONTENT);
                 }
 
                 if (plugIn is FileWriterPlugIn)
                 {
-                    item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_WRITER);
+                    item.SubItems.Add(Resources.GOREDIT_TEXT_FILE_WRITER);
                 }
 
                 if (plugIn is GorgonFileSystemProviderPlugIn)
                 {
-                    item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
+                    item.SubItems.Add(Resources.GOREDIT_TEXT_FILE_READER);
                 }
 
 	            if (_pendingDisabled.Contains(plugIn.Name))
 	            {
-			        item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
+			        item.SubItems[1].Text = Resources.GOREDIT_TEXT_DISABLED;
 		            item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
 	            }
 				else if (_sysDisabled.Contains(plugIn.Name))
