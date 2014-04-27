@@ -97,12 +97,6 @@
     <Compile Include="Controls\controlColorPicker.Designer.cs">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\DefaultContentPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\DefaultContentPanel.Designer.cs">
-      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\EditorPreferencePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -234,9 +228,6 @@
     <EmbeddedResource Include="Controls\controlColorPicker.resx">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\DefaultContentPanel.resx">
-      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\EditorPreferencePanel.resx">
       <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -318,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\info_16x16.png" />
     <None Include="Resources\linked_file_8x8.png" />
     <None Include="Resources\image_missing_16x16.png" />
     <None Include="Resources\image_missing_128x128.png" />

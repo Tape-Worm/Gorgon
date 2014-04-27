@@ -88,6 +88,16 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to set or return whether the logo on the starting page should be animated.
+		/// </summary>
+		[ApplicationSetting("AnimateStartPageLogo", true, typeof(bool), "Options")]
+		public bool AnimateStartPageLogo
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
 		[ApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
@@ -240,6 +250,9 @@ namespace GorgonLibrary.Editor
 		internal GorgonEditorSettings()
 			: base("Gorgon.Editor", new Version(1, 0))
 		{
+			AnimateStartPageLogo = true;
+			StartPageAnimationPulseRate = 0.125f;
+
 			// Set the path for the application settings.
 			Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
 					  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)

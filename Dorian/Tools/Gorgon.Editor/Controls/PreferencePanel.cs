@@ -122,6 +122,7 @@ namespace GorgonLibrary.Editor
         public PreferencePanel()
         {
             InitializeComponent();
+	        toolHelp.ToolTipTitle = Resources.GOREDIT_TEXT_HELP;
         }
         #endregion
     }

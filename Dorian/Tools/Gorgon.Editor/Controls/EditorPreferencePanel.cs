@@ -31,6 +31,7 @@ using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -108,12 +109,18 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
-        #region Properties.
-
-        #endregion
-
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the Click event of the checkAnimateLogo control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void checkAnimateLogo_Click(object sender, EventArgs e)
+		{
+			labelAnimateSpeed.Enabled = numericAnimateSpeed.Enabled = checkAnimateLogo.Checked;
+		}
+
+		/// <summary>
         /// Handles the Enter event of the textPlugInLocation control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -216,8 +223,29 @@ namespace GorgonLibrary.Editor
                 comboImageEditor.Enabled = false;
             }
         }
-        
-        /// <summary>
+
+		/// <summary>
+		/// Function to localize the text on the controls for the panel.
+		/// </summary>
+		/// <remarks>
+		/// Override this method to supply localized text for any controls on the panel.
+		/// </remarks>
+	    protected internal override void LocalizeControls()
+		{
+			Text = Resources.GOREDIT_TEXT_EDITOR_PREFERENCES;
+			labelPaths.Text = Resources.GOREDIT_TEXT_EDITOR_PATHS;
+			labelOptions.Text = Resources.GOREDIT_TEXT_EDITOR_OPTIONS;
+			labelScratchLocation.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_SCRATCH_LOCATION);
+			labelPlugInLocation.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_PLUG_IN_LOCATION);
+			labelImageEditor.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_IMAGE_EDITOR);
+			checkAutoLoadFile.Text = Resources.GOREDIT_TEXT_LOAD_LAST_FILE;
+
+			toolHelp.SetToolTip(imageScratchHelp, Resources.GOREDIT_TIP_SCRATCH_LOCATION);
+			toolHelp.SetToolTip(imagePlugInHelp, Resources.GOREDIT_TIP_PLUG_IN_LOCATION);
+			toolHelp.SetToolTip(imageImageEditorHelp, Resources.GOREDIT_TIP_IMAGE_EDITOR);
+		}
+
+	    /// <summary>
         /// Function to read the current settings into their respective controls.
         /// </summary>
         public override void InitializeSettings()
@@ -225,8 +253,18 @@ namespace GorgonLibrary.Editor
             textScratchLocation.Text = Program.Settings.ScratchPath;
             textPlugInLocation.Text = Program.Settings.PlugInDirectory;
             checkAutoLoadFile.Checked = Program.Settings.AutoLoadLastFile;
+		    checkAnimateLogo.Checked = Program.Settings.AnimateStartPageLogo;
+		    var animSpeed = (decimal)Program.Settings.StartPageAnimationPulseRate;
 
-            FillImageEditors();
+		    if ((animSpeed >= numericAnimateSpeed.Minimum)
+		        && (animSpeed <= numericAnimateSpeed.Maximum))
+		    {
+			    numericAnimateSpeed.Value = (decimal)Program.Settings.StartPageAnimationPulseRate;
+		    }
+
+		    FillImageEditors();
+
+			checkAnimateLogo_Click(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -246,7 +284,16 @@ namespace GorgonLibrary.Editor
 
             Program.Settings.DefaultImageEditor = comboImageEditor.Text;
 
-
+	        var speed = (float)numericAnimateSpeed.Value;
+	        if ((ContentManagement.Current == null) && 
+				((!Program.Settings.StartPageAnimationPulseRate.EqualsEpsilon(speed))
+				|| (Program.Settings.AnimateStartPageLogo != checkAnimateLogo.Checked)))
+	        {
+		        Program.Settings.AnimateStartPageLogo = checkAnimateLogo.Checked;
+		        Program.Settings.StartPageAnimationPulseRate = speed;
+				ContentManagement.EditorSettingsUpdated();
+	        }
+			
             Program.Settings.AutoLoadLastFile = checkAutoLoadFile.Checked;
         }
 

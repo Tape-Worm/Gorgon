@@ -43,7 +43,7 @@ namespace GorgonLibrary.Editor
 		: ContentObject
 	{
 		#region Variables.
-		private DefaultContentPanel _container;				// Our container control.
+		private ContentPanel _container;					// Our container control.
 		private Gorgon2D _2D;								// 2D renderer for the content.
 		private GorgonTexture2D _logo;						// Logo.
 		private bool _disposed;								// Flag to indicate that the object was disposed.
@@ -111,6 +111,21 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function called when editor or plug-in settings are updated.
+		/// </summary>
+		protected internal override void OnEditorSettingsUpdated()
+		{
+			if (Program.Settings.AnimateStartPageLogo)
+			{
+				_delta = _delta < 0 ? -Program.Settings.StartPageAnimationPulseRate : Program.Settings.StartPageAnimationPulseRate;
+			}
+			else
+			{
+				_delta = 0.0f;
+			}
+		}
+
 		/// <summary>
 		/// Function to persist the content data into a stream.
 		/// </summary>
@@ -214,9 +229,12 @@ namespace GorgonLibrary.Editor
 		/// <returns>A control to embed into the container interface.</returns>
         protected override ContentPanel OnInitialize()
 		{
-			AlphaDelta = Program.Settings.StartPageAnimationPulseRate.Abs();
+			_delta = Program.Settings.AnimateStartPageLogo ? Program.Settings.StartPageAnimationPulseRate.Abs() : 0;
 
-			_container = new DefaultContentPanel(this);
+			_container = new ContentPanel(this)
+			             {
+				             CaptionVisible = false
+			             };
 
 			_2D = Program.Graphics.Output.Create2DRenderer(_container.PanelDisplay);
 

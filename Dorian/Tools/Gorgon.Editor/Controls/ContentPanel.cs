@@ -356,11 +356,11 @@ namespace GorgonLibrary.Editor
 
 
         /// <summary>
-        /// Function called when the settings for the content plug-in have changed.
+        /// Function called when the settings for the editor or content plug-in have changed.
         /// </summary>
         /// <remarks>Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This 
         /// only applies to plug-ins that implement <see cref="GorgonLibrary.Editor.IPlugInSettingsUI"/>.</remarks>
-        protected internal virtual void OnPlugInSettingsChanged()
+        protected internal virtual void OnEditorSettingsChanged()
         {
         }
 

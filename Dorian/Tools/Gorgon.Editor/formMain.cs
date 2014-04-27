@@ -637,13 +637,13 @@ namespace GorgonLibrary.Editor
             popupItemAddContent.Enabled = false;
             dropNewContent.Enabled = false;
             itemDelete.Enabled = popupItemDelete.Enabled = false;
-            itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_DEFAULT);
+            itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE);
             itemDelete.Visible = popupItemDelete.Visible = true;
             popupItemEdit.Visible = false;
             toolStripSeparator5.Visible = true;
             popupItemRename.Visible = true;
             popupItemRename.Enabled = false;
-            popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_DEFAULT);
+            popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_RENAME);
             popupItemCreateFolder.Visible = false;
 	        itemCreateFolder.Enabled = false;
 			buttonEditContent.Enabled = false;
@@ -674,14 +674,14 @@ namespace GorgonLibrary.Editor
 		        popupItemCreateFolder.Enabled = itemCreateFolder.Enabled = true;
 		        popupItemCreateFolder.Visible = true;
 		        itemDelete.Enabled = popupItemDelete.Enabled = (!dependencies) && (tabDocumentManager.SelectedTab == pageItems);
-		        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_FOLDER);
+		        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE_FOLDER);
 		        popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
 
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
 					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
 				    popupItemRename.Enabled = !dependencies;
-				    popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
+				    popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_RENAME_FOLDER);
 		        }
 		        else
 		        {
@@ -690,11 +690,11 @@ namespace GorgonLibrary.Editor
 				        buttonDeleteContent.Enabled = false;
 				        popupItemDelete.Visible = false;
 				        itemDelete.Enabled = false;
-				        itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_DEFAULT);
+				        itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE);
 			        }
 			        else
 			        {
-				        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_ALL);
+				        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE_ALL_FILES);
 			        }
 
 			        toolStripSeparator5.Visible = false;
@@ -2918,33 +2918,33 @@ namespace GorgonLibrary.Editor
 			pageItems.Text = Resources.GOREDIT_TAB_CONTENTFILES;
 			pageProperties.Text = Resources.GOREDIT_TAB_PROPERTIES;
 
-			menuFile.Text = Resources.GOREDIT_MENU_FILE;
-			popupItemEdit.Text = menuEdit.Text = Resources.GOREDIT_MENU_EDIT;
-			menuRecentFiles.Text = Resources.GOREDIT_MENU_RECENTFILES;
+			menuFile.Text = Resources.GOREDIT_ACC_TEXT_FILE;
+			popupItemEdit.Text = menuEdit.Text = Resources.GOREDIT_ACC_TEXT_EDIT;
+			menuRecentFiles.Text = Resources.GOREDIT_ACC_TEXT_RECENT_FILES;
 			
-			itemNew.Text = string.Format("{0}...", Resources.GOREDIT_MENU_NEW);
-			itemOpen.Text = string.Format("{0}...", Resources.GOREDIT_MENU_OPEN);
+			itemNew.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_NEW);
+			itemOpen.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_OPEN);
 			popupItemAddContent.Text = itemAddContent.Text = Resources.GOREDIT_MENU_ADDCONTENT;
 			popupItemCreateFolder.Text = itemCreateFolder.Text = string.Format("{0}...", Resources.GOREDIT_MENU_CREATEFOLDER);
-			itemSave.Text = string.Format("{0}...", Resources.GOREDIT_MENU_SAVE);
+			itemSave.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_SAVE);
 			itemSaveAs.Text = string.Format("{0}...", Resources.GOREDIT_MENU_SAVEAS);
-			itemImport.Text = string.Format("{0}...", Resources.GOREDIT_MENU_IMPORT);
-			itemExport.Text = string.Format("{0}...", Resources.GOREDIT_MENU_EXPORT);
+			itemImport.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_IMPORT);
+			itemExport.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_EXPORT);
 			itemExit.Text = Resources.GOREDIT_MENU_EXIT;
 
 			popupItemCut.Text = itemCut.Text = Resources.GOREDIT_MENU_CUT;
-			popupItemCopy.Text = itemCopy.Text = Resources.GOREDIT_MENU_COPY;
-			popupItemPaste.Text = itemPaste.Text = Resources.GOREDIT_MENU_PASTE;
-			popupItemDelete.Text = itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_DEFAULT);
-			itemPreferences.Text = Resources.GOREDIT_MENU_PREFERENCES;
+			popupItemCopy.Text = itemCopy.Text = Resources.GOREDIT_ACC_TEXT_COPY;
+			popupItemPaste.Text = itemPaste.Text = Resources.GOREDIT_ACC_TEXT_PASTE;
+			popupItemDelete.Text = itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE);
+			itemPreferences.Text = Resources.GOREDIT_ACC_TEXT_PREFERENCES;
 			
-			popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_DEFAULT);
+			popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_RENAME);
 
 			dropNewContent.Text = dropNewContent.ToolTipText = Resources.GOREDIT_BUTTON_NEWCONTENT;
 			buttonEditContent.Text = buttonEditContent.ToolTipText = Resources.GOREDIT_BUTTON_EDIT;
 			buttonDeleteContent.Text = buttonDeleteContent.ToolTipText = Resources.GOREDIT_BUTTON_DELETE;
 
-			itemResetValue.Text = Resources.GOREDIT_MENU_RESETVALUE;
+			itemResetValue.Text = Resources.GOREDIT_ACC_TEXT_RESET_VALUE;
 		}
 
 		/// <summary>
