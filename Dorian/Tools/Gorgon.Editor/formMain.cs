@@ -270,7 +270,7 @@ namespace GorgonLibrary.Editor
 			        filter.Append("|");
 			    }
 
-				filter.AppendFormat("{0}|*.*", Resources.GOREDIT_ALL_FILES);
+				filter.AppendFormat("{0}|*.*", Resources.GOREDIT_TEXT_ALL_FILES);
 			}
 
 			// If we do have multiple file types, and a description, then update.
@@ -293,7 +293,7 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                AssignFilter(dialogImport, ContentManagement.GetContentExtensions(), true, Resources.GOREDIT_ALL_CONTENT);
+                AssignFilter(dialogImport, ContentManagement.GetContentExtensions(), true, Resources.GOREDIT_TEXT_ALL_CONTENT);
 
                 dialogImport.InitialDirectory = Program.Settings.ImportLastFilePath;                
 
@@ -345,8 +345,8 @@ namespace GorgonLibrary.Editor
 	                GorgonDialogs.WarningBox(this,
 	                                         string.Format(
 	                                                       importExport
-		                                                       ? Resources.GOREDIT_IMPORT_CANCELLED
-		                                                       : Resources.GOREDIT_EXPORT_CANCELLED,
+		                                                       ? Resources.GOREDIT_DLG_IMPORT_CANCELLED
+		                                                       : Resources.GOREDIT_DLG_EXPORT_CANCELLED,
 	                                                       filesCopied,
 	                                                       totalFiles,
 	                                                       skipped));
@@ -356,8 +356,8 @@ namespace GorgonLibrary.Editor
 	                GorgonDialogs.InfoBox(this,
 	                                      string.Format(
 	                                                    importExport
-		                                                    ? Resources.GOREDIT_IMPORT_SUCCESS
-		                                                    : Resources.GOREDIT_EXPORT_SUCCESSFUL,
+		                                                    ? Resources.GOREDIT_DLG_IMPORT_SUCCESS
+		                                                    : Resources.GOREDIT_DLG_EXPORT_SUCCESSFUL,
 	                                                    filesCopied,
 	                                                    totalFiles,
 	                                                    skipped));
@@ -399,7 +399,7 @@ namespace GorgonLibrary.Editor
 				                      if (!result)
 				                      {
 					                      GorgonDialogs.ErrorBox(null,
-					                                             string.Format(Resources.GOREDIT_IMPORT_FILE_OPEN_FOR_EDIT,
+					                                             string.Format(Resources.GOREDIT_DLG_IMPORT_FILE_OPEN_FOR_EDIT,
 					                                                           file.FullPath));
 				                      }
 			                      };
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Editor
 	        Action invokeAction =
 		        () => result = GorgonDialogs.ConfirmBox(null,
 		                                                string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-		                                                              Resources.GOREDIT_FILE_DEFAULT_TYPE,
+		                                                              Resources.GOREDIT_TEXT_FILE_LOWER,
 		                                                              filePath),
 		                                                null,
 		                                                totalFileCount > 1,
@@ -460,7 +460,7 @@ namespace GorgonLibrary.Editor
 
                                       result = GorgonDialogs.ConfirmBox(null,
                                                                         string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-                                                                                      Resources.GOREDIT_FILE_DEFAULT_TYPE,
+                                                                                      Resources.GOREDIT_TEXT_FILE_LOWER,
                                                                                       filePath),
 																		null,
                                                                         true,
@@ -527,7 +527,7 @@ namespace GorgonLibrary.Editor
             {
                 TreeNodeEditor selectedNode = treeFiles.SelectedNode;
 
-                dialogExport.Description = Resources.GOREDIT_EXPORT_DLG_TITLE;
+                dialogExport.Description = Resources.GOREDIT_TEXT_SELECT_DIR_EXPORT;
                 dialogExport.SelectedPath = Program.Settings.ExportLastFilePath;
                 dialogExport.ShowNewFolderButton = true;
 
@@ -547,7 +547,7 @@ namespace GorgonLibrary.Editor
 					if (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath))
 					{
 						ConfirmationResult result = GorgonDialogs.ConfirmBox(this,
-						                                                     string.Format(Resources.GOREDIT_EXPORT_EXPORT_DEPENDENCIES,
+						                                                     string.Format(Resources.GOREDIT_DLG_EXPORT_DEPENDENCIES,
 						                                                                   file.Name), null, true);
 
 						if (result == ConfirmationResult.Cancel)
@@ -614,7 +614,7 @@ namespace GorgonLibrary.Editor
 	        bool dependencies = false;
             TreeNodeEditor selectedNode = treeFiles.SelectedNode;
 
-            Text = string.Format("{0} - {1}", FileManagement.Filename, Resources.GOREDIT_DEFAULT_TITLE);
+            Text = string.Format("{0} - {1}", FileManagement.Filename, Resources.GOREDIT_TEXT_GORGON_EDITOR);
 
 			Debug.Assert(_rootNode != null, "Root node is NULL!");
 
@@ -828,7 +828,7 @@ namespace GorgonLibrary.Editor
 				// Ensure we can actually open this type.
 				if (plugIn == null)
 				{
-					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, fileNode.File.Name, fileNode.File.Extension));
+					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_CONTENT_PLUG_IN_FOR_FILE, fileNode.File.Name, fileNode.File.Extension));
 					return;
 				}
 
@@ -852,7 +852,7 @@ namespace GorgonLibrary.Editor
 			{
 			    CurrentOpenFile = null;
 				ContentManagement.LoadDefaultContentPane();
-                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_CONTENT_OPEN_ERROR, fileNode.File.Name), null, ex);
+                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, fileNode.File.Name), null, ex);
 			}
 			finally
 			{
@@ -1116,7 +1116,7 @@ namespace GorgonLibrary.Editor
 
 				if ((cutCopyObject.IsCut) && (currentNode.IsAncestorOf(node)))
 				{
-					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_CANNOT_MOVE_TO_CHILD);
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_DLG_FILE_CANNOT_MOVE_TO_CHILD);
 					return;
 				}
 
@@ -1571,7 +1571,7 @@ namespace GorgonLibrary.Editor
                 // The file did not get created, then display an error to that effect.
                 if (newFile == null)
 			    {
-					throw new IOException(string.Format(Resources.GOREDIT_CONTENT_CANNOT_CREATE_FILE, content.Name));
+					throw new IOException(string.Format(Resources.GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE, content.Name));
 			    }
 				
 				// Persist the content to the file.
@@ -1737,7 +1737,7 @@ namespace GorgonLibrary.Editor
 					var directoryNode = (TreeNodeDirectory)treeFiles.SelectedNode;
 					string sourcePath = directoryNode.Directory.FullPath;
 
-                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, sourcePath)) == ConfirmationResult.No)
+                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_DLG_DELETE_DIRECTORY, sourcePath)) == ConfirmationResult.No)
                     {
                         return;
                     }
@@ -1777,7 +1777,7 @@ namespace GorgonLibrary.Editor
 					var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
 					string sourceFilePath = fileNode.File.FullPath;
 
-					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, sourceFilePath)) == ConfirmationResult.No)
+					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_DLG_DELETE_FILE, sourceFilePath)) == ConfirmationResult.No)
 					{
 						return;
 					}
@@ -2063,7 +2063,7 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				int nameIndex = 0;
-				string defaultName = Resources.GOREDIT_FILE_DEFAULT_DIRECTORY_NAME;
+				string defaultName = Resources.GOREDIT_TEXT_UNTITLED;
 				var selectedNode = treeFiles.SelectedNode as TreeNodeDirectory;
 
 				if (selectedNode == null)
@@ -2083,7 +2083,7 @@ namespace GorgonLibrary.Editor
 				while ((selectedNode.Directory.Directories.Contains(defaultName))
 						|| (selectedNode.Directory.Files.Contains(defaultName)))
 				{
-					defaultName = string.Format("{0} ({1})", Resources.GOREDIT_FILE_DEFAULT_DIRECTORY_NAME, ++nameIndex);
+                    defaultName = string.Format("{0} ({1})", Resources.GOREDIT_TEXT_UNTITLED, ++nameIndex);
 				}
 
 				tempNode.Text = defaultName;
@@ -2696,7 +2696,7 @@ namespace GorgonLibrary.Editor
                     dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
                 }
 
-                AssignFilter(dialogOpenFile, FileManagement.GetReaderExtensions(), true, Resources.GOREDIT_ALL_FILE_TYPES);
+                AssignFilter(dialogOpenFile, FileManagement.GetReaderExtensions(), true, Resources.GOREDIT_TEXT_GORGON_FILES);
 
                 if (dialogOpenFile.ShowDialog(this) != DialogResult.OK)
                 {
@@ -2913,9 +2913,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void LocalizeControls()
 		{
-			Text = Resources.GOREDIT_DEFAULT_TITLE;
+			Text = Resources.GOREDIT_TEXT_GORGON_EDITOR;
 
-			pageItems.Text = Resources.GOREDIT_TAB_CONTENTFILES;
+			pageItems.Text = Resources.GOREDIT_TEXT_CONTENT_FILES;
 			pageProperties.Text = Resources.GOREDIT_TAB_PROPERTIES;
 
 			menuFile.Text = Resources.GOREDIT_ACC_TEXT_FILE;
@@ -2924,15 +2924,15 @@ namespace GorgonLibrary.Editor
 			
 			itemNew.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_NEW);
 			itemOpen.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_OPEN);
-			popupItemAddContent.Text = itemAddContent.Text = Resources.GOREDIT_MENU_ADDCONTENT;
-			popupItemCreateFolder.Text = itemCreateFolder.Text = string.Format("{0}...", Resources.GOREDIT_MENU_CREATEFOLDER);
+			popupItemAddContent.Text = itemAddContent.Text = Resources.GOREDIT_ACC_TEXT_ADD_CONTENT;
+			popupItemCreateFolder.Text = itemCreateFolder.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_CREATE_FOLDER);
 			itemSave.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_SAVE);
-			itemSaveAs.Text = string.Format("{0}...", Resources.GOREDIT_MENU_SAVEAS);
+			itemSaveAs.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_SAVE_AS);
 			itemImport.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_IMPORT);
 			itemExport.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_EXPORT);
-			itemExit.Text = Resources.GOREDIT_MENU_EXIT;
+			itemExit.Text = Resources.GOREDIT_ACC_TEXT_EXIT;
 
-			popupItemCut.Text = itemCut.Text = Resources.GOREDIT_MENU_CUT;
+			popupItemCut.Text = itemCut.Text = Resources.GOREDIT_ACC_TEXT_CUT;
 			popupItemCopy.Text = itemCopy.Text = Resources.GOREDIT_ACC_TEXT_COPY;
 			popupItemPaste.Text = itemPaste.Text = Resources.GOREDIT_ACC_TEXT_PASTE;
 			popupItemDelete.Text = itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE);
@@ -2940,9 +2940,9 @@ namespace GorgonLibrary.Editor
 			
 			popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_RENAME);
 
-			dropNewContent.Text = dropNewContent.ToolTipText = Resources.GOREDIT_BUTTON_NEWCONTENT;
-			buttonEditContent.Text = buttonEditContent.ToolTipText = Resources.GOREDIT_BUTTON_EDIT;
-			buttonDeleteContent.Text = buttonDeleteContent.ToolTipText = Resources.GOREDIT_BUTTON_DELETE;
+			dropNewContent.Text = dropNewContent.ToolTipText = Resources.GOREDIT_TEXT_NEW_CONTENT;
+			buttonEditContent.Text = buttonEditContent.ToolTipText = Resources.GOREDIT_TEXT_EDIT_CONTENT;
+			buttonDeleteContent.Text = buttonDeleteContent.ToolTipText = Resources.GOREDIT_TEXT_DELETE_CONTENT;
 
 			itemResetValue.Text = Resources.GOREDIT_ACC_TEXT_RESET_VALUE;
 		}
@@ -3091,7 +3091,7 @@ namespace GorgonLibrary.Editor
 				                                       displayText.Insert(0, "\n");
 
 				                                       GorgonDialogs.WarningBox(this,
-				                                                                string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_WARN,
+				                                                                string.Format(Resources.GOREDIT_DLG_CANNOT_FIND_DEPENDENCY,
 				                                                                              sourceFile),
 				                                                                null,
 				                                                                displayText.ToString());

@@ -37,7 +37,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GorgonLibrary.Collections;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -649,7 +648,7 @@ namespace GorgonLibrary.Editor
 	        if (listFiles.Items.Count == 0)
 	        {
 		        labelNoFilesFound.Visible = true;
-		        labelNoFilesFound.Text = string.Format(Resources.GOREDIT_DLG_SEARCH_NOFILES, textSearch.Text);
+		        labelNoFilesFound.Text = string.Format(Resources.GOREDIT_TEXT_SEARCH_NO_FILES, textSearch.Text);
 		        labelNoFilesFound.BringToFront();
 	        }
 	        else
@@ -1187,20 +1186,20 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void LocalizeStrings()
 		{
-			textSearch.CueText = Resources.GOREDIT_DLG_SEARCH_TEXT;
-			label1.Text = string.Format("{0}:", Resources.GOREDIT_DLG_FILE_LABEL);
-			itemViewDetails.Text = Resources.GOREDIT_DLG_MENU_DETAILS;
-			itemViewLarge.Text = Resources.GOREDIT_DLG_MENU_LARGE;
-			columnFileName.Text = Resources.GOREDIT_DLG_COLUMN_NAME;
-			columnDate.Text = Resources.GOREDIT_DLG_COLUMN_DATE;
-			columnSize.Text = Resources.GOREDIT_DLG_COLUMN_SIZE;
-			buttonView.Text = Resources.GOREDIT_DLG_CHANGEVIEW_TEXT;
-			buttonGoUp.Text = Resources.GOREDIT_DLG_GOUP_BUTTON_TEXT;
+			textSearch.CueText = Resources.GOREDIT_TEXT_SEARCH;
+			label1.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_FILE);
+			itemViewDetails.Text = Resources.GOREDIT_TEXT_DETAIL_VIEW;
+			itemViewLarge.Text = Resources.GOREDIT_TEXT_THUMBNAIL_VIEW;
+			columnFileName.Text = Resources.GOREDIT_TEXT_NAME;
+			columnDate.Text = Resources.GOREDIT_TEXT_DATE;
+			columnSize.Text = Resources.GOREDIT_TEXT_SIZE;
+			buttonView.Text = Resources.GOREDIT_TEXT_CHANGEVIEW;
+			buttonGoUp.Text = Resources.GOREDIT_TEXT_GO_UP_TO_PARENT;
 			buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
-			buttonBack.Text = Resources.GOREDIT_DLG_BACK_TEXT;
-			buttonForward.Text = Resources.GOREDIT_DLG_FORWARD_TEXT;
+			buttonBack.Text = Resources.GOREDIT_TEXT_BACK;
+			buttonForward.Text = Resources.GOREDIT_TEXT_GO_FORWARD;
 			buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
-			labelSearchBanner.Text = Resources.GOREDIT_DLG_SEARCHLABEL;
+			labelSearchBanner.Text = Resources.GOREDIT_TEXT_SEARCH_RESULTS;
 		}
 
 		/// <summary>

@@ -202,7 +202,7 @@ namespace GorgonLibrary.Editor
 		/// Property to return the name of the content object.
 		/// </summary>
         [Browsable(true),
-		LocalDisplayName(typeof(Resources), "PROP_NAME_NAME"),
+		LocalDisplayName(typeof(Resources), "GOREDIT_TEXT_NAME"),
 		LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
 		LocalDescription(typeof(Resources), "PROP_NAME_DESC")]
 		public string Name
@@ -398,7 +398,7 @@ namespace GorgonLibrary.Editor
 
 			if (stream.Position >= stream.Length)
 			{
-				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
+				throw new EndOfStreamException(Resources.GOREDIT_ERR_STREAM_EOS);
 			}
 
 			return OnLoadDependencyFile(dependency, stream);
@@ -422,7 +422,7 @@ namespace GorgonLibrary.Editor
 
 			if (stream.Position >= stream.Length)
 			{
-				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
+				throw new EndOfStreamException(Resources.GOREDIT_ERR_STREAM_EOS);
 			}
 
 			OnRead(stream);

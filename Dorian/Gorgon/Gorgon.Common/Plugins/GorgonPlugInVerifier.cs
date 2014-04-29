@@ -70,51 +70,47 @@ namespace GorgonLibrary.PlugIns
         /// <param name="name">Name of the assembly.</param>
         /// <param name="requesting">Requesting assembly.</param>
         /// <returns>The assembly if found, NULL if not.</returns>
-        private static Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
+        private Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
         {
-            string location = string.Format("{0}{1}{2}", 
-                                    Path.GetDirectoryName(requesting.Location), 
-                                    Path.DirectorySeparatorChar,
-                                    name.Name);
+            var locations = new string[requesting == null ? 1 : 2];
+            Assembly result = null;
 
-            // Search for DLLs.
-            location = Path.ChangeExtension(location, "dll");
+            // Check locally first.
+            locations[0] = Path.GetDirectoryName(_assembly.Location) +
+                           Path.DirectorySeparatorChar +
+                           name.Name;
 
-            if (File.Exists(location))
+            if (locations.Length > 1)
             {
-                return Assembly.ReflectionOnlyLoadFrom(location);
+                // Otherwise, check in the requesting assembly location.
+                // ReSharper disable once PossibleNullReferenceException
+                locations[1] = Path.GetDirectoryName(requesting.Location) +
+                           Path.DirectorySeparatorChar +
+                           name.Name;
             }
 
-            // Search for executables.
-            location = Path.ChangeExtension(location, "exe");
-
-            return File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
-        }
-
-        /// <summary>
-        /// Function to retrieve the assembly from the same directory as assembly that holds this type.
-        /// </summary>
-        /// <param name="name">Name of the assembly.</param>
-        /// <returns>The assembly if found, NULL if not.</returns>
-        private Assembly GetFromLocalDir(AssemblyName name)
-        {
-            string location = string.Format("{0}{1}{2}",
-                                    Path.GetDirectoryName(_assembly.Location),
-                                    Path.DirectorySeparatorChar,
-                                    name.Name);
-
-            // Search for DLLs.
-            location = Path.ChangeExtension(location, "dll");
-
-            if (File.Exists(location))
+            foreach (string assemblyLocation in locations)
             {
-                return Assembly.ReflectionOnlyLoadFrom(location);
+                // Search for DLLs.
+                string location = Path.ChangeExtension(assemblyLocation, "dll");
+
+                if (File.Exists(location))
+                {
+                    return Assembly.ReflectionOnlyLoadFrom(location);
+                }
+
+                // Search for executables.
+                location = Path.ChangeExtension(location, "exe");
+
+                result = File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
+
+                if (result != null)
+                {
+                    break;
+                }
             }
 
-            // Search for executables.
-            location = Path.ChangeExtension(location, "exe");
-
-            return File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
+            return result;
         }
         
         /// <summary>
@@ -141,7 +137,7 @@ namespace GorgonLibrary.PlugIns
             }
 
             // We couldn't find the assembly in the requesting assembly directory, move on the to current.
-            result = GetFromLocalDir(name) ?? GetFromRequestedDir(name, args.RequestingAssembly);
+            result = GetFromRequestedDir(name, args.RequestingAssembly);
             
             return result;
 		}
@@ -168,7 +164,7 @@ namespace GorgonLibrary.PlugIns
             }
             catch (ReflectionTypeLoadException)
             {
-                return new string[] { };
+                return new string[0];
             }
             finally
             {

@@ -284,7 +284,7 @@ namespace GorgonLibrary.Editor
             // We don't have a writer plug-in, at this point, that's not good.
             if (plugIn == null)
             {
-                throw new IOException(string.Format(Resources.GOREDIT_NO_WRITER_PLUGIN, path));
+                throw new IOException(string.Format(Resources.GOREDIT_ERR_NO_WRITER_PLUGIN, path));
             }
 
             // Write the meta data file to the file system.

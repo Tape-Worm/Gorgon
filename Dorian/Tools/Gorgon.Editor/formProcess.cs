@@ -305,7 +305,7 @@ namespace GorgonLibrary.Editor
 					break;
 				case ProcessType.FileInfo:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					_progressText = labelStatus.Text = Resources.GOREDIT_IMPORT_INFO_LABEL;
+					_progressText = labelStatus.Text = Resources.GOREDIT_TEXT_GET_FILE_INFO;
 					break;
 			}
 		}

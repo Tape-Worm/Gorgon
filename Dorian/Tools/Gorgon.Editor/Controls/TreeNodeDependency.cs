@@ -92,10 +92,10 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				fileName = Resources.GOREDIT_DEPENDENCY_BROKEN_UNKNOWN;
+				fileName = Resources.GOREDIT_TEXT_UNKNOWN_FILE;
 			}
 
-			Text = string.Format("{0} ({1})", fileName, Resources.GOREDIT_DEPENDENCY_BROKEN);
+			Text = string.Format("{0} ({1})", fileName, Resources.GOREDIT_TEXT_BROKEN_LINK);
 			
 			IsBroken = true;
 		}
