@@ -79,7 +79,7 @@ namespace GorgonLibrary.Editor
 			if ((nameAttr == null)
 				|| (string.IsNullOrWhiteSpace(nameAttr.Value)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_DEPENDENCY_PROP_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT);
 			}
 
 			return new DependencyProperty(nameAttr.Value, propertyNode.Value);
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOREDIT_DEPENDENCY_PROP_TOSTRING, Name, Value ?? string.Empty);
+			return string.Format(Resources.GOREDIT_TEXT_DEPENDENCY_PROP, Name, Value ?? string.Empty);
 		}
 
 		/// <summary>

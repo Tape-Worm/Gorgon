@@ -335,7 +335,7 @@ namespace GorgonLibrary.Editor
 
 			if (Contains(key.Name, key.Type))
 			{
-				throw new ArgumentException(string.Format(Resources.GOREDIT_DEPENDENCY_EXISTS, key.Type, key.Name));
+				throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_DEPENDENCY_EXISTS, key.Type, key.Name));
 			}
 
 			_dependencies[key] = item;

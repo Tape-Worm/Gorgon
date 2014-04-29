@@ -361,10 +361,10 @@ namespace GorgonLibrary.PlugIns
 		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
-		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
+		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey)
+		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey = null)
 		{
 		    var result = PlugInSigningResult.Signed;
 
@@ -409,39 +409,15 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
-		/// <param name="assemblyName">Name of the assembly to check.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName)
-		{
-			return IsAssemblySigned(assemblyName, null);
-		}
-
-		/// <summary>
-		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
-		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
-		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
+		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public PlugInSigningResult IsAssemblySigned(string assemblyPath, byte[] publicKey)
+		public PlugInSigningResult IsAssemblySigned(string assemblyPath, byte[] publicKey = null)
 		{
 			return IsAssemblySigned(FindPlugInAssembly(assemblyPath), publicKey);
-		}
-
-		/// <summary>
-		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
-		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly to check.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public PlugInSigningResult IsAssemblySigned(string assemblyPath)		
-		{
-			return IsAssemblySigned(assemblyPath, null);
 		}
 
 		/// <summary>

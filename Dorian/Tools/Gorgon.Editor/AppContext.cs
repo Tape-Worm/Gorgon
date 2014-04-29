@@ -161,7 +161,7 @@ namespace GorgonLibrary.Editor
             // Ensure that we're not being clever and trying to mess up our system.
             if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
             {
-                GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
+                GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_CANNOT_USESYS_SCRATCH);
             }
             else
             {
@@ -221,7 +221,7 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
-                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_FILE_CANNOT_OPEN, Program.Settings.LastEditorFile), null, ex);
+                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, Program.Settings.LastEditorFile), null, ex);
                 Program.Settings.LastEditorFile = string.Empty;
             }
 	    }
@@ -237,12 +237,12 @@ namespace GorgonLibrary.Editor
 
 			if (!File.Exists(inputPlugInPath))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
 			if (!Gorgon.PlugIns.IsPlugInAssembly(inputPlugInPath))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
 			// Ensure that it's signed with the same public key.
@@ -251,7 +251,7 @@ namespace GorgonLibrary.Editor
 			if ((key != null) && (key.Length != 0) 
 				&& (Gorgon.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
 			// Load the plug-in.
@@ -259,7 +259,7 @@ namespace GorgonLibrary.Editor
 
 			if (!Gorgon.PlugIns.Contains(GorgonRawInputTypeName))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
 			// Create the factory.

@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor
 				|| (string.IsNullOrWhiteSpace(typeAttr.Value))
 			    || (string.IsNullOrWhiteSpace(pathNode.Value)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_DEPENDENCY_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_DEPENDENCY_CORRUPT);
 			}
 
 			var result = new Dependency(pathNode.Value, typeAttr.Value);

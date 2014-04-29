@@ -200,7 +200,7 @@ namespace GorgonLibrary.Editor
 		public EditorFileBrowser()
 		{
 			FileExtensions = new GorgonFileExtensionCollection();
-			Text = Resources.GOREDIT_DLG_FILE_SELECT_TEXT;
+			Text = Resources.GOREDIT_TEXT_SELECT_FILE;
 		}
 		#endregion
 	}

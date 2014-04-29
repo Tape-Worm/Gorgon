@@ -239,6 +239,8 @@ namespace GorgonLibrary.Editor
 			labelPlugInLocation.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_PLUG_IN_LOCATION);
 			labelImageEditor.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_IMAGE_EDITOR);
 			checkAutoLoadFile.Text = Resources.GOREDIT_TEXT_LOAD_LAST_FILE;
+		    checkAnimateLogo.Text = Resources.GOREDIT_TEXT_ANIMATE_LOGO;
+		    labelAnimateSpeed.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_ANIMATE_SPEED);
 
 			toolHelp.SetToolTip(imageScratchHelp, Resources.GOREDIT_TIP_SCRATCH_LOCATION);
 			toolHelp.SetToolTip(imagePlugInHelp, Resources.GOREDIT_TIP_PLUG_IN_LOCATION);

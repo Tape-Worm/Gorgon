@@ -395,7 +395,7 @@ namespace GorgonLibrary.Editor
 
 				if (externalFile == null)
 				{
-					throw new FileNotFoundException(string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_FILE,
+					throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE,
 						                                                        dependencyFile.Path));
 				}
 
@@ -414,9 +414,9 @@ namespace GorgonLibrary.Editor
 					{
 						case DependencyLoadState.FatalError:
 							throw new GorgonException(GorgonResult.CannotRead,
-							                          string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY_ERR, dependencyFile.Path, result.Message));
+							                          string.Format(Resources.GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
 						case DependencyLoadState.ErrorContinue:
-							missing.Add(string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY_WARN, dependencyFile.Path, result.Message));
+							missing.Add(string.Format(Resources.GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
 							break;
 						default:
 							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;

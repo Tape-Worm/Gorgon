@@ -190,7 +190,7 @@ namespace GorgonLibrary.Editor
         {
 	        if (_content == null)
 	        {
-				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Resources.GOREDIT_CONTENT_DEFAULT_NAME, HasChanged ? "*" : string.Empty);
+				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Resources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
 		        return;
 	        }
 
