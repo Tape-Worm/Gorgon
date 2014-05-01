@@ -26,6 +26,7 @@
 
 using System;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -33,7 +34,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Editor dialog for editing vector/point values.
 	/// </summary>
-	public partial class formValueComponentEditDialog 
+	public partial class ValueComponentEditor 
 		: ZuneForm
 	{
 		#region Variables.
@@ -212,13 +213,34 @@ namespace GorgonLibrary.Editor
 
 			control.Select(0, control.Text.Length);
 		}
-		#endregion
+
+        /// <summary>
+        /// Function to localize the form.
+        /// </summary>
+	    private void LocalizeControls()
+        {
+            labelValueCaption.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_VALUE);
+            buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
+            buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+	    protected override void OnLoad(EventArgs e)
+	    {
+	        base.OnLoad(e);
+
+            LocalizeControls();
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formValueComponentEditDialog"/> class.
+		/// Initializes a new instance of the <see cref="ValueComponentEditor"/> class.
 		/// </summary>
-		public formValueComponentEditDialog()
+		public ValueComponentEditor()
 		{
 			InitializeComponent();
 		}
