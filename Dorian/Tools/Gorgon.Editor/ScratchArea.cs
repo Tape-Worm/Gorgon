@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -474,7 +475,7 @@ namespace GorgonLibrary.Editor
                 Tuple<string, string> file = settings.Files[i];
 		        var progressValue = (int)(((i + settings.Directories.Count + 1) / totalEntries) * 100M);
 
-		        settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_TEXT_COPYING,
+		        settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", Resources.GOREDIT_TEXT_COPYING,
 		                                                            file.Item2.Ellipses(45, true)));
 
 		        try
@@ -642,7 +643,7 @@ namespace GorgonLibrary.Editor
                 }
 
                 // Update the process dialog.
-                settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_TEXT_COPYING,
+                settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", Resources.GOREDIT_TEXT_COPYING,
                                                                     newFileName.Ellipses(45, true)));
 
                 if (Export(file, newDirectory, true))
@@ -685,14 +686,14 @@ namespace GorgonLibrary.Editor
             string destPath = (destination + directory.Name).FormatDirectory('/');
             GorgonFileSystemDirectory newDirectory = ScratchFiles.GetDirectory(destPath);
 
-            settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_TEXT_COPYING,
+            settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", Resources.GOREDIT_TEXT_COPYING,
                                                                 directory.FullPath.Ellipses(45, true)));
 
             // If there's a file with the same name, then give us an error.
             if (ScratchFiles.GetFile(destination.FormatDirectory('/') + directory.Name) != null)
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-                                                          Resources.GOREDIT_TEXT_FILE_LOWER,
+                                                          Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
                                                           directory.Name));
             }
 
@@ -753,7 +754,7 @@ namespace GorgonLibrary.Editor
 
                 string destFilePath = destPath + file.Name;
 
-                settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_TEXT_COPYING,
+                settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", Resources.GOREDIT_TEXT_COPYING,
                                                                     file.FullPath.Ellipses(45, true)));
 
                 // If the file exists, prompt to overwrite.
@@ -857,7 +858,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(destinationPath))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             // Ensure that we're not trying to copy a parent directory into one of its ancestors.
@@ -924,7 +925,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(destination))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
 			}
 
 			try
@@ -966,7 +967,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(destination))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             // Do not copy if this is a blocked file.
@@ -993,7 +994,7 @@ namespace GorgonLibrary.Editor
                 if (ScratchFiles.GetDirectory(newPath.FormatDirectory('/')) != null)
                 {
                     throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-                                                              Resources.GOREDIT_TEXT_DIRECTORY_LOWER,
+                                                              Resources.GOREDIT_TEXT_DIRECTORY,
                                                               destFileName));
                 }
 
@@ -1070,13 +1071,13 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(newName))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             // Ensure we've got a valid file name.
             if ((newName.IndexOfAny(_fileChars) > -1) || (newName.IndexOf('/') > -1) || (newName.IndexOf('\\') > -1))
             {
-                throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS,
                                                           string.Join(" ", _fileChars.Where(item => item > 32))));
             }
 
@@ -1089,14 +1090,14 @@ namespace GorgonLibrary.Editor
             if (directory.Parent.Directories.Contains(newName))
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-                                                          Resources.GOREDIT_TEXT_DIRECTORY_LOWER,
+                                                          Resources.GOREDIT_TEXT_DIRECTORY,
                                                           newName));
             }
 
             if (directory.Parent.Files.Contains(newName))
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-                                                          Resources.GOREDIT_TEXT_FILE_LOWER,
+                                                          Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
                                                           newName));
             }
 
@@ -1139,20 +1140,20 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(newName))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             // Ensure we've got a valid directory name.
             if ((newName.IndexOfAny(_fileChars) > -1) || (newName.IndexOf('/') > -1) || (newName.IndexOf('\\') > -1))
             {
-                throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS,
                                                           string.Join(" ", _fileChars.Where(item => item > 32))));
             }
 
             // If the directory already exists, then do not create it.
             if (parent.Directories.Contains(newName))
             {
-                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS, Resources.GOREDIT_TEXT_DIRECTORY_LOWER, newName));
+                throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS, Resources.GOREDIT_TEXT_DIRECTORY, newName));
             }
 
             return ScratchFiles.CreateDirectory((parent.FullPath + newName).FormatDirectory('/'));
@@ -1175,13 +1176,13 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(newName))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
 			}
 
 			// Ensure we've got a valid file name.
 			if ((newName.IndexOfAny(_fileChars) > -1) || (newName.IndexOf('/') > -1) || (newName.IndexOf('\\') > -1))
 			{
-				throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
+				throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS,
 				                                          string.Join(" ", _fileChars.Where(item => item > 32))));
 			}
 
@@ -1196,14 +1197,14 @@ namespace GorgonLibrary.Editor
 			if (file.Directory.Files.Contains(newName))
 			{
 				throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-				                                          Resources.GOREDIT_TEXT_FILE_LOWER,
+                                                          Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
 				                                          newName));
 			}
 
             if (file.Directory.Directories.Contains(newName))
             {
                 throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-                                                          Resources.GOREDIT_TEXT_DIRECTORY_LOWER,
+                                                          Resources.GOREDIT_TEXT_DIRECTORY,
                                                           newName));
             }
 
@@ -1242,7 +1243,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(fileType))
             {
-                fileType = Resources.GOREDIT_TEXT_FILE_LOWER;
+                fileType = Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture);
             }
 
             Debug.Assert(CreateFileConflictFunction != null, "No file conflict method assigned in create file.");
@@ -1279,7 +1280,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(destinationPath))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
 			}
 
 			// Ensure that we're not trying to copy a parent directory into one of its ancestors.
@@ -1344,7 +1345,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(destinationPath))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
 			}
 
             // Bring up the progress form.
@@ -1559,7 +1560,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (Program.Settings == null)
 			{
-				throw new ApplicationException(Resources.GOREDIT_NO_APP_SETTINGS);
+				throw new ApplicationException(Resources.GOREDIT_ERR_NO_APP_SETTINGS);
 			}
 
 			try
@@ -1617,7 +1618,7 @@ namespace GorgonLibrary.Editor
 			{
 				dialog = new FolderBrowserDialog
 				{
-					Description = Resources.GOREDIT_SCRATCH_PATH_DLG_DESC
+					Description = Resources.GOREDIT_DLG_SCRATCH_PATH
 				};
 
 				if (Directory.Exists(Program.Settings.ScratchPath))

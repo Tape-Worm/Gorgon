@@ -127,22 +127,16 @@
   <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\project_node_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_NO_DRIVE_AVAILABLE" xml:space="preserve">
+  <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
     <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
   </data>
   <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
-    <value>Copying '{0}'</value>
+    <value>Copying</value>
   </data>
   <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
     <value>Controls whether multiple files can be selected or not.</value>
   </data>
-  <data name="GOREDIT_TEXT_FILE_LOWER" xml:space="preserve">
-    <value>file</value>
-  </data>
-  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
-  <data name="GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT" xml:space="preserve">
+  <data name="GOREDIT_TEXT_LOAD_DEFAULT" xml:space="preserve">
     <value>Loading default content pane.</value>
   </data>
   <data name="GOREDIT_TEXT_DETAIL_VIEW" xml:space="preserve">
@@ -154,7 +148,7 @@
   <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tree_expand_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_STREAM_WRITE_ONLY" xml:space="preserve">
+  <data name="GOREDIT_ERR_STREAM_WRITE_ONLY" xml:space="preserve">
     <value>The stream is write only.</value>
   </data>
   <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
@@ -163,7 +157,7 @@
   <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
     <value>Untitled</value>
   </data>
-  <data name="CATEGORY_DESIGN" xml:space="preserve">
+  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_DISABLE_PLUGIN" xml:space="preserve">
@@ -175,10 +169,10 @@
   <data name="GOREDIT_ACC_TEXT_RENAME_FOLDER" xml:space="preserve">
     <value>&amp;Rename folder</value>
   </data>
-  <data name="GOREDIT_PROC_IMPORT_DLG_TITLE" xml:space="preserve">
-    <value>Importing files</value>
+  <data name="GOREDIT_TEXT_IMPORTING" xml:space="preserve">
+    <value>Importing</value>
   </data>
-  <data name="GOREDIT_STREAM_READ_ONLY" xml:space="preserve">
+  <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
   <data name="GOREDIT_DLG_IMPORT_CANCELLED" xml:space="preserve">
@@ -186,10 +180,10 @@
 {0}/{1} files and directories copied.
 {2}/{1} files and directories skipped.</value>
   </data>
-  <data name="GOREDIT_FILE_HAS_CHANGES_CONFIRM" xml:space="preserve">
+  <data name="GOREDIT_DLG_FILE_HAS_CHANGES" xml:space="preserve">
     <value>The editor file '{0}' has unsaved changes.  Would you like to save these changes?</value>
   </data>
-  <data name="GOREDIT_OVERWRITE_DIRECTORY_PROMPT" xml:space="preserve">
+  <data name="GOREDIT_DLG_OVERWRITE_DIRECTORY" xml:space="preserve">
     <value>The directory '{0}' already exists.  Would you like to merge the two directories together?</value>
   </data>
   <data name="GOREDIT_DLG_EXPORT_DEPENDENCIES" xml:space="preserve">
@@ -198,7 +192,7 @@
   <data name="GOREDIT_TEXT_SIZE" xml:space="preserve">
     <value>Size</value>
   </data>
-  <data name="GOREDIT_SPLASH_LOAD_PLUGIN" xml:space="preserve">
+  <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
     <value>Plug-in: {0}</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_IMPORT" xml:space="preserve">
@@ -222,7 +216,7 @@
   <data name="GOREDIT_TEXT_BROKEN_LINK" xml:space="preserve">
     <value>(Broken link)</value>
   </data>
-  <data name="GOREDIT_FILE_NOT_FOUND" xml:space="preserve">
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>Could not find the file '{0}'.</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
@@ -237,13 +231,13 @@
   <data name="GOREDIT_TEXT_DATE" xml:space="preserve">
     <value>Date</value>
   </data>
-  <data name="GOREDIT_SPLASH_LOADING_INPUT" xml:space="preserve">
+  <data name="GOREDIT_TEXT_LOAD_RAW_INPUT" xml:space="preserve">
     <value>Loading raw input interface...</value>
   </data>
-  <data name="GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+  <data name="GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GOREDIT_SPLASH_LOAD_PLUGINS" xml:space="preserve">
+  <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
     <value>Loading plug-ins...</value>
   </data>
   <data name="edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -255,7 +249,7 @@
   <data name="GOREDIT_TEXT_FILE_WRITER" xml:space="preserve">
     <value>File writer</value>
   </data>
-  <data name="GOREDIT_METADATA_CORRUPT" xml:space="preserve">
+  <data name="GOREDIT_ERR_METADATA_CORRUPT" xml:space="preserve">
     <value>The meta data for the file is corrupted.</value>
   </data>
   <data name="PROP_NAME_DESC" xml:space="preserve">
@@ -263,9 +257,6 @@
   </data>
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
-    <value>Data</value>
   </data>
   <data name="GOREDIT_TEXT_SELECT_FILE" xml:space="preserve">
     <value>Select a file</value>
@@ -276,10 +267,7 @@ by content in the editor.
 
 Changing this value will require a restart of the application.</value>
   </data>
-  <data name="GOREDIT_FILE_WRITE_SAVE_LABEL" xml:space="preserve">
-    <value>Saving...</value>
-  </data>
-  <data name="GOREDIT_FILE_SOURCE_SAME_AS_DEST" xml:space="preserve">
+  <data name="GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST" xml:space="preserve">
     <value>The source file must not be the same as the destination file.</value>
   </data>
   <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -297,13 +285,10 @@ Changing this value will require a restart of the application.</value>
   <data name="PROP_TEXT_DESC" xml:space="preserve">
     <value>Sets the text value to assign to the caption of the window.</value>
   </data>
-  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
-    <value>Appearance</value>
+  <data name="GOREDIT_TEXT_SAVING" xml:space="preserve">
+    <value>Saving</value>
   </data>
-  <data name="GOREDIT_FILE_WRITE_SAVE_DLG_TITLE" xml:space="preserve">
-    <value>Saving '{0}'</value>
-  </data>
-  <data name="GOREDIT_SPLASH_LOAD_PREV_FILE" xml:space="preserve">
+  <data name="GOREDIT_TEXT_LOAD_PREV_FILE" xml:space="preserve">
     <value>Loading previous editor file...</value>
   </data>
   <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
@@ -318,25 +303,19 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_NO_CONTENT_PLUG_IN_FOR_FILE" xml:space="preserve">
     <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{1}' files.</value>
   </data>
-  <data name="GOREDIT_TAB_PROPERTIES" xml:space="preserve">
+  <data name="GOREDIT_TEXT_PROPERTIES" xml:space="preserve">
     <value>Properties</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_RECENT_FILES" xml:space="preserve">
     <value>&amp;Recent files</value>
   </data>
-  <data name="GOREDIT_NO_EDITOR_PLUGINS" xml:space="preserve">
-    <value>The assembly '{0}' does not contain any editor compatible plug-ins.</value>
-  </data>
   <data name="GOREDIT_TEXT_SCRATCH_LOCATION" xml:space="preserve">
     <value>Scratch area location</value>
-  </data>
-  <data name="GOREDIT_PROC_COPY_DLG_TITLE" xml:space="preserve">
-    <value>Copying files</value>
   </data>
   <data name="PropertyChecker" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PropertyChecker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_DIRECTORY_LOWER" xml:space="preserve">
+  <data name="GOREDIT_TEXT_DIRECTORY" xml:space="preserve">
     <value>directory</value>
   </data>
   <data name="GOREDIT_TEXT_DISABLED" xml:space="preserve">
@@ -359,10 +338,10 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_TEXT_PLUGINS" xml:space="preserve">
     <value>Plug-ins</value>
   </data>
-  <data name="GOREDIT_NO_PROVIDERS_TO_READ_FILE" xml:space="preserve">
+  <data name="GOREDIT_ERR_NO_READ_PROVIDERS" xml:space="preserve">
     <value>The editor does not know how to read the file '{0}'.</value>
   </data>
-  <data name="GOREDIT_OVERWRITE_FILE_PROMPT" xml:space="preserve">
+  <data name="GOREDIT_DLG_OVERWRITE_FILE" xml:space="preserve">
     <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
   </data>
   <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -373,11 +352,6 @@ Changing this value will require a restart of the application.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_EXPORT" xml:space="preserve">
     <value>&amp;Export</value>
-  </data>
-  <data name="GOREDIT_DLG_EXPORT_SUCCESSFUL" xml:space="preserve">
-    <value>The export operation was completed successfully.
-{0}/{1} files copied.
-{2}/{1} files skipped.</value>
   </data>
   <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
     <value>Could not create the content file '{0}'.</value>
@@ -411,7 +385,7 @@ Error: {1}
   <data name="GOREDIT_DLG_DISABLE_PLUGIN" xml:space="preserve">
     <value>This will disable the plug in '{0}'.  Are you sure wish to do this?</value>
   </data>
-  <data name="GOREDIT_NO_APP_SETTINGS" xml:space="preserve">
+  <data name="GOREDIT_ERR_NO_APP_SETTINGS" xml:space="preserve">
     <value>The application settings were not loaded.</value>
   </data>
   <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -426,7 +400,7 @@ Error: {1}
   <data name="GOREDIT_TEXT_AVAILABLE_PLUGINS" xml:space="preserve">
     <value>Available plug-ins</value>
   </data>
-  <data name="GOREDIT_PROPERTY_NOT_FOUND" xml:space="preserve">
+  <data name="GOREDIT_ERR_PROPERTY_NOT_FOUND" xml:space="preserve">
     <value>The property '{0}' does not exist for this content.</value>
   </data>
   <data name="GOREDIT_TEXT_SEARCH_NO_FILES" xml:space="preserve">
@@ -435,7 +409,7 @@ Error: {1}
   <data name="GOREDIT_TEXT_ALL_CONTENT" xml:space="preserve">
     <value>All content types</value>
   </data>
-  <data name="GOREDIT_SPLASH_INIT_GFX" xml:space="preserve">
+  <data name="GOREDIT_TEXT_INITIALIZE_GRAPHICS" xml:space="preserve">
     <value>Initializing graphics...</value>
   </data>
   <data name="GOREDIT_ERR_DEPENDENCY_PROP_EXISTS" xml:space="preserve">
@@ -465,7 +439,7 @@ Error: {1}
   <data name="GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT" xml:space="preserve">
     <value>Unable to read the dependency property.  It has been corrupted.</value>
   </data>
-  <data name="GOREDIT_PASTE_MUST_BE_DIRECTORY" xml:space="preserve">
+  <data name="GOREDIT_DLG_PASTE_MUST_BE_DIRECTORY" xml:space="preserve">
     <value>The destination must be a directory.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_RESET_VALUE" xml:space="preserve">
@@ -474,7 +448,7 @@ Error: {1}
   <data name="GOREDIT_TEXT_PLUGIN_PREFS" xml:space="preserve">
     <value>Plug-in preferences</value>
   </data>
-  <data name="GOREDIT_SPLASH_INITIALIZING" xml:space="preserve">
+  <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
     <value>Initializing</value>
   </data>
   <data name="forward_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -485,12 +459,6 @@ Error: {1}
   </data>
   <data name="GOREDIT_ACC_TEXT_CANCEL" xml:space="preserve">
     <value>&amp;Cancel</value>
-  </data>
-  <data name="GOREDIT_METADATA_ALREADY_EXISTS" xml:space="preserve">
-    <value>The meta data item '{0}' already exists in this collection.</value>
-  </data>
-  <data name="GOREDIT_METADATA_NOT_FOUND" xml:space="preserve">
-    <value>There is no meta data item with the name '{0}' in this collection.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_COPY" xml:space="preserve">
     <value>&amp;Copy</value>
@@ -522,7 +490,7 @@ Error: {1}
   <data name="folder_open_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_open_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_SCRATCH_PATH_DLG_DESC" xml:space="preserve">
+  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
     <value>Select a new temporary scratch path.</value>
   </data>
   <data name="GOREDIT_TEXT_BACK" xml:space="preserve">
@@ -546,7 +514,7 @@ the editor.
 
 Changing this value will require a restart of the application.</value>
   </data>
-  <data name="GOREDIT_SETTING_PLUGIN_LOC_CHANGE_MSG" xml:space="preserve">
+  <data name="GOREDIT_DLG_PLUGIN_LOC_CHANGE" xml:space="preserve">
     <value>The plug-in location has changed.  This will require that the application be restarted before this setting takes effect.</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
@@ -570,7 +538,7 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_TEXT_EDITOR_PATHS" xml:space="preserve">
     <value>Editor paths</value>
   </data>
-  <data name="GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG" xml:space="preserve">
+  <data name="GOREDIT_DLG_SCRATCH_LOC_CHANGE" xml:space="preserve">
     <value>The scratch location has changed.  This will require that the application be restarted before this setting takes effect.</value>
   </data>
   <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
@@ -582,8 +550,8 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ERR_DEPENDENCY_CORRUPT" xml:space="preserve">
     <value>Unable to read the dependency. It has been corrupted.</value>
   </data>
-  <data name="GOREDIT_PROC_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
-    <value>Scanning Files</value>
+  <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
+    <value>Scanning</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_RENAME" xml:space="preserve">
     <value>&amp;Rename</value>
@@ -600,7 +568,7 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ACC_TEXT_EDIT" xml:space="preserve">
     <value>&amp;Edit</value>
   </data>
-  <data name="GOREDIT_PROC_MOVE_DLG_TITLE" xml:space="preserve">
+  <data name="GOREDIT_TEXT_MOVING" xml:space="preserve">
     <value>Moving files</value>
   </data>
   <data name="GOREDIT_DLG_NO_FILE_IN_PATH" xml:space="preserve">
@@ -639,12 +607,8 @@ Changing this value will require a restart of the application.</value>
   <data name="new_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\new_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_DLG_IMPORT_SUCCESS" xml:space="preserve">
-    <value>{0}/{1} files and directories successfully imported.
-{2}/{1} files and directories were skipped.</value>
-  </data>
-  <data name="GOREDIT_PROC_EXPORT_DLG_TITLE" xml:space="preserve">
-    <value>Exporting files</value>
+  <data name="GOREDIT_TEXT_EXPORTING" xml:space="preserve">
+    <value>Exporting</value>
   </data>
   <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
     <value>Preferences</value>
@@ -658,7 +622,7 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_DELETE_FILE" xml:space="preserve">
     <value>This will delete '{0}'.  Are you sure you wish to do this?</value>
   </data>
-  <data name="GOREDIT_FILE_PATH_HAS_INVALID_CHARS" xml:space="preserve">
+  <data name="GOREDIT_ERR_FILE_PATH_INVALID_CHARS" xml:space="preserve">
     <value>The name contains invalid characters.
 The following characters are not allowed:
 {0}</value>
@@ -702,7 +666,7 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
     <value>Disabled by user.</value>
   </data>
-  <data name="GOREDIT_SPLASH_CREATE_SCRATCH" xml:space="preserve">
+  <data name="GOREDIT_TEXT_CREATING_SCRATCH" xml:space="preserve">
     <value>Creating scratch area...</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_EXIT" xml:space="preserve">
@@ -769,5 +733,44 @@ and double click on the plug-in item in the list.</value>
   </data>
   <data name="GOREDIT_TEXT_ANIMATE_SPEED" xml:space="preserve">
     <value>Animation speed</value>
+  </data>
+  <data name="GOREDIT_TEXT_ALPHA" xml:space="preserve">
+    <value>Alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_FILES" xml:space="preserve">
+    <value>files</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_ALPHA" xml:space="preserve">
+    <value>New alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_NAME" xml:space="preserve">
+    <value>New name</value>
+  </data>
+  <data name="GOREDIT_TEXT_OLD_ALPHA" xml:space="preserve">
+    <value>Old alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_PICK_ALPHA" xml:space="preserve">
+    <value>Pick an alpha value</value>
+  </data>
+  <data name="GOREDIT_TEXT_VALUE" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="PROP_TEXT_CAPTION_VISIBLE_DESC" xml:space="preserve">
+    <value>Shows or hides the caption for the content panel.</value>
+  </data>
+  <data name="PROP_TEXT_CONTENT_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text for the caption on the content panel control.</value>
+  </data>
+  <data name="PROP_TEXT_PREF_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text to display on the tab for the preference panel.</value>
   </data>
 </root>

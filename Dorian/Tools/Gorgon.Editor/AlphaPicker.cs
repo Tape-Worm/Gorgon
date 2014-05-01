@@ -26,20 +26,17 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// A form to handle picking an alpha value for a color.
 	/// </summary>
-	public partial class formAlphaPicker 
-		: Form
+	public partial class AlphaPicker
+		: ZuneForm
 	{
-		#region Variables.
-		
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the currently selected alpha value.
@@ -71,7 +68,20 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
+        /// <summary>
+        /// Function to localize the controls on the form.
+        /// </summary>
+	    private void LocalizeControls()
+        {
+            Text = Resources.GOREDIT_TEXT_PICK_ALPHA;
+            labelAlpha.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_ALPHA);
+            labelOldAlpha.Text = Resources.GOREDIT_TEXT_OLD_ALPHA;
+            labelNewAlpha.Text = Resources.GOREDIT_TEXT_NEW_ALPHA;
+            buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
+            buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+        }
+
 		/// <summary>
 		/// Handles the ValueChanged event of the numericAlphaValue control.
 		/// </summary>
@@ -93,13 +103,24 @@ namespace GorgonLibrary.Editor
 			numericAlphaValue.Value = sliderAlpha.Value.A;
 			colorPreview.LowerColor = Color.FromArgb(sliderAlpha.Value.A, Color.White);
 		}
-		#endregion
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+	    protected override void OnLoad(EventArgs e)
+	    {
+	        base.OnLoad(e);
+
+            LocalizeControls();
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formAlphaPicker"/> class.
+		/// Initializes a new instance of the <see cref="AlphaPicker"/> class.
 		/// </summary>
-		public formAlphaPicker()
+		public AlphaPicker()
 		{
 			InitializeComponent();
 		}

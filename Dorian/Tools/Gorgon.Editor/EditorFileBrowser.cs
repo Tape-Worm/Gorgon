@@ -69,84 +69,98 @@ namespace GorgonLibrary.Editor
 			private set;
 		}
 
-        /// <summary>
-        /// Property to set or return whether to allow multiple selections.
-        /// </summary>
-        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR"), LocalDescription(typeof(Resources), "PROP_MULTISELECT_DESC"), DefaultValue(false)]
+	    /// <summary>
+	    /// Property to set or return whether to allow multiple selections.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR")]
+	    [LocalDescription(typeof(Resources), "PROP_MULTISELECT_DESC")]
+	    [DefaultValue(false)]
 	    public bool MultipleSelection
 	    {
 	        get;
 	        set;
 	    }
 
-        /// <summary>
-        /// Property to set or return the default view for the dialog.
-        /// </summary>
-        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_FILEVIEW_DESC"), DefaultValue(typeof(FileViews), "Details")]
+	    /// <summary>
+	    /// Property to set or return the default view for the dialog.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(Resources), "PROP_FILEVIEW_DESC")]
+	    [DefaultValue(typeof(FileViews), "Details")]
 	    public FileViews FileView
 	    {
 	        get;
 	        set;
 	    }
 
-        /// <summary>
-        /// Property to set or return the starting directory for the dialog.
-        /// </summary>
-        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA"), LocalDescription(typeof(Resources), "PROP_STARTDIRECTORY_DESC")]
+	    /// <summary>
+	    /// Property to set or return the starting directory for the dialog.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA")]
+	    [LocalDescription(typeof(Resources), "PROP_STARTDIRECTORY_DESC")]
 	    public string StartDirectory
 	    {
 	        get;
 	        set;
 	    }
 
-		/// <summary>
-		/// Property to set or return the default extension for the filter.
-		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR"), LocalDescription(typeof(Resources), "PROP_DEFAULTEXTENSION_DESC")]
-		public string DefaultExtension
-		{
-			get
-			{
-				return _defaultExtension;
-			}
-			set
-			{
-				if (value == null)
-				{
-					value = string.Empty;
-				}
+	    /// <summary>
+	    /// Property to set or return the default extension for the filter.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR")]
+	    [LocalDescription(typeof(Resources), "PROP_DEFAULTEXTENSION_DESC")]
+	    public string DefaultExtension
+	    {
+	        get
+	        {
+	            return _defaultExtension;
+	        }
+	        set
+	        {
+	            if (value == null)
+	            {
+	                value = string.Empty;
+	            }
 
-				if (value.StartsWith("."))
-				{
-					value = value.Substring(1);
-				}
+	            if (value.StartsWith("."))
+	            {
+	                value = value.Substring(1);
+	            }
 
-				_defaultExtension = value;
-			}
-		}
+	            _defaultExtension = value;
+	        }
+	    }
 
-		/// <summary>
-		/// Property to set or return the caption text for the dialog.
-		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
-		public string Text
-		{
-			get;
-			set;
-		}
+	    /// <summary>
+	    /// Property to set or return the caption text for the dialog.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
+	    public string Text
+	    {
+	        get;
+	        set;
+	    }
 
-        /// <summary>
-        /// Property to return the selected file name.
-        /// </summary>
-        /// <remarks>If there are multiple file names selected, then this will return the first name on the <see cref="Files">file array</see>.</remarks>
-        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA"), LocalDescription(typeof(Resources), "PROP_FILENAME_DESC")]
+	    /// <summary>
+	    /// Property to return the selected file name.
+	    /// </summary>
+	    /// <remarks>If there are multiple file names selected, then this will return the first name on the <see cref="Files">file array</see>.</remarks>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA")]
+	    [LocalDescription(typeof(Resources), "PROP_FILENAME_DESC")]
 	    public string Filename
 	    {
 	        get;
 	        set;
 	    }
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the array of selected file names.
         /// </summary>
         [Browsable(false)]

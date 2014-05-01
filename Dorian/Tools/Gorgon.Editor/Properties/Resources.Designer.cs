@@ -91,15 +91,6 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Design.
-        /// </summary>
-        internal static string CATEGORY_DESIGN {
-            get {
-                return ResourceManager.GetString("CATEGORY_DESIGN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Check_Disabled {
@@ -528,22 +519,29 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The export operation was completed successfully.
-        ///{0}/{1} files copied.
-        ///{2}/{1} files skipped..
-        /// </summary>
-        internal static string GOREDIT_DLG_EXPORT_SUCCESSFUL {
-            get {
-                return ResourceManager.GetString("GOREDIT_DLG_EXPORT_SUCCESSFUL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The destination directory must not be a sub-directory of this directory..
         /// </summary>
         internal static string GOREDIT_DLG_FILE_CANNOT_MOVE_TO_CHILD {
             get {
                 return ResourceManager.GetString("GOREDIT_DLG_FILE_CANNOT_MOVE_TO_CHILD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The editor file &apos;{0}&apos; has unsaved changes.  Would you like to save these changes?.
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_HAS_CHANGES {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_HAS_CHANGES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source file must not be the same as the destination file..
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST", resourceCulture);
             }
         }
         
@@ -595,16 +593,6 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}/{1} files and directories successfully imported.
-        ///{2}/{1} files and directories were skipped..
-        /// </summary>
-        internal static string GOREDIT_DLG_IMPORT_SUCCESS {
-            get {
-                return ResourceManager.GetString("GOREDIT_DLG_IMPORT_SUCCESS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot open &apos;{0}&apos;.  There are no content plug-ins loaded that can open &apos;{1}&apos; files..
         /// </summary>
         internal static string GOREDIT_DLG_NO_CONTENT_PLUG_IN_FOR_FILE {
@@ -650,11 +638,65 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; already exists.  Would you like to merge the two directories together?.
+        /// </summary>
+        internal static string GOREDIT_DLG_OVERWRITE_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_OVERWRITE_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The {0} &apos;{1}&apos; already exists.  Do you wish to overwrite it?.
+        /// </summary>
+        internal static string GOREDIT_DLG_OVERWRITE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_OVERWRITE_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The destination must be a directory..
+        /// </summary>
+        internal static string GOREDIT_DLG_PASTE_MUST_BE_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_PASTE_MUST_BE_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The plug-in &apos;{0}&apos; failed to load.
         /// </summary>
         internal static string GOREDIT_DLG_PLUG_IN_FAIL_REASON {
             get {
                 return ResourceManager.GetString("GOREDIT_DLG_PLUG_IN_FAIL_REASON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The plug-in location has changed.  This will require that the application be restarted before this setting takes effect..
+        /// </summary>
+        internal static string GOREDIT_DLG_PLUGIN_LOC_CHANGE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_PLUGIN_LOC_CHANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The scratch location has changed.  This will require that the application be restarted before this setting takes effect..
+        /// </summary>
+        internal static string GOREDIT_DLG_SCRATCH_LOC_CHANGE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_SCRATCH_LOC_CHANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a new temporary scratch path..
+        /// </summary>
+        internal static string GOREDIT_DLG_SCRATCH_PATH {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_SCRATCH_PATH", resourceCulture);
             }
         }
         
@@ -776,11 +818,67 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name contains invalid characters.
+        ///The following characters are not allowed:
+        ///{0}.
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_PATH_INVALID_CHARS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_PATH_INVALID_CHARS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not load the raw input interface DLL..
         /// </summary>
         internal static string GOREDIT_ERR_INPUT_COULD_NOT_LOAD {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_INPUT_COULD_NOT_LOAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The meta data for the file is corrupted..
+        /// </summary>
+        internal static string GOREDIT_ERR_METADATA_CORRUPT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_METADATA_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The application settings were not loaded..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_APP_SETTINGS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_APP_SETTINGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_DRIVE_AVAILABLE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_DRIVE_AVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The editor does not know how to read the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_READ_PROVIDERS {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_READ_PROVIDERS", resourceCulture);
             }
         }
         
@@ -794,6 +892,24 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameter must not be empty..
+        /// </summary>
+        internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; does not exist for this content..
+        /// </summary>
+        internal static string GOREDIT_ERR_PROPERTY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PROPERTY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
         /// </summary>
         internal static string GOREDIT_ERR_STREAM_EOS {
@@ -803,337 +919,20 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The editor file &apos;{0}&apos; has unsaved changes.  Would you like to save these changes?.
-        /// </summary>
-        internal static string GOREDIT_FILE_HAS_CHANGES_CONFIRM {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_HAS_CHANGES_CONFIRM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not find the file &apos;{0}&apos;..
-        /// </summary>
-        internal static string GOREDIT_FILE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The name contains invalid characters.
-        ///The following characters are not allowed:
-        ///{0}.
-        /// </summary>
-        internal static string GOREDIT_FILE_PATH_HAS_INVALID_CHARS {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_PATH_HAS_INVALID_CHARS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The source file must not be the same as the destination file..
-        /// </summary>
-        internal static string GOREDIT_FILE_SOURCE_SAME_AS_DEST {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_SOURCE_SAME_AS_DEST", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving &apos;{0}&apos;.
-        /// </summary>
-        internal static string GOREDIT_FILE_WRITE_SAVE_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_WRITE_SAVE_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Saving....
-        /// </summary>
-        internal static string GOREDIT_FILE_WRITE_SAVE_LABEL {
-            get {
-                return ResourceManager.GetString("GOREDIT_FILE_WRITE_SAVE_LABEL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The meta data item &apos;{0}&apos; already exists in this collection..
-        /// </summary>
-        internal static string GOREDIT_METADATA_ALREADY_EXISTS {
-            get {
-                return ResourceManager.GetString("GOREDIT_METADATA_ALREADY_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The meta data for the file is corrupted..
-        /// </summary>
-        internal static string GOREDIT_METADATA_CORRUPT {
-            get {
-                return ResourceManager.GetString("GOREDIT_METADATA_CORRUPT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no meta data item with the name &apos;{0}&apos; in this collection..
-        /// </summary>
-        internal static string GOREDIT_METADATA_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOREDIT_METADATA_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The application settings were not loaded..
-        /// </summary>
-        internal static string GOREDIT_NO_APP_SETTINGS {
-            get {
-                return ResourceManager.GetString("GOREDIT_NO_APP_SETTINGS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files..
-        /// </summary>
-        internal static string GOREDIT_NO_DRIVE_AVAILABLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_NO_DRIVE_AVAILABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The assembly &apos;{0}&apos; does not contain any editor compatible plug-ins..
-        /// </summary>
-        internal static string GOREDIT_NO_EDITOR_PLUGINS {
-            get {
-                return ResourceManager.GetString("GOREDIT_NO_EDITOR_PLUGINS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The editor does not know how to read the file &apos;{0}&apos;..
-        /// </summary>
-        internal static string GOREDIT_NO_PROVIDERS_TO_READ_FILE {
-            get {
-                return ResourceManager.GetString("GOREDIT_NO_PROVIDERS_TO_READ_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The directory &apos;{0}&apos; already exists.  Would you like to merge the two directories together?.
-        /// </summary>
-        internal static string GOREDIT_OVERWRITE_DIRECTORY_PROMPT {
-            get {
-                return ResourceManager.GetString("GOREDIT_OVERWRITE_DIRECTORY_PROMPT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The {0} &apos;{1}&apos; already exists.  Do you wish to overwrite it?.
-        /// </summary>
-        internal static string GOREDIT_OVERWRITE_FILE_PROMPT {
-            get {
-                return ResourceManager.GetString("GOREDIT_OVERWRITE_FILE_PROMPT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be empty..
-        /// </summary>
-        internal static string GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The destination must be a directory..
-        /// </summary>
-        internal static string GOREDIT_PASTE_MUST_BE_DIRECTORY {
-            get {
-                return ResourceManager.GetString("GOREDIT_PASTE_MUST_BE_DIRECTORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Copying files.
-        /// </summary>
-        internal static string GOREDIT_PROC_COPY_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROC_COPY_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exporting files.
-        /// </summary>
-        internal static string GOREDIT_PROC_EXPORT_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROC_EXPORT_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Importing files.
-        /// </summary>
-        internal static string GOREDIT_PROC_IMPORT_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROC_IMPORT_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scanning Files.
-        /// </summary>
-        internal static string GOREDIT_PROC_IMPORT_INFO_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROC_IMPORT_INFO_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Moving files.
-        /// </summary>
-        internal static string GOREDIT_PROC_MOVE_DLG_TITLE {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROC_MOVE_DLG_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The property &apos;{0}&apos; does not exist for this content..
-        /// </summary>
-        internal static string GOREDIT_PROPERTY_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GOREDIT_PROPERTY_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Select a new temporary scratch path..
-        /// </summary>
-        internal static string GOREDIT_SCRATCH_PATH_DLG_DESC {
-            get {
-                return ResourceManager.GetString("GOREDIT_SCRATCH_PATH_DLG_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The plug-in location has changed.  This will require that the application be restarted before this setting takes effect..
-        /// </summary>
-        internal static string GOREDIT_SETTING_PLUGIN_LOC_CHANGE_MSG {
-            get {
-                return ResourceManager.GetString("GOREDIT_SETTING_PLUGIN_LOC_CHANGE_MSG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The scratch location has changed.  This will require that the application be restarted before this setting takes effect..
-        /// </summary>
-        internal static string GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG {
-            get {
-                return ResourceManager.GetString("GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Creating scratch area....
-        /// </summary>
-        internal static string GOREDIT_SPLASH_CREATE_SCRATCH {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_CREATE_SCRATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing graphics....
-        /// </summary>
-        internal static string GOREDIT_SPLASH_INIT_GFX {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_INIT_GFX", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Initializing.
-        /// </summary>
-        internal static string GOREDIT_SPLASH_INITIALIZING {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_INITIALIZING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading default content pane..
-        /// </summary>
-        internal static string GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plug-in: {0}.
-        /// </summary>
-        internal static string GOREDIT_SPLASH_LOAD_PLUGIN {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_LOAD_PLUGIN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading plug-ins....
-        /// </summary>
-        internal static string GOREDIT_SPLASH_LOAD_PLUGINS {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_LOAD_PLUGINS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading previous editor file....
-        /// </summary>
-        internal static string GOREDIT_SPLASH_LOAD_PREV_FILE {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_LOAD_PREV_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Loading raw input interface....
-        /// </summary>
-        internal static string GOREDIT_SPLASH_LOADING_INPUT {
-            get {
-                return ResourceManager.GetString("GOREDIT_SPLASH_LOADING_INPUT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The stream is read only..
         /// </summary>
-        internal static string GOREDIT_STREAM_READ_ONLY {
+        internal static string GOREDIT_ERR_STREAM_READ_ONLY {
             get {
-                return ResourceManager.GetString("GOREDIT_STREAM_READ_ONLY", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_STREAM_READ_ONLY", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to The stream is write only..
         /// </summary>
-        internal static string GOREDIT_STREAM_WRITE_ONLY {
+        internal static string GOREDIT_ERR_STREAM_WRITE_ONLY {
             get {
-                return ResourceManager.GetString("GOREDIT_STREAM_WRITE_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Properties.
-        /// </summary>
-        internal static string GOREDIT_TAB_PROPERTIES {
-            get {
-                return ResourceManager.GetString("GOREDIT_TAB_PROPERTIES", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_STREAM_WRITE_ONLY", resourceCulture);
             }
         }
         
@@ -1152,6 +951,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_ALL_FILES {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alpha.
+        /// </summary>
+        internal static string GOREDIT_TEXT_ALPHA {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_ALPHA", resourceCulture);
             }
         }
         
@@ -1228,7 +1036,7 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copying &apos;{0}&apos;.
+        ///   Looks up a localized string similar to Copying.
         /// </summary>
         internal static string GOREDIT_TEXT_COPYING {
             get {
@@ -1242,6 +1050,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_CREATING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_CREATING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating scratch area....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CREATING_SCRATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CREATING_SCRATCH", resourceCulture);
             }
         }
         
@@ -1293,9 +1110,9 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to directory.
         /// </summary>
-        internal static string GOREDIT_TEXT_DIRECTORY_LOWER {
+        internal static string GOREDIT_TEXT_DIRECTORY {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_DIRECTORY_LOWER", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_DIRECTORY", resourceCulture);
             }
         }
         
@@ -1363,6 +1180,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exporting.
+        /// </summary>
+        internal static string GOREDIT_TEXT_EXPORTING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_EXPORTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed plug-ins.
         /// </summary>
         internal static string GOREDIT_TEXT_FAILED_PLUGINS {
@@ -1381,15 +1207,6 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to file.
-        /// </summary>
-        internal static string GOREDIT_TEXT_FILE_LOWER {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_FILE_LOWER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to File reader.
         /// </summary>
         internal static string GOREDIT_TEXT_FILE_READER {
@@ -1404,6 +1221,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_FILE_WRITER {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_FILE_WRITER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to files.
+        /// </summary>
+        internal static string GOREDIT_TEXT_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_FILES", resourceCulture);
             }
         }
         
@@ -1471,11 +1297,83 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Importing.
+        /// </summary>
+        internal static string GOREDIT_TEXT_IMPORTING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_IMPORTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing graphics....
+        /// </summary>
+        internal static string GOREDIT_TEXT_INITIALIZE_GRAPHICS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_INITIALIZE_GRAPHICS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing.
+        /// </summary>
+        internal static string GOREDIT_TEXT_INITIALIZING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_INITIALIZING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading default content pane..
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOAD_DEFAULT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOAD_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load last opened file on editor start up.
         /// </summary>
         internal static string GOREDIT_TEXT_LOAD_LAST_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_LOAD_LAST_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading previous editor file....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOAD_PREV_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOAD_PREV_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading raw input interface....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOAD_RAW_INPUT {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOAD_RAW_INPUT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading plug-ins....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moving files.
+        /// </summary>
+        internal static string GOREDIT_TEXT_MOVING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_MOVING", resourceCulture);
             }
         }
         
@@ -1489,6 +1387,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New alpha.
+        /// </summary>
+        internal static string GOREDIT_TEXT_NEW_ALPHA {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_NEW_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to New content item.
         /// </summary>
         internal static string GOREDIT_TEXT_NEW_CONTENT {
@@ -1498,11 +1405,47 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to New name.
+        /// </summary>
+        internal static string GOREDIT_TEXT_NEW_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_NEW_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Old alpha.
+        /// </summary>
+        internal static string GOREDIT_TEXT_OLD_ALPHA {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_OLD_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Path.
         /// </summary>
         internal static string GOREDIT_TEXT_PATH {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick an alpha value.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PICK_ALPHA {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PICK_ALPHA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plug-in: {0}.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PLUG_IN {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PLUG_IN", resourceCulture);
             }
         }
         
@@ -1543,11 +1486,38 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Properties.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PROPERTIES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PROPERTIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reason.
         /// </summary>
         internal static string GOREDIT_TEXT_REASON {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_REASON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving.
+        /// </summary>
+        internal static string GOREDIT_TEXT_SAVING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SAVING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scanning.
+        /// </summary>
+        internal static string GOREDIT_TEXT_SCANNING {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SCANNING", resourceCulture);
             }
         }
         
@@ -1656,6 +1626,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_UNTITLED {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_UNTITLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        internal static string GOREDIT_TEXT_VALUE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_VALUE", resourceCulture);
             }
         }
         
@@ -1851,6 +1830,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Design.
+        /// </summary>
+        internal static string PROP_CATEGORY_DESIGN {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox..
         /// </summary>
         internal static string PROP_CUETEXT_DESC {
@@ -1914,11 +1902,38 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shows or hides the caption for the content panel..
+        /// </summary>
+        internal static string PROP_TEXT_CAPTION_VISIBLE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_CAPTION_VISIBLE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the text for the caption on the content panel control..
+        /// </summary>
+        internal static string PROP_TEXT_CONTENT_PANEL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_CONTENT_PANEL_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets the text value to assign to the caption of the window..
         /// </summary>
         internal static string PROP_TEXT_DESC {
             get {
                 return ResourceManager.GetString("PROP_TEXT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the text to display on the tab for the preference panel..
+        /// </summary>
+        internal static string PROP_TEXT_PREF_PANEL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_PREF_PANEL_DESC", resourceCulture);
             }
         }
         

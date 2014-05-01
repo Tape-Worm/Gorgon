@@ -44,7 +44,7 @@ namespace GorgonLibrary.Editor.Controls
     /// <summary>
     /// Plug-in list interface.
     /// </summary>
-    public partial class PanelPlugIns 
+    partial class PanelPlugIns 
         : PreferencePanel
     {
         #region Variables.

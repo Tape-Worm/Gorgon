@@ -278,7 +278,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
             }
 
             // We don't have a writer plug-in, at this point, that's not good.
@@ -327,7 +327,7 @@ namespace GorgonLibrary.Editor
 
 	        if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
             {
-                throw new FileLoadException(string.Format(Resources.GOREDIT_NO_PROVIDERS_TO_READ_FILE,
+                throw new FileLoadException(string.Format(Resources.GOREDIT_ERR_NO_READ_PROVIDERS,
                                                           Path.GetFileName(path)));
             }
 

@@ -127,12 +127,6 @@
     <Compile Include="Controls\TreeNodeDependency.cs" />
     <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="Controls\EditorTreeNode.cs" />
-    <Compile Include="Controls\panelEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\panelEx.Designer.cs">
-      <DependentUpon>panelEx.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="Dependency.cs" />
@@ -162,29 +156,23 @@
       <DependentUpon>formEditorFileSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="FileManagement.cs" />
-    <Compile Include="formAlphaPicker.cs">
+    <Compile Include="AlphaPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formAlphaPicker.Designer.cs">
-      <DependentUpon>formAlphaPicker.cs</DependentUpon>
+    <Compile Include="AlphaPicker.Designer.cs">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
     </Compile>
-    <Compile Include="formNewName.cs">
+    <Compile Include="NewNameEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formNewName.Designer.cs">
-      <DependentUpon>formNewName.cs</DependentUpon>
+    <Compile Include="NewNameEditor.Designer.cs">
+      <DependentUpon>NewNameEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="formPrefs.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="formPrefs.Designer.cs">
       <DependentUpon>formPrefs.cs</DependentUpon>
-    </Compile>
-    <Compile Include="formValueComponentEditDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formValueComponentEditDialog.Designer.cs">
-      <DependentUpon>formValueComponentEditDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="formProcess.cs">
       <SubType>Form</SubType>
@@ -206,6 +194,12 @@
     <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
     <Compile Include="PropertyGrid\ContentTypeDescriptor.cs" />
     <Compile Include="ScratchArea.cs" />
+    <Compile Include="ValueComponentEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ValueComponentEditor.Designer.cs">
+      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
@@ -234,9 +228,6 @@
     <EmbeddedResource Include="Controls\EditorTreeView.resx">
       <DependentUpon>EditorTreeView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\panelEx.resx">
-      <DependentUpon>panelEx.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\PanelPlugInPreferences.resx">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
     </EmbeddedResource>
@@ -252,20 +243,17 @@
     <EmbeddedResource Include="formEditorFileSelector.resx">
       <DependentUpon>formEditorFileSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formAlphaPicker.resx">
-      <DependentUpon>formAlphaPicker.cs</DependentUpon>
+    <EmbeddedResource Include="AlphaPicker.resx">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formNewName.resx">
-      <DependentUpon>formNewName.cs</DependentUpon>
+    <EmbeddedResource Include="NewNameEditor.resx">
+      <DependentUpon>NewNameEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formPrefs.resx">
       <DependentUpon>formPrefs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formValueComponentEditDialog.resx">
-      <DependentUpon>formValueComponentEditDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formProcess.resx">
       <DependentUpon>formProcess.cs</DependentUpon>
@@ -283,6 +271,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ValueComponentEditor.resx">
+      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>

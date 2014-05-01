@@ -33,7 +33,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Splash screen form.
 	/// </summary>
-	public partial class formSplash : Form
+	partial class FormSplash : Form
 	{
 		#region Variables.
 		private readonly Version _appVersion;
@@ -71,15 +71,15 @@ namespace GorgonLibrary.Editor
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			UpdateVersion(Resources.GOREDIT_SPLASH_INITIALIZING);
+			UpdateVersion(Resources.GOREDIT_TEXT_INITIALIZING);
 		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formSplash"/> class.
+		/// Initializes a new instance of the <see cref="FormSplash"/> class.
 		/// </summary>
-		public formSplash()
+		public FormSplash()
 		{
 			InitializeComponent();
 

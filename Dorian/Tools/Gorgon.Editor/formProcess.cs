@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -104,23 +105,24 @@ namespace GorgonLibrary.Editor
 				switch (_processType)
 				{
 					case ProcessType.FileWriter:
-						base.Text = string.Format(Resources.GOREDIT_FILE_WRITE_SAVE_DLG_TITLE,
-						                          Path.GetFileName(value).Ellipses(35, true));
+				        base.Text = string.Format(@"{0} {1}",
+				                                  Resources.GOREDIT_TEXT_SAVING,
+				                                  Path.GetFileName(value).Ellipses(35, true));
 						break;
 					case ProcessType.FileImporter:
-						base.Text = Resources.GOREDIT_PROC_IMPORT_DLG_TITLE;
+				        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_IMPORTING, Resources.GOREDIT_TEXT_FILES);
 						break;
                     case ProcessType.FileExporter:
-				        base.Text = Resources.GOREDIT_PROC_EXPORT_DLG_TITLE;
+                        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_EXPORTING, Resources.GOREDIT_TEXT_FILES);
 				        break;
 					case ProcessType.FileInfo:
-						base.Text = Resources.GOREDIT_PROC_IMPORT_INFO_DLG_TITLE;
+						base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_SCANNING, Resources.GOREDIT_TEXT_FILES);
 						break;
 					case ProcessType.FileCopy:
-						base.Text = Resources.GOREDIT_PROC_COPY_DLG_TITLE;
+				        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_COPYING, Resources.GOREDIT_TEXT_FILES);
 						break;
                     case ProcessType.FileMove:
-                        base.Text = Resources.GOREDIT_PROC_MOVE_DLG_TITLE;
+                        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_MOVING, Resources.GOREDIT_TEXT_FILES);
 				        break;
 					default:
 #if DEBUG
@@ -294,7 +296,7 @@ namespace GorgonLibrary.Editor
 			{
 				case ProcessType.FileWriter:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					_progressText = labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
+					_progressText = labelStatus.Text = string.Format("{0}...", Resources.GOREDIT_TEXT_SAVING);
 					break;
                 case ProcessType.FileMove:
 				case ProcessType.FileCopy:

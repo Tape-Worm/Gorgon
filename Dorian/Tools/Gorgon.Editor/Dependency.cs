@@ -153,7 +153,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			if (type == null)
@@ -163,7 +163,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(type))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
 			}
 
 			Path = name;
