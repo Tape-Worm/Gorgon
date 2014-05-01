@@ -1604,11 +1604,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemShadowOffset_Click(object sender, EventArgs e)
 		{
-			formValueComponentEditDialog componentEdit = null;
+			ValueComponentEditor valueEditor = null;
 
 			try
 			{
-				componentEdit = new formValueComponentEditDialog
+				valueEditor = new ValueComponentEditor
 				                {
 					                ValueComponents = 2,
 					                DecimalPlaces = 0,
@@ -1618,11 +1618,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					                Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y,
 					                Text = Resources.GORFNT_DLG_SHADOW_OFFSET_CAPTION
 				                };
-				componentEdit.ValueChanged += componentEdit_ValueChanged;
+				valueEditor.ValueChanged += componentEdit_ValueChanged;
 
-				if (componentEdit.ShowDialog() == DialogResult.OK)
+				if (valueEditor.ShowDialog() == DialogResult.OK)
 				{
-					_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset = new Point((int)componentEdit.Value1, (int)componentEdit.Value2);
+					_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset = new Point((int)valueEditor.Value1, (int)valueEditor.Value2);
 				}
 				else
 				{
@@ -1635,10 +1635,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 			finally
 			{
-				if (componentEdit != null)
+				if (valueEditor != null)
 				{
-					componentEdit.ValueChanged -= componentEdit_ValueChanged;
-					componentEdit.Dispose();
+					valueEditor.ValueChanged -= componentEdit_ValueChanged;
+					valueEditor.Dispose();
 				}
 			}
 		}
@@ -1650,7 +1650,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void componentEdit_ValueChanged(object sender, EventArgs e)
 		{
-			var dialog = (formValueComponentEditDialog)sender;
+			var dialog = (ValueComponentEditor)sender;
 						
 			_text.ShadowOffset = new Point((int)dialog.Value1, (int)dialog.Value2);
 			DrawText();
@@ -1664,11 +1664,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemShadowOpacity_Click(object sender, EventArgs e)
 		{
-			formAlphaPicker picker = null;
+			AlphaPicker picker = null;
 
 			try
 			{
-				picker = new formAlphaPicker
+				picker = new AlphaPicker
 				         {
 					         Text = Resources.GORFNT_DLG_SHADOW_ALPHA_CAPTION,
 					         SelectedAlphaValue = GorgonFontEditorPlugIn.Settings.ShadowOpacity

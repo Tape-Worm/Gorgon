@@ -231,12 +231,12 @@ namespace GorgonLibrary.Editor
 
 				if (biggestDrive == null)
 				{
-					throw new IOException(Resources.GOREDIT_NO_DRIVE_AVAILABLE);
+					throw new IOException(Resources.GOREDIT_ERR_NO_DRIVE_AVAILABLE);
 				}
 			}
 			else
 			{
-				throw new IOException(Resources.GOREDIT_NO_DRIVE_AVAILABLE);
+				throw new IOException(Resources.GOREDIT_ERR_NO_DRIVE_AVAILABLE);
 			}
 			
 			return biggestDrive.RootDirectory;

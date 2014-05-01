@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor
 {
-	partial class controlColorPicker
+	partial class ControlColorPicker
 	{
 		/// <summary> 
 		/// Required designer variable.
@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(controlColorPicker));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ControlColorPicker));
             this.panelColor = new Fetze.WinFormsColor.ColorPanel();
             this.sliderColor = new Fetze.WinFormsColor.ColorSlider();
             this.sliderAlpha = new Fetze.WinFormsColor.ColorSlider();

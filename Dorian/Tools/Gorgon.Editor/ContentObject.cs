@@ -203,7 +203,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
         [Browsable(true),
 		LocalDisplayName(typeof(Resources), "GOREDIT_TEXT_NAME"),
-		LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), 
 		LocalDescription(typeof(Resources), "PROP_NAME_DESC")]
 		public string Name
 		{
@@ -345,7 +345,7 @@ namespace GorgonLibrary.Editor
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
             }
 
             if (ContentPropertyChanged != null)
@@ -393,7 +393,7 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanRead)
 			{
-				throw new IOException(Resources.GOREDIT_STREAM_WRITE_ONLY);
+				throw new IOException(Resources.GOREDIT_ERR_STREAM_WRITE_ONLY);
 			}
 
 			if (stream.Position >= stream.Length)
@@ -417,7 +417,7 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanRead)
 			{
-				throw new IOException(Resources.GOREDIT_STREAM_WRITE_ONLY);
+				throw new IOException(Resources.GOREDIT_ERR_STREAM_WRITE_ONLY);
 			}
 
 			if (stream.Position >= stream.Length)
@@ -450,7 +450,7 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException(Resources.GOREDIT_STREAM_READ_ONLY);
+				throw new IOException(Resources.GOREDIT_ERR_STREAM_READ_ONLY);
 			}
 
 			OnPersist(stream);
@@ -477,7 +477,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace("propertyName"))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             return TypeDescriptor.Contains(propertyName);
@@ -500,12 +500,12 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace("propertyName"))
             {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             if (!TypeDescriptor.Contains(propertyName))
             {
-                throw new KeyNotFoundException(string.Format(Resources.GOREDIT_PROPERTY_NOT_FOUND, propertyName));
+                throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_PROPERTY_NOT_FOUND, propertyName));
             }
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;

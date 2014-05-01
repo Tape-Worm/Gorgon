@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -340,28 +341,19 @@ namespace GorgonLibrary.Editor
             {
                 int skipped = totalFiles - filesCopied;
 
-                if (cancelled)
+                if (!cancelled)
                 {
-	                GorgonDialogs.WarningBox(this,
-	                                         string.Format(
-	                                                       importExport
-		                                                       ? Resources.GOREDIT_DLG_IMPORT_CANCELLED
-		                                                       : Resources.GOREDIT_DLG_EXPORT_CANCELLED,
-	                                                       filesCopied,
-	                                                       totalFiles,
-	                                                       skipped));
+                    return;
                 }
-                else
-                {
-	                GorgonDialogs.InfoBox(this,
-	                                      string.Format(
-	                                                    importExport
-		                                                    ? Resources.GOREDIT_DLG_IMPORT_SUCCESS
-		                                                    : Resources.GOREDIT_DLG_EXPORT_SUCCESSFUL,
-	                                                    filesCopied,
-	                                                    totalFiles,
-	                                                    skipped));
-                }
+
+                GorgonDialogs.WarningBox(this,
+                                         string.Format(
+                                                       importExport
+                                                           ? Resources.GOREDIT_DLG_IMPORT_CANCELLED
+                                                           : Resources.GOREDIT_DLG_EXPORT_CANCELLED,
+                                                       filesCopied,
+                                                       totalFiles,
+                                                       skipped));
             }
 	    }
 
@@ -427,8 +419,8 @@ namespace GorgonLibrary.Editor
             var result = ConfirmationResult.None;
 	        Action invokeAction =
 		        () => result = GorgonDialogs.ConfirmBox(null,
-		                                                string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-		                                                              Resources.GOREDIT_TEXT_FILE_LOWER,
+		                                                string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
+		                                                              Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
 		                                                              filePath),
 		                                                null,
 		                                                totalFileCount > 1,
@@ -459,8 +451,8 @@ namespace GorgonLibrary.Editor
                                       Cursor current = Cursor.Current;
 
                                       result = GorgonDialogs.ConfirmBox(null,
-                                                                        string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-                                                                                      Resources.GOREDIT_TEXT_FILE_LOWER,
+                                                                        string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
+                                                                                      Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
                                                                                       filePath),
 																		null,
                                                                         true,
@@ -494,7 +486,7 @@ namespace GorgonLibrary.Editor
                                       Cursor current = Cursor.Current;
 
                                       result = GorgonDialogs.ConfirmBox(null,
-                                                                        string.Format(Resources.GOREDIT_OVERWRITE_DIRECTORY_PROMPT,
+                                                                        string.Format(Resources.GOREDIT_DLG_OVERWRITE_DIRECTORY,
                                                                                       directoryPath),
 																		null,
                                                                         true,
@@ -1103,14 +1095,14 @@ namespace GorgonLibrary.Editor
 
 				if (currentNode == null)
 				{
-					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_PASTE_MUST_BE_DIRECTORY);
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_DLG_PASTE_MUST_BE_DIRECTORY);
 					return;
 				}
 
 				// If we're moving, there are some restrictions.
 				if ((currentNode == node) && (cutCopyObject.IsCut))
 				{
-					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_SOURCE_SAME_AS_DEST);
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST);
 					return;
 				}
 
@@ -1211,7 +1203,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			var result = GorgonDialogs.ConfirmBox(this,
-			                                      string.Format(Resources.GOREDIT_FILE_HAS_CHANGES_CONFIRM,
+			                                      string.Format(Resources.GOREDIT_DLG_FILE_HAS_CHANGES,
 			                                                    FileManagement.Filename),
 			                                      null,
 			                                      true);
@@ -2278,14 +2270,15 @@ namespace GorgonLibrary.Editor
 				// Handle explorer files.
 				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
 				{
-					var dropData = (IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop);
-					var files = new List<string>(dropData.Where(item =>
-					                                            !item.StartsWith(ScratchArea.ScratchFiles.WriteLocation,
-					                                                             StringComparison.OrdinalIgnoreCase)));
+				    var dropData = ((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop))
+				        .Where(item =>
+				               !item.StartsWith(ScratchArea.ScratchFiles.WriteLocation,
+				                                StringComparison.OrdinalIgnoreCase))
+				        .ToArray();
 
-					if (files.Count > 0)
+					if (dropData.Length > 0)
 					{
-						AddFilesFromExplorer(destDir, files);						
+						AddFilesFromExplorer(destDir, dropData);						
 					}					
 					return;
 				}
@@ -2916,7 +2909,7 @@ namespace GorgonLibrary.Editor
 			Text = Resources.GOREDIT_TEXT_GORGON_EDITOR;
 
 			pageItems.Text = Resources.GOREDIT_TEXT_CONTENT_FILES;
-			pageProperties.Text = Resources.GOREDIT_TAB_PROPERTIES;
+			pageProperties.Text = Resources.GOREDIT_TEXT_PROPERTIES;
 
 			menuFile.Text = Resources.GOREDIT_ACC_TEXT_FILE;
 			popupItemEdit.Text = menuEdit.Text = Resources.GOREDIT_ACC_TEXT_EDIT;
@@ -3102,7 +3095,7 @@ namespace GorgonLibrary.Editor
 			ScratchArea.ExceptionAction = FileCopyException;
             ScratchArea.ImportExportFileConflictFunction = ImportConfirmFileOverwrite;
             ScratchArea.ImportExportFileCompleteAction = FileImportExportCompleted;
-		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
+		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
 		                                                                                                        fileType,
 		                                                                                                        fileName));
 		    ScratchArea.CopyFileConflictFunction = CopyConfirmFileOverwrite;

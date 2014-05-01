@@ -50,7 +50,7 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Variables.
-		private readonly formSplash _splash;			// Main splash screen.
+		private readonly FormSplash _splash;			// Main splash screen.
 		#endregion
 
 		#region Methods.
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Editor
 			// _splash object could not be disposed until well after the closure
 			// had completed execution.  By all rights, this should fail too, and
 			// does not, therefore resharper is wrong.
-			_splash.UpdateVersion(string.Format(Resources.GOREDIT_SPLASH_LOAD_PLUGIN,
+			_splash.UpdateVersion(string.Format(Resources.GOREDIT_TEXT_PLUG_IN,
 												Path.GetFileNameWithoutExtension(text)
 													.Ellipses(40, true)));
 		}
@@ -120,7 +120,7 @@ namespace GorgonLibrary.Editor
 	    private void InitializeGraphics()
 	    {
             // Initialize our graphics interface.
-            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_INIT_GFX);
+            _splash.UpdateVersion(Resources.GOREDIT_TEXT_INITIALIZE_GRAPHICS);
 
             // Find the best device in the system.
             GorgonVideoDeviceEnumerator.Enumerate(false, false);
@@ -144,7 +144,7 @@ namespace GorgonLibrary.Editor
 	    private void InitializePlugIns()
 	    {
             Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
-            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PLUGINS);
+            _splash.UpdateVersion(Resources.GOREDIT_TEXT_LOADING_PLUGINS);
 
             PlugIns.LoadPlugIns(UpdateSplashPlugInText);
 	    }
@@ -156,7 +156,7 @@ namespace GorgonLibrary.Editor
 	    {
             Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
 
-            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_CREATE_SCRATCH);
+            _splash.UpdateVersion(Resources.GOREDIT_TEXT_CREATING_SCRATCH);
 
             // Ensure that we're not being clever and trying to mess up our system.
             if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
@@ -216,7 +216,7 @@ namespace GorgonLibrary.Editor
                     return;
                 }
 
-                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PREV_FILE);
+                _splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_PREV_FILE);
                 FileManagement.Open(Program.Settings.LastEditorFile);
             }
             catch (Exception ex)
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Editor
 		{
 			string inputPlugInPath = Path.Combine(Gorgon.ApplicationDirectory, "Gorgon.Input.Raw.dll");
 
-			_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOADING_INPUT);
+			_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_RAW_INPUT);
 
 			if (!File.Exists(inputPlugInPath))
 			{
@@ -288,7 +288,7 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				_splash = new formSplash();
+				_splash = new FormSplash();
 				MainForm = new formMain();
 
 				_splash.Show();
@@ -313,7 +313,7 @@ namespace GorgonLibrary.Editor
                 }
 
                 // Set up the default pane.
-				_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT);
+				_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_DEFAULT);
 				ContentManagement.LoadDefaultContentPane();
                 
                 // Keep showing the splash screen.

@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Control to be displayed for picking colors on the property grid drop down.
 	/// </summary>
-	partial class controlColorPicker : UserControl
+	partial class ControlColorPicker : UserControl
 	{
 		/// <summary>
 		/// Property to set or return the editor service.
@@ -75,9 +75,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="controlColorPicker"/> class.
+		/// Initializes a new instance of the <see cref="ControlColorPicker"/> class.
 		/// </summary>
-		public controlColorPicker()
+		public ControlColorPicker()
 		{
 			InitializeComponent();
 		}

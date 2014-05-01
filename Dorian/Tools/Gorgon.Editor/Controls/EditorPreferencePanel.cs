@@ -314,7 +314,7 @@ namespace GorgonLibrary.Editor
 
 	        if (!string.Equals(textScratchLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.ScratchPath, StringComparison.OrdinalIgnoreCase))
 	        {
-		        GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG);
+		        GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_DLG_SCRATCH_LOC_CHANGE);
 	        }
 
             if ((string.Equals(Program.Settings.DefaultImageEditor,
@@ -334,7 +334,7 @@ namespace GorgonLibrary.Editor
 
 		        if (!string.Equals(textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.PlugInDirectory, StringComparison.OrdinalIgnoreCase))
 		        {
-			        GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_SETTING_PLUGIN_LOC_CHANGE_MSG);
+			        GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_DLG_PLUGIN_LOC_CHANGE);
 		        }
 	        }
 	        catch

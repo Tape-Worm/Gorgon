@@ -26,6 +26,7 @@
 
 using System.ComponentModel;
 using System.Windows.Forms;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
@@ -40,10 +41,14 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
+
         /// <summary>
         /// Property to set or return the text caption for this panel.
         /// </summary>
-        [Browsable(true), Category("Appearance"), Description("Sets the text caption for the prefrence panel tab."), DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        [Browsable(true)]
+        [LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN")]
+        [LocalDescription(typeof(Resources), "PROP_TEXT_PREF_PANEL_DESC")]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public new string Text
         {
             get
@@ -60,7 +65,7 @@ namespace GorgonLibrary.Editor
                 base.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Property to return whether to refresh the tree after the preferences are committed.
         /// </summary>

@@ -31,7 +31,7 @@ using System.Drawing.Design;
 using System.Windows.Forms.Design;
 using GorgonLibrary.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.Design
 {
 	/// <summary>
 	/// Editor for the alpha channel.
@@ -66,12 +66,12 @@ namespace GorgonLibrary.Editor
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			controlColorPicker colorPicker = null;
+			ControlColorPicker colorPicker = null;
 			Color colorValue = Color.Empty;
 
 			try
 			{
-				colorPicker = new controlColorPicker();
+				colorPicker = new ControlColorPicker();
 				colorPicker.EditorService = editorSerivce;
 				colorPicker.AlphaOnly = true;
 				colorPicker.CurrentColor = (Color)value;

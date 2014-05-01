@@ -179,14 +179,14 @@ namespace GorgonLibrary.Editor
 		{
 			if (parent == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_METADATA_CORRUPT);
 			}
 
 			XElement writerPlugInElement = parent.Element(WriterPlugInNode);
 
 			if (writerPlugInElement == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_METADATA_CORRUPT);
 			}
 
 			XAttribute writerPlugInTypeAttr = writerPlugInElement.Attribute(TypeNameAttr);
@@ -207,7 +207,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (parent == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_METADATA_CORRUPT);
 			}
 
 			Dependencies.Clear();

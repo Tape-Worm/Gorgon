@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Input;
 using GorgonLibrary.UI;
@@ -146,41 +147,47 @@ namespace GorgonLibrary.Editor
             }
 		}
 
-		/// <summary>
-		/// Property to set or return the text caption for this control.
-		/// </summary>
-		[Browsable(true), Category("Appearance"), Description("Sets the text for the caption on the content panel control."), 
-		DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-		public new virtual string Text
-		{
-			get
-			{
-				return base.Text;
-			}
-			set
-			{
-				base.Text = value;
-                UpdateCaption();
-			}
-		}
+	    /// <summary>
+	    /// Property to set or return the text caption for this control.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(Resources), "PROP_TEXT_CONTENT_PANEL_DESC")]
+	    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+	    public new virtual string Text
+	    {
+	        get
+	        {
+	            return base.Text;
+	        }
+	        set
+	        {
+	            base.Text = value;
+	            UpdateCaption();
+	        }
+	    }
 
-		/// <summary>
-		/// Property to set or return whether the caption for the content panel is visible or not.
-		/// </summary>
-		[Browsable(true), Category("Appearance"), Description("Shows or hides the caption for the content panel."), DefaultValue(true)]
-		public bool CaptionVisible
-		{
-			get
-			{
-				return _captionVisible;
-			}
-			set
-			{
-				_captionVisible = value;
-				panelCaption.Visible = _captionVisible;
-			}
-		}
-		#endregion
+	    /// <summary>
+	    /// Property to set or return whether the caption for the content panel is visible or not.
+	    /// </summary>
+	    [Browsable(true)]
+	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(Resources), "PROP_TEXT_CAPTION_VISIBLE_DESC")]
+	    [DefaultValue(true)]
+	    public bool CaptionVisible
+	    {
+	        get
+	        {
+	            return _captionVisible;
+	        }
+	        set
+	        {
+	            _captionVisible = value;
+	            panelCaption.Visible = _captionVisible;
+	        }
+	    }
+
+	    #endregion
 
 		#region Methods.
         /// <summary>

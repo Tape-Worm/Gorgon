@@ -34,6 +34,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.Design;
+using GorgonLibrary.Editor.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
