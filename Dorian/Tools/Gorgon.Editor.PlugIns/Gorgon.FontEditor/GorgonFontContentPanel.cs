@@ -3048,8 +3048,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.RefreshContent();
 
-			_content = Content as GorgonFontContent;
-
             Debug.Assert(_content != null, "The content is not font content.");
 
 			// Populate the character search list.
@@ -4237,6 +4235,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         public GorgonFontContentPanel()
         {
+            InitializeComponent();    
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFontContentPanel"/> class.
+        /// </summary>
+        public GorgonFontContentPanel(GorgonFontContent content, GorgonInputFactory input)
+            : base(content, input)
+        {
+            _content = content;
+
             InitializeComponent();
 
 			MouseWheel += PanelDisplay_MouseWheel;

@@ -40,15 +40,6 @@ namespace GorgonLibrary.Editor
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the input interface.
-		/// </summary>
-		public static GorgonInputFactory Input
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the logging interface for the application.
 		/// </summary>
 		public static GorgonLogFile LogFile
@@ -139,12 +130,6 @@ namespace GorgonLibrary.Editor
                 Gorgon.PlugIns.AssemblyResolver = null;
 
 				ContentManagement.UnloadCurrentContent();
-
-				// Turn off input interface.
-				if (Input != null)
-				{
-					Input.Dispose();
-				}
 
 				// Clean up the plug-ins.
 				foreach (var plugInItem in PlugIns.ContentPlugIns)

@@ -31,6 +31,7 @@ using System.Linq;
 using System.Reflection;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 
@@ -49,6 +50,33 @@ namespace GorgonLibrary.Editor
 		#endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the graphics interface used by the editor.
+        /// </summary>
+	    public static GorgonGraphics Graphics
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the path to the plug-ins.
+        /// </summary>
+	    public static string PlugInPath
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the list of disabled plug-ins disabled by the user.
+        /// </summary>
+	    public static IList<string> UserDisabledPlugIns
+	    {
+	        get;
+	        set;
+	    }
+
         /// <summary>
         /// Property to return the list of writer plug-ins.
         /// </summary>
@@ -97,11 +125,11 @@ namespace GorgonLibrary.Editor
 
 			foreach (var assembly in assemblies)
 			{
-				Program.LogFile.Print("Loading plug-in assembly \"{0}\".", LoggingLevel.Verbose, assembly.FullName);
+				EditorLogging.Print("Loading plug-in assembly \"{0}\".", assembly.FullName);
 
 				if (!Gorgon.PlugIns.IsPlugInAssembly(assembly.FullName))
 				{
-					Program.LogFile.Print("Assembly \"{0}\" is not a valid plug-in assembly.", LoggingLevel.Verbose, assembly.FullName);
+					EditorLogging.Print("Assembly \"{0}\" is not a valid plug-in assembly.", assembly.FullName);
 					continue;
 				}
 
@@ -118,17 +146,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			return results;
-		}
-
-		/// <summary>
-		/// Function to determine if a plug-in was disabled by a user.
-		/// </summary>
-		/// <param name="plugIn">Plug-in to check.</param>
-		/// <returns>TRUE if disabled, FALSE if not.</returns>
-		private static bool IsUserDisabled(GorgonPlugIn plugIn)
-		{
-			return Program.Settings.DisabledPlugIns.Any(item =>
-			                                            string.Equals(item, plugIn.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
         /// <summary>
@@ -161,7 +178,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The number of plug-ins loaded.</returns>
 		public static int LoadPlugIns(Action<string> callback)
 		{
-			var plugInDirectory = new DirectoryInfo(Program.Settings.PlugInDirectory);
+			var plugInDirectory = new DirectoryInfo(PlugInPath);
 
 			if (!plugInDirectory.Exists)
 			{
@@ -178,11 +195,9 @@ namespace GorgonLibrary.Editor
 			// Process each plug-in.
 			foreach (var plugIn in plugIns)
 			{
-				if (IsUserDisabled(plugIn))
+				if (UserDisabledPlugIns.Any(item => string.Equals(item, plugIn.Name, StringComparison.OrdinalIgnoreCase)))
 				{
-					Program.LogFile.Print("Found plug-in: \"{0}\".  But it is disabled by the user.",
-											LoggingLevel.Verbose,
-											plugIn.Description);
+					EditorLogging.Print("Found plug-in: \"{0}\".  But it is disabled by the user.", plugIn.Description);
 
 					_disabled.Add(new DisabledPlugIn(plugIn, Resources.GOREDIT_TEXT_DISABLED_BY_USER));
 					
@@ -194,7 +209,7 @@ namespace GorgonLibrary.Editor
 
 				if (fileReader != null)
 				{
-					Program.LogFile.Print("Found a file system provider plug-in: \"{0}\".", LoggingLevel.Verbose, fileReader.Name);
+					EditorLogging.Print("Found a file system provider plug-in: \"{0}\".", fileReader.Name);
 
 
 					_readerPlugIns[fileReader.Name] = fileReader;
@@ -202,21 +217,24 @@ namespace GorgonLibrary.Editor
 				}
 
 				var editorPlugIn = (EditorPlugIn)plugIn;
+
+                // Assign the graphics interface to each editor plug-in.
+			    editorPlugIn.Graphics = Graphics;
+
 				var validationData = editorPlugIn.ValidatePlugIn();
 
 				if (!string.IsNullOrWhiteSpace(validationData))
 				{
-					Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:",
-					                      LoggingLevel.Verbose,
+					EditorLogging.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:",
 					                      editorPlugIn.PlugInType,
 					                      editorPlugIn.Description);
-					Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
+					EditorLogging.Print("{0}", validationData);
 
 					_disabled.Add(new DisabledPlugIn(plugIn, validationData));
 					continue;
 				}
 
-				Program.LogFile.Print("Found a {0} plug-in: \"{1}\".", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
+				EditorLogging.Print("Found a {0} plug-in: \"{1}\".", editorPlugIn.PlugInType, editorPlugIn.Description);
 
 				// Categorize the editor plug-ins.
 				switch (editorPlugIn.PlugInType)
@@ -238,10 +256,12 @@ namespace GorgonLibrary.Editor
 						}
 						break;
 					default:
-						Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
-						Program.LogFile.Print("Plug-in type is unknown.", LoggingLevel.Verbose);
+				        EditorLogging.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:",
+				                            editorPlugIn.PlugInType,
+				                            editorPlugIn.Description);
+						EditorLogging.Print("Plug-in type is unknown.", LoggingLevel.Verbose);
 
-						_disabled.Add(new DisabledPlugIn(editorPlugIn, "Unknown plug-in type."));
+						_disabled.Add(new DisabledPlugIn(editorPlugIn, Resources.GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE));
 						break;
 				}
 			}

@@ -338,7 +338,7 @@ namespace GorgonLibrary.Editor.Controls
 		/// </returns>
 	    public override bool ValidateSettings()
 	    {
-		    if (!_pendingDisabled.SetEquals(Program.Settings.DisabledPlugIns))
+		    if (!_pendingDisabled.SetEquals(PlugIns.UserDisabledPlugIns))
 		    {
 				GorgonDialogs.InfoBox(ParentForm, Resources.GOREDIT_DLG_APP_NEEDS_RESTART);    
 		    }
@@ -353,12 +353,12 @@ namespace GorgonLibrary.Editor.Controls
 	    {
 		    base.CommitSettings();
 
-			Program.Settings.DisabledPlugIns.Clear();
+	        Program.Settings.DisabledPlugIns.Clear();
 
-		    foreach (string plugIn in _pendingDisabled)
-		    {
-			    Program.Settings.DisabledPlugIns.Add(plugIn);
-		    }
+	        foreach (string pending in _pendingDisabled)
+	        {
+	            Program.Settings.DisabledPlugIns.Add(pending);
+	        }
 	    }
 	    #endregion
 

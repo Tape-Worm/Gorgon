@@ -123,15 +123,8 @@
   <data name="GOREDIT_VERSION" xml:space="preserve">
     <value>Version: {0} - {1}</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\project_node_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
     <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
-  </data>
-  <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
-    <value>Copying</value>
   </data>
   <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
     <value>Controls whether multiple files can be selected or not.</value>
@@ -139,23 +132,8 @@
   <data name="GOREDIT_TEXT_LOAD_DEFAULT" xml:space="preserve">
     <value>Loading default content pane.</value>
   </data>
-  <data name="GOREDIT_TEXT_DETAIL_VIEW" xml:space="preserve">
-    <value>Detail view</value>
-  </data>
-  <data name="GOREDIT_TEXT_CREATING" xml:space="preserve">
-    <value>Creating '{0}'</value>
-  </data>
-  <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tree_expand_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_STREAM_WRITE_ONLY" xml:space="preserve">
-    <value>The stream is write only.</value>
-  </data>
   <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
     <value>The {0} '{1}' has unsaved changes. Would you like to save the {0} now?</value>
-  </data>
-  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
-    <value>Untitled</value>
   </data>
   <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
@@ -168,12 +146,6 @@
   </data>
   <data name="GOREDIT_ACC_TEXT_RENAME_FOLDER" xml:space="preserve">
     <value>&amp;Rename folder</value>
-  </data>
-  <data name="GOREDIT_TEXT_IMPORTING" xml:space="preserve">
-    <value>Importing</value>
-  </data>
-  <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
-    <value>The stream is read only.</value>
   </data>
   <data name="GOREDIT_DLG_IMPORT_CANCELLED" xml:space="preserve">
     <value>The import operation was cancelled.
@@ -189,17 +161,11 @@
   <data name="GOREDIT_DLG_EXPORT_DEPENDENCIES" xml:space="preserve">
     <value>The file '{0}' is dependent upon other files in the file system.  Would you like to export these dependencies with the file?</value>
   </data>
-  <data name="GOREDIT_TEXT_SIZE" xml:space="preserve">
-    <value>Size</value>
-  </data>
   <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
     <value>Plug-in: {0}</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_IMPORT" xml:space="preserve">
     <value>&amp;Import</value>
-  </data>
-  <data name="back_16x16png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\back_16x16png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_OPEN" xml:space="preserve">
     <value>&amp;Open</value>
@@ -213,23 +179,15 @@
   <data name="GOREDIT_DLG_IMPORT_FILE_OPEN_FOR_EDIT" xml:space="preserve">
     <value>The file '{0}' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.</value>
   </data>
-  <data name="GOREDIT_TEXT_BROKEN_LINK" xml:space="preserve">
-    <value>(Broken link)</value>
-  </data>
   <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>Could not find the file '{0}'.</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
-    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
-  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_CUT" xml:space="preserve">
     <value>Cu&amp;t</value>
-  </data>
-  <data name="GOREDIT_TEXT_DATE" xml:space="preserve">
-    <value>Date</value>
   </data>
   <data name="GOREDIT_TEXT_LOAD_RAW_INPUT" xml:space="preserve">
     <value>Loading raw input interface...</value>
@@ -249,17 +207,11 @@
   <data name="GOREDIT_TEXT_FILE_WRITER" xml:space="preserve">
     <value>File writer</value>
   </data>
-  <data name="GOREDIT_ERR_METADATA_CORRUPT" xml:space="preserve">
-    <value>The meta data for the file is corrupted.</value>
-  </data>
   <data name="PROP_NAME_DESC" xml:space="preserve">
     <value>Provides a name for the content.  The name should conform to a standard file name.</value>
   </data>
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_SELECT_FILE" xml:space="preserve">
-    <value>Select a file</value>
   </data>
   <data name="GOREDIT_TIP_SCRATCH_LOCATION" xml:space="preserve">
     <value>Selects a new working directory for the temporary files used 
@@ -270,12 +222,6 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST" xml:space="preserve">
     <value>The source file must not be the same as the destination file.</value>
   </data>
-  <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\choose_view_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_SEARCH" xml:space="preserve">
-    <value>Search...</value>
-  </data>
   <data name="GOREDIT_DLG_FILE_CANNOT_MOVE_TO_CHILD" xml:space="preserve">
     <value>The destination directory must not be a sub-directory of this directory.</value>
   </data>
@@ -285,9 +231,6 @@ Changing this value will require a restart of the application.</value>
   <data name="PROP_TEXT_DESC" xml:space="preserve">
     <value>Sets the text value to assign to the caption of the window.</value>
   </data>
-  <data name="GOREDIT_TEXT_SAVING" xml:space="preserve">
-    <value>Saving</value>
-  </data>
   <data name="GOREDIT_TEXT_LOAD_PREV_FILE" xml:space="preserve">
     <value>Loading previous editor file...</value>
   </data>
@@ -296,9 +239,6 @@ Changing this value will require a restart of the application.</value>
   </data>
   <data name="GOREDIT_TEXT_PLUG_IN_LOCATION" xml:space="preserve">
     <value>Plug-in location</value>
-  </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_EXISTS" xml:space="preserve">
-    <value>The {0} dependency '{1}' already exists in this collection.</value>
   </data>
   <data name="GOREDIT_DLG_NO_CONTENT_PLUG_IN_FOR_FILE" xml:space="preserve">
     <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{1}' files.</value>
@@ -311,12 +251,6 @@ Changing this value will require a restart of the application.</value>
   </data>
   <data name="GOREDIT_TEXT_SCRATCH_LOCATION" xml:space="preserve">
     <value>Scratch area location</value>
-  </data>
-  <data name="PropertyChecker" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PropertyChecker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_DIRECTORY" xml:space="preserve">
-    <value>directory</value>
   </data>
   <data name="GOREDIT_TEXT_DISABLED" xml:space="preserve">
     <value>Disabled</value>
@@ -338,14 +272,8 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_TEXT_PLUGINS" xml:space="preserve">
     <value>Plug-ins</value>
   </data>
-  <data name="GOREDIT_ERR_NO_READ_PROVIDERS" xml:space="preserve">
-    <value>The editor does not know how to read the file '{0}'.</value>
-  </data>
   <data name="GOREDIT_DLG_OVERWRITE_FILE" xml:space="preserve">
     <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
-  </data>
-  <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\linked_file_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_TEXT_FILE_READER" xml:space="preserve">
     <value>File reader</value>
@@ -356,22 +284,8 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
     <value>Could not create the content file '{0}'.</value>
   </data>
-  <data name="folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_DLG_NO_SUCH_DIRECTORY" xml:space="preserve">
-    <value>There is no directory named '{0}'.</value>
-  </data>
   <data name="GOREDIT_DLG_CANNOT_FIND_DEPENDENCY" xml:space="preserve">
     <value>The file '{0}' has dependencies that could not be loaded.  The file was loaded normally, but may not function correctly.  Please see the details pane to see which dependency files did not load correctly.</value>
-  </data>
-  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
-    <value>File: {0}
-Error: {1}
-</value>
   </data>
   <data name="GOREDIT_TEXT_CONTENT_FILES" xml:space="preserve">
     <value>Content files</value>
@@ -379,17 +293,8 @@ Error: {1}
   <data name="GOREDIT_TEXT_NEW_CONTENT" xml:space="preserve">
     <value>New content item</value>
   </data>
-  <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_missing_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_DLG_DISABLE_PLUGIN" xml:space="preserve">
     <value>This will disable the plug in '{0}'.  Are you sure wish to do this?</value>
-  </data>
-  <data name="GOREDIT_ERR_NO_APP_SETTINGS" xml:space="preserve">
-    <value>The application settings were not loaded.</value>
-  </data>
-  <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unknown_document_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_FILENAME_DESC" xml:space="preserve">
     <value>Sets the default selected filename or the last selected file name.</value>
@@ -400,20 +305,11 @@ Error: {1}
   <data name="GOREDIT_TEXT_AVAILABLE_PLUGINS" xml:space="preserve">
     <value>Available plug-ins</value>
   </data>
-  <data name="GOREDIT_ERR_PROPERTY_NOT_FOUND" xml:space="preserve">
-    <value>The property '{0}' does not exist for this content.</value>
-  </data>
-  <data name="GOREDIT_TEXT_SEARCH_NO_FILES" xml:space="preserve">
-    <value>No files were found for the search '{0}'</value>
-  </data>
   <data name="GOREDIT_TEXT_ALL_CONTENT" xml:space="preserve">
     <value>All content types</value>
   </data>
   <data name="GOREDIT_TEXT_INITIALIZE_GRAPHICS" xml:space="preserve">
     <value>Initializing graphics...</value>
-  </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_PROP_EXISTS" xml:space="preserve">
-    <value>There is already a dependency property with the name of '{0}' in this collection.</value>
   </data>
   <data name="GOREDIT_TEXT_SELECT_COLOR" xml:space="preserve">
     <value>Please select a color...</value>
@@ -424,20 +320,11 @@ Error: {1}
   <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="tree_collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tree_collapse_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_TEXT_DELETE_CONTENT" xml:space="preserve">
     <value>Delete selected content</value>
   </data>
   <data name="GOREDIT_TEXT_EDITOR_OPTIONS" xml:space="preserve">
     <value>Options</value>
-  </data>
-  <data name="Expando" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Expando.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT" xml:space="preserve">
-    <value>Unable to read the dependency property.  It has been corrupted.</value>
   </data>
   <data name="GOREDIT_DLG_PASTE_MUST_BE_DIRECTORY" xml:space="preserve">
     <value>The destination must be a directory.</value>
@@ -450,12 +337,6 @@ Error: {1}
   </data>
   <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
     <value>Initializing</value>
-  </data>
-  <data name="forward_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\forward_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST" xml:space="preserve">
-    <value>The dependency property '{0}' does not exist in this collection.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_CANCEL" xml:space="preserve">
     <value>&amp;Cancel</value>
@@ -475,29 +356,11 @@ Error: {1}
   <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
     <value>The initial directory for the file dialog.</value>
   </data>
-  <data name="GOREDIT_ERR_FILE_ALREADY_EXISTS" xml:space="preserve">
-    <value>The {0} '{1}' already exists.</value>
-  </data>
   <data name="Gorgon_2_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_FILE" xml:space="preserve">
     <value>&amp;File</value>
-  </data>
-  <data name="GOREDIT_DLG_IMPORT_NO_DATA" xml:space="preserve">
-    <value>There were no files/directories found that could be imported.</value>
-  </data>
-  <data name="folder_open_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_open_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
-    <value>Select a new temporary scratch path.</value>
-  </data>
-  <data name="GOREDIT_TEXT_BACK" xml:space="preserve">
-    <value>Go back</value>
-  </data>
-  <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_missing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_SAVE_AS" xml:space="preserve">
     <value>Save &amp;as</value>
@@ -517,23 +380,11 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_PLUGIN_LOC_CHANGE" xml:space="preserve">
     <value>The plug-in location has changed.  This will require that the application be restarted before this setting takes effect.</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
-    <value>There was an error loading dependency '{0}'.  The content requires this dependency and cannot be loaded without it.\nError: {1}</value>
-  </data>
   <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_FILE" xml:space="preserve">
-    <value>File</value>
-  </data>
   <data name="PROP_FILEVIEW_DESC" xml:space="preserve">
     <value>The view used for the file dialog.</value>
-  </data>
-  <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE" xml:space="preserve">
-    <value>A dependency file, '{0}' is missing and must exist to load the content.</value>
   </data>
   <data name="GOREDIT_TEXT_EDITOR_PATHS" xml:space="preserve">
     <value>Editor paths</value>
@@ -544,23 +395,8 @@ Changing this value will require a restart of the application.</value>
   <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
     <value>Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes.</value>
   </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME" xml:space="preserve">
-    <value>The dependency property needs a name.</value>
-  </data>
-  <data name="GOREDIT_ERR_DEPENDENCY_CORRUPT" xml:space="preserve">
-    <value>Unable to read the dependency. It has been corrupted.</value>
-  </data>
-  <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
-    <value>Scanning</value>
-  </data>
   <data name="GOREDIT_ACC_TEXT_RENAME" xml:space="preserve">
     <value>&amp;Rename</value>
-  </data>
-  <data name="GOREDIT_TEXT_UNKNOWN_FILE" xml:space="preserve">
-    <value>Unknown file</value>
-  </data>
-  <data name="GOREDIT_TEXT_GET_FILE_INFO" xml:space="preserve">
-    <value>Getting file information...</value>
   </data>
   <data name="GOREDIT_DLG_APP_NEEDS_RESTART" xml:space="preserve">
     <value>Any changes to the plug-in list will not take effect until the application is restarted.</value>
@@ -568,26 +404,8 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ACC_TEXT_EDIT" xml:space="preserve">
     <value>&amp;Edit</value>
   </data>
-  <data name="GOREDIT_TEXT_MOVING" xml:space="preserve">
-    <value>Moving files</value>
-  </data>
-  <data name="GOREDIT_DLG_NO_FILE_IN_PATH" xml:space="preserve">
-    <value>There is no file in the path '{0}'.</value>
-  </data>
-  <data name="GOREDIT_TEXT_SEARCH_RESULTS" xml:space="preserve">
-    <value>Files returned from the search (hit ESC to go back)</value>
-  </data>
   <data name="GOREDIT_TEXT_FAILED_PLUGINS" xml:space="preserve">
     <value>Failed plug-ins</value>
-  </data>
-  <data name="Check_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Enabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_CHANGEVIEW" xml:space="preserve">
-    <value>Change file views.</value>
-  </data>
-  <data name="GOREDIT_ERR_STREAM_EOS" xml:space="preserve">
-    <value>Cannot read beyond the end of the stream.</value>
   </data>
   <data name="GOREDIT_TEXT_EDIT_CONTENT" xml:space="preserve">
     <value>Edit selected content</value>
@@ -595,55 +413,17 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_OPEN_ERROR" xml:space="preserve">
     <value>There was an error opening '{0}'.</value>
   </data>
-  <data name="GOREDIT_ERR_NO_WRITER_PLUGIN" xml:space="preserve">
-    <value>Cannot write the file '{0}'.  There is no plug-in available to write the file with.</value>
-  </data>
-  <data name="GOREDIT_DLG_NO_SUCH_FILE" xml:space="preserve">
-    <value>There is no file named '{0}{1}'.</value>
-  </data>
-  <data name="GOREDIT_ERR_FILE_DIRECTORY_IS_CHILD" xml:space="preserve">
-    <value>Cannot copy '{0}' because the destination is a sub folder of this folder.</value>
-  </data>
   <data name="new_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\new_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_TEXT_EXPORTING" xml:space="preserve">
-    <value>Exporting</value>
-  </data>
-  <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
-    <value>Preferences</value>
-  </data>
-  <data name="GOREDIT_TEXT_GO_FORWARD" xml:space="preserve">
-    <value>Go forward</value>
-  </data>
-  <data name="GOREDIT_TEXT_DEPENDENCY_PROP" xml:space="preserve">
-    <value>Dependency property '{0}': '{1}'</value>
-  </data>
   <data name="GOREDIT_DLG_DELETE_FILE" xml:space="preserve">
     <value>This will delete '{0}'.  Are you sure you wish to do this?</value>
-  </data>
-  <data name="GOREDIT_ERR_FILE_PATH_INVALID_CHARS" xml:space="preserve">
-    <value>The name contains invalid characters.
-The following characters are not allowed:
-{0}</value>
-  </data>
-  <data name="GOREDIT_DLG_IMPORT_CONFIRM" xml:space="preserve">
-    <value>{0} files and {1} directories will be imported.  Are you sure you wish to do this?</value>
-  </data>
-  <data name="GOREDIT_TEXT_NAME" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="GOREDIT_TEXT_THUMBNAIL_VIEW" xml:space="preserve">
-    <value>Thumbnail view</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_PREFERENCES" xml:space="preserve">
     <value>&amp;Preferences</value>
   </data>
   <data name="GOREDIT_DLG_DELETE_DIRECTORY" xml:space="preserve">
     <value>This will delete '{0}' and any files and/or directories it contains.  Are you sure you wish to do this?</value>
-  </data>
-  <data name="GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL" xml:space="preserve">
-    <value>Could not load the thumbnail for the file '{0}'.</value>
   </data>
   <data name="GOREDIT_DLG_IMAGE_EDITOR_CHANGED" xml:space="preserve">
     <value>You must close and re-open the current content to use the new image editor.</value>
@@ -663,9 +443,6 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_SELECT_DIR_EXPORT" xml:space="preserve">
     <value>Select a directory to export the files into.</value>
   </data>
-  <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
-    <value>Disabled by user.</value>
-  </data>
   <data name="GOREDIT_TEXT_CREATING_SCRATCH" xml:space="preserve">
     <value>Creating scratch area...</value>
   </data>
@@ -674,15 +451,6 @@ The following characters are not allowed:
   </data>
   <data name="GOREDIT_ACC_TEXT_DELETE_FOLDER" xml:space="preserve">
     <value>&amp;Delete folder</value>
-  </data>
-  <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Check_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_TEXT_GO_UP_TO_PARENT" xml:space="preserve">
-    <value>Go up to the parent of this directory.</value>
   </data>
   <data name="info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -712,9 +480,6 @@ the editor.
 Changing this value will require any open content be closed 
 and re-opened to use the new image editor.</value>
   </data>
-  <data name="GOREDIT_TEXT_HELP" xml:space="preserve">
-    <value>Help</value>
-  </data>
   <data name="GOREDIT_TIP_PLUGINS" xml:space="preserve">
     <value>Manages plug-ins that are responsible for creating/editing 
 specific types of content.
@@ -736,9 +501,6 @@ and double click on the plug-in item in the list.</value>
   </data>
   <data name="GOREDIT_TEXT_ALPHA" xml:space="preserve">
     <value>Alpha</value>
-  </data>
-  <data name="GOREDIT_TEXT_FILES" xml:space="preserve">
-    <value>files</value>
   </data>
   <data name="GOREDIT_TEXT_NEW_ALPHA" xml:space="preserve">
     <value>New alpha</value>

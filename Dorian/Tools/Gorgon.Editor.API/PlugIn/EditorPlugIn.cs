@@ -50,17 +50,15 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	public abstract class EditorPlugIn
 		: GorgonPlugIn
-	{
-		#region Properties.
+    {
+        #region Properties.
         /// <summary>
         /// Property to return the graphics interface for the application.
         /// </summary>
         public GorgonGraphics Graphics
         {
-            get
-            {
-                return Program.Graphics;
-            }
+            get;
+            internal set;
         }
 
 		/// <summary>
@@ -71,6 +69,15 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 		}
+
+        /// <summary>
+        /// Property to return the settings used by the editor.
+        /// </summary>
+	    public static GorgonEditorSettings EditorSettings
+	    {
+	        get;
+	        internal set;
+	    }
 		#endregion
 
 		#region Methods.

@@ -58,7 +58,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.Settings.ScratchPath;
+				return ScratchArea.ScratchPath;
 			}
 		}
 		#endregion

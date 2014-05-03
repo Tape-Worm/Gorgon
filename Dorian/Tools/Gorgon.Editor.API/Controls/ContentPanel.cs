@@ -57,12 +57,11 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the raw input interface.
 		/// </summary>
+		[Browsable(false)]
 		protected GorgonInputFactory RawInput
 		{
-			get
-			{
-				return Program.Input;
-			}
+			get;
+            private set;
 		}
 
 		/// <summary>
@@ -402,10 +401,12 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="ContentPanel"/> class.
 		/// </summary>
 		/// <param name="content">The content.</param>
-		public ContentPanel(ContentObject content)
+		/// <param name="input">Input interface to use.</param>
+		public ContentPanel(ContentObject content, GorgonInputFactory input = null)
 			: this()
 		{
 			Content = content;
+		    RawInput = input;
 		}
 		#endregion
 	}
