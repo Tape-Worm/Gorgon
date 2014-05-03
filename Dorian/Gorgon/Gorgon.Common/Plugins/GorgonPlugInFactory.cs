@@ -39,7 +39,7 @@ using GorgonLibrary.Properties;
 namespace GorgonLibrary.PlugIns
 {
 	/// <summary>
-    /// The return values for the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.IsAssemblySigned(string)">IsAssemblySigned</see> method.
+    /// The return values for the <see cref="GorgonPlugInFactory.IsAssemblySigned(System.Reflection.AssemblyName,byte[])">IsAssemblySigned</see> method.
 	/// </summary>
 	[Flags]
 	public enum PlugInSigningResult

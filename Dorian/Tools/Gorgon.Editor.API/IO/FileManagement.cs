@@ -140,7 +140,7 @@ namespace GorgonLibrary.Editor
         {
             ScratchArea.DestroyScratchArea();
             ScratchArea.InitializeScratch();
-			Program.EditorMetaData.Reset();
+			EditorMetaDataFile.Reset();
         }
 
         /// <summary>
@@ -187,12 +187,12 @@ namespace GorgonLibrary.Editor
         {
 	        if (plugIn == null)
 	        {
-		        Program.EditorMetaData.WriterPlugInType = string.Empty;
+		        EditorMetaDataFile.WriterPlugInType = string.Empty;
 
 		        return;
 	        }
 
-	        Program.EditorMetaData.WriterPlugInType = plugIn.Name;
+			EditorMetaDataFile.WriterPlugInType = plugIn.Name;
         }
 
         /// <summary>
@@ -207,11 +207,11 @@ namespace GorgonLibrary.Editor
 
 			// If we have meta-data, then use that to determine which file writer is used.
 	        if ((!skipMetaData)
-				&& (!string.IsNullOrWhiteSpace(Program.EditorMetaData.WriterPlugInType)))
+				&& (!string.IsNullOrWhiteSpace(EditorMetaDataFile.WriterPlugInType)))
 	        {
 				result = (from plugIn in PlugIns.WriterPlugIns
 						  where string.Equals(plugIn.Value.Name,
-											  Program.EditorMetaData.WriterPlugInType,
+											  EditorMetaDataFile.WriterPlugInType,
 											  StringComparison.OrdinalIgnoreCase)
 						  select plugIn.Value).FirstOrDefault();
 
@@ -259,8 +259,6 @@ namespace GorgonLibrary.Editor
             Filename = "Untitled";
             FilePath = string.Empty;
 
-            Program.Settings.LastEditorFile = string.Empty;
-
             FileChanged = false;
         }
 
@@ -288,7 +286,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Write the meta data file to the file system.
-			Program.EditorMetaData.Save();
+			EditorMetaDataFile.Save();
 
             // Write the file.
             if (!plugIn.Save(path))
@@ -298,7 +296,6 @@ namespace GorgonLibrary.Editor
 
             Filename = Path.GetFileName(path);
             FilePath = path;
-            Program.Settings.LastEditorFile = path;
 
             // Remove all changed items.
             FileChanged = false;
@@ -317,7 +314,7 @@ namespace GorgonLibrary.Editor
             // Add the new file system as a mount point.
 	        var plugIns = from plugIn in Gorgon.PlugIns
 	                      where plugIn is GorgonFileSystemProviderPlugIn 
-						  && Program.Settings.DisabledPlugIns.All(name =>!string.Equals(name,plugIn.Name,StringComparison.OrdinalIgnoreCase))
+						  && PlugIns.IsDisabled(plugIn)
 	                      select plugIn;
 
 	        foreach (var plugIn in plugIns)
@@ -363,10 +360,9 @@ namespace GorgonLibrary.Editor
                 
                 FilePath = string.Empty;
                 Filename = Path.GetFileName(path);
-                Program.Settings.LastEditorFile = path;
 
 				// Load the meta data if it exists.
-				Program.EditorMetaData.Load();
+				EditorMetaDataFile.Load();
 
                 // If we can't write the file, then leave the editor file path as blank.
                 // If the file path is blank, then the Save As function will be triggered if we attempt to save so we 
