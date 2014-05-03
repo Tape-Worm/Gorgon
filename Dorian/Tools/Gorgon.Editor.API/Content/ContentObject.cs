@@ -33,6 +33,8 @@ using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Input;
+using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor
 {
@@ -92,9 +94,17 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	public abstract class ContentObject
 		: IDisposable, INamedObject
-	{
-		#region Variables.
-		private string _name = "Content";			// Name of the content.
+    {
+        #region Constants.
+        /// <summary>
+        /// The type name for the raw input plug-in.
+        /// </summary>
+        public const string GorgonRawInputTypeName = "GorgonLibrary.Input.GorgonRawPlugIn";
+        #endregion
+
+        #region Variables.
+        private GorgonInputFactory _input;          // Raw input interface.
+        private string _name = "Content";			// Name of the content.
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
 		#endregion
@@ -263,6 +273,27 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to return the raw input object from the editor.
+        /// </summary>
+        /// <returns>The raw input interface from the editor.</returns>
+        protected GorgonInputFactory GetRawInput()
+        {
+            if (_input != null)
+            {
+                return _input;
+            }
+
+            if (!Gorgon.PlugIns.Contains(GorgonRawInputTypeName))
+            {
+                return null;
+            }
+
+            _input = GorgonInputFactory.CreateInputFactory(GorgonRawInputTypeName);
+
+            return _input;
+        }
+
         /// <summary>
 		/// Function to retrieve the registered image editor for the system.
 		/// </summary>
@@ -607,6 +638,11 @@ namespace GorgonLibrary.Editor
 			{
 				return;
 			}
+
+		    if (_input != null)
+		    {
+		        _input.Dispose();
+		    }
 
 			if ((ContentControl != null)
 				&& (!ContentControl.IsDisposed))

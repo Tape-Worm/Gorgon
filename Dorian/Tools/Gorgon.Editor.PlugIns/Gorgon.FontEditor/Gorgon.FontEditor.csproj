@@ -198,6 +198,10 @@
       <Project>{ce225f21-fb4d-4cb1-8b5b-48a61b5d0e54}</Project>
       <Name>Gorgon.Renderers.2D</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
+      <Project>{f169087c-a984-4823-bb6a-f34a14b8b4d5}</Project>
+      <Name>Gorgon.Editor.API</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon.Editor\Gorgon.Editor.csproj">
       <Project>{559cd7ce-1c08-46e8-b5fd-87a2829f5115}</Project>
       <Name>Gorgon.Editor %28Tools\Gorgon.Editor\Gorgon.Editor%29</Name>

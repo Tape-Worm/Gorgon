@@ -82,29 +82,11 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Clipper.cs" />
-    <Compile Include="ContentManagement.cs" />
-    <Compile Include="ContentObject.cs" />
-    <Compile Include="ContentSettings.cs" />
-    <Compile Include="Controls\ContentPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\ContentPanel.Designer.cs">
-      <DependentUpon>ContentPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\controlColorPicker.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\controlColorPicker.Designer.cs">
-      <DependentUpon>controlColorPicker.cs</DependentUpon>
-    </Compile>
     <Compile Include="Controls\EditorPreferencePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controls\EditorPreferencePanel.Designer.cs">
       <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\EditorTreeView.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\PanelPlugInPreferences.cs">
       <SubType>UserControl</SubType>
@@ -118,44 +100,13 @@
     <Compile Include="Controls\PanelPlugIns.Designer.cs">
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PreferencePanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\PreferencePanel.Designer.cs">
-      <DependentUpon>PreferencePanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\TreeNodeDependency.cs" />
-    <Compile Include="Controls\TreeNodeFile.cs" />
-    <Compile Include="Controls\EditorTreeNode.cs" />
-    <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="Dependency.cs" />
-    <Compile Include="DependencyCollection.cs" />
-    <Compile Include="DependencyLoadResult.cs" />
-    <Compile Include="DependencyProperty.cs" />
-    <Compile Include="DependencyPropertyCollection.cs" />
-    <Compile Include="Designers\AlphaChannelEditor.cs" />
-    <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
-    <Compile Include="Designers\PointFConverter.cs" />
-    <Compile Include="Designers\RGBAEditor.cs" />
-    <Compile Include="Designers\RGBATypeConverter.cs" />
-    <Compile Include="EditorFileBrowser.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="EditorMetaDataFile.cs" />
     <Compile Include="formColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="formColorDialog.Designer.cs">
       <DependentUpon>formColorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="formEditorFileSelector.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formEditorFileSelector.Designer.cs">
-      <DependentUpon>formEditorFileSelector.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FileManagement.cs" />
     <Compile Include="AlphaPicker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -174,33 +125,13 @@
     <Compile Include="formPrefs.Designer.cs">
       <DependentUpon>formPrefs.cs</DependentUpon>
     </Compile>
-    <Compile Include="formProcess.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formProcess.Designer.cs">
-      <DependentUpon>formProcess.cs</DependentUpon>
-    </Compile>
     <Compile Include="Magnifier.cs" />
-    <Compile Include="PlugIn\ContentPlugIn.cs" />
-    <Compile Include="PlugIn\DisabledPlugIn.cs" />
-    <Compile Include="PlugIn\EditorPlugIn.cs" />
-    <Compile Include="PlugIn\EditorPlugInSettings.cs" />
-    <Compile Include="PlugIn\FileWriterPlugIn.cs" />
-    <Compile Include="PlugIn\IImageEditorContent.cs" />
-    <Compile Include="PlugIn\IImageEditorPlugIn.cs" />
-    <Compile Include="PlugIn\IPlugInSettings.cs" />
-    <Compile Include="PlugIn\PlugIns.cs" />
-    <Compile Include="PropertyGrid\ContentProperty.cs" />
-    <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
-    <Compile Include="PropertyGrid\ContentTypeDescriptor.cs" />
-    <Compile Include="ScratchArea.cs" />
     <Compile Include="ValueComponentEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ValueComponentEditor.Designer.cs">
       <DependentUpon>ValueComponentEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -213,20 +144,10 @@
     <Compile Include="formSplash.Designer.cs">
       <DependentUpon>formSplash.cs</DependentUpon>
     </Compile>
-    <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\ContentPanel.resx">
-      <DependentUpon>ContentPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\controlColorPicker.resx">
-      <DependentUpon>controlColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Controls\EditorPreferencePanel.resx">
       <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\EditorTreeView.resx">
-      <DependentUpon>EditorTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PanelPlugInPreferences.resx">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
@@ -234,14 +155,8 @@
     <EmbeddedResource Include="Controls\PanelPlugIns.resx">
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\PreferencePanel.resx">
-      <DependentUpon>PreferencePanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="formColorDialog.resx">
       <DependentUpon>formColorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formEditorFileSelector.resx">
-      <DependentUpon>formEditorFileSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="AlphaPicker.resx">
       <DependentUpon>AlphaPicker.cs</DependentUpon>
@@ -255,22 +170,13 @@
     <EmbeddedResource Include="formPrefs.resx">
       <DependentUpon>formPrefs.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formProcess.resx">
-      <DependentUpon>formProcess.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <EmbeddedResource Include="ValueComponentEditor.resx">
       <DependentUpon>ValueComponentEditor.cs</DependentUpon>
     </EmbeddedResource>
@@ -297,37 +203,22 @@
       <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
       <Name>Gorgon.Renderers.2D</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
+      <Project>{f169087c-a984-4823-bb6a-f34a14b8b4d5}</Project>
+      <Name>Gorgon.Editor.API</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <None Include="Resources\info_16x16.png" />
-    <None Include="Resources\linked_file_8x8.png" />
-    <None Include="Resources\image_missing_16x16.png" />
-    <None Include="Resources\image_missing_128x128.png" />
-    <None Include="Resources\back_16x16png.png" />
-    <None Include="Resources\forward_16x16.png" />
-    <None Include="Resources\up_16x16.png" />
-    <None Include="Resources\find_16x16.png" />
-    <None Include="Resources\choose_view_16x16.png" />
     <None Include="Resources\remove_16x16.png" />
     <None Include="Resources\add_16x16.png" />
     <None Include="Resources\down_16x16.png" />
-    <None Include="Resources\Expando.png" />
-    <None Include="Resources\tree_expand_16x16.png" />
-    <None Include="Resources\tree_collapse_16x16.png" />
     <None Include="Resources\new_item_16x16.png" />
     <None Include="Resources\delete_item_16x16.png" />
     <None Include="Resources\edit_16x16.png" />
-    <None Include="Resources\unknown_document_16x16.png" />
-    <None Include="Resources\folder_open_16x16.png" />
-    <None Include="Resources\folder_16x16.png" />
-    <None Include="Resources\project_node_16x16.png" />
-    <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
-    <None Include="Resources\PropertyChecker.png" />
-    <None Include="Resources\Check_Enabled.png" />
-    <None Include="Resources\Check_Disabled.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
   </ItemGroup>
   <ItemGroup>

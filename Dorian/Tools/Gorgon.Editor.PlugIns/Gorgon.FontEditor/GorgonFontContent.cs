@@ -782,10 +782,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </returns>        
 		protected override ContentPanel OnInitialize()
 		{
-			_panel = new GorgonFontContentPanel
-			         {
-			             Content = this
-			         };
+		    _panel = new GorgonFontContentPanel(this, GetRawInput());
 
 		    _swap = Graphics.Output.CreateSwapChain("FontEditor.SwapChain", new GorgonSwapChainSettings
 			{

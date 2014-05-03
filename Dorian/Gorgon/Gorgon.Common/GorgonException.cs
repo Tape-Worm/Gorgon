@@ -224,46 +224,27 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Function to catch and log any stray exception.
-		/// </summary>
-		/// <param name="ex">Exception to catch.</param>
-		/// <returns>The exception that was caught.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		public static Exception Catch(Exception ex)
-		{
-		    if (ex == null)
-		    {
-		        throw new ArgumentNullException("ex");
-		    }
-
-		    LogException(ex);
-
-			return ex;
-		}
-
-		/// <summary>
 		/// Functon to catch and handle an exception.
 		/// </summary>
 		/// <param name="ex">Exception to pass to the handler.</param>
-		/// <param name="handler">Handler to handle the exception.</param>
+		/// <param name="handler">[Optional] Handler to handle the exception.</param>
 		/// <returns>The exception that was caught.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> or <paramref name="handler"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		public static Exception Catch(Exception ex, GorgonExceptionHandler handler)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		public static Exception Catch(Exception ex, GorgonExceptionHandler handler = null)
 		{
 			if (ex == null)
 			{
 				throw new ArgumentNullException("ex");
 			}
 
-			if (handler == null)
-			{
-				throw new ArgumentNullException("handler");
-			}
-
 			LogException(ex);
-			handler();
 
-			return ex;
+		    if (handler != null)
+		    {
+		        handler();
+		    }
+
+		    return ex;
 		}
 
 		/// <summary>

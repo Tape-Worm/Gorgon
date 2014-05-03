@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -45,10 +46,6 @@ namespace GorgonLibrary.Editor
 	class AppContext
 		: ApplicationContext
 	{
-		#region Constants.
-		private string GorgonRawInputTypeName = "GorgonLibrary.Input.GorgonRawPlugIn";			// Type name for the raw input plug-in.
-		#endregion
-
 		#region Variables.
 		private readonly FormSplash _splash;			// Main splash screen.
 		#endregion
@@ -142,19 +139,26 @@ namespace GorgonLibrary.Editor
         /// Function to initialize the plug-ins interface.
         /// </summary>
 	    private void InitializePlugIns()
-	    {
+        {
+            EditorPlugIn.EditorSettings = Program.Settings;
+
+            PlugIns.PlugInPath = Program.Settings.PlugInDirectory;
+            PlugIns.UserDisabledPlugIns = Program.Settings.DisabledPlugIns.ToArray();
+
             Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
             _splash.UpdateVersion(Resources.GOREDIT_TEXT_LOADING_PLUGINS);
 
             PlugIns.LoadPlugIns(UpdateSplashPlugInText);
-	    }
+        }
 
         /// <summary>
         /// Function to initialize the scratch files area.
         /// </summary>
 	    private void InitializeScratchArea()
-	    {
-            Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+        {
+            ScratchArea.ScratchPath = Program.Settings.ScratchPath;
+
+            Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, ScratchArea.ScratchPath);
 
             _splash.UpdateVersion(Resources.GOREDIT_TEXT_CREATING_SCRATCH);
 
@@ -195,7 +199,7 @@ namespace GorgonLibrary.Editor
 			// Get only the providers that are not disabled.
 			var plugIns = from plugIn in Gorgon.PlugIns
 						  where plugIn is GorgonFileSystemProviderPlugIn
-						  && Program.Settings.DisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
+						  && PlugIns.UserDisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
 						  select plugIn;
 
 	        foreach (GorgonPlugIn plugIn in plugIns)
@@ -257,13 +261,10 @@ namespace GorgonLibrary.Editor
 			// Load the plug-in.
 			Gorgon.PlugIns.LoadPlugInAssembly(inputPlugInPath);
 
-			if (!Gorgon.PlugIns.Contains(GorgonRawInputTypeName))
+			if (!Gorgon.PlugIns.Contains(ContentObject.GorgonRawInputTypeName))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
-
-			// Create the factory.
-			Program.Input = GorgonInputFactory.CreateInputFactory(GorgonRawInputTypeName);
 		}
 
 		/// <summary>
