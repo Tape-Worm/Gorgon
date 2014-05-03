@@ -39,7 +39,7 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	/// <remarks>Meta data allows us to attach various types of information that wouldn't normally contain it.  It can be used to show relationships between 
 	/// objects, or point to an icon for a file.</remarks>
-	class EditorMetaDataFile
+	static class EditorMetaDataFile
 	{
 		#region Constants.
 		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
@@ -51,65 +51,17 @@ namespace GorgonLibrary.Editor
 		private const string NameAttr = "Name";										// Name attribute name.
 		#endregion
 
-		#region Classes.
-		/// <summary>
-		/// Comparer used to find the name of an item.
-		/// </summary>
-		internal class NameComparer
-			: IEqualityComparer<string>
-		{
-			#region IEqualityComparer<EditorMetaDataItem> Members
-			/// <summary>
-			/// Determines whether the specified objects are equal.
-			/// </summary>
-			/// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
-			/// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
-			/// <returns>
-			/// true if the specified objects are equal; otherwise, false.
-			/// </returns>
-			/// <exception cref="System.NotImplementedException"></exception>
-			public bool Equals(string x, string y)
-			{
-				if ((x == null) && (y == null))
-				{
-					return true;
-				}
-
-				if (((x != null) && (y == null))
-					|| (x == null))
-				{
-					return false;
-				}
-
-				return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
-			}
-
-			/// <summary>
-			/// Returns a hash code for this instance.
-			/// </summary>
-			/// <param name="obj">The object.</param>
-			/// <returns>
-			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-			/// </returns>
-			public int GetHashCode(string obj)
-			{
-				return 281.GenerateHash(obj);
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
-		private GorgonFileSystemFileEntry _metaDataFile;					// The file in the file system that is holding our meta data.
-		private XDocument _metaData;										// The meta data XML.
-		private readonly string _path;										// Path to the metadata file.
+		private static GorgonFileSystemFileEntry _metaDataFile;					// The file in the file system that is holding our meta data.
+		private static XDocument _metaData;										// The meta data XML.
+		private static readonly string _path;										// Path to the metadata file.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the fully qualified type name of the writer plug-in.
 		/// </summary>
-		public string WriterPlugInType
+		public static string WriterPlugInType
 		{
 			get;
 			set;
@@ -118,7 +70,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the list of files and associated dependencies.
 		/// </summary>
-		public IDictionary<string, DependencyCollection> Dependencies
+		public static IDictionary<string, DependencyCollection> Dependencies
 		{
 			get;
 			private set;
@@ -175,7 +127,7 @@ namespace GorgonLibrary.Editor
 		/// Function to retrieve the writer settings.
 		/// </summary>
 		/// <param name="parent">Parent node of the settings.</param>
-		private void GetWriterSettings(XElement parent)
+		private static void GetWriterSettings(XElement parent)
 		{
 			if (parent == null)
 			{
@@ -203,7 +155,7 @@ namespace GorgonLibrary.Editor
 		/// Function to retrieve the dependency list.
 		/// </summary>
 		/// <param name="parent">Parent node.</param>
-		private void GetDependencies(XElement parent)
+		private static void GetDependencies(XElement parent)
 		{
 			if (parent == null)
 			{
@@ -239,7 +191,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to reset the meta data back to its initial state.
 		/// </summary>
-		public void Reset()
+		public static void Reset()
 		{
 			_metaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
 									  new XElement(MetaDataRootName,
@@ -247,7 +199,7 @@ namespace GorgonLibrary.Editor
 												   new XElement(ContentDependencyFiles)));
 
 			WriterPlugInType = string.Empty;
-			Dependencies = new Dictionary<string, DependencyCollection>(new NameComparer());
+			Dependencies = new Dictionary<string, DependencyCollection>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -255,7 +207,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <remarks>Use this method to retrieve any stored meta data.  If no meta data exists, then this function will do nothing.</remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the meta data is corrupted.</exception>
-		public void Load()
+		public static void Load()
 		{
 			_metaDataFile = ScratchArea.ScratchFiles.GetFile(_path);
 
@@ -286,7 +238,7 @@ namespace GorgonLibrary.Editor
 		/// Function to store the meta data.
 		/// </summary>
 		/// <remarks>Use this to store the meta data in the file system.</remarks>
-		public void Save()
+		public static void Save()
 		{
 			if (_metaData == null)
 			{
@@ -343,7 +295,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File to check.</param>
 		/// <returns>TRUE if a link is found, FALSE if not.</returns>
-		public bool HasFileLinks(GorgonFileSystemFileEntry file)
+		public static bool HasFileLinks(GorgonFileSystemFileEntry file)
 		{
 			return Dependencies.Any(item => item.Value.Contains(file.FullPath));
 		}
@@ -353,7 +305,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="directory">Directory to evaluate.</param>
 		/// <returns>TRUE if the directory or sub directory contains file links, FALSE if not.</returns>
-		public bool HasFileLinks(GorgonFileSystemDirectory directory)
+		public static bool HasFileLinks(GorgonFileSystemDirectory directory)
 		{
 			if ((directory.Directories.Count > 0) && (directory.Directories.Any(HasFileLinks)))
 			{
@@ -368,7 +320,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">The file to look up.</param>
 		/// <returns>A list of files that are linked to the specified file.</returns>
-		public IList<string> GetFileLinks(GorgonFileSystemFileEntry file)
+		public static IList<string> GetFileLinks(GorgonFileSystemFileEntry file)
 		{
 			return Dependencies
 				.Where(item => item.Value.Contains(file.FullPath))
@@ -381,7 +333,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="directory">The directory to look up.</param>
 		/// <returns>A list of files within the directory (or sub directories) that are linked to other files.</returns>
-		public IList<string> GetFileLinks(GorgonFileSystemDirectory directory)
+		public static IList<string> GetFileLinks(GorgonFileSystemDirectory directory)
 		{
 			var ownerFiles = new List<string>();
 
@@ -407,7 +359,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EditorMetaDataFile"/> class.
 		/// </summary>
-		public EditorMetaDataFile()
+		static EditorMetaDataFile()
 		{
 			_path = "/" + MetaDataFile;
 

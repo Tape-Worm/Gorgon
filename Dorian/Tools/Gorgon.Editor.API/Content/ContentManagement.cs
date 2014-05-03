@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -44,9 +45,31 @@ namespace GorgonLibrary.Editor
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
 	    private static ContentObject _currentContentObject;
 	    private static bool _contentChanged ;
+	    private static Type _defaultContentType;
         #endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the type of the default content object.
+		/// </summary>
+	    public static Type DefaultContentType
+		{
+			get
+			{
+				return _defaultContentType;
+			}
+			set
+			{
+				if ((value != null)
+				    && (!value.IsSubclassOf(typeof(ContentObject))))
+				{
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT, value.FullName));
+				}
+
+				_defaultContentType = value;
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether the current content has been changed or not.
 		/// </summary>
@@ -167,6 +190,62 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to load the content and its related UI.
+		/// </summary>
+		/// <param name="contentObject">Content to load.</param>
+		/// <param name="isDefault">TRUE if this is the default content, FALSE if not.</param>
+	    private static void LoadContent(ContentObject contentObject, bool isDefault)
+	    {
+			// Unload any content that's currently active.
+			UnloadCurrentContent();
+
+			// Initialize content resources.
+			ContentPanel contentWindow = contentObject.InitializeContent();
+
+			_currentContentObject = contentObject;
+
+			// Do not count the default content pane as being "content".
+			// This "Current" content being null will be our indicator that no content is currently active.
+			if (!isDefault)
+			{
+				Current = contentObject;
+			}
+
+			if (contentWindow == null)
+			{
+				return;
+			}
+
+			if (ContentInitializedAction != null)
+			{
+				contentWindow.Dock = DockStyle.Fill;
+				ContentInitializedAction(contentWindow);
+			}
+
+			if (ContentEnumerateProperties != null)
+			{
+				// Enumerate properties for the content.
+				ContentEnumerateProperties(contentObject.HasProperties);
+			}
+
+			if (contentObject.HasProperties)
+			{
+				contentObject.ContentPropertyChanged += OnContentChanged;
+			}
+
+			// Force focus to the content window.
+			if (contentWindow.Parent != null)
+			{
+				contentWindow.Focus();
+			}
+
+			if (contentObject.HasRenderer)
+			{
+				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
+			}
+	    }
+
+		/// <summary>
 		/// Function to tell the content that the editor settings have changed.
 		/// </summary>
 	    public static void EditorSettingsUpdated()
@@ -275,74 +354,42 @@ namespace GorgonLibrary.Editor
 		/// Function to load a content object into the content pane in the interface.
 		/// </summary>
 		/// <param name="contentObject">Content object to load into the interface.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentObject"/> is NULL (Nothing in VB.Net).</exception>
 	    public static void LoadContentPane(ContentObject contentObject)
 	    {
 			if (contentObject == null)
 			{
 				throw new ArgumentNullException("contentObject");
 			}
-			
-			// Unload any content that's currently active.
-			UnloadCurrentContent();
 
-			// Initialize content resources.
-			ContentPanel contentWindow = contentObject.InitializeContent();
-
-			_currentContentObject = contentObject;
-
-			// Do not count the default content pane as being "content".
-			// This "Current" content being null will be our indicator that no content is currently active.
-			if (!(contentObject is DefaultContent))
-			{
-				Current = contentObject;
-			}
-
-			if (contentWindow == null)
-			{
-				return;
-			}
-
-			if (ContentInitializedAction != null)
-			{
-				contentWindow.Dock = DockStyle.Fill;
-				ContentInitializedAction(contentWindow);
-			}
-
-			if (ContentEnumerateProperties != null)
-			{
-				// Enumerate properties for the content.
-				ContentEnumerateProperties(contentObject.HasProperties);
-			}
-
-			if (contentObject.HasProperties)
-			{
-				contentObject.ContentPropertyChanged += OnContentChanged;
-			}
-
-			// Force focus to the content window.
-			if (contentWindow.Parent != null)
-			{
-				contentWindow.Focus();
-			}
-
-			if (contentObject.HasRenderer)
-			{
-				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
-			}
+			LoadContent(contentObject, false);
 	    }
 		
 		/// <summary>
 		/// Function load the default content pane into the interface.
 		/// </summary>
+		/// <exception cref="GorgonException">Thrown when the <see cref="DefaultContentType"/> property is set to NULL (Nothing in VB.Net).</exception>
 	    public static void LoadDefaultContentPane()
 	    {
+			if (DefaultContentType == null)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN);
+			}
+
 			// We already have the default pane loaded.
 		    if ((Current == null) && (_currentContentObject != null))
 		    {
 			    return;
 		    }
 
-		    LoadContentPane(new DefaultContent());
+			var defaultContent = (ContentObject)Activator.CreateInstance(DefaultContentType,
+			                                                             BindingFlags.CreateInstance,
+			                                                             null,
+			                                                             null,
+			                                                             null,
+			                                                             null);
+
+			LoadContent(defaultContent, true);
 	    }
 
         /// <summary>
@@ -384,12 +431,11 @@ namespace GorgonLibrary.Editor
 		/// Function to load dependencies for a file.
 		/// </summary>
 		/// <param name="content">The content that is being loaded.</param>
-		/// <param name="metaData">Meta data containing the dependency information.</param>
 		/// <param name="filePath">Path to the file that may contain dependencies.</param>
 		/// <param name="missing">A list of dependencies that are missing.</param>
-	    private static void LoadDependencies(ContentObject content, EditorMetaDataFile metaData, string filePath, List<string> missing)
+	    private static void LoadDependencies(ContentObject content, string filePath, List<string> missing)
 	    {
-			foreach (Dependency dependencyFile in metaData.Dependencies[filePath])
+			foreach (Dependency dependencyFile in EditorMetaDataFile.Dependencies[filePath])
 			{
 				GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Path);
 
@@ -400,10 +446,10 @@ namespace GorgonLibrary.Editor
 				}
 
 				// If the dependency file contains any dependencies, then we need to load it them prior to loading the actual dependency.
-				if ((metaData.Dependencies.ContainsKey(dependencyFile.Path))
-					&& (metaData.Dependencies[dependencyFile.Path].Count > 0))
+				if ((EditorMetaDataFile.Dependencies.ContainsKey(dependencyFile.Path))
+					&& (EditorMetaDataFile.Dependencies[dependencyFile.Path].Count > 0))
 				{
-					LoadDependencies(content, metaData, dependencyFile.Path, missing);
+					LoadDependencies(content, dependencyFile.Path, missing);
 				}
 
 				// Read the external content.
@@ -453,26 +499,24 @@ namespace GorgonLibrary.Editor
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
 			// Indicate that this content is linked to another piece of content.
-			content.HasOwner = Program.EditorMetaData.HasFileLinks(file);
+			content.HasOwner = EditorMetaDataFile.HasFileLinks(file);
 
 			// Load the content dependencies if any exist.
-			EditorMetaDataFile metaData = Program.EditorMetaData;
-
 			// Check for dependencies.
-			if ((metaData.Dependencies.ContainsKey(file.FullPath))
-				&& (metaData.Dependencies[file.FullPath].Count > 0))
+			if ((EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath))
+				&& (EditorMetaDataFile.Dependencies[file.FullPath].Count > 0))
 			{
 				var missingDependencies = new List<string>();
 
 				try
 				{
-					LoadDependencies(content, metaData, file.FullPath, missingDependencies);
+					LoadDependencies(content, file.FullPath, missingDependencies);
 				}
 				catch
 				{
 					// If we have a major failure, ensure that any dependencies that were loaded 
 					// are cleaned up (if they require it).
-					var cleanUp = from dependency in metaData.Dependencies
+					var cleanUp = from dependency in EditorMetaDataFile.Dependencies
 					              from dependencyObject in dependency.Value
 					              let disposable = dependencyObject.DependencyObject as IDisposable
 					              where disposable != null
@@ -531,18 +575,18 @@ namespace GorgonLibrary.Editor
 				Current.Persist(contentStream);
 			}
 
-			if ((Current.Dependencies.Count == 0) 
-				&& (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath)))
+			if ((Current.Dependencies.Count == 0)
+				&& (EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath)))
 			{
-				Program.EditorMetaData.Dependencies.Remove(file.FullPath);
-				Program.EditorMetaData.Save();
+				EditorMetaDataFile.Dependencies.Remove(file.FullPath);
+				EditorMetaDataFile.Save();
 			}
 			else
 			{
 				if (Current.Dependencies.Count > 0)
 				{
-					Program.EditorMetaData.Dependencies[file.FullPath] = Current.Dependencies;
-					Program.EditorMetaData.Save();
+					EditorMetaDataFile.Dependencies[file.FullPath] = Current.Dependencies;
+					EditorMetaDataFile.Save();
 				}
 			}
 

@@ -82,21 +82,15 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Clipper.cs" />
-    <Compile Include="Controls\EditorPreferencePanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\EditorPreferencePanel.cs" />
     <Compile Include="Controls\EditorPreferencePanel.Designer.cs">
       <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PanelPlugInPreferences.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\PanelPlugInPreferences.cs" />
     <Compile Include="Controls\PanelPlugInPreferences.Designer.cs">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PanelPlugIns.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Controls\PanelPlugIns.cs" />
     <Compile Include="Controls\PanelPlugIns.Designer.cs">
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </Compile>

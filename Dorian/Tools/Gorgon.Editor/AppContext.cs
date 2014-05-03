@@ -289,6 +289,8 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				ContentManagement.ContentMetaData = Program.EditorMetaData;
+
 				_splash = new FormSplash();
 				MainForm = new formMain();
 
@@ -303,7 +305,7 @@ namespace GorgonLibrary.Editor
                 InitializePlugIns();
                 InitializeScratchArea();
 				InitializeInput();
-
+				
                 FileManagement.InitializeFileTypes();
                 ContentManagement.InitializeContentFileTypes();
 
@@ -315,6 +317,7 @@ namespace GorgonLibrary.Editor
 
                 // Set up the default pane.
 				_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_DEFAULT);
+				ContentManagement.DefaultContentType = typeof(DefaultContent);
 				ContentManagement.LoadDefaultContentPane();
                 
                 // Keep showing the splash screen.

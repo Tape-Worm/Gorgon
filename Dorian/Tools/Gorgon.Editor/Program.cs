@@ -28,7 +28,6 @@ using System;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -65,15 +64,6 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Property to set or return the editor meta data file.
-		/// </summary>
-		public static EditorMetaDataFile EditorMetaData
-		{
-			get;
-			set;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -96,8 +86,6 @@ namespace GorgonLibrary.Editor
 			{
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
-
-				EditorMetaData = new EditorMetaDataFile();
 
 				Settings.Load();
 

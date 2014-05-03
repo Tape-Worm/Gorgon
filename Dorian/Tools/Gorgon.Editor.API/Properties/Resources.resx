@@ -374,4 +374,10 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
     <value>Unknown plug-in type.</value>
   </data>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT" xml:space="preserve">
+    <value>The default content type '{0}' is not a content object.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN" xml:space="preserve">
+    <value>The default content type is not known.</value>
+  </data>
 </root>

@@ -55,6 +55,9 @@
 
         #endregion
 
+		/// <summary>
+		/// Tool tip for controls on the panel.
+		/// </summary>
         protected System.Windows.Forms.ToolTip toolHelp;
 
     }
