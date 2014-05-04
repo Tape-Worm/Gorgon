@@ -63,10 +63,10 @@
     <Compile Include="Content\ContentObject.cs" />
     <Compile Include="Content\ContentSettings.cs" />
     <Compile Include="Content\Magnifier.cs" />
-    <Compile Include="Controls\AlphaChannelDialog.cs">
+    <Compile Include="Forms\AlphaChannelDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\AlphaChannelDialog.Designer.cs">
+    <Compile Include="Forms\AlphaChannelDialog.Designer.cs">
       <DependentUpon>AlphaChannelDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\ControlColorPicker.cs">
@@ -88,25 +88,25 @@
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\ColorDialog.cs">
+    <Compile Include="Forms\ColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\ColorDialog.Designer.cs">
+    <Compile Include="Forms\ColorDialog.Designer.cs">
       <DependentUpon>ColorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\NewNameDialog.cs">
+    <Compile Include="Forms\NewNameDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\NewNameDialog.Designer.cs">
+    <Compile Include="Forms\NewNameDialog.Designer.cs">
       <DependentUpon>NewNameDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TreeNodeDependency.cs" />
     <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="Controls\TreeNodeFile.cs" />
-    <Compile Include="Controls\ValueComponentDialog.cs">
+    <Compile Include="Forms\ValueComponentDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\ValueComponentDialog.Designer.cs">
+    <Compile Include="Forms\ValueComponentDialog.Designer.cs">
       <DependentUpon>ValueComponentDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="IO\FileManagement.cs" />
@@ -185,16 +185,16 @@
     <None Include="Resources\back_16x16png1.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Controls\AlphaChannelDialog.resx">
+    <EmbeddedResource Include="Forms\AlphaChannelDialog.resx">
       <DependentUpon>AlphaChannelDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ColorDialog.resx">
+    <EmbeddedResource Include="Forms\ColorDialog.resx">
       <DependentUpon>ColorDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\NewNameDialog.resx">
+    <EmbeddedResource Include="Forms\NewNameDialog.resx">
       <DependentUpon>NewNameDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\ValueComponentDialog.resx">
+    <EmbeddedResource Include="Forms\ValueComponentDialog.resx">
       <DependentUpon>ValueComponentDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\APIResources.resx">
