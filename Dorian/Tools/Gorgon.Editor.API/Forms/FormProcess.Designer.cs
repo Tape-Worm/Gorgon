@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor
 {
-	partial class formProcess
+	partial class FormProcess
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formProcess));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProcess));
 			this.labelStatus = new System.Windows.Forms.Label();
 			this.progressMeter = new System.Windows.Forms.ProgressBar();
 			this.buttonCancel = new System.Windows.Forms.Button();

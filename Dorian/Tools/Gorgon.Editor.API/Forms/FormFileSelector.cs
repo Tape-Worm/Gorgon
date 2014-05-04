@@ -48,7 +48,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A file selector window for retrieving files from the mounted scratch area.
 	/// </summary>
-	partial class formEditorFileSelector 
+	partial class FormEditorFileSelector 
 		: ZuneForm
 	{
 		#region Classes
@@ -2048,10 +2048,10 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formEditorFileSelector"/> class.
+		/// Initializes a new instance of the <see cref="FormEditorFileSelector"/> class.
 		/// </summary>
 		/// <param name="extensions">File extensions used to filter the file list.</param>
-		public formEditorFileSelector(GorgonFileExtensionCollection extensions)
+		public FormEditorFileSelector(GorgonFileExtensionCollection extensions)
 		{
 			InitializeComponent();
 

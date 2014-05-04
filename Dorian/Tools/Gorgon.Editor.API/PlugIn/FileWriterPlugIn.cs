@@ -69,7 +69,7 @@ namespace GorgonLibrary.Editor
 	{
 		#region Variables.
 		private float _compressAmount = 0.05f;			// Compression amount.
-		private formProcess _processForm;				// Processing form.
+		private FormProcess _processForm;				// Processing form.
 		#endregion
 
 		#region Properties.
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE if the file was saved successfully, FALSE if not.</returns>
 		public bool Save(string path)
 		{
-			using (_processForm = new formProcess(ProcessType.FileWriter))
+			using (_processForm = new FormProcess(ProcessType.FileWriter))
 			{
 				using (var cancelToken = new CancellationTokenSource(Int32.MaxValue))
 				{
