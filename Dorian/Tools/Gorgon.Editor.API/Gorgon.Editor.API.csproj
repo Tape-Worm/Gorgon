@@ -88,11 +88,11 @@
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\formColorDialog.cs">
+    <Compile Include="Controls\ColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Controls\formColorDialog.Designer.cs">
-      <DependentUpon>formColorDialog.cs</DependentUpon>
+    <Compile Include="Controls\ColorDialog.Designer.cs">
+      <DependentUpon>ColorDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\NewNameEditor.cs">
       <SubType>Form</SubType>
@@ -188,8 +188,8 @@
     <EmbeddedResource Include="Controls\AlphaPicker.resx">
       <DependentUpon>AlphaPicker.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\formColorDialog.resx">
-      <DependentUpon>formColorDialog.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\ColorDialog.resx">
+      <DependentUpon>ColorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\NewNameEditor.resx">
       <DependentUpon>NewNameEditor.cs</DependentUpon>
