@@ -82,15 +82,21 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Clipper.cs" />
-    <Compile Include="Controls\EditorPreferencePanel.cs" />
+    <Compile Include="Controls\EditorPreferencePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\EditorPreferencePanel.Designer.cs">
       <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PanelPlugInPreferences.cs" />
+    <Compile Include="Controls\PanelPlugInPreferences.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\PanelPlugInPreferences.Designer.cs">
       <DependentUpon>PanelPlugInPreferences.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PanelPlugIns.cs" />
+    <Compile Include="Controls\PanelPlugIns.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Controls\PanelPlugIns.Designer.cs">
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </Compile>
@@ -107,6 +113,7 @@
     <Compile Include="AlphaPicker.Designer.cs">
       <DependentUpon>AlphaPicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="NewNameEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +127,11 @@
       <DependentUpon>formPrefs.cs</DependentUpon>
     </Compile>
     <Compile Include="Magnifier.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ValueComponentEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,8 +180,9 @@
       <DependentUpon>formSplash.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="ValueComponentEditor.resx">
       <DependentUpon>ValueComponentEditor.cs</DependentUpon>
@@ -204,6 +217,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\folder_open_16x161.png" />
+    <None Include="Resources\folder_16x161.png" />
+    <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
     <None Include="Resources\info_16x16.png" />
     <None Include="Resources\remove_16x16.png" />
     <None Include="Resources\add_16x16.png" />

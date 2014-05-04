@@ -22,14 +22,14 @@ namespace GorgonLibrary.Editor.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class APIResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal APIResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace GorgonLibrary.Editor.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Editor.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Editor.Properties.APIResources", typeof(APIResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -267,15 +267,6 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot use a system location or the root of the system drive for scratch data..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_USESYS_SCRATCH {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USESYS_SCRATCH", resourceCulture);
             }
         }
         
@@ -746,16 +737,6 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_UNTITLED {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_UNTITLED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Gorgon_2_x_Logo_Blurry {
-            get {
-                object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Blurry", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         

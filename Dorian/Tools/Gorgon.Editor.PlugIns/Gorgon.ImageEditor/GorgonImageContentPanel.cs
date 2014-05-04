@@ -85,7 +85,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (_content.Image != null)
 		    {
-				_texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
+				_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
 				_textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
 		    }
 
@@ -121,7 +121,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 	    public void CreateResources()
 		{
-			_backgroundTexture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
+			_backgroundTexture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
 		}
 		#endregion
 

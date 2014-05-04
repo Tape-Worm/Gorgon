@@ -123,7 +123,11 @@ namespace GorgonLibrary.Editor
 		        return result;
 		    }
 
-			result = new TreeNodeDirectory(directory);
+			result = new TreeNodeDirectory(directory)
+			         {
+				         ForeColor = Color.White,
+				         Text = directory.Name
+			         };
 
 			if ((directory.Directories.Count > 0) || (directory.Files.Count > 0))
 			{
@@ -482,7 +486,7 @@ namespace GorgonLibrary.Editor
             if (node.IsExpanded)
             {
                 currentImage = node.ExpandedImage;
-                plusMinusImage = Resources.tree_expand_16x16;
+                plusMinusImage = APIResources.tree_expand_16x16;
 
                 if (currentImage == null)
                 {
@@ -491,7 +495,7 @@ namespace GorgonLibrary.Editor
             }
             else
             {
-                plusMinusImage = Resources.tree_collapse_16x16;
+                plusMinusImage = APIResources.tree_collapse_16x16;
                 currentImage = node.CollapsedImage;
             }
 
@@ -556,15 +560,15 @@ namespace GorgonLibrary.Editor
 			// Draw the link icon overlay if we have a dependency.
 	        if ((node.NodeType & NodeType.Dependency) == NodeType.Dependency)
 	        {
-			    e.Graphics.DrawImage(Resources.linked_file_8x8,
+			    e.Graphics.DrawImage(APIResources.linked_file_8x8,
 			                            new Rectangle(position.X,
-			                                        position.Y + currentImage.Height - Resources.linked_file_8x8.Height,
-			                                        Resources.linked_file_8x8.Width,
-			                                        Resources.linked_file_8x8.Height),
+			                                        position.Y + currentImage.Height - APIResources.linked_file_8x8.Height,
+			                                        APIResources.linked_file_8x8.Width,
+			                                        APIResources.linked_file_8x8.Height),
 			                            0,
 			                            0,
-			                            Resources.linked_file_8x8.Width,
-			                            Resources.linked_file_8x8.Height,
+			                            APIResources.linked_file_8x8.Width,
+			                            APIResources.linked_file_8x8.Height,
 			                            GraphicsUnit.Pixel,
 			                            _linkAttributes);
 	        }

@@ -1277,7 +1277,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
 					settings.ArrayCount = 1;
 
-					texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name, imageContent.Image, settings);
+					texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name, imageContent.Image, settings);
 
                     // Attach the dependency to link the texture to this font.
 					var dependency = new Dependency(textureFile.FullPath, GorgonFontContent.GlyphTextureType)
@@ -1352,7 +1352,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             
 			if (_zoomFont == null)
 			{
-				_zoomFont = _content.Graphics.Fonts.CreateFont("MagnifierCaptionFont",
+				_zoomFont = ContentObject.Graphics.Fonts.CreateFont("MagnifierCaptionFont",
 				                                               new GorgonFontSettings
 				                                               {
 					                                               AntiAliasingMode = FontAntiAliasMode.AntiAlias,
@@ -3077,7 +3077,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
 		    _text.AllowColorCodes = true;
 
-            _pattern = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
+            _pattern = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
 
             _patternSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings
             {

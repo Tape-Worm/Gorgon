@@ -43,8 +43,11 @@ namespace GorgonLibrary.Editor
 		: GorgonApplicationSettings
 	{
 		#region Variables.
-		private float _animationRate = 0.25f;		// Animation rate.
-		#endregion
+        // Animation rate.
+		private float _animationRate = 0.25f;
+        // List of plug-ins disabled by the user.
+	    private List<string> _userDisabledPlugIns;          
+        #endregion
 
 		#region Properties.
         /// <summary>
@@ -168,13 +171,28 @@ namespace GorgonLibrary.Editor
 		[ApplicationSetting("DisabledPlugIns", typeof(IList<string>), "PlugIns")]
 		public IList<string> DisabledPlugIns
 		{
-			get;
-			private set;
+		    get
+		    {
+		        return _userDisabledPlugIns;
+		    }
+		    set
+		    {
+		        _userDisabledPlugIns.Clear();
+
+		        if ((value == null)
+                    || (value.Count == 0))
+		        {
+		            return;
+		        }
+
+                _userDisabledPlugIns.AddRange(value);
+		    }
 		}
 
         /// <summary>
         /// Property to set or return the default image editor plug-in to use when handling images in other plug-ins.
         /// </summary>
+        [ApplicationSetting("DefaultImageEditorPlugIn", typeof(string), "")]
 	    public string DefaultImageEditor
 	    {
 	        get;
@@ -275,7 +293,7 @@ namespace GorgonLibrary.Editor
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
 
             RecentFiles = new List<string>();
-			DisabledPlugIns = new List<string>();
+			_userDisabledPlugIns = new List<string>();
             PlugInDirectory = Gorgon.ApplicationDirectory + "PlugIns";
 
 			// Set the default scratch location.

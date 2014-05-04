@@ -251,11 +251,11 @@ namespace GorgonLibrary.Editor
 			var newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
 			if ((e.Item.Enabled) && (!e.Item.Selected))
 			{
-				e.Graphics.DrawImage(Resources.Check_Enabled, newRect);
+				e.Graphics.DrawImage(APIResources.Check_Enabled, newRect);
 			}
 			else
 			{
-				e.Graphics.DrawImage(Resources.Check_Disabled, newRect);
+				e.Graphics.DrawImage(APIResources.Check_Disabled, newRect);
 			}
 		}
 

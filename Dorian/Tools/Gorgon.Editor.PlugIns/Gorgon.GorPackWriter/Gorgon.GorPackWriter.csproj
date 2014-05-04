@@ -63,9 +63,9 @@
       <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
       <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Editor\Gorgon.Editor.csproj">
-      <Project>{559cd7ce-1c08-46e8-b5fd-87a2829f5115}</Project>
-      <Name>Gorgon.Editor %28Tools\Gorgon.Editor\Gorgon.Editor%29</Name>
+    <ProjectReference Include="..\..\Gorgon.Editor.API\Gorgon.Editor.API.csproj">
+      <Project>{f169087c-a984-4823-bb6a-f34a14b8b4d5}</Project>
+      <Name>Gorgon.Editor.API</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

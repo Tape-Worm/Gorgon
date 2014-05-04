@@ -536,7 +536,7 @@ namespace GorgonLibrary.Editor
 					GorgonFileSystemFileEntry file = ((TreeNodeFile)treeFiles.SelectedNode).File;
 
 					// If we have dependencies, then ask to export those as well.
-					if (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath))
+					if (EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath))
 					{
 						ConfirmationResult result = GorgonDialogs.ConfirmBox(this,
 						                                                     string.Format(Resources.GOREDIT_DLG_EXPORT_DEPENDENCIES,
@@ -554,7 +554,7 @@ namespace GorgonLibrary.Editor
 							// Merge file paths together in a hash set so we don't get attempts to overwrite the same
 							// file over and over.  This can happen because the same dependency can appear multiple
 							// times for a file.
-							foreach (Dependency dependency in Program.EditorMetaData.Dependencies[file.FullPath])
+							foreach (Dependency dependency in EditorMetaDataFile.Dependencies[file.FullPath])
 							{
 								if (!filePaths.Contains(dependency.Path.ToLowerInvariant()))
 								{
@@ -655,7 +655,7 @@ namespace GorgonLibrary.Editor
 				// Don't check the root node.
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
-			        dependencies = Program.EditorMetaData.HasFileLinks(((TreeNodeDirectory)selectedNode).Directory);
+			        dependencies = EditorMetaDataFile.HasFileLinks(((TreeNodeDirectory)selectedNode).Directory);
 		        }
 
 		        toolStripSeparator4.Visible = true;
@@ -715,7 +715,7 @@ namespace GorgonLibrary.Editor
 
             file = ((TreeNodeFile)selectedNode).File;
 
-	        dependencies = Program.EditorMetaData.HasFileLinks(file);
+	        dependencies = EditorMetaDataFile.HasFileLinks(file);
 
 			toolStripSeparator4.Visible =
 				buttonEditContent.Enabled =
@@ -1281,6 +1281,8 @@ namespace GorgonLibrary.Editor
                     Program.Settings.LastEditorFile = FileManagement.FilePath;
                 }
 
+				Program.Settings.DefaultImageEditor = ContentManagement.DefaultImageEditorPlugIn;
+
 				Program.Settings.Save();
 			}
 #if DEBUG
@@ -1322,7 +1324,7 @@ namespace GorgonLibrary.Editor
 					|| (fileNode.NodeType != NodeType.File)
 					|| (fileNode.File == null)
 				    || (fileNode.Nodes.Count == 0)
-					|| (!Program.EditorMetaData.Dependencies.ContainsKey(fileNode.File.FullPath)))
+					|| (!EditorMetaDataFile.Dependencies.ContainsKey(fileNode.File.FullPath)))
 				{
 					return;
 				}
@@ -1356,12 +1358,12 @@ namespace GorgonLibrary.Editor
 		{
 			fileNode.Nodes.Clear();
 
-			if (!Program.EditorMetaData.Dependencies.ContainsKey(fileNode.File.FullPath))
+			if (!EditorMetaDataFile.Dependencies.ContainsKey(fileNode.File.FullPath))
 			{
 				return;
 			}
 
-			DependencyCollection dependencies = Program.EditorMetaData.Dependencies[fileNode.File.FullPath];
+			DependencyCollection dependencies = EditorMetaDataFile.Dependencies[fileNode.File.FullPath];
 
 			foreach (Dependency dependencyFile in dependencies)
 			{
@@ -1390,7 +1392,12 @@ namespace GorgonLibrary.Editor
 
 			foreach (var subDirectory in rootNode.Directory.Directories.OrderBy(item => item.Name))
 			{
-				var subNode = new TreeNodeDirectory(subDirectory);
+				var subNode = new TreeNodeDirectory(subDirectory)
+				              {
+								  ForeColor = Color.White,
+								  Text = subDirectory.Name
+				              };
+				
 
 				if ((subDirectory.Directories.Count > 0) 
                     || ((subDirectory.Files.Count > 0)
@@ -1427,8 +1434,12 @@ namespace GorgonLibrary.Editor
 		/// Function to initialize the files tree.
 		/// </summary>
 		private void InitializeTree()
-		{            
-			_rootNode = new RootNodeDirectory();
+		{
+			_rootNode = new RootNodeDirectory
+			            {
+							ForeColor = Color.White,
+							Text = @"/"
+			            };
 
 			// If we have files or sub directories, dump them in here.
 			if ((ScratchArea.ScratchFiles.RootDirectory.Directories.Count > 0)
@@ -1602,8 +1613,7 @@ namespace GorgonLibrary.Editor
 #if DEBUG
 					catch (Exception innerEx)
 					{
-						GorgonException.Log = Program.LogFile;
-						GorgonException.Catch(innerEx);
+						EditorLogging.CatchException(innerEx);
 					}
 #else
 					catch
@@ -1746,7 +1756,7 @@ namespace GorgonLibrary.Editor
                     ScratchArea.ScratchFiles.DeleteDirectory(directory);
 
 					var dependencies =
-						Program.EditorMetaData.Dependencies.Where(item =>
+						EditorMetaDataFile.Dependencies.Where(item =>
 																  item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase))
 							   .Select(item => item.Key).ToArray();
 
@@ -1754,10 +1764,10 @@ namespace GorgonLibrary.Editor
 					{
 						foreach (string dependency in dependencies)
 						{
-							Program.EditorMetaData.Dependencies.Remove(dependency);
+							EditorMetaDataFile.Dependencies.Remove(dependency);
 						}
 
-						Program.EditorMetaData.Save();
+						EditorMetaDataFile.Save();
 					}
 
 
@@ -1785,10 +1795,10 @@ namespace GorgonLibrary.Editor
 					ScratchArea.ScratchFiles.DeleteFile(file);
 
 					// Remove the dependency link.
-					if (Program.EditorMetaData.Dependencies.ContainsKey(sourceFilePath))
+					if (EditorMetaDataFile.Dependencies.ContainsKey(sourceFilePath))
 					{
-						Program.EditorMetaData.Dependencies.Remove(sourceFilePath);
-						Program.EditorMetaData.Save();
+						EditorMetaDataFile.Dependencies.Remove(sourceFilePath);
+						EditorMetaDataFile.Save();
 					}
 
 					PruneTree(fileNode);
@@ -1945,7 +1955,11 @@ namespace GorgonLibrary.Editor
 			    var newDirectory = ScratchArea.CreateDirectory(parentNode.Directory, label);
 
 			    // Set up a new node for the directory since our current node is here as a proxy.
-			    var treeNode = new TreeNodeDirectory(newDirectory);
+				var treeNode = new TreeNodeDirectory(newDirectory)
+				               {
+					               ForeColor = Color.White,
+					               Text = newDirectory.Name
+				               };
 
 			    int nodeIndex = parentNode.Nodes.IndexOf(e.Node);
 			    parentNode.Nodes.Insert(nodeIndex, treeNode);
@@ -2128,7 +2142,7 @@ namespace GorgonLibrary.Editor
                                   + CurrentOpenFile.Name;
             }
 
-	        if (Program.EditorMetaData.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
+	        if (EditorMetaDataFile.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
 	        {
 		        files = ScratchArea.ScratchFiles.FindFiles(sourcePath, "*", true).Select(item => item.FullPath).ToArray();
 	        }
@@ -2153,7 +2167,7 @@ namespace GorgonLibrary.Editor
 					string destPath = newDirectory.FullPath + file.Substring(sourcePath.Length);
 					UpdateDependencyList(file, destPath, false, false);
 				}
-				Program.EditorMetaData.Save();
+				EditorMetaDataFile.Save();
 			}
 
             sourceDirNode.Text = newDirectory.Name;
@@ -2340,7 +2354,7 @@ namespace GorgonLibrary.Editor
 	                              CurrentOpenFile.Name;
                 }
 
-	            if (Program.EditorMetaData.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
+	            if (EditorMetaDataFile.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
 	            {
 		            files = ScratchArea.ScratchFiles.FindFiles(sourcePath, "*", true).Select(item => item.FullPath).ToArray();
 	            }
@@ -2369,7 +2383,7 @@ namespace GorgonLibrary.Editor
 			            string destPath = newDirectory.FullPath + file.Substring(sourcePath.Length);
 						UpdateDependencyList(file, destPath, isCopy, false);
 		            }
-					Program.EditorMetaData.Save();
+					EditorMetaDataFile.Save();
 	            }
 
                 result = destinationNode.Nodes.AddDirectory(newDirectory, sourceNode.IsExpanded);
@@ -2407,22 +2421,22 @@ namespace GorgonLibrary.Editor
 		/// <param name="saveMetaData">TRUE to save the meta data file, FALSE to leave alone.</param>
 		private static void UpdateDependencyList(string sourceFile, string destFile, bool isCopy, bool saveMetaData)
 		{
-			if (!Program.EditorMetaData.Dependencies.ContainsKey(sourceFile))
+			if (!EditorMetaDataFile.Dependencies.ContainsKey(sourceFile))
 			{
 				return;
 			}
 
-			DependencyCollection dependencies = Program.EditorMetaData.Dependencies[sourceFile];
+			DependencyCollection dependencies = EditorMetaDataFile.Dependencies[sourceFile];
 
 			if (!isCopy)
 			{
-				Program.EditorMetaData.Dependencies.Remove(sourceFile);
-				Program.EditorMetaData.Dependencies[destFile] = dependencies;
-				Program.EditorMetaData.Save();
+				EditorMetaDataFile.Dependencies.Remove(sourceFile);
+				EditorMetaDataFile.Dependencies[destFile] = dependencies;
+				EditorMetaDataFile.Save();
 				return;
 			}
 
-			Program.EditorMetaData.Dependencies[destFile] = new DependencyCollection();
+			EditorMetaDataFile.Dependencies[destFile] = new DependencyCollection();
 
 			// Copy the dependency list.
 			foreach (Dependency dependency in dependencies)
@@ -2434,7 +2448,7 @@ namespace GorgonLibrary.Editor
 					newDependency.Properties[property.Name] = property;
 				}
 
-				Program.EditorMetaData.Dependencies[destFile][newDependency.Path, newDependency.Type] = newDependency;
+				EditorMetaDataFile.Dependencies[destFile][newDependency.Path, newDependency.Type] = newDependency;
 			}
 
 			if (!saveMetaData)
@@ -2442,7 +2456,7 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			Program.EditorMetaData.Save();
+			EditorMetaDataFile.Save();
 		}
 
 		/// <summary>
@@ -2828,9 +2842,7 @@ namespace GorgonLibrary.Editor
                 }
                 catch(Exception ex)
                 {
-                    GorgonException.Log = Program.LogFile;
-                    GorgonException.Catch(ex);
-                    GorgonException.Log = Gorgon.Log;
+	                EditorLogging.CatchException(ex);
                 }
             }
         }

@@ -76,7 +76,7 @@ namespace GorgonLibrary.Editor.Design
 		/// An <see cref="T:System.Object"/> representing the converted value.
 		/// </returns>
 		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="destinationtype"/> is null.</exception>
+		///   <paramref name="destinationType"/> is null.</exception>
 		///   
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed.</exception>
 		///   
@@ -85,10 +85,10 @@ namespace GorgonLibrary.Editor.Design
 		///   </PermissionSet>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if ((destinationType == null) || (!(value is Color)) || (destinationType != typeof(string)))
+			if ((!(value is Color)) || (destinationType != typeof(string)))
 				return base.ConvertTo(context, culture, value, destinationType);
 
-			return ((Color)value).A.ToString();
+			return ((Color)value).A.ToString(culture);
 		}
 		#endregion
 	}

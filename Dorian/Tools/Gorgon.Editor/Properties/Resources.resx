@@ -535,4 +535,28 @@ and double click on the plug-in item in the list.</value>
   <data name="PROP_TEXT_PREF_PANEL_DESC" xml:space="preserve">
     <value>Sets the text to display on the tab for the preference panel.</value>
   </data>
+  <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_open_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_open_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
+    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
+  </data>
+  <data name="GOREDIT_TEXT_FILE" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="GOREDIT_TEXT_NAME" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
 </root>

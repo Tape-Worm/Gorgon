@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor
 				|| (string.IsNullOrWhiteSpace(typeAttr.Value))
 			    || (string.IsNullOrWhiteSpace(pathNode.Value)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_DEPENDENCY_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, APIResources.GOREDIT_ERR_DEPENDENCY_CORRUPT);
 			}
 
 			var result = new Dependency(pathNode.Value, typeAttr.Value);
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			if (type == null)
@@ -163,7 +163,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(type))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
 			}
 
 			Path = name;

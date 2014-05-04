@@ -150,8 +150,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return the text caption for this control.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
-	    [LocalDescription(typeof(Resources), "PROP_TEXT_CONTENT_PANEL_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(APIResources), "PROP_TEXT_CONTENT_PANEL_DESC")]
 	    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 	    public new virtual string Text
 	    {
@@ -170,8 +170,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return whether the caption for the content panel is visible or not.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
-	    [LocalDescription(typeof(Resources), "PROP_TEXT_CAPTION_VISIBLE_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(APIResources), "PROP_TEXT_CAPTION_VISIBLE_DESC")]
 	    [DefaultValue(true)]
 	    public bool CaptionVisible
 	    {
@@ -196,7 +196,7 @@ namespace GorgonLibrary.Editor
         {
 	        if (_content == null)
 	        {
-				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Resources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
+				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
 		        return;
 	        }
 

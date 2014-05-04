@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
@@ -67,14 +68,17 @@ namespace GorgonLibrary.Editor.Design
 		{
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			ControlColorPicker colorPicker = null;
-			Color colorValue = Color.Empty;
+
+			Debug.Assert(value != null, "Value is NULL.");
 
 			try
 			{
-				colorPicker = new ControlColorPicker();
-				colorPicker.EditorService = editorSerivce;
-				colorPicker.AlphaOnly = true;
-				colorPicker.CurrentColor = (Color)value;
+				colorPicker = new ControlColorPicker
+				              {
+					              EditorService = editorSerivce,
+					              AlphaOnly = true,
+					              CurrentColor = (Color)value
+				              };
 				editorSerivce.DropDownControl(colorPicker);
 
 				return colorPicker.CurrentColor;
@@ -106,7 +110,7 @@ namespace GorgonLibrary.Editor.Design
 		{
 			base.PaintValue(e);
 
-			e.Graphics.DrawImage(Resources.PropertyChecker, e.Bounds);
+			e.Graphics.DrawImage(APIResources.PropertyChecker, e.Bounds);
 			using (Brush brush = new SolidBrush((Color)e.Value))
 				e.Graphics.FillRectangle(brush, e.Bounds);
 		}

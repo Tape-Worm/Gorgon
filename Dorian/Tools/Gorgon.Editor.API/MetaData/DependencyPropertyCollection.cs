@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor
 			{
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Resources.GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME);
+					throw new ArgumentException(APIResources.GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME);
 				}
 
 				if (Contains(name))
@@ -151,12 +151,12 @@ namespace GorgonLibrary.Editor
 		{
 			if (string.IsNullOrWhiteSpace(property.Name))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME);
+				throw new ArgumentException(APIResources.GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME);
 			}
 
 			if (Contains(property.Name))
 			{
-				throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_DEPENDENCY_PROP_EXISTS, property.Name));
+				throw new ArgumentException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_PROP_EXISTS, property.Name));
 			}
 
 			AddItem(property);
@@ -179,7 +179,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (!Contains(name))
 			{
-				throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST, name));
+				throw new KeyNotFoundException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST, name));
 			}
 
 			RemoveItem(name);
@@ -208,7 +208,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (!Contains(property))
 			{
-				throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST, property.Name));
+				throw new KeyNotFoundException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST, property.Name));
 			}
 
 			RemoveItem(property);

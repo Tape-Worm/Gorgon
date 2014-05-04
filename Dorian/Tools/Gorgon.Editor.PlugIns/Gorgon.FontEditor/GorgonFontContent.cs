@@ -110,23 +110,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private GorgonSwapChain _swap;						// Swap chain for our display.
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
         private readonly bool _createFont;                  // Flag to indicate that the font should be created after initialization.
-	    private IImageEditorPlugIn _imageEditor;			// Global image editor plug-in.
 	    private GorgonTexture2D _badGlyphTexture;			// Texture used as a stand-in when a glyph is missing its texture.
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the image editor plug-in.
-		/// </summary>
-		[Browsable(false)]
-	    public IImageEditorPlugIn ImageEditor
-		{
-			get
-			{
-				return _imageEditor ?? (_imageEditor = GetRegisteredImageEditor());
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the active state for the editor.
 		/// </summary>

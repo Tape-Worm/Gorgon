@@ -123,7 +123,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void GetFileData()
 		{
-			ExpandedImage = Resources.unknown_document_16x16;
+			ExpandedImage = APIResources.unknown_document_16x16;
 			CollapsedImage = ExpandedImage;
 			PlugIn = null;
 
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Editor
 			GetFileData();
 
 			// We have dependencies, so update.
-			if (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath))
+			if (EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath))
 			{
 				Nodes.Add(new TreeNode("DummyNode"));
 			}

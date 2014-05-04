@@ -236,10 +236,10 @@ namespace GorgonLibrary.Editor
 				             CaptionVisible = false
 			             };
 
-			_2D = Program.Graphics.Output.Create2DRenderer(_container.PanelDisplay);
+			_2D = Graphics.Output.Create2DRenderer(_container.PanelDisplay);
 
 			// Create the logo for display.
-			_logo = Program.Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());
+			_logo = Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());
 
 			var textureCoordinates = new RectangleF(Vector2.Zero, _logo.ToTexel(new Vector2(_logo.Settings.Width, _logo.Settings.Height / 3)));
 

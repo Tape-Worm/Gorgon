@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor
@@ -52,15 +51,6 @@ namespace GorgonLibrary.Editor
 		: GorgonPlugIn
     {
         #region Properties.
-        /// <summary>
-        /// Property to return the graphics interface for the application.
-        /// </summary>
-        public GorgonGraphics Graphics
-        {
-            get;
-            internal set;
-        }
-
 		/// <summary>
 		/// Property to return the type of plug-in.
 		/// </summary>
@@ -69,15 +59,6 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 		}
-
-        /// <summary>
-        /// Property to return the settings used by the editor.
-        /// </summary>
-	    public static GorgonEditorSettings EditorSettings
-	    {
-	        get;
-	        internal set;
-	    }
 		#endregion
 
 		#region Methods.

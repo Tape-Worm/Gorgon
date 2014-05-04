@@ -27,13 +27,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
 using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
@@ -87,31 +85,6 @@ namespace GorgonLibrary.Editor
 	    }
 
         /// <summary>
-        /// Function to initialize the log file.
-        /// </summary>
-	    private void InitializeLogFile()
-	    {
-            _splash.UpdateVersion("Creating logger...");
-            Program.LogFile = new GorgonLogFile("Gorgon.Editor", "Tape_Worm");
-            try
-            {
-                Program.LogFile.Open();
-            }
-#if DEBUG
-			catch (Exception ex)
-            {
-                // If we can't open the log file in debug mode, let us know about it.
-                GorgonDialogs.ErrorBox(null, ex);
-			}
-#else
-			catch
-			{
-				// Purposely left empty.  We don't care about the log file in release mode.
-			}
-#endif
-		}
-
-        /// <summary>
         /// Function to initialize the graphics interface.
         /// </summary>
 	    private void InitializeGraphics()
@@ -132,7 +105,7 @@ namespace GorgonLibrary.Editor
                               select device).First();
             }
 
-            Program.Graphics = new GorgonGraphics(bestDevice);
+	        ContentObject.Graphics = new GorgonGraphics(bestDevice);
 	    }
 
         /// <summary>
@@ -140,12 +113,10 @@ namespace GorgonLibrary.Editor
         /// </summary>
 	    private void InitializePlugIns()
         {
-            EditorPlugIn.EditorSettings = Program.Settings;
-
             PlugIns.PlugInPath = Program.Settings.PlugInDirectory;
             PlugIns.UserDisabledPlugIns = Program.Settings.DisabledPlugIns.ToArray();
 
-            Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
+            EditorLogging.Print("Loading plug-ins...", LoggingLevel.Verbose);
             _splash.UpdateVersion(Resources.GOREDIT_TEXT_LOADING_PLUGINS);
 
             PlugIns.LoadPlugIns(UpdateSplashPlugInText);
@@ -158,7 +129,7 @@ namespace GorgonLibrary.Editor
         {
             ScratchArea.ScratchPath = Program.Settings.ScratchPath;
 
-            Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, ScratchArea.ScratchPath);
+			EditorLogging.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, ScratchArea.ScratchPath);
 
             _splash.UpdateVersion(Resources.GOREDIT_TEXT_CREATING_SCRATCH);
 
@@ -178,7 +149,7 @@ namespace GorgonLibrary.Editor
             // Ensure we can actually access the scratch area.
             while (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) != ScratchAccessibility.Accessible)
             {
-                Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+                EditorLogging.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
 
                 if (ScratchArea.SetScratchLocation() == ScratchAccessibility.Canceled)
                 {
@@ -188,7 +159,7 @@ namespace GorgonLibrary.Editor
                     return;
                 }
 
-                Program.LogFile.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+                EditorLogging.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
 
                 // Update with the new scratch path.
                 Program.Settings.Save();
@@ -289,7 +260,7 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				ContentManagement.ContentMetaData = Program.EditorMetaData;
+				ContentManagement.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
 
 				_splash = new FormSplash();
 				MainForm = new formMain();
@@ -300,7 +271,8 @@ namespace GorgonLibrary.Editor
                 // Fade in our splash screen.
 				FadeSplashScreen(true, 500.0f);
 
-                InitializeLogFile();
+				EditorLogging.Open();
+
                 InitializeGraphics();
                 InitializePlugIns();
                 InitializeScratchArea();

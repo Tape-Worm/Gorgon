@@ -119,34 +119,34 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="back_16x16png" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\back_16x16png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\back_16x16png1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\cancel_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Check_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Check_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Enabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\choose_view_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\choose_view_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Expando" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Expando.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\Expando1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\find_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\folder_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="folder_open_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\folder_open_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\folder_open_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="forward_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\forward_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Resources\forward_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_CANCEL" xml:space="preserve">
     <value>&amp;Cancel</value>
@@ -186,8 +186,11 @@ Error: {1}
   <data name="GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
     <value>There was an error loading dependency '{0}'.  The content requires this dependency and cannot be loaded without it.\nError: {1}</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
-    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT" xml:space="preserve">
+    <value>The default content type '{0}' is not a content object.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN" xml:space="preserve">
+    <value>The default content type is not known.</value>
   </data>
   <data name="GOREDIT_ERR_DEPENDENCY_CORRUPT" xml:space="preserve">
     <value>Unable to read the dependency. It has been corrupted.</value>
@@ -335,49 +338,40 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_UNKNOWN_FILE" xml:space="preserve">
     <value>Unknown file</value>
   </data>
-  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
-    <value>Untitled</value>
-  </data>
-  <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_missing_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\image_missing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\linked_file_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\project_node_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="PropertyChecker" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PropertyChecker.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="tree_collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tree_collapse_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tree_expand_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\unknown_document_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
     <value>Unknown plug-in type.</value>
   </data>
-  <data name="GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT" xml:space="preserve">
-    <value>The default content type '{0}' is not a content object.</value>
+  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
+    <value>Untitled</value>
   </data>
-  <data name="GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN" xml:space="preserve">
-    <value>The default content type is not known.</value>
+  <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_128x1281.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\linked_file_8x81.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ok_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\project_node_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PropertyChecker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PropertyChecker1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tree_collapse_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tree_expand_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unknown_document_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\up_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

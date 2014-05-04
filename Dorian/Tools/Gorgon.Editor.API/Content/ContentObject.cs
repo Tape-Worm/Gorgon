@@ -137,6 +137,27 @@ namespace GorgonLibrary.Editor
 		    private set;
 	    }
 
+		/// <summary>
+		/// Property to return the default registered image editor.
+		/// </summary>
+		/// <remarks>Use this to load in image data for textures.</remarks>
+		[Browsable(false)]
+	    public IImageEditorPlugIn ImageEditor
+	    {
+		    get;
+		    private set;
+	    }
+
+		/// <summary>
+		/// Property to return the graphics interface for the application.
+		/// </summary>
+		[Browsable(false)]
+		public static GorgonGraphics Graphics
+		{
+			get;
+			internal set;
+		}
+
         /// <summary>
         /// Property to return the plug-in that can create this content.
         /// </summary>
@@ -178,18 +199,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the graphics interface for the application.
-		/// </summary>
-        [Browsable(false)]
-		public GorgonGraphics Graphics
-		{
-			get
-			{
-				return Program.Graphics;
-			}
-		}
-
-		/// <summary>
 		/// Property to return whether the content object supports a renderer interface.
 		/// </summary>
         [Browsable(false)]
@@ -212,9 +221,9 @@ namespace GorgonLibrary.Editor
 		/// Property to return the name of the content object.
 		/// </summary>
         [Browsable(true),
-		LocalDisplayName(typeof(Resources), "GOREDIT_TEXT_NAME"),
-		LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), 
-		LocalDescription(typeof(Resources), "PROP_NAME_DESC")]
+		LocalDisplayName(typeof(APIResources), "GOREDIT_TEXT_NAME"),
+		LocalCategory(typeof(APIResources), "PROP_CATEGORY_DESIGN"), 
+		LocalDescription(typeof(APIResources), "PROP_NAME_DESC")]
 		public string Name
 		{
 			get
@@ -295,37 +304,6 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-		/// Function to retrieve the registered image editor for the system.
-		/// </summary>
-		/// <returns>The registered image editor plug-in, or NULL (Nothing in VB.Net) if not found.</returns>
-	    protected IImageEditorPlugIn GetRegisteredImageEditor()
-		{
-            ContentPlugIn plugIn;
-
-            // Use the first image editor if we haven't selected one.
-            if (string.IsNullOrWhiteSpace(Program.Settings.DefaultImageEditor))
-            {
-                // Find the first image editor plug-in.
-                plugIn = PlugIns.ContentPlugIns.FirstOrDefault(item => item.Value is IImageEditorPlugIn).Value;
-
-                if (plugIn == null)
-                {
-                    return null;
-                }
-
-                Program.Settings.DefaultImageEditor = plugIn.Name;
-                return (IImageEditorPlugIn)plugIn;
-            }
-
-            if (!PlugIns.ContentPlugIns.TryGetValue(Program.Settings.DefaultImageEditor, out plugIn))
-            {
-                return null;
-            }
-
-            return plugIn as IImageEditorPlugIn;
-		}
-
-        /// <summary>
         /// Function called after the content data has been updated.
         /// </summary>
         protected virtual void OnContentUpdated()
@@ -376,7 +354,7 @@ namespace GorgonLibrary.Editor
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
+                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
             }
 
             if (ContentPropertyChanged != null)
@@ -397,6 +375,36 @@ namespace GorgonLibrary.Editor
         protected internal virtual void OnEditorSettingsUpdated()
         {
         }
+
+		/// <summary>
+		/// Function to retrieve the registered image editor for the system.
+		/// </summary>
+		/// <param name="defaultEditor">The name of the default image editor.</param>
+		internal void GetRegisteredImageEditor(string defaultEditor)
+		{
+			ContentPlugIn plugIn;
+
+			// Use the first image editor if we haven't selected one.
+			if (string.IsNullOrWhiteSpace(defaultEditor))
+			{
+				// Find the first image editor plug-in.
+				plugIn = PlugIns.ContentPlugIns.FirstOrDefault(item => item.Value is IImageEditorPlugIn).Value;
+
+				if (plugIn == null)
+				{
+					return;
+				}
+				
+				ImageEditor = (IImageEditorPlugIn)plugIn;
+			}
+
+			if (!PlugIns.ContentPlugIns.TryGetValue(defaultEditor, out plugIn))
+			{
+				return;
+			}
+
+			ImageEditor = plugIn as IImageEditorPlugIn;
+		}
 
         /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
@@ -424,12 +432,12 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanRead)
 			{
-				throw new IOException(Resources.GOREDIT_ERR_STREAM_WRITE_ONLY);
+				throw new IOException(APIResources.GOREDIT_ERR_STREAM_WRITE_ONLY);
 			}
 
 			if (stream.Position >= stream.Length)
 			{
-				throw new EndOfStreamException(Resources.GOREDIT_ERR_STREAM_EOS);
+				throw new EndOfStreamException(APIResources.GOREDIT_ERR_STREAM_EOS);
 			}
 
 			return OnLoadDependencyFile(dependency, stream);
@@ -448,12 +456,12 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanRead)
 			{
-				throw new IOException(Resources.GOREDIT_ERR_STREAM_WRITE_ONLY);
+				throw new IOException(APIResources.GOREDIT_ERR_STREAM_WRITE_ONLY);
 			}
 
 			if (stream.Position >= stream.Length)
 			{
-				throw new EndOfStreamException(Resources.GOREDIT_ERR_STREAM_EOS);
+				throw new EndOfStreamException(APIResources.GOREDIT_ERR_STREAM_EOS);
 			}
 
 			OnRead(stream);
@@ -481,7 +489,7 @@ namespace GorgonLibrary.Editor
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException(Resources.GOREDIT_ERR_STREAM_READ_ONLY);
+				throw new IOException(APIResources.GOREDIT_ERR_STREAM_READ_ONLY);
 			}
 
 			OnPersist(stream);
@@ -508,7 +516,7 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace("propertyName"))
             {
-                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             return TypeDescriptor.Contains(propertyName);
@@ -531,12 +539,12 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace("propertyName"))
             {
-                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
+                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
             }
 
             if (!TypeDescriptor.Contains(propertyName))
             {
-                throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_PROPERTY_NOT_FOUND, propertyName));
+                throw new KeyNotFoundException(string.Format(APIResources.GOREDIT_ERR_PROPERTY_NOT_FOUND, propertyName));
             }
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;

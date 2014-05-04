@@ -80,6 +80,9 @@
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\TreeNodeDependency.cs" />
+    <Compile Include="Controls\TreeNodeDirectory.cs" />
+    <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="IO\FileManagement.cs" />
     <Compile Include="IO\ScratchArea.cs" />
     <Compile Include="Logging\EditorLogging.cs" />
@@ -108,9 +111,6 @@
     <Compile Include="Controls\PreferencePanel.Designer.cs">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TreeNodeDependency.cs" />
-    <Compile Include="Controls\TreeNodeDirectory.cs" />
-    <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="Forms\formProcess.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +121,11 @@
     <Compile Include="PlugIn\ContentPlugIn.cs" />
     <Compile Include="PlugIn\DisabledPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugIn.cs" />
+    <Compile Include="Properties\APIResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>APIResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings\EditorPlugInSettings.cs" />
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
     <Compile Include="PlugIn\IImageEditorContent.cs" />
@@ -128,39 +133,37 @@
     <Compile Include="Settings\IPlugInSettings.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Settings\GorgonEditorSettings.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\up_16x16.png" />
-    <None Include="Resources\forward_16x16.png" />
-    <None Include="Resources\folder_open_16x16.png" />
-    <None Include="Resources\folder_16x16.png" />
-    <None Include="Resources\find_16x16.png" />
-    <None Include="Resources\Expando.png" />
-    <None Include="Resources\choose_view_16x16.png" />
-    <None Include="Resources\Check_Enabled.png" />
-    <None Include="Resources\Check_Disabled.png" />
-    <None Include="Resources\back_16x16png.png" />
-    <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
-    <None Include="Resources\image_missing_16x16.png" />
-    <None Include="Resources\image_missing_128x128.png" />
-    <None Include="Resources\linked_file_8x8.png" />
-    <None Include="Resources\ok_16x16.png" />
-    <None Include="Resources\cancel_16x16.png" />
-    <None Include="Resources\project_node_16x16.png" />
-    <None Include="Resources\PropertyChecker.png" />
-    <None Include="Resources\tree_expand_16x16.png" />
-    <None Include="Resources\tree_collapse_16x16.png" />
-    <None Include="Resources\unknown_document_16x16.png" />
+    <None Include="Resources\up_16x161.png" />
+    <None Include="Resources\unknown_document_16x161.png" />
+    <None Include="Resources\tree_expand_16x161.png" />
+    <None Include="Resources\tree_collapse_16x161.png" />
+    <None Include="Resources\PropertyChecker1.png" />
+    <None Include="Resources\project_node_16x161.png" />
+    <None Include="Resources\ok_16x161.png" />
+    <None Include="Resources\linked_file_8x81.png" />
+    <None Include="Resources\image_missing_16x161.png" />
+    <None Include="Resources\image_missing_128x1281.png" />
+    <None Include="Resources\forward_16x161.png" />
+    <None Include="Resources\folder_open_16x161.png" />
+    <None Include="Resources\folder_16x161.png" />
+    <None Include="Resources\find_16x161.png" />
+    <None Include="Resources\Expando1.png" />
+    <None Include="Resources\choose_view_16x161.png" />
+    <None Include="Resources\Check_Enabled1.png" />
+    <None Include="Resources\Check_Disabled1.png" />
+    <None Include="Resources\cancel_16x161.png" />
+    <None Include="Resources\back_16x16png1.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\APIResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>APIResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\ControlColorPicker.resx">
       <DependentUpon>ControlColorPicker.cs</DependentUpon>
     </EmbeddedResource>
@@ -178,10 +181,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\formProcess.resx">
       <DependentUpon>formProcess.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
