@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -59,16 +59,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\comboPatterns.cs">
+    <Compile Include="Controls\ComboPatterns.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\comboFonts.cs">
+    <Compile Include="Controls\ComboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\listBoxFont.cs">
+    <Compile Include="Controls\ListBoxFont.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\listBoxFontStyle.cs">
+    <Compile Include="Controls\ListBoxFontStyle.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\PanelFontPreferences.cs">
@@ -77,23 +77,23 @@
     <Compile Include="Controls\PanelFontPreferences.Designer.cs">
       <DependentUpon>PanelFontPreferences.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\panelGradient.cs">
+    <Compile Include="Controls\PanelGradient.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\panelGradient.Designer.cs">
-      <DependentUpon>panelGradient.cs</DependentUpon>
+    <Compile Include="Controls\PanelGradient.Designer.cs">
+      <DependentUpon>PanelGradient.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\panelHatch.cs">
+    <Compile Include="Controls\PanelHatch.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\panelHatch.Designer.cs">
-      <DependentUpon>panelHatch.cs</DependentUpon>
+    <Compile Include="Controls\PanelHatch.Designer.cs">
+      <DependentUpon>PanelHatch.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\panelTexture.cs">
+    <Compile Include="Controls\PanelTexture.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\panelTexture.Designer.cs">
-      <DependentUpon>panelTexture.cs</DependentUpon>
+    <Compile Include="Controls\PanelTexture.Designer.cs">
+      <DependentUpon>PanelTexture.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\WrapModeComboItem.cs" />
     <Compile Include="Design\CharacterSetEditor.cs" />
@@ -207,14 +207,14 @@
     <EmbeddedResource Include="Controls\PanelFontPreferences.resx">
       <DependentUpon>PanelFontPreferences.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\panelGradient.resx">
-      <DependentUpon>panelGradient.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\PanelGradient.resx">
+      <DependentUpon>PanelGradient.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\panelHatch.resx">
-      <DependentUpon>panelHatch.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\PanelHatch.resx">
+      <DependentUpon>PanelHatch.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\panelTexture.resx">
-      <DependentUpon>panelTexture.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\PanelTexture.resx">
+      <DependentUpon>PanelTexture.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormBrushEditor.resx">
       <DependentUpon>FormBrushEditor.cs</DependentUpon>
