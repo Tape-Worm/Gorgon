@@ -81,7 +81,7 @@
     <Compile Include="Controls\ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\EditorFileBrowser.cs">
+    <Compile Include="Controls\EditorFileDialog.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EditorTreeNode.cs" />
