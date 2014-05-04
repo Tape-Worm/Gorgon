@@ -45,7 +45,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
 			this.panelTextureDisplay = new System.Windows.Forms.Panel();
 			this.PanelDisplay.SuspendLayout();
 			this.SuspendLayout();
@@ -84,7 +84,7 @@
 
         #endregion
 
-		private EditorFileBrowser imageFileBrowser;
+		private EditorFileDialog imageFileBrowser;
 		internal System.Windows.Forms.Panel panelTextureDisplay;
 
     }

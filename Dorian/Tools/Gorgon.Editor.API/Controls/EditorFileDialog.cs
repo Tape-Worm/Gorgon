@@ -50,7 +50,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A file browser interface to allow the selection of files inside of the currently open file system.
 	/// </summary>
-	public class EditorFileBrowser
+	public class EditorFileDialog
 		: Component
 	{
 		#region Variables.
@@ -209,9 +209,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorFileBrowser"/> class.
+		/// Initializes a new instance of the <see cref="EditorFileDialog"/> class.
 		/// </summary>
-		public EditorFileBrowser()
+		public EditorFileDialog()
 		{
 			FileExtensions = new GorgonFileExtensionCollection();
 			Text = APIResources.GOREDIT_TEXT_SELECT_FILE;

@@ -43,7 +43,7 @@
             this.labelTexLeft = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.numericHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericY)).BeginInit();
@@ -301,7 +301,7 @@
 		private System.Windows.Forms.Label labelTexWidth;
 		private System.Windows.Forms.Label labelTexTop;
 		private System.Windows.Forms.Label labelTexLeft;
-		private EditorFileBrowser imageFileBrowser;
+		private EditorFileDialog imageFileBrowser;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panel2;
 	}

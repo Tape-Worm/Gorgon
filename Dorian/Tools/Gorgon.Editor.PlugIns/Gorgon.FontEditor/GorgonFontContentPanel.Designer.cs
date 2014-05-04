@@ -168,7 +168,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelTextVertScroll = new System.Windows.Forms.Panel();
             this.scrollTextVertical = new System.Windows.Forms.VScrollBar();
-            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
             this.tipButtons = new System.Windows.Forms.ToolTip(this.components);
             this.PanelDisplay.SuspendLayout();
             this.panelGlyphEdit.SuspendLayout();
@@ -1486,7 +1486,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripLabel labelPreviewText;
 		private System.Windows.Forms.ToolStripTextBox textPreviewText;
-		private EditorFileBrowser imageFileBrowser;
+		private EditorFileDialog imageFileBrowser;
 		private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
 		private System.Windows.Forms.ToolStripMenuItem menuItem1600;
 		private System.Windows.Forms.ToolStripMenuItem menuItem800;
