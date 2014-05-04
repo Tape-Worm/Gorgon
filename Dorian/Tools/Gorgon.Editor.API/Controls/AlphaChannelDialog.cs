@@ -32,9 +32,9 @@ using GorgonLibrary.UI;
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A form to handle picking an alpha value for a color.
+	/// A dialog to handle picking an alpha value for a color.
 	/// </summary>
-	public partial class AlphaPicker
+	public partial class AlphaChannelDialog
 		: ZuneForm
 	{
 		#region Properties.
@@ -118,9 +118,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="AlphaPicker"/> class.
+		/// Initializes a new instance of the <see cref="AlphaChannelDialog"/> class.
 		/// </summary>
-		public AlphaPicker()
+		public AlphaChannelDialog()
 		{
 			InitializeComponent();
 		}

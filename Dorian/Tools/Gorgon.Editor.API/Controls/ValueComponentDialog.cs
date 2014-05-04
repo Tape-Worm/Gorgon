@@ -34,7 +34,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Editor dialog for editing vector/point values.
 	/// </summary>
-	public partial class ValueComponentEditor 
+	public partial class ValueComponentDialog 
 		: ZuneForm
 	{
 		#region Variables.
@@ -238,9 +238,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ValueComponentEditor"/> class.
+		/// Initializes a new instance of the <see cref="ValueComponentDialog"/> class.
 		/// </summary>
-		public ValueComponentEditor()
+		public ValueComponentDialog()
 		{
 			InitializeComponent();
 		}

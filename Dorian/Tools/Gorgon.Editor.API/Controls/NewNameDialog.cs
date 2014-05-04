@@ -33,7 +33,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Form to allow entry of a new name for an object.
 	/// </summary>
-	public partial class NewNameEditor 
+	public partial class NewNameDialog 
 		: ZuneForm
 	{
 		#region Methods.
@@ -81,9 +81,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NewNameEditor"/> class.
+		/// Initializes a new instance of the <see cref="NewNameDialog"/> class.
 		/// </summary>
-		public NewNameEditor()
+		public NewNameDialog()
 		{
 			InitializeComponent();
 		}
