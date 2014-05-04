@@ -33,7 +33,7 @@ namespace GorgonLibrary.Editor
     /// <summary>
     /// A dialog for selecting a color.
     /// </summary>
-    partial class formColorDialog 
+    public partial class ColorDialog 
         : ZuneForm
     {
         #region Variables.
@@ -51,24 +51,11 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-
-        }
-        #endregion
-
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="formColorDialog"/> class.
+        /// Initializes a new instance of the <see cref="ColorDialog"/> class.
         /// </summary>
-        public formColorDialog()
+        public ColorDialog()
         {
             InitializeComponent();
         }

@@ -41,7 +41,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     /// <summary>
     /// An editor that will create a brush for a font.
     /// </summary>
-    partial class formBrushEditor 
+    partial class FormBrushEditor 
         : ZuneForm
 	{
 		#region Classes.
@@ -481,18 +481,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Constructor/Destructor.
 	    /// <summary>
-	    /// Initializes a new instance of the <see cref="formBrushEditor"/> class.
+	    /// Initializes a new instance of the <see cref="FormBrushEditor"/> class.
 	    /// </summary>
-	    public formBrushEditor()
+	    public FormBrushEditor()
 	    {
 		    InitializeComponent();
 	    }
 
 	    /// <summary>
-        /// Initializes a new instance of the <see cref="formBrushEditor"/> class.
+        /// Initializes a new instance of the <see cref="FormBrushEditor"/> class.
         /// </summary>
         /// <param name="fontContent">The current font content interface.</param>
-        public formBrushEditor(GorgonFontContent fontContent)
+        public FormBrushEditor(GorgonFontContent fontContent)
 			: this()
 	    {
 		    _currentContent = fontContent;

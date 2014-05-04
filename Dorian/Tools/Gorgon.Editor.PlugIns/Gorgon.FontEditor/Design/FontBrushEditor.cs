@@ -89,7 +89,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			var descriptor = (ContentTypeDescriptor)context.Instance;
             var document = (GorgonFontContent)descriptor.Content;
-		    formBrushEditor brushEditor = null;
+		    FormBrushEditor brushEditor = null;
 
 	        try
 	        {
@@ -105,7 +105,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			        }
 		        }
 
-		        brushEditor = new formBrushEditor(document)
+		        brushEditor = new FormBrushEditor(document)
 				              {
 					              BrushType = document.Brush.BrushType
 				              };
