@@ -1165,8 +1165,10 @@ namespace GorgonLibrary.Graphics
 				// Copy the custom kern settings.
 				foreach (var customKern in Settings.KerningPairs)
 				{
-					if ((!allowedCharacters.Contains(customKern.Key.LeftCharacter)) ||
-						(!allowedCharacters.Contains(customKern.Key.RightCharacter)))
+					if (((!allowedCharacters.Contains(customKern.Key.LeftCharacter))
+					     && (Settings.Glyphs.All(item => item.Character != customKern.Key.LeftCharacter)))
+					    || ((!allowedCharacters.Contains(customKern.Key.RightCharacter))
+					        && (Settings.Glyphs.All(item => item.Character != customKern.Key.RightCharacter))))
 					{
 						continue;
 					}

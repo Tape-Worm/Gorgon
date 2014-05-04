@@ -967,11 +967,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					return;
 				}
 
+				// If we have a custom advance for this glyph, then remove it.
+				if (_content.Font.Settings.Advances.ContainsKey(_newGlyph.Character))
+				{
+					_content.Font.Settings.Advances.Remove(_newGlyph.Character);
+				}
+
 				_newGlyph = new GorgonGlyph(_newGlyph.Character,
 				                            _newGlyph.Texture,
 				                            Rectangle.Truncate(_glyphClipper.ClipRegion),
 				                            _newGlyph.Offset,
-                                            (int)_glyphClipper.ClipRegion.Width);
+											(int)_glyphClipper.ClipRegion.Width);
 
 				// If we've customized this glyph before, remove it from the customization list.
 				GorgonGlyph existingCustomGlyph =
@@ -1873,11 +1879,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            buttonGlyphKern.Checked = _content.CurrentState == DrawState.KernPair && buttonGlyphKern.Enabled &&
 	                                      buttonGlyphKern.Visible;
 
+				// Disable the reset buttons when we don't have a change, and also when we're using custom glyph textures.
+				// This is done because the custom glyph does not have a source value to use when determining offset/advancement.
 	            buttonResetGlyphAdvance.Enabled = numericGlyphAdvance.Enabled && _selectedGlyph != null &&
-	                                              _content.Font.Settings.Advances.ContainsKey(_selectedGlyph.Character);
+	                                              _content.Font.Settings.Advances.ContainsKey(_selectedGlyph.Character)
+												  && !_content.Font.Settings.Glyphs.Contains(_selectedGlyph);
 
 				buttonResetGlyphOffset.Enabled = numericGlyphAdvance.Enabled && _selectedGlyph != null &&
-												  _content.Font.Settings.Offsets.ContainsKey(_selectedGlyph.Character);
+												  _content.Font.Settings.Offsets.ContainsKey(_selectedGlyph.Character)
+												  && !_content.Font.Settings.Glyphs.Contains(_selectedGlyph);
 
 
 	            if (buttonGlyphTools.Visible)
@@ -3404,6 +3414,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				_content.Font.Settings.Offsets.Remove(_selectedGlyph.Character);
 				_content.UpdateFontGlyphOffset(Point.Empty, true);
+				_text.Font = _content.Font;
 				_text.Refresh();
 			}
 			catch (Exception ex)

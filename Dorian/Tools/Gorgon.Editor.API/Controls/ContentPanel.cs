@@ -130,19 +130,16 @@ namespace GorgonLibrary.Editor
             }
             set
             {
-				if (_content != null)
-				{
-					_content.ContentPropertyChanged -= _content_ContentPropertyChanged;
-				}
-
                 _content = value;
 
-				if (_content != null)
-				{
-					_content.ContentPropertyChanged += _content_ContentPropertyChanged;
-				}
-
-                RefreshContent();
+	            if (_content != null)
+	            {
+		            RefreshContent();
+	            }
+	            else
+	            {
+		            UpdateCaption();
+	            }
             }
 		}
 
@@ -257,22 +254,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function called when a property is changed on the related content for this panel.
-		/// </summary>
-		/// <param name="sender">Content that sent the event</param>
-		/// <param name="e">Event parameters.</param>
-		private void _content_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
-		{
-            // Don't call the event when we're just repainting the property panel.
-		    if (e.Repaint)
-		    {
-		        return;
-		    }
-
-			OnContentPropertyChanged(e.PropertyName, e.Value);
-		}
-
-		/// <summary>
 		/// Function to perform localization on the control text properties.
 		/// </summary>
 		protected virtual void LocalizeControls()
@@ -359,8 +340,6 @@ namespace GorgonLibrary.Editor
 			UpdateCaption();
 		}
 
-
-
         /// <summary>
         /// Function called when the settings for the editor or content plug-in have changed.
         /// </summary>
@@ -405,7 +384,13 @@ namespace GorgonLibrary.Editor
 		public ContentPanel(ContentObject content, GorgonInputFactory input = null)
 			: this()
 		{
-			Content = content;
+			if (content == null)
+			{
+				throw new ArgumentNullException("content");
+			}
+
+			_content = content;
+			UpdateCaption();
 		    RawInput = input;
 		}
 		#endregion
