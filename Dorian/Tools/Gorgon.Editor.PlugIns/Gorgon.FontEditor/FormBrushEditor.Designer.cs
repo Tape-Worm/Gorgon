@@ -49,7 +49,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             this.panel2 = new System.Windows.Forms.Panel();
             this.comboBrushType = new System.Windows.Forms.ComboBox();
             this.labelBrushType = new System.Windows.Forms.Label();
-            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
+            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
             this.tabBrushEditor.SuspendLayout();
             this.pageTexture.SuspendLayout();
             this.pageSolid.SuspendLayout();
@@ -335,7 +335,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private System.Windows.Forms.ComboBox comboBrushType;
         private System.Windows.Forms.Label labelBrushType;
         private Fetze.WinFormsColor.ColorPickerPanel colorSolidBrush;
-		private EditorFileBrowser imageFileBrowser;
+		private EditorFileDialog imageFileBrowser;
 		private System.Windows.Forms.Label labelInfo;
 		private KRBTabControl.TabPageEx pageGradient;
 		private Controls.PanelGradient panelGradEditor;
