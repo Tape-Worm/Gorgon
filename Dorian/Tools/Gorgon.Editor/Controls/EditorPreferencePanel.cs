@@ -176,8 +176,15 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonScratch_Click(object sender, EventArgs e)
         {
-	        if (ScratchArea.SetScratchLocation() != ScratchAccessibility.Accessible)
+	        ScratchAccessibility result = ScratchArea.SetScratchLocation();
+
+	        if (result != ScratchAccessibility.Accessible)
 	        {
+		        if (result == ScratchAccessibility.SystemArea)
+		        {
+					GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_CANNOT_USESYS_SCRATCH);
+		        }
+
 		        return;
 	        }
 

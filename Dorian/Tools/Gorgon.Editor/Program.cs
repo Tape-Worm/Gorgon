@@ -25,9 +25,8 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -39,27 +38,9 @@ namespace GorgonLibrary.Editor
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the logging interface for the application.
-		/// </summary>
-		public static GorgonLogFile LogFile
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
 		public static GorgonEditorSettings Settings
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the graphics interface.
-		/// </summary>
-		public static GorgonGraphics Graphics
 		{
 			get;
 			set;
@@ -89,23 +70,8 @@ namespace GorgonLibrary.Editor
 
 				Settings.Load();
 
-				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) =>
-				                                  {
-					                                  var assemblies = appDomain.GetAssemblies();
-
-					                                  // ReSharper disable once LoopCanBeConvertedToQuery
-					                                  // ReSharper disable once ForCanBeConvertedToForeach
-					                                  for (int i = 0; i < assemblies.Length; i++)
-					                                  {
-						                                  var assembly = assemblies[i];
-
-						                                  if (assembly.FullName == e.Name)
-						                                  {
-							                                  return assembly;
-						                                  }
-					                                  }
-					                                  return null;
-				                                  };
+				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
+				                                                             .FirstOrDefault(assembly => assembly.FullName == e.Name);
 
 				Gorgon.Run(new AppContext());
 			}
@@ -131,10 +97,10 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Shut down the graphics interface.
-				if (Graphics != null)
+				if (ContentObject.Graphics != null)
 				{
-					Graphics.Dispose();
-					Graphics = null;
+					ContentObject.Graphics.Dispose();
+					ContentObject.Graphics = null;
 				}
 
 				// Clean up temporary files in scratch area.
@@ -143,11 +109,7 @@ namespace GorgonLibrary.Editor
 					ScratchArea.DestroyScratchArea();
 				}
 
-				// Close the logging file.
-				if (LogFile != null)
-				{
-					LogFile.Close();
-				}
+				EditorLogging.Close();
 			}
 		}
 	}

@@ -71,7 +71,7 @@ namespace GorgonLibrary.Editor
 			/// <summary>
 			/// Property to set or return the text for the textbox cue.
 			/// </summary>
-			[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_CUETEXT_DESC")]
+			[Browsable(true), LocalCategory(typeof(APIResources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(APIResources), "PROP_CUETEXT_DESC")]
 			public string CueText
 			{
 				get
@@ -648,7 +648,7 @@ namespace GorgonLibrary.Editor
 	        if (listFiles.Items.Count == 0)
 	        {
 		        labelNoFilesFound.Visible = true;
-		        labelNoFilesFound.Text = string.Format(Resources.GOREDIT_TEXT_SEARCH_NO_FILES, textSearch.Text);
+		        labelNoFilesFound.Text = string.Format(APIResources.GOREDIT_TEXT_SEARCH_NO_FILES, textSearch.Text);
 		        labelNoFilesFound.BringToFront();
 	        }
 	        else
@@ -1186,20 +1186,20 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void LocalizeStrings()
 		{
-			textSearch.CueText = Resources.GOREDIT_TEXT_SEARCH;
-			label1.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_FILE);
-			itemViewDetails.Text = Resources.GOREDIT_TEXT_DETAIL_VIEW;
-			itemViewLarge.Text = Resources.GOREDIT_TEXT_THUMBNAIL_VIEW;
-			columnFileName.Text = Resources.GOREDIT_TEXT_NAME;
-			columnDate.Text = Resources.GOREDIT_TEXT_DATE;
-			columnSize.Text = Resources.GOREDIT_TEXT_SIZE;
-			buttonView.Text = Resources.GOREDIT_TEXT_CHANGEVIEW;
-			buttonGoUp.Text = Resources.GOREDIT_TEXT_GO_UP_TO_PARENT;
-			buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
-			buttonBack.Text = Resources.GOREDIT_TEXT_BACK;
-			buttonForward.Text = Resources.GOREDIT_TEXT_GO_FORWARD;
-			buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
-			labelSearchBanner.Text = Resources.GOREDIT_TEXT_SEARCH_RESULTS;
+			textSearch.CueText = APIResources.GOREDIT_TEXT_SEARCH;
+			label1.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_FILE);
+			itemViewDetails.Text = APIResources.GOREDIT_TEXT_DETAIL_VIEW;
+			itemViewLarge.Text = APIResources.GOREDIT_TEXT_THUMBNAIL_VIEW;
+			columnFileName.Text = APIResources.GOREDIT_TEXT_NAME;
+			columnDate.Text = APIResources.GOREDIT_TEXT_DATE;
+			columnSize.Text = APIResources.GOREDIT_TEXT_SIZE;
+			buttonView.Text = APIResources.GOREDIT_TEXT_CHANGEVIEW;
+			buttonGoUp.Text = APIResources.GOREDIT_TEXT_GO_UP_TO_PARENT;
+			buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;
+			buttonBack.Text = APIResources.GOREDIT_TEXT_BACK;
+			buttonForward.Text = APIResources.GOREDIT_TEXT_GO_FORWARD;
+			buttonCancel.Text = APIResources.GOREDIT_ACC_TEXT_CANCEL;
+			labelSearchBanner.Text = APIResources.GOREDIT_TEXT_SEARCH_RESULTS;
 		}
 
 		/// <summary>
@@ -1493,12 +1493,12 @@ namespace GorgonLibrary.Editor
 
 						Invoke(new MethodInvoker(() =>
 						                         {
-							                         GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
+							                         GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
 							                                                              item.FullPath), null, ex);
 
 													 if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
 													 {
-														 imagesFilesLarge.Images.Add(item.FullPath, (Bitmap)Resources.image_missing_128x128.Clone());
+														 imagesFilesLarge.Images.Add(item.FullPath, (Bitmap)APIResources.image_missing_128x128.Clone());
 													 }
 
 							                         if (listFiles.Items.ContainsKey(item.FullPath))
@@ -1703,7 +1703,7 @@ namespace GorgonLibrary.Editor
 
 				if (string.IsNullOrWhiteSpace(fileName))
 				{
-					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_FILE_IN_PATH, directoryName));
+					GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_NO_FILE_IN_PATH, directoryName));
 					return false;
 				}
 
@@ -1713,7 +1713,7 @@ namespace GorgonLibrary.Editor
 
 					if (directoryEntry == null)
 					{
-						GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_SUCH_DIRECTORY, directoryName));
+						GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_NO_SUCH_DIRECTORY, directoryName));
 						return false;
 					}
 				}
@@ -1746,7 +1746,7 @@ namespace GorgonLibrary.Editor
 
 				if (fileEntry == null)
 				{
-					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_SUCH_FILE, directoryName, fileName));
+					GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_NO_SUCH_FILE, directoryName, fileName));
 					return false;
 				}
 

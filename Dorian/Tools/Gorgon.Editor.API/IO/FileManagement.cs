@@ -276,13 +276,13 @@ namespace GorgonLibrary.Editor
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
             }
 
             // We don't have a writer plug-in, at this point, that's not good.
             if (plugIn == null)
             {
-                throw new IOException(string.Format(Resources.GOREDIT_ERR_NO_WRITER_PLUGIN, path));
+                throw new IOException(string.Format(APIResources.GOREDIT_ERR_NO_WRITER_PLUGIN, path));
             }
 
             // Write the meta data file to the file system.
@@ -314,7 +314,7 @@ namespace GorgonLibrary.Editor
             // Add the new file system as a mount point.
 	        var plugIns = from plugIn in Gorgon.PlugIns
 	                      where plugIn is GorgonFileSystemProviderPlugIn 
-						  && PlugIns.IsDisabled(plugIn)
+						  && !PlugIns.IsDisabled(plugIn)
 	                      select plugIn;
 
 	        foreach (var plugIn in plugIns)
@@ -324,7 +324,7 @@ namespace GorgonLibrary.Editor
 
 	        if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
             {
-                throw new FileLoadException(string.Format(Resources.GOREDIT_ERR_NO_READ_PROVIDERS,
+                throw new FileLoadException(string.Format(APIResources.GOREDIT_ERR_NO_READ_PROVIDERS,
                                                           Path.GetFileName(path)));
             }
 

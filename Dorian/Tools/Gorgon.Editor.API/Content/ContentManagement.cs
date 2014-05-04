@@ -32,6 +32,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -50,6 +51,24 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the default image editor plug-in setting.
+		/// </summary>
+	    public static string DefaultImageEditorPlugIn
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the application graphics interface.
+		/// </summary>
+	    public static GorgonGraphics Graphics
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to set or return the type of the default content object.
 		/// </summary>
 	    public static Type DefaultContentType
@@ -63,7 +82,7 @@ namespace GorgonLibrary.Editor
 				if ((value != null)
 				    && (!value.IsSubclassOf(typeof(ContentObject))))
 				{
-					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT, value.FullName));
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(APIResources.GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT, value.FullName));
 				}
 
 				_defaultContentType = value;
@@ -373,7 +392,7 @@ namespace GorgonLibrary.Editor
 	    {
 			if (DefaultContentType == null)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN);
+				throw new GorgonException(GorgonResult.CannotCreate, APIResources.GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN);
 			}
 
 			// We already have the default pane loaded.
@@ -424,6 +443,14 @@ namespace GorgonLibrary.Editor
                 content.SetDefaults();
             }
 
+			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
+
+	        if ((content.ImageEditor != null)
+	            && (string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn)))
+	        {
+		        DefaultImageEditorPlugIn = content.ImageEditor.Name;
+	        }
+
             return content;
         }
 
@@ -441,7 +468,7 @@ namespace GorgonLibrary.Editor
 
 				if (externalFile == null)
 				{
-					throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE,
+					throw new FileNotFoundException(string.Format(APIResources.GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE,
 						                                                        dependencyFile.Path));
 				}
 
@@ -460,9 +487,9 @@ namespace GorgonLibrary.Editor
 					{
 						case DependencyLoadState.FatalError:
 							throw new GorgonException(GorgonResult.CannotRead,
-							                          string.Format(Resources.GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
+							                          string.Format(APIResources.GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
 						case DependencyLoadState.ErrorContinue:
-							missing.Add(string.Format(Resources.GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
+							missing.Add(string.Format(APIResources.GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
 							break;
 						default:
 							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;
@@ -495,6 +522,14 @@ namespace GorgonLibrary.Editor
 		    }
 
             ContentObject content = plugIn.CreateContentObject(settings);
+
+			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
+
+			if ((string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn))
+			    && (content.ImageEditor != null))
+			{
+				DefaultImageEditorPlugIn = content.ImageEditor.Name;
+			}
 
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 

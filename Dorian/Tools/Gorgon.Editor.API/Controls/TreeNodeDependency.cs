@@ -88,14 +88,14 @@ namespace GorgonLibrary.Editor
 
 			Name = dependency.Path;
 			PlugIn = null;
-			CollapsedImage = ExpandedImage = Resources.image_missing_16x16;
+			CollapsedImage = ExpandedImage = APIResources.image_missing_16x16;
 
 			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				fileName = Resources.GOREDIT_TEXT_UNKNOWN_FILE;
+				fileName = APIResources.GOREDIT_TEXT_UNKNOWN_FILE;
 			}
 
-			Text = string.Format("{0} ({1})", fileName, Resources.GOREDIT_TEXT_BROKEN_LINK);
+			Text = string.Format("{0} ({1})", fileName, APIResources.GOREDIT_TEXT_BROKEN_LINK);
 			
 			IsBroken = true;
 		}

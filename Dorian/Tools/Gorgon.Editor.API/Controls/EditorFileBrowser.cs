@@ -73,8 +73,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return whether to allow multiple selections.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR")]
-	    [LocalDescription(typeof(Resources), "PROP_MULTISELECT_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_BEHAVIOR")]
+	    [LocalDescription(typeof(APIResources), "PROP_MULTISELECT_DESC")]
 	    [DefaultValue(false)]
 	    public bool MultipleSelection
 	    {
@@ -86,8 +86,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return the default view for the dialog.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
-	    [LocalDescription(typeof(Resources), "PROP_FILEVIEW_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(APIResources), "PROP_FILEVIEW_DESC")]
 	    [DefaultValue(typeof(FileViews), "Details")]
 	    public FileViews FileView
 	    {
@@ -99,8 +99,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return the starting directory for the dialog.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA")]
-	    [LocalDescription(typeof(Resources), "PROP_STARTDIRECTORY_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_DATA")]
+	    [LocalDescription(typeof(APIResources), "PROP_STARTDIRECTORY_DESC")]
 	    public string StartDirectory
 	    {
 	        get;
@@ -111,8 +111,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return the default extension for the filter.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR")]
-	    [LocalDescription(typeof(Resources), "PROP_DEFAULTEXTENSION_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_BEHAVIOR")]
+	    [LocalDescription(typeof(APIResources), "PROP_DEFAULTEXTENSION_DESC")]
 	    public string DefaultExtension
 	    {
 	        get
@@ -139,8 +139,8 @@ namespace GorgonLibrary.Editor
 	    /// Property to set or return the caption text for the dialog.
 	    /// </summary>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
-	    [LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_APPEARANCE")]
+	    [LocalDescription(typeof(APIResources), "PROP_TEXT_DESC")]
 	    public string Text
 	    {
 	        get;
@@ -152,8 +152,8 @@ namespace GorgonLibrary.Editor
 	    /// </summary>
 	    /// <remarks>If there are multiple file names selected, then this will return the first name on the <see cref="Files">file array</see>.</remarks>
 	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA")]
-	    [LocalDescription(typeof(Resources), "PROP_FILENAME_DESC")]
+	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_DATA")]
+	    [LocalDescription(typeof(APIResources), "PROP_FILENAME_DESC")]
 	    public string Filename
 	    {
 	        get;
@@ -214,7 +214,7 @@ namespace GorgonLibrary.Editor
 		public EditorFileBrowser()
 		{
 			FileExtensions = new GorgonFileExtensionCollection();
-			Text = Resources.GOREDIT_TEXT_SELECT_FILE;
+			Text = APIResources.GOREDIT_TEXT_SELECT_FILE;
 		}
 		#endregion
 	}

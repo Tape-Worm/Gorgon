@@ -46,8 +46,8 @@ namespace GorgonLibrary.Editor
         /// Property to set or return the text caption for this panel.
         /// </summary>
         [Browsable(true)]
-        [LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN")]
-        [LocalDescription(typeof(Resources), "PROP_TEXT_PREF_PANEL_DESC")]
+        [LocalCategory(typeof(APIResources), "PROP_CATEGORY_DESIGN")]
+        [LocalDescription(typeof(APIResources), "PROP_TEXT_PREF_PANEL_DESC")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public new string Text
         {
@@ -84,7 +84,7 @@ namespace GorgonLibrary.Editor
         /// <remarks>Override this method to supply localized text for any controls on the panel.</remarks>
         protected internal virtual void LocalizeControls()
         {
-            Text = Resources.GOREDIT_TEXT_PREFERENCES;
+            Text = APIResources.GOREDIT_TEXT_PREFERENCES;
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace GorgonLibrary.Editor
         public PreferencePanel()
         {
             InitializeComponent();
-	        toolHelp.ToolTipTitle = Resources.GOREDIT_TEXT_HELP;
+	        toolHelp.ToolTipTitle = APIResources.GOREDIT_TEXT_HELP;
         }
         #endregion
     }

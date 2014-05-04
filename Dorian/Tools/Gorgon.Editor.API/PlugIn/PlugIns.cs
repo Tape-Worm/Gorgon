@@ -199,7 +199,7 @@ namespace GorgonLibrary.Editor
 				{
 					EditorLogging.Print("Found plug-in: \"{0}\".  But it is disabled by the user.", plugIn.Description);
 
-					_disabled.Add(new DisabledPlugIn(plugIn, Resources.GOREDIT_TEXT_DISABLED_BY_USER));
+					_disabled.Add(new DisabledPlugIn(plugIn, APIResources.GOREDIT_TEXT_DISABLED_BY_USER));
 					
 					continue;
 				}
@@ -217,9 +217,6 @@ namespace GorgonLibrary.Editor
 				}
 
 				var editorPlugIn = (EditorPlugIn)plugIn;
-
-                // Assign the graphics interface to each editor plug-in.
-			    editorPlugIn.Graphics = Graphics;
 
 				var validationData = editorPlugIn.ValidatePlugIn();
 
@@ -261,7 +258,7 @@ namespace GorgonLibrary.Editor
 				                            editorPlugIn.Description);
 						EditorLogging.Print("Plug-in type is unknown.", LoggingLevel.Verbose);
 
-						_disabled.Add(new DisabledPlugIn(editorPlugIn, Resources.GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE));
+						_disabled.Add(new DisabledPlugIn(editorPlugIn, APIResources.GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE));
 						break;
 				}
 			}

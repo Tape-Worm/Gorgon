@@ -106,23 +106,23 @@ namespace GorgonLibrary.Editor
 				{
 					case ProcessType.FileWriter:
 				        base.Text = string.Format(@"{0} {1}",
-				                                  Resources.GOREDIT_TEXT_SAVING,
+				                                  APIResources.GOREDIT_TEXT_SAVING,
 				                                  Path.GetFileName(value).Ellipses(35, true));
 						break;
 					case ProcessType.FileImporter:
-				        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_IMPORTING, Resources.GOREDIT_TEXT_FILES);
+				        base.Text = string.Format(@"{0} {1}", APIResources.GOREDIT_TEXT_IMPORTING, APIResources.GOREDIT_TEXT_FILES);
 						break;
                     case ProcessType.FileExporter:
-                        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_EXPORTING, Resources.GOREDIT_TEXT_FILES);
+                        base.Text = string.Format(@"{0} {1}", APIResources.GOREDIT_TEXT_EXPORTING, APIResources.GOREDIT_TEXT_FILES);
 				        break;
 					case ProcessType.FileInfo:
-						base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_SCANNING, Resources.GOREDIT_TEXT_FILES);
+						base.Text = string.Format(@"{0} {1}", APIResources.GOREDIT_TEXT_SCANNING, APIResources.GOREDIT_TEXT_FILES);
 						break;
 					case ProcessType.FileCopy:
-				        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_COPYING, Resources.GOREDIT_TEXT_FILES);
+				        base.Text = string.Format(@"{0} {1}", APIResources.GOREDIT_TEXT_COPYING, APIResources.GOREDIT_TEXT_FILES);
 						break;
                     case ProcessType.FileMove:
-                        base.Text = string.Format(@"{0} {1}", Resources.GOREDIT_TEXT_MOVING, Resources.GOREDIT_TEXT_FILES);
+                        base.Text = string.Format(@"{0} {1}", APIResources.GOREDIT_TEXT_MOVING, APIResources.GOREDIT_TEXT_FILES);
 				        break;
 					default:
 #if DEBUG
@@ -296,7 +296,7 @@ namespace GorgonLibrary.Editor
 			{
 				case ProcessType.FileWriter:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					_progressText = labelStatus.Text = string.Format("{0}...", Resources.GOREDIT_TEXT_SAVING);
+					_progressText = labelStatus.Text = string.Format("{0}...", APIResources.GOREDIT_TEXT_SAVING);
 					break;
                 case ProcessType.FileMove:
 				case ProcessType.FileCopy:
@@ -307,7 +307,7 @@ namespace GorgonLibrary.Editor
 					break;
 				case ProcessType.FileInfo:
 					progressMeter.Style = ProgressBarStyle.Marquee;
-					_progressText = labelStatus.Text = Resources.GOREDIT_TEXT_GET_FILE_INFO;
+					_progressText = labelStatus.Text = APIResources.GOREDIT_TEXT_GET_FILE_INFO;
 					break;
 			}
 		}

@@ -129,12 +129,12 @@ namespace GorgonLibrary.Editor
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+					throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 				}
 
 				if (string.IsNullOrWhiteSpace(type))
 				{
-					throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+					throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
 				}
 
 				Name = name;
@@ -335,7 +335,7 @@ namespace GorgonLibrary.Editor
 
 			if (Contains(key.Name, key.Type))
 			{
-				throw new ArgumentException(string.Format(Resources.GOREDIT_ERR_DEPENDENCY_EXISTS, key.Type, key.Name));
+				throw new ArgumentException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_EXISTS, key.Type, key.Name));
 			}
 
 			_dependencies[key] = item;

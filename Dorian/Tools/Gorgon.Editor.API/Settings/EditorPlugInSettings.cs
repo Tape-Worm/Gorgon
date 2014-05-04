@@ -65,7 +65,7 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonEditorSettings" /> class.
+		/// Initializes a new instance of the <see cref="EditorPlugInSettings" /> class.
 		/// </summary>
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="version">The version of the settings file.</param>

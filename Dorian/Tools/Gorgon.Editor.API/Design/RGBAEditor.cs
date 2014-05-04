@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
@@ -65,6 +66,8 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
+			Debug.Assert(value != null, "Value is NULL.");
+
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			ControlColorPicker colorPicker = null;
 
@@ -104,7 +107,7 @@ namespace GorgonLibrary.Editor.Design
 		{
 			base.PaintValue(e);
 
-			e.Graphics.DrawImage(Resources.PropertyChecker, e.Bounds);
+			e.Graphics.DrawImage(APIResources.PropertyChecker, e.Bounds);
 			using(Brush brush = new SolidBrush((Color)e.Value))
 			{
 				e.Graphics.FillRectangle(brush, e.Bounds);

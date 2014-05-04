@@ -79,7 +79,7 @@ namespace GorgonLibrary.Editor
 			if ((nameAttr == null)
 				|| (string.IsNullOrWhiteSpace(nameAttr.Value)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT);
+				throw new GorgonException(GorgonResult.CannotRead, APIResources.GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT);
 			}
 
 			return new DependencyProperty(nameAttr.Value, propertyNode.Value);
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOREDIT_TEXT_DEPENDENCY_PROP, Name, Value ?? string.Empty);
+			return string.Format(APIResources.GOREDIT_TEXT_DEPENDENCY_PROP, Name, Value ?? string.Empty);
 		}
 
 		/// <summary>
@@ -175,7 +175,7 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			Name = name;

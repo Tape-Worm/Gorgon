@@ -113,11 +113,9 @@ namespace GorgonLibrary.Editor
 		/// <param name="directory">The directory to associate with this node.</param>
 		public TreeNodeDirectory(GorgonFileSystemDirectory directory)
 		{
-			ForeColor = Color.White;
 			Name = directory.FullPath;
-			Text = directory.Name;
-			ExpandedImage = Resources.folder_open_16x16;
-			CollapsedImage = Resources.folder_16x16;
+			ExpandedImage = APIResources.folder_open_16x16;
+			CollapsedImage = APIResources.folder_16x16;
 		}
 
 		/// <summary>
@@ -125,8 +123,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public TreeNodeDirectory()
 		{
-			ExpandedImage = Resources.folder_open_16x16;
-			CollapsedImage = Resources.folder_16x16;
+			ExpandedImage = APIResources.folder_open_16x16;
+			CollapsedImage = APIResources.folder_16x16;
 		}
 		#endregion
 	}
@@ -215,7 +213,7 @@ namespace GorgonLibrary.Editor
 		public RootNodeDirectory()
 			: base(ScratchArea.ScratchFiles.RootDirectory)
 		{
-			ExpandedImage = CollapsedImage = Resources.project_node_16x16;
+			ExpandedImage = CollapsedImage = APIResources.project_node_16x16;
 		}
 		#endregion
 	}

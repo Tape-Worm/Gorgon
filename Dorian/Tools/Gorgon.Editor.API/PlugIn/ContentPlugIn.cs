@@ -28,6 +28,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -43,6 +44,15 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the graphics interface for the application.
+		/// </summary>
+		public GorgonGraphics Graphics
+		{
+			get;
+			internal set;
+		}
+
 		/// <summary>
 		/// Property to return the file extensions (and descriptions) for this content type.
 		/// </summary>
@@ -114,7 +124,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The 16x16 image for the content.</returns>
 		public virtual Image GetContentIcon()
 		{
-			return Resources.unknown_document_16x16;
+			return APIResources.unknown_document_16x16;
 		}
 
 		/// <summary>
