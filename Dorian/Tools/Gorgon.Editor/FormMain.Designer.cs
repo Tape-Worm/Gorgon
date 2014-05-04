@@ -26,7 +26,7 @@
 
 namespace GorgonLibrary.Editor
 {
-	partial class formMain
+	partial class FormMain
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -55,7 +55,7 @@ namespace GorgonLibrary.Editor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemNew = new System.Windows.Forms.ToolStripMenuItem();

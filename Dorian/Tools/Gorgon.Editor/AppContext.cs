@@ -263,7 +263,7 @@ namespace GorgonLibrary.Editor
 				ContentManagement.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
 
 				_splash = new FormSplash();
-				MainForm = new formMain();
+				MainForm = new FormMain();
 
 				_splash.Show();
 				_splash.Refresh();

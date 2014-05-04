@@ -39,7 +39,7 @@ namespace GorgonLibrary.Editor
     /// <summary>
     /// Handles the preferences and plug-ins management for the application.
     /// </summary>
-    partial class formPrefs 
+	partial class FormPreferences 
         : ZuneForm
     {
         #region Variables.
@@ -162,9 +162,9 @@ namespace GorgonLibrary.Editor
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="formPrefs"/> class.
+        /// Initializes a new instance of the <see cref="FormPreferences"/> class.
         /// </summary>
-        public formPrefs()
+        public FormPreferences()
         {
             InitializeComponent();
         }
