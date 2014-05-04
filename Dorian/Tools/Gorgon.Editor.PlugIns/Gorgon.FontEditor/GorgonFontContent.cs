@@ -142,8 +142,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 _settings.Brush = value;
                 OnContentUpdated();
-                OnContentPropertyChanged("Brush", value);
-				OnContentPropertyChanged("Dependency", value);
+                OnContentPropertyChanged("Brush", value, false);
+				OnContentPropertyChanged("Dependency", value, false);
             }
         }
 
@@ -185,7 +185,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				
 	            _settings.OutlineSize = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("OutlineSize", value);
+	            OnContentPropertyChanged("OutlineSize", value, false);
             }
         }
 
@@ -211,7 +211,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            _settings.OutlineColor1 = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("OutlineColor", value);
+	            OnContentPropertyChanged("OutlineColor", value, false);
             }
         }
 
@@ -237,7 +237,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_settings.OutlineColor2 = value;
 				OnContentUpdated();
-				OnContentPropertyChanged("OutlineColor", value);
+				OnContentPropertyChanged("OutlineColor", value, false);
 			}
 		}
 
@@ -269,7 +269,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.Size = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontSize", value);
+	            OnContentPropertyChanged("FontSize", value, false);
             }
         }
 
@@ -301,7 +301,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_settings.PackingSpacing = value;
 				CheckTextureSize();
 				OnContentUpdated();
-				OnContentPropertyChanged("PackingSpace", value);
+				OnContentPropertyChanged("PackingSpace", value, false);
 			}
 		}
 
@@ -339,7 +339,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontTextureSize", value);
+	            OnContentPropertyChanged("FontTextureSize", value, false);
             }
         }
 
@@ -365,7 +365,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            _settings.AntiAliasingMode = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontAntiAliasMode", value);
+	            OnContentPropertyChanged("FontAntiAliasMode", value, false);
             }
         }
 		
@@ -392,7 +392,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontHeightMode = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("UsePointSize", value);
+	            OnContentPropertyChanged("UsePointSize", value, false);
             }
         }
 
@@ -423,7 +423,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontFamilyName = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontFamily", value);
+	            OnContentPropertyChanged("FontFamily", value, false);
             }
         }
 
@@ -454,7 +454,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.Characters = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("Characters", value);
+	            OnContentPropertyChanged("Characters", value, false);
             }
         }
 
@@ -482,7 +482,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontStyle = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontStyle", value);
+	            OnContentPropertyChanged("FontStyle", value, false);
             }
         }
 
@@ -508,7 +508,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			    _settings.UseKerningPairs = value;
 				OnContentUpdated();
-			    OnContentPropertyChanged("UseKerningPairs", value);
+			    OnContentPropertyChanged("UseKerningPairs", value, false);
 		    }
 	    }
 
@@ -881,7 +881,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public void UpdateFontGlyphs()
         {
             OnContentUpdated();
-            OnContentPropertyChanged("Glyphs", Font.Settings.Glyphs);
+            OnContentPropertyChanged("Glyphs", Font.Settings.Glyphs, false);
         }
 
 		/// <summary>
@@ -894,11 +894,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (resetFont)
 			{
 				OnContentUpdated();
-				OnContentPropertyChanged("ResetGlyphAdvance", advance);
+				OnContentPropertyChanged("ResetGlyphAdvance", advance, false);
 				return;
 			}
 
-			OnContentPropertyChanged("SelectedGlyphAdvance", advance);
+			OnContentPropertyChanged("SelectedGlyphAdvance", advance, false);
 	    }
 
 		/// <summary>
@@ -911,11 +911,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (resetFont)
 			{
 				OnContentUpdated();
-				OnContentPropertyChanged("ResetGlyphOffset", offset);
+				OnContentPropertyChanged("ResetGlyphOffset", offset, false);
 				return;
 			}
 
-			OnContentPropertyChanged("SelectedGlyphOffset", offset);
+			OnContentPropertyChanged("SelectedGlyphOffset", offset, false);
 	    }
 
 		/// <summary>

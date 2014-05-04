@@ -34,7 +34,6 @@ using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
-using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor
 {
@@ -249,7 +248,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 				
-				OnContentPropertyChanged("Name", _name);
+				OnContentPropertyChanged("Name", _name, false);
 			}
 		}
 
@@ -350,17 +349,27 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="propertyName">Name of the property that was updated.</param>
         /// <param name="value">Value assigned to the property.</param>
-        protected virtual void OnContentPropertyChanged(string propertyName, object value)
+        /// <param name="refreshPropertyPanel">TRUE to refresh the property panel associated with the content, FALSE to leave alone.</param>
+        protected virtual void OnContentPropertyChanged(string propertyName, object value, bool refreshPropertyPanel)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
                 throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
             }
 
-            if (ContentPropertyChanged != null)
-            {
-                ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value, false));
-            }
+			// If we have a content UI, then tell it of the change to the property.
+			if ((ContentControl != null)
+				&& (!refreshPropertyPanel))
+			{
+				ContentControl.OnContentPropertyChanged(propertyName, value);
+			}
+
+	        if (ContentPropertyChanged == null)
+	        {
+		        return;
+	        }
+
+	        ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value, refreshPropertyPanel));
         }
 
         /// <summary>
@@ -549,13 +558,7 @@ namespace GorgonLibrary.Editor
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;
 
-            if (ContentPropertyChanged != null)
-            {
-                ContentPropertyChanged(this,
-                                       new ContentPropertyChangedEventArgs(propertyName,
-                                                                           TypeDescriptor[propertyName].GetValue<object>(),
-                                                                           true));
-            }
+			OnContentPropertyChanged(propertyName, TypeDescriptor[propertyName].GetValue<object>(), true);
         }
 
 		/// <summary>

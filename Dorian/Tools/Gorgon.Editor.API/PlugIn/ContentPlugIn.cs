@@ -45,15 +45,6 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the graphics interface for the application.
-		/// </summary>
-		public GorgonGraphics Graphics
-		{
-			get;
-			internal set;
-		}
-
-		/// <summary>
 		/// Property to return the file extensions (and descriptions) for this content type.
 		/// </summary>
 		/// <remarks>This dictionary contains the file extension including the leading period as the key (in lowercase), and a tuple containing the file extension, and a description of the file (for display).</remarks>

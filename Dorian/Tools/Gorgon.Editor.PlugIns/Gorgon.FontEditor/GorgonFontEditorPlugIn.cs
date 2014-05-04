@@ -127,11 +127,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             var invalidReasons = new StringBuilder(512);
 
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
-            if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)
+            if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel == Graphics.DeviceFeatureLevel.SM2_a_b)
             {
 	            invalidReasons.AppendFormat(Resources.GORFNT_ERR_PLUGIN_INVALID_SM,
-	                                        Graphics.VideoDevice.Name,
-	                                        Graphics.VideoDevice.SupportedFeatureLevel);
+	                                        ContentObject.Graphics.VideoDevice.Name,
+	                                        ContentObject.Graphics.VideoDevice.SupportedFeatureLevel);
             }
 
             return invalidReasons.ToString();
@@ -208,7 +208,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </returns>
         public override ContentSettings GetContentSettings()
         {
-            return new GorgonFontContentSettings(new Size(Graphics.Textures.MaxWidth, Graphics.Textures.MaxHeight));
+            return new GorgonFontContentSettings(new Size(ContentObject.Graphics.Textures.MaxWidth, ContentObject.Graphics.Textures.MaxHeight));
         }
 
 		/// <summary>

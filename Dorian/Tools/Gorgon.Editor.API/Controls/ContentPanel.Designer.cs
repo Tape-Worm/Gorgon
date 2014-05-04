@@ -18,6 +18,15 @@
 				components.Dispose();
 			}
 
+			if (disposing)
+			{
+				if (RawInput != null)
+				{
+					RawInput.Dispose();
+					RawInput = null;
+				}
+			}
+
 			base.Dispose(disposing);
 		}
 
