@@ -638,15 +638,6 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alpha.
-        /// </summary>
-        internal static string GOREDIT_TEXT_ALPHA {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Animate the Gorgon logo on the start up screen.
         /// </summary>
         internal static string GOREDIT_TEXT_ANIMATE_LOGO {
@@ -908,15 +899,6 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New alpha.
-        /// </summary>
-        internal static string GOREDIT_TEXT_NEW_ALPHA {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_NEW_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to New content item.
         /// </summary>
         internal static string GOREDIT_TEXT_NEW_CONTENT {
@@ -926,38 +908,11 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New name.
-        /// </summary>
-        internal static string GOREDIT_TEXT_NEW_NAME {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_NEW_NAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Old alpha.
-        /// </summary>
-        internal static string GOREDIT_TEXT_OLD_ALPHA {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_OLD_ALPHA", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Path.
         /// </summary>
         internal static string GOREDIT_TEXT_PATH {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_PATH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pick an alpha value.
-        /// </summary>
-        internal static string GOREDIT_TEXT_PICK_ALPHA {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_PICK_ALPHA", resourceCulture);
             }
         }
         
@@ -1066,24 +1021,6 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_UNTITLED {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_UNTITLED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Value.
-        /// </summary>
-        internal static string GOREDIT_TEXT_VALUE {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_VALUE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Zoom.
-        /// </summary>
-        internal static string GOREDIT_TEXT_ZOOM {
-            get {
-                return ResourceManager.GetString("GOREDIT_TEXT_ZOOM", resourceCulture);
             }
         }
         

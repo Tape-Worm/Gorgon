@@ -60,10 +60,10 @@ namespace GorgonLibrary.Editor
         /// </summary>
 	    private void LocalizeControls()
         {
-            Text = Resources.GOREDIT_TEXT_NEW_NAME;
-            labelName.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_NAME);
-            buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
-            buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+            Text = APIResources.GOREDIT_TEXT_NEW_NAME;
+            labelName.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_NAME);
+            buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;
+            buttonCancel.Text = APIResources.GOREDIT_ACC_TEXT_CANCEL;
         }
 
 		/// <summary>

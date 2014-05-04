@@ -74,12 +74,12 @@ namespace GorgonLibrary.Editor
         /// </summary>
 	    private void LocalizeControls()
         {
-            Text = Resources.GOREDIT_TEXT_PICK_ALPHA;
-            labelAlpha.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_ALPHA);
-            labelOldAlpha.Text = Resources.GOREDIT_TEXT_OLD_ALPHA;
-            labelNewAlpha.Text = Resources.GOREDIT_TEXT_NEW_ALPHA;
-            buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
-            buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+            Text = APIResources.GOREDIT_TEXT_PICK_ALPHA;
+            labelAlpha.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_ALPHA);
+            labelOldAlpha.Text = APIResources.GOREDIT_TEXT_OLD_ALPHA;
+            labelNewAlpha.Text = APIResources.GOREDIT_TEXT_NEW_ALPHA;
+            buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;
+            buttonCancel.Text = APIResources.GOREDIT_ACC_TEXT_CANCEL;
         }
 
 		/// <summary>

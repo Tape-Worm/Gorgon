@@ -374,4 +374,25 @@ The following characters are not allowed:
   <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\up_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_TEXT_ALPHA" xml:space="preserve">
+    <value>Alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_ALPHA" xml:space="preserve">
+    <value>New alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_NAME" xml:space="preserve">
+    <value>New name</value>
+  </data>
+  <data name="GOREDIT_TEXT_OLD_ALPHA" xml:space="preserve">
+    <value>Old alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_PICK_ALPHA" xml:space="preserve">
+    <value>Pick an alpha value</value>
+  </data>
+  <data name="GOREDIT_TEXT_VALUE" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="GOREDIT_TEXT_ZOOM" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
 </root>

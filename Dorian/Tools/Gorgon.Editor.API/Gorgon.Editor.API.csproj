@@ -58,9 +58,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Content\Clipper.cs" />
     <Compile Include="Content\ContentManagement.cs" />
     <Compile Include="Content\ContentObject.cs" />
     <Compile Include="Content\ContentSettings.cs" />
+    <Compile Include="Content\Magnifier.cs" />
+    <Compile Include="Controls\AlphaPicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\AlphaPicker.Designer.cs">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ControlColorPicker.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -80,9 +88,27 @@
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\formColorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\formColorDialog.Designer.cs">
+      <DependentUpon>formColorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NewNameEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\NewNameEditor.Designer.cs">
+      <DependentUpon>NewNameEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TreeNodeDependency.cs" />
     <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="Controls\TreeNodeFile.cs" />
+    <Compile Include="Controls\ValueComponentEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\ValueComponentEditor.Designer.cs">
+      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="IO\FileManagement.cs" />
     <Compile Include="IO\ScratchArea.cs" />
     <Compile Include="Logging\EditorLogging.cs" />
@@ -159,6 +185,18 @@
     <None Include="Resources\back_16x16png1.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\AlphaPicker.resx">
+      <DependentUpon>AlphaPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\formColorDialog.resx">
+      <DependentUpon>formColorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\NewNameEditor.resx">
+      <DependentUpon>NewNameEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ValueComponentEditor.resx">
+      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\APIResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>

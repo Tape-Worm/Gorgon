@@ -219,9 +219,9 @@ namespace GorgonLibrary.Editor
         /// </summary>
 	    private void LocalizeControls()
         {
-            labelValueCaption.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_VALUE);
-            buttonOK.Text = Resources.GOREDIT_ACC_TEXT_OK;
-            buttonCancel.Text = Resources.GOREDIT_ACC_TEXT_CANCEL;
+            labelValueCaption.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_VALUE);
+            buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;
+            buttonCancel.Text = APIResources.GOREDIT_ACC_TEXT_CANCEL;
         }
 
         /// <summary>
