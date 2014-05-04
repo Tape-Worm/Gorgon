@@ -365,9 +365,6 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ACC_TEXT_SAVE_AS" xml:space="preserve">
     <value>Save &amp;as</value>
   </data>
-  <data name="GOREDIT_TEXT_ZOOM" xml:space="preserve">
-    <value>Zoom</value>
-  </data>
   <data name="PROP_CUETEXT_DESC" xml:space="preserve">
     <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
   </data>
@@ -498,24 +495,6 @@ and double click on the plug-in item in the list.</value>
   </data>
   <data name="GOREDIT_TEXT_ANIMATE_SPEED" xml:space="preserve">
     <value>Animation speed</value>
-  </data>
-  <data name="GOREDIT_TEXT_ALPHA" xml:space="preserve">
-    <value>Alpha</value>
-  </data>
-  <data name="GOREDIT_TEXT_NEW_ALPHA" xml:space="preserve">
-    <value>New alpha</value>
-  </data>
-  <data name="GOREDIT_TEXT_NEW_NAME" xml:space="preserve">
-    <value>New name</value>
-  </data>
-  <data name="GOREDIT_TEXT_OLD_ALPHA" xml:space="preserve">
-    <value>Old alpha</value>
-  </data>
-  <data name="GOREDIT_TEXT_PICK_ALPHA" xml:space="preserve">
-    <value>Pick an alpha value</value>
-  </data>
-  <data name="GOREDIT_TEXT_VALUE" xml:space="preserve">
-    <value>Value</value>
   </data>
   <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
     <value>Appearance</value>

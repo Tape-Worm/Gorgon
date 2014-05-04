@@ -81,7 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Clipper.cs" />
     <Compile Include="Controls\EditorPreferencePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -101,42 +100,17 @@
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </Compile>
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="formColorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formColorDialog.Designer.cs">
-      <DependentUpon>formColorDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="AlphaPicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AlphaPicker.Designer.cs">
-      <DependentUpon>AlphaPicker.cs</DependentUpon>
-    </Compile>
     <Compile Include="GorgonEditorSettings.cs" />
-    <Compile Include="NewNameEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="NewNameEditor.Designer.cs">
-      <DependentUpon>NewNameEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="formPrefs.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="formPrefs.Designer.cs">
       <DependentUpon>formPrefs.cs</DependentUpon>
     </Compile>
-    <Compile Include="Magnifier.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="ValueComponentEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ValueComponentEditor.Designer.cs">
-      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
@@ -161,17 +135,8 @@
     <EmbeddedResource Include="Controls\PanelPlugIns.resx">
       <DependentUpon>PanelPlugIns.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formColorDialog.resx">
-      <DependentUpon>formColorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="AlphaPicker.resx">
-      <DependentUpon>AlphaPicker.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="NewNameEditor.resx">
-      <DependentUpon>NewNameEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formPrefs.resx">
       <DependentUpon>formPrefs.cs</DependentUpon>
@@ -183,9 +148,6 @@
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ValueComponentEditor.resx">
-      <DependentUpon>ValueComponentEditor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
   </ItemGroup>

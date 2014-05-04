@@ -174,7 +174,7 @@ namespace GorgonLibrary.Editor
 			{
 				if (string.IsNullOrWhiteSpace(_zoomWindowText))
 				{
-					_zoomWindowText = Resources.GOREDIT_TEXT_ZOOM;
+					_zoomWindowText = APIResources.GOREDIT_TEXT_ZOOM;
 				}
 
 				_zoomWindowText = value;
@@ -354,7 +354,7 @@ namespace GorgonLibrary.Editor
 			_sprite.TextureSampler.BorderColor = GorgonColor.Transparent;
 			_sprite.TextureSampler.TextureFilter = TextureFilter.Point;
             
-			_zoomWindowText = Resources.GOREDIT_TEXT_ZOOM;
+			_zoomWindowText = APIResources.GOREDIT_TEXT_ZOOM;
 			_zoomFont = renderer.Graphics.Fonts.DefaultFont;
 
 			UpdateTextureCoordinates();
