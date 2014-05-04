@@ -45,7 +45,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Main application object.
 	/// </summary>
-	partial class formMain
+	partial class FormMain
 		: ZuneForm
 	{
 		#region Value Types.
@@ -158,11 +158,11 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void itemPreferences_Click(object sender, EventArgs e)
         {
-            formPrefs prefs = null;
+            FormPreferences prefs = null;
 
             try
             {
-                prefs = new formPrefs();
+                prefs = new FormPreferences();
                 prefs.ShowDialog(this);
             }
             catch (Exception ex)
@@ -3030,9 +3030,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain"/> class.
+		/// Initializes a new instance of the <see cref="FormMain"/> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 
