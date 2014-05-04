@@ -241,11 +241,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         private void GetShadowAlpha()
         {
-            AlphaPicker picker = null;
+            AlphaChannelDialog picker = null;
 
             try
             {
-                picker = new AlphaPicker
+                picker = new AlphaChannelDialog
                 {
                     Text = Resources.GORFNT_DLG_SHADOW_ALPHA_CAPTION,
                     SelectedAlphaValue = _shadowOpacity / 255.0f

@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor
 {
-	partial class NewNameEditor
+	partial class NewNameDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewNameEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewNameDialog));
             this.labelName = new System.Windows.Forms.Label();
             this.textName = new System.Windows.Forms.TextBox();
             this.buttonCancel = new System.Windows.Forms.Button();

@@ -137,11 +137,11 @@
     <Compile Include="Controls\PreferencePanel.Designer.cs">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\formProcess.cs">
+    <Compile Include="Forms\FormProcess.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\formProcess.Designer.cs">
-      <DependentUpon>formProcess.cs</DependentUpon>
+    <Compile Include="Forms\FormProcess.Designer.cs">
+      <DependentUpon>FormProcess.cs</DependentUpon>
     </Compile>
     <Compile Include="MetaData\EditorMetaDataFile.cs" />
     <Compile Include="PlugIn\ContentPlugIn.cs" />
@@ -217,8 +217,8 @@
     <EmbeddedResource Include="Controls\PreferencePanel.resx">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\formProcess.resx">
-      <DependentUpon>formProcess.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormProcess.resx">
+      <DependentUpon>FormProcess.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

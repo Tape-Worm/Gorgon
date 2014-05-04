@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.Editor
 {
-	partial class AlphaPicker
+	partial class AlphaChannelDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AlphaPicker));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AlphaChannelDialog));
             this.sliderAlpha = new Fetze.WinFormsColor.ColorSlider();
             this.labelAlpha = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
