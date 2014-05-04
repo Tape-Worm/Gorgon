@@ -113,7 +113,7 @@ namespace GorgonLibrary.Editor
 			/// <summary>
 			/// The process form to use.
 			/// </summary>
-			public formProcess ProcessForm;
+			public FormProcess ProcessForm;
 
 			/// <summary>
 			/// The directory conflict result.
@@ -168,7 +168,7 @@ namespace GorgonLibrary.Editor
 			/// <summary>
 			/// The process form to use.
 			/// </summary>
-			public formProcess ProcessForm;
+			public FormProcess ProcessForm;
 
 			/// <summary>
 			/// Files to copy.
@@ -216,7 +216,7 @@ namespace GorgonLibrary.Editor
 	        /// <summary>
 	        /// The process form to use.
 	        /// </summary>
-	        public formProcess ProcessForm;
+	        public FormProcess ProcessForm;
 
 	        /// <summary>
 	        /// The total number of files.
@@ -547,7 +547,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The number of files and directories imported.</returns>
 		private static int ImportData(ImportSettings settings)
 		{
-			using (var processForm = new formProcess(ProcessType.FileImporter))
+			using (var processForm = new FormProcess(ProcessType.FileImporter))
 			{
 				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
 				{
@@ -876,7 +876,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Bring up the progress form.
-            using (var processForm = new formProcess(ProcessType.FileMove))
+            using (var processForm = new FormProcess(ProcessType.FileMove))
             {
                 using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
                 {
@@ -1298,7 +1298,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Bring up the progress form.
-			using (var processForm = new formProcess(ProcessType.FileCopy))
+			using (var processForm = new FormProcess(ProcessType.FileCopy))
 			{
 				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
 				{
@@ -1357,7 +1357,7 @@ namespace GorgonLibrary.Editor
 			}
 
             // Bring up the progress form.
-            using (var processForm = new formProcess(ProcessType.FileExporter))
+            using (var processForm = new FormProcess(ProcessType.FileExporter))
             {
                 using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
                 {
@@ -1483,7 +1483,7 @@ namespace GorgonLibrary.Editor
             Debug.Assert(CanImportFunction != null, "No file validation action assigned in import.");
 
 			// Bring up the progress form.
-			using (var processForm = new formProcess(ProcessType.FileInfo))
+			using (var processForm = new FormProcess(ProcessType.FileInfo))
 			{
 				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
 				{

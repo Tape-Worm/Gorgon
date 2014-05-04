@@ -26,7 +26,7 @@
 
 namespace GorgonLibrary.Editor
 {
-	partial class formEditorFileSelector
+	partial class FormEditorFileSelector
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -66,7 +66,7 @@ namespace GorgonLibrary.Editor
 		{
 			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("/");
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formEditorFileSelector));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormEditorFileSelector));
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.splitMainPanes = new System.Windows.Forms.SplitContainer();
@@ -95,7 +95,7 @@ namespace GorgonLibrary.Editor
 			this.itemViewLarge = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelSearch = new System.Windows.Forms.Panel();
 			this.buttonSearch = new System.Windows.Forms.Button();
-			this.textSearch = new GorgonLibrary.Editor.formEditorFileSelector.CuedTextBox();
+			this.textSearch = new GorgonLibrary.Editor.FormEditorFileSelector.CuedTextBox();
 			this.labelNoFilesFound = new System.Windows.Forms.Label();
 			this.panelFilters = new System.Windows.Forms.Panel();
 			this.comboFilters = new System.Windows.Forms.ComboBox();
@@ -631,7 +631,7 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.Panel panelTools;
 		private System.Windows.Forms.Panel panelSearch;
 		private System.Windows.Forms.Button buttonSearch;
-		private GorgonLibrary.Editor.formEditorFileSelector.CuedTextBox textSearch;
+		private GorgonLibrary.Editor.FormEditorFileSelector.CuedTextBox textSearch;
 		private System.Windows.Forms.ComboBox comboFile;
 		private System.Windows.Forms.ColumnHeader columnFileName;
 		private System.Windows.Forms.ColumnHeader columnDate;

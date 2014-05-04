@@ -180,7 +180,7 @@ namespace GorgonLibrary.Editor
 	    /// <remarks>Depending on which button was clicked, either DialogResult.OK or DialogResult.Cancel will be returned from this method.</remarks>
 	    public DialogResult ShowDialog(IWin32Window owner = null)
 	    {
-	        using(var selector = new formEditorFileSelector(FileExtensions))
+	        using(var selector = new FormEditorFileSelector(FileExtensions))
 	        {
 	            selector.Text = Text;
 	            selector.DefaultExtension = DefaultExtension;

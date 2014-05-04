@@ -69,7 +69,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A dialog used to indicate a time consuming action is taking place.
 	/// </summary>
-	partial class formProcess 
+	partial class FormProcess 
 		: ZuneForm
 	{
 		#region Variables.
@@ -275,18 +275,18 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formProcess"/> class.
+		/// Initializes a new instance of the <see cref="FormProcess"/> class.
 		/// </summary>
-		public formProcess()
+		public FormProcess()
 		{
 			InitializeComponent();
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formProcess"/> class.
+		/// Initializes a new instance of the <see cref="FormProcess"/> class.
 		/// </summary>
 		/// <param name="processType">Type of the process.</param>
-		public formProcess(ProcessType processType)
+		public FormProcess(ProcessType processType)
 		{
 			_processType = processType;
 
