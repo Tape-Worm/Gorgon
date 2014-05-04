@@ -102,11 +102,11 @@
     <Compile Include="Design\FontBrushEditor.cs" />
     <Compile Include="Design\FontFamilyEditor.cs" />
     <Compile Include="Design\FontStyleEditor.cs" />
-    <Compile Include="formBrushEditor.cs">
+    <Compile Include="FormBrushEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formBrushEditor.Designer.cs">
-      <DependentUpon>formBrushEditor.cs</DependentUpon>
+    <Compile Include="FormBrushEditor.Designer.cs">
+      <DependentUpon>FormBrushEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="FormEditPreviewText.cs">
       <SubType>Form</SubType>
@@ -115,17 +115,17 @@
       <DependentUpon>FormEditPreviewText.cs</DependentUpon>
     </Compile>
     <Compile Include="GorgonFontContentSettings.cs" />
-    <Compile Include="formCharacterPicker.cs">
+    <Compile Include="FormCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formCharacterPicker.Designer.cs">
-      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    <Compile Include="FormCharacterPicker.Designer.cs">
+      <DependentUpon>FormCharacterPicker.cs</DependentUpon>
     </Compile>
-    <Compile Include="formNewFont.cs">
+    <Compile Include="FormNewFont.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formNewFont.Designer.cs">
-      <DependentUpon>formNewFont.cs</DependentUpon>
+    <Compile Include="FormNewFont.Designer.cs">
+      <DependentUpon>FormNewFont.cs</DependentUpon>
     </Compile>
     <Compile Include="GorgonFontContent.cs" />
     <Compile Include="GorgonFontContentPanel.cs">
@@ -216,17 +216,17 @@
     <EmbeddedResource Include="Controls\panelTexture.resx">
       <DependentUpon>panelTexture.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formBrushEditor.resx">
-      <DependentUpon>formBrushEditor.cs</DependentUpon>
+    <EmbeddedResource Include="FormBrushEditor.resx">
+      <DependentUpon>FormBrushEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formCharacterPicker.resx">
-      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    <EmbeddedResource Include="FormCharacterPicker.resx">
+      <DependentUpon>FormCharacterPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormEditPreviewText.resx">
       <DependentUpon>FormEditPreviewText.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formNewFont.resx">
-      <DependentUpon>formNewFont.cs</DependentUpon>
+    <EmbeddedResource Include="FormNewFont.resx">
+      <DependentUpon>FormNewFont.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GorgonFontContentPanel.resx">
       <DependentUpon>GorgonFontContentPanel.cs</DependentUpon>

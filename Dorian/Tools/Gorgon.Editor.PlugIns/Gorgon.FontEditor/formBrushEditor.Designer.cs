@@ -4,7 +4,7 @@ using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
-    partial class formBrushEditor
+    partial class FormBrushEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formBrushEditor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormBrushEditor));
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.tabBrushEditor = new KRBTabControl.KRBTabControl();
