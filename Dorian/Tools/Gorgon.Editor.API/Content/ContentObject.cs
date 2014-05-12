@@ -190,7 +190,9 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				if (ContentManagement.ContentRenamed != null)
+				if ((ContentManagement.ContentRenamed != null)
+					&& (ContentManagement.Current == this)
+					&& (HasProperties))
 				{
 					// The changing of the name for content is special in that it's persisted
 					// immediately.  When the name is changed, no change tracking is performed.
@@ -520,9 +522,15 @@ namespace GorgonLibrary.Editor
                 throw new KeyNotFoundException(string.Format(APIResources.GOREDIT_ERR_PROPERTY_NOT_FOUND, propertyName));
             }
 
+	        if (!HasProperties)
+	        {
+		        return;
+	        }
+
             TypeDescriptor[propertyName].IsReadOnly = disabled;
 
-	        if (ContentManagement.ContentPropertyStateChanged == null)
+	        if ((ContentManagement.ContentPropertyStateChanged == null)
+				|| (ContentManagement.Current != this))
 	        {
 		        return;
 	        }
@@ -590,7 +598,7 @@ namespace GorgonLibrary.Editor
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 
-			_name = name;
+			Name = name;
 		}
 		#endregion
 

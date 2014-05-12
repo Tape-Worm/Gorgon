@@ -38,6 +38,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -1375,7 +1376,7 @@ namespace GorgonLibrary.Editor
 			settings.Name = file.Name;
 			settings.CreateContent = false;
 
-			// We need to load the content so we can generate a thumbnail (or retrieve cached version).
+			// We need to load the content so we can generate a thumbnail (or retrieve the cached version).
 			using (ContentObject content = plugIn.CreateContentObject(settings))
 			{
 				if (!content.HasThumbnail)
@@ -1437,7 +1438,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to retrieve the thumb nails for the file view when in thumbnail mode on a separate thread.
 		/// </summary>
-		private void GetThumbNails()
+		private async void GetThumbNails()
 		{
 			// Get the first item that needs a thumbnail.
 			while ((_thumbNailFiles.Count > 0) && (!_cancelSource.Token.IsCancellationRequested))
@@ -1467,13 +1468,18 @@ namespace GorgonLibrary.Editor
 									                         return;
 								                         }
 
+														 // Attempt to remove this item.
+								                         if (!_thumbNailFiles.Contains(item))
+								                         {
+									                         return;
+								                         }
+
+								                         _thumbNailFiles.Remove(item);
+
 								                         if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
 								                         {
 									                         imagesFilesLarge.Images.Add(item.FullPath, thumbNail);
 								                         }
-
-								                         // Attempt to remove this item.
-								                         _thumbNailFiles.Remove(item);
 
 								                         // If the list view no longer contains this item, then we should dump it.
 								                         // It'll still be cached in our image list for later.
@@ -1493,8 +1499,10 @@ namespace GorgonLibrary.Editor
 
 						Invoke(new MethodInvoker(() =>
 						                         {
+#if DEBUG
 							                         GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
 							                                                              item.FullPath), null, ex);
+#endif
 
 													 if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
 													 {
