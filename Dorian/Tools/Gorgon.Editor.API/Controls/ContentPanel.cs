@@ -186,20 +186,6 @@ namespace GorgonLibrary.Editor
 	    #endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to update the caption label.
-        /// </summary>
-        private void UpdateCaption()
-        {
-	        if (_content == null)
-	        {
-				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
-		        return;
-	        }
-
-            labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, HasChanged ? "*" : string.Empty);
-		}
-
 		/// <summary>
 		/// Handles the MouseEnter event of the labelClose control.
 		/// </summary>
@@ -356,6 +342,20 @@ namespace GorgonLibrary.Editor
 		{
 			HasChanged = false;
 			RefreshContent();
+		}
+
+		/// <summary>
+		/// Function to update the caption label.
+		/// </summary>
+		internal void UpdateCaption()
+		{
+			if (_content == null)
+			{
+				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
+				return;
+			}
+
+			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, HasChanged ? "*" : string.Empty);
 		}
 
 		/// <summary>

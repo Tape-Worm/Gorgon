@@ -3052,6 +3052,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Function to refresh the UI by a change to the font properties.
+		/// </summary>
+		/// <param name="propertyName">Name of the property to refresh from.</param>
+		/// <param name="value">The current value of the property.</param>
+	    public void RefreshByProperty(string propertyName, object value)
+	    {
+		    OnContentPropertyChanged(propertyName, value);
+	    }
+
+		/// <summary>
 		/// Function called when the content has changed.
 		/// </summary>
 		public override void RefreshContent()
@@ -3077,6 +3087,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
 			panelText.BackColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
+			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
+			textPreviewText.Select();
 
 			_text = _content.Renderer.Renderables.CreateText("Sample.Text", _content.Font, string.Empty);
 			_text.Color = Color.Black;
@@ -3086,6 +3098,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
 			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
 		    _text.AllowColorCodes = true;
+			_text.Text = textPreviewText.Text;
 
             _pattern = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
 
@@ -3101,8 +3114,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             _patternSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
             _patternSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 
-			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
-			textPreviewText.Select();
 
 			// Create the glyph sprite.
 			_glyphSprite = _content.Renderer.Renderables.CreateSprite("GlyphSprite", new GorgonSpriteSettings());

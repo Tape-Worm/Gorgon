@@ -126,17 +126,11 @@
   <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
     <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
   </data>
-  <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
-    <value>Controls whether multiple files can be selected or not.</value>
-  </data>
   <data name="GOREDIT_TEXT_LOAD_DEFAULT" xml:space="preserve">
     <value>Loading default content pane.</value>
   </data>
   <data name="GOREDIT_DLG_CONTENT_CHANGED_SAVE" xml:space="preserve">
     <value>The {0} '{1}' has unsaved changes. Would you like to save the {0} now?</value>
-  </data>
-  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
-    <value>Design</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_DISABLE_PLUGIN" xml:space="preserve">
     <value>&amp;Disable</value>
@@ -207,9 +201,6 @@
   <data name="GOREDIT_TEXT_FILE_WRITER" xml:space="preserve">
     <value>File writer</value>
   </data>
-  <data name="PROP_NAME_DESC" xml:space="preserve">
-    <value>Provides a name for the content.  The name should conform to a standard file name.</value>
-  </data>
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -227,9 +218,6 @@ Changing this value will require a restart of the application.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_PASTE" xml:space="preserve">
     <value>&amp;Paste</value>
-  </data>
-  <data name="PROP_TEXT_DESC" xml:space="preserve">
-    <value>Sets the text value to assign to the caption of the window.</value>
   </data>
   <data name="GOREDIT_TEXT_LOAD_PREV_FILE" xml:space="preserve">
     <value>Loading previous editor file...</value>
@@ -296,9 +284,6 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_DLG_DISABLE_PLUGIN" xml:space="preserve">
     <value>This will disable the plug in '{0}'.  Are you sure wish to do this?</value>
   </data>
-  <data name="PROP_FILENAME_DESC" xml:space="preserve">
-    <value>Sets the default selected filename or the last selected file name.</value>
-  </data>
   <data name="GOREDIT_ACC_TEXT_ADD_CONTENT" xml:space="preserve">
     <value>Add &amp;content</value>
   </data>
@@ -353,9 +338,6 @@ Changing this value will require a restart of the application.</value>
   <data name="GOREDIT_ACC_TEXT_OK" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
-  <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
-    <value>The initial directory for the file dialog.</value>
-  </data>
   <data name="Gorgon_2_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -364,9 +346,6 @@ Changing this value will require a restart of the application.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_SAVE_AS" xml:space="preserve">
     <value>Save &amp;as</value>
-  </data>
-  <data name="PROP_CUETEXT_DESC" xml:space="preserve">
-    <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
   </data>
   <data name="GOREDIT_TIP_PLUG_IN_LOCATION" xml:space="preserve">
     <value>Selects the directory that contains the plug-ins to use with 
@@ -380,17 +359,11 @@ Changing this value will require a restart of the application.</value>
   <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_FILEVIEW_DESC" xml:space="preserve">
-    <value>The view used for the file dialog.</value>
-  </data>
   <data name="GOREDIT_TEXT_EDITOR_PATHS" xml:space="preserve">
     <value>Editor paths</value>
   </data>
   <data name="GOREDIT_DLG_SCRATCH_LOC_CHANGE" xml:space="preserve">
     <value>The scratch location has changed.  This will require that the application be restarted before this setting takes effect.</value>
-  </data>
-  <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
-    <value>Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes.</value>
   </data>
   <data name="GOREDIT_ACC_TEXT_RENAME" xml:space="preserve">
     <value>&amp;Rename</value>
@@ -495,24 +468,6 @@ and double click on the plug-in item in the list.</value>
   </data>
   <data name="GOREDIT_TEXT_ANIMATE_SPEED" xml:space="preserve">
     <value>Animation speed</value>
-  </data>
-  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
-    <value>Appearance</value>
-  </data>
-  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
-  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
-    <value>Data</value>
-  </data>
-  <data name="PROP_TEXT_CAPTION_VISIBLE_DESC" xml:space="preserve">
-    <value>Shows or hides the caption for the content panel.</value>
-  </data>
-  <data name="PROP_TEXT_CONTENT_PANEL_DESC" xml:space="preserve">
-    <value>Sets the text for the caption on the content panel control.</value>
-  </data>
-  <data name="PROP_TEXT_PREF_PANEL_DESC" xml:space="preserve">
-    <value>Sets the text to display on the tab for the preference panel.</value>
   </data>
   <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
