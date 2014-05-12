@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -138,10 +139,10 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Property to set or return the method to call when a property on the content has changed.
+		/// Property to set or return the method to call when content is renamed.
 		/// </summary>
-		/// <remarks>This only takes effect if properties are available for public use on the content.</remarks>
-	    public static Action<ContentPropertyChangedEventArgs> ContentPropertyChanged
+		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c></remarks>
+	    public static Action<string> ContentRenamed
 	    {
 		    get;
 		    set;
@@ -151,6 +152,15 @@ namespace GorgonLibrary.Editor
 		/// Property to set or return the method to call when the current content is persisted back to the file system.
 		/// </summary>
 	    public static Action ContentSaved
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the method to call when a content property has its enabled/disabled state changed.
+		/// </summary>
+	    public static Action ContentPropertyStateChanged
 	    {
 		    get;
 		    set;
@@ -190,22 +200,13 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Event handler fired when any content property is changed.
+		/// Function called when a property on the content has been changed.
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event parameters.</param>
-		private static void OnContentChanged(object sender, ContentPropertyChangedEventArgs e)
+		private static void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (Current == null)
-			{
-				return;
-			}
-
 			_contentChanged = true;
-			if (ContentPropertyChanged != null)
-			{
-				ContentPropertyChanged(e);
-			}
 		}
 
 		/// <summary>
@@ -249,7 +250,7 @@ namespace GorgonLibrary.Editor
 
 			if (contentObject.HasProperties)
 			{
-				contentObject.ContentPropertyChanged += OnContentChanged;
+				contentObject.PropertyChanged += OnPropertyChanged;
 			}
 
 			// Force focus to the content window.
@@ -280,22 +281,6 @@ namespace GorgonLibrary.Editor
 			{
 				_currentContentObject.ContentControl.OnEditorSettingsChanged();
 			}
-	    }
-
-		/// <summary>
-		/// Function to update the content properties.
-		/// </summary>
-		/// <param name="propertyValue">The updated property and value information.</param>
-	    public static void UpdateProperties(PropertyValueChangedEventArgs propertyValue)
-	    {
-			if ((Current == null)
-			    || (!Current.HasProperties))
-			{
-				return;
-			}
-
-			Current.PropertyChanged(propertyValue);
-			_contentChanged = true;
 	    }
 
 		/// <summary>
@@ -364,7 +349,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Close the content object.  This should preserve any changes.
-			_currentContentObject.ContentPropertyChanged -= OnContentChanged;
+			_currentContentObject.PropertyChanged -= OnPropertyChanged;
 			_currentContentObject.Dispose();
 			_currentContentObject = null;
 	    }

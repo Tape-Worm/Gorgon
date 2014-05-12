@@ -395,4 +395,49 @@ The following characters are not allowed:
   <data name="GOREDIT_TEXT_ZOOM" xml:space="preserve">
     <value>Zoom</value>
   </data>
+  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="PROP_CUETEXT_DESC" xml:space="preserve">
+    <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
+  </data>
+  <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
+    <value>Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes.</value>
+  </data>
+  <data name="PROP_FILENAME_DESC" xml:space="preserve">
+    <value>Sets the default selected filename or the last selected file name.</value>
+  </data>
+  <data name="PROP_FILEVIEW_DESC" xml:space="preserve">
+    <value>The view used for the file dialog.</value>
+  </data>
+  <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
+    <value>Controls whether multiple files can be selected or not.</value>
+  </data>
+  <data name="PROP_NAME_DESC" xml:space="preserve">
+    <value>Provides a name for the content.  The name should conform to a standard file name.</value>
+  </data>
+  <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
+    <value>The initial directory for the file dialog.</value>
+  </data>
+  <data name="PROP_TEXT_CAPTION_VISIBLE_DESC" xml:space="preserve">
+    <value>Shows or hides the caption for the content panel.</value>
+  </data>
+  <data name="PROP_TEXT_CONTENT_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text for the caption on the content panel control.</value>
+  </data>
+  <data name="PROP_TEXT_DESC" xml:space="preserve">
+    <value>Sets the text value to assign to the caption of the window.</value>
+  </data>
+  <data name="PROP_TEXT_PREF_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text to display on the tab for the preference panel.</value>
+  </data>
 </root>

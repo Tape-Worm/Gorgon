@@ -128,30 +128,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Called when [property value changed].
-		/// </summary>
-		/// <param name="o">The o.</param>
-		/// <param name="e">The <see cref="PropertyValueChangedEventArgs"/> instance containing the event data.</param>
-		private void OnPropertyValueChanged(object o, PropertyValueChangedEventArgs e)
-		{
-			Cursor.Current = Cursors.WaitCursor;
-
-			try
-			{
-				ContentManagement.UpdateProperties(e);
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-				ValidateControls();
-			}
-		}
-
-		/// <summary>
         /// Handles the Click event of the itemPreferences control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -968,47 +944,36 @@ namespace GorgonLibrary.Editor
 			itemResetValue.Enabled = (propertyItem.SelectedGridItem.PropertyDescriptor.CanResetValue(propertyItem.SelectedObject));
 		}
 
-        /// <summary>
-        /// Handles the ContentPropertyChanged event of the CurrentContent control.
-        /// </summary>
-        /// <param name="changedArgs">Information about the property that changed.</param>
-        private void OnContentPropertyChanged(ContentPropertyChangedEventArgs changedArgs)
-        {
+		/// <summary>
+		/// Function called when the name property of the content has been changed.
+		/// </summary>
+		/// <param name="newName">The new name for the content.</param>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+		private void ContentNamePropertyChanged(string newName)
+		{
+			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-                // Only repaint the property grid in this case.
-                if (changedArgs.Repaint)
-                {
-                    propertyItem.Refresh();
-                    return;
-                }
+				TreeNodeFile node = treeFiles.GetCurrentContentNode(CurrentOpenFile);
 
-                // If we change the name of an item, we must rename it.
-				if (!changedArgs.PropertyName.Equals("name", StringComparison.OrdinalIgnoreCase))
-				{
-					return;
-				}
-
-				// Find our node that corresponds to this content.
-				var node = treeFiles.GetCurrentContentNode(CurrentOpenFile);
-
-				// If the node isn't here, then it may not have been enumerated, so it's OK if we get out.
 				if (node == null)
 				{
 					return;
 				}
 
-				RenameFileNode(node, changedArgs.Value.ToString());
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
+				if (string.Equals(node.File.Name, newName, StringComparison.OrdinalIgnoreCase))
+				{
+					return;
+				}
+
+				RenameFileNode(node, newName);
 			}
 			finally
 			{
+				Cursor.Current = Cursors.Default;
 				ValidateControls();
 			}
-        }
+		}
 
 		/// <summary>
 		/// Function called when the content window is closed.
@@ -1248,7 +1213,8 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Unhook from the content functionality.
-				ContentManagement.ContentPropertyChanged = null;
+				ContentManagement.ContentPropertyStateChanged = null;
+				ContentManagement.ContentRenamed = null;
 				ContentManagement.ContentPanelUnloadAction = null;
 				ContentManagement.ContentEnumerateProperties = null;
 				ContentManagement.ContentInitializedAction = null;
@@ -3051,20 +3017,12 @@ namespace GorgonLibrary.Editor
 			                                             };
 			ContentManagement.ContentEnumerateProperties = hasProperties =>
 			{
-				propertyItem.PropertyValueChanged -= OnPropertyValueChanged;
-				ContentManagement.ContentPropertyChanged = null;
-
 				if (hasProperties)
 				{
 					pageProperties.Enabled = true;
 					propertyItem.SelectedObject = ContentManagement.Current.TypeDescriptor;
 					propertyItem.Refresh();
 					tabDocumentManager.SelectedTab = pageProperties;
-    
-					// Set up event.
-					ContentManagement.ContentPropertyChanged = OnContentPropertyChanged;
-
-					propertyItem.PropertyValueChanged += OnPropertyValueChanged;
 				}
 				else
 				{                
@@ -3101,6 +3059,9 @@ namespace GorgonLibrary.Editor
 				                                                                null,
 				                                                                displayText.ToString());
 			                                       };
+
+			ContentManagement.ContentRenamed = ContentNamePropertyChanged;
+			ContentManagement.ContentPropertyStateChanged = () => propertyItem.Refresh();
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

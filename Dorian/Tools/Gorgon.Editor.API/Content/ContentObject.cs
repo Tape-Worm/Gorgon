@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
@@ -38,61 +39,10 @@ using GorgonLibrary.Input;
 namespace GorgonLibrary.Editor
 {
     /// <summary>
-    /// Content property changed event arguments.
-    /// </summary>
-    class ContentPropertyChangedEventArgs
-        : EventArgs
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the name of the property that was updated.
-        /// </summary>
-        public string PropertyName
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the value for the property that was updated.
-        /// </summary>
-        public object Value
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return whether we should repaint the property or not.
-        /// </summary>
-        public bool Repaint
-        {
-            get;
-            private set;
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContentPropertyChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="repaint">TRUE to repaint the property, FALSE to leave alone.</param>
-        public ContentPropertyChangedEventArgs(string propertyName, object value, bool repaint)
-        {
-            PropertyName = propertyName;
-            Value = value;
-            Repaint = repaint;
-        }
-        #endregion
-    }
-
-    /// <summary>
 	/// Base object for content that can be created/modified by the editor.
 	/// </summary>
 	public abstract class ContentObject
-		: IDisposable, INamedObject
+		: IDisposable, INamedObject, INotifyPropertyChanged
     {
         #region Constants.
         /// <summary>
@@ -107,14 +57,6 @@ namespace GorgonLibrary.Editor
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
 		#endregion
-
-        #region Events.
-        /// <summary>
-        /// Event fired when the content has had a property change.
-        /// </summary>
-        [Browsable(false)]
-        internal event EventHandler<ContentPropertyChangedEventArgs> ContentPropertyChanged;
-        #endregion
 
         #region Properties.
         /// <summary>
@@ -241,14 +183,27 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				_name = ValidateName(value);
+				string newName = ValidateName(value);
 
-				if (string.IsNullOrWhiteSpace(_name))
+				if (string.IsNullOrWhiteSpace(newName))
 				{
 					return;
 				}
-				
-				OnContentPropertyChanged("Name", _name, false);
+
+				if (ContentManagement.ContentRenamed != null)
+				{
+					// The changing of the name for content is special in that it's persisted
+					// immediately.  When the name is changed, no change tracking is performed.
+					ContentManagement.ContentRenamed(newName);
+				}
+
+				_name = newName;
+
+				// If we have a content UI, then tell it of the change to the property.
+				if (ContentControl != null)
+				{
+					ContentControl.UpdateCaption();
+				}
 			}
 		}
 
@@ -345,34 +300,6 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-        /// Function to notify the application that a property on the content object was changed.
-        /// </summary>
-        /// <param name="propertyName">Name of the property that was updated.</param>
-        /// <param name="value">Value assigned to the property.</param>
-        /// <param name="refreshPropertyPanel">TRUE to refresh the property panel associated with the content, FALSE to leave alone.</param>
-        protected virtual void OnContentPropertyChanged(string propertyName, object value, bool refreshPropertyPanel)
-        {
-            if (string.IsNullOrWhiteSpace(propertyName))
-            {
-                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
-            }
-
-			// If we have a content UI, then tell it of the change to the property.
-			if ((ContentControl != null)
-				&& (!refreshPropertyPanel))
-			{
-				ContentControl.OnContentPropertyChanged(propertyName, value);
-			}
-
-	        if (ContentPropertyChanged == null)
-	        {
-		        return;
-	        }
-
-	        ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value, refreshPropertyPanel));
-        }
-
-        /// <summary>
         /// Function called when the content is being initialized.
         /// </summary>
         /// <returns>A control to place in the primary interface window.</returns>
@@ -384,6 +311,43 @@ namespace GorgonLibrary.Editor
         protected internal virtual void OnEditorSettingsUpdated()
         {
         }
+
+		/// <summary>
+		/// Function to let the interface know that a property has been changed.
+		/// </summary>
+		/// <param name="property">Name of the property.</param>
+		/// <param name="value">New value for the property.</param>
+	    protected void NotifyPropertyChanged(string property, object value)
+	    {
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(property));
+			}
+
+			// If we have a content UI, then tell it of the change to the property.
+			if (ContentControl == null)
+			{
+				return;
+			}
+
+			ContentControl.OnContentPropertyChanged(property, value);
+		}
+
+		/// <summary>
+		/// Function to let the interface know that a property has been changed.
+		/// </summary>
+		/// <param name="propertyName">Name of the property that was updated.  This value is passed automatically.</param>
+	    protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+	    {
+			object value = null;
+
+			if (TypeDescriptor.Contains(propertyName))
+			{
+				value = TypeDescriptor[propertyName].GetValue<object>();
+			}
+
+			NotifyPropertyChanged(propertyName, value);
+	    }
 
 		/// <summary>
 		/// Function to retrieve the registered image editor for the system.
@@ -558,8 +522,13 @@ namespace GorgonLibrary.Editor
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;
 
-			OnContentPropertyChanged(propertyName, TypeDescriptor[propertyName].GetValue<object>(), true);
-        }
+	        if (ContentManagement.ContentPropertyStateChanged == null)
+	        {
+		        return;
+	        }
+
+	        ContentManagement.ContentPropertyStateChanged();
+		}
 
 		/// <summary>
 		/// Function to retrieve a thumbnail image for the content plug-in.
@@ -575,7 +544,7 @@ namespace GorgonLibrary.Editor
         /// Function called when a property is changed from the property grid.
         /// </summary>
         /// <param name="e">Event parameters called when a property is changed.</param>
-        public virtual void PropertyChanged(PropertyValueChangedEventArgs e)
+        public virtual void OnPropertyChanged(PropertyValueChangedEventArgs e)
         {
             
         }
@@ -621,7 +590,7 @@ namespace GorgonLibrary.Editor
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 
-			Name = name;
+			_name = name;
 		}
 		#endregion
 
@@ -675,5 +644,12 @@ namespace GorgonLibrary.Editor
 			GC.SuppressFinalize(this);
 		}
 		#endregion
-	}
+
+		#region INotifyPropertyChanged Members
+		/// <summary>
+		/// Occurs when a property value changes.
+		/// </summary>
+	    public event PropertyChangedEventHandler PropertyChanged;
+	    #endregion
+    }
 }

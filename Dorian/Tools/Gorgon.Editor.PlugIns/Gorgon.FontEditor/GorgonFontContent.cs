@@ -142,8 +142,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 _settings.Brush = value;
                 OnContentUpdated();
-                OnContentPropertyChanged("Brush", value, false);
-				OnContentPropertyChanged("Dependency", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -185,7 +184,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				
 	            _settings.OutlineSize = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("OutlineSize", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -211,7 +210,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            _settings.OutlineColor1 = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("OutlineColor", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -237,7 +236,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_settings.OutlineColor2 = value;
 				OnContentUpdated();
-				OnContentPropertyChanged("OutlineColor", value, false);
+				NotifyPropertyChanged();
 			}
 		}
 
@@ -269,7 +268,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.Size = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontSize", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -301,7 +300,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_settings.PackingSpacing = value;
 				CheckTextureSize();
 				OnContentUpdated();
-				OnContentPropertyChanged("PackingSpace", value, false);
+				NotifyPropertyChanged();
 			}
 		}
 
@@ -339,7 +338,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontTextureSize", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -365,7 +364,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            _settings.AntiAliasingMode = value;
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontAntiAliasMode", value, false);
+				NotifyPropertyChanged();
             }
         }
 		
@@ -392,7 +391,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontHeightMode = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("UsePointSize", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -423,7 +422,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontFamilyName = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontFamily", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -454,7 +453,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.Characters = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("Characters", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -482,7 +481,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            _settings.FontStyle = value;
 	            CheckTextureSize();
 	            OnContentUpdated();
-	            OnContentPropertyChanged("FontStyle", value, false);
+				NotifyPropertyChanged();
             }
         }
 
@@ -508,7 +507,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			    _settings.UseKerningPairs = value;
 				OnContentUpdated();
-			    OnContentPropertyChanged("UseKerningPairs", value, false);
+				NotifyPropertyChanged();
 		    }
 	    }
 
@@ -881,7 +880,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public void UpdateFontGlyphs()
         {
             OnContentUpdated();
-            OnContentPropertyChanged("Glyphs", Font.Settings.Glyphs, false);
+			NotifyPropertyChanged();
         }
 
 		/// <summary>
@@ -894,11 +893,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (resetFont)
 			{
 				OnContentUpdated();
-				OnContentPropertyChanged("ResetGlyphAdvance", advance, false);
+				NotifyPropertyChanged("ResetGlyphAdvance", advance);
 				return;
 			}
 
-			OnContentPropertyChanged("SelectedGlyphAdvance", advance, false);
+			NotifyPropertyChanged("SelectedGlyphAdvance", advance);
 	    }
 
 		/// <summary>
@@ -911,11 +910,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (resetFont)
 			{
 				OnContentUpdated();
-				OnContentPropertyChanged("ResetGlyphOffset", offset, false);
+				NotifyPropertyChanged("ResetGlyphOffset", offset);
 				return;
 			}
 
-			OnContentPropertyChanged("SelectedGlyphOffset", offset, false);
+			NotifyPropertyChanged("SelectedGlyphOffset", offset);
 	    }
 
 		/// <summary>
