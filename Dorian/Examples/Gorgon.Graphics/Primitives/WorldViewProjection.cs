@@ -46,10 +46,12 @@ namespace GorgonLibrary.Graphics.Example
 		#region Variables.
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
-		// The constant buffer to update.
-		private readonly GorgonConstantBuffer _buffer;
-		// Buffer data.
-		private readonly GorgonDataStream _bufferData;
+		// The projection * view constant buffer to update.
+		private readonly GorgonConstantBuffer _projViewBuffer;
+		// Projection * view buffer data.
+		private readonly GorgonDataStream _projViewData;
+        // World constant buffer to update.
+	    private readonly GorgonConstantBuffer _worldBuffer;
 		// Size of a matrix, in bytes.
 		private readonly int _matrixSize = DirectAccess.SizeOf<Matrix>();
 		#endregion
@@ -61,14 +63,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="world">World matrix to update.</param>
 		public void UpdateWorldMatrix(ref Matrix world)
 		{
-			unsafe
-			{
-				var data = (byte*)_bufferData.UnsafePointer;
-
-				DirectAccess.WriteValue(data, ref world);
-
-				_buffer.Update(_bufferData);
-			}
+            _worldBuffer.Update(ref world);
 		}
 
 		/// <summary>
@@ -88,11 +83,11 @@ namespace GorgonLibrary.Graphics.Example
 
 			unsafe
 			{
-				var data = (byte*)_bufferData.UnsafePointer;
+				var data = (byte*)_projViewData.UnsafePointer;
 
-				DirectAccess.WriteValue(data + (_matrixSize * 2), ref projection);
+				DirectAccess.WriteValue(data + _matrixSize, ref projection);
 
-				_buffer.Update(_bufferData);
+				_projViewBuffer.Update(_projViewData);
 			}
 		}
 		#endregion
@@ -107,27 +102,29 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			Matrix dummy = Matrix.Identity;
 
-			_buffer = graphics.Buffers.CreateConstantBuffer("WVPBuffer",
+			_projViewBuffer = graphics.Buffers.CreateConstantBuffer("WVPBuffer",
 			                                                new GorgonConstantBufferSettings
 			                                                {
-				                                                SizeInBytes = _matrixSize * 3,
+				                                                SizeInBytes = _matrixSize * 2,
 				                                                Usage = BufferUsage.Default
 			                                                });
 
-			_bufferData = new GorgonDataStream(_buffer.SizeInBytes);
+			_projViewData = new GorgonDataStream(_projViewBuffer.SizeInBytes);
 
 			unsafe
 			{
-				var data = (byte *)_bufferData.UnsafePointer;
+				var data = (byte *)_projViewData.UnsafePointer;
 
 				DirectAccess.WriteValue(data, ref dummy);
 				DirectAccess.WriteValue((data + _matrixSize), ref dummy);
-				DirectAccess.WriteValue((data + (_matrixSize * 2)), ref dummy);
 			}
 
-			_buffer.Update(_bufferData);
+			_projViewBuffer.Update(_projViewData);
 
-			graphics.Shaders.VertexShader.ConstantBuffers[0] = _buffer;
+		    _worldBuffer = graphics.Buffers.CreateConstantBuffer("WorldBuffer", ref dummy, BufferUsage.Default);
+
+			graphics.Shaders.VertexShader.ConstantBuffers[0] = _projViewBuffer;
+		    graphics.Shaders.VertexShader.ConstantBuffers[1] = _worldBuffer;
 		}
 		#endregion
 
@@ -145,14 +142,19 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (disposing)
 			{
-				if (_bufferData != null)
+			    if (_worldBuffer != null)
+			    {
+			        _worldBuffer.Dispose();
+			    }
+
+				if (_projViewData != null)
 				{
-					_bufferData.Dispose();
+					_projViewData.Dispose();
 				}
 
-				if (_buffer != null)
+				if (_projViewBuffer != null)
 				{
-					_buffer.Dispose();
+					_projViewBuffer.Dispose();
 				}
 			}
 
