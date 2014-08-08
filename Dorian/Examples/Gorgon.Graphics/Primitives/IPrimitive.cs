@@ -62,5 +62,14 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			get;
 		}
+
+        /// <summary>
+        /// Property to set or return the texture to use.
+        /// </summary>
+	    GorgonTexture2D Texture
+	    {
+	        get;
+            set;
+	    }
 	}
 }

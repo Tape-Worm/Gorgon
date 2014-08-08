@@ -117,6 +117,7 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <Content Include="Resources\Shaders.hlsl" />
+    <None Include="Resources\UV.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

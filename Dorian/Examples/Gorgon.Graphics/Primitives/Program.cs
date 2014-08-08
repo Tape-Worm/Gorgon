@@ -63,6 +63,10 @@ namespace GorgonLibrary.Graphics.Example
 		private static Triangle _triangle;
 		// Light for our primitives.
 		private static Light _light;
+        // The texture to use.
+	    private static GorgonTexture2D _texture;
+        // Rotation value.
+	    private static float _objRotation;
 
 		/// <summary>
 		/// Main application loop.
@@ -72,6 +76,19 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			_swapChain.Clear(Color.CornflowerBlue, 1.0f);
 
+		    _objRotation += 50.0f * GorgonTiming.Delta;
+
+		    if (_objRotation > 359.9f)
+		    {
+		        _objRotation -= 359.9f;
+		    }
+
+            _triangle.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
+            
+		    Matrix world = _triangle.World;
+            _wvp.UpdateWorldMatrix(ref world);
+
+            _graphics.Shaders.PixelShader.Resources[0] = _triangle.Texture;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_triangle.VertexBuffer, Vertex3D.Size);
 			_graphics.Input.IndexBuffer = _triangle.IndexBuffer;
 
@@ -126,6 +143,8 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Input.Layout = _vertexLayout;
 			_graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
 
+		    _texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("UVTexture", Resources.UV);
+
 			var depth = new GorgonDepthStencilStates
 			            {
 				            DepthComparison = ComparisonOperators.LessEqual,
@@ -137,18 +156,16 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Output.SetRenderTarget(_swapChain, _swapChain.DepthStencilBuffer);
 			_graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			_graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, _form.ClientSize.Width, _form.ClientSize.Height, 0, 1.0f));
-
+		    _graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.LinearFilter;
+            
 			_wvp = new WorldViewProjection(_graphics);
-			_wvp.UpdateProjection(75.0f, _form.ClientSize.Width, _form.ClientSize.Height, 0.5f, 10000.0f);
-
-			Matrix world = Matrix.Translation(0, 0, 1.0f);
-			_wvp.UpdateWorldMatrix(ref world);
+			_wvp.UpdateProjection(75.0f, _form.ClientSize.Width, _form.ClientSize.Height);
 
 			// When we resize, update the projection and viewport to match our client size.
 			_form.Resize += (sender, args) =>
 			                {
 								_graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, _form.ClientSize.Width, _form.ClientSize.Height, 0, 1.0f));
-								_wvp.UpdateProjection(75.0f, _form.ClientSize.Width, _form.ClientSize.Height, 0.5f, 10000.0f);
+								_wvp.UpdateProjection(75.0f, _form.ClientSize.Width, _form.ClientSize.Height);
 			                };
 
 			var fnU = new Vector3(0.5f, 1.0f, 0);
@@ -172,9 +189,14 @@ namespace GorgonLibrary.Graphics.Example
 													Position = new Vector4(0.5f, -0.5f, 0.0f, 1),
 													Normal = faceNormal,
 													UV = new Vector2(1.0f, 1.0f)
-												});
+												})
+			            {
+			                Texture = _texture
+			            };
 
-			_light = new Light(_graphics);
+            _triangle.Position = new Vector3(0, 0, 1.0f);
+
+		    _light = new Light(_graphics);
 			var lightPosition = new Vector3(2.0f, 2.0f, -10.0f);
 			_light.UpdateLightPosition(ref lightPosition);
 		}

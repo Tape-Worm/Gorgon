@@ -5,9 +5,14 @@ SamplerState _sampler : register(s0);
 // The transformation matrices.
 cbuffer WorldViewProjection : register(b0)
 {
-	float4x4 World;
 	float4x4 View;
 	float4x4 Projection;
+}
+
+// The world matrix.
+cbuffer WorldMatrix : register(b1)
+{
+	float4x4 World;
 }
 
 // The light used for lighting calculations.
@@ -61,9 +66,10 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 	float3 h = normalize(normalize(-vertex.worldPos) - lightDirection);
 
 	float specLighting = pow(saturate(dot(h, vertex.normal)), 128.0f);
+	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
 
 	return float4(saturate(
-		(float3(1, 1, 1) * LightColor.rgb * diffuse * 0.6) + // Use light diffuse vector as intensity multiplier
+		(textureColor.rgb * float3(1, 1, 1) * LightColor.rgb * diffuse * 0.6) + // Use light diffuse vector as intensity multiplier
 		(float3(1, 1, 1) * specLighting * 0.5) // Use light specular vector as intensity multiplier
-		), 1);
+		), textureColor.a);
 }
