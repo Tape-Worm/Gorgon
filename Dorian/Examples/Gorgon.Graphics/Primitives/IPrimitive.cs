@@ -32,6 +32,14 @@ namespace GorgonLibrary.Graphics.Example
 	interface IPrimitive
 	{
 		/// <summary>
+		/// Property to return the type of primitive used to draw the object.
+		/// </summary>
+		PrimitiveType PrimitiveType
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the number of vertices.
 		/// </summary>
 		int VertexCount

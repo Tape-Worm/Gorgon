@@ -49,7 +49,8 @@ VertexOut PrimVS(PrimVertex vertex)
 	output.worldPos = worldPos.xyz;
 	output.position = mul(WVP, worldPos);
 	
-	output.normal = mul(vertex.normal, (float3x3)World);
+	output.normal = normalize(mul((float3x3)World, vertex.normal));
+	
 	output.uv = vertex.uv;
 	
 
@@ -59,17 +60,19 @@ VertexOut PrimVS(PrimVertex vertex)
 // Our pixel shader that will render objects with textures.
 float4 PrimPS(VertexOut vertex) : SV_Target
 {
+	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
 	float3 lightDirection = normalize(vertex.worldPos - LightPosition);
-	float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (100.0f / dot(LightPosition - vertex.worldPos, LightPosition - vertex.worldPos));
+	float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (6.0f / dot(LightPosition - vertex.worldPos, LightPosition - vertex.worldPos));
 
 	// Using Blinn half angle modification for perofrmance over correctness
 	float3 h = normalize(normalize(-vertex.worldPos) - lightDirection);
 
-	float specLighting = pow(saturate(dot(h, vertex.normal)), 128.0f);
-	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
+	float specLighting = pow(saturate(dot(h, vertex.normal)), 512.0f);
 
 	return float4(saturate(
 		(textureColor.rgb * float3(1, 1, 1) * LightColor.rgb * diffuse * 0.6) + // Use light diffuse vector as intensity multiplier
-		(float3(1, 1, 1) * specLighting * 0.5) // Use light specular vector as intensity multiplier
-		), textureColor.a);
+	(float3(1, 1, 1) * specLighting * 0.5) // Use light specular vector as intensity multiplier
+	), textureColor.a);
+
+	//return float4(saturate(textureColor.rgb * dot(vertex.normal, -lightDirection)), textureColor.a);
 }
