@@ -166,13 +166,14 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="point3">The 3rd point in the triangle.</param>
 		public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
 		{
+			PrimitiveType = PrimitiveType.TriangleList;
 			VertexBuffer = graphics.Buffers.CreateVertexBuffer("TriVB",
 			                                                   new[]
 			                                                   {
 				                                                   point1,
 				                                                   point2,
 				                                                   point3
-			                                                   });
+			                                                   }, BufferUsage.Immutable);
 
 			IndexBuffer = graphics.Buffers.CreateIndexBuffer("TriIB",
 			                                                  new[]
@@ -223,6 +224,15 @@ namespace GorgonLibrary.Graphics.Example
 		#endregion
 
 		#region IPrimitive Members
+		/// <summary>
+		/// Property to return the type of primitive used to draw the object.
+		/// </summary>
+		public PrimitiveType PrimitiveType
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the number of vertices.
 		/// </summary>

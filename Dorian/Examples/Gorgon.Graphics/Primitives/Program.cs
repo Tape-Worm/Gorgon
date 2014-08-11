@@ -61,6 +61,10 @@ namespace GorgonLibrary.Graphics.Example
 		private static WorldViewProjection _wvp;
 		// Triangle primitive.
 		private static Triangle _triangle;
+		// Plane primitive.
+		private static Plane _plane;
+		// Cube primitive.
+		private static Cube _cube;
 		// Light for our primitives.
 		private static Light _light;
         // The texture to use.
@@ -74,6 +78,8 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
 		private static bool Idle()
 		{
+			Matrix world;
+
 			_swapChain.Clear(Color.CornflowerBlue, 1.0f);
 
 		    _objRotation += 50.0f * GorgonTiming.Delta;
@@ -85,14 +91,37 @@ namespace GorgonLibrary.Graphics.Example
 
             _triangle.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
             
-		    Matrix world = _triangle.World;
+		    /*world = _triangle.World;
             _wvp.UpdateWorldMatrix(ref world);
 
             _graphics.Shaders.PixelShader.Resources[0] = _triangle.Texture;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_triangle.VertexBuffer, Vertex3D.Size);
 			_graphics.Input.IndexBuffer = _triangle.IndexBuffer;
+			_graphics.Input.PrimitiveType = _triangle.PrimitiveType;
 
 			_graphics.Output.DrawIndexed(0, 0, _triangle.IndexCount);
+          
+			_plane.Rotation = new Vector3(_objRotation, 0, 0);
+			world = _plane.World;
+			_wvp.UpdateWorldMatrix(ref world);
+
+			_graphics.Shaders.PixelShader.Resources[0] = _plane.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_plane.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _plane.IndexBuffer;
+			_graphics.Input.PrimitiveType = _plane.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _plane.IndexCount);*/
+
+			_cube.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
+			world = _cube.World;
+			_wvp.UpdateWorldMatrix(ref world);
+
+			_graphics.Shaders.PixelShader.Resources[0] = _cube.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_cube.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _cube.IndexBuffer;
+			_graphics.Input.PrimitiveType = _cube.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
 
 			var state = _renderer2D.Begin2D();
 			_renderer2D.Drawing.DrawString(_font, string.Format("FPS: {0:0.0}, Delta: {1:0.000} ms", GorgonTiming.FPS, GorgonTiming.Delta * 1000), Vector2.Zero, Color.White);
@@ -191,13 +220,24 @@ namespace GorgonLibrary.Graphics.Example
 													UV = new Vector2(1.0f, 1.0f)
 												})
 			            {
-			                Texture = _texture
+				            Texture = _texture,
+				            Position = new Vector3(0, 0, 1.0f)
 			            };
 
-            _triangle.Position = new Vector3(0, 0, 1.0f);
+			_plane = new Plane(_graphics, new Vector2(1.0f, 1.0f), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(180, 0, 0), 8, 8)
+			         {
+				         Position = new Vector3(0, -0.25f, 1.0f),
+						 Texture = _texture
+			         };
 
-		    _light = new Light(_graphics);
-			var lightPosition = new Vector3(2.0f, 2.0f, -10.0f);
+			_cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(0), 8, 8)
+			        {
+				        Position = new Vector3(0, 0, 1.5f),
+				        Texture = _texture
+			        };
+
+			_light = new Light(_graphics);
+			var lightPosition = new Vector3(1.0f, 1.0f, -1.0f);
 			_light.UpdateLightPosition(ref lightPosition);
 		}
 
@@ -225,6 +265,16 @@ namespace GorgonLibrary.Graphics.Example
 				if (_light != null)
 				{
 					_light.Dispose();
+				}
+
+				if (_cube != null)
+				{
+					_cube.Dispose();
+				}
+
+				if (_plane != null)
+				{
+					_plane.Dispose();
 				}
 
 				if (_triangle != null)
