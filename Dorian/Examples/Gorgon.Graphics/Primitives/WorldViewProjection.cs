@@ -42,18 +42,40 @@ namespace GorgonLibrary.Graphics.Example
 	/// </summary>
 	class WorldViewProjection
 		: IDisposable
-	{
-		#region Variables.
-		// Flag to indicate that the object was disposed.
+    {
+        #region Value Types
+        /// <summary>
+        /// View/projection matrices.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Size = 192)]
+	    private struct ViewProjectionData
+        {
+            /// <summary>
+            /// The view matrix.
+            /// </summary>
+            public Matrix View;
+            /// <summary>
+            /// The projection matrix.
+            /// </summary>
+            public Matrix Projection;
+            /// <summary>
+            /// The view * project matrix.
+            /// </summary>
+            public Matrix ViewProjection;
+        }
+        #endregion
+
+        #region Variables.
+        // Flag to indicate that the object was disposed.
 		private bool _disposed;
 		// The projection * view constant buffer to update.
 		private readonly GorgonConstantBuffer _projViewBuffer;
-		// Projection * view buffer data.
-		private readonly GorgonDataStream _projViewData;
         // World constant buffer to update.
 	    private readonly GorgonConstantBuffer _worldBuffer;
 		// Size of a matrix, in bytes.
 		private readonly int _matrixSize = DirectAccess.SizeOf<Matrix>();
+        // View/projection data.
+	    private ViewProjectionData _viewProj;
 		#endregion
 
 		#region Methods.
@@ -65,6 +87,19 @@ namespace GorgonLibrary.Graphics.Example
 		{
             _worldBuffer.Update(ref world);
 		}
+
+        /// <summary>
+        /// Function to update the view matrix.
+        /// </summary>
+        /// <param name="view">The view matrix to assign.</param>
+	    public void UpdateViewMatrix(ref Matrix view)
+	    {
+            _viewProj.View = view;
+
+            Matrix.Multiply(ref _viewProj.View, ref _viewProj.Projection, out _viewProj.ViewProjection);
+
+            _projViewBuffer.Update(ref _viewProj);
+	    }
 
 		/// <summary>
 		/// Function to update the screen width/screen height.
@@ -81,14 +116,11 @@ namespace GorgonLibrary.Graphics.Example
 
 			Matrix.PerspectiveFovLH(fov.Radians(), aspect, nearZ, farZ, out projection);
 
-			unsafe
-			{
-				var data = (byte*)_projViewData.UnsafePointer;
+		    _viewProj.Projection = projection;
 
-				DirectAccess.WriteValue(data + _matrixSize, ref projection);
+		    Matrix.Multiply(ref _viewProj.View, ref _viewProj.Projection, out _viewProj.ViewProjection);
 
-				_projViewBuffer.Update(_projViewData);
-			}
+            _projViewBuffer.Update(ref _viewProj);
 		}
 		#endregion
 
@@ -102,24 +134,21 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			Matrix dummy = Matrix.Identity;
 
-			_projViewBuffer = graphics.Buffers.CreateConstantBuffer("WVPBuffer",
+			_projViewBuffer = graphics.Buffers.CreateConstantBuffer("WVPBuffer", 
 			                                                new GorgonConstantBufferSettings
 			                                                {
-				                                                SizeInBytes = _matrixSize * 2,
+				                                                SizeInBytes = DirectAccess.SizeOf<ViewProjectionData>(),
 				                                                Usage = BufferUsage.Default
 			                                                });
 
-			_projViewData = new GorgonDataStream(_projViewBuffer.SizeInBytes);
+		    _viewProj = new ViewProjectionData
+		                {
+		                    Projection = Matrix.Identity,
+		                    View = Matrix.Identity,
+		                    ViewProjection = Matrix.Identity
+		                };
 
-			unsafe
-			{
-				var data = (byte *)_projViewData.UnsafePointer;
-
-				DirectAccess.WriteValue(data, ref dummy);
-				DirectAccess.WriteValue((data + _matrixSize), ref dummy);
-			}
-
-			_projViewBuffer.Update(_projViewData);
+            _projViewBuffer.Update(ref _viewProj);
 
 		    _worldBuffer = graphics.Buffers.CreateConstantBuffer("WorldBuffer", ref dummy, BufferUsage.Default);
 
@@ -146,11 +175,6 @@ namespace GorgonLibrary.Graphics.Example
 			    {
 			        _worldBuffer.Dispose();
 			    }
-
-				if (_projViewData != null)
-				{
-					_projViewData.Dispose();
-				}
 
 				if (_projViewBuffer != null)
 				{
