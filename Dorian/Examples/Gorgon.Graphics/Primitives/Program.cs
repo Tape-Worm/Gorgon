@@ -239,6 +239,8 @@ namespace GorgonLibrary.Graphics.Example
 			_light = new Light(_graphics);
 			var lightPosition = new Vector3(1.0f, 1.0f, -1.0f);
 			_light.UpdateLightPosition(ref lightPosition);
+		    GorgonColor color = GorgonColor.White;
+            _light.UpdateSpecular(ref color, 256.0f);
 		}
 
 		/// <summary>

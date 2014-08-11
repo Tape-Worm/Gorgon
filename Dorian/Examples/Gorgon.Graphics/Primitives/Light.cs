@@ -42,36 +42,100 @@ namespace GorgonLibrary.Graphics.Example
 	/// </summary>
 	class Light
 		: IDisposable
-	{
-		#region Variables.
-		// Flag to indicate that the object was disposed.
+    {
+        #region Value Types.
+        /// <summary>
+        /// Data for a light to pass to the GPU.
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 4)]
+	    private struct LightData
+        {
+            /// <summary>
+            /// Color of the light.
+            /// </summary>
+            public Vector4 LightColor;
+            /// <summary>
+            /// Specular color for the light.
+            /// </summary>
+            public Vector4 SpecularColor;
+            /// <summary>
+            /// Position of the light in world space.
+            /// </summary>
+            public Vector3 LightPosition;
+            /// <summary>
+            /// Specular highlight power.
+            /// </summary>
+            public float SpecularPower;
+            /// <summary>
+            /// Attenuation falloff.
+            /// </summary>
+            public float Attenuation;
+        }
+        #endregion
+
+        #region Variables.
+        // Flag to indicate that the object was disposed.
 		private bool _disposed;
 		// The constant buffer to update.
 		private readonly GorgonConstantBuffer _buffer;
-		// Buffer data.
-		private readonly GorgonDataStream _bufferData;
+        // Data to send to the GPU.
+	    private LightData _lightData;
 		#endregion
 
-		#region Methods.
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the attenuation falloff for the light.
+        /// </summary>
+	    public float Attenuation
+	    {
+	        get
+	        {
+	            return _lightData.Attenuation;
+	        }
+	        set
+	        {
+	            _lightData.Attenuation = value;
+                _buffer.Update(ref _lightData);
+	        }
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to update the color for the light.
+        /// </summary>
+        /// <param name="color">Color to use.</param>
+	    public void UpdateColor(ref GorgonColor color)
+        {
+            _lightData.LightColor = color;
+            _buffer.Update(ref _lightData);
+        }
+
+        /// <summary>
+        /// Function to update the specular power and color of the light.
+        /// </summary>
+        /// <param name="specColor">Specular color.</param>
+        /// <param name="power">Specular power.</param>
+	    public void UpdateSpecular(ref GorgonColor specColor, float power)
+        {
+            _lightData.SpecularColor = specColor;
+            _lightData.SpecularPower = power;
+
+            _buffer.Update(ref _lightData);
+        }
+
 		/// <summary>
 		/// Function to update the world matrix.
 		/// </summary>
 		/// <param name="position">The new position of the light.</param>
 		public void UpdateLightPosition(ref Vector3 position)
 		{
-			unsafe
-			{
-				var data = (byte*)_bufferData.UnsafePointer;
-
-				DirectAccess.WriteValue(data + Vector4.SizeInBytes, ref position);
-
-				_buffer.Update(_bufferData);
-			}
+		    _lightData.LightPosition = position;
+            _buffer.Update(ref _lightData);
 		}
 		#endregion
 
 		#region Constructor.
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WorldViewProjection"/> class.
 		/// </summary>
@@ -81,24 +145,18 @@ namespace GorgonLibrary.Graphics.Example
 			_buffer = graphics.Buffers.CreateConstantBuffer("LightBuffer",
 			                                                new GorgonConstantBufferSettings
 			                                                {
-				                                                SizeInBytes = 32,
+				                                                SizeInBytes = DirectAccess.SizeOf<LightData>(),
 				                                                Usage = BufferUsage.Default
 			                                                });
 
-			_bufferData = new GorgonDataStream(_buffer.SizeInBytes);
 
-			unsafe
-			{
-				var data = (byte *)_bufferData.UnsafePointer;
+		    _lightData.Attenuation = 6.0f;
+		    _lightData.LightColor = GorgonColor.White;
+		    _lightData.LightPosition = Vector3.Zero;
+		    _lightData.SpecularColor = GorgonColor.White;
+		    _lightData.SpecularPower = 512.0f;
 
-				GorgonColor color = GorgonColor.White;
-				Vector4 position = Vector4.Zero;
-
-				DirectAccess.WriteValue(data, ref color);
-				DirectAccess.WriteValue((data + Vector4.SizeInBytes), ref position);
-			}
-
-			_buffer.Update(_bufferData);
+            _buffer.Update(ref _lightData);
 
 			graphics.Shaders.PixelShader.ConstantBuffers[0] = _buffer;
 		}
@@ -118,11 +176,6 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (disposing)
 			{
-				if (_bufferData != null)
-				{
-					_bufferData.Dispose();
-				}
-
 				if (_buffer != null)
 				{
 					_buffer.Dispose();
