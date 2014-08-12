@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// View/projection matrices.
         /// </summary>
-        [StructLayout(LayoutKind.Sequential, Size = 192)]
+        [StructLayout(LayoutKind.Sequential, Size = 208)]
 	    private struct ViewProjectionData
         {
             /// <summary>
@@ -63,6 +63,26 @@ namespace GorgonLibrary.Graphics.Example
             /// </summary>
             public Matrix ViewProjection;
         }
+
+		/// <summary>
+		/// Camera data.
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential, Size =  48, Pack = 4)]
+		private struct CameraData
+		{
+			/// <summary>
+			/// Camera position.
+			/// </summary>
+			public Vector3 CameraPosition;
+			/// <summary>
+			/// Camera look at target.
+			/// </summary>
+			public Vector3 CameraLookAt;
+			/// <summary>
+			/// Camera up vector.
+			/// </summary>
+			public Vector3 CameraUp;
+		}
         #endregion
 
         #region Variables.
@@ -72,10 +92,12 @@ namespace GorgonLibrary.Graphics.Example
 		private readonly GorgonConstantBuffer _projViewBuffer;
         // World constant buffer to update.
 	    private readonly GorgonConstantBuffer _worldBuffer;
-		// Size of a matrix, in bytes.
-		private readonly int _matrixSize = DirectAccess.SizeOf<Matrix>();
+		// Camera constant buffer.
+		private readonly GorgonConstantBuffer _cameraBuffer;
         // View/projection data.
 	    private ViewProjectionData _viewProj;
+		// Camera data.
+		private CameraData _camData;
 		#endregion
 
 		#region Methods.
@@ -91,14 +113,20 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// Function to update the view matrix.
         /// </summary>
-        /// <param name="view">The view matrix to assign.</param>
-	    public void UpdateViewMatrix(ref Matrix view)
-	    {
-            _viewProj.View = view;
-
+        /// <param name="eyePosition">Position of the eye.</param>
+        /// <param name="lookAt">Point in space to look at.</param>
+        /// <param name="up">The current up vector.</param>
+	    public void UpdateViewMatrix(ref Vector3 eyePosition, ref Vector3 lookAt, ref Vector3 up)
+        {
+	        Matrix.LookAtLH(ref eyePosition, ref lookAt, ref up, out _viewProj.View);
             Matrix.Multiply(ref _viewProj.View, ref _viewProj.Projection, out _viewProj.ViewProjection);
 
+	        _camData.CameraPosition = eyePosition;
+	        _camData.CameraLookAt = lookAt;
+	        _camData.CameraUp = up;
+			
             _projViewBuffer.Update(ref _viewProj);
+			_cameraBuffer.Update(ref _camData);
 	    }
 
 		/// <summary>
@@ -152,8 +180,13 @@ namespace GorgonLibrary.Graphics.Example
 
 		    _worldBuffer = graphics.Buffers.CreateConstantBuffer("WorldBuffer", ref dummy, BufferUsage.Default);
 
+			_camData.CameraLookAt = new Vector3(0, 0, -1.0f);
+			_camData.CameraUp = new Vector3(0, 1, 0);
+			_cameraBuffer = graphics.Buffers.CreateConstantBuffer("CameraBuffer", ref _camData, BufferUsage.Default);
+
 			graphics.Shaders.VertexShader.ConstantBuffers[0] = _projViewBuffer;
 		    graphics.Shaders.VertexShader.ConstantBuffers[1] = _worldBuffer;
+			graphics.Shaders.PixelShader.ConstantBuffers[0] = _cameraBuffer;
 		}
 		#endregion
 
@@ -171,6 +204,11 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (disposing)
 			{
+				if (_cameraBuffer != null)
+				{
+					_cameraBuffer.Dispose();
+				}
+
 			    if (_worldBuffer != null)
 			    {
 			        _worldBuffer.Dispose();

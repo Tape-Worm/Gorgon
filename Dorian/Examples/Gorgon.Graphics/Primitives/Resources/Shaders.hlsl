@@ -7,7 +7,7 @@ cbuffer ViewProjectionData : register(b0)
 {
 	float4x4 View;
 	float4x4 Projection;
-	float4x4 ViewProjection;
+	float4x4 ViewProjection;	
 }
 
 // The world matrix.
@@ -16,8 +16,16 @@ cbuffer WorldMatrix : register(b1)
 	float4x4 World;
 }
 
+// Camera data.
+cbuffer Camera : register(b0)
+{
+	float3 CameraPosition;
+	float3 CameraLookAt;
+	float3 CameraUp;
+}
+
 // The light used for lighting calculations.
-cbuffer Light : register(b0)
+cbuffer Light : register(b1)
 {
 	float3 LightColor;
 	float3 SpecularColor;
@@ -67,7 +75,7 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 	float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (Attenuation / dot(LightPosition - vertex.worldPos, LightPosition - vertex.worldPos));
 
 	// Using Blinn half angle modification for perofrmance over correctness
-	float3 h = normalize(normalize(-vertex.worldPos) - lightDirection);
+	float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
 
 	float specLighting = pow(saturate(dot(h, vertex.normal)), SpecularPower);
 

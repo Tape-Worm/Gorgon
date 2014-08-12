@@ -30,8 +30,10 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics.Example.Properties;
@@ -241,6 +243,61 @@ namespace GorgonLibrary.Graphics.Example
 			_light.UpdateLightPosition(ref lightPosition);
 		    GorgonColor color = GorgonColor.White;
             _light.UpdateSpecular(ref color, 256.0f);
+
+			var eye = Vector3.Zero;
+			var lookAt = Vector3.UnitZ;
+			var up = Vector3.UnitY;
+			Vector3 forward = Vector3.UnitZ;
+			_wvp.UpdateViewMatrix(ref eye, ref lookAt, ref up);
+
+			float yRot = 0;
+			float xRot = 0;
+
+			_form.KeyDown += (sender, args) =>
+			                 {
+				                 
+				                 Vector3 right = Vector3.UnitX;
+				                 Vector3 targetDir;
+				                 Vector3 rightDir;
+				                 Vector3 upDir; 
+				                 Vector3 posDir = Vector3.Zero;
+								 Matrix rotMatrix;
+
+				                 switch (args.KeyCode)
+				                 {
+									 case Keys.A:
+						                 break;
+									 case Keys.D:
+										 break;
+									 case Keys.W:
+										 posDir = new Vector3(0, 0, 15 * GorgonTiming.Delta);
+						                 break;
+									 case Keys.S:
+										 posDir = new Vector3(0, 0, -15 * GorgonTiming.Delta);
+										 break;
+									 case Keys.Left:
+						                 xRot -= 36.0f * (GorgonTiming.Delta * 10);
+						                 break;
+									 case Keys.Right:
+						                 xRot += 36.0f * (GorgonTiming.Delta * 10);
+						                 break;
+									 case Keys.Up:
+						                 yRot -= 90.0f * (GorgonTiming.Delta * 10);
+						                 break;
+									 case Keys.Down:
+										 yRot += 90.0f * (GorgonTiming.Delta * 10);
+										 break;
+				                 }
+
+								 Matrix.RotationYawPitchRoll(xRot.Radians(), yRot.Radians(), 0, out rotMatrix);
+								 Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
+								 Vector3.TransformCoordinate(ref up, ref rotMatrix, out upDir);
+
+				                 //Vector3.Normalize(ref lookAt, out forward);
+				                 Vector3.Add(ref eye, ref lookAt, out lookAt);
+
+								 _wvp.UpdateViewMatrix(ref eye, ref lookAt, ref upDir);
+			                 };
 		}
 
 		/// <summary>

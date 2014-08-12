@@ -158,7 +158,7 @@ namespace GorgonLibrary.Graphics.Example
 
             _buffer.Update(ref _lightData);
 
-			graphics.Shaders.PixelShader.ConstantBuffers[0] = _buffer;
+			graphics.Shaders.PixelShader.ConstantBuffers[1] = _buffer;
 		}
 		#endregion
 
