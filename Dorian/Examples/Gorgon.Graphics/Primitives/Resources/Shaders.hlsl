@@ -27,11 +27,14 @@ cbuffer Camera : register(b0)
 // The light used for lighting calculations.
 cbuffer Light : register(b1)
 {
-	float3 LightColor;
-	float3 SpecularColor;
-	float3 LightPosition;
-	float  SpecularPower;
-	float  Attenuation;
+	struct LightData
+	{
+		float3 LightColor;
+		float3 SpecularColor;
+		float3 LightPosition;
+		float  SpecularPower;
+		float  Attenuation;
+	} lights[3];
 }
 
 // Our vertex.
@@ -71,18 +74,25 @@ VertexOut PrimVS(PrimVertex vertex)
 float4 PrimPS(VertexOut vertex) : SV_Target
 {
 	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
-	float3 lightDirection = normalize(vertex.worldPos - LightPosition);
-	float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (Attenuation / dot(LightPosition - vertex.worldPos, LightPosition - vertex.worldPos));
+	float3 output = float3(0, 0, 0);
 
-	// Using Blinn half angle modification for perofrmance over correctness
-	float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
+	for (int i = 0; i < 3; ++i)
+	{
+		LightData light = lights[i];
+		float3 lightDirection = normalize(vertex.worldPos - light.LightPosition);
+		float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (light.Attenuation / dot(light.LightPosition - vertex.worldPos, light.LightPosition - vertex.worldPos));
 
-	float specLighting = pow(saturate(dot(h, vertex.normal)), SpecularPower);
+		// Using Blinn half angle modification for perofrmance over correctness
+		float3 h = normalize(normalize(CameraPosition - vertex.worldPos) - lightDirection);
+			
+		output += float3(textureColor.rgb * float3(1, 1, 1) * light.LightColor.rgb * diffuse * 0.6); // Use light diffuse vector as intensity multiplier
 
-	return float4(saturate(
-		(textureColor.rgb * float3(1, 1, 1) * LightColor.rgb * diffuse * 0.6) + // Use light diffuse vector as intensity multiplier
-	(SpecularColor * specLighting * 0.5) // Use light specular vector as intensity multiplier
-	), textureColor.a);
+		if (light.SpecularPower >= 1.0f)
+		{
+			float specLighting = pow(saturate(dot(h, vertex.normal)), light.SpecularPower);
+			output = output + (light.SpecularColor * specLighting * 0.5);
+		}
+	}
 
-	//return float4(saturate(textureColor.rgb * dot(vertex.normal, -lightDirection)), textureColor.a);
+	return float4(saturate(float3(0.392157f * 0.3f, 0.584314f * 0.3f, 0.929412f * 0.3f) + output), textureColor.a);
 }
