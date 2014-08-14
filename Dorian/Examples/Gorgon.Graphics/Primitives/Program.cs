@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Input;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
@@ -73,6 +74,14 @@ namespace GorgonLibrary.Graphics.Example
 	    private static GorgonTexture2D _texture;
         // Rotation value.
 	    private static float _objRotation;
+		// Input factory.
+		private static GorgonInputFactory _input;
+		// Keyboard interface.
+		private static GorgonKeyboard _keyboard;
+		// Camera rotation amount.
+		private static Vector3 _cameraRotation;
+		// Camera position (eye).
+		private static Vector3 _cameraPosition;
 
 		/// <summary>
 		/// Main application loop.
@@ -91,9 +100,11 @@ namespace GorgonLibrary.Graphics.Example
 		        _objRotation -= 359.9f;
 		    }
 
-            _triangle.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
+			ProcessKeys();
+
+            //_triangle.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
             
-		    /*world = _triangle.World;
+		    world = _triangle.World;
             _wvp.UpdateWorldMatrix(ref world);
 
             _graphics.Shaders.PixelShader.Resources[0] = _triangle.Texture;
@@ -103,7 +114,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Output.DrawIndexed(0, 0, _triangle.IndexCount);
           
-			_plane.Rotation = new Vector3(_objRotation, 0, 0);
+			//_plane.Rotation = new Vector3(_objRotation, 0, 0);
 			world = _plane.World;
 			_wvp.UpdateWorldMatrix(ref world);
 
@@ -112,7 +123,7 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Input.IndexBuffer = _plane.IndexBuffer;
 			_graphics.Input.PrimitiveType = _plane.PrimitiveType;
 
-			_graphics.Output.DrawIndexed(0, 0, _plane.IndexCount);*/
+			_graphics.Output.DrawIndexed(0, 0, _plane.IndexCount);
 
 			_cube.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
 			world = _cube.World;
@@ -126,12 +137,94 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
 
 			var state = _renderer2D.Begin2D();
-			_renderer2D.Drawing.DrawString(_font, string.Format("FPS: {0:0.0}, Delta: {1:0.000} ms", GorgonTiming.FPS, GorgonTiming.Delta * 1000), Vector2.Zero, Color.White);
+			_renderer2D.Drawing.DrawString(_font, string.Format("FPS: {0:0.0}, Delta: {1:0.000} ms Secs: {3:0} CamRot: {2}", GorgonTiming.FPS, GorgonTiming.Delta * 1000, _cameraRotation, GorgonTiming.SecondsSinceStart), Vector2.Zero, Color.White);
 			_renderer2D.Flush();
 			_renderer2D.End2D(state);
 
 			_swapChain.Flip();
 			return true;
+		}
+
+		private static void ProcessKeys()
+		{
+			var pos = Vector3.Zero;
+			var up = Vector3.UnitY;
+			var right = Vector3.UnitX;
+			Vector3 forward = Vector3.UnitZ;
+			Vector3 upDir;
+			Vector3 rightDir;
+			Vector3 lookAt;
+			Matrix rotMatrix;
+			Vector3 cameraDir = Vector3.Zero;
+
+			if (_keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
+			{
+				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
+			} else
+			if (_keyboard.KeyStates[KeyboardKeys.Right] == KeyState.Down)
+			{
+				_cameraRotation.X += 40.0f * GorgonTiming.Delta;
+			} else
+			if (_keyboard.KeyStates[KeyboardKeys.Up] == KeyState.Down)
+			{
+				_cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
+			} else
+			if (_keyboard.KeyStates[KeyboardKeys.Down] == KeyState.Down)
+			{
+				_cameraRotation.Y += 40.0f * GorgonTiming.Delta;
+			} else if (_keyboard.KeyStates[KeyboardKeys.PageUp] == KeyState.Down)
+			{
+				_cameraRotation.Z -= 40.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.PageDown] == KeyState.Down)
+			{
+				_cameraRotation.Z += 40.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.D] == KeyState.Down)
+			{
+				cameraDir.X = 2.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down)
+			{
+				cameraDir.X = -2.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.W] == KeyState.Down)
+			{
+				cameraDir.Z = 2.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.S] == KeyState.Down)
+			{
+				cameraDir.Z = -2.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.Q] == KeyState.Down)
+			{
+				cameraDir.Y = 2.0f * GorgonTiming.Delta;
+			}
+			else if (_keyboard.KeyStates[KeyboardKeys.E] == KeyState.Down)
+			{
+				cameraDir.Y = -2.0f * GorgonTiming.Delta;
+			}
+			else
+			{
+				return;
+			}
+
+			Matrix.RotationYawPitchRoll(_cameraRotation.X.Radians(), _cameraRotation.Y.Radians(), _cameraRotation.Z.Radians(), out rotMatrix);
+			Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
+			Vector3.TransformCoordinate(ref right, ref rotMatrix, out rightDir);
+			Vector3.Cross(ref lookAt, ref rightDir, out upDir);
+
+			Vector3.Multiply(ref rightDir, cameraDir.X, out rightDir);
+			Vector3.Add(ref _cameraPosition, ref rightDir, out _cameraPosition);
+			Vector3.Multiply(ref lookAt, cameraDir.Z, out forward);
+			Vector3.Add(ref _cameraPosition, ref forward, out _cameraPosition);
+			Vector3.Multiply(ref upDir, cameraDir.Y, out up);
+			Vector3.Add(ref _cameraPosition, ref up, out _cameraPosition);
+
+			lookAt.Normalize();
+			Vector3.Add(ref _cameraPosition, ref lookAt, out lookAt);
+			
+			_wvp.UpdateViewMatrix(ref _cameraPosition, ref lookAt, ref upDir);
 		}
 
 		/// <summary>
@@ -140,6 +233,11 @@ namespace GorgonLibrary.Graphics.Example
 		private static void Initialize()
 		{
 			_form = new FormMain();
+
+			Gorgon.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
+
+			_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+			_keyboard = _input.CreateKeyboard(_form);
 			
 			_graphics = new GorgonGraphics();
 			_swapChain = _graphics.Output.CreateSwapChain("Swap",
@@ -207,17 +305,17 @@ namespace GorgonLibrary.Graphics.Example
 
 			_triangle = new Triangle(_graphics, new Vertex3D
 			                                    {
-				                                    Position = new Vector4(-0.5f, -0.5f, 0.0f, 1),
+				                                    Position = new Vector4(-12.5f, -1.5f, 12.5f, 1),
 													Normal = faceNormal,
 													UV = new Vector2(0, 1.0f)
 												}, new Vertex3D
 												{
-													Position = new Vector4(0, 0.5f, 0.0f, 1),
+													Position = new Vector4(0, 24.5f, 12.5f, 1),
 													Normal = faceNormal,
 													UV = new Vector2(0.5f, 0.0f)
 												}, new Vertex3D
 												{
-													Position = new Vector4(0.5f, -0.5f, 0.0f, 1),
+													Position = new Vector4(12.5f, -1.5f, 12.5f, 1),
 													Normal = faceNormal,
 													UV = new Vector2(1.0f, 1.0f)
 												})
@@ -226,9 +324,9 @@ namespace GorgonLibrary.Graphics.Example
 				            Position = new Vector3(0, 0, 1.0f)
 			            };
 
-			_plane = new Plane(_graphics, new Vector2(1.0f, 1.0f), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(180, 0, 0), 8, 8)
+			_plane = new Plane(_graphics, new Vector2(25.0f, 25.0f), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(90, 0, 0), 32, 32)
 			         {
-				         Position = new Vector3(0, -0.25f, 1.0f),
+				         Position = new Vector3(0, -1.5f, 1.0f),
 						 Texture = _texture
 			         };
 
@@ -240,9 +338,23 @@ namespace GorgonLibrary.Graphics.Example
 
 			_light = new Light(_graphics);
 			var lightPosition = new Vector3(1.0f, 1.0f, -1.0f);
-			_light.UpdateLightPosition(ref lightPosition);
+			_light.UpdateLightPosition(ref lightPosition, 0);
 		    GorgonColor color = GorgonColor.White;
-            _light.UpdateSpecular(ref color, 256.0f);
+            _light.UpdateSpecular(ref color, 256.0f, 0);
+
+			lightPosition = new Vector3(-5.0f, 5.0f, 8.0f);
+			_light.UpdateLightPosition(ref lightPosition, 1);
+			color = Color.Yellow;
+			_light.UpdateColor(ref color, 1);
+			_light.UpdateSpecular(ref color, 2048.0f, 1);
+			_light.UpdateAttenuation(10.0f, 1);
+
+			lightPosition = new Vector3(5.0f, 3.0f, 10.0f);
+			_light.UpdateLightPosition(ref lightPosition, 2);
+			color = Color.Red;
+			_light.UpdateColor(ref color, 2);
+			_light.UpdateSpecular(ref color, 0.0f, 2);
+			_light.UpdateAttenuation(16.0f, 2);
 
 			var eye = Vector3.Zero;
 			var lookAt = Vector3.UnitZ;
@@ -250,54 +362,7 @@ namespace GorgonLibrary.Graphics.Example
 			Vector3 forward = Vector3.UnitZ;
 			_wvp.UpdateViewMatrix(ref eye, ref lookAt, ref up);
 
-			float yRot = 0;
-			float xRot = 0;
-
-			_form.KeyDown += (sender, args) =>
-			                 {
-				                 
-				                 Vector3 right = Vector3.UnitX;
-				                 Vector3 targetDir;
-				                 Vector3 rightDir;
-				                 Vector3 upDir; 
-				                 Vector3 posDir = Vector3.Zero;
-								 Matrix rotMatrix;
-
-				                 switch (args.KeyCode)
-				                 {
-									 case Keys.A:
-						                 break;
-									 case Keys.D:
-										 break;
-									 case Keys.W:
-										 posDir = new Vector3(0, 0, 15 * GorgonTiming.Delta);
-						                 break;
-									 case Keys.S:
-										 posDir = new Vector3(0, 0, -15 * GorgonTiming.Delta);
-										 break;
-									 case Keys.Left:
-						                 xRot -= 36.0f * (GorgonTiming.Delta * 10);
-						                 break;
-									 case Keys.Right:
-						                 xRot += 36.0f * (GorgonTiming.Delta * 10);
-						                 break;
-									 case Keys.Up:
-						                 yRot -= 90.0f * (GorgonTiming.Delta * 10);
-						                 break;
-									 case Keys.Down:
-										 yRot += 90.0f * (GorgonTiming.Delta * 10);
-										 break;
-				                 }
-
-								 Matrix.RotationYawPitchRoll(xRot.Radians(), yRot.Radians(), 0, out rotMatrix);
-								 Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
-								 Vector3.TransformCoordinate(ref up, ref rotMatrix, out upDir);
-
-				                 //Vector3.Normalize(ref lookAt, out forward);
-				                 Vector3.Add(ref eye, ref lookAt, out lookAt);
-
-								 _wvp.UpdateViewMatrix(ref eye, ref lookAt, ref upDir);
-			                 };
+			_cameraRotation = Vector2.Zero;
 		}
 
 		/// <summary>

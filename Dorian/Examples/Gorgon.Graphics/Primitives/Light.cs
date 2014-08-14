@@ -50,6 +50,11 @@ namespace GorgonLibrary.Graphics.Example
         [StructLayout(LayoutKind.Sequential, Size = 64, Pack = 4)]
 	    private struct LightData
         {
+			/// <summary>
+			/// Size of the data structure, in bytes.
+			/// </summary>
+	        public static readonly int Size = DirectAccess.SizeOf<LightData>();
+
             /// <summary>
             /// Color of the light.
             /// </summary>
@@ -79,36 +84,45 @@ namespace GorgonLibrary.Graphics.Example
 		// The constant buffer to update.
 		private readonly GorgonConstantBuffer _buffer;
         // Data to send to the GPU.
-	    private LightData _lightData;
+	    private LightData[] _lightData = new LightData[3];
+		// Backing store for lights.
+		private GorgonDataStream _lightStore;
 		#endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to set or return the attenuation falloff for the light.
-        /// </summary>
-	    public float Attenuation
-	    {
-	        get
-	        {
-	            return _lightData.Attenuation;
-	        }
-	        set
-	        {
-	            _lightData.Attenuation = value;
-                _buffer.Update(ref _lightData);
-	        }
-	    }
-        #endregion
-
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Function to update the correct light buffer data to the constant buffer.
+		/// </summary>
+		/// <param name="index">Index of the light to update.</param>
+		private unsafe void UpdateIndex(int index)
+		{
+			var data = (LightData*)_lightStore.UnsafePointer;
+
+			for (int i = 0; i < _lightData.Length; ++i)
+			{
+				*(data++) = _lightData[i];
+			}
+
+			_buffer.Update(_lightData);
+		}
+
+		/// <summary>
+		/// Function to update the attenuation falloff for the light.
+		/// </summary>
+		public void UpdateAttenuation(float value, int index)
+		{
+			_lightData[index].Attenuation = value;
+			UpdateIndex(index);
+		}
+
+		/// <summary>
         /// Function to update the color for the light.
         /// </summary>
         /// <param name="color">Color to use.</param>
-	    public void UpdateColor(ref GorgonColor color)
+	    public void UpdateColor(ref GorgonColor color, int index)
         {
-            _lightData.LightColor = color;
-            _buffer.Update(ref _lightData);
+            _lightData[index].LightColor = color;
+            UpdateIndex(index);
         }
 
         /// <summary>
@@ -116,22 +130,21 @@ namespace GorgonLibrary.Graphics.Example
         /// </summary>
         /// <param name="specColor">Specular color.</param>
         /// <param name="power">Specular power.</param>
-	    public void UpdateSpecular(ref GorgonColor specColor, float power)
+	    public void UpdateSpecular(ref GorgonColor specColor, float power, int index)
         {
-            _lightData.SpecularColor = specColor;
-            _lightData.SpecularPower = power;
-
-            _buffer.Update(ref _lightData);
+            _lightData[index].SpecularColor = specColor;
+            _lightData[index].SpecularPower = power;
+	        UpdateIndex(index);
         }
 
 		/// <summary>
 		/// Function to update the world matrix.
 		/// </summary>
 		/// <param name="position">The new position of the light.</param>
-		public void UpdateLightPosition(ref Vector3 position)
+		public void UpdateLightPosition(ref Vector3 position, int index)
 		{
-		    _lightData.LightPosition = position;
-            _buffer.Update(ref _lightData);
+		    _lightData[index].LightPosition = position;
+            UpdateIndex(index);
 		}
 		#endregion
 
@@ -142,21 +155,28 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="graphics">The graphics interface to use.</param>
 		public Light(GorgonGraphics graphics)
 		{
+			_lightData[0].Attenuation = 6.0f;
+			_lightData[0].LightColor = GorgonColor.White;
+			_lightData[0].LightPosition = Vector3.Zero;
+			_lightData[0].SpecularColor = GorgonColor.White;
+			_lightData[0].SpecularPower = 512.0f;
+
 			_buffer = graphics.Buffers.CreateConstantBuffer("LightBuffer",
 			                                                new GorgonConstantBufferSettings
 			                                                {
-				                                                SizeInBytes = DirectAccess.SizeOf<LightData>(),
+				                                                SizeInBytes = LightData.Size * _lightData.Length,
 				                                                Usage = BufferUsage.Default
 			                                                });
+			
+			_lightStore = new GorgonDataStream(_buffer.SizeInBytes);
+			unsafe
+			{
+				DirectAccess.ZeroMemory(_lightStore.UnsafePointer, _buffer.SizeInBytes);
+				var data = (LightData*)_lightStore.UnsafePointer;
+				*data = _lightData[0];
+			}
 
-
-		    _lightData.Attenuation = 6.0f;
-		    _lightData.LightColor = GorgonColor.White;
-		    _lightData.LightPosition = Vector3.Zero;
-		    _lightData.SpecularColor = GorgonColor.White;
-		    _lightData.SpecularPower = 512.0f;
-
-            _buffer.Update(ref _lightData);
+            _buffer.Update(_lightStore);
 
 			graphics.Shaders.PixelShader.ConstantBuffers[1] = _buffer;
 		}
@@ -176,6 +196,11 @@ namespace GorgonLibrary.Graphics.Example
 
 			if (disposing)
 			{
+				if (_lightStore != null)
+				{
+					_lightStore.Dispose();
+				}
+
 				if (_buffer != null)
 				{
 					_buffer.Dispose();
