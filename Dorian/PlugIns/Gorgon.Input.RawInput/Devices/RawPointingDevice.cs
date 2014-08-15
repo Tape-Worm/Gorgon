@@ -63,7 +63,10 @@ namespace GorgonLibrary.Input.Raw
 		    }
 
 		    // Move the windows cursor to match if not exclusive.
-		    System.Windows.Forms.Cursor.Position = BoundControl.PointToScreen(!Exclusive ? Point.Truncate(Position) : new Point(0, 0));
+			System.Windows.Forms.Cursor.Position =
+				BoundControl.PointToScreen(!Exclusive
+					                           ? Point.Truncate(Position)
+					                           : new Point(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2));
 		}
 
 	    /// <summary>
@@ -106,10 +109,12 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void BindDevice()
 		{
+			BoundControl.MouseLeave -= Owner_MouseLeave;
+
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
-				_messageFilter.RawInputData += GetRawData;
+				_messageFilter.RawInputPointingDeviceData -= GetRawData;
+				_messageFilter.RawInputPointingDeviceData += GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -123,18 +128,23 @@ namespace GorgonLibrary.Input.Raw
 		    }
 
 		    // Enable exclusive access.
-		    if (Exclusive)
-		    {
-		        _device.Flags |= RawInputDeviceFlags.CaptureMouse | RawInputDeviceFlags.NoLegacy;
-		    }
+			if (Exclusive)
+			{
+				_device.Flags |= RawInputDeviceFlags.CaptureMouse | RawInputDeviceFlags.NoLegacy;
+			}
 
 		    _device.WindowHandle = BoundControl.Handle;
-						
+
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_POINTING_DEVICE);
 		    }
+
+			if (!Exclusive)
+			{
+				OnWindowBound(BoundControl);
+			}
 		}
 
 		/// <summary>
@@ -144,12 +154,12 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
+				_messageFilter.RawInputPointingDeviceData -= GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Mouse;
-			_device.Flags = RawInputDeviceFlags.None;
+			_device.Flags = RawInputDeviceFlags.Remove;
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.
@@ -157,6 +167,8 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE);
 		    }
+
+			BoundControl.MouseLeave -= Owner_MouseLeave;
 		}
 
 		/// <summary>
@@ -164,14 +176,14 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event data to examine.</param>
-		private void GetRawData(object sender, RawInputEventArgs e)
+		private void GetRawData(object sender, RawInputPointingDeviceEventArgs e)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
 		        return;
 		    }
 
-		    if ((e.Data.Header.Type != RawInputType.Mouse) || ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
+		    if ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle))
 		    {
 		        return;
 		    }
@@ -207,9 +219,9 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 		    // Get wheel data.
-		    if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MouseWheel) != 0)
+		    if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.MouseWheel) != 0)
 		    {
-		        OnPointingDeviceWheelMove((short)e.Data.Mouse.ButtonData);
+		        OnPointingDeviceWheelMove((short)e.PointingDeviceData.ButtonData);
 		    }
 
 		    // If we're outside of the delay, then restart double click cycle.
@@ -220,38 +232,38 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 			// Get button data.
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.LeftDown) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.LeftDown) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Left);
 				OnPointingDeviceDown(PointingDeviceButtons.Left);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.RightDown) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.RightDown) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Right);
 				OnPointingDeviceDown(PointingDeviceButtons.Right);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MiddleDown) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.MiddleDown) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Middle);
 				OnPointingDeviceDown(PointingDeviceButtons.Middle);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button4Down) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.Button4Down) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Button4);
 				OnPointingDeviceDown(PointingDeviceButtons.Button4);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button5Down) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.Button5Down) != 0)
 			{
 				BeginDoubleClick(PointingDeviceButtons.Button5);
 				OnPointingDeviceDown(PointingDeviceButtons.Button5);
 			}
 
 			// If we have an 'up' event on the buttons, remove the flag.
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.LeftUp) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.LeftUp) != 0)
 			{
 			    if (IsDoubleClick(PointingDeviceButtons.Left))
 			    {
@@ -266,7 +278,7 @@ namespace GorgonLibrary.Input.Raw
 			    OnPointingDeviceUp(PointingDeviceButtons.Left, _clickCount);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.RightUp) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.RightUp) != 0)
 			{
 			    if (IsDoubleClick(PointingDeviceButtons.Right))
 			    {
@@ -281,7 +293,7 @@ namespace GorgonLibrary.Input.Raw
 			    OnPointingDeviceUp(PointingDeviceButtons.Right, _clickCount);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.MiddleUp) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.MiddleUp) != 0)
 			{
 			    if (IsDoubleClick(PointingDeviceButtons.Middle))
 			    {
@@ -296,7 +308,7 @@ namespace GorgonLibrary.Input.Raw
 			    OnPointingDeviceUp(PointingDeviceButtons.Middle, _clickCount);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button4Up) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.Button4Up) != 0)
 			{
 			    if (IsDoubleClick(PointingDeviceButtons.Button4))
 			    {
@@ -311,7 +323,7 @@ namespace GorgonLibrary.Input.Raw
 			    OnPointingDeviceUp(PointingDeviceButtons.Button4, _clickCount);
 			}
 
-			if ((e.Data.Mouse.ButtonFlags & RawMouseButtons.Button5Up) != 0)
+			if ((e.PointingDeviceData.ButtonFlags & RawMouseButtons.Button5Up) != 0)
 			{
 			    if (IsDoubleClick(PointingDeviceButtons.Button5))
 			    {
@@ -327,8 +339,8 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 			// Fire events.
-			RelativePosition = new PointF(e.Data.Mouse.LastX, e.Data.Mouse.LastY);
-			OnPointingDeviceMove(new PointF(Position.X + e.Data.Mouse.LastX, Position.Y + e.Data.Mouse.LastY), false);
+			RelativePosition = new PointF(e.PointingDeviceData.LastX, e.PointingDeviceData.LastY);
+			OnPointingDeviceMove(new PointF(Position.X + e.PointingDeviceData.LastX, Position.Y + e.PointingDeviceData.LastY), false);
 			UpdateCursorPosition();
 		}
 		#endregion

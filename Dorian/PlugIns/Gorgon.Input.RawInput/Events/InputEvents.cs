@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
-	/// Object representing event arguments for the raw input events.
+	/// Object representing event arguments for the raw input keyboard events.
 	/// </summary>
-	internal class RawInputEventArgs
+	internal class RawInputKeyboardEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -45,9 +46,9 @@ namespace GorgonLibrary.Input.Raw
 		}
 
 		/// <summary>
-		/// Property to return the raw input data.
+		/// Property to return the raw input keyboard data.
 		/// </summary>
-		public RawInputData Data
+		public RAWINPUTKEYBOARD KeyboardData
 		{
 			get;
 			private set;
@@ -58,19 +59,104 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Constructor.
 		/// </summary>
+		/// <param name="device">The device that sent the event.</param>
 		/// <param name="data">Raw input data to pass.</param>
-		public RawInputEventArgs(RawInputData data)
+		public RawInputKeyboardEventArgs(IntPtr device, ref RAWINPUTKEYBOARD data)
 		{
-			Handle = data.Header.Device;
-			Data = data;
+			Handle = device;
+			KeyboardData = data;
 		}
 		#endregion
 	}
 
 	/// <summary>
-	/// Delegate for a raw input event.
+	/// Object representing event arguments for the raw input pointing device events.
 	/// </summary>
-	/// <param name="sender">Object that sent the event.</param>
-	/// <param name="e">Event arguments.</param>
-	internal delegate void RawInputEventHandler(object sender, RawInputEventArgs e);
+	internal class RawInputPointingDeviceEventArgs
+		: EventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the handle to the device that is receiving the event notification.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the raw input pointing device data.
+		/// </summary>
+		public RAWINPUTMOUSE PointingDeviceData
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="device">The device that sent the event.</param>
+		/// <param name="data">Raw input data to pass.</param>
+		public RawInputPointingDeviceEventArgs(IntPtr device, ref RAWINPUTMOUSE data)
+		{
+			Handle = device;
+			PointingDeviceData = data;
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Object representing event arguments for the raw input HID events.
+	/// </summary>
+	internal class RawInputHIDEventArgs
+		: EventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the handle to the device that is receiving the event notification.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the raw input HID data.
+		/// </summary>
+		public RAWINPUTHID HIDData
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the HID buffer data.
+		/// </summary>
+		public byte[] HIDBuffer
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="device">The device that sent the event.</param>
+		/// <param name="data">Raw input data to pass.</param>
+		/// <param name="hidBuffer">HID buffer data.</param>
+		public RawInputHIDEventArgs(IntPtr device, ref RAWINPUTHID data, byte[] hidBuffer)
+		{
+			Handle = device;
+			HIDData = data;
+			HIDBuffer = hidBuffer;
+		}
+		#endregion
+	}
 }

@@ -49,7 +49,7 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event argments.</param>
-		private void GetRawData(object sender, RawInputEventArgs e)
+		private void GetRawData(object sender, RawInputKeyboardEventArgs e)
 		{
 		    var state = KeyState.Down;				// Key state.
 
@@ -58,8 +58,7 @@ namespace GorgonLibrary.Input.Raw
 		        return;
 		    }
 
-		    if ((e.Data.Header.Type != RawInputType.Keyboard) ||
-		        ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
+		    if ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle))
 		    {
 		        return;
 		    }
@@ -78,13 +77,13 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 			// Get the key code.
-			var keyCode = (KeyboardKeys)e.Data.Keyboard.VirtualKey;
+			var keyCode = (KeyboardKeys)e.KeyboardData.VirtualKey;
 
 			// Check for left/right versions.
-			KeyboardKeys version = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
+			KeyboardKeys version = ((e.KeyboardData.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
 
-		    if ((e.Data.Keyboard.Message == WindowMessages.KeyUp) || (e.Data.Keyboard.Message == WindowMessages.SysKeyUp) ||
-		        (e.Data.Keyboard.Message == WindowMessages.IMEKeyUp))
+		    if ((e.KeyboardData.Message == WindowMessages.KeyUp) || (e.KeyboardData.Message == WindowMessages.SysKeyUp) ||
+		        (e.KeyboardData.Message == WindowMessages.IMEKeyUp))
 		    {
 		        state = KeyState.Up;
 		    }
@@ -107,7 +106,7 @@ namespace GorgonLibrary.Input.Raw
 					KeyStates[KeyboardKeys.Menu] = state;
 					break;
 				case KeyboardKeys.ShiftKey:		// Shift.
-			        keyCode = e.Data.Keyboard.MakeCode == 0x36 ? KeyboardKeys.RShiftKey : KeyboardKeys.LShiftKey;
+			        keyCode = e.KeyboardData.MakeCode == 0x36 ? KeyboardKeys.RShiftKey : KeyboardKeys.LShiftKey;
 
 					KeyStates[KeyboardKeys.ShiftKey] = state;
 					break;
@@ -118,11 +117,11 @@ namespace GorgonLibrary.Input.Raw
 
 		    if (state == KeyState.Down)
 		    {
-		        OnKeyDown(keyCode, e.Data.Keyboard.MakeCode);
+		        OnKeyDown(keyCode, e.KeyboardData.MakeCode);
 		    }
 		    else
 		    {
-		        OnKeyUp(keyCode, e.Data.Keyboard.MakeCode);
+		        OnKeyUp(keyCode, e.KeyboardData.MakeCode);
 		    }
 		}
 
@@ -133,8 +132,8 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
-				_messageFilter.RawInputData += GetRawData;
+				_messageFilter.RawInputKeyboardData -= GetRawData;
+				_messageFilter.RawInputKeyboardData += GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -169,12 +168,12 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
+				_messageFilter.RawInputKeyboardData -= GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Keyboard;
-			_device.Flags = RawInputDeviceFlags.None;
+			_device.Flags = RawInputDeviceFlags.Remove;
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.

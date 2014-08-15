@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -78,10 +80,16 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonInputFactory _input;
 		// Keyboard interface.
 		private static GorgonKeyboard _keyboard;
+		// Mouse interface.
+		private static GorgonPointingDevice _mouse;
 		// Camera rotation amount.
 		private static Vector3 _cameraRotation;
 		// Camera position (eye).
 		private static Vector3 _cameraPosition;
+		// Last position of the mouse cursor before being taken over.
+		private static Vector2 _lastMousePosition;
+		// Flag to indicate that we need to activate arc ball mode.
+		private static bool _arcBallMode = false;
 
 		/// <summary>
 		/// Main application loop.
@@ -157,6 +165,24 @@ namespace GorgonLibrary.Graphics.Example
 			Matrix rotMatrix;
 			Vector3 cameraDir = Vector3.Zero;
 
+			try
+			{
+				if ((_mouse.Button & PointingDeviceButtons.Button2) == PointingDeviceButtons.Button2)
+				{
+					_mouse.HideCursor();
+					_mouse.Exclusive = true;
+				}
+				else
+				{
+					_mouse.Exclusive = false;
+					_mouse.ShowCursor();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(_form, ex));
+			}
+
 			if (_keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
 			{
 				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
@@ -228,17 +254,42 @@ namespace GorgonLibrary.Graphics.Example
 		}
 
 		/// <summary>
+		/// Handles the Down event of the Mouse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
+		private static void Mouse_Down(object sender, PointingDeviceEventArgs args)
+		{
+			if ((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+			{
+				return;
+			}
+
+			_arcBallMode = true;
+		}
+
+		/// <summary>
+		/// Handles the Up event of the Mouse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
+		private static void Mouse_Up(object sender, PointingDeviceEventArgs args)
+		{
+			if ((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+			{
+				return;
+			}
+
+			_arcBallMode = false;
+		}
+
+		/// <summary>
 		/// Function to initialize the application.
 		/// </summary>
 		private static void Initialize()
 		{
 			_form = new FormMain();
-
-			Gorgon.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
-
-			_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
-			_keyboard = _input.CreateKeyboard(_form);
-			
+		
 			_graphics = new GorgonGraphics();
 			_swapChain = _graphics.Output.CreateSwapChain("Swap",
 			                                              new GorgonSwapChainSettings
@@ -359,10 +410,18 @@ namespace GorgonLibrary.Graphics.Example
 			var eye = Vector3.Zero;
 			var lookAt = Vector3.UnitZ;
 			var up = Vector3.UnitY;
-			Vector3 forward = Vector3.UnitZ;
 			_wvp.UpdateViewMatrix(ref eye, ref lookAt, ref up);
 
 			_cameraRotation = Vector2.Zero;
+
+			Gorgon.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
+
+			_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+			_keyboard = _input.CreateKeyboard(_form);
+			_mouse = _input.CreatePointingDevice(_form);
+
+			/*_mouse.PointingDeviceDown += Mouse_Down;
+			_mouse.PointingDeviceUp += Mouse_Up;*/
 		}
 
 		/// <summary>

@@ -450,7 +450,6 @@ namespace GorgonLibrary.Input.Raw
 					if (MessageFilter != null)
 					{
 						Application.RemoveMessageFilter(MessageFilter);
-						MessageFilter.Dispose();
 					}
 				}
 

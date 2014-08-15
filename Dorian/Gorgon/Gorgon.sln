@@ -118,6 +118,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.API", "..\Tools\Gorgon.Editor.API\Gorgon.Editor.API.csproj", "{F169087C-A984-4823-BB6A-F34A14B8B4D5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Primitives", "..\Examples\Gorgon.Graphics\Primitives\Primitives.csproj", "{834D4440-7007-49BF-8B2E-F35F19FF0D58}"
+	ProjectSection(ProjectDependencies) = postProject
+		{604519C3-8CC6-41BE-8949-4BDDEACAD9FC} = {604519C3-8CC6-41BE-8949-4BDDEACAD9FC}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

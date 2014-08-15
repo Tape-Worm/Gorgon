@@ -238,7 +238,9 @@ namespace GorgonLibrary.Input
 		protected virtual void OnBoundWindowFocused()
 		{
 			if ((DeviceFactory.AutoReacquireDevices) && (Exclusive))
+			{
 				Acquired = true;
+			}
 		}
 
 		/// <summary>
@@ -247,7 +249,9 @@ namespace GorgonLibrary.Input
 		protected virtual void OnBoundWindowUnfocused()
 		{
 			if (Exclusive)
+			{
 				Acquired = false;
+			}
 		}
 
 		/// <summary>
