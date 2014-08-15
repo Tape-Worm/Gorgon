@@ -77,7 +77,6 @@
     <Compile Include="Devices\WMMJoystick.cs" />
     <Compile Include="Events\InputEvents.cs" />
     <Compile Include="Events\MessageFilter.cs" />
-    <Compile Include="Native\RawInputData.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Native\Win32Types.cs" />

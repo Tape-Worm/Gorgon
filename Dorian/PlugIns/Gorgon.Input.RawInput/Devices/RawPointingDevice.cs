@@ -111,6 +111,8 @@ namespace GorgonLibrary.Input.Raw
 		{
 			BoundControl.MouseLeave -= Owner_MouseLeave;
 
+            UnbindDevice();
+
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputPointingDeviceData -= GetRawData;
@@ -119,7 +121,7 @@ namespace GorgonLibrary.Input.Raw
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Mouse;
-			_device.Flags = RawInputDeviceFlags.None;
+            _device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
 		    if ((AllowBackground) || (Exclusive))
@@ -135,7 +137,7 @@ namespace GorgonLibrary.Input.Raw
 
 		    _device.WindowHandle = BoundControl.Handle;
 
-			// Attempt to register the device.
+		    // Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_POINTING_DEVICE);

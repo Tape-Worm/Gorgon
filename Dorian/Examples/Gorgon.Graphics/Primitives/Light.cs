@@ -84,7 +84,7 @@ namespace GorgonLibrary.Graphics.Example
 		// The constant buffer to update.
 		private readonly GorgonConstantBuffer _buffer;
         // Data to send to the GPU.
-	    private LightData[] _lightData = new LightData[3];
+	    private LightData[] _lightData = new LightData[8];
 		// Backing store for lights.
 		private GorgonDataStream _lightStore;
 		#endregion

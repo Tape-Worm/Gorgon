@@ -611,7 +611,7 @@ namespace GorgonLibrary.Native
 	/// </summary>
 	[Flags]
 	enum RawMouseFlags
-		: ushort
+		: uint
 	{
 		/// <summary>Relative to the last position.</summary>
 		MoveRelative = 0,

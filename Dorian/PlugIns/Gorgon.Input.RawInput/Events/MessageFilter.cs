@@ -102,13 +102,13 @@ namespace GorgonLibrary.Input.Raw
 							RawInputPointingDeviceData(this,
 							                           new RawInputPointingDeviceEventArgs(rawInput->Header.Device, ref rawInput->Union.Mouse));
 						}
-						break;
+				        break;
 					case RawInputType.Keyboard:
 						if (RawInputKeyboardData != null)
 						{
 							RawInputKeyboardData(this, new RawInputKeyboardEventArgs(rawInput->Header.Device, ref rawInput->Union.Keyboard));
 						}
-						break;
+				        break;
 					default:
 						if (RawInputHIDData != null)
 						{
@@ -122,7 +122,7 @@ namespace GorgonLibrary.Input.Raw
 
 							RawInputHIDData(this, new RawInputHIDEventArgs(rawInput->Header.Device, ref rawInput->Union.HID, HIDData));
 						}
-						break;
+				        break;
 				}
 			}
 

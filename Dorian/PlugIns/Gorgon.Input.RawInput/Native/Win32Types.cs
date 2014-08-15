@@ -311,57 +311,66 @@ namespace GorgonLibrary.Native
 		/// <summary>Flags for the event.</summary>
 		[FieldOffset(0)]
 		public RawMouseFlags Flags;
-		/// <summary>Flags for the event.</summary>
-		[FieldOffset(4)]
-		public RawMouseButtons ButtonFlags;
-		/// <summary>If the mouse wheel is moved, this will contain the delta amount.</summary>
-		[FieldOffset(6)]
-		public ushort ButtonData;
-		/// <summary>Raw button data.</summary>
-		[FieldOffset(8)]
+        /// <summary>Flags for the event.</summary>
+        [FieldOffset(4)]
+        public RawMouseButtons ButtonFlags;
+        /// <summary>If the mouse wheel is moved, this will contain the delta amount.</summary>
+        [FieldOffset(6)]
+        public ushort ButtonData;
+        /// <summary>Raw button data.</summary>
+        [FieldOffset(8)]
 		public uint RawButtons;
 		/// <summary>Relative direction of motion, depending on flags.</summary>
-		[FieldOffset(12)]
+        [FieldOffset(12)]
 		public int LastX;
 		/// <summary>Relative direction of motion, depending on flags.</summary>
-		[FieldOffset(16)]
+        [FieldOffset(16)]
 		public int LastY;
 		/// <summary>Extra information.</summary>
-		[FieldOffset(20)]
+        [FieldOffset(20)]
 		public uint ExtraInformation;
 	}
 
 	/// <summary>
 	/// Value type for raw input from a keyboard.
 	/// </summary>	
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Explicit)]
 	internal struct RAWINPUTKEYBOARD
 	{
 		/// <summary>Scan code for key depression.</summary>
+        [FieldOffset(0)]
 		public short MakeCode;
 		/// <summary>Scan code information.</summary>
+        [FieldOffset(2)]
 		public RawKeyboardFlags Flags;
 		/// <summary>Reserved.</summary>
+        [FieldOffset(4)]
 		public short Reserved;
 		/// <summary>Virtual key code.</summary>
+        [FieldOffset(6)]
 		public VirtualKeys VirtualKey;
 		/// <summary>Corresponding window message.</summary>
+        [FieldOffset(8)]
 		public WindowMessages Message;
 		/// <summary>Extra information.</summary>
+        [FieldOffset(12)]
 		public int ExtraInformation;
 	}
 
 	/// <summary>
 	/// Value type for raw input from a HID.
 	/// </summary>	
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Explicit)]
 	internal struct RAWINPUTHID
 	{
 		/// <summary>Size of the HID data in bytes.</summary>
+		[FieldOffset(0)]
 		public int Size;
 		/// <summary>Number of HID in Data.</summary>
+        [FieldOffset(4)]
 		public int Count;
 		/// <summary>HID data.</summary>
+        [FieldOffset(8)]
 		IntPtr Data;
 	}
 
@@ -382,7 +391,6 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Value type for raw input.
 	/// </summary>
-	/// <remarks>This is for use with x64 versions of windows.  Using the <c ref="RAWINPUT">32 bit RAWINPUT</c> will fail on the x64 version of windows.</remarks>
 	[StructLayout(LayoutKind.Sequential)]
 	internal struct RAWINPUT
 	{

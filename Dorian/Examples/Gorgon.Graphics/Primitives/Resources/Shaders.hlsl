@@ -34,7 +34,7 @@ cbuffer Light : register(b1)
 		float3 LightPosition;
 		float  SpecularPower;
 		float  Attenuation;
-	} lights[3];
+	} lights[8];
 }
 
 // Our vertex.
@@ -76,9 +76,15 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
 	float3 output = float3(0, 0, 0);
 
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < 8; ++i)
 	{
 		LightData light = lights[i];
+
+		if (light.Attenuation <= 0.0f)
+		{
+			continue;
+		}
+
 		float3 lightDirection = normalize(vertex.worldPos - light.LightPosition);
 		float diffuse = saturate(dot(vertex.normal, -lightDirection)) * (light.Attenuation / dot(light.LightPosition - vertex.worldPos, light.LightPosition - vertex.worldPos));
 
