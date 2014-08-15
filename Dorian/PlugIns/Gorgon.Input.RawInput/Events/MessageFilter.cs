@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
@@ -33,18 +34,25 @@ namespace GorgonLibrary.Input.Raw
 	/// Object representing a message loop filter.
 	/// </summary>
 	internal class MessageFilter
-		: System.Windows.Forms.IMessageFilter, IDisposable
+		: System.Windows.Forms.IMessageFilter
 	{
 		#region Events.
 		/// <summary>
-		/// Event fired when a raw input event occours.
+		/// Event fired when a raw input keyboard event occours.
 		/// </summary>
-		public event EventHandler<RawInputEventArgs> RawInputData = null;
+		public event EventHandler<RawInputKeyboardEventArgs> RawInputKeyboardData = null;
+		/// <summary>
+		/// Event fired when a pointing device event occurs.
+		/// </summary>
+		public event EventHandler<RawInputPointingDeviceEventArgs> RawInputPointingDeviceData = null;
+		/// <summary>
+		/// Event fired when an HID event occurs.
+		/// </summary>
+		public event EventHandler<RawInputHIDEventArgs> RawInputHIDData = null;
 		#endregion
 
 		#region Variables.
-		private bool _isDisposed;					// Flag to indicate that the object has been disposed.
-		private RawInputData _data;					// Raw input data.
+		private readonly int _headerSize = DirectAccess.SizeOf<RAWINPUTHEADER>();	// Size of the input data in bytes.
 		#endregion
 
 		#region IMessageFilter Members
@@ -63,47 +71,62 @@ namespace GorgonLibrary.Input.Raw
 				return false;
 			}
 
-			if (_data == null)
+			unsafe
 			{
-				_data = new RawInputData();
-			}
+				int dataSize = 0;
 
-			_data.GetRawInputData(m.LParam);
-			if (RawInputData != null)
-			{
-				RawInputData(this, new RawInputEventArgs(_data));
+				// Get data size.			
+				int result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
+
+				if (result == -1)
+				{
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+				}
+
+				// Get actual data.
+				var rawInputPtr = stackalloc byte[dataSize];
+				result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, (IntPtr)rawInputPtr, ref dataSize, _headerSize);
+
+				if ((result == -1) || (result != dataSize))
+				{
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+				}
+
+				var rawInput = (RAWINPUT*)rawInputPtr;
+
+				switch (rawInput->Header.Type)
+				{
+					case RawInputType.Mouse:
+						if (RawInputPointingDeviceData != null)
+						{
+							RawInputPointingDeviceData(this,
+							                           new RawInputPointingDeviceEventArgs(rawInput->Header.Device, ref rawInput->Union.Mouse));
+						}
+						break;
+					case RawInputType.Keyboard:
+						if (RawInputKeyboardData != null)
+						{
+							RawInputKeyboardData(this, new RawInputKeyboardEventArgs(rawInput->Header.Device, ref rawInput->Union.Keyboard));
+						}
+						break;
+					default:
+						if (RawInputHIDData != null)
+						{
+							var HIDData = new byte[rawInput->Union.HID.Size * rawInput->Union.HID.Count];
+							var hidDataPtr = ((byte*)rawInput) + _headerSize + 8;
+
+							fixed (byte* buffer = &HIDData[0])
+							{
+								DirectAccess.MemoryCopy(buffer, hidDataPtr, HIDData.Length);
+							}
+
+							RawInputHIDData(this, new RawInputHIDEventArgs(rawInput->Header.Device, ref rawInput->Union.HID, HIDData));
+						}
+						break;
+				}
 			}
 
 			return false;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-			    if ((disposing) && (_data != null))
-			    {
-			        _data.Dispose();
-			    }
-
-			    _data = null;
-			}
-			_isDisposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

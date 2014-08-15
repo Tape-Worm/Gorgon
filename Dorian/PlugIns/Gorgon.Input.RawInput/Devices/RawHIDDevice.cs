@@ -49,14 +49,14 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event argments.</param>
-		private void GetRawData(object sender, RawInputEventArgs e)
+		private void GetRawData(object sender, RawInputHIDEventArgs e)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
 		        return;
 		    }
 
-		    if ((e.Data.Header.Type != RawInputType.HID) || (_deviceData.Handle != e.Handle))
+		    if (_deviceData.Handle != e.Handle)
 		    {
 		        return;
 		    }
@@ -74,7 +74,7 @@ namespace GorgonLibrary.Input.Raw
 			    }
 			}
 
-			SetData("BinaryData", e.Data.HIDData);
+			SetData("BinaryData", e.HIDData);
 		}
 
 		/// <summary>
@@ -84,8 +84,8 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
-				_messageFilter.RawInputData += GetRawData;
+				_messageFilter.RawInputHIDData -= GetRawData;
+				_messageFilter.RawInputHIDData += GetRawData;
 			}
 
 			_device.UsagePage = _deviceData.UsagePage;
@@ -120,7 +120,7 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= GetRawData;
+				_messageFilter.RawInputHIDData -= GetRawData;
 			}
 
 			_device.UsagePage = _deviceData.UsagePage;

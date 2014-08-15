@@ -304,7 +304,7 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
         private void _mouse_PointingDeviceDown(object sender, PointingDeviceEventArgs e)
-        {
+		{
             UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
         }
 

@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Windows.Forms;
 using GorgonLibrary.Math;
 
@@ -307,14 +308,14 @@ namespace GorgonLibrary.Input
         /// </summary>
         /// <param name="bShow">TRUE to show, FALSE to hide.</param>
         /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-        [DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
+        [DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
         
 		/// <summary>
 		/// Function called when the device is bound to a window.
 		/// </summary>
 		/// <param name="window">Window that was bound.</param>
-		protected override void OnWindowBound(System.Windows.Forms.Control window)
+		protected override void OnWindowBound(Control window)
 		{
 			window.MouseLeave += Owner_MouseLeave;
 		}
@@ -463,7 +464,9 @@ namespace GorgonLibrary.Input
 				if (disposing)
 				{
 					if (!CursorVisible)
+					{
 						ShowCursor();
+					}
 				}
 				_disposed = true;
 			}
@@ -540,7 +543,7 @@ namespace GorgonLibrary.Input
 		{
 		    if (_cursorHidden)
 		    {
-		        System.Windows.Forms.Cursor.Show();
+		        Cursor.Show();
 		    }
 
 		    _cursorHidden = false;
@@ -553,7 +556,7 @@ namespace GorgonLibrary.Input
 		{
 		    if (!_cursorHidden)
 		    {
-		        System.Windows.Forms.Cursor.Hide();
+		        Cursor.Hide();
 		    }
 
 		    _cursorHidden = true;
@@ -651,8 +654,8 @@ namespace GorgonLibrary.Input
 			ResetCursor();
 			ShowCursor();
 
-			DoubleClickDelay = System.Windows.Forms.SystemInformation.DoubleClickTime;
-			DoubleClickRange = new PointF(System.Windows.Forms.SystemInformation.DoubleClickSize.Width, System.Windows.Forms.SystemInformation.DoubleClickSize.Height);
+			DoubleClickDelay = SystemInformation.DoubleClickTime;
+			DoubleClickRange = new PointF(SystemInformation.DoubleClickSize.Width, SystemInformation.DoubleClickSize.Height);
 		}
 		#endregion
 	}
