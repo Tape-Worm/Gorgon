@@ -310,32 +310,6 @@ namespace GorgonLibrary.Input
         /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
         [DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
         private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
-        
-		/// <summary>
-		/// Function called when the device is bound to a window.
-		/// </summary>
-		/// <param name="window">Window that was bound.</param>
-		protected override void OnWindowBound(Control window)
-		{
-			window.MouseLeave += Owner_MouseLeave;
-		}
-
-		/// <summary>
-		/// Handles the MouseLeave event of the owner control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		protected void Owner_MouseLeave(object sender, EventArgs e)
-		{
-			// If we're not exclusive and we leave the control, we should reset
-			// the button status or else the button(s) will remain in a pressed
-			// state upon re-entry.  Regardless of whether a button is physically
-			// pressed or not.
-		    if (!Exclusive)
-		    {
-		        ResetButtons();
-		    }
-		}
 
 		/// <summary>
 		/// Function to fire the pointing device wheel move event.
@@ -439,19 +413,6 @@ namespace GorgonLibrary.Input
 
 		    var e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
 		    PointingDeviceUp(this, e);
-		}
-
-		/// <summary>
-		/// Function to unbind the device from a window.
-		/// </summary>
-		protected override void UnbindWindow()
-		{
-			base.UnbindWindow();
-
-		    if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
-		    {
-		        BoundControl.MouseLeave -= Owner_MouseLeave;
-		    }
 		}
 
 		/// <summary>

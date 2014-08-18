@@ -26,6 +26,8 @@
 
 using System;
 using System.Drawing;
+using System.Net.Mime;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
@@ -105,39 +107,64 @@ namespace GorgonLibrary.Input.Raw
 		}
 
 		/// <summary>
+		/// Handles the MouseLeave event of the bound control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void BoundControl_MouseLeave(object sender, EventArgs e)
+		{
+			// If we're not exclusive and we leave the control, we should reset
+			// the button status or else the button(s) will remain in a pressed
+			// state upon re-entry.  Regardless of whether a button is physically
+			// pressed or not.
+			ResetButtons();
+		}
+
+		/// <summary>
+		/// Function to unbind the device from a window.
+		/// </summary>
+		protected override void UnbindWindow()
+		{
+			base.UnbindWindow();
+
+			if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
+			{
+				BoundControl.MouseLeave -= BoundControl_MouseLeave;
+			}
+		}
+
+		/// <summary>
 		/// Function to bind the input device.
 		/// </summary>
 		protected override void BindDevice()
 		{
-			BoundControl.MouseLeave -= Owner_MouseLeave;
-
             UnbindDevice();
 
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputPointingDeviceData -= GetRawData;
 				_messageFilter.RawInputPointingDeviceData += GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Mouse;
             _device.Flags = RawInputDeviceFlags.None;
+			_device.WindowHandle = IntPtr.Zero;
 
 			// Enable background access.
-		    if ((AllowBackground) || (Exclusive))
+		    if (AllowBackground)
 		    {
+				_device.WindowHandle = BoundControl.Handle;
 		        _device.Flags |= RawInputDeviceFlags.InputSink;
 		    }
 
 		    // Enable exclusive access.
 			if (Exclusive)
 			{
+				_device.WindowHandle = BoundControl.Handle;
 				_device.Flags |= RawInputDeviceFlags.CaptureMouse | RawInputDeviceFlags.NoLegacy;
 			}
 
-		    _device.WindowHandle = BoundControl.Handle;
-
-		    // Attempt to register the device.
+			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_POINTING_DEVICE);
@@ -145,7 +172,7 @@ namespace GorgonLibrary.Input.Raw
 
 			if (!Exclusive)
 			{
-				OnWindowBound(BoundControl);
+				BoundControl.MouseLeave += BoundControl_MouseLeave;
 			}
 		}
 
@@ -154,6 +181,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void UnbindDevice()
 		{
+			BoundControl.MouseLeave -= BoundControl_MouseLeave;
+
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputPointingDeviceData -= GetRawData;
@@ -169,8 +198,6 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE);
 		    }
-
-			BoundControl.MouseLeave -= Owner_MouseLeave;
 		}
 
 		/// <summary>
@@ -206,7 +233,9 @@ namespace GorgonLibrary.Input.Raw
 			// Do nothing if we're outside and we have exclusive mode turned off.
 			if (!Exclusive)
 			{
-			    if (!WindowRectangle.Contains(BoundControl.PointToClient(System.Windows.Forms.Cursor.Position))) 
+				Point clientPosition = BoundControl.PointToClient(System.Windows.Forms.Cursor.Position);
+
+			    if (!WindowRectangle.Contains(clientPosition)) 
 				{
 					_outside = true;
 					return;
@@ -216,7 +245,7 @@ namespace GorgonLibrary.Input.Raw
 			    {
 			        // If we're back inside place position at the entry point.
 			        _outside = false;
-			        Position = BoundControl.PointToClient(System.Windows.Forms.Cursor.Position);
+			        Position = clientPosition;
 			    }
 			}
 

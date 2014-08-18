@@ -223,7 +223,7 @@ namespace GorgonLibrary.Input.WinForms
 		internal WinFormsPointingDevice(GorgonInputFactory owner)
 			: base(owner, "Win Forms Mouse")
 		{			
-			Gorgon.Log.Print("Raw input pointing device interface created.", LoggingLevel.Verbose);
+			Gorgon.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
 		}
 		#endregion
 	}

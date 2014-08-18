@@ -304,15 +304,6 @@ namespace GorgonLibrary.Input
         }
 
 		/// <summary>
-		/// Function called when the device is bound to a window.
-		/// </summary>
-		/// <param name="window">Window that was bound.</param>
-		/// <remarks>Implementors will override this method to handle specific events that may affect the input device.</remarks>
-		protected virtual void OnWindowBound(Control window)
-		{
-		}
-
-		/// <summary>
 		/// Function to bind the device to a window.
 		/// </summary>
 		/// <param name="boundWindow">Window to bind with.</param>
@@ -354,8 +345,6 @@ namespace GorgonLibrary.Input
 			BoundTopLevelForm.Deactivate += BoundForm_Deactivate;
 			BoundControl.LostFocus += BoundWindow_LostFocus;
 			BoundControl.GotFocus += BoundWindow_GotFocus;
-
-			OnWindowBound(boundWindow);
 		}
 		#endregion
 
