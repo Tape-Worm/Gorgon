@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
 using GorgonLibrary.Renderers;
@@ -351,9 +352,9 @@ namespace GorgonLibrary.Examples
 				_graphics = new GorgonGraphics();
 				_screen = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings
 				    {
-					Size = Properties.Settings.Default.Resolution,
+					Size = Settings.Default.Resolution,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
-					IsWindowed = Properties.Settings.Default.IsWindowed
+					IsWindowed = Settings.Default.IsWindowed
 				});
 
                 // For the backup image. Used to make it as large as the monitor that we're on.
@@ -419,9 +420,9 @@ namespace GorgonLibrary.Examples
 			    }
 
 				// Set the mouse range and position.
-				Cursor.Position = PointToScreen(new Point(Properties.Settings.Default.Resolution.Width / 2, Properties.Settings.Default.Resolution.Height / 2));
-				_mouse.SetPosition(Properties.Settings.Default.Resolution.Width / 2, Properties.Settings.Default.Resolution.Height / 2);
-				_mouse.SetPositionRange(0, 0, Properties.Settings.Default.Resolution.Width, Properties.Settings.Default.Resolution.Height);
+				Cursor.Position = PointToScreen(new Point(Settings.Default.Resolution.Width / 2, Settings.Default.Resolution.Height / 2));
+				_mouse.SetPosition(Settings.Default.Resolution.Width / 2, Settings.Default.Resolution.Height / 2);
+				_mouse.SetPositionRange(0, 0, Settings.Default.Resolution.Width, Settings.Default.Resolution.Height);
 
 				// Set gorgon events.
 				_screen.AfterStateTransition += (sender, args) =>

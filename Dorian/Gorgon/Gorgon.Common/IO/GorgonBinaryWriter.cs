@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Text;
 using GorgonLibrary.Native;
 using GorgonLibrary.Properties;
@@ -37,7 +38,7 @@ namespace GorgonLibrary.IO
 	/// <remarks>The <see cref="System.IO.BinaryWriter">BinaryWriter</see> object included with .NET automatically closes the underlying stream when the writer
 	/// is closed.  This object was created to allow the user to decide when to close the underlying stream.</remarks>
 	public class GorgonBinaryWriter
-		: System.IO.BinaryWriter
+		: BinaryWriter
 	{
 		#region Variables.
 		private bool _isDisposed;		// Flag to indicate that the object was disposed.
@@ -296,7 +297,7 @@ namespace GorgonLibrary.IO
 		/// <param name="output">Output stream.</param>
 		/// <param name="encoder">Encoding for the binary writer.</param>
 		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryWriter(System.IO.Stream output, Encoding encoder, bool keepStreamOpen)
+		public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen)
 			: base(output, encoder)
 		{
 			_keepOpen = keepStreamOpen;
@@ -307,7 +308,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="output">Output stream.</param>
 		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryWriter(System.IO.Stream output, bool keepStreamOpen)
+		public GorgonBinaryWriter(Stream output, bool keepStreamOpen)
 			: this(output, Encoding.UTF8, keepStreamOpen)
 		{
 		}

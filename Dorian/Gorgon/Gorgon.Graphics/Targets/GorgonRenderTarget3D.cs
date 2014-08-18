@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 
@@ -91,7 +92,7 @@ namespace GorgonLibrary.Graphics
 
             var desc = new D3D.Texture3DDescription
             {
-                Format = (SharpDX.DXGI.Format)Settings.TextureFormat,
+                Format = (Format)Settings.TextureFormat,
                 Width = Settings.Width,
                 Height = Settings.Height,
                 Depth = Settings.Depth,

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -149,7 +150,7 @@ namespace GorgonLibrary.Graphics
 				MipLODBias = 0.0f,
 				MaxAnisotropy = 1,
 				ComparisonFunction = ComparisonOperators.Never,
-				BorderColor = System.Drawing.Color.White,
+				BorderColor = Color.White,
 				MinLOD = -3.402823466e+38f,
 				MaxLOD = 3.402823466e+38f
 			};
@@ -166,7 +167,7 @@ namespace GorgonLibrary.Graphics
             MipLODBias = 0.0f,
             MaxAnisotropy = 1,
             ComparisonFunction = ComparisonOperators.Never,
-            BorderColor = System.Drawing.Color.White,
+            BorderColor = Color.White,
             MinLOD = -3.402823466e+38f,
             MaxLOD = 3.402823466e+38f
         };

@@ -26,8 +26,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
@@ -35,6 +37,7 @@ using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Properties;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary
 {
@@ -166,7 +169,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return Application.StartupPath.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+				return Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar);
 			}
 		}
 
@@ -269,7 +272,7 @@ namespace GorgonLibrary
 				// Give up CPU time if we're not focused.
 				if ((ApplicationForm != null) && (!ApplicationForm.ContainsFocus) && (UnfocusedSleepTime > 0))
 				{
-					System.Threading.Thread.Sleep(UnfocusedSleepTime);
+					Thread.Sleep(UnfocusedSleepTime);
 				}
 			}
 		}
@@ -662,7 +665,7 @@ namespace GorgonLibrary
 				catch (Exception ex)
 				{
 					// Only note this in DEBUG mode.
-					UI.GorgonDialogs.ErrorBox(ApplicationForm, ex);
+					GorgonDialogs.ErrorBox(ApplicationForm, ex);
 				}
 #else
 				// ReSharper disable EmptyGeneralCatchClause

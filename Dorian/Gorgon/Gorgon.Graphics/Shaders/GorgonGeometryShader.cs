@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics.Properties;
 using Compiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
@@ -115,7 +116,7 @@ namespace GorgonLibrary.Graphics
 			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 			}
 		}
         #endregion

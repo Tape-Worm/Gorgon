@@ -193,7 +193,7 @@ namespace GorgonLibrary.Graphics
 			var desc = new D3D.Texture2DDescription
 			{
 				ArraySize = Settings.ArrayCount,
-				Format = (SharpDX.DXGI.Format)Settings.TextureFormat,
+				Format = (GI.Format)Settings.TextureFormat,
 				Width = Settings.Width,
 				Height = Settings.Height,
 				MipLevels = Settings.MipCount,

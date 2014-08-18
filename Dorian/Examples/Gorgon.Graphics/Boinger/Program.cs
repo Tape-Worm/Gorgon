@@ -29,8 +29,10 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Example.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -50,7 +52,7 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			get
 			{
-				return Native.DirectAccess.SizeOf<BoingerVertex>();
+				return DirectAccess.SizeOf<BoingerVertex>();
 			}
 		}
 
@@ -349,9 +351,9 @@ namespace GorgonLibrary.Graphics.Example
 			    {
 				Window = _mainForm,										// Assign to our form.
 				Format = BufferFormat.R8G8B8A8_UIntNormal,				// Set up for 32 bit RGBA normalized display.
-				Size = Properties.Settings.Default.Resolution,			// Get the resolution from the config file.
+				Size = Settings.Default.Resolution,			// Get the resolution from the config file.
 				DepthStencilFormat = depthFormat,						// Get our depth format.
-				IsWindowed = Properties.Settings.Default.IsWindowed		// Set up for windowed or full screen (depending on config file).
+				IsWindowed = Settings.Default.IsWindowed		// Set up for windowed or full screen (depending on config file).
 			});
 
 			// Center on the primary monitor.
@@ -370,12 +372,12 @@ namespace GorgonLibrary.Graphics.Example
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
-			_vertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "BoingerVS", Properties.Resources.Shader);
+			_vertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "BoingerVS", Resources.Shader);
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
-			_pixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "BoingerPS", Properties.Resources.Shader);
+			_pixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "BoingerPS", Resources.Shader);
 			// Our shadow shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
-			_pixelShaderShadow = Graphics.Shaders.CreateShader<GorgonPixelShader>("ShadowShader", "BoingerShadowPS", Properties.Resources.Shader);
+			_pixelShaderShadow = Graphics.Shaders.CreateShader<GorgonPixelShader>("ShadowShader", "BoingerShadowPS", Resources.Shader);
 
 			// Create the vertex input layout.
 			// We need to create a layout for our vertex type because the shader won't know
@@ -389,7 +391,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Load our textures from the resources.
 			// This contains our textures for the walls and ball.  
-			_texture = Graphics.Textures.CreateTexture<GorgonTexture2D>("PlaneTexture", Properties.Resources.Texture);
+			_texture = Graphics.Textures.CreateTexture<GorgonTexture2D>("PlaneTexture", Resources.Texture);
 
 			// Set up our view matrix.
 			// Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's

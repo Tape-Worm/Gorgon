@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers.Properties;
 using SlimMath;
@@ -77,7 +78,7 @@ namespace GorgonLibrary.Renderers
             }
 
 		    var result = (T)(Activator.CreateInstance(type,
-		                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+		                BindingFlags.NonPublic | BindingFlags.Instance,
 		                null,
 		                new object[]
 		                {

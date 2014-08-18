@@ -27,8 +27,11 @@
 using System;
 using System.Drawing;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Math;
+using Rectangle = System.Drawing.Rectangle;
+using RectangleF = System.Drawing.RectangleF;
 
 namespace GorgonLibrary.Graphics
 {
@@ -118,9 +121,9 @@ namespace GorgonLibrary.Graphics
 		/// Function to convert this viewport rectangle into a Direct3D viewport.
 		/// </summary>
 		/// <returns>The Direct3D viewport value type.</returns>		
-		internal SharpDX.ViewportF Convert()
+		internal ViewportF Convert()
 		{
-			return new SharpDX.ViewportF(Left, Top, Width, Height, MinimumZ, MaximumZ);
+			return new ViewportF(Left, Top, Width, Height, MinimumZ, MaximumZ);
 		}
 
 		/// <summary>

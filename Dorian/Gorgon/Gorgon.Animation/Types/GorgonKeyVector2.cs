@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.IO;
 using SlimMath;
 
 namespace GorgonLibrary.Animation
@@ -98,7 +99,7 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
+		void IKeyFrame.FromChunk(GorgonChunkReader chunk)
 		{
 			Time = chunk.ReadFloat();
 			Value = chunk.Read<Vector2>();
@@ -108,7 +109,7 @@ namespace GorgonLibrary.Animation
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void IKeyFrame.ToChunk(IO.GorgonChunkWriter chunk)
+		void IKeyFrame.ToChunk(GorgonChunkWriter chunk)
 		{
 			chunk.WriteFloat(Time);
 			chunk.Write(Value);

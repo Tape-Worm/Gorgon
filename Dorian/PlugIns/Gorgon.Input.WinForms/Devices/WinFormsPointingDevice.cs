@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input.WinForms
@@ -61,7 +62,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void BoundWindow_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			GetMouseData(e, true, ButtonState.None);
 		}
@@ -71,7 +72,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void BoundWindow_MouseUp(object sender, MouseEventArgs e)
 		{
 			GetMouseData(e, false, ButtonState.Up);
 		}
@@ -81,7 +82,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void BoundWindow_MouseDown(object sender, MouseEventArgs e)
 		{
 			GetMouseData(e, false, ButtonState.Down);
 		}
@@ -91,9 +92,9 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void BoundWindow_MouseMove(object sender, MouseEventArgs e)
 		{
-			GetMouseData(e, false, (e.Button != System.Windows.Forms.MouseButtons.None ? ButtonState.Down : ButtonState.None));
+			GetMouseData(e, false, (e.Button != MouseButtons.None ? ButtonState.Down : ButtonState.None));
 		}
 
 		/// <summary>
@@ -101,7 +102,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+		private void BoundWindow_MouseWheel(object sender, MouseEventArgs e)
 		{
 			GetMouseData(e, false, ButtonState.None);
 		}
@@ -112,7 +113,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="e">Event arguments.</param>
 		/// <param name="doubleClick">TRUE if the event is from a double click, FALSE if not.</param>
 		/// <param name="state">The state for the button event.</param>
-		private void GetMouseData(System.Windows.Forms.MouseEventArgs e, bool doubleClick, ButtonState state)
+		private void GetMouseData(MouseEventArgs e, bool doubleClick, ButtonState state)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
@@ -122,7 +123,7 @@ namespace GorgonLibrary.Input.WinForms
 		    OnPointingDeviceWheelMove(e.Delta);
 
 			// Get button data.
-			if ((e.Button & System.Windows.Forms.MouseButtons.Left) == System.Windows.Forms.MouseButtons.Left)
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
 			{
 			    if (state == ButtonState.Down)
 			    {
@@ -135,7 +136,7 @@ namespace GorgonLibrary.Input.WinForms
 			    }
 			}
 
-			if ((e.Button & System.Windows.Forms.MouseButtons.Right) == System.Windows.Forms.MouseButtons.Right)
+			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
 			{
 			    if (state == ButtonState.Down)
 			    {
@@ -148,7 +149,7 @@ namespace GorgonLibrary.Input.WinForms
 			    }
 			}
 
-			if ((e.Button & System.Windows.Forms.MouseButtons.Middle) == System.Windows.Forms.MouseButtons.Middle)
+			if ((e.Button & MouseButtons.Middle) == MouseButtons.Middle)
 			{
 			    if (state == ButtonState.Down)
 			    {
@@ -160,7 +161,7 @@ namespace GorgonLibrary.Input.WinForms
 			        OnPointingDeviceUp(PointingDeviceButtons.Middle, e.Clicks);
 			    }
 			}
-			if ((e.Button & System.Windows.Forms.MouseButtons.XButton1) == System.Windows.Forms.MouseButtons.XButton1)
+			if ((e.Button & MouseButtons.XButton1) == MouseButtons.XButton1)
 			{
 			    if (state == ButtonState.Down)
 			    {
@@ -172,7 +173,7 @@ namespace GorgonLibrary.Input.WinForms
 			        OnPointingDeviceUp(PointingDeviceButtons.Button4, e.Clicks);
 			    }
 			}
-			if ((e.Button & System.Windows.Forms.MouseButtons.XButton2) == System.Windows.Forms.MouseButtons.XButton2)
+			if ((e.Button & MouseButtons.XButton2) == MouseButtons.XButton2)
 			{
 			    if (state == ButtonState.Down)
 			    {

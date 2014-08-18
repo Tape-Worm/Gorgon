@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -453,7 +454,7 @@ namespace GorgonLibrary.Examples
             _backgroundSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
             _backgroundSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
                 
-			_logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Logo", Properties.Resources.Gorgon_2_x_Logo_Full);
+			_logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Logo", Resources.Gorgon_2_x_Logo_Full);
 			_logoSprite = _renderer.Renderables.CreateSprite("Logo",
 				new GorgonSpriteSettings
 				{

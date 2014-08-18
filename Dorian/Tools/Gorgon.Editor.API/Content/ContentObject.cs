@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -543,7 +544,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <returns>The image for the thumbnail of the content.</returns>
 		/// <remarks>The size of the thumbnail should be set to 128x128.</remarks>
-		public virtual System.Drawing.Image GetThumbNailImage()
+		public virtual Image GetThumbNailImage()
 		{
 			return null;
 		}

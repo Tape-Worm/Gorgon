@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
@@ -75,7 +76,7 @@ namespace GorgonLibrary.Input.Raw
 			: base(name, InputDeviceType.Joystick, className, hidPath)
 		{
 			JoystickID = joystickID;
-			_joyCapsSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(JOYCAPS));
+			_joyCapsSize = Marshal.SizeOf(typeof(JOYCAPS));
 		}
 		#endregion
 	}

@@ -27,6 +27,9 @@
 using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -162,13 +165,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Texture to build a view description for.</param>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.UnorderedAccessViewDescription GetDesc1D(GorgonTexture texture)
+		private UnorderedAccessViewDescription GetDesc1D(GorgonTexture texture)
 		{
-			return new SharpDX.Direct3D11.UnorderedAccessViewDescription
+			return new UnorderedAccessViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
-					Dimension = texture.Settings.ArrayCount > 1 ? SharpDX.Direct3D11.UnorderedAccessViewDimension.Texture1DArray
-						            : SharpDX.Direct3D11.UnorderedAccessViewDimension.Texture1D,
+					Format = (Format)Format,
+					Dimension = texture.Settings.ArrayCount > 1 ? UnorderedAccessViewDimension.Texture1DArray
+						            : UnorderedAccessViewDimension.Texture1D,
 					Texture1DArray =
 						{
 							MipSlice = MipIndex,
@@ -183,14 +186,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Texture to build a view description for.</param>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.UnorderedAccessViewDescription GetDesc2D(GorgonTexture texture)
+		private UnorderedAccessViewDescription GetDesc2D(GorgonTexture texture)
 		{
-			return new SharpDX.Direct3D11.UnorderedAccessViewDescription
+			return new UnorderedAccessViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
+					Format = (Format)Format,
 					Dimension = texture.Settings.ArrayCount > 1
-						            ? SharpDX.Direct3D11.UnorderedAccessViewDimension.Texture2DArray
-						            : SharpDX.Direct3D11.UnorderedAccessViewDimension.Texture2D,
+						            ? UnorderedAccessViewDimension.Texture2DArray
+						            : UnorderedAccessViewDimension.Texture2D,
 					Texture2DArray =
 						{
 							MipSlice =  MipIndex,
@@ -204,12 +207,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the view description for a 3D texture.
 		/// </summary>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.UnorderedAccessViewDescription GetDesc3D()
+		private UnorderedAccessViewDescription GetDesc3D()
 		{
-			return new SharpDX.Direct3D11.UnorderedAccessViewDescription
+			return new UnorderedAccessViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
-					Dimension = SharpDX.Direct3D11.UnorderedAccessViewDimension.Texture3D,
+					Format = (Format)Format,
+					Dimension = UnorderedAccessViewDimension.Texture3D,
 					Texture3D =
 						{
 							MipSlice = MipIndex,
@@ -225,7 +228,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnInitialize()
 		{
-			SharpDX.Direct3D11.UnorderedAccessViewDescription desc;
+			UnorderedAccessViewDescription desc;
 			var texture = (GorgonTexture)Resource;
 
 			Gorgon.Log.Print("Creating texture unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
@@ -254,12 +257,12 @@ namespace GorgonLibrary.Graphics
 				Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
 
 				// Create our SRV.
-				D3DView = new SharpDX.Direct3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+				D3DView = new UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
 					{
 						DebugName = Resource.ResourceType + " '" + texture.Name + "' Unordered Access Resource View"
 					};
 			}
-			catch (SharpDX.SharpDXException sDXEx)
+			catch (SharpDXException sDXEx)
 			{
 				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
 				{

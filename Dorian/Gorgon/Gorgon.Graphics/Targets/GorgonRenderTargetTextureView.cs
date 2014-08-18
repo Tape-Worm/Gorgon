@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Graphics.Properties;
 
@@ -83,7 +84,7 @@ namespace GorgonLibrary.Graphics
             {
                 return new D3D.RenderTargetViewDescription
                 {
-                    Format = (SharpDX.DXGI.Format)Format,
+                    Format = (Format)Format,
                     Dimension = D3D.RenderTargetViewDimension.Texture1DArray,
                     Texture1DArray =
                     {
@@ -96,7 +97,7 @@ namespace GorgonLibrary.Graphics
 
             return new D3D.RenderTargetViewDescription
             {
-                Format = (SharpDX.DXGI.Format)Format,
+                Format = (Format)Format,
                 Dimension = D3D.RenderTargetViewDimension.Texture1D,
                 Texture1D =
                 {
@@ -119,7 +120,7 @@ namespace GorgonLibrary.Graphics
             {
                 return new D3D.RenderTargetViewDescription
                 {
-                    Format = (SharpDX.DXGI.Format)Format,
+                    Format = (Format)Format,
                     Dimension = isMultiSampled
                         ? D3D.RenderTargetViewDimension.Texture2DMultisampledArray
                         : D3D.RenderTargetViewDimension.Texture2DArray,
@@ -134,7 +135,7 @@ namespace GorgonLibrary.Graphics
 
             return new D3D.RenderTargetViewDescription
             {
-                Format = (SharpDX.DXGI.Format)Format,
+                Format = (Format)Format,
                 Dimension = isMultiSampled
                     ? D3D.RenderTargetViewDimension.Texture2DMultisampled
                     : D3D.RenderTargetViewDimension.Texture2D,
@@ -153,7 +154,7 @@ namespace GorgonLibrary.Graphics
         {
             return new D3D.RenderTargetViewDescription
             {
-                Format = (SharpDX.DXGI.Format)Format,
+                Format = (Format)Format,
                 Dimension = D3D.RenderTargetViewDimension.Texture3D,
                 Texture3D =
                 {

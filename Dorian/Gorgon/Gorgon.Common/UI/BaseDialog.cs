@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.UI
@@ -242,7 +243,7 @@ namespace GorgonLibrary.UI
 		{
 		    int borderHeight = buttonOK.Top - 5;
 
-			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+			g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 			SizeF textDimensions = g.MeasureString(_message, Font, new SizeF(_maxTextSize.Width - 2, maxTextHeight));
 		    
             using (Brush backBrush = new SolidBrush(Color.FromArgb(255, 240, 240, 240)))

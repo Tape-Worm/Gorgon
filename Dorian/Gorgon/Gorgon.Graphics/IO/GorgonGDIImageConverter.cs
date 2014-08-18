@@ -32,6 +32,7 @@ using System.Linq;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics.Properties;
+using Bitmap = SharpDX.WIC.Bitmap;
 
 namespace GorgonLibrary.IO
 {
@@ -172,7 +173,7 @@ namespace GorgonLibrary.IO
 			var data = new GorgonImageData(settings);
 			
 			// Using the image, convert to a WIC bitmap object.
-			using (SharpDX.WIC.Bitmap bitmap = wic.CreateWICImageFromImage(image))
+			using (Bitmap bitmap = wic.CreateWICImageFromImage(image))
 			{
 				for (int mipLevel = 0; mipLevel < data.Settings.MipCount; mipLevel++)
 				{
@@ -320,7 +321,7 @@ namespace GorgonLibrary.IO
             var data = new GorgonImageData(settings);
 			
 			// Using the image, convert to a WIC bitmap object.
-			using (SharpDX.WIC.Bitmap bitmap = wic.CreateWICImageFromImage(image))
+			using (Bitmap bitmap = wic.CreateWICImageFromImage(image))
 			{
 				for (int mipLevel = 0; mipLevel < options.MipCount; mipLevel++)
 				{
@@ -544,7 +545,7 @@ namespace GorgonLibrary.IO
 		public static Image[] CreateGDIImagesFromImageData(GorgonImageData imageData)
 		{
 			PixelFormat? format = GetPixelFormat(imageData.Settings.Format);
-			SharpDX.WIC.Bitmap[] bitmaps = null;
+			Bitmap[] bitmaps = null;
 			Image[] images;
 
 			if (format == null)

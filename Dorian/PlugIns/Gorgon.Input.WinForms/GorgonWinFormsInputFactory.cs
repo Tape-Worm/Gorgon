@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using GorgonLibrary.Input.WinForms.Properties;
 
 namespace GorgonLibrary.Input.WinForms
@@ -88,7 +89,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// A new custom HID interface.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
-		protected override GorgonCustomHID CreateCustomHIDImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo hidInfo)
+		protected override GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo)
 		{
 			throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}
@@ -101,7 +102,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
-		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
+		protected override GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
 			return new WinFormsKeyboard(this);
 		}
@@ -115,7 +116,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
 		/// </remarks>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
+		protected override GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
 			return new WinFormsPointingDevice(this);
 		}
@@ -128,7 +129,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo joystickInfo)
+		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickInfo)
 		{
             throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}

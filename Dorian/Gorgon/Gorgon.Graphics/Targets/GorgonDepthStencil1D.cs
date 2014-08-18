@@ -28,6 +28,8 @@ using System;
 using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -110,25 +112,25 @@ namespace GorgonLibrary.Graphics
 		/// <param name="initialData">Data used to populate the image.</param>
 		protected override void OnInitialize(GorgonImageData initialData)
 		{
-			var shaderBind = Settings.AllowShaderView ? SharpDX.Direct3D11.BindFlags.ShaderResource : SharpDX.Direct3D11.BindFlags.None;
+			var shaderBind = Settings.AllowShaderView ? BindFlags.ShaderResource : BindFlags.None;
 
-			var desc = new SharpDX.Direct3D11.Texture1DDescription
+			var desc = new Texture1DDescription
 				{
 					ArraySize = Settings.ArrayCount,
 					BindFlags = GetBindFlags(true, false) | shaderBind,
-					CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
-					Format = Settings.AllowShaderView ? (SharpDX.DXGI.Format)Settings.TextureFormat : (SharpDX.DXGI.Format)Settings.Format,
+					CpuAccessFlags = CpuAccessFlags.None,
+					Format = Settings.AllowShaderView ? (Format)Settings.TextureFormat : (Format)Settings.Format,
 					Width = Settings.Width,
 					MipLevels = Settings.MipCount,
-					OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None
+					OptionFlags = ResourceOptionFlags.None
 				};
 
 			Gorgon.Log.Print("{0} {1}: Creating 1D depth/stencil texture...", LoggingLevel.Verbose, GetType().Name, Name);
 
 			// Create the texture.
 			D3DResource = initialData != null
-				              ? new SharpDX.Direct3D11.Texture1D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
-				              : new SharpDX.Direct3D11.Texture1D(Graphics.D3DDevice, desc);
+				              ? new Texture1D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+				              : new Texture1D(Graphics.D3DDevice, desc);
 
 			GorgonRenderStatistics.DepthBufferCount++;
 			GorgonRenderStatistics.DepthBufferSize += SizeInBytes;

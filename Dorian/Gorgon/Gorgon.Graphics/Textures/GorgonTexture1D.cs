@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 				{
 					ArraySize = Settings.ArrayCount,
 					BindFlags = GetBindFlags(false, false),
-					Format = (SharpDX.DXGI.Format)Settings.Format,
+					Format = (GI.Format)Settings.Format,
 					Width = Settings.Width,
 					MipLevels = Settings.MipCount,
 					OptionFlags = D3D.ResourceOptionFlags.None,

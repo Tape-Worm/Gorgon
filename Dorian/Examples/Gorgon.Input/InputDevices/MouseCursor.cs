@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.Examples
@@ -104,7 +105,7 @@ namespace GorgonLibrary.Examples
         {
             _graphics = Graphics.FromHwnd(displayControl.Handle);
 
-            _mouseImage = new Bitmap(displayControl.ClientSize.Width, displayControl.ClientSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            _mouseImage = new Bitmap(displayControl.ClientSize.Width, displayControl.ClientSize.Height, PixelFormat.Format32bppArgb);
             _imageGraphics = Graphics.FromImage(_mouseImage);
 
             _graphicsContext = BufferedGraphicsManager.Current;

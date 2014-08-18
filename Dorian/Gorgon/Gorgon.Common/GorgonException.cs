@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Runtime.Serialization;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Properties;
@@ -162,7 +163,7 @@ namespace GorgonLibrary
 				              gorgonException.ResultCode.Code, indicator, Resources.GOR_DLG_ERR_GOREXCEPT_RESULT);
 			    }
 
-			    System.Collections.IDictionary extraInfo = inner.Data;
+			    IDictionary extraInfo = inner.Data;
 
 				// Print custom information.
 				if (extraInfo.Count > 0)
@@ -170,7 +171,7 @@ namespace GorgonLibrary
 					Log.Print("{0}", LoggingLevel.Verbose, indicator);
 					Log.Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_DLG_ERR_CUSTOM_INFO);
 					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
-					foreach (System.Collections.DictionaryEntry item in extraInfo)
+					foreach (DictionaryEntry item in extraInfo)
 					{
 					    if (item.Value != null)
 					    {

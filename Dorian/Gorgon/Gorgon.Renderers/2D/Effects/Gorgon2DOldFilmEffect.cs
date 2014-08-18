@@ -25,11 +25,13 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -443,7 +445,7 @@ namespace GorgonLibrary.Renderers
 
 			// Create pixel shader.
 			Passes[0].PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.OldFilm.PS",
-				"GorgonPixelShaderFilmGrain", Encoding.UTF8.GetString(Properties.Resources.FilmGrain));
+				"GorgonPixelShaderFilmGrain", Encoding.UTF8.GetString(Resources.FilmGrain));
 
 			_timingBuffer = Graphics.Buffers.CreateConstantBuffer("Effect.OldFilm.TimingBuffer", new GorgonConstantBufferSettings
 			{
@@ -539,7 +541,7 @@ namespace GorgonLibrary.Renderers
 				MipLODBias = 0.0f,
 				MaxAnisotropy = 1,
 				ComparisonFunction = ComparisonOperators.Never,
-				BorderColor = System.Drawing.Color.White,
+				BorderColor = Color.White,
 				MinLOD = -3.402823466e+38f,
 				MaxLOD = 3.402823466e+38f
 			};

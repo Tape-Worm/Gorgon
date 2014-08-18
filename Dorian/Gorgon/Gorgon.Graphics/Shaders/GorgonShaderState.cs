@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
@@ -285,7 +287,7 @@ namespace GorgonLibrary.Graphics
 						AddressV = (D3D.TextureAddressMode)stateType.VerticalAddressing,
 						AddressW = (D3D.TextureAddressMode)stateType.DepthAddressing,
 						BorderColor =
-							new SharpDX.Color4(stateType.BorderColor.Red, stateType.BorderColor.Green, stateType.BorderColor.Blue,
+							new Color4(stateType.BorderColor.Red, stateType.BorderColor.Green, stateType.BorderColor.Blue,
 							                   stateType.BorderColor.Alpha),
 						ComparisonFunction = (D3D.Comparison)stateType.ComparisonFunction,
 						MaximumAnisotropy = stateType.MaxAnisotropy,
@@ -581,7 +583,7 @@ namespace GorgonLibrary.Graphics
 			/// Gets the enumerator.
 			/// </summary>
 			/// <returns></returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return _states.GetEnumerator();
 			}
@@ -954,7 +956,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return _buffers.GetEnumerator();
 			}
@@ -1353,7 +1355,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return _resources.GetEnumerator();
 			}

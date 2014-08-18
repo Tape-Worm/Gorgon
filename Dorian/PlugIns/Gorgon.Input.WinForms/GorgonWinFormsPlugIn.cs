@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Input.WinForms;
+
 namespace GorgonLibrary.Input
 {
 	/// <summary>
@@ -41,7 +43,7 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		protected override GorgonInputFactory CreateFactory()
 		{
-			return new WinForms.GorgonWinFormsInputFactory();
+			return new GorgonWinFormsInputFactory();
 		}
 		#endregion
 

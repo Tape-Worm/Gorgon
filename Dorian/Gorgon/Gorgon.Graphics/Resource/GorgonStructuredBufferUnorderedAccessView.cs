@@ -27,6 +27,8 @@
 using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -94,33 +96,33 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         protected override void OnInitialize()
         {
-            var bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.None;
+            var bufferType = UnorderedAccessViewBufferFlags.None;
 
 			Gorgon.Log.Print("Creating structured buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
             switch (ViewType)
             {
                 case UnorderedAccessViewType.AppendConsume:
-                    bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Append;
+                    bufferType = UnorderedAccessViewBufferFlags.Append;
                     break;
                 case UnorderedAccessViewType.Counter:
-                    bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Counter;
+                    bufferType = UnorderedAccessViewBufferFlags.Counter;
                     break;
             }
 
-            var desc = new SharpDX.Direct3D11.UnorderedAccessViewDescription
+            var desc = new UnorderedAccessViewDescription
                 {
-                    Dimension = SharpDX.Direct3D11.UnorderedAccessViewDimension.Buffer,
+                    Dimension = UnorderedAccessViewDimension.Buffer,
                     Buffer =
                         {
                             FirstElement = ElementStart,
                             ElementCount = ElementCount,
                             Flags = bufferType
                         },
-                    Format = (SharpDX.DXGI.Format)Format
+                    Format = (Format)Format
                 };
 
-            D3DView = new SharpDX.Direct3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+            D3DView = new UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
                 {
                     DebugName = "Gorgon Unordered Access View for " + Resource.Name
                 };

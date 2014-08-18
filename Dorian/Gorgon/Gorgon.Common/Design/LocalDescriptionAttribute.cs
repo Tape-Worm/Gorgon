@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Resources;
+using System.Threading;
 
 namespace GorgonLibrary.Design
 {
@@ -47,7 +48,7 @@ namespace GorgonLibrary.Design
 		private static string GetString(Type resourcesType, string resourceName)
 		{
 			var manager = new ResourceManager(resourcesType.FullName, resourcesType.Assembly);
-			return manager.GetString(resourceName, System.Threading.Thread.CurrentThread.CurrentUICulture);
+			return manager.GetString(resourceName, Thread.CurrentThread.CurrentUICulture);
 		}
 		#endregion
 

@@ -36,6 +36,7 @@ using GorgonLibrary.Graphics.Example.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Graphics.Example
@@ -586,7 +587,7 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => UI.GorgonDialogs.ErrorBox(null, ex));
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
 			}
 			finally
 			{

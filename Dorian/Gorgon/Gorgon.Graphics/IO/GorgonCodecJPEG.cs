@@ -25,6 +25,7 @@
 #endregion
 
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.WIC;
 
 namespace GorgonLibrary.IO
 {
@@ -77,7 +78,7 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal override void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
+        internal override void SetFrameOptions(BitmapFrameEncode frame)
         {
             frame.Options.ImageQuality = _imageQuality;
         }
@@ -88,7 +89,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecJPEG" /> class.
         /// </summary>
         public GorgonCodecJPEG()
-            : base("JPEG", Resources.GORGFX_IMAGE_JPG_CODEC_DESC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, SharpDX.WIC.ContainerFormatGuids.Jpeg)
+            : base("JPEG", Resources.GORGFX_IMAGE_JPG_CODEC_DESC, new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, ContainerFormatGuids.Jpeg)
         {
         }
         #endregion

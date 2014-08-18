@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -127,7 +128,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             var invalidReasons = new StringBuilder(512);
 
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
-            if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel == Graphics.DeviceFeatureLevel.SM2_a_b)
+            if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
             {
 	            invalidReasons.AppendFormat(Resources.GORFNT_ERR_PLUGIN_INVALID_SM,
 	                                        ContentObject.Graphics.VideoDevice.Name,

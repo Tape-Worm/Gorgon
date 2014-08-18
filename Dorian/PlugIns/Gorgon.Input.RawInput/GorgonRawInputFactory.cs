@@ -281,23 +281,22 @@ namespace GorgonLibrary.Input.Raw
                 return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
             }
 
-            if (msg == WindowMessages.RawInput)
+            if (msg != WindowMessages.RawInput)
             {
-                var inputMessage = new Message
-                                   {
-                                       HWnd = hwnd,
-                                       Msg = (int)msg,
-                                       LParam = lParam,
-                                       WParam = wParam
-                                   };
-
-                if (MessageFilter.PreFilterMessage(ref inputMessage))
-                {
-                    return inputMessage.Result;
-                }
+                return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
             }
 
-            return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
+            var inputMessage = new Message
+                               {
+                                   HWnd = hwnd,
+                                   Msg = (int)msg,
+                                   LParam = lParam,
+                                   WParam = wParam
+                               };
+
+            return MessageFilter.PreFilterMessage(ref inputMessage)
+                       ? inputMessage.Result
+                       : Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
 	    }
 
         /// <summary>
@@ -306,12 +305,21 @@ namespace GorgonLibrary.Input.Raw
         /// <param name="windowHandle">Window handle to hook.</param>
 	    private void HookWindowProc(IntPtr windowHandle)
 	    {
+            // Only need to hook the application window, but if that's not available for whatever reason
+            // we can hook into the control being used to receive raw input events.  At the very minimum we 
+            // need a window of some kind in order to process the WM_INPUT event.  If one is not available, 
+            // then we must throw an exception.
             if (MessageFilter != null)
             {
                 return;
             }
 
             _hookedWindow = Gorgon.ApplicationForm != null ? Gorgon.ApplicationForm.Handle : windowHandle;
+
+            if (_hookedWindow == IntPtr.Zero)
+            {
+                throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
+            }
 
             // Hook the window procedure.
             _oldWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
@@ -551,7 +559,6 @@ namespace GorgonLibrary.Input.Raw
 					if (MessageFilter != null)
 					{
                         UnhookWindowProc();
-						//Application.RemoveMessageFilter(MessageFilter);
 					}
 				}
 
@@ -569,9 +576,6 @@ namespace GorgonLibrary.Input.Raw
 		public GorgonRawInputFactory()
 			: base("Gorgon Raw Input")
 		{
-			//MessageFilter = new MessageFilter();
-
-			//Application.AddMessageFilter(MessageFilter);
 		}
 		#endregion
 	}

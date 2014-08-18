@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(stream, "stream");
 
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}
@@ -162,7 +162,7 @@ namespace GorgonLibrary.Graphics
 		public void Update(ref int value, int offset, GorgonGraphics deferred = null)
 		{
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(values, "values");
 
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}

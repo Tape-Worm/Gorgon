@@ -781,7 +781,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_BUFFER_SIZE_MISMATCH, "buffer");
             }
 
-            if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+            if (Settings.Usage == BufferUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
             }
@@ -833,7 +833,7 @@ namespace GorgonLibrary.Graphics
             GorgonDebug.AssertParamRange(destByteIndex, 0, buffer.SizeInBytes, "destOffset");
 
 #if DEBUG
-            if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+            if (Settings.Usage == BufferUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
             }
@@ -872,7 +872,7 @@ namespace GorgonLibrary.Graphics
 			where T : struct
 		{
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}
@@ -913,7 +913,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(data, "data");
 
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}
@@ -951,7 +951,7 @@ namespace GorgonLibrary.Graphics
             GorgonDebug.AssertNull(stream, "stream");
 
 #if DEBUG
-            if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+            if (Settings.Usage != BufferUsage.Default)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
             }

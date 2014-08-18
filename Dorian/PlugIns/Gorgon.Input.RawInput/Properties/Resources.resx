@@ -150,4 +150,7 @@
   <data name="GORINP_RAW_NOT_MM_JOYSTICK" xml:space="preserve">
     <value>The joystick information object is not Windows Multimedia specific.</value>
   </data>
+  <data name="GORINP_RAW_NO_WINDOW_TO_BIND" xml:space="preserve">
+    <value>Raw input requires a window to bind with in order to received event data.</value>
+  </data>
 </root>

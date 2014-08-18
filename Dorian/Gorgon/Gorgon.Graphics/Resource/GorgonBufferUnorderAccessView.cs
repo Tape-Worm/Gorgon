@@ -27,6 +27,7 @@
 using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -84,19 +85,19 @@ namespace GorgonLibrary.Graphics
 		protected override void OnInitialize()
         {
 			Gorgon.Log.Print("Creating buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
-			var desc = new SharpDX.Direct3D11.UnorderedAccessViewDescription
+			var desc = new D3D.UnorderedAccessViewDescription
 				{
-					Dimension = SharpDX.Direct3D11.UnorderedAccessViewDimension.Buffer,
+					Dimension = D3D.UnorderedAccessViewDimension.Buffer,
 					Buffer =
 						{
 							FirstElement = ElementStart,
 							ElementCount = ElementCount,
 							Flags = IsRaw ? D3D.UnorderedAccessViewBufferFlags.Raw : D3D.UnorderedAccessViewBufferFlags.None
 						},
-					Format = (SharpDX.DXGI.Format)Format
+					Format = (Format)Format
 				};
 
-			D3DView = new SharpDX.Direct3D11.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+			D3DView = new D3D.UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
 				{
 					DebugName = "Gorgon Unordered Access View for " + Resource.Name
 				};

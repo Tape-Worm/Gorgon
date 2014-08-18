@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using System.Globalization;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using SlimMath;
@@ -169,7 +170,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Character.ToString(System.Globalization.CultureInfo.CurrentCulture);
+				return Character.ToString(CultureInfo.CurrentCulture);
 			}
 		}
 		#endregion

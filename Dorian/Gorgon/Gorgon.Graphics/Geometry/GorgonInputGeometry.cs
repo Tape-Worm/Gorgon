@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using SharpDX.Direct3D;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
@@ -490,7 +492,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>
 			/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 			/// </returns>
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return _bindings.GetEnumerator();
 			}
@@ -664,7 +666,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				_primitiveType = value;
-				_graphics.Context.InputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)value;
+				_graphics.Context.InputAssembler.PrimitiveTopology = (PrimitiveTopology)value;
 			}
 		}
 
@@ -701,7 +703,7 @@ namespace GorgonLibrary.Graphics
         {
             _graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
             VertexBuffers.Reset();
-            _graphics.Context.InputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+            _graphics.Context.InputAssembler.PrimitiveTopology = (PrimitiveTopology.TriangleList);
             _graphics.Context.InputAssembler.InputLayout = null;
 
             _indexBuffer = null;

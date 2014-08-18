@@ -87,9 +87,9 @@ namespace GorgonLibrary.Graphics
 		{
 			Gorgon.Log.Print("Creating buffer shader view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
-			var desc = new SharpDX.Direct3D11.ShaderResourceViewDescription
+			var desc = new D3D.ShaderResourceViewDescription
 				{
-					BufferEx = new SharpDX.Direct3D11.ShaderResourceViewDescription.ExtendedBufferResource
+					BufferEx = new D3D.ShaderResourceViewDescription.ExtendedBufferResource
 						{
 							FirstElement = ElementStart,
 							ElementCount = ElementCount,
@@ -99,7 +99,7 @@ namespace GorgonLibrary.Graphics
 					Format = (GI.Format)Format
 				};
 
-			D3DView = new SharpDX.Direct3D11.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+			D3DView = new D3D.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
 				{
 					DebugName = "Gorgon Shader View for " + Resource.GetType().FullName
 				};

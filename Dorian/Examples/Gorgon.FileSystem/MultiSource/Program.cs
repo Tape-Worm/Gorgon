@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
@@ -46,7 +47,7 @@ namespace GorgonLibrary.Examples
 		{
 			get
 			{
-				string path = Properties.Settings.Default.PlugInLocation;
+				string path = Settings.Default.PlugInLocation;
 
 				if (path.Contains("{0}"))
 				{
@@ -75,7 +76,7 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
-			string path = Properties.Settings.Default.ResourceLocation;
+			string path = Settings.Default.ResourceLocation;
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{

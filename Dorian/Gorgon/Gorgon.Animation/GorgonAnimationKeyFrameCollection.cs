@@ -25,8 +25,10 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Animation
@@ -102,7 +104,7 @@ namespace GorgonLibrary.Animation
 			{
 			    if (Contains(key.Time))
                 {
-			        throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, key.Time));
+			        throw new ArgumentException(string.Format(Resources.GORANM_KEY_EXISTS_AT_TIME, key.Time));
 			    }
 
 			    Times.Add(key.Time, key);
@@ -171,7 +173,7 @@ namespace GorgonLibrary.Animation
 		{
 		    if (Contains(item.Time))
 		    {
-                throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
+                throw new ArgumentException(string.Format(Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
 		    }
 
 		    _keyFrames.Insert(index, item);
@@ -231,13 +233,13 @@ namespace GorgonLibrary.Animation
 		{
 		    if (item.DataType != _track.DataType)
 		    {
-		        throw new InvalidCastException(string.Format(Properties.Resources.GORANM_KEY_TRACK_TYPE_MISMATCH, 
+		        throw new InvalidCastException(string.Format(Resources.GORANM_KEY_TRACK_TYPE_MISMATCH, 
                                                     item.GetType().FullName, _track.GetType().FullName));
 		    }
 
 		    if (Contains(item.Time))
 		    {
-		        throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
+		        throw new ArgumentException(string.Format(Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
 		    }
 
 		    _keyFrames.Add(item);
@@ -317,7 +319,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
 		/// </returns>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}

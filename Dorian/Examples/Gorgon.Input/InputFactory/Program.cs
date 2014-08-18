@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.Input;
 
 namespace GorgonLibrary.Examples
@@ -69,7 +70,7 @@ namespace GorgonLibrary.Examples
 		{
 			get
 			{
-				string plugInPath = Properties.Settings.Default.InputPlugInPath;
+				string plugInPath = Settings.Default.InputPlugInPath;
 
 				// Map the plug-in path.
 				if (plugInPath.Contains("{0}"))

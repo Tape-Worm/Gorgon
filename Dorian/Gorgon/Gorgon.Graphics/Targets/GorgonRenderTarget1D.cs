@@ -26,6 +26,7 @@
 
 using System;
 using GorgonLibrary.Diagnostics;
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -151,7 +152,7 @@ namespace GorgonLibrary.Graphics
             var desc = new D3D.Texture1DDescription
             {
                 ArraySize = Settings.ArrayCount,
-                Format = (SharpDX.DXGI.Format)Settings.TextureFormat,
+                Format = (Format)Settings.TextureFormat,
                 Width = Settings.Width,
                 MipLevels = Settings.MipCount,
                 BindFlags = GetBindFlags(false, true),

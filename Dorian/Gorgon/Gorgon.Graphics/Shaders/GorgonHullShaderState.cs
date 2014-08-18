@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using SharpDX.Direct3D11;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -47,7 +49,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
+		protected override void SetResources(int slot, int count, ShaderResourceView[] resources)
 		{
             if (count == 1)
 		    {
@@ -65,7 +67,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		protected override void SetSamplers(int slot, int count, SharpDX.Direct3D11.SamplerState[] samplers)
+		protected override void SetSamplers(int slot, int count, SamplerState[] samplers)
 		{
             if (count == 1)
 		    {
@@ -83,7 +85,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, SharpDX.Direct3D11.Buffer[] buffers)
+		protected override void SetConstantBuffers(int slot, int count, Buffer[] buffers)
 		{
             if (count == 1)
 		    {

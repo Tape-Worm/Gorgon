@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Graphics.Test.Properties;
+using GorgonLibrary.UI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.InteropServices;
 using SlimMath;
@@ -182,12 +184,12 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     runDeferred();
                     
-                    System.Threading.Thread.Sleep(5);
+                    Thread.Sleep(5);
                 }
             }
             catch (Exception ex)
             {
-                UI.GorgonDialogs.ErrorBox(null, ex);
+                GorgonDialogs.ErrorBox(null, ex);
                 Gorgon.Quit();
             }
         }

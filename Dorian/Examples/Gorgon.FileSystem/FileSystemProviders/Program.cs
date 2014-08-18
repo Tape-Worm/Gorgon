@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
@@ -72,7 +73,7 @@ namespace GorgonLibrary.Examples
 		{
 			get
 			{
-				string path = Properties.Settings.Default.PlugInLocation;
+				string path = Settings.Default.PlugInLocation;
 
 				if (path.Contains("{0}"))
 				{

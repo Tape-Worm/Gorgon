@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Properties;
@@ -147,14 +148,14 @@ namespace GorgonLibrary.UI
 										   gorgonException.ResultCode.Code.FormatHex());
 				}
 
-				System.Collections.IDictionary extraInfo = nextException.Data;
+				IDictionary extraInfo = nextException.Data;
 
 				// Print custom information.
 				if (extraInfo.Count > 0)
 				{
 					var customData = new StringBuilder(256);
 
-					foreach (System.Collections.DictionaryEntry item in extraInfo)
+					foreach (DictionaryEntry item in extraInfo)
 					{
 						if (customData.Length > 0)
 						{

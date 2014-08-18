@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using SlimMath;
 
@@ -146,7 +147,7 @@ namespace GorgonLibrary.Renderers
         /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already started the collider chunk.</para>
         /// </remarks>
-        protected internal override void WriteToChunk(IO.GorgonChunkWriter writer)
+        protected internal override void WriteToChunk(GorgonChunkWriter writer)
         {
             writer.WriteString(GetType().FullName);
             writer.Write(Center);
@@ -163,7 +164,7 @@ namespace GorgonLibrary.Renderers
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>
-        protected internal override void ReadFromChunk(IO.GorgonChunkReader reader)
+        protected internal override void ReadFromChunk(GorgonChunkReader reader)
         {
             _center = reader.Read<Vector2>();
             _radius = reader.ReadFloat();
