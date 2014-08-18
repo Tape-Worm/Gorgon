@@ -45,6 +45,10 @@ namespace GorgonLibrary.Input.Raw
 	{
 		#region Variables.
 		private bool _disposed;			// Flag to indicate that the object was disposed.
+	    private IntPtr _oldWndProc;     // Previous window procedure.
+	    private IntPtr _hookedWindow;   // Window that has its wnd proc hooked up.
+	    private IntPtr _newWndProc;     // New window procedure.
+	    private WndProc _wndProc;       // New window procedure.
 		#endregion
 
 		#region Properties.
@@ -59,6 +63,16 @@ namespace GorgonLibrary.Input.Raw
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Delete for our custom window proc.
+        /// </summary>
+        /// <param name="hWnd">Window handle.</param>
+        /// <param name="msg">Message.</param>
+        /// <param name="wParam">Parameter</param>
+        /// <param name="lParam">Parameter.</param>
+        /// <returns>Result.</returns>
+        private delegate IntPtr WndProc(IntPtr hWnd, WindowMessages msg, IntPtr wParam, IntPtr lParam);
+
 		/// <summary>
 		/// Function to retrieve the device name.
 		/// </summary>
@@ -251,6 +265,89 @@ namespace GorgonLibrary.Input.Raw
 			}
 		}
 
+        /// <summary>
+        /// Function to handle raw input messages on the window.
+        /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="msg">The message.</param>
+        /// <param name="wParam">The parameter.</param>
+        /// <param name="lParam">The parameter.</param>
+        /// <returns>The result of the procedure.</returns>
+	    private IntPtr RawWndProc(IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam)
+	    {
+            if (_disposed)
+            {
+                UnhookWindowProc();
+                return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
+            }
+
+            if (msg == WindowMessages.RawInput)
+            {
+                var inputMessage = new Message
+                                   {
+                                       HWnd = hwnd,
+                                       Msg = (int)msg,
+                                       LParam = lParam,
+                                       WParam = wParam
+                                   };
+
+                if (MessageFilter.PreFilterMessage(ref inputMessage))
+                {
+                    return inputMessage.Result;
+                }
+            }
+
+            return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
+	    }
+
+        /// <summary>
+        /// Function to hook the window procedure.
+        /// </summary>
+        /// <param name="windowHandle">Window handle to hook.</param>
+	    private void HookWindowProc(IntPtr windowHandle)
+	    {
+            if (MessageFilter != null)
+            {
+                return;
+            }
+
+            _hookedWindow = Gorgon.ApplicationForm != null ? Gorgon.ApplicationForm.Handle : windowHandle;
+
+            // Hook the window procedure.
+            _oldWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
+
+            _wndProc = RawWndProc;
+            _newWndProc = Marshal.GetFunctionPointerForDelegate(_wndProc);
+
+            Win32API.SetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc, _newWndProc);
+
+            MessageFilter = new MessageFilter();
+	    }
+
+        /// <summary>
+        /// Function to unhook the window procedure.
+        /// </summary>
+	    private void UnhookWindowProc()
+	    {
+	        if ((MessageFilter == null)
+                || (_hookedWindow == IntPtr.Zero))
+	        {
+	            return;
+	        }
+            
+            MessageFilter = null;
+            _hookedWindow = IntPtr.Zero;
+
+            IntPtr currentWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
+
+            if (currentWndProc != _newWndProc)
+            {
+                return;
+            }
+
+            Win32API.SetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc, _oldWndProc);
+	    }
+
 		/// <summary>
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
@@ -391,6 +488,8 @@ namespace GorgonLibrary.Input.Raw
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
 		protected override GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
+            HookWindowProc(window.Handle);
+
 		    RawKeyboard keyboard = keyboardInfo == null
 		                               ? new RawKeyboard(this, "System Keyboard", IntPtr.Zero)
 		                               : new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle);
@@ -408,6 +507,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
+            HookWindowProc(window.Handle);
+
 		    RawPointingDevice mouse = pointingDeviceInfo == null
 		                                  ? new RawPointingDevice(this, "System Mouse", IntPtr.Zero)
 		                                  : new RawPointingDevice(this, pointingDeviceInfo.Name,
@@ -449,7 +550,8 @@ namespace GorgonLibrary.Input.Raw
 
 					if (MessageFilter != null)
 					{
-						Application.RemoveMessageFilter(MessageFilter);
+                        UnhookWindowProc();
+						//Application.RemoveMessageFilter(MessageFilter);
 					}
 				}
 
@@ -467,8 +569,9 @@ namespace GorgonLibrary.Input.Raw
 		public GorgonRawInputFactory()
 			: base("Gorgon Raw Input")
 		{
-			MessageFilter = new MessageFilter();
-			Application.AddMessageFilter(MessageFilter);
+			//MessageFilter = new MessageFilter();
+
+			//Application.AddMessageFilter(MessageFilter);
 		}
 		#endregion
 	}

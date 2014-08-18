@@ -30,6 +30,41 @@ namespace GorgonLibrary.Native
 {
     // ReSharper disable InconsistentNaming
 	#region Enumerations
+    /// <summary>
+    /// Window long functionality flags.
+    /// </summary>
+    enum WindowLongType
+    {
+        /// <summary>
+        /// Retrieves extended window styles.
+        /// </summary>
+        ExStyle = -20,
+        /// <summary>
+        /// Retrieves a handle to the application instance.
+        /// </summary>
+        HInstance = -6,
+        /// <summary>
+        /// Retrieves the handle to the parent window if one exists.
+        /// </summary>
+        HwndParent = -8,
+        /// <summary>
+        /// Retrieves the identifier of the window.
+        /// </summary>
+        ID = -12,
+        /// <summary>
+        /// Retrieves the window styles.
+        /// </summary>
+        Style = -16,
+        /// <summary>
+        /// Retrieves user defined data associated with the window.
+        /// </summary>
+        UserData = -21,
+        /// <summary>
+        /// Retrieves the window procedure.
+        /// </summary>
+        WndProc = -4
+    }
+
 	/// <summary>
 	/// Enumeration containing the joystick information flags.
 	/// </summary>
