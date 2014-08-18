@@ -80,7 +80,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="deviceType">Type of device.</param>
 		/// <param name="deviceList">List of devices.</param>
 		/// <returns>A device name structure.</returns>
-		private static void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
+		private unsafe static void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
 		{
 			int dataSize = 0;
 			RegistryKey deviceKey = null;
@@ -90,22 +90,24 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new Win32Exception();
 		    }
-		    
-		    IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
+
+            // This is highly unlikely to happen, but don't enumerate this item if the size of larger than 512kb.
+            // This is because we're using stackalloc and the stack is limited to 1MB/thread in .NET.
+		    if (dataSize > 524288)
+		    {
+		        return;
+		    }
+
+            byte *data = stackalloc byte[dataSize];
 
 		    try
 		    {
-		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, data, ref dataSize) < 0)
+		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
 		        {
 		            throw new Win32Exception();
 		        }
 
-                if (data == IntPtr.Zero)
-		        {
-		            throw new Win32Exception();
-		        }
-
-		        string regPath = Marshal.PtrToStringAnsi(data);
+		        string regPath = Marshal.PtrToStringAnsi((IntPtr)data);
 
 		        if (regPath == null)
 		        {
@@ -188,11 +190,6 @@ namespace GorgonLibrary.Input.Raw
 		        if (classKey != null)
 		        {
 		            classKey.Dispose();
-		        }
-
-		        if (data != IntPtr.Zero)
-		        {
-		            Marshal.FreeHGlobal(data);
 		        }
 		    }
 		}
