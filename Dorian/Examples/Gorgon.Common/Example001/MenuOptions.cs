@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Threading;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 
@@ -95,7 +96,7 @@ namespace GorgonLibrary.Examples
 				Console.Write("Press any key to return...".PadRight(Console.WindowWidth - 1));
 
 				// Give up CPU time.
-				System.Threading.Thread.Sleep(100);
+				Thread.Sleep(100);
 			}
 		}
 

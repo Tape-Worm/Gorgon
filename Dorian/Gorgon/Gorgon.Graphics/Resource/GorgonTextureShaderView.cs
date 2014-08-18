@@ -27,6 +27,9 @@
 using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX;
+using SharpDX.Direct3D;
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -97,9 +100,9 @@ namespace GorgonLibrary.Graphics
 		{
 			return new D3D.ShaderResourceViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
-					Dimension = texture.Settings.ArrayCount > 1 ? SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray 
-						            : SharpDX.Direct3D.ShaderResourceViewDimension.Texture1D,
+					Format = (Format)Format,
+					Dimension = texture.Settings.ArrayCount > 1 ? ShaderResourceViewDimension.Texture1DArray 
+						            : ShaderResourceViewDimension.Texture1D,
 					Texture1DArray =
 						{
 							MipLevels = MipCount,
@@ -125,12 +128,12 @@ namespace GorgonLibrary.Graphics
 			{
 				return new D3D.ShaderResourceViewDescription
 					{
-						Format = (SharpDX.DXGI.Format)Format,
+						Format = (Format)Format,
 						Dimension = texture.Settings.ArrayCount > 1
-							            ? texture.Settings.IsTextureCube ? SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray 
-								              : SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DArray
-							            : texture.Settings.IsTextureCube ? SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube
-								              : SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D,
+							            ? texture.Settings.IsTextureCube ? ShaderResourceViewDimension.TextureCubeArray 
+								              : ShaderResourceViewDimension.Texture2DArray
+							            : texture.Settings.IsTextureCube ? ShaderResourceViewDimension.TextureCube
+								              : ShaderResourceViewDimension.Texture2D,
 						Texture2DArray = 
 							{
 								MipLevels = MipCount,
@@ -143,10 +146,10 @@ namespace GorgonLibrary.Graphics
 
 			return new D3D.ShaderResourceViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
+					Format = (Format)Format,
 					Dimension = texture.Settings.ArrayCount > 1
-						            ? SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampledArray
-						            : SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampled,
+						            ? ShaderResourceViewDimension.Texture2DMultisampledArray
+						            : ShaderResourceViewDimension.Texture2DMultisampled,
 					Texture2DMSArray =
 						{
 							ArraySize = ArrayCount,
@@ -163,8 +166,8 @@ namespace GorgonLibrary.Graphics
 		{
 			return new D3D.ShaderResourceViewDescription
 				{
-					Format = (SharpDX.DXGI.Format)Format,
-					Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D,
+					Format = (Format)Format,
+					Dimension = ShaderResourceViewDimension.Texture3D,
 					Texture3D =
 						{
 							MostDetailedMip = MipStart,
@@ -211,7 +214,7 @@ namespace GorgonLibrary.Graphics
 						DebugName = Resource.ResourceType + " '" + texture.Name + "' Shader Resource View"
 					};
 			}
-			catch (SharpDX.SharpDXException sDXEx)
+			catch (SharpDXException sDXEx)
 			{
 				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
 				{

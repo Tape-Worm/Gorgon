@@ -26,8 +26,11 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.Direct3D11;
+using SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
@@ -106,18 +109,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="initialData">Data used to populate the image.</param>
 		protected override void OnInitialize(GorgonImageData initialData)
 		{
-			var shaderBind = Settings.AllowShaderView ? SharpDX.Direct3D11.BindFlags.ShaderResource : SharpDX.Direct3D11.BindFlags.None;
+			var shaderBind = Settings.AllowShaderView ? BindFlags.ShaderResource : BindFlags.None;
 
-			var desc = new SharpDX.Direct3D11.Texture2DDescription
+			var desc = new Texture2DDescription
 				{
 					ArraySize = Settings.ArrayCount,
 					BindFlags = GetBindFlags(true, false) | shaderBind,
-					CpuAccessFlags = SharpDX.Direct3D11.CpuAccessFlags.None,
-					Format = Settings.AllowShaderView ? (SharpDX.DXGI.Format)Settings.TextureFormat : (SharpDX.DXGI.Format)Settings.Format,
+					CpuAccessFlags = CpuAccessFlags.None,
+					Format = Settings.AllowShaderView ? (Format)Settings.TextureFormat : (Format)Settings.Format,
 					Height = Settings.Height,
 					Width = Settings.Width,
 					MipLevels = Settings.MipCount,
-					OptionFlags = SharpDX.Direct3D11.ResourceOptionFlags.None,
+					OptionFlags = ResourceOptionFlags.None,
 					SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
 				};
 
@@ -125,8 +128,8 @@ namespace GorgonLibrary.Graphics
 
 			// Create the texture.
 			D3DResource = initialData != null
-				              ? new SharpDX.Direct3D11.Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
-				              : new SharpDX.Direct3D11.Texture2D(Graphics.D3DDevice, desc);
+				              ? new Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+				              : new Texture2D(Graphics.D3DDevice, desc);
 
 			GorgonRenderStatistics.DepthBufferCount++;
 			GorgonRenderStatistics.DepthBufferSize += SizeInBytes;
@@ -190,7 +193,7 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override void UpdateSubResource(GorgonImageBuffer buffer,
-            System.Drawing.Rectangle destRect,
+            Rectangle destRect,
             int destArrayIndex = 0,
             int destMipLevel = 0,
             GorgonGraphics deferred = null)

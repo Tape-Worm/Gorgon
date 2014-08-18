@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Threading;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Examples
@@ -61,7 +63,7 @@ namespace GorgonLibrary.Examples
 			Console.ForegroundColor = ConsoleColor.White;
 
 			// Give up some CPU time.
-			System.Threading.Thread.Sleep(5);
+			Thread.Sleep(5);
 		}
 
 		/// <summary>
@@ -168,8 +170,8 @@ namespace GorgonLibrary.Examples
 			// This is here for any windows forms elements that get displayed.
 			// Without this, the elements will not use the visual styles and will 
 			// default to older styles.
-			System.Windows.Forms.Application.EnableVisualStyles();
-			System.Windows.Forms.Application.DoEvents();
+			Application.EnableVisualStyles();
+			Application.DoEvents();
 
 			Console.Title = "Gorgon Common Library Example #1.";
 			Console.CursorVisible = false;

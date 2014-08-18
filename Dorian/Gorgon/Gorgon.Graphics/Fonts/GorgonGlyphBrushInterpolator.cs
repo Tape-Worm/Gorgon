@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics.Fonts
@@ -55,7 +56,7 @@ namespace GorgonLibrary.Graphics.Fonts
 		/// <summary>
 		/// Function to write the interpolation value to a chunk writer.
 		/// </summary>
-		internal void WriteChunk(IO.GorgonChunkWriter writer)
+		internal void WriteChunk(GorgonChunkWriter writer)
 		{
 			writer.WriteFloat(Weight);
 			writer.Write(Color);
@@ -188,7 +189,7 @@ namespace GorgonLibrary.Graphics.Fonts
 		/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
 		/// </summary>
 		/// <param name="reader">The chunk reader to retrieve the values from.</param>
-		internal GorgonGlyphBrushInterpolator(IO.GorgonChunkReader reader)
+		internal GorgonGlyphBrushInterpolator(GorgonChunkReader reader)
 		{
 			Weight = reader.ReadFloat();
 			Color = reader.Read<GorgonColor>();

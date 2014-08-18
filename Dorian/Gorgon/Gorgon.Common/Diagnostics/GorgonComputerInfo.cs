@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GorgonLibrary.Native;
 
@@ -235,17 +236,17 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public static void RefreshEnvironmentVariables()
 		{
-			System.Collections.IDictionary oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+			IDictionary oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
 
 			_machineVariables = new Dictionary<string, string>();
 			_userVariables = new Dictionary<string, string>();
 
-			foreach (System.Collections.DictionaryEntry variable in oldVariables)
+			foreach (DictionaryEntry variable in oldVariables)
 				_machineVariables.Add(variable.Key.ToString(), variable.Value.ToString());
 
 			oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
 
-			foreach (System.Collections.DictionaryEntry variable in oldVariables)
+			foreach (DictionaryEntry variable in oldVariables)
 				_userVariables.Add(variable.Key.ToString(), variable.Value.ToString());			
 		}
 		#endregion

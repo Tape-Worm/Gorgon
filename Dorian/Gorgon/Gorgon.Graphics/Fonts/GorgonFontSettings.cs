@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using SlimMath;
 using Color = System.Drawing.Color;
@@ -348,7 +349,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The font height, in pixels.</returns>
 		public static float GetFontHeight(float pointSize, int outlineSize)
 		{
-			using (var tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+			using (var tempBmp = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
 			{
 				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tempBmp))
 				{

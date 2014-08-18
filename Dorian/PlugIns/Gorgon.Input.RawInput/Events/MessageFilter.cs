@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Windows.Forms;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
 
@@ -34,7 +35,7 @@ namespace GorgonLibrary.Input.Raw
 	/// Object representing a message loop filter.
 	/// </summary>
 	internal class MessageFilter
-		: System.Windows.Forms.IMessageFilter
+		: IMessageFilter
 	{
 		#region Events.
 		/// <summary>
@@ -56,78 +57,81 @@ namespace GorgonLibrary.Input.Raw
 		#endregion
 
 		#region IMessageFilter Members
-		/// <summary>
-		/// Filters out a message before it is dispatched.
-		/// </summary>
-		/// <param name="m">The message to be dispatched. You cannot modify this message.</param>
-		/// <returns>
-		/// true to filter the message and stop it from being dispatched; false to allow the message to continue to the next filter or control.
-		/// </returns>
-		public bool PreFilterMessage(ref System.Windows.Forms.Message m)
-		{
-			// Handle raw input messages.
-			if ((WindowMessages)m.Msg != WindowMessages.RawInput)
-			{
-				return false;
-			}
 
-			unsafe
-			{
-				int dataSize = 0;
+	    /// <summary>
+	    /// Filters out a message before it is dispatched.
+	    /// </summary>
+	    /// <param name="m">The message to be dispatched. You cannot modify this message.</param>
+	    /// <returns>
+	    /// true to filter the message and stop it from being dispatched; false to allow the message to continue to the next filter or control.
+	    /// </returns>
+	    public unsafe bool PreFilterMessage(ref Message m)
+	    {
 
-				// Get data size.			
-				int result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
+	        int dataSize = 0;
 
-				if (result == -1)
-				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
-				}
+	        // Get data size.			
+	        int result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
 
-				// Get actual data.
-				var rawInputPtr = stackalloc byte[dataSize];
-				result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, (IntPtr)rawInputPtr, ref dataSize, _headerSize);
+	        if (result == -1)
+	        {
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+	        }
 
-				if ((result == -1) || (result != dataSize))
-				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
-				}
+	        // Get actual data.
+	        var rawInputPtr = stackalloc byte[dataSize];
+	        result = Win32API.GetRawInputData(m.LParam,
+	                                          RawInputCommand.Input,
+	                                          (IntPtr)rawInputPtr,
+	                                          ref dataSize,
+	                                          _headerSize);
 
-				var rawInput = (RAWINPUT*)rawInputPtr;
+	        if ((result == -1)
+	            || (result != dataSize))
+	        {
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+	        }
 
-				switch (rawInput->Header.Type)
-				{
-					case RawInputType.Mouse:
-						if (RawInputPointingDeviceData != null)
-						{
-							RawInputPointingDeviceData(this,
-							                           new RawInputPointingDeviceEventArgs(rawInput->Header.Device, ref rawInput->Union.Mouse));
-						}
-				        break;
-					case RawInputType.Keyboard:
-						if (RawInputKeyboardData != null)
-						{
-							RawInputKeyboardData(this, new RawInputKeyboardEventArgs(rawInput->Header.Device, ref rawInput->Union.Keyboard));
-						}
-				        break;
-					default:
-						if (RawInputHIDData != null)
-						{
-							var HIDData = new byte[rawInput->Union.HID.Size * rawInput->Union.HID.Count];
-							var hidDataPtr = ((byte*)rawInput) + _headerSize + 8;
+	        var rawInput = *((RAWINPUT*)rawInputPtr);
 
-							fixed (byte* buffer = &HIDData[0])
-							{
-								DirectAccess.MemoryCopy(buffer, hidDataPtr, HIDData.Length);
-							}
+	        switch (rawInput.Header.Type)
+	        {
+	            case RawInputType.Mouse:
+	                if (RawInputPointingDeviceData != null)
+	                {
+	                    RawInputPointingDeviceData(this,
+	                                               new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
+	                                                                                   ref rawInput.Union.Mouse));
+	                }
+	                break;
+	            case RawInputType.Keyboard:
+	                if (RawInputKeyboardData != null)
+	                {
+	                    RawInputKeyboardData(this,
+	                                         new RawInputKeyboardEventArgs(rawInput.Header.Device,
+	                                                                       ref rawInput.Union.Keyboard));
+	                }
+	                break;
+	            default:
+	                if (RawInputHIDData != null)
+	                {
+	                    var HIDData = new byte[rawInput.Union.HID.Size * rawInput.Union.HID.Count];
+	                    var hidDataPtr = rawInputPtr + _headerSize + 8;
 
-							RawInputHIDData(this, new RawInputHIDEventArgs(rawInput->Header.Device, ref rawInput->Union.HID, HIDData));
-						}
-				        break;
-				}
-			}
+	                    fixed(byte* buffer = &HIDData[0])
+	                    {
+	                        DirectAccess.MemoryCopy(buffer, hidDataPtr, HIDData.Length);
+	                    }
 
-			return true;
-		}
-		#endregion
+	                    RawInputHIDData(this,
+	                                    new RawInputHIDEventArgs(rawInput.Header.Device, ref rawInput.Union.HID, HIDData));
+	                }
+	                break;
+	        }
+
+	        return true;
+	    }
+
+	    #endregion
 	}
 }

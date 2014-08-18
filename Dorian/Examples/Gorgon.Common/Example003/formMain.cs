@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using GorgonLibrary.UI;
 
@@ -69,7 +70,7 @@ namespace GorgonLibrary.Examples
 				_formGraphics = panelGraphics.CreateGraphics();
 				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
 				_graphics = Graphics.FromImage(_bitmap);
-				_graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+				_graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				_graphics.Clear(Color.Black);				
 			}
 			catch (Exception ex)

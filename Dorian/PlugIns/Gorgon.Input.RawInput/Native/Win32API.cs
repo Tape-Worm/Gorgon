@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Native
@@ -45,7 +47,7 @@ namespace GorgonLibrary.Native
 	/// Please note that a lot of the enumerators/structures have slightly different names than their Win32 counterparts.  This was done for the sake of readability.  This does NOT affect their results or their effect on the results of their related functionality.
 	/// </para>
 	/// </remarks>
-	[System.Security.SuppressUnmanagedCodeSecurity]
+	[SuppressUnmanagedCodeSecurity]
 	internal static class Win32API
 	{
 		#region Methods.
@@ -242,7 +244,7 @@ namespace GorgonLibrary.Native
 
 			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceInfo, IntPtr.Zero, ref dataSize) < 0)
 			{
-				throw new System.ComponentModel.Win32Exception();
+				throw new Win32Exception();
 			}
 
 			IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
@@ -251,7 +253,7 @@ namespace GorgonLibrary.Native
 			{
 				if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) < 0)
 				{
-					throw new System.ComponentModel.Win32Exception();
+					throw new Win32Exception();
 				}
 				    
 				var result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
@@ -277,7 +279,7 @@ namespace GorgonLibrary.Native
 
 			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
 			{
-				throw new System.ComponentModel.Win32Exception();
+				throw new Win32Exception();
 			}
 
 			if (deviceCount == 0)
@@ -290,7 +292,7 @@ namespace GorgonLibrary.Native
 			{
 				if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) < 0)
 				{
-					throw new System.ComponentModel.Win32Exception();
+					throw new Win32Exception();
 				}
 
 				var result = new RAWINPUTDEVICELIST[deviceCount];

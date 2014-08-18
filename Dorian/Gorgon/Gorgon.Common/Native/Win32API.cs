@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace GorgonLibrary.Native
 {
@@ -157,7 +158,7 @@ namespace GorgonLibrary.Native
 	/// Please note that a lot of the enumerators/structures have slightly different names than their Win32 counterparts.  This was done for the sake of readability.  This does NOT affect their results or their effect on the results of their related functionality.
 	/// </para>
 	/// </remarks>	
-	[System.Security.SuppressUnmanagedCodeSecurity]
+	[SuppressUnmanagedCodeSecurity]
 	static class Win32API
 	{
 		#region Properties.

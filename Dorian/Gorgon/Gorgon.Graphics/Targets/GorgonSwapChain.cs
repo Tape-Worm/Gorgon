@@ -31,6 +31,8 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Native;
+using GorgonLibrary.UI;
+using SharpDX;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -285,7 +287,7 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 GorgonException.Catch(ex,
                                       () =>
-                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                      GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
 																null,
                                                                 ex));
@@ -329,7 +331,7 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 GorgonException.Catch(ex,
                                       () =>
-                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                      GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
 																null,
                                                                 ex));
@@ -467,7 +469,7 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 GorgonException.Catch(ex,
                                       () =>
-                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                      GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
 																null,
                                                                 ex));
@@ -553,7 +555,7 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 GorgonException.Catch(ex,
                                       () =>
-                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                      GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
 																null,
                                                                 ex));
@@ -614,7 +616,7 @@ namespace GorgonLibrary.Graphics
 				    }
 				}
 			}
-			catch (SharpDX.SharpDXException sdEx)
+			catch (SharpDXException sdEx)
 			{
 				switch (sdEx.ResultCode.Code)
 				{
@@ -924,7 +926,7 @@ namespace GorgonLibrary.Graphics
 		public void Flip(int interval)
 		{
 			var flags = GI.PresentFlags.None;
-			SharpDX.Result result = SharpDX.Result.Ok;
+			Result result = Result.Ok;
 
 			GorgonDebug.AssertParamRange(interval, 0, 4, true, true, "interval");
 
@@ -943,9 +945,9 @@ namespace GorgonLibrary.Graphics
 				IsInStandBy = false;
 				GISwapChain.Present(interval, flags);
 			}
-			catch (SharpDX.SharpDXException sdex)
+			catch (SharpDXException sdex)
 			{
-			    if (sdex.ResultCode == SharpDX.Result.Ok)
+			    if (sdex.ResultCode == Result.Ok)
 			    {
 			        return;
 			    }

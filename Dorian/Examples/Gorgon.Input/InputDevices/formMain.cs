@@ -28,6 +28,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 
@@ -138,7 +139,7 @@ namespace GorgonLibrary.Examples
 	            if (_joystick.Button[0].IsPressed)
 	            {
 		            // Spray the screen.
-		            _currentCursor = Properties.Resources.hand_pointer_icon;
+		            _currentCursor = Resources.hand_pointer_icon;
 		            _mouse.Position = _mousePosition = screenPosition;	
 		            _spray.SprayPoint(_mousePosition);
 	            }
@@ -147,7 +148,7 @@ namespace GorgonLibrary.Examples
 		            // Turn off the cursor if the mouse button isn't held down.
 		            if ((_mouse.Button & PointingDeviceButtons.Button1) != PointingDeviceButtons.Button1)
 		            {
-			            _currentCursor = Properties.Resources.hand_icon;
+			            _currentCursor = Resources.hand_icon;
 		            }
 	            }
 
@@ -237,11 +238,11 @@ namespace GorgonLibrary.Examples
             if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
             {
                 _spray.SprayPoint(Point.Round(position));
-                _currentCursor = Properties.Resources.hand_pointer_icon;
+                _currentCursor = Resources.hand_pointer_icon;
             }
             else
             {
-                _currentCursor = Properties.Resources.hand_icon;
+                _currentCursor = Resources.hand_icon;
             }
 
             _mousePosition = new Point((int)position.X, (int)_mouse.Position.Y);
@@ -479,7 +480,7 @@ namespace GorgonLibrary.Examples
 			try
 			{
 				// Set our default cursor.
-				_currentCursor = Properties.Resources.hand_icon;
+				_currentCursor = Resources.hand_icon;
 				
 				// Load our raw input plug-in assembly.
 				Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");

@@ -99,7 +99,7 @@ namespace GorgonLibrary.Graphics
 			var desc = new D3D.Texture2DDescription
 			    {
 			        ArraySize = Settings.ArrayCount,
-			        Format = (SharpDX.DXGI.Format)Settings.Format,
+			        Format = (GI.Format)Settings.Format,
 			        Width = Settings.Width,
 			        Height = Settings.Height,
 			        MipLevels = Settings.MipCount,

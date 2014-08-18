@@ -26,12 +26,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
+using SharpDX;
+using SharpDX.WIC;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace GorgonLibrary.IO
 {
@@ -43,19 +45,19 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// The output pixel is assigned the value of the pixel that the point falls within. No other pixels are considered.
 		/// </summary>
-		Point = SharpDX.WIC.BitmapInterpolationMode.NearestNeighbor,
+		Point = BitmapInterpolationMode.NearestNeighbor,
 		/// <summary>
 		/// The output pixel values are computed as a weighted average of the nearest four pixels in a 2x2 grid.
 		/// </summary>
-		Linear = SharpDX.WIC.BitmapInterpolationMode.Linear,
+		Linear = BitmapInterpolationMode.Linear,
 		/// <summary>
 		/// Destination pixel values are computed as a weighted average of the nearest sixteen pixels in a 4x4 grid.
 		/// </summary>
-		Cubic = SharpDX.WIC.BitmapInterpolationMode.Cubic,
+		Cubic = BitmapInterpolationMode.Cubic,
 		/// <summary>
 		/// Destination pixel values are computed as a weighted average of the all the pixels that map to the new pixel.
 		/// </summary>
-		Fant = SharpDX.WIC.BitmapInterpolationMode.Fant
+		Fant = BitmapInterpolationMode.Fant
 	}
 
 	/// <summary>
@@ -66,11 +68,11 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// No dithering.
 		/// </summary>
-		None = SharpDX.WIC.BitmapDitherType.None,
+		None = BitmapDitherType.None,
 		/// <summary>
 		/// An error diffusion algorithm.
 		/// </summary>
-		ErrorDiffusion = SharpDX.WIC.BitmapDitherType.ErrorDiffusion
+		ErrorDiffusion = BitmapDitherType.ErrorDiffusion
 	}
 
 	/// <summary>
@@ -797,10 +799,10 @@ namespace GorgonLibrary.IO
 								var sourceBuffer = data[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
                                 var destBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-								var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+								var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
 								// Create a temporary WIC bitmap to work with.
-								using (var bitmap = new SharpDX.WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
+								using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 								{
 									wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
 															destPixelFormat, Dithering, newSize, Clip, Filter);
@@ -829,10 +831,10 @@ namespace GorgonLibrary.IO
 								    var sourceBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
 									var destBuffer = destData[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-									var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+									var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
 									// Create a temporary WIC bitmap to work with.
-									using (var bitmap = new SharpDX.WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
+									using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 									{
 										wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
 																Guid.Empty, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);

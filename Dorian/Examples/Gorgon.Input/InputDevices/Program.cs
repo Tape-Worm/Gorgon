@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
@@ -44,7 +45,7 @@ namespace GorgonLibrary.Examples
 		{
 			get
 			{
-				string path = Properties.Settings.Default.PlugInLocation;
+				string path = Settings.Default.PlugInLocation;
 
 				if (path.Contains("{0}"))
 				{

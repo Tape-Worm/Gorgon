@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -57,7 +58,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void textPreview_TextChanged(object sender, System.EventArgs e)
+		private void textPreview_TextChanged(object sender, EventArgs e)
 		{
 			buttonOK.Enabled = textPreview.TextLength > 0;
 		}

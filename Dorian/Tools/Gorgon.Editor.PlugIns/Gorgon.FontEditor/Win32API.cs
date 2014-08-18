@@ -27,8 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -36,7 +40,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Win32 functions.
 	/// </summary>
-	[System.Security.SuppressUnmanagedCodeSecurity]
+	[SuppressUnmanagedCodeSecurity]
 	static class Win32API
 	{
 		#region Variables.
@@ -103,7 +107,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private static void BuildUnicodeRangeList()
 		{
-			IList<string> rangeLines = Properties.Resources.UnicodeBlocks.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			IList<string> rangeLines = Resources.UnicodeBlocks.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			_ranges = new SortedDictionary<string, GorgonRange>();
 
 			// Break out the lines.
@@ -117,8 +121,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					continue;
 				}
 
-				var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
-				                            int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), System.Globalization.NumberStyles.HexNumber));
+				var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), NumberStyles.HexNumber), 
+				                            int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), NumberStyles.HexNumber));
 
 				// Combine the first 2 latin categories into the one category.
 				if (range.Maximum <= 0xff)
@@ -155,7 +159,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		/// <param name="key">Key to look up.</param>
 		/// <returns>The character for the key.</returns>
-		public static char GetKeyCharacter(System.Windows.Forms.Keys key)
+		public static char GetKeyCharacter(Keys key)
 		{
 			char result = ' ';
 
@@ -178,13 +182,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if (_codePointNames == null)
 			{
-				IList<string> lines = Properties.Resources.UnicodeData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				IList<string> lines = Resources.UnicodeData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
 				_codePointNames = new Dictionary<int, string>();
 
 				foreach (string[] fields in lines.Select(line => line.Split(new[] { ';' })))
 				{
-					_codePointNames.Add(Int32.Parse(fields[0], System.Globalization.NumberStyles.HexNumber),
+					_codePointNames.Add(Int32.Parse(fields[0], NumberStyles.HexNumber),
 					                    string.IsNullOrEmpty(fields[10]) ? fields[1] : fields[10]);
 				}
 			}

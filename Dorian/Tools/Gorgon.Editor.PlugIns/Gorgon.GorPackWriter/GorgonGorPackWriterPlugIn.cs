@@ -26,6 +26,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -93,7 +94,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                                 new XElement("Offset", position),
                                 new XElement("Size", size),
                                 new XElement("CompressedSize", compressedSize),
-                                new XElement("FileDate", file.CreateDate.ToString(System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat)),
+                                new XElement("FileDate", file.CreateDate.ToString(CultureInfo.InvariantCulture.DateTimeFormat)),
                                 new XElement("Encrypted", false),
                                 new XElement("Comment", "Gorgon.Editor"));
         }

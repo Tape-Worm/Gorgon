@@ -26,10 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
+using SharpDX.WIC;
+using Bitmap = SharpDX.WIC.Bitmap;
 using DX = SharpDX;
 
 namespace GorgonLibrary.IO
@@ -175,7 +179,7 @@ namespace GorgonLibrary.IO
 		/// <param name="frameIndex">Index of the current frame.</param>
 		/// <param name="settings">Image data settings.</param>
 		/// <param name="paletteColors">Palette colors used to encode the images.</param>
-		internal override void AddCustomMetaData(SharpDX.WIC.BitmapEncoder encoder, SharpDX.WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
+		internal override void AddCustomMetaData(BitmapEncoder encoder, BitmapFrameEncode frame, int frameIndex, IImageSettings settings, DX.Color[] paletteColors)
 		{
 			// Do nothing.
 			if (FrameDelays == null)
@@ -225,9 +229,9 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// The position of the offset.
 		/// </returns>
-		internal override System.Drawing.Point GetFrameOffset(SharpDX.WIC.BitmapFrameDecode frame)
+		internal override Point GetFrameOffset(BitmapFrameDecode frame)
 		{
-			System.Drawing.Point offset = System.Drawing.Point.Empty;
+			Point offset = Point.Empty;
 
 			if (frame == null)
 			{
@@ -261,9 +265,9 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// A tuple containing the palette data, alpha percentage and the type of palette.
 		/// </returns>
-		internal override Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, SharpDX.WIC.Bitmap bitmap)
+		internal override Tuple<Palette, double, BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, Bitmap bitmap)
 		{			
-			SharpDX.WIC.Palette palette;
+			Palette palette;
 
 			if (Palette.Count == 0)
 			{
@@ -273,10 +277,10 @@ namespace GorgonLibrary.IO
 					return base.GetPaletteInfo(wic, null);
 				}
 
-				palette = new SharpDX.WIC.Palette(wic.Factory);
+				palette = new Palette(wic.Factory);
 				palette.Initialize(bitmap, 256, true);
 					
-				return new Tuple<SharpDX.WIC.Palette,double,SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
+				return new Tuple<Palette,double,BitmapPaletteType>(palette, AlphaThresholdPercent, BitmapPaletteType.Custom);
 			}
 
 			// Generate from our custom palette.
@@ -288,10 +292,10 @@ namespace GorgonLibrary.IO
 				paletteColors[i] = Palette[i].SharpDXColor4;
 			}
 
-			palette = new SharpDX.WIC.Palette(wic.Factory);
+			palette = new Palette(wic.Factory);
 			palette.Initialize(paletteColors);
 
-			return new Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
+			return new Tuple<Palette, double, BitmapPaletteType>(palette, AlphaThresholdPercent, BitmapPaletteType.Custom);
 		}
 
         /// <summary>
@@ -318,7 +322,7 @@ namespace GorgonLibrary.IO
                 throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
             }
 
-            using (var fileStream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+            using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 return GetFrameDelays(fileStream);
             }
@@ -339,7 +343,7 @@ namespace GorgonLibrary.IO
         /// <para>The stream cannot perform seek operations.</para>
         /// </exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public ushort[] GetFrameDelays(System.IO.Stream stream)
+        public ushort[] GetFrameDelays(Stream stream)
         {
 	        var result = new ushort[0];
 
@@ -350,12 +354,12 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
+                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException(Resources.GORGFX_STREAM_NO_SEEK);
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
 			if (!UseAllFrames)
@@ -372,18 +376,18 @@ namespace GorgonLibrary.IO
 				// Get our WIC interface.				
 				using (var wic = new GorgonWICImage())
 				{
-					using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+					using (var decoder = new BitmapDecoder(wic.Factory, SupportedFormat))
 					{
-						using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
+						using (var wicStream = new WICStream(wic.Factory, wrapperStream))
 						{
 							try
 							{
-								decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
+								decoder.Initialize(wicStream, DecodeOptions.CacheOnDemand);
 							}
 							catch (DX.SharpDXException)
 							{
 								// Repackage the exception to keep in line with our API defintion.
-								throw new System.IO.IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
 							if (decoder.FrameCount < 2)
@@ -405,7 +409,7 @@ namespace GorgonLibrary.IO
 
 										if (settings.Format == BufferFormat.Unknown)
 										{
-											throw new System.IO.IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
+											throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 										}
 									}
 
@@ -442,7 +446,7 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
 		public GorgonCodecGIF()
-			: base("GIF", Resources.GORGFX_IMAGE_GIF_CODEC_DESC, new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
+			: base("GIF", Resources.GORGFX_IMAGE_GIF_CODEC_DESC, new[] { "gif" }, ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
             Palette = new List<GorgonColor>(256);

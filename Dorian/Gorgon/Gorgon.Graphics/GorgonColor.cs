@@ -27,7 +27,11 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX;
 using SlimMath;
+using Color = System.Drawing.Color;
+using Vector3 = SlimMath.Vector3;
+using Vector4 = SlimMath.Vector4;
 
 namespace GorgonLibrary.Graphics
 {
@@ -62,22 +66,22 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return a SharpDX color4 type.
 		/// </summary>
-		internal SharpDX.Color4 SharpDXColor4
+		internal Color4 SharpDXColor4
 		{
 			get
 			{
-				return new SharpDX.Color4(Red, Green, Blue, Alpha);
+				return new Color4(Red, Green, Blue, Alpha);
 			}
 		}
 
 		/// <summary>
 		/// Property to return a SharpDX color3 type.
 		/// </summary>
-		internal SharpDX.Color3 SharpDXColor3
+		internal Color3 SharpDXColor3
 		{
 			get
 			{
-				return new SharpDX.Color3(Red, Green, Blue);
+				return new Color3(Red, Green, Blue);
 			}
 		}
 
@@ -549,7 +553,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
 		/// <param name="color">The SharpDX color to convert.</param>
-		internal GorgonColor(SharpDX.Color3 color)
+		internal GorgonColor(Color3 color)
 			: this(color.Red, color.Green, color.Blue, 1.0f)
 		{
 		}
@@ -558,7 +562,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonColor"/> struct.
 		/// </summary>
 		/// <param name="color">The SharpDX color to convert.</param>
-		internal GorgonColor(SharpDX.Color4 color)
+		internal GorgonColor(Color4 color)
 			: this(color.Red, color.Green, color.Blue, color.Alpha)
 		{
 		}

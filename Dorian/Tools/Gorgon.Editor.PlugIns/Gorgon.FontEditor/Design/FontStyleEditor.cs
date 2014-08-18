@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
@@ -50,7 +51,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns>
 		/// The new value of the object. If the value of the object has not changed, this should return the same object it was passed.
 		/// </returns>
-		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			ListBoxFontStyle fontStyles = null;
@@ -107,7 +108,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle"/> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)"/> method. If the <see cref="T:System.Drawing.Design.UITypeEditor"/> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None"/>.
 		/// </returns>
-		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.DropDown;
 		}

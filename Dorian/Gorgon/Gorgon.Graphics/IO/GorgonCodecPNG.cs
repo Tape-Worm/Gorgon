@@ -25,6 +25,7 @@
 #endregion
 
 using GorgonLibrary.Graphics.Properties;
+using SharpDX.WIC;
 
 namespace GorgonLibrary.IO
 {
@@ -36,31 +37,31 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// The system will chose the best filter based on the image data.
         /// </summary>
-        DontCare = SharpDX.WIC.PngFilterOption.Unspecified,
+        DontCare = PngFilterOption.Unspecified,
         /// <summary>
         /// No filtering.
         /// </summary>
-        None = SharpDX.WIC.PngFilterOption.None,
+        None = PngFilterOption.None,
         /// <summary>
         /// Sub filtering.
         /// </summary>
-        Sub = SharpDX.WIC.PngFilterOption.Sub,
+        Sub = PngFilterOption.Sub,
         /// <summary>
         /// Up filtering.
         /// </summary>
-        Up = SharpDX.WIC.PngFilterOption.Up,
+        Up = PngFilterOption.Up,
         /// <summary>
         /// Average filtering.
         /// </summary>
-        Average = SharpDX.WIC.PngFilterOption.Average,
+        Average = PngFilterOption.Average,
         /// <summary>
         /// Paeth filtering.
         /// </summary>
-        Paeth = SharpDX.WIC.PngFilterOption.Paeth,
+        Paeth = PngFilterOption.Paeth,
         /// <summary>
         /// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
         /// </summary>
-        Adaptive = SharpDX.WIC.PngFilterOption.Adaptive
+        Adaptive = PngFilterOption.Adaptive
     }
 
     /// <summary>
@@ -107,10 +108,10 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal override void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
+        internal override void SetFrameOptions(BitmapFrameEncode frame)
         {
             frame.Options.InterlaceOption = UseInterlacing;
-            frame.Options.FilterOption = (SharpDX.WIC.PngFilterOption)CompressionFilter;
+            frame.Options.FilterOption = (PngFilterOption)CompressionFilter;
         }
         #endregion
 
@@ -119,7 +120,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecPNG"/> class.
         /// </summary>
         public GorgonCodecPNG()
-            : base("PNG", Resources.GORGFX_IMAGE_PNG_CODEC_DESC, new[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png)
+            : base("PNG", Resources.GORGFX_IMAGE_PNG_CODEC_DESC, new[] { "png" }, ContainerFormatGuids.Png)
         {
             UseInterlacing = false;
             CompressionFilter = PNGFilter.None;

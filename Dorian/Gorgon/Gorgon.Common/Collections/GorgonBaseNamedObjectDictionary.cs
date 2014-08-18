@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GorgonLibrary.Properties;
 
@@ -254,7 +255,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>
 		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
 		/// </returns>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (KeyValuePair<string, T> item in _list)

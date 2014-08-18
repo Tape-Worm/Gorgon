@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Animation
 {
@@ -57,13 +58,13 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		void FromChunk(IO.GorgonChunkReader chunk);
+		void FromChunk(GorgonChunkReader chunk);
 
 		/// <summary>
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void ToChunk(IO.GorgonChunkWriter chunk);
+		void ToChunk(GorgonChunkWriter chunk);
 		#endregion
 	}
 }

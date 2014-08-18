@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Examples.Properties;
 
 namespace GorgonLibrary.Examples
 {
@@ -276,7 +277,7 @@ namespace GorgonLibrary.Examples
 		{
 			_colorMatrix = new ColorMatrix();
 			_cursorAttribs = new ImageAttributes();			
-			_cursor = Properties.Resources.device_gamepad_48x48;
+			_cursor = Resources.device_gamepad_48x48;
 			CursorSize = new Size(_cursor.Width, _cursor.Height);
 			_control = surfaceControl;
 			_control.Resize += surfaceControl_Resize;

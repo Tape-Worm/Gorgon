@@ -25,6 +25,8 @@
 #endregion
 
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input.WinForms
@@ -45,8 +47,8 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="nVirtKey">Virtual key code to retrieve.</param>
 		// <returns>A bitmask containing the state of the virtual key.</returns>
-		[DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
-		private static extern short GetKeyState(System.Windows.Forms.Keys nVirtKey);
+		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
+		private static extern short GetKeyState(Keys nVirtKey);
 
 		/// <summary>
 		/// Function to retrieve the scan code for a virtual key.
@@ -54,7 +56,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="uCode">Virtual key code</param>
 		/// <param name="uMapType">Mapping type.</param>
 		/// <returns>The scan code.</returns>
-		[DllImport("user32.dll", CharSet = CharSet.Auto), System.Security.SuppressUnmanagedCodeSecurity]
+		[DllImport("user32.dll", CharSet = CharSet.Auto), SuppressUnmanagedCodeSecurity]
 		private static extern int MapVirtualKey(KeyboardKeys uCode, int uMapType);
 
 		/// <summary>
@@ -62,7 +64,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="keyEventArgs">Event parameters from the keyboard events.</param>
 		/// <param name="state">State of the key, up or down.</param>
-		private void ProcessKeys(System.Windows.Forms.KeyEventArgs keyEventArgs, KeyState state)
+		private void ProcessKeys(KeyEventArgs keyEventArgs, KeyState state)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
@@ -79,12 +81,12 @@ namespace GorgonLibrary.Input.WinForms
 			switch(keyCode)
 			{
 				case KeyboardKeys.ControlKey:
-			        if ((GetKeyState(System.Windows.Forms.Keys.LControlKey) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.LControlKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LControlKey;
 			        }
 
-			        if ((GetKeyState(System.Windows.Forms.Keys.RControlKey) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.RControlKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RControlKey;
 			        }
@@ -92,12 +94,12 @@ namespace GorgonLibrary.Input.WinForms
 			        KeyStates[KeyboardKeys.ControlKey] = state;
 					break;
 				case KeyboardKeys.Menu:
-			        if ((GetKeyState(System.Windows.Forms.Keys.LMenu) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.LMenu) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LMenu;
 			        }
 
-			        if ((GetKeyState(System.Windows.Forms.Keys.RMenu) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.RMenu) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RMenu;
 			        }
@@ -105,12 +107,12 @@ namespace GorgonLibrary.Input.WinForms
 			        KeyStates[KeyboardKeys.Menu] = state;
 					break;
 				case KeyboardKeys.ShiftKey:
-			        if ((GetKeyState(System.Windows.Forms.Keys.LShiftKey) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.LShiftKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LShiftKey;
 			        }
 
-			        if ((GetKeyState(System.Windows.Forms.Keys.RShiftKey) & 0x80) == 0x80)
+			        if ((GetKeyState(Keys.RShiftKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RShiftKey;
 			        }
@@ -136,7 +138,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+		private void BoundWindow_KeyDown(object sender, KeyEventArgs e)
 		{
 			ProcessKeys(e, KeyState.Down);
 		}
@@ -146,7 +148,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+		private void BoundWindow_KeyUp(object sender, KeyEventArgs e)
 		{
 			ProcessKeys(e, KeyState.Up);
 		}

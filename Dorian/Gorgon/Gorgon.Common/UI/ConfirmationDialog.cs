@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.UI
@@ -133,7 +134,7 @@ namespace GorgonLibrary.UI
 		/// Function to perform the actual drawing of the dialog.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-		protected override void DrawDialog(System.Drawing.Graphics g)
+		protected override void DrawDialog(Graphics g)
 		{
 		    // Get size.
 			float maxTextHeight = AdjustSize(g,0);

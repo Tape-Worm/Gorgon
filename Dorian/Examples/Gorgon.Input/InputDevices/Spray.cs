@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Examples
@@ -64,7 +65,7 @@ namespace GorgonLibrary.Examples
                 _graphics = null;
             }
             
-            var newBuffer = new Bitmap(newSize.Width, newSize.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
             _graphics = Graphics.FromImage(newBuffer);
 
             if (Surface != null)
@@ -105,7 +106,7 @@ namespace GorgonLibrary.Examples
         /// <param name="size">Size of the drawing surface.</param>
         public Spray(Size size)
         {
-            Surface = new Bitmap(size.Width, size.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Surface = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
             _graphics = Graphics.FromImage(Surface);
         }
         #endregion

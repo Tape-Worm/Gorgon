@@ -29,6 +29,7 @@ using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using GorgonLibrary.Graphics.Fonts;
+using GorgonLibrary.IO;
 using SlimMath;
 using GorgonLibrary.Math;
 
@@ -187,7 +188,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to write the brush elements out to a chunked file.
 		/// </summary>
 		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		internal override void Write(IO.GorgonChunkWriter chunk)
+		internal override void Write(GorgonChunkWriter chunk)
 		{
 			chunk.Begin("BRSHDATA");
 			chunk.Write(BrushType);
@@ -238,7 +239,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(IO.GorgonChunkReader chunk)
+		internal override void Read(GorgonChunkReader chunk)
 		{
 			Points.Clear();
 			BlendPositions.Clear();

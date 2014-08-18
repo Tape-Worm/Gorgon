@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
 
@@ -163,7 +164,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				return;
 			}
 
-			e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+			e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 			var textBounds = new Rectangle(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 			var patternBounds = new Rectangle(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
 

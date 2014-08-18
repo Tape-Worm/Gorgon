@@ -148,7 +148,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(data, "data");
 
 #if DEBUG
-			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			if (Settings.Usage != BufferUsage.Default)
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}

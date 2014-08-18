@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using SharpDX.Direct3D11;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -61,7 +63,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
+		protected override void SetResources(int slot, int count, ShaderResourceView[] resources)
 		{
 		    if (count == 1)
 		    {
@@ -80,7 +82,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetSamplers(int slot, int count, SharpDX.Direct3D11.SamplerState[] samplers)
+		protected override void SetSamplers(int slot, int count, SamplerState[] samplers)
 		{
 #if DEBUG
             if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
@@ -105,7 +107,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, SharpDX.Direct3D11.Buffer[] buffers)
+		protected override void SetConstantBuffers(int slot, int count, Buffer[] buffers)
 		{
 		    if (count == 1)
 		    {

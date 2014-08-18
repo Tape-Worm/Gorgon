@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Graphics.Properties;
 
@@ -95,7 +96,7 @@ namespace GorgonLibrary.Graphics
 			if (!Instanced)
 				instanceCount = 0;
 
-			return new D3D.InputElement(Context, Index, (SharpDX.DXGI.Format)Format, Offset, Slot,
+			return new D3D.InputElement(Context, Index, (Format)Format, Offset, Slot,
 			                            (Instanced
 				                             ? D3D.InputClassification.PerInstanceData
 				                             : D3D.InputClassification.PerVertexData), instanceCount);

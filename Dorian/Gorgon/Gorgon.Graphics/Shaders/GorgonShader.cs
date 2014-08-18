@@ -30,6 +30,7 @@ using System.IO;
 using System.Text;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using SharpDX;
 using Common = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 using Shaders = SharpDX.D3DCompiler;
@@ -160,15 +161,15 @@ namespace GorgonLibrary.Graphics
 			string prefix;
 			string version;
 
-		    if (((ShaderType == GorgonLibrary.Graphics.ShaderType.Compute)
-		         || (ShaderType == GorgonLibrary.Graphics.ShaderType.Domain)
-		         || (ShaderType == GorgonLibrary.Graphics.ShaderType.Hull))
+		    if (((ShaderType == ShaderType.Compute)
+		         || (ShaderType == ShaderType.Domain)
+		         || (ShaderType == ShaderType.Hull))
 		        && (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
 		    {
 		        throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
 		    }
 
-		    if ((ShaderType == GorgonLibrary.Graphics.ShaderType.Geometry)
+		    if ((ShaderType == ShaderType.Geometry)
 		        && ((Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)))
 		    {
                 throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
@@ -398,7 +399,7 @@ namespace GorgonLibrary.Graphics
 
 				return Shaders.ShaderBytecode.Compile(parsedCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, _shaderMacros, null);
 			}
-			catch (SharpDX.CompilationException cex)
+			catch (CompilationException cex)
 			{
 				Errors = cex.Message;
 				throw GorgonException.Catch(cex);

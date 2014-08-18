@@ -28,6 +28,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 using GorgonLibrary.Animation.Properties;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Animation
@@ -366,7 +367,7 @@ namespace GorgonLibrary.Animation
 		/// Function to read the track data from a data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		internal void FromChunk(IO.GorgonChunkReader chunk)
+		internal void FromChunk(GorgonChunkReader chunk)
 		{
 			InterpolationMode = chunk.Read<TrackInterpolationMode>();
 
@@ -387,7 +388,7 @@ namespace GorgonLibrary.Animation
 		/// Function to write the track data to a data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		internal void ToChunk(IO.GorgonChunkWriter chunk)
+		internal void ToChunk(GorgonChunkWriter chunk)
 		{
 			chunk.WriteString(Name);
 			chunk.Write(InterpolationMode);

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.IO.GorPack;
 using GorgonLibrary.IO.GorPack.Properties;
 
 namespace GorgonLibrary.IO
@@ -53,7 +54,7 @@ namespace GorgonLibrary.IO
         /// </returns>
         protected override GorgonFileSystemProvider OnCreateProvider()
         {
-            return new GorPack.GorgonGorPackProvider(Resources.GORFS_DESC);
+            return new GorgonGorPackProvider(Resources.GORFS_DESC);
         }
         #endregion
 

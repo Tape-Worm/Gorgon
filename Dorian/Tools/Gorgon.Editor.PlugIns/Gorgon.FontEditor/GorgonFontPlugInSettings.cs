@@ -28,6 +28,7 @@ using System;
 using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -111,8 +112,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
-		[ApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
-		public Graphics.FontHeightMode FontSizeType
+		[ApplicationSetting("FontSizeType", FontHeightMode.Points, typeof(FontHeightMode), "FontEditor")]
+		public FontHeightMode FontSizeType
 		{
 			get;
 			set;
@@ -121,8 +122,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default font anti-alias mode.
 		/// </summary>
-		[ApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAlias, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
-		public Graphics.FontAntiAliasMode FontAntiAliasMode
+		[ApplicationSetting("FontAntiAliasMode", FontAntiAliasMode.AntiAlias, typeof(FontAntiAliasMode), "FontEditor")]
+		public FontAntiAliasMode FontAntiAliasMode
 		{
 			get;
 			set;

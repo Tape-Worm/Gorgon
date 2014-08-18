@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -72,7 +73,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <exception cref="T:System.ArgumentNullException">The <paramref name="destinationType"/> parameter is null. </exception>
 		///   
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 		    return (!(value is IEnumerable<char>))
 		               ? base.ConvertTo(context, culture, value, destinationType)

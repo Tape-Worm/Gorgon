@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using GorgonLibrary.Diagnostics;
@@ -550,7 +551,7 @@ namespace GorgonLibrary.Graphics
             /// <returns>
             /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
             /// </returns>
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
                 return _unorderedViews.GetEnumerator();
             }
@@ -584,7 +585,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
+		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
 		{
             if (count == 1)
 		    {
@@ -602,7 +603,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		protected override void SetSamplers(int slot, int count, SharpDX.Direct3D11.SamplerState[] samplers)
+		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
 		{
             if (count == 1)
 		    {
@@ -620,7 +621,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, SharpDX.Direct3D11.Buffer[] buffers)
+		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
 		{
             if (count == 1)
 		    {

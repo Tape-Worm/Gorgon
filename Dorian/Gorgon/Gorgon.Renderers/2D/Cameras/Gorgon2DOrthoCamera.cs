@@ -29,6 +29,7 @@ using System.Linq;
 using System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -247,7 +248,7 @@ namespace GorgonLibrary.Renderers
 					                                      item.Name.Equals("Gorgon2D.Icons", StringComparison.OrdinalIgnoreCase))
 					              ??
 					              gorgon2D.Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons",
-					                                                                        Properties.Resources.Icons),
+					                                                                        Resources.Icons),
 				              TextureRegion = new RectangleF(0.253906f, 0, 0.25f, 0.195313f),
 				              Anchor = new Vector2(32f, 25),
 				              Scale = new Vector2(1.0f),

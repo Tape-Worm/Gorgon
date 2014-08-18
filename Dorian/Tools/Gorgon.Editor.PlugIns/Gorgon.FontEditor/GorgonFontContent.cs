@@ -40,6 +40,7 @@ using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -959,7 +960,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						size.Width *= aspect;
 					}
 
-					graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+					graphics.SmoothingMode = SmoothingMode.HighQuality;
 					graphics.DrawImage(sourceImage,
 					                   new RectangleF(position, size),
 					                   new RectangleF(0, 0, sourceImage.Width, sourceImage.Height),

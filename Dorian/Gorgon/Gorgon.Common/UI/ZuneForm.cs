@@ -30,6 +30,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using GorgonLibrary.Native;
 using GorgonLibrary.Design;
@@ -958,7 +959,7 @@ namespace GorgonLibrary.UI
 				return;
 			}
 
-			_iconImage = new Bitmap(24, 24, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			_iconImage = new Bitmap(24, 24, PixelFormat.Format32bppArgb);
 			using (Graphics g = Graphics.FromImage(_iconImage))
 			{
 				g.DrawIcon(Icon, new Rectangle(0, 0, 24, 24));

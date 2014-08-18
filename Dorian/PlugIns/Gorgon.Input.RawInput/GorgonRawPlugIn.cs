@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Input.Raw;
+
 namespace GorgonLibrary.Input
 {
 	/// <summary>
@@ -41,7 +43,7 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		protected override GorgonInputFactory CreateFactory()
 		{
-			return new Raw.GorgonRawInputFactory();
+			return new GorgonRawInputFactory();
 		}
 		#endregion
 

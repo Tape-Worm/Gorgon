@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.Native;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -207,7 +208,7 @@ namespace GorgonLibrary.Graphics
 	        var area = Screen.AllScreens.Aggregate(Rectangle.Empty, (current, t) => Rectangle.Union(current, t.Bounds));
 
 			Index = 0;
-			Handle = Native.Win32API.GetMonitor(null);
+			Handle = Win32API.GetMonitor(null);
 			IsAttachedToDesktop = true;
 			Name = Resources.GORGFX_OUTPUT_SOFTWARE_DEV_NAME;
 			OutputBounds = Screen.PrimaryScreen.Bounds;

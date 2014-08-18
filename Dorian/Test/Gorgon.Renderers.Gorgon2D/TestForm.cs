@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Graphics.Test
 {
@@ -28,13 +29,13 @@ namespace GorgonLibrary.Graphics.Test
             InitializeComponent();
         }
 
-        private void buttonYes_Click(object sender, System.EventArgs e)
+        private void buttonYes_Click(object sender, EventArgs e)
         {
             TestResult = DialogResult.Yes;
             Close();
         }
 
-        private void buttonWrong_Click(object sender, System.EventArgs e)
+        private void buttonWrong_Click(object sender, EventArgs e)
         {
             TestResult = DialogResult.No;
             Close();

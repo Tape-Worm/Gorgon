@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Linq;
 using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Animation
 {
@@ -189,7 +190,7 @@ namespace GorgonLibrary.Animation
         /// Function to read a keyframe from a chunk.
         /// </summary>
         /// <param name="chunk">Chunk to read from.</param>
-		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
+		void IKeyFrame.FromChunk(GorgonChunkReader chunk)
 		{
             Value = null;
 			Time = chunk.ReadFloat();
@@ -227,7 +228,7 @@ namespace GorgonLibrary.Animation
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void IKeyFrame.ToChunk(IO.GorgonChunkWriter chunk)
+		void IKeyFrame.ToChunk(GorgonChunkWriter chunk)
 		{
 			chunk.WriteFloat(Time);
 			chunk.WriteBoolean(Value != null);

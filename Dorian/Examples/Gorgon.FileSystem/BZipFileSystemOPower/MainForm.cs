@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
@@ -155,12 +156,12 @@ namespace GorgonLibrary.Examples
         {
             // Resize and center the screen.
             var screen = Screen.FromHandle(Handle);
-            ClientSize = Properties.Settings.Default.Resolution;
+            ClientSize = Settings.Default.Resolution;
             Location = new Point(screen.Bounds.Left + screen.WorkingArea.Width / 2 - ClientSize.Width / 2, screen.Bounds.Top + screen.WorkingArea.Height / 2 - ClientSize.Height / 2);
 
             // Initialize our graphics.
             _graphics = new GorgonGraphics();
-            _2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Properties.Settings.Default.IsWindowed);
+            _2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Settings.Default.IsWindowed);
 
             // Show the logo because I'm insecure.
             _2D.IsLogoVisible = true;

@@ -65,7 +65,7 @@ namespace GorgonLibrary.Input.Raw
 		    }
 
 		    // Move the windows cursor to match if not exclusive.
-			System.Windows.Forms.Cursor.Position =
+			Cursor.Position =
 				BoundControl.PointToScreen(!Exclusive
 					                           ? Point.Truncate(Position)
 					                           : new Point(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2));
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Input.Raw
 			// Do nothing if we're outside and we have exclusive mode turned off.
 			if (!Exclusive)
 			{
-				Point clientPosition = BoundControl.PointToClient(System.Windows.Forms.Cursor.Position);
+				Point clientPosition = BoundControl.PointToClient(Cursor.Position);
 
 			    if (!WindowRectangle.Contains(clientPosition)) 
 				{
