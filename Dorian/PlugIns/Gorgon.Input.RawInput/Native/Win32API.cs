@@ -145,7 +145,80 @@ namespace GorgonLibrary.Native
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool RegisterRawInputDevices([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices, int uiNumDevices, int cbSize);
 
-		/// <summary>
+        /// <summary>
+        /// Function to retrieve information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to retrieve information from.</param>
+        /// <param name="index">Type of information.</param>
+        /// <returns>A pointer to the information.</returns>
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
+	    private static extern IntPtr GetWindowLongx86(HandleRef hwnd, WindowLongType index);
+
+        /// <summary>
+        /// Function to retrieve information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to retrieve information from.</param>
+        /// <param name="index">Type of information.</param>
+        /// <returns>A pointer to the information.</returns>
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
+        private static extern IntPtr GetWindowLongx64(HandleRef hwnd, WindowLongType index);
+
+        /// <summary>
+        /// Function to set information for the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to set information on.</param>
+        /// <param name="index">Type of information.</param>
+        /// <param name="info">Information to set.</param>
+        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLongx86(HandleRef hwnd, WindowLongType index, IntPtr info);
+
+        /// <summary>
+        /// Function to set information for the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to set information on.</param>
+        /// <param name="index">Type of information.</param>
+        /// <param name="info">Information to set.</param>
+        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SetWindowLongx64(HandleRef hwnd, WindowLongType index, IntPtr info);
+
+        /// <summary>
+        /// Function to call a window procedure.
+        /// </summary>
+        /// <param name="wndProc">Pointer to the window procedure function to call.</param>
+        /// <param name="hwnd">Window handle to use.</param>
+        /// <param name="msg">Message to send.</param>
+        /// <param name="wParam">Parameter for the message.</param>
+        /// <param name="lParam">Parameter for the message.</param>
+        /// <returns>The return value specifies the result of the message processing and depends on the message sent.</returns>
+        [DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
+        public static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam);
+
+        /// <summary>
+        /// Function to retrieve information about the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to retrieve information from.</param>
+        /// <param name="index">Type of information.</param>
+        /// <returns>A pointer to the information.</returns>
+        public static IntPtr GetWindowLong(HandleRef hwnd, WindowLongType index)
+        {
+            return IntPtr.Size == 4 ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
+        }
+
+        /// <summary>
+        /// Function to set information for the specified window.
+        /// </summary>
+        /// <param name="hwnd">Window handle to set information on.</param>
+        /// <param name="index">Type of information.</param>
+        /// <param name="info">Information to set.</param>
+        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+        public static IntPtr SetWindowLong(HandleRef hwnd, WindowLongType index, IntPtr info)
+        {
+            return IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
+        }
+
+	    /// <summary>
 		/// Function to register a raw input device.
 		/// </summary>
 		/// <param name="device">Device information.</param>

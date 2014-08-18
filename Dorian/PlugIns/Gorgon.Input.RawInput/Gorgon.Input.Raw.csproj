@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Devices\RawHIDDevice.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonRawPlugIn.cs" />
     <Compile Include="GorgonRawInputDeviceInfo.cs" />
     <Compile Include="GorgonWMMDeviceInfo.cs" />

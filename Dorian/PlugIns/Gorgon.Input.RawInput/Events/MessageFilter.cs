@@ -126,7 +126,7 @@ namespace GorgonLibrary.Input.Raw
 				}
 			}
 
-			return false;
+			return true;
 		}
 		#endregion
 	}
