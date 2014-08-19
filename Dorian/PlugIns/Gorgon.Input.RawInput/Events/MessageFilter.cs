@@ -57,7 +57,6 @@ namespace GorgonLibrary.Input.Raw
 		#endregion
 
 		#region IMessageFilter Members
-
 	    /// <summary>
 	    /// Filters out a message before it is dispatched.
 	    /// </summary>
