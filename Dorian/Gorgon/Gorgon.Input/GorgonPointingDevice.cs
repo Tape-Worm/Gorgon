@@ -175,27 +175,7 @@ namespace GorgonLibrary.Input
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return whether the window has exclusive access or not.
-		/// </summary>
-		public override bool Exclusive
-		{
-			get
-			{
-				return base.Exclusive;
-			}
-			set
-			{
-				base.Exclusive = value;
-
-			    if (value)
-			    {
-			        CursorVisible = false;
-			    }
-			}
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the position range.
 		/// </summary>
 		public RectangleF PositionRange
@@ -293,7 +273,7 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
-		/// Property to return the pointing device button(s) that are currently down.
+		/// Property to set or return the pointing device button(s) that are currently down.
 		/// </summary>
 		public PointingDeviceButtons Button
 		{
@@ -303,7 +283,6 @@ namespace GorgonLibrary.Input
 		#endregion
 
 		#region Methods.
-
 		/// <summary>
 		/// Function to set the visibility of the pointing device cursor.
 		/// </summary>
@@ -312,7 +291,35 @@ namespace GorgonLibrary.Input
 		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
 		private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Acquired" /> property changes its value.
+        /// </summary>
+	    protected override void OnAcquisitionChanged()
+	    {
+            ResetButtons();
+	    }
+
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Enabled" /> property changes its value.
+        /// </summary>
+	    protected override void OnEnabledChanged()
+	    {
+	        ResetButtons();
+	    }
+
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Exclusive" /> property changes its value.
+        /// </summary>
+	    protected override void OnExclusiveChanged()
+	    {
+	        ResetButtons();
+            if (Exclusive)
+            {
+                CursorVisible = false;
+            }
+	    }
+
+	    /// <summary>
 		/// Function to fire the pointing device wheel move event.
 		/// </summary>
 		protected void OnPointingDeviceWheelMove(int newDelta)
@@ -524,7 +531,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to reset the buttons.
 		/// </summary>
-		public void ResetButtons()
+		public virtual void ResetButtons()
 		{
 			Button = PointingDeviceButtons.None;
 		}

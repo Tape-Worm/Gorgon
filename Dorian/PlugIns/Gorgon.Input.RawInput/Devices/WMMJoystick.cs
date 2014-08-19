@@ -169,42 +169,6 @@ namespace GorgonLibrary.Input.Raw
 		MultimediaJoystickButtons _buttonStates;	    // Button states.
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the device is acquired or not.
-		/// </summary>		
-		public override bool Acquired
-		{
-			get
-			{
-				return base.Acquired;
-			}
-			set
-			{
-				base.Acquired = value;
-
-			    if (value)
-			    {
-			        DeviceLost = false;
-			    }
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the window has exclusive access or not.  For joysticks, this is always TRUE.
-		/// </summary>		
-		public override bool Exclusive
-		{
-			get
-			{
-				return true;
-			}
-			set
-			{				
-			}
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function to shift the value to fall within the axis range.
@@ -287,7 +251,20 @@ namespace GorgonLibrary.Input.Raw
 			return joyInfo;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Acquired" /> property changes its value.
+        /// </summary>
+	    protected override void OnAcquisitionChanged()
+	    {
+	        if (!Acquired)
+	        {
+	            return;
+	        }
+
+	        DeviceLost = true;
+	    }
+
+	    /// <summary>
 		/// Function to initalize the data for the joystick.
 		/// </summary>
 		protected override JoystickCapabilities GetCapabilities()
@@ -390,6 +367,7 @@ namespace GorgonLibrary.Input.Raw
 		internal MultimediaJoystick(GorgonInputFactory owner, int joystickID, string name)
 			: base(owner, name)
 		{
+		    AllowExclusiveMode = false;
 			_joystickID = joystickID;
 			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
 		}
