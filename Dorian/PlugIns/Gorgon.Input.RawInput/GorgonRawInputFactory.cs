@@ -289,6 +289,26 @@ namespace GorgonLibrary.Input.Raw
 
             if (msg != WindowMessages.RawInput)
             {
+	            switch (msg)
+	            {
+					case WindowMessages.XButtonDoubleClick:
+					case WindowMessages.LeftButtonDoubleClick:
+					case WindowMessages.RightButtonDoubleClick:
+					case WindowMessages.MiddleButtonDoubleClick:
+					case WindowMessages.LeftButtonDown:
+					case WindowMessages.LeftButtonUp:
+					case WindowMessages.RightButtonDown:
+					case WindowMessages.RightButtonUp:
+					case WindowMessages.MiddleButtonDown:
+					case WindowMessages.MiddleButtonUp:
+					case WindowMessages.XButtonDown:
+					case WindowMessages.XButtonUp:
+			        case WindowMessages.MouseMove:
+					case WindowMessages.MouseWheel:
+
+			            return IntPtr.Zero;
+					
+	            }
                 return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
             }
 

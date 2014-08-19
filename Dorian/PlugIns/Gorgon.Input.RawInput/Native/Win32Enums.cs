@@ -1413,6 +1413,18 @@ namespace GorgonLibrary.Native
 		MiddleButtonDoubleClick = 0x0209,
 		/// <summary></summary>
 		MouseWheel = 0x020A,
+		/// <summary>
+		/// 
+		/// </summary>
+		XButtonDown = 0x20B,
+		/// <summary>
+		/// 
+		/// </summary>
+		XButtonUp = 0x20C,
+		/// <summary>
+		/// 
+		/// </summary>
+		XButtonDoubleClick = 0x20D,
 		/// <summary></summary>
 		ParentNotify = 0x0210,
 		/// <summary></summary>
