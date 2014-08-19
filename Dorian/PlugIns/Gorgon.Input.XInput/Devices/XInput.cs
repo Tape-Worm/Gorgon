@@ -146,42 +146,6 @@ namespace GorgonLibrary.Input.XInput
 	    private XInputButtons _buttonList;					// List of buttons for the controller.
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the device is acquired or not.
-		/// </summary>		
-		public override bool Acquired
-		{
-			get
-			{
-				return base.Acquired;
-			}
-			set
-			{
-				base.Acquired = value;
-
-			    if (value)
-			    {
-			        DeviceLost = false;
-			    }
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the window has exclusive access or not.  For joysticks, this is always TRUE.
-		/// </summary>		
-		public override bool Exclusive
-		{
-			get
-			{
-				return true;
-			}
-			set
-			{				
-			}
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve the POV data.
@@ -238,7 +202,20 @@ namespace GorgonLibrary.Input.XInput
 		    }
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Acquired" /> property changes its value.
+        /// </summary>
+	    protected override void OnAcquisitionChanged()
+	    {
+            if (!Acquired)
+            {
+                return;
+            }
+
+            DeviceLost = false;
+	    }
+
+	    /// <summary>
 		/// Function to perform device vibration.
 		/// </summary>
 		/// <param name="motorIndex">Index of the motor to start.</param>
@@ -384,6 +361,8 @@ namespace GorgonLibrary.Input.XInput
 		internal XInputController(GorgonInputFactory owner, int joystickID, string name, XI.Controller controller)
 			: base(owner, name)
 		{
+            AllowExclusiveMode = false;
+
 		    _controller = controller;
 			_controllerID = joystickID;
 			if (controller.IsConnected)

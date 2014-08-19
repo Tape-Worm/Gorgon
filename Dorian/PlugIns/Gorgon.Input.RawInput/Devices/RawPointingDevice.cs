@@ -118,7 +118,7 @@ namespace GorgonLibrary.Input.Raw
 			ResetButtons();
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Function to unbind the device from a window.
 		/// </summary>
 		protected override void UnbindWindow()
@@ -372,7 +372,20 @@ namespace GorgonLibrary.Input.Raw
 			OnPointingDeviceMove(new PointF(Position.X + e.PointingDeviceData.LastX, Position.Y + e.PointingDeviceData.LastY), false);
 			UpdateCursorPosition();
 		}
-		#endregion
+
+        /// <summary>
+        /// Function to reset the buttons.
+        /// </summary>
+	    public override void ResetButtons()
+	    {
+	        base.ResetButtons();
+
+            // Ensure that the double clicking functionality is turned off.
+            _doubleClickButton = PointingDeviceButtons.None;
+            _doubleClicker.Reset();
+            _clickCount = 0;
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

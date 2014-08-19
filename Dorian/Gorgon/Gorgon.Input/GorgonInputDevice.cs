@@ -55,6 +55,15 @@ namespace GorgonLibrary.Input
 			private set;
 		}
 
+        /// <summary>
+        /// Property to set or return whether this device type allows for an exclusive mode.
+        /// </summary>
+	    protected bool AllowExclusiveMode
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the factory UUID for this device.
 		/// </summary>
@@ -85,7 +94,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return whether the device is acquired or not.
 		/// </summary>
-		public virtual bool Acquired
+		public bool Acquired
 		{
 			get
 			{
@@ -109,21 +118,24 @@ namespace GorgonLibrary.Input
 				{
 					UnbindDevice();
 				}
+
+                OnAcquisitionChanged();
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return whether the window has exclusive access or not.
 		/// </summary>
-		public virtual bool Exclusive
+		public bool Exclusive
 		{
 			get
 			{
-				return _exclusive;
+			    return _exclusive;
 			}
-			set
+		    set
 			{
-				if (_exclusive == value)
+				if ((_exclusive == value)
+                    || (!AllowExclusiveMode))
 				{
 					return;
 				}
@@ -131,15 +143,17 @@ namespace GorgonLibrary.Input
 				_exclusive = value;
 				if ((_enabled) && (_acquired))
 				{
-					BindDevice();
+					//BindDevice();
 				}
+
+                OnExclusiveChanged();
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return whether to allow this device to keep sending data even if the window is not focused.
 		/// </summary>
-		public virtual bool AllowBackground
+		public bool AllowBackground
 		{
 			get
 			{
@@ -187,6 +201,8 @@ namespace GorgonLibrary.Input
 				{
 					UnbindDevice();
 				}
+
+                OnEnabledChanged();
 			}
 		}
 		#endregion
@@ -231,6 +247,30 @@ namespace GorgonLibrary.Input
 		{
 			OnBoundWindowFocused();
 		}
+
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Acquired"/> property changes its value.
+        /// </summary>
+	    protected virtual void OnAcquisitionChanged()
+	    {
+	        
+	    }
+
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Enabled"/> property changes its value.
+        /// </summary>
+	    protected virtual void OnEnabledChanged()
+	    {
+	        
+	    }
+
+        /// <summary>
+        /// Function called when the <see cref="GorgonInputDevice.Exclusive"/> property changes its value.
+        /// </summary>
+	    protected virtual void OnExclusiveChanged()
+	    {
+	        
+	    }
 
 		/// <summary>
 		/// Function called if the bound window gets focus.
@@ -362,6 +402,8 @@ namespace GorgonLibrary.Input
 		    {
 		        throw new ArgumentNullException("owner");
 		    }
+
+		    AllowExclusiveMode = true;
 
 		    DeviceFactory = owner;
 			UUID = Guid.Empty.ToString();
