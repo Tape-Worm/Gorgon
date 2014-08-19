@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Runtime.InteropServices;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
@@ -85,9 +84,9 @@ namespace GorgonLibrary.Input.Raw
 			private void GetCaps(int joystickID)
 			{
 				JOYCAPS caps = default(JOYCAPS);									// Joystick capabilities.
-			    var capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
+			    var capsFlags = JoystickCapabilityFlags.None;						// Extra capability flags.
 
-				int error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
+				int error = Win32API.joyGetDevCaps(joystickID, ref caps, DirectAccess.SizeOf<JOYCAPS>());
 
 				// If the joystick is disconnected then leave.
 			    if (error == 0xA7)

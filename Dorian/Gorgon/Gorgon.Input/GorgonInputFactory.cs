@@ -251,6 +251,22 @@ namespace GorgonLibrary.Input
 		protected abstract GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo);
 
 		/// <summary>
+		/// Function called before enumeration begins.
+		/// </summary>
+		/// <remarks>Implementors can use this method to cache enumeration data.</remarks>
+		protected virtual void OnBeforeEnumerate()
+		{
+		}
+
+		/// <summary>
+		/// Function called after enumeration ends.
+		/// </summary>
+		/// <remarks>Implementors can use this method to clean up any cached enumeration data.</remarks>
+		protected virtual void OnAfterEnumerate()
+		{
+		}
+
+		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="hidName">Name of the HID to use.</param>
@@ -450,10 +466,20 @@ namespace GorgonLibrary.Input
 		public void EnumerateDevices()
 		{
 			DestroyDevices();
-			PointingDevices = new GorgonInputDeviceInfoCollection(EnumeratePointingDevices());
-			KeyboardDevices = new GorgonInputDeviceInfoCollection(EnumerateKeyboardDevices());
-			JoystickDevices = new GorgonInputDeviceInfoCollection(EnumerateJoysticksDevices());
-			CustomHIDs = new GorgonInputDeviceInfoCollection(EnumerateCustomHIDs());
+
+			OnBeforeEnumerate();
+
+			try
+			{
+				PointingDevices = new GorgonInputDeviceInfoCollection(EnumeratePointingDevices());
+				KeyboardDevices = new GorgonInputDeviceInfoCollection(EnumerateKeyboardDevices());
+				JoystickDevices = new GorgonInputDeviceInfoCollection(EnumerateJoysticksDevices());
+				CustomHIDs = new GorgonInputDeviceInfoCollection(EnumerateCustomHIDs());
+			}
+			finally
+			{
+				OnAfterEnumerate();
+			}
 		}
 
 		/// <summary>

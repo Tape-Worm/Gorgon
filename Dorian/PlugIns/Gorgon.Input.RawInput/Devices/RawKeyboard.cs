@@ -130,9 +130,10 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void BindDevice()
 		{
+			UnbindDevice();
+
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputKeyboardData -= GetRawData;
 				_messageFilter.RawInputKeyboardData += GetRawData;
 			}
 
@@ -141,7 +142,7 @@ namespace GorgonLibrary.Input.Raw
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
-		    if ((AllowBackground) || (Exclusive))
+		    if (AllowBackground)
 		    {
 		        _device.Flags |= RawInputDeviceFlags.InputSink;
 		    }

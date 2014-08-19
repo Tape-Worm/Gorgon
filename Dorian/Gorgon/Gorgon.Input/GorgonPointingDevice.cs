@@ -303,13 +303,14 @@ namespace GorgonLibrary.Input
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to set the visibility of the pointing device cursor.
-        /// </summary>
-        /// <param name="bShow">TRUE to show, FALSE to hide.</param>
-        /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-        [DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
-        private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
+
+		/// <summary>
+		/// Function to set the visibility of the pointing device cursor.
+		/// </summary>
+		/// <param name="bShow">TRUE to show, FALSE to hide.</param>
+		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
+		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
+		private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
 
 		/// <summary>
 		/// Function to fire the pointing device wheel move event.
@@ -485,12 +486,9 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		internal static void ResetCursor()
 		{
-			int count = ShowCursor(false);
-
 			// Turn off the cursor.
-			while (count >= 0)
+			while (ShowCursor(false) > -1)
 			{
-				count = ShowCursor(false);
 			}
 
 			ShowCursor(true);

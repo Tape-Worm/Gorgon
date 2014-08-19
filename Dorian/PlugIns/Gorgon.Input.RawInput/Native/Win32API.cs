@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
-using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Native
 {
@@ -133,8 +132,8 @@ namespace GorgonLibrary.Native
 		/// <param name="pData">Data returned.</param>
 		/// <param name="pcbSize">Size of the data to return.</param>
 		/// <returns>0 if successful, otherwise an error code.</returns>
-		[DllImport("user32.dll")]
-		public static extern int GetRawInputDeviceInfo(IntPtr hDevice, int uiCommand, IntPtr pData, ref int pcbSize);
+		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
+		public static extern int GetRawInputDeviceInfo(IntPtr hDevice, RawInputCommand uiCommand, IntPtr pData, ref int pcbSize);
 
 		/// <summary>
 		/// Function to register a raw input device.
@@ -230,7 +229,7 @@ namespace GorgonLibrary.Native
 			var devices = new RAWINPUTDEVICE[1];		// Raw input devices.
 
 			devices[0] = device;
-			return RegisterRawInputDevices(devices, 1, Marshal.SizeOf(typeof(RAWINPUTDEVICE)));
+			return RegisterRawInputDevices(devices, 1, DirectAccess.SizeOf<RAWINPUTDEVICE>());
 		}
 
 		/// <summary>
@@ -238,44 +237,32 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <param name="deviceHandle">Device handle.</param>
 		/// <returns>The device information structure.</returns>
-		public static RID_DEVICE_INFO GetDeviceInfo(IntPtr deviceHandle)
+		public static unsafe RID_DEVICE_INFO GetDeviceInfo(IntPtr deviceHandle)
 		{
-			int dataSize = 0;
+			int dataSize = DirectAccess.SizeOf<RID_DEVICE_INFO>();
 
-			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceInfo, IntPtr.Zero, ref dataSize) < 0)
+			byte* data = stackalloc byte[dataSize];
+
+			if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize) < 0)
 			{
 				throw new Win32Exception();
 			}
 
-			IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
+			RID_DEVICE_INFO result;
 
-			try
-			{
-				if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) < 0)
-				{
-					throw new Win32Exception();
-				}
-				    
-				var result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
-				return result;
-			}
-			finally
-			{
-				if (data != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(data);
-				}
-			}
+			DirectAccess.MemoryCopy(&result, data, dataSize);
+
+			return result;
 		}
 
 		/// <summary>
 		/// Function to enumerate raw input devices.
 		/// </summary>
 		/// <returns>An array of raw input device structures.</returns>
-		public static RAWINPUTDEVICELIST[] EnumerateInputDevices()
+		public unsafe static RAWINPUTDEVICELIST[] EnumerateInputDevices()
 		{
 		    int deviceCount = 0;
-			int structSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
+			int structSize = DirectAccess.SizeOf<RAWINPUTDEVICELIST>();
 
 			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
 			{
@@ -287,43 +274,21 @@ namespace GorgonLibrary.Native
 				return new RAWINPUTDEVICELIST[0];
 			}
 
-			IntPtr deviceList = Marshal.AllocHGlobal(structSize * deviceCount);
-			try
+			RAWINPUTDEVICELIST* deviceListPtr = stackalloc RAWINPUTDEVICELIST[deviceCount];
+			
+			if (GetRawInputDeviceList((IntPtr)deviceListPtr, ref deviceCount, structSize) < 0)
 			{
-				if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) < 0)
-				{
-					throw new Win32Exception();
-				}
-
-				var result = new RAWINPUTDEVICELIST[deviceCount];
-
-				for (int i = 0; i < result.Length; i++)
-				{
-					if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-					{
-						result[i] =
-							(RAWINPUTDEVICELIST)
-								(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)),
-									typeof(RAWINPUTDEVICELIST)));
-					}
-					else
-					{
-						result[i] =
-							(RAWINPUTDEVICELIST)
-								(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)),
-									typeof(RAWINPUTDEVICELIST)));
-					}
-				}
-
-				return result;
+				throw new Win32Exception();
 			}
-			finally
+
+			var result = new RAWINPUTDEVICELIST[deviceCount];
+
+			fixed (RAWINPUTDEVICELIST* resultPtr = &result[0])
 			{
-				if (deviceList != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(deviceList);
-				}
+				DirectAccess.MemoryCopy(resultPtr, deviceListPtr, structSize * deviceCount);
 			}
+
+			return result;
 		}
 
 		#endregion
