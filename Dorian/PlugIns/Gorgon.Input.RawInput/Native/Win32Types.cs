@@ -127,8 +127,8 @@ namespace GorgonLibrary.Native
 		/// <summary>
 		/// Flag to indicate a horizontal wheel.
 		/// </summary>
-		[MarshalAs(UnmanagedType.U4)]
-		public int fHasHorizontalWheel;
+		[MarshalAs(UnmanagedType.Bool)]
+		public bool fHasHorizontalWheel;
 	}
 
 	/// <summary>

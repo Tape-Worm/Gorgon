@@ -44,11 +44,18 @@ namespace GorgonLibrary.Input.Raw
 		: GorgonInputFactory
 	{
 		#region Variables.
-		private bool _disposed;			// Flag to indicate that the object was disposed.
-	    private IntPtr _oldWndProc;     // Previous window procedure.
-	    private IntPtr _hookedWindow;   // Window that has its wnd proc hooked up.
-	    private IntPtr _newWndProc;     // New window procedure.
-	    private WndProc _wndProc;       // New window procedure.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;			
+		// Previous window procedure.
+	    private IntPtr _oldWndProc;								
+		// Window that has its wnd proc hooked up.
+	    private IntPtr _hookedWindow;							
+		// New window procedure.
+	    private IntPtr _newWndProc;								
+		// New window procedure.
+	    private WndProc _wndProc;							
+		// List of enumerated devices.
+		private IEnumerable<RAWINPUTDEVICELIST> _enumeratedDevices;
 		#endregion
 
 		#region Properties.
@@ -86,30 +93,32 @@ namespace GorgonLibrary.Input.Raw
 			RegistryKey deviceKey = null;
 			RegistryKey classKey = null;
 
-		    if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceName, IntPtr.Zero, ref dataSize) < 0)
+		    if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
 		    {
 		        throw new Win32Exception();
 		    }
 
-            // This is highly unlikely to happen, but don't enumerate this item if the size of larger than 512kb.
-            // This is because we're using stackalloc and the stack is limited to 1MB/thread in .NET.
-		    if (dataSize > 524288)
-		    {
-		        return;
-		    }
+			// Do nothing if we have no data.
+			if (dataSize == 0)
+			{
+				return;
+			}
 
-            byte *data = stackalloc byte[dataSize];
+			// Multiply by two because dataSize with a command of "DeviceName" will return the number of characters required,
+			// not bytes.
+            char *data = stackalloc char[dataSize];
 
 		    try
 		    {
-		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
+		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
 		        {
 		            throw new Win32Exception();
 		        }
 
-		        string regPath = Marshal.PtrToStringAnsi((IntPtr)data);
+				// The strings that come back from native land will end with a NULL terminator, so crop that off.
+		        var regPath = new string(data, 0, dataSize - 1);
 
-		        if (regPath == null)
+		        if (regPath.Length == 0)
 		        {
 		            throw new Win32Exception();
 		        }
@@ -359,7 +368,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of pointing device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
-		    IEnumerable<RAWINPUTDEVICELIST> devices = Win32API.EnumerateInputDevices().Where(item => item.DeviceType == RawInputType.Mouse);
+		    IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Where(item => item.DeviceType == RawInputType.Mouse);
 			var result = new List<GorgonRawInputDeviceInfo>();
 
 		    foreach (var pointingDevice in devices)
@@ -376,7 +385,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of keyboard device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
-		    IEnumerable<RAWINPUTDEVICELIST> devices = Win32API.EnumerateInputDevices().Where(item => item.DeviceType == RawInputType.Keyboard);
+		    IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Where(item => item.DeviceType == RawInputType.Keyboard);
 			var result = new List<GorgonRawInputDeviceInfo>();
 
 		    foreach (var keyboardDevice in devices)
@@ -443,6 +452,17 @@ namespace GorgonLibrary.Input.Raw
 		}
 
 		/// <summary>
+		/// Function called before enumeration begins.
+		/// </summary>
+		/// <remarks>
+		/// Implementors can use this method to cache enumeration data.
+		/// </remarks>
+		protected override void OnBeforeEnumerate()
+		{
+			_enumeratedDevices = Win32API.EnumerateInputDevices();
+		}
+
+		/// <summary>
 		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
 		/// </summary>
 		/// <returns>
@@ -450,9 +470,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
-		    IEnumerable<RAWINPUTDEVICELIST> devices =
-		        Win32API.EnumerateInputDevices()
-		                .Where(item => item.DeviceType != RawInputType.Keyboard && item.DeviceType != RawInputType.Mouse);
+			IEnumerable<RAWINPUTDEVICELIST> devices =
+				_enumeratedDevices.Where(item => item.DeviceType != RawInputType.Keyboard && item.DeviceType != RawInputType.Mouse);
 			var result = new List<GorgonRawInputDeviceInfo>();
 
 		    foreach (var hidDevice in devices)
@@ -473,6 +492,8 @@ namespace GorgonLibrary.Input.Raw
 		/// </returns>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo)
 		{
+			HookWindowProc(window.Handle);
+
             var rawInfo = hidInfo as GorgonRawInputDeviceInfo;
 
 		    if (rawInfo == null)

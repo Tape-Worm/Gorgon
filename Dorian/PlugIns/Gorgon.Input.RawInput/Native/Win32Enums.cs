@@ -740,25 +740,6 @@ namespace GorgonLibrary.Native
 	}
 
 	/// <summary>
-	/// Enumeration containing raw input device information.
-	/// </summary>
-	enum RawInputDeviceInfo
-	{
-		/// <summary>
-		/// 
-		/// </summary>
-		PreParseData = 0x20000005,
-		/// <summary>
-		/// 
-		/// </summary>
-		DeviceName = 0x20000007,
-		/// <summary>
-		/// 
-		/// </summary>
-		DeviceInfo = 0x2000000B
-	}
-
-	/// <summary>
 	/// Enumeration for virtual keys.
 	/// </summary>
 	enum VirtualKeys

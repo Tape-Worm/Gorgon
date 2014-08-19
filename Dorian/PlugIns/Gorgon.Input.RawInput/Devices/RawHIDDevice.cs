@@ -82,9 +82,10 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void BindDevice()
 		{
+			UnbindDevice();
+
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputHIDData -= GetRawData;
 				_messageFilter.RawInputHIDData += GetRawData;
 			}
 
@@ -93,7 +94,7 @@ namespace GorgonLibrary.Input.Raw
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
-		    if ((AllowBackground) || (Exclusive))
+		    if (AllowBackground)
 		    {
 		        _device.Flags |= RawInputDeviceFlags.InputSink;
 		    }
@@ -125,7 +126,7 @@ namespace GorgonLibrary.Input.Raw
 
 			_device.UsagePage = _deviceData.UsagePage;
 			_device.Usage = (ushort)_deviceData.Usage;
-			_device.Flags = RawInputDeviceFlags.None;
+			_device.Flags = RawInputDeviceFlags.Remove;
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.
