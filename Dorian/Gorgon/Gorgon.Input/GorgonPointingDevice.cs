@@ -90,7 +90,6 @@ namespace GorgonLibrary.Input
 		private PointF _doubleClickRange = new PointF(2.0f, 2.0f);			// Range that a double click is valid within.
 		private PointF _position;											// Mouse horizontal and vertical position.
 		private int _wheel;													// Mouse wheel position.
-		private PointF _relativePosition = PointF.Empty;					// Mouse relative position.
 		private RectangleF _positionConstraint;								// Constraints for the pointing device position.
 		private Point _wheelConstraint;										// Constraints for the pointing device wheel.
 	    #endregion
@@ -221,15 +220,8 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		public PointF RelativePosition
 		{
-			get
-			{
-				ConstrainData();
-				return _relativePosition;
-			}
-			protected set
-			{
-				_relativePosition = value;
-			}
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -354,8 +346,6 @@ namespace GorgonLibrary.Input
 		/// <remarks>Some plug-ins provide their own relative position data, which is likely to be more accurate, so we can tell the library to not calculate in that instance.</remarks>
 		protected void OnPointingDeviceMove(PointF newPosition, bool setRelative)
 		{
-			RelativePosition = PointF.Empty;
-
 			if (newPosition != _position)
 			{
 			    if (setRelative)

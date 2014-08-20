@@ -58,10 +58,16 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonFont _font;
 		// The layout of a vertex.
 		private static GorgonInputLayout _vertexLayout;
+		// The layout of a vertex.
+		private static GorgonInputLayout _normalVertexLayout;
 		// The pixel shader.
 		private static GorgonPixelShader _pixelShader;
 		// The vertex shader.
 		private static GorgonVertexShader _vertexShader;
+		// The pixel shader.
+		private static GorgonPixelShader _normalPixelShader;
+		// The vertex shader.
+		private static GorgonVertexShader _normalVertexShader;
 		// World/view/project matrix combo.
 		private static WorldViewProjection _wvp;
 		// Triangle primitive.
@@ -70,6 +76,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static Plane _plane;
 		// Cube primitive.
 		private static Cube _cube;
+		// Sphere primitive.
+		private static Sphere _sphere;
 		// Light for our primitives.
 		private static Light _light;
         // The texture to use.
@@ -86,10 +94,10 @@ namespace GorgonLibrary.Graphics.Example
 		private static Vector3 _cameraRotation;
 		// Camera position (eye).
 		private static Vector3 _cameraPosition;
-		// Last position of the mouse cursor before being taken over.
-		private static Vector2 _lastMousePosition;
-		// Flag to indicate that we need to activate arc ball mode.
-		private static bool _arcBallMode = false;
+		// Mouse stating position.
+		private static Vector2 _mouseStart;
+		// Sphere position.
+		private static float _yPos = 1.0f;
 
 		/// <summary>
 		/// Main application loop.
@@ -107,6 +115,14 @@ namespace GorgonLibrary.Graphics.Example
 		    {
 		        _objRotation -= 359.9f;
 		    }
+
+			if (_mouse.Exclusive)
+			{
+				var delta = new Vector2(_mouse.Position.X - _mouseStart.X, _mouse.Position.Y - _mouseStart.Y);
+				_cameraRotation.Y += (360.0f * delta.Y.Sign() * GorgonTiming.Delta);
+				_cameraRotation.X += (360.0f * delta.X.Sign() * GorgonTiming.Delta);
+				_mouseStart = _mouse.Position;
+			}
 
 			ProcessKeys();
 
@@ -144,8 +160,54 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
 
+			_yPos = (_objRotation.Radians().Sin().Abs() * 2.0f) - 1.25f;
+			_sphere.Position = new Vector3(-2.0f, _yPos, 0.75f);
+			_sphere.Rotation = new Vector3(_objRotation, _objRotation, 0);
+			world = _sphere.World;
+			_wvp.UpdateWorldMatrix(ref world);
+
+			_graphics.Shaders.PixelShader.Resources[0] = _sphere.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_sphere.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _sphere.IndexBuffer;
+			_graphics.Input.PrimitiveType = _sphere.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _sphere.IndexCount);
+
+			_graphics.Shaders.PixelShader.Resources[0] = _sphere.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_sphere.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _sphere.IndexBuffer;
+			_graphics.Input.PrimitiveType = _sphere.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _sphere.IndexCount);
+
+			_graphics.Input.Layout = _normalVertexLayout;
+			_graphics.Input.PrimitiveType = PrimitiveType.LineList;
+			_graphics.Shaders.PixelShader.Resources[0] = null;
+			_graphics.Shaders.PixelShader.Current = _normalPixelShader;
+			_graphics.Shaders.VertexShader.Current = _normalVertexShader;
+			_graphics.Input.IndexBuffer = null;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_sphere.Normals, Vector4.SizeInBytes);
+
+			_graphics.Output.Draw(0, _sphere.VertexCount * 2);
+
+			_graphics.Input.Layout = _vertexLayout;
+			_graphics.Shaders.PixelShader.Current = _pixelShader;
+			_graphics.Shaders.VertexShader.Current = _vertexShader;
+
 			var state = _renderer2D.Begin2D();
-			_renderer2D.Drawing.DrawString(_font, string.Format("FPS: {0:0.0}, Delta: {1:0.000} ms Secs: {3:0} CamRot: {2}", GorgonTiming.FPS, GorgonTiming.Delta * 1000, _cameraRotation, GorgonTiming.SecondsSinceStart), Vector2.Zero, Color.White);
+			_renderer2D.Drawing.DrawString(_font,
+			                               string.Format(
+			                                             "FPS: {0:0.0}, Delta: {1:0.000} ms Secs: {3:0} CamRot: {2} Mouse: {4:0}x{5:0}, {6:0}x{7:0}",
+			                                             GorgonTiming.FPS,
+			                                             GorgonTiming.Delta * 1000,
+			                                             _cameraRotation,
+			                                             GorgonTiming.SecondsSinceStart,
+			                                             _mouse.Position.X,
+			                                             _mouse.Position.Y,
+			                                             _mouse.RelativePosition.X,
+			                                             _mouse.RelativePosition.Y),
+			                               Vector2.Zero,
+			                               Color.White);
 			_renderer2D.Flush();
 			_renderer2D.End2D(state);
 
@@ -164,24 +226,6 @@ namespace GorgonLibrary.Graphics.Example
 			Vector3 lookAt;
 			Matrix rotMatrix;
 			Vector3 cameraDir = Vector3.Zero;
-
-			try
-			{
-				if ((_mouse.Button & PointingDeviceButtons.Button2) == PointingDeviceButtons.Button2)
-				{
-					_mouse.HideCursor();
-					_mouse.Exclusive = true;
-				}
-				else
-				{
-					_mouse.Exclusive = false;
-					_mouse.ShowCursor();
-				}
-			}
-			catch (Exception ex)
-			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(_form, ex));
-			}
 
 			if (_keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
 			{
@@ -230,10 +274,6 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				cameraDir.Y = -2.0f * GorgonTiming.Delta;
 			}
-			else
-			{
-				return;
-			}
 
 			Matrix.RotationYawPitchRoll(_cameraRotation.X.Radians(), _cameraRotation.Y.Radians(), _cameraRotation.Z.Radians(), out rotMatrix);
 			Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
@@ -260,12 +300,14 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
 		private static void Mouse_Down(object sender, PointingDeviceEventArgs args)
 		{
-			if ((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+			if (((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+				&& (!_mouse.Exclusive))
 			{
 				return;
 			}
 
-			_arcBallMode = true;
+			_mouseStart = args.Position;
+			_mouse.Exclusive = true;
 		}
 
 		/// <summary>
@@ -275,12 +317,14 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
 		private static void Mouse_Up(object sender, PointingDeviceEventArgs args)
 		{
-			if ((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+			if (((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
+				&& (_mouse.Exclusive))
 			{
 				return;
 			}
 
-			_arcBallMode = false;
+			_mouse.Exclusive = false;
+			_mouse.ShowCursor();
 		}
 
 		/// <summary>
@@ -316,7 +360,21 @@ namespace GorgonLibrary.Graphics.Example
 
 			_vertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "PrimVS", Resources.Shaders);
 			_pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "PrimPS", Resources.Shaders);
+			_normalVertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("NormalVertexShader", "NormalVS", Resources.Shaders);
+			_normalPixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("NormalPixelShader", "NormalPS", Resources.Shaders);
 			_vertexLayout = _graphics.Input.CreateInputLayout("Vertex3D", typeof(Vertex3D), _vertexShader);
+			_normalVertexLayout = _graphics.Input.CreateInputLayout("NormalVertex",
+			                                                        new[]
+			                                                        {
+				                                                        new GorgonInputElement("SV_POSITION",
+				                                                                               BufferFormat.R32G32B32A32_Float,
+				                                                                               0,
+				                                                                               0,
+				                                                                               0,
+				                                                                               false,
+				                                                                               0),
+			                                                        },
+			                                                        _normalVertexShader);
 
 			_graphics.Shaders.VertexShader.Current = _vertexShader;
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
@@ -381,11 +439,26 @@ namespace GorgonLibrary.Graphics.Example
 						 Texture = _texture
 			         };
 
-			_cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(0), 8, 8)
+			_cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(45.0f, 0, 0), 8, 8)
 			        {
 				        Position = new Vector3(0, 0, 1.5f),
 				        Texture = _texture
 			        };
+
+			_sphere = new Sphere(_graphics, 1.0f, new RectangleF(0.25f, 0.25f, 4.0f, 4.0f), Vector3.Zero, 64, 64)
+			          {
+				          Position = new Vector3(-2.0f, 1.0f, 0.75f),
+				          Texture = _texture
+			          };
+
+			_graphics.Shaders.PixelShader.TextureSamplers[0] = new GorgonTextureSamplerStates
+			                                                   {
+																   TextureFilter = TextureFilter.Linear,
+																   HorizontalAddressing = TextureAddressing.Wrap,
+																   VerticalAddressing = TextureAddressing.Wrap,
+																   DepthAddressing = TextureAddressing.Wrap,
+																   ComparisonFunction = ComparisonOperators.Always
+			                                                   };
 
 			_light = new Light(_graphics);
 			var lightPosition = new Vector3(1.0f, 1.0f, -1.0f);
@@ -420,8 +493,8 @@ namespace GorgonLibrary.Graphics.Example
 			_keyboard = _input.CreateKeyboard(_form);
 			_mouse = _input.CreatePointingDevice(_form);
 
-			/*_mouse.PointingDeviceDown += Mouse_Down;
-			_mouse.PointingDeviceUp += Mouse_Up;*/
+			_mouse.PointingDeviceDown += Mouse_Down;
+			_mouse.PointingDeviceUp += Mouse_Up;
 		}
 
 		/// <summary>
@@ -445,6 +518,11 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			finally
 			{
+				if (_sphere != null)
+				{
+					_sphere.Dispose();
+				}
+					
 				if (_light != null)
 				{
 					_light.Dispose();
