@@ -45,6 +45,11 @@ struct PrimVertex
 	float2 uv : TEXCOORD;
 };
 
+struct NormalVertex
+{
+	float4 pos : SV_POSITION;
+};
+
 struct VertexOut
 {
 	float4 position: SV_POSITION;
@@ -101,4 +106,19 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 	}
 
 	return float4(saturate(float3(0.392157f * 0.3f, 0.584314f * 0.3f, 0.929412f * 0.3f) + output), textureColor.a);
+}
+
+NormalVertex NormalVS(NormalVertex vertex)
+{
+	NormalVertex output;
+
+	float4 worldPos = mul(World, vertex.pos);
+	output.pos = mul(ViewProjection, worldPos);
+
+	return output;
+}
+
+float4 NormalPS(NormalVertex vertex) : SV_Target
+{
+	return float4(1, 0, 0, 1);
 }

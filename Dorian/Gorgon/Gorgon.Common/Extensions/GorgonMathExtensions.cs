@@ -875,6 +875,111 @@ namespace GorgonLibrary.Math
 
 	        return (value > result) ? result + 1 : result;
         }
-        #endregion
+
+		/// <summary>
+		/// Function to return the sign of an int32 value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this int value)
+		{
+			if (value == 0)
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of an int64 value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this long value)
+		{
+			if (value == 0)
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of an signed byte value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this sbyte value)
+		{
+			if (value == 0)
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of an int16 value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this short value)
+		{
+			if (value == 0)
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of a decimal value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this decimal value)
+		{
+			if (value == 0)
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of a single floating point value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this float value)
+		{
+			if (value.EqualsEpsilon(0))
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+
+		/// <summary>
+		/// Function to return the sign of a double floating point value.
+		/// </summary>
+		/// <param name="value">Value to evaluate.</param>
+		/// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
+		public static int Sign(this double value)
+		{
+			if (value.EqualsEpsilon(0))
+			{
+				return 0;
+			}
+
+			return value < 0 ? -1 : 1;
+		}
+		#endregion
 	}
 }
