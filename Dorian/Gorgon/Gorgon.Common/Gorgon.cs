@@ -455,7 +455,8 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				throw GorgonException.Catch(ex);
+				GorgonException.LogException(ex);
+				throw;
 			}
 			finally
 			{
@@ -503,7 +504,8 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				throw GorgonException.Catch(ex);
+				GorgonException.LogException(ex);
+				throw;
 			}
 			finally
 			{
@@ -544,7 +546,8 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				throw GorgonException.Catch(ex);
+				GorgonException.LogException(ex);
+				throw;
 			}
 			finally
 			{

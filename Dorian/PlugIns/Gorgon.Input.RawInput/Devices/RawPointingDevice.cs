@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
@@ -48,6 +49,9 @@ namespace GorgonLibrary.Input.Raw
 		private PointF _doubleClickPosition;				    // Double click position.
 		private PointingDeviceButtons _doubleClickButton;	    // Button that was double clicked.
 		private readonly IntPtr _deviceHandle = IntPtr.Zero;    // Device handle.
+		private bool _isExclusive;								// Flag to indicate that the pointing device is placed in exclusive mode.
+		private bool _isBound;									// Flag to indicate that the device is bound.
+		private PointF _lastPosition;							// The last position of the cursor before it was put into exclusive mode.
 		#endregion
 
 		#region Methods.
@@ -92,16 +96,14 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>TRUE if it is a double click, FALSE if not.</returns>
 		private bool IsDoubleClick(PointingDeviceButtons button)
 		{
-		    if (button != _doubleClickButton)
+		    if ((button != _doubleClickButton)
+				|| (_doubleClicker.Milliseconds > DoubleClickDelay))
 		    {
 		        return false;
 		    }
-		    if (_doubleClicker.Milliseconds > DoubleClickDelay)
-		    {
-		        return false;
-		    }
-			return (!(System.Math.Abs(Position.X - _doubleClickPosition.X) > DoubleClickRange.X)) &&
-			       (!(System.Math.Abs(Position.Y - _doubleClickPosition.Y) > DoubleClickRange.Y));
+
+			return (!((Position.X - _doubleClickPosition.X).Abs() > DoubleClickRange.X)) &&
+			       (!((Position.Y - _doubleClickPosition.Y).Abs() > DoubleClickRange.Y));
 		}
 
 		/// <summary>
@@ -136,6 +138,24 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void BindDevice()
 		{
+			if ((Exclusive) && (!_isExclusive))
+			{
+				_lastPosition = Cursor.Position;
+				UpdateCursorPosition();
+				_isExclusive = true;
+			}
+
+			if ((!Exclusive) && (_isExclusive))
+			{
+				_isExclusive = false;
+				Position = BoundControl.PointToClient(Point.Truncate(_lastPosition));
+			}
+
+			if (_isBound)
+			{
+				return;
+			}
+
             UnbindDevice();
 
 			if (_messageFilter != null)
@@ -146,7 +166,7 @@ namespace GorgonLibrary.Input.Raw
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Mouse;
             _device.Flags = RawInputDeviceFlags.None;
-			_device.WindowHandle = IntPtr.Zero;
+			_device.WindowHandle = BoundControl.Handle;
 
 			// Enable background access.
 		    if (AllowBackground)
@@ -154,13 +174,6 @@ namespace GorgonLibrary.Input.Raw
 				_device.WindowHandle = BoundControl.Handle;
 		        _device.Flags |= RawInputDeviceFlags.InputSink;
 		    }
-
-		    // Enable exclusive access.
-			if (Exclusive)
-			{
-				_device.WindowHandle = BoundControl.Handle;
-				_device.Flags |= RawInputDeviceFlags.CaptureMouse | RawInputDeviceFlags.NoLegacy;
-			}
 
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
@@ -172,6 +185,8 @@ namespace GorgonLibrary.Input.Raw
 			{
 				BoundControl.MouseLeave += BoundControl_MouseLeave;
 			}
+
+			_isBound = true;
 		}
 
 		/// <summary>
@@ -196,6 +211,8 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE);
 		    }
+
+			_isBound = false;
 		}
 
 		/// <summary>

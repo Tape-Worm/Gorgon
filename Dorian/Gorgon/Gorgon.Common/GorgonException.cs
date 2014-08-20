@@ -117,7 +117,7 @@ namespace GorgonLibrary
 		/// <summary>
 		/// Function to send the exception to the log file.
 		/// </summary>
-		private static void LogException(Exception ex)
+		internal static void LogException(Exception ex)
 		{
 		    string indicator = string.Empty;	// Inner exception indicator.
 			string branch = string.Empty;		// Branching character.
