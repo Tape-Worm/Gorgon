@@ -181,6 +181,7 @@ namespace GorgonLibrary.Input.WinForms
 		internal WinFormsKeyboard(GorgonInputFactory owner)
 			: base(owner, "Win Forms Input Keyboard")
 		{
+			AllowExclusiveMode = false;
 			Gorgon.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
 		}
 		#endregion

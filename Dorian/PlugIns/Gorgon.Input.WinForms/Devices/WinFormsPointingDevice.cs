@@ -223,7 +223,8 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		internal WinFormsPointingDevice(GorgonInputFactory owner)
 			: base(owner, "Win Forms Mouse")
-		{			
+		{
+			AllowExclusiveMode = false;
 			Gorgon.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
 		}
 		#endregion

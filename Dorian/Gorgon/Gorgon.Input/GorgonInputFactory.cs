@@ -44,7 +44,8 @@ namespace GorgonLibrary.Input
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed;											// Flag to indicate that the object was disposed.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;											
 	    #endregion
 
 		#region Properties.
@@ -55,6 +56,15 @@ namespace GorgonLibrary.Input
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to return when a pointing device has been flagged as exclusive.
+		/// </summary>
+		protected internal InputDeviceType ExclusiveDevices
+		{
+			get;
+			internal set;
 		}
 
 		/// <summary>
@@ -138,6 +148,8 @@ namespace GorgonLibrary.Input
 		    {
 		        device.Value.Dispose();
 		    }
+
+			ExclusiveDevices = InputDeviceType.None;
 
 		    Devices.Clear();
 		}
@@ -302,12 +314,14 @@ namespace GorgonLibrary.Input
 			{
 				customHID = CreateCustomHIDImpl(window, deviceInfo);
 				customHID.UUID = GetDeviceUUID(deviceInfo, customHID.GetType());
+				customHID.DeviceType = InputDeviceType.HID;
 				Devices.Add(customHID.UUID, customHID);
 			}
 
 			customHID.ClearData();
 			customHID.Bind(window);
 			customHID.Enabled = true;
+			customHID.Exclusive = (ExclusiveDevices & InputDeviceType.HID) == InputDeviceType.HID;
 
 			return customHID;
 		}
@@ -336,6 +350,7 @@ namespace GorgonLibrary.Input
 			if (keyboardDevice == null)
 			{
 				keyboardDevice = CreateKeyboardImpl(window, deviceInfo);
+				keyboardDevice.DeviceType = InputDeviceType.Keyboard;
 				keyboardDevice.UUID = GetDeviceUUID(deviceInfo, keyboardDevice.GetType());
 				Devices.Add(keyboardDevice.UUID, keyboardDevice);
 			}
@@ -345,6 +360,7 @@ namespace GorgonLibrary.Input
 			keyboardDevice.KeyStates.Reset();
 			keyboardDevice.Bind(window);
 			keyboardDevice.Enabled = true;
+			keyboardDevice.Exclusive = (ExclusiveDevices & InputDeviceType.Keyboard) == InputDeviceType.Keyboard;
 
 			return keyboardDevice;
 		}
@@ -379,13 +395,18 @@ namespace GorgonLibrary.Input
                 throw new ArgumentException(string.Format(Resources.GORINP_POINTINGDEVICE_NOT_FOUND, pointingDeviceName), "pointingDeviceName");
 			}
 
-			var pointingDevice = GetInputDevice<GorgonPointingDevice>(deviceInfo);
+			// Only reset this once.
+			if (!Devices.Any(item => item.Value is GorgonPointingDevice))
+			{
+				GorgonPointingDevice.ResetCursor();
+			}
 
-			GorgonPointingDevice.ResetCursor();
+			var pointingDevice = GetInputDevice<GorgonPointingDevice>(deviceInfo);
 
 			if (pointingDevice == null)
 			{
 				pointingDevice = CreatePointingDeviceImpl(window, deviceInfo);
+				pointingDevice.DeviceType = InputDeviceType.PointingDevice;
 				pointingDevice.UUID = GetDeviceUUID(deviceInfo, pointingDevice.GetType());
 				Devices.Add(pointingDevice.UUID, pointingDevice);
 			}
@@ -397,7 +418,12 @@ namespace GorgonLibrary.Input
 			pointingDevice.ResetButtons();
 			pointingDevice.Bind(window);
 			pointingDevice.Enabled = true;
-			pointingDevice.ShowCursor();
+			pointingDevice.Exclusive = (ExclusiveDevices & InputDeviceType.PointingDevice) == InputDeviceType.PointingDevice;
+
+			if (!pointingDevice.Exclusive)
+			{
+				pointingDevice.ShowCursor();
+			}
 
 			return pointingDevice;
 		}
@@ -449,12 +475,14 @@ namespace GorgonLibrary.Input
 			{
 				joystickDevice = CreateJoystickImpl(window, deviceInfo);
 				joystickDevice.UUID = GetDeviceUUID(deviceInfo, joystickDevice.GetType());
+				joystickDevice.DeviceType = InputDeviceType.Joystick;
 				Devices.Add(joystickDevice.UUID, joystickDevice);
 			}
 
 			joystickDevice.Initialize();
 			joystickDevice.Bind(window);
 			joystickDevice.Enabled = true;
+			joystickDevice.Exclusive = (ExclusiveDevices & InputDeviceType.Joystick) == InputDeviceType.Joystick;
 
 			return joystickDevice;
 		}
@@ -556,6 +584,7 @@ namespace GorgonLibrary.Input
 		protected GorgonInputFactory(string name)
 			: base(name)
 		{
+			ExclusiveDevices = InputDeviceType.None;
 			Devices = new Dictionary<string, GorgonInputDevice>();
 			AutoReacquireDevices = true;
 		}

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Properties;
@@ -49,10 +50,10 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the input interface owner for this device.
 		/// </summary>
-		protected GorgonInputFactory DeviceFactory
+		protected internal GorgonInputFactory DeviceFactory
 		{
 			get;
-			private set;
+			internal set;
 		}
 
         /// <summary>
@@ -71,6 +72,15 @@ namespace GorgonLibrary.Input
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the information about this device.
+		/// </summary>
+		public InputDeviceType DeviceType
+		{
+			get;
+			internal set;
 		}
 
 		/// <summary>
@@ -141,9 +151,27 @@ namespace GorgonLibrary.Input
 				}
 
 				_exclusive = value;
+
+				// Make all devices of the same type exclusive or not exclusive.
+				foreach (var device in DeviceFactory.Devices.Where(device => device.GetType() == GetType()))
+				{
+					device.Value._exclusive = value;
+				}
+			
+				// Flag the device as exclusive in the factory.
+				// We do this so that plug-in implementors can use the information.
+				if (value)
+				{
+					DeviceFactory.ExclusiveDevices |= DeviceType;
+				}
+				else
+				{
+					DeviceFactory.ExclusiveDevices &= ~DeviceType;
+				}
+				
 				if ((_enabled) && (_acquired))
 				{
-					//BindDevice();
+					BindDevice();
 				}
 
                 OnExclusiveChanged();
@@ -437,6 +465,11 @@ namespace GorgonLibrary.Input
 				if (DeviceFactory.Devices.ContainsKey(UUID))
 				{
 					DeviceFactory.Devices.Remove(UUID);
+				}
+
+				if ((_exclusive) && (DeviceFactory.Devices.All(item => item.Value != this && item.Value.GetType() == GetType())))
+				{
+					DeviceFactory.ExclusiveDevices &= ~DeviceType;
 				}
 			}
 

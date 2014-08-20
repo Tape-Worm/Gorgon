@@ -32,24 +32,29 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// Input device type.
 	/// </summary>
+	[Flags]
 	public enum InputDeviceType
 	{
 		/// <summary>
+		/// No device type.
+		/// </summary>
+		None = 0,
+		/// <summary>
 		/// Keyboard input device.
 		/// </summary>
-		Keyboard = 0,
+		Keyboard = 1,
 		/// <summary>
 		/// Pointing input device.
 		/// </summary>
-		PointingDevice = 1,
+		PointingDevice = 2,
 		/// <summary>
 		/// Joystick/gamepad input device.
 		/// </summary>
-		Joystick = 2,
+		Joystick = 4,
 		/// <summary>
 		/// Generic HID input device.
 		/// </summary>
-		HID = 3
+		HID = 8
 	}
 
 	/// <summary>

@@ -41,6 +41,7 @@ namespace GorgonLibrary.Input.Raw
 		private readonly MessageFilter _messageFilter;	                // Window message filter.
 		private RAWINPUTDEVICE _device;									// Input device.
 		private readonly IntPtr _deviceHandle = IntPtr.Zero;			// Device handle.
+		private bool _isBound;											// Flag to indicate that we're bound.
 		#endregion
 
 		#region Methods.
@@ -130,6 +131,11 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void BindDevice()
 		{
+			if (_isBound)
+			{
+				return;
+			}
+
 			UnbindDevice();
 
 			if (_messageFilter != null)
@@ -147,12 +153,6 @@ namespace GorgonLibrary.Input.Raw
 		        _device.Flags |= RawInputDeviceFlags.InputSink;
 		    }
 
-		    // Enable exclusive access.
-		    if (Exclusive)
-		    {
-		        _device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
-		    }
-
 		    _device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
@@ -160,6 +160,8 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_KEYBOARD);
 		    }
+
+			_isBound = true;
 		}
 
 		/// <summary>
@@ -182,6 +184,8 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_KEYBOARD);
 		    }
+
+			_isBound = false;
 		}
 		#endregion
 

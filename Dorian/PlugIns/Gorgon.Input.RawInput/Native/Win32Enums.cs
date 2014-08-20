@@ -1337,6 +1337,10 @@ namespace GorgonLibrary.Native
 		SysChar = 0x0106,
 		/// <summary></summary>
 		SysDeadChar = 0x0107,
+		/// <summary>
+		/// 
+		/// </summary>
+		UniChar = 0x0109,
 		/// <summary></summary>
 		KeyLast = 0x0180,
 		/// <summary></summary>
@@ -1535,6 +1539,10 @@ namespace GorgonLibrary.Native
 		Print = 0x0317,
 		/// <summary></summary>
 		PrintClient = 0x0318,
+		/// <summary>
+		/// 
+		/// </summary>
+		AppCommand = 0x0319,
 		/// <summary></summary>
 		HandheldFirst = 0x0358,
 		/// <summary></summary>

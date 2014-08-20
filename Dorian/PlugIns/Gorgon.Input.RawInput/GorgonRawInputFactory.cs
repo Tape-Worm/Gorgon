@@ -289,6 +289,50 @@ namespace GorgonLibrary.Input.Raw
 
             if (msg != WindowMessages.RawInput)
             {
+				// If we have a pointing device set as exclusive, then block all WM_MOUSE messages.
+	            if ((ExclusiveDevices & InputDeviceType.PointingDevice) == InputDeviceType.PointingDevice)
+	            {
+		            switch (msg)
+		            {
+						case WindowMessages.XButtonDoubleClick:
+						case WindowMessages.LeftButtonDoubleClick:
+						case WindowMessages.RightButtonDoubleClick:
+						case WindowMessages.MiddleButtonDoubleClick:
+						case WindowMessages.LeftButtonDown:
+						case WindowMessages.LeftButtonUp:
+						case WindowMessages.RightButtonDown:
+						case WindowMessages.RightButtonUp:
+						case WindowMessages.MiddleButtonDown:
+						case WindowMessages.MiddleButtonUp:
+						case WindowMessages.XButtonDown:
+						case WindowMessages.XButtonUp:
+						case WindowMessages.MouseMove:
+						case WindowMessages.MouseWheel:
+							return IntPtr.Zero;
+		            }
+	            }
+
+	            // ReSharper disable once InvertIf
+	            if ((ExclusiveDevices & InputDeviceType.Keyboard) == InputDeviceType.Keyboard)
+	            {
+		            switch (msg)
+		            {
+						case WindowMessages.KeyDown:
+   						case WindowMessages.KeyUp:
+						case WindowMessages.Char:
+						case WindowMessages.UniChar:
+						case WindowMessages.AppCommand:
+						case WindowMessages.DeadChar:
+						case WindowMessages.HotKey:
+				            return IntPtr.Zero;
+						case WindowMessages.SysKeyDown:
+				            var vKey = (VirtualKeys)wParam;
+
+							// Allow Alt+F4, Alt+Tab and Ctrl + Escape
+				            return vKey == VirtualKeys.F4 ? Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam) : IntPtr.Zero;
+		            }
+	            }
+
                 return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
             }
 
