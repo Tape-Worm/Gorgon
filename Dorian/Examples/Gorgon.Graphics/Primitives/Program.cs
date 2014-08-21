@@ -78,10 +78,14 @@ namespace GorgonLibrary.Graphics.Example
 		private static Cube _cube;
 		// Sphere primitive.
 		private static Sphere _sphere;
+		// Icosphere primitive.
+		private static IcoSphere _icoSphere;
 		// Light for our primitives.
 		private static Light _light;
         // The texture to use.
 	    private static GorgonTexture2D _texture;
+		// Earth texture.
+		private static GorgonTexture2D _earf;
         // Rotation value.
 	    private static float _objRotation;
 		// Input factory.
@@ -98,6 +102,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static Vector2 _mouseStart;
 		// Sphere position.
 		private static float _yPos = 1.0f;
+		// Lock to sphere.
+		private static bool _lock = false;
 
 		/// <summary>
 		/// Main application loop.
@@ -115,14 +121,6 @@ namespace GorgonLibrary.Graphics.Example
 		    {
 		        _objRotation -= 359.9f;
 		    }
-
-			if (_mouse.Exclusive)
-			{
-				var delta = new Vector2(_mouse.Position.X - _mouseStart.X, _mouse.Position.Y - _mouseStart.Y);
-				_cameraRotation.Y += (360.0f * delta.Y.Sign() * GorgonTiming.Delta);
-				_cameraRotation.X += (360.0f * delta.X.Sign() * GorgonTiming.Delta);
-				_mouseStart = _mouse.Position;
-			}
 
 			ProcessKeys();
 
@@ -160,7 +158,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
 
-			_yPos = (_objRotation.Radians().Sin().Abs() * 2.0f) - 1.25f;
+			_yPos = (_objRotation.Radians().Sin().Abs() * 2.0f) - 1.10f;
 			_sphere.Position = new Vector3(-2.0f, _yPos, 0.75f);
 			_sphere.Rotation = new Vector3(_objRotation, _objRotation, 0);
 			world = _sphere.World;
@@ -173,13 +171,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Output.DrawIndexed(0, 0, _sphere.IndexCount);
 
-			_graphics.Shaders.PixelShader.Resources[0] = _sphere.Texture;
-			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_sphere.VertexBuffer, Vertex3D.Size);
-			_graphics.Input.IndexBuffer = _sphere.IndexBuffer;
-			_graphics.Input.PrimitiveType = _sphere.PrimitiveType;
-
-			_graphics.Output.DrawIndexed(0, 0, _sphere.IndexCount);
-
+			/*
 			_graphics.Input.Layout = _normalVertexLayout;
 			_graphics.Input.PrimitiveType = PrimitiveType.LineList;
 			_graphics.Shaders.PixelShader.Resources[0] = null;
@@ -192,20 +184,28 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Input.Layout = _vertexLayout;
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
-			_graphics.Shaders.VertexShader.Current = _vertexShader;
+			_graphics.Shaders.VertexShader.Current = _vertexShader;*/
+			
+			_icoSphere.Rotation = new Vector3(0, _objRotation, 0);
+			world = _icoSphere.World;
+			_wvp.UpdateWorldMatrix(ref world);
+			_graphics.Shaders.PixelShader.Resources[0] = _icoSphere.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_icoSphere.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _icoSphere.IndexBuffer;
+			_graphics.Input.PrimitiveType = _icoSphere.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _icoSphere.IndexCount);
 
 			var state = _renderer2D.Begin2D();
 			_renderer2D.Drawing.DrawString(_font,
 			                               string.Format(
-			                                             "FPS: {0:0.0}, Delta: {1:0.000} ms Secs: {3:0} CamRot: {2} Mouse: {4:0}x{5:0}, {6:0}x{7:0}",
+			                                             "FPS: {0:0.0}, Delta: {1:0.000} ms Tris: {3:0} CamRot: {2} Mouse: {4:0}x{5:0}",
 			                                             GorgonTiming.FPS,
 			                                             GorgonTiming.Delta * 1000,
 			                                             _cameraRotation,
-			                                             GorgonTiming.SecondsSinceStart,
+			                                             (_triangle.IndexCount / 3) + (_plane.IndexCount / 3) + (_cube.IndexCount / 3) + (_sphere.IndexCount / 3) + (_icoSphere.IndexCount / 3),
 			                                             _mouse.Position.X,
-			                                             _mouse.Position.Y,
-			                                             _mouse.RelativePosition.X,
-			                                             _mouse.RelativePosition.Y),
+			                                             _mouse.Position.Y),
 			                               Vector2.Zero,
 			                               Color.White);
 			_renderer2D.Flush();
@@ -275,10 +275,22 @@ namespace GorgonLibrary.Graphics.Example
 				cameraDir.Y = -2.0f * GorgonTiming.Delta;
 			}
 
-			Matrix.RotationYawPitchRoll(_cameraRotation.X.Radians(), _cameraRotation.Y.Radians(), _cameraRotation.Z.Radians(), out rotMatrix);
-			Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
-			Vector3.TransformCoordinate(ref right, ref rotMatrix, out rightDir);
-			Vector3.Cross(ref lookAt, ref rightDir, out upDir);
+			if (!_lock)
+			{
+				Matrix.RotationYawPitchRoll(_cameraRotation.X.Radians(),
+				                            _cameraRotation.Y.Radians(),
+				                            _cameraRotation.Z.Radians(),
+				                            out rotMatrix);
+				Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
+				Vector3.TransformCoordinate(ref right, ref rotMatrix, out rightDir);
+				Vector3.Cross(ref lookAt, ref rightDir, out upDir);
+			}
+			else
+			{
+				upDir = up;
+				rightDir = right;
+				lookAt = _sphere.Position;
+			}
 
 			Vector3.Multiply(ref rightDir, cameraDir.X, out rightDir);
 			Vector3.Add(ref _cameraPosition, ref rightDir, out _cameraPosition);
@@ -287,9 +299,12 @@ namespace GorgonLibrary.Graphics.Example
 			Vector3.Multiply(ref upDir, cameraDir.Y, out up);
 			Vector3.Add(ref _cameraPosition, ref up, out _cameraPosition);
 
-			lookAt.Normalize();
-			Vector3.Add(ref _cameraPosition, ref lookAt, out lookAt);
-			
+			//lookAt.Normalize();
+			if (!_lock)
+			{
+				Vector3.Add(ref _cameraPosition, ref lookAt, out lookAt);
+			}
+
 			_wvp.UpdateViewMatrix(ref _cameraPosition, ref lookAt, ref upDir);
 		}
 
@@ -382,6 +397,7 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
 
 		    _texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("UVTexture", Resources.UV);
+			_earf = _graphics.Textures.CreateTexture<GorgonTexture2D>("Earf", Resources.earthmap1k);
 
 			var depth = new GorgonDepthStencilStates
 			            {
@@ -445,11 +461,18 @@ namespace GorgonLibrary.Graphics.Example
 				        Texture = _texture
 			        };
 
-			_sphere = new Sphere(_graphics, 1.0f, new RectangleF(0.25f, 0.25f, 4.0f, 4.0f), Vector3.Zero, 64, 64)
+			_sphere = new Sphere(_graphics, 1.0f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), Vector3.Zero, 64, 64)
 			          {
 				          Position = new Vector3(-2.0f, 1.0f, 0.75f),
-				          Texture = _texture
+				          Texture = _earf
 			          };
+
+			_icoSphere = new IcoSphere(_graphics, 5.0f, new RectangleF(0, 0, 1, 1), Vector3.Zero, 3)
+			             {
+							 Rotation = new Vector3(0, -45.0f, 0),
+				             Position = new Vector3(10, 2, 9.5f),
+				             Texture = _earf
+			             };
 
 			_graphics.Shaders.PixelShader.TextureSamplers[0] = new GorgonTextureSamplerStates
 			                                                   {
@@ -493,8 +516,29 @@ namespace GorgonLibrary.Graphics.Example
 			_keyboard = _input.CreateKeyboard(_form);
 			_mouse = _input.CreatePointingDevice(_form);
 
+			_keyboard.KeyDown += (sender, args) =>
+			                     {
+				                     if (args.Key == KeyboardKeys.L)
+				                     {
+					                     _lock = !_lock;
+				                     }
+			                     };
+
 			_mouse.PointingDeviceDown += Mouse_Down;
 			_mouse.PointingDeviceUp += Mouse_Up;
+			_mouse.PointingDeviceMove += (sender, args) =>
+			                             {
+				                             if (!_mouse.Exclusive)
+				                             {
+					                             return;
+				                             }
+				                             var delta = new Vector2(_mouse.Position.X - _mouseStart.X,
+				                                                     _mouse.Position.Y - _mouseStart.Y);
+				                             _cameraRotation.Y += (0.5f * delta.Y.Sign());//GorgonTiming.Delta);
+				                             _cameraRotation.X += (0.5f * delta.X.Sign());//GorgonTiming.Delta);
+				                             _mouseStart = _mouse.Position;
+			                             };
+
 		}
 
 		/// <summary>
