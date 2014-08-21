@@ -534,8 +534,8 @@ namespace GorgonLibrary.Graphics.Example
 				                             }
 				                             var delta = new Vector2(_mouse.Position.X - _mouseStart.X,
 				                                                     _mouse.Position.Y - _mouseStart.Y);
-				                             _cameraRotation.Y += (0.5f * delta.Y.Sign());//GorgonTiming.Delta);
-				                             _cameraRotation.X += (0.5f * delta.X.Sign());//GorgonTiming.Delta);
+				                             _cameraRotation.Y += ((360.0f * GorgonTiming.Delta) * delta.Y.Sign());//GorgonTiming.Delta);
+				                             _cameraRotation.X += ((360.0f * GorgonTiming.Delta) * delta.X.Sign());//GorgonTiming.Delta);
 				                             _mouseStart = _mouse.Position;
 			                             };
 

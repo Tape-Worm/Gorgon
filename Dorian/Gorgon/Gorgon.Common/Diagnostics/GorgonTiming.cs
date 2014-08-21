@@ -122,7 +122,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the number of frames that have been presented.
 		/// </summary>
-		public static long FrameCount
+		public static ulong FrameCount
 		{
 			get;
 			private set;

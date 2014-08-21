@@ -74,7 +74,7 @@ namespace GorgonLibrary
         private static Form _mainForm;																							// Main application form.
 		private static bool _quitSignalled;																						// Flag to indicate that the application needs to close.
 		private static Func<bool> _loop;																						// Application loop method.
-        private static bool _beginFrameTiming = true;                                                                           // Flag to begin frame rate timing.
+        private static bool _timingStarted = true;                                                                              // Flag to indicate that frame rate timing has started.
 		#endregion
 
 		#region Properties.
@@ -254,10 +254,10 @@ namespace GorgonLibrary
 			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.
-			    if (_beginFrameTiming)
+			    if (_timingStarted)
 			    {
 			        GorgonTiming.Reset();
-			        _beginFrameTiming = false;
+			        _timingStarted = false;
 			    }
 
 				GorgonTiming.Update();
@@ -450,7 +450,7 @@ namespace GorgonLibrary
 			    }
 
 			    IsRunning = true;
-			    _beginFrameTiming = true;
+			    _timingStarted = true;
                 Application.Run(context);
 			}
 			catch (Exception ex)
@@ -499,7 +499,7 @@ namespace GorgonLibrary
 				}
 
 				IsRunning = true;
-                _beginFrameTiming = true;
+                _timingStarted = true;
 				Application.Run(ApplicationForm);
 			}
 			catch (Exception ex)
@@ -541,7 +541,7 @@ namespace GorgonLibrary
 				}
 
 				IsRunning = true;
-                _beginFrameTiming = true;
+                _timingStarted = true;
 				Application.Run();
 			}
 			catch (Exception ex)
