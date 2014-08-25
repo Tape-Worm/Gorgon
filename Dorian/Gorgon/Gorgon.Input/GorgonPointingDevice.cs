@@ -216,12 +216,14 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
-		/// Property to return the relative amount moved.
+		/// Property to set or return the relative amount moved by the pointing device.
 		/// </summary>
+		/// <remarks>This will accumulate the relative position over time and give the last relative position since the mouse last moved.  This may not be desirable for 
+		/// all scenarios, so the user will have to reset this to 0, 0 when they want a new relative value set.</remarks>
 		public PointF RelativePosition
 		{
 			get;
-			protected set;
+			set;
 		}
 
 		/// <summary>
@@ -288,6 +290,7 @@ namespace GorgonLibrary.Input
         /// </summary>
 	    protected override void OnAcquisitionChanged()
 	    {
+			RelativePosition = Point.Empty;
             ResetButtons();
 	    }
 
@@ -296,6 +299,7 @@ namespace GorgonLibrary.Input
         /// </summary>
 	    protected override void OnEnabledChanged()
 	    {
+			RelativePosition = Point.Empty;
 	        ResetButtons();
 	    }
 
@@ -303,7 +307,9 @@ namespace GorgonLibrary.Input
         /// Function called when the <see cref="GorgonInputDevice.Exclusive" /> property changes its value.
         /// </summary>
 	    protected override void OnExclusiveChanged()
-	    {
+        {
+	        RelativePosition = Point.Empty;
+
 	        ResetButtons();
             if (Exclusive)
             {
@@ -350,7 +356,7 @@ namespace GorgonLibrary.Input
 			{
 			    if (setRelative)
 			    {
-			        RelativePosition = new PointF(newPosition.X - _position.X, newPosition.Y - _position.Y);
+			        RelativePosition = new PointF(RelativePosition.X + (newPosition.X - _position.X), RelativePosition.Y + (newPosition.Y - _position.Y));
 			    }
 
 			    _position = newPosition;
@@ -490,7 +496,6 @@ namespace GorgonLibrary.Input
 
 			ShowCursor(true);
 		}
-
 
 		/// <summary>
 		/// Function to show the pointing device cursor.

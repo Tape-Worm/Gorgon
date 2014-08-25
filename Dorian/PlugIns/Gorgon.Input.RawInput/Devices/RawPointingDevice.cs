@@ -385,8 +385,9 @@ namespace GorgonLibrary.Input.Raw
 			}
 
 			// Fire events.
-			RelativePosition = new PointF(e.PointingDeviceData.LastX, e.PointingDeviceData.LastY);
-			OnPointingDeviceMove(new PointF(Position.X + e.PointingDeviceData.LastX, Position.Y + e.PointingDeviceData.LastY), false);
+			RelativePosition = new PointF(RelativePosition.X + e.PointingDeviceData.LastX, RelativePosition.Y + e.PointingDeviceData.LastY);
+			OnPointingDeviceMove(new PointF(Position.X + e.PointingDeviceData.LastX, Position.Y + e.PointingDeviceData.LastY),
+				                    false);
 			UpdateCursorPosition();
 		}
 

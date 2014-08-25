@@ -66,8 +66,7 @@ namespace GorgonLibrary.Input.Raw
 	    /// </returns>
 	    public unsafe bool PreFilterMessage(ref Message m)
 	    {
-
-	        int dataSize = 0;
+			int dataSize = 0;
 
 	        // Get data size.			
 	        int result = Win32API.GetRawInputData(m.LParam, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
@@ -96,7 +95,7 @@ namespace GorgonLibrary.Input.Raw
 	        switch (rawInput.Header.Type)
 	        {
 	            case RawInputType.Mouse:
-	                if (RawInputPointingDeviceData != null)
+	                if (RawInputPointingDeviceData != null) 
 	                {
 	                    RawInputPointingDeviceData(this,
 	                                               new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
@@ -128,7 +127,7 @@ namespace GorgonLibrary.Input.Raw
 	                break;
 	        }
 
-	        return true;
+	        return false;
 	    }
 
 	    #endregion

@@ -103,7 +103,9 @@ namespace GorgonLibrary.Graphics.Example
 		// Sphere position.
 		private static float _yPos = 1.0f;
 		// Lock to sphere.
-		private static bool _lock = false;
+		private static bool _lock;
+		// Mouse sensitivity.
+		private static float _sensitivity = 0.5f;
 
 		/// <summary>
 		/// Main application loop.
@@ -171,7 +173,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Output.DrawIndexed(0, 0, _sphere.IndexCount);
 
-			/*
+			
 			_graphics.Input.Layout = _normalVertexLayout;
 			_graphics.Input.PrimitiveType = PrimitiveType.LineList;
 			_graphics.Shaders.PixelShader.Resources[0] = null;
@@ -184,7 +186,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_graphics.Input.Layout = _vertexLayout;
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
-			_graphics.Shaders.VertexShader.Current = _vertexShader;*/
+			_graphics.Shaders.VertexShader.Current = _vertexShader;
 			
 			_icoSphere.Rotation = new Vector3(0, _objRotation, 0);
 			world = _icoSphere.World;
@@ -199,19 +201,21 @@ namespace GorgonLibrary.Graphics.Example
 			var state = _renderer2D.Begin2D();
 			_renderer2D.Drawing.DrawString(_font,
 			                               string.Format(
-			                                             "FPS: {0:0.0}, Delta: {1:0.000} ms Tris: {3:0} CamRot: {2} Mouse: {4:0}x{5:0}",
+			                                             "FPS: {0:0.0}, Delta: {1:0.000} ms Tris: {3:0} CamRot: {2} Mouse: {4:0}x{5:0} Sensitivity: {6:0.0##}",
 			                                             GorgonTiming.FPS,
 			                                             GorgonTiming.Delta * 1000,
 			                                             _cameraRotation,
 			                                             (_triangle.IndexCount / 3) + (_plane.IndexCount / 3) + (_cube.IndexCount / 3) + (_sphere.IndexCount / 3) + (_icoSphere.IndexCount / 3),
 			                                             _mouse.Position.X,
-			                                             _mouse.Position.Y),
+			                                             _mouse.Position.Y,
+														 _sensitivity),
 			                               Vector2.Zero,
 			                               Color.White);
 			_renderer2D.Flush();
 			_renderer2D.End2D(state);
 
 			_swapChain.Flip();
+
 			return true;
 		}
 
@@ -526,17 +530,39 @@ namespace GorgonLibrary.Graphics.Example
 
 			_mouse.PointingDeviceDown += Mouse_Down;
 			_mouse.PointingDeviceUp += Mouse_Up;
+			_mouse.PointingDeviceWheelMove += (sender, args) =>
+			                                  {
+				                                  if (args.WheelDelta < 0)
+				                                  {
+					                                  _sensitivity -= 0.05f;
+
+					                                  if (_sensitivity < 0.05f)
+					                                  {
+						                                  _sensitivity = 0.05f;
+					                                  }
+				                                  } else if (args.WheelDelta > 0)
+				                                  {
+					                                  _sensitivity += 0.05f;
+
+					                                  if (_sensitivity > 2.0f)
+					                                  {
+						                                  _sensitivity = 2.0f;
+					                                  }
+				                                  }
+
+			                                  };
 			_mouse.PointingDeviceMove += (sender, args) =>
 			                             {
 				                             if (!_mouse.Exclusive)
 				                             {
 					                             return;
 				                             }
-				                             var delta = new Vector2(_mouse.Position.X - _mouseStart.X,
-				                                                     _mouse.Position.Y - _mouseStart.Y);
-				                             _cameraRotation.Y += ((360.0f * GorgonTiming.Delta) * delta.Y.Sign());//GorgonTiming.Delta);
-				                             _cameraRotation.X += ((360.0f * GorgonTiming.Delta) * delta.X.Sign());//GorgonTiming.Delta);
+
+				                             var delta = args.RelativePosition;
+				                             _cameraRotation.Y += delta.Y * _sensitivity;//((360.0f * 0.002f) * delta.Y.Sign());
+				                             _cameraRotation.X += delta.X * _sensitivity;//((360.0f * 0.002f) * delta.X.Sign());
 				                             _mouseStart = _mouse.Position;
+				                             _mouse.RelativePosition = PointF.Empty;
 			                             };
 
 		}

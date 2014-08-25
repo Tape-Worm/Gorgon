@@ -38,7 +38,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -1438,7 +1437,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to retrieve the thumb nails for the file view when in thumbnail mode on a separate thread.
 		/// </summary>
-		private async void GetThumbNails()
+		private void GetThumbNails()
 		{
 			// Get the first item that needs a thumbnail.
 			while ((_thumbNailFiles.Count > 0) && (!_cancelSource.Token.IsCancellationRequested))
@@ -1490,7 +1489,11 @@ namespace GorgonLibrary.Editor
 							                         }));
 						}
 					}
+#if DEBUG
 					catch (Exception ex)
+#else
+					catch
+#endif
 					{
 						if (_cancelSource.Token.IsCancellationRequested)
 						{
