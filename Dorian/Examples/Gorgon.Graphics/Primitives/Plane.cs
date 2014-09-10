@@ -161,8 +161,7 @@ namespace GorgonLibrary.Graphics.Example
 			}
 		}
 		#endregion
-
-
+        
 		#region IPrimitive Members
 		/// <summary>
 		/// Property to return the type of primitive used to draw the object.

@@ -105,7 +105,7 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 		}
 	}
 
-	return float4(saturate(float3(0.392157f * 0.3f, 0.584314f * 0.3f, 0.929412f * 0.3f) + output), textureColor.a);
+	return float4(saturate(float3(0.392157f * 0.25f, 0.584314f * 0.25f, 0.929412f * 0.25f) + output), textureColor.a);
 }
 
 NormalVertex NormalVS(NormalVertex vertex)
