@@ -38,6 +38,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// Defines a mesh that can be transformed.
 	/// </summary>
 	abstract class MoveableMesh
+        : Mesh
 	{
 		#region Variables.
 		// Position of the triangle.
@@ -150,16 +151,6 @@ namespace GorgonLibrary.Graphics.Example
 
 				return _world;
 			}
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="MoveableMesh"/> class.
-		/// </summary>
-		protected MoveableMesh()
-		{
-			
 		}
 		#endregion
 	}

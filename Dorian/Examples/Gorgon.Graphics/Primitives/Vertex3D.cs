@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// The layout for our vertex.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
-	struct Vertex3D
+	public struct Vertex3D
 	{
 		#region Variables.
 		/// <summary>
