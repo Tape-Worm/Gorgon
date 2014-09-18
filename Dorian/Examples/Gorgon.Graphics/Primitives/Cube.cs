@@ -123,6 +123,65 @@ namespace GorgonLibrary.Graphics.Example
 				}
 			}
 		}
+
+        /// <summary>
+        /// Function to calculate tangent information for bump mapping.
+        /// </summary>
+        /// <param name="vertexData">Buffer holding the vertices.</param>
+        /// <param name="indexData">Buffer holding the indices.</param>
+	    private unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
+        {
+            int triangleCount = IndexCount / 3;
+            var biTanData = new Vector3[VertexCount];
+            var tanData = new Vector3[VertexCount];
+
+            for (int i = 0; i < triangleCount; ++i)
+            {
+                int index1 = *(indexData++);
+                int index2 = *(indexData++);
+                int index3 = *(indexData++);
+
+                Vertex3D vertex1 = vertexData[index1];
+                Vertex3D vertex2 = vertexData[index2];
+                Vertex3D vertex3 = vertexData[index3];
+
+                Vector4 vertexEdge1;
+                Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out vertexEdge1);
+
+                Vector4 vertexEdge2;
+                Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out vertexEdge2);
+
+                Vector2 st1;
+                Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out st1);
+                Vector2 st2;
+                Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out st2);
+
+                float r = 1.0f / (st1.X * st2.Y - st2.X * st1.Y);
+
+                var s = new Vector3((st2.Y * vertexEdge1.X - st1.Y * vertexEdge2.X) * r,
+                                    (st2.Y * vertexEdge1.Y - st1.Y * vertexEdge2.Y) * r,
+                                    (st2.Y * vertexEdge1.Z - st2.Y * vertexEdge2.Z) * r);
+
+                var t = new Vector3((st2.X * vertexEdge2.X - st1.X * vertexEdge1.X) * r,
+                                    (st2.X * vertexEdge2.Y - st1.X * vertexEdge1.Y) * r,
+                                    (st2.X * vertexEdge2.Z - st1.X * vertexEdge1.Z) * r);
+
+                Vector3.Add(ref tanData[index1], ref s, out tanData[index1]);
+                Vector3.Add(ref tanData[index2], ref s, out tanData[index2]);
+                Vector3.Add(ref tanData[index3], ref s, out tanData[index3]);
+
+                Vector3.Add(ref biTanData[index1], ref t, out biTanData[index1]);
+                Vector3.Add(ref biTanData[index2], ref t, out biTanData[index2]);
+                Vector3.Add(ref biTanData[index3], ref t, out biTanData[index3]);
+            }
+
+            for (int i = 0; i < VertexCount; ++i)
+            {
+                Vertex3D vertex = vertexData[i];
+
+
+            }
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -148,9 +207,10 @@ namespace GorgonLibrary.Graphics.Example
 
 			unsafe
 			{
-				using (var data = new GorgonDataStream(VertexCount * Vertex3D.Size))
+				using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
+                using (var indexData = new GorgonDataStream(IndexCount * sizeof(int)))
 				{
-					var vertices = (Vertex3D *)data.UnsafePointer;
+					var vertices = (Vertex3D *)vertexData.UnsafePointer;
 					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					vertices += faceVertexCount;
 
@@ -168,16 +228,7 @@ namespace GorgonLibrary.Graphics.Example
 
 					GetVertices(vertices, Vector3.UnitZ, Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
-					VertexBuffer = graphics.Buffers.CreateVertexBuffer("CubeVB", new GorgonBufferSettings
-					{
-						Usage = BufferUsage.Immutable,
-						SizeInBytes = (int)data.Length
-					}, data);
-				}
-
-				using (var data = new GorgonDataStream(IndexCount * sizeof(int)))
-				{
-					var indices = (int*)data.UnsafePointer;
+					var indices = (int*)indexData.UnsafePointer;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
 					indices += faceIndexCount;
 
@@ -194,13 +245,22 @@ namespace GorgonLibrary.Graphics.Example
 					indices += faceIndexCount;
 
 					GetIndices(indices, faceVertexCount * 5, columnsPerFace, rowsPerFace);
+
+				    CalculateTangents(vertices, indices);
+
+                    VertexBuffer = graphics.Buffers.CreateVertexBuffer("CubeVB", new GorgonBufferSettings
+                    {
+                        Usage = BufferUsage.Immutable,
+                        SizeInBytes = (int)vertexData.Length
+                    }, vertexData);
+
 					
 					IndexBuffer = graphics.Buffers.CreateIndexBuffer("CubeIB", new GorgonIndexBufferSettings
 					{
 						Usage = BufferUsage.Immutable,
 						Use32BitIndices = true,
-						SizeInBytes = (int)data.Length
-					}, data);
+						SizeInBytes = (int)indexData.Length
+					}, indexData);
 				}
 			}
 		}
