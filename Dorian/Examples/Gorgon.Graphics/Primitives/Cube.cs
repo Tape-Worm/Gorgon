@@ -24,13 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using SlimMath;
@@ -38,11 +32,9 @@ using SlimMath;
 namespace GorgonLibrary.Graphics.Example
 {
 	class Cube
-		: MoveableMesh, IPrimitive, IDisposable
+		: MoveableMesh
 	{
 		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// Initial orientation.
 		private Matrix _orientation = Matrix.Identity;
 		#endregion
@@ -105,7 +97,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="vertexStart">The starting vertex.</param>
 		/// <param name="columns">Number of columns for the plane.</param>
 		/// <param name="rows">Number of rows for the plane.</param>
-		private unsafe void GetIndices(int* buffer, int vertexStart, int columns, int rows)
+		private static unsafe void GetIndices(int* buffer, int vertexStart, int columns, int rows)
 		{
 			int columnWrap = columns + 1;
 
@@ -123,65 +115,6 @@ namespace GorgonLibrary.Graphics.Example
 				}
 			}
 		}
-
-        /// <summary>
-        /// Function to calculate tangent information for bump mapping.
-        /// </summary>
-        /// <param name="vertexData">Buffer holding the vertices.</param>
-        /// <param name="indexData">Buffer holding the indices.</param>
-	    private unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
-        {
-            int triangleCount = IndexCount / 3;
-            var biTanData = new Vector3[VertexCount];
-            var tanData = new Vector3[VertexCount];
-
-            for (int i = 0; i < triangleCount; ++i)
-            {
-                int index1 = *(indexData++);
-                int index2 = *(indexData++);
-                int index3 = *(indexData++);
-
-                Vertex3D vertex1 = vertexData[index1];
-                Vertex3D vertex2 = vertexData[index2];
-                Vertex3D vertex3 = vertexData[index3];
-
-                Vector4 vertexEdge1;
-                Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out vertexEdge1);
-
-                Vector4 vertexEdge2;
-                Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out vertexEdge2);
-
-                Vector2 st1;
-                Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out st1);
-                Vector2 st2;
-                Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out st2);
-
-                float r = 1.0f / (st1.X * st2.Y - st2.X * st1.Y);
-
-                var s = new Vector3((st2.Y * vertexEdge1.X - st1.Y * vertexEdge2.X) * r,
-                                    (st2.Y * vertexEdge1.Y - st1.Y * vertexEdge2.Y) * r,
-                                    (st2.Y * vertexEdge1.Z - st2.Y * vertexEdge2.Z) * r);
-
-                var t = new Vector3((st2.X * vertexEdge2.X - st1.X * vertexEdge1.X) * r,
-                                    (st2.X * vertexEdge2.Y - st1.X * vertexEdge1.Y) * r,
-                                    (st2.X * vertexEdge2.Z - st1.X * vertexEdge1.Z) * r);
-
-                Vector3.Add(ref tanData[index1], ref s, out tanData[index1]);
-                Vector3.Add(ref tanData[index2], ref s, out tanData[index2]);
-                Vector3.Add(ref tanData[index3], ref s, out tanData[index3]);
-
-                Vector3.Add(ref biTanData[index1], ref t, out biTanData[index1]);
-                Vector3.Add(ref biTanData[index2], ref t, out biTanData[index2]);
-                Vector3.Add(ref biTanData[index3], ref t, out biTanData[index3]);
-            }
-
-            for (int i = 0; i < VertexCount; ++i)
-            {
-                Vertex3D vertex = vertexData[i];
-
-
-            }
-	    }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -263,102 +196,6 @@ namespace GorgonLibrary.Graphics.Example
 					}, indexData);
 				}
 			}
-		}
-		#endregion
-
-		#region IPrimitive Members
-		/// <summary>
-		/// Property to return the type of primitive used to draw the object.
-		/// </summary>
-		public PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of vertices.
-		/// </summary>
-		public int VertexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of indices.
-		/// </summary>
-		public int IndexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the vertex buffer.
-		/// </summary>
-		public GorgonVertexBuffer VertexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the index buffer.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the texture to use.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get;
-			set;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (IndexBuffer != null)
-				{
-					IndexBuffer.Dispose();	
-				}
-
-				if (VertexBuffer != null)
-				{
-					VertexBuffer.Dispose();
-				}
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

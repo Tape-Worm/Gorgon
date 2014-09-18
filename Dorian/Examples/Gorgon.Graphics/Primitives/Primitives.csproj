@@ -69,6 +69,7 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="IPrimitive.cs" />
+    <Compile Include="Mesh.cs" />
     <Compile Include="MoveableMesh.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="Program.cs" />
