@@ -37,11 +37,9 @@ using SlimMath;
 namespace GorgonLibrary.Graphics.Example
 {
 	class Plane
-		: MoveableMesh, IPrimitive, IDisposable
+		: MoveableMesh
 	{
 		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// Initial orientation.
 		private Matrix _orientation = Matrix.Identity;
 		#endregion
@@ -130,131 +128,38 @@ namespace GorgonLibrary.Graphics.Example
 		public Plane(GorgonGraphics graphics, Vector2 size, RectangleF textureCoordinates, Vector3 angle, int columns = 1, int rows = 1)
 		{
 			Quaternion orientation;
+			PrimitiveType = PrimitiveType.TriangleStrip;
 			VertexCount = (columns + 1) * (rows + 1);
 			IndexCount = ((columns * rows ) * 6) + (rows - 1);
+			TriangleCount = (IndexCount - (rows - 1)) / 3;
 
 			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
 			Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 			unsafe
 			{
-				using (var data = new GorgonDataStream(VertexCount * Vertex3D.Size))
+				using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
+				using (var indexData = new GorgonDataStream(IndexCount * sizeof(int)))
 				{
-					GetVertices((Vertex3D *)data.UnsafePointer, size, textureCoordinates, columns, rows);
+					GetVertices((Vertex3D *)vertexData.UnsafePointer, size, textureCoordinates, columns, rows);
+					GetIndices((int*)indexData.UnsafePointer, columns, rows);
+
+					CalculateTangents((Vertex3D *)vertexData.UnsafePointer, (int *)indexData.UnsafePointer);
+
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("PlaneVB", new GorgonBufferSettings
 					                                                              {
 						                                                              Usage = BufferUsage.Immutable,
-																					  SizeInBytes = (int)data.Length
-					                                                              }, data);
-				}
-
-				using (var data = new GorgonDataStream(IndexCount * sizeof(int)))
-				{
-					GetIndices((int *)data.UnsafePointer, columns, rows);
+																					  SizeInBytes = (int)vertexData.Length
+					                                                              }, vertexData);
+					
 					IndexBuffer = graphics.Buffers.CreateIndexBuffer("PlaneIB", new GorgonIndexBufferSettings
 					                                                            {
 						                                                            Usage = BufferUsage.Immutable,
 																					Use32BitIndices = true,
-																					SizeInBytes = (int)data.Length
-					                                                            }, data);
+																					SizeInBytes = (int)indexData.Length
+					                                                            }, indexData);
 				}
 			}
-		}
-		#endregion
-        
-		#region IPrimitive Members
-		/// <summary>
-		/// Property to return the type of primitive used to draw the object.
-		/// </summary>
-		public PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleStrip;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of vertices.
-		/// </summary>
-		public int VertexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of indices.
-		/// </summary>
-		public int IndexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the vertex buffer.
-		/// </summary>
-		public GorgonVertexBuffer VertexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the index buffer.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the texture to use.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get;
-			set;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (VertexBuffer != null)
-				{
-					VertexBuffer.Dispose();
-				}
-
-				if (IndexBuffer != null)
-				{
-					IndexBuffer.Dispose();
-				}
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

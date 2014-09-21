@@ -163,6 +163,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Calculate number of vertices and indices required for our sphere.
 			VertexCount = (ringCount + 1) * (segmentCount + 1);
 			IndexCount = 6 * ringCount * (segmentCount + 1);
+		    TriangleCount = IndexCount / 3;
 
 			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
 		    Matrix.RotationQuaternion(ref orientation, out _orientation);

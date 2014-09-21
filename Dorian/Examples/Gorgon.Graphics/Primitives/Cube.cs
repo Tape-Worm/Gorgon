@@ -56,6 +56,7 @@ namespace GorgonLibrary.Graphics.Example
 			float columnHeight = 1.0f / rows;
 			Matrix rotation = Matrix.Identity;
 			Vector3 translate;
+			Vector3 transformNormal;
 
 			Vector3 orientVector;
 			Vector3.Cross(ref normal, ref up, out orientVector);
@@ -65,6 +66,9 @@ namespace GorgonLibrary.Graphics.Example
 			rotation.Row2 = up;
 			rotation.Row3 = normal;
 			rotation.Row4 = new Vector4(translate, 1);
+
+			Vector3.TransformCoordinate(ref normal, ref _orientation, out transformNormal);
+			Vector3.Normalize(ref transformNormal, out transformNormal);
 
 			for (int y = 0; y <= rows; ++y)
 			{
@@ -82,7 +86,7 @@ namespace GorgonLibrary.Graphics.Example
 						Position =
 							new Vector4(vertexPos,
 										1.0f),
-						Normal = normal,
+						Normal = transformNormal,
 						UV = new Vector2((x * (textureCoordinates.Width / columns)) + textureCoordinates.X,
 										 (1.0f - (y * (textureCoordinates.Height / rows))) + textureCoordinates.Y)
 					};
@@ -129,71 +133,64 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="rowsPerFace">The number of rows per face.</param>
 		public Cube(GorgonGraphics graphics, Vector3 size, RectangleF textureCoordinates, Vector3 angle, int columnsPerFace = 1, int rowsPerFace = 1)
 		{
+			PrimitiveType = PrimitiveType.TriangleList;
 			Quaternion orientation;
 			int faceVertexCount = (columnsPerFace + 1) * (rowsPerFace + 1);
 			int faceIndexCount = (columnsPerFace * rowsPerFace) * 6;
 			VertexCount = faceVertexCount * 6;
 			IndexCount = faceIndexCount * 6;
+			TriangleCount = IndexCount / 3;
 
 			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
 			Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 			unsafe
 			{
-				using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
-                using (var indexData = new GorgonDataStream(IndexCount * sizeof(int)))
+				using (
+					GorgonDataStream vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size),
+					                 indexData = new GorgonDataStream(IndexCount * sizeof(int)))
 				{
-					var vertices = (Vertex3D *)vertexData.UnsafePointer;
+					var vertices = (Vertex3D*)vertexData.UnsafePointer;
+					// Front.
 					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
-					vertices += faceVertexCount;
-
-					GetVertices(vertices, -Vector3.UnitZ, -Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
-					vertices += faceVertexCount;
-
-					GetVertices(vertices, Vector3.UnitY, Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
-					vertices += faceVertexCount;
-
-					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
-					vertices += faceVertexCount;
-
-					GetVertices(vertices, Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
-					vertices += faceVertexCount;
-
-					GetVertices(vertices, Vector3.UnitZ, Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					// Bottom.
+					GetVertices(vertices + faceVertexCount, -Vector3.UnitZ, -Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					// Back.
+					GetVertices(vertices + (faceVertexCount * 2), Vector3.UnitY, Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					// Top.
+					GetVertices(vertices + (faceVertexCount * 3), Vector3.UnitZ, Vector3.UnitY, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					// Left.
+					GetVertices(vertices + (faceVertexCount * 4), Vector3.UnitY, -Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
+					// Right
+					GetVertices(vertices + (faceVertexCount * 5), Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
 					var indices = (int*)indexData.UnsafePointer;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
-					indices += faceIndexCount;
+					GetIndices(indices + faceIndexCount, faceVertexCount, columnsPerFace, rowsPerFace);
+					GetIndices(indices + (faceIndexCount * 2), faceVertexCount * 2, columnsPerFace, rowsPerFace);
+					GetIndices(indices + (faceIndexCount * 3), faceVertexCount * 3, columnsPerFace, rowsPerFace);
+					GetIndices(indices + (faceIndexCount * 4), faceVertexCount * 4, columnsPerFace, rowsPerFace);
+					GetIndices(indices + (faceIndexCount * 5), faceVertexCount * 5, columnsPerFace, rowsPerFace);
 
-					GetIndices(indices, faceVertexCount, columnsPerFace, rowsPerFace);
-					indices += faceIndexCount;
+					CalculateTangents(vertices, indices);
 
-					GetIndices(indices, faceVertexCount * 2, columnsPerFace, rowsPerFace);
-					indices += faceIndexCount;
+					VertexBuffer = graphics.Buffers.CreateVertexBuffer("CubeVB",
+					                                                   new GorgonBufferSettings
+					                                                   {
+						                                                   Usage = BufferUsage.Immutable,
+						                                                   SizeInBytes = (int)vertexData.Length
+					                                                   },
+					                                                   vertexData);
 
-					GetIndices(indices, faceVertexCount * 3, columnsPerFace, rowsPerFace);
-					indices += faceIndexCount;
 
-					GetIndices(indices, faceVertexCount * 4, columnsPerFace, rowsPerFace);
-					indices += faceIndexCount;
-
-					GetIndices(indices, faceVertexCount * 5, columnsPerFace, rowsPerFace);
-
-				    CalculateTangents(vertices, indices);
-
-                    VertexBuffer = graphics.Buffers.CreateVertexBuffer("CubeVB", new GorgonBufferSettings
-                    {
-                        Usage = BufferUsage.Immutable,
-                        SizeInBytes = (int)vertexData.Length
-                    }, vertexData);
-
-					
-					IndexBuffer = graphics.Buffers.CreateIndexBuffer("CubeIB", new GorgonIndexBufferSettings
-					{
-						Usage = BufferUsage.Immutable,
-						Use32BitIndices = true,
-						SizeInBytes = (int)indexData.Length
-					}, indexData);
+					IndexBuffer = graphics.Buffers.CreateIndexBuffer("CubeIB",
+					                                                 new GorgonIndexBufferSettings
+					                                                 {
+						                                                 Usage = BufferUsage.Immutable,
+						                                                 Use32BitIndices = true,
+						                                                 SizeInBytes = (int)indexData.Length
+					                                                 },
+					                                                 indexData);
 				}
 			}
 		}

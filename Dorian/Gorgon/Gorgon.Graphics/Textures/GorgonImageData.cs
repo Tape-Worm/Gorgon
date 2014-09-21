@@ -762,20 +762,27 @@ namespace GorgonLibrary.Graphics
         /// Function to copy texture data into a buffer.
         /// </summary>
         /// <param name="stagingTexture">Texture to copy.</param>
-        /// <param name="buffer">Buffer that will contain the data.</param>
         /// <param name="arrayIndex">Index of the array to copy.</param>
         /// <param name="mipLevel">Mip level to copy.</param>
-        /// <param name="rowStride">Stride of a single row in the buffer.</param>
-        /// <param name="height">Height of the buffer.</param>
-        /// <param name="depthCount">Number of depth levels in the buffer.</param>
-        private static void GetTextureData(GorgonTexture stagingTexture, void *buffer, int arrayIndex, int mipLevel, int rowStride, int height, int depthCount)
+		/// <param name="destImageBuffer">Image buffer to copy into.</param>
+        private static void GetTextureData(GorgonTexture stagingTexture, int arrayIndex, int mipLevel, GorgonImageBuffer destImageBuffer)
         {
-            int sliceStride = rowStride * height;
+	        int depthCount = 1.Max(destImageBuffer.Depth);
+	        int height = 1.Max(destImageBuffer.Height);
+	        int rowStride = destImageBuffer.PitchInformation.RowPitch;
+	        int sliceStride = destImageBuffer.PitchInformation.SlicePitch;
+	        var buffer = (byte *)destImageBuffer.Data.UnsafePointer;
 	        var flags = BufferLockFlags.Write;
 
 	        if (stagingTexture.Settings.Usage == BufferUsage.Dynamic)
 	        {
 		        flags |= BufferLockFlags.Discard;
+	        }
+
+			// If this image is compressed, then use the block height information.
+	        if (destImageBuffer.PitchInformation.BlockCount.Height > 0)
+	        {
+		        height = destImageBuffer.PitchInformation.BlockCount.Height;
 	        }
 
             // Copy the texture data into the buffer.
@@ -808,7 +815,7 @@ namespace GorgonLibrary.Graphics
                 if ((textureLock.PitchInformation.RowPitch != rowStride)
                     || (textureLock.PitchInformation.SlicePitch != sliceStride))
                 {
-                    var destData = (byte*)buffer;
+                    var destData = buffer;
                     var sourceData = (byte*)textureLock.Data.UnsafePointer;
 
                     for (int depth = 0; depth < depthCount; depth++)
@@ -897,7 +904,7 @@ namespace GorgonLibrary.Graphics
                 var buffer = result[mipLevel, arrayIndex];
 
                 // Copy the data from the texture.
-                GetTextureData(staging, buffer.Data.UnsafePointer, arrayIndex, mipLevel, buffer.PitchInformation.RowPitch, buffer.Height, buffer.Depth);
+                GetTextureData(staging, arrayIndex, mipLevel, buffer);
 
                 return result;
             }
@@ -951,7 +958,7 @@ namespace GorgonLibrary.Graphics
                         var buffer = result[mipLevel, array];
 
                         // Copy the data from the texture.
-                        GetTextureData(staging, buffer.Data.UnsafePointer, array, mipLevel, buffer.PitchInformation.RowPitch, buffer.Height, buffer.Depth);
+                        GetTextureData(staging, array, mipLevel, buffer);
                     }
                 }
 
@@ -1474,23 +1481,21 @@ namespace GorgonLibrary.Graphics
 				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, codec.Codec));
 			}
 
-            // Just apply directly if we're already using a data stream.
+			// Just apply directly if we're already using a data stream.
 			var gorgonDataStream = stream as GorgonDataStream;
-
-			if (gorgonDataStream != null)
-            {
-                return codec.LoadFromStream(gorgonDataStream, size);
-            }
 
             // Load the data into unmanaged memory.
 			try
 			{
 				// Use a memory stream for ease of access.
-				memoryStream = new GorgonDataStream(size);
-				memoryStream.ReadFromStream(stream, size);
-				memoryStream.Position = 0;
+				if (gorgonDataStream == null)
+				{
+					gorgonDataStream = new GorgonDataStream(size);
+					gorgonDataStream.ReadFromStream(stream, size);
+					gorgonDataStream.Position = 0;
+				}
 
-				result = codec.LoadFromStream(memoryStream, size);
+				result = codec.LoadFromStream(gorgonDataStream, size);
 
 				// Post process our data.
 				if ((codec.Width != 0) || (codec.Height != 0) || (codec.MipCount != 0) || (codec.Format != BufferFormat.Unknown))
@@ -1510,9 +1515,10 @@ namespace GorgonLibrary.Graphics
             finally
             {
                 // If we haven't co-opted the pointer, then free the memory we've allocated.
-                if (memoryStream != null)
+                if ((stream != gorgonDataStream)
+					&& (gorgonDataStream != null))
                 {
-                    memoryStream.Dispose();
+                    gorgonDataStream.Dispose();
                 }
             }
 
