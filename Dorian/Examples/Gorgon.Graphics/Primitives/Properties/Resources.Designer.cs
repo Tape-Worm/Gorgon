@@ -101,6 +101,16 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap normalmap {
+            get {
+                object obj = ResourceManager.GetObject("normalmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Rain_Height_NRM {

@@ -38,7 +38,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// A sphere object.
 	/// </summary>
 	class Sphere
-		: MoveableMesh, IPrimitive, IDisposable
+		: MoveableMesh
 	{
 		#region Variables.
 		// Flag to indicate that the object was disposed.
@@ -161,6 +161,7 @@ namespace GorgonLibrary.Graphics.Example
 		    Quaternion orientation;
 
 			// Calculate number of vertices and indices required for our sphere.
+		    PrimitiveType = PrimitiveType.TriangleList;
 			VertexCount = (ringCount + 1) * (segmentCount + 1);
 			IndexCount = 6 * ringCount * (segmentCount + 1);
 		    TriangleCount = IndexCount / 3;
@@ -210,7 +211,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
 			{
@@ -223,86 +224,9 @@ namespace GorgonLibrary.Graphics.Example
 				{
 					Normals.Dispose();
 				}
-
-				if (VertexBuffer != null)
-				{
-					VertexBuffer.Dispose();
-				}
-
-				if (IndexBuffer != null)
-				{
-					IndexBuffer.Dispose();
-				}
 			}
 
 			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region IPrimitive Members
-		/// <summary>
-		/// Property to return the type of primitive used to draw the object.
-		/// </summary>
-		public PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of vertices.
-		/// </summary>
-		public int VertexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of indices.
-		/// </summary>
-		public int IndexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the vertex buffer.
-		/// </summary>
-		public GorgonVertexBuffer VertexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the index buffer.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the texture to use.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get;
-			set;
 		}
 		#endregion
 	}
