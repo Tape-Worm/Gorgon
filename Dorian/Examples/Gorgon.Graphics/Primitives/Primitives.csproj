@@ -68,7 +68,6 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="IPrimitive.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MoveableMesh.cs" />
     <Compile Include="Plane.cs" />
@@ -133,6 +132,7 @@
     <None Include="Resources\Rain_Height_SPEC.dds" />
     <None Include="Resources\earthspec1k.jpg" />
     <None Include="Resources\earthcloudmap.png" />
+    <None Include="Resources\normalmap.png" />
     <Content Include="Resources\Shaders.hlsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
