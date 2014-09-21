@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using SlimMath;
 
@@ -36,11 +37,9 @@ namespace GorgonLibrary.Graphics.Example
 	/// An ico sphere object.
 	/// </summary>
 	class IcoSphere
-		: MoveableMesh, IPrimitive, IDisposable
+		: MoveableMesh
 	{
 		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// Initial orientation.
 		private Matrix _orientation = Matrix.Identity;
 		// A list of previously performed splits.
@@ -381,11 +380,34 @@ namespace GorgonLibrary.Graphics.Example
 
 			FixSeam(vertexList, indexList);
 
-			VertexCount = vertexList.Count;
-			IndexCount = indexList.Count;
+			unsafe
+			{
+				using (var vertexData = new GorgonDataStream(vertexList.ToArray()))
+				using (var indexData = new GorgonDataStream(indexList.ToArray()))
+				{
+					VertexCount = vertexList.Count;
+					IndexCount = indexList.Count;
+					TriangleCount = IndexCount / 3;
 
-			VertexBuffer = graphics.Buffers.CreateVertexBuffer("IcoSphereVertexBuffer", vertexList.ToArray(), BufferUsage.Immutable);
-			IndexBuffer = graphics.Buffers.CreateIndexBuffer("IcoSphereIndexbuffer", indexList.ToArray(), BufferUsage.Immutable);
+					CalculateTangents((Vertex3D*)vertexData.UnsafePointer, (int*)indexData.UnsafePointer);
+
+					VertexBuffer = graphics.Buffers.CreateVertexBuffer("IcoSphereVertexBuffer",
+						                                                new GorgonBufferSettings
+						                                                {
+																			SizeInBytes = (int)vertexData.Length,
+																			Usage = BufferUsage.Immutable
+						                                                },
+						                                                vertexData);
+					IndexBuffer = graphics.Buffers.CreateIndexBuffer("IcoSphereIndexbuffer",
+						                                                new GorgonIndexBufferSettings
+						                                                {
+																			Usage = BufferUsage.Immutable,
+																			Use32BitIndices = true,
+																			SizeInBytes = (int)indexData.Length
+						                                                },
+						                                                indexData);
+				}
+			}
 		}
 		#endregion
 
@@ -401,107 +423,12 @@ namespace GorgonLibrary.Graphics.Example
 	    public IcoSphere(GorgonGraphics graphics, float radius, RectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
 	    {
 		    Radius = radius;
+			PrimitiveType = PrimitiveType.TriangleList;
 		    Quaternion orientation;
 			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
 		    Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 			BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (VertexBuffer != null)
-				{
-					VertexBuffer.Dispose();
-				}
-
-				if (IndexBuffer != null)
-				{
-					IndexBuffer.Dispose();
-				}
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region IPrimitive Members
-		/// <summary>
-		/// Property to return the type of primitive used to draw the object.
-		/// </summary>
-		public PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of vertices.
-		/// </summary>
-		public int VertexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of indices.
-		/// </summary>
-		public int IndexCount
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the vertex buffer.
-		/// </summary>
-		public GorgonVertexBuffer VertexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the index buffer.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the texture to use.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get;
-			set;
 		}
 		#endregion
 	}

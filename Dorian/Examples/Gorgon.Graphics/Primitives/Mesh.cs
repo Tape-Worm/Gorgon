@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Math;
 using SlimMath;
 
 namespace GorgonLibrary.Graphics.Example
@@ -53,6 +54,15 @@ namespace GorgonLibrary.Graphics.Example
             get;
             protected set;
         }
+
+		/// <summary>
+		/// Property to return the number of triangles.
+		/// </summary>
+	    public int TriangleCount
+	    {
+		    get;
+		    protected set;
+	    }
 
         /// <summary>
         /// Property to return the number of vertices.
@@ -108,13 +118,20 @@ namespace GorgonLibrary.Graphics.Example
         /// <param name="indexData">Buffer holding the indices.</param>
         protected unsafe void CalculateTangents(Vertex3D* vertexData, int* indexData)
         {
-            int triangleCount = IndexCount / 3;
-            var biTanData = new Vector3[VertexCount];
-            var tanData = new Vector3[VertexCount];
+			var biTanData = new Vector3[VertexCount];
+			var tanData = new Vector3[VertexCount];
 
-            for (int i = 0; i < triangleCount; ++i)
+            for (int i = 0; i < TriangleCount; ++i)
             {
                 int index1 = *(indexData++);
+
+				// If we hit a strip-restart index, then skip to the next index.
+	            if ((PrimitiveType == PrimitiveType.TriangleStrip) 
+					&& (index1 < 0))
+	            {
+		            index1 = *(indexData++);
+	            }
+
                 int index2 = *(indexData++);
                 int index3 = *(indexData++);
 
@@ -122,34 +139,40 @@ namespace GorgonLibrary.Graphics.Example
                 Vertex3D vertex2 = vertexData[index2];
                 Vertex3D vertex3 = vertexData[index3];
 
-                Vector4 vertexEdge1;
-                Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out vertexEdge1);
+                Vector4 deltaPos1;
+                Vector4.Subtract(ref vertex2.Position, ref vertex1.Position, out deltaPos1);
 
-                Vector4 vertexEdge2;
-                Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out vertexEdge2);
+                Vector4 deltaPos2;
+                Vector4.Subtract(ref vertex3.Position, ref vertex1.Position, out deltaPos2);
 
-                Vector2 st1;
-                Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out st1);
-                Vector2 st2;
-                Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out st2);
+                Vector2 deltaUV1;
+                Vector2.Subtract(ref vertex2.UV, ref vertex1.UV, out deltaUV1);
+                Vector2 deltaUV2;
+                Vector2.Subtract(ref vertex3.UV, ref vertex1.UV, out deltaUV2);
 
-                float r = 1.0f / (st1.X * st2.Y - st2.X * st1.Y);
+	            float denom = (deltaUV1.X * deltaUV2.Y - deltaUV1.Y * deltaUV2.X);
+	            float r = 0.0f;
 
-                var s = new Vector3((st2.Y * vertexEdge1.X - st1.Y * vertexEdge2.X) * r,
-                                    (st2.Y * vertexEdge1.Y - st1.Y * vertexEdge2.Y) * r,
-                                    (st2.Y * vertexEdge1.Z - st2.Y * vertexEdge2.Z) * r);
+	            if (!denom.EqualsEpsilon(0))
+	            {
+		            r = 1.0f / denom;
+	            }
+				
+	            var tangent = new Vector3((deltaUV2.Y * deltaPos1.X - deltaUV1.Y * deltaPos2.X) * r,
+	                                      (deltaUV2.Y * deltaPos1.Y - deltaUV1.Y * deltaPos2.Y) * r,
+	                                      (deltaUV2.Y * deltaPos1.Z - deltaUV1.Y * deltaPos2.Z) * r);
 
-                var t = new Vector3((st2.X * vertexEdge2.X - st1.X * vertexEdge1.X) * r,
-                                    (st2.X * vertexEdge2.Y - st1.X * vertexEdge1.Y) * r,
-                                    (st2.X * vertexEdge2.Z - st1.X * vertexEdge1.Z) * r);
+				var biTangent = new Vector3((deltaUV1.X * deltaPos2.X - deltaUV2.X * deltaPos1.X) * r,
+	                                        (deltaUV1.X * deltaPos2.Y - deltaUV2.X * deltaPos1.Y) * r,
+	                                        (deltaUV1.X * deltaPos2.Z - deltaUV2.X * deltaPos1.Z) * r);
 
-                Vector3.Add(ref tanData[index1], ref s, out tanData[index1]);
-                Vector3.Add(ref tanData[index2], ref s, out tanData[index2]);
-                Vector3.Add(ref tanData[index3], ref s, out tanData[index3]);
+                Vector3.Add(ref tanData[index1], ref tangent, out tanData[index1]);
+                Vector3.Add(ref tanData[index2], ref tangent, out tanData[index2]);
+                Vector3.Add(ref tanData[index3], ref tangent, out tanData[index3]);
 
-                Vector3.Add(ref biTanData[index1], ref t, out biTanData[index1]);
-                Vector3.Add(ref biTanData[index2], ref t, out biTanData[index2]);
-                Vector3.Add(ref biTanData[index3], ref t, out biTanData[index3]);
+                Vector3.Add(ref biTanData[index1], ref biTangent, out biTanData[index1]);
+                Vector3.Add(ref biTanData[index2], ref biTangent, out biTanData[index2]);
+                Vector3.Add(ref biTanData[index3], ref biTangent, out biTanData[index3]);
             }
 
             for (int i = 0; i < VertexCount; ++i)
@@ -160,9 +183,9 @@ namespace GorgonLibrary.Graphics.Example
                 Vector3 cross;
                 float dot;
 
-                Vector3.Subtract(ref tanData[i], ref vertex.Normal, out tangent);
-                Vector3.Dot(ref vertex.Normal, ref tanData[i], out dot);
-                Vector3.Multiply(ref tangent, dot, out tangent);
+				Vector3.Dot(ref vertex.Normal, ref tanData[i], out dot);
+				Vector3.Multiply(ref vertex.Normal, dot, out tangent);
+				Vector3.Subtract(ref tanData[i], ref tangent, out tangent);
                 Vector3.Normalize(ref tangent, out tangent);
 
                 Vector3.Cross(ref vertex.Normal, ref tanData[i], out cross);

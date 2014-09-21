@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		[InputElement(2, "TEXCOORD")]
 		public Vector2 UV;
-
+		
         /// <summary>
         /// The tangent vector.
         /// </summary>

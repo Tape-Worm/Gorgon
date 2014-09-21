@@ -38,16 +38,8 @@ using Matrix = SlimMath.Matrix;
 namespace GorgonLibrary.Graphics.Example
 {
 	class Triangle
-		: MoveableMesh, IPrimitive, IDisposable
+		: MoveableMesh
 	{
-		#region Variables.
-		// Flag to indicate that the object is disposed.
-		private bool _disposed;
-		#endregion
-
-        #region Properties.
-        #endregion
-
         #region Constructor/Destructor.
         /// <summary>
 		/// Initializes a new instance of the <see cref="Triangle"/> class.
@@ -59,6 +51,14 @@ namespace GorgonLibrary.Graphics.Example
 		public Triangle(GorgonGraphics graphics, Vertex3D point1, Vertex3D point2, Vertex3D point3)
 		{
 			PrimitiveType = PrimitiveType.TriangleList;
+	        VertexCount = 3;
+	        IndexCount = 3;
+	        TriangleCount = 1;
+			
+			point1.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+			point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+			point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
+
 			VertexBuffer = graphics.Buffers.CreateVertexBuffer("TriVB",
 			                                                   new[]
 			                                                   {
@@ -75,104 +75,6 @@ namespace GorgonLibrary.Graphics.Example
 				                                                  2
 			                                                  }, BufferUsage.Immutable);
 		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (IndexBuffer != null)
-				{
-					IndexBuffer.Dispose();
-				}
-
-				if (VertexBuffer != null)
-				{
-					VertexBuffer.Dispose();
-				}
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region IPrimitive Members
-		/// <summary>
-		/// Property to return the type of primitive used to draw the object.
-		/// </summary>
-		public PrimitiveType PrimitiveType
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the number of vertices.
-		/// </summary>
-		public int VertexCount
-		{
-			get
-			{
-				return 3;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the number of indices.
-		/// </summary>
-		public int IndexCount
-		{
-			get
-			{
-				return 3;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the vertex buffer.
-		/// </summary>
-		public GorgonVertexBuffer VertexBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the index buffer.
-		/// </summary>
-		public GorgonIndexBuffer IndexBuffer
-		{
-			get;
-			private set;
-		}
-
-        /// <summary>
-        /// Property to set or return the texture to use.
-        /// </summary>
-	    public GorgonTexture2D Texture
-	    {
-	        get;
-	        set;
-	    }
 		#endregion
 	}
 }

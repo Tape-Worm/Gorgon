@@ -61,6 +61,26 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] earthbump1k_NRM {
+            get {
+                object obj = ResourceManager.GetObject("earthbump1k_NRM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap earthcloudmap {
+            get {
+                object obj = ResourceManager.GetObject("earthcloudmap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap earthmap1k {
@@ -71,9 +91,43 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap earthspec1k {
+            get {
+                object obj = ResourceManager.GetObject("earthspec1k", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Rain_Height_NRM {
+            get {
+                object obj = ResourceManager.GetObject("Rain_Height_NRM", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Rain_Height_SPEC {
+            get {
+                object obj = ResourceManager.GetObject("Rain_Height_SPEC", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to // Our default texture and sampler.
         ///Texture2D _texture : register(t0);
+        ///Texture2D _normalTexture : register(t1); 
+        ///Texture2D _specTexture : register(t2); 
         ///SamplerState _sampler : register(s0);
+        ///SamplerState _normalSampler : register(s1);
+        ///SamplerState _specSampler : register(s2);
         ///
         ///// The transformation matrices.
         ///cbuffer ViewProjectionData : register(b0)
@@ -86,18 +140,7 @@ namespace GorgonLibrary.Graphics.Example.Properties {
         ///// The world matrix.
         ///cbuffer WorldMatrix : register(b1)
         ///{
-        ///	float4x4 World;
-        ///}
-        ///
-        ///// Camera data.
-        ///cbuffer Camera : register(b0)
-        ///{
-        ///	float3 CameraPosition;
-        ///	float3 CameraLookAt;
-        ///	float3 CameraUp;
-        ///}
-        ///
-        ///// The light used for lighting calculat [rest of string was truncated]&quot;;.
+        ///	float4x4 Wor [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Shaders {
             get {

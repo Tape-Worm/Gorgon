@@ -36,6 +36,7 @@ using System.Windows.Forms.VisualStyles;
 using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
@@ -62,6 +63,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonInputLayout _normalVertexLayout;
 		// The pixel shader.
 		private static GorgonPixelShader _pixelShader;
+		// The pixel shader.
+		private static GorgonPixelShader _bumpShader;
 		// The vertex shader.
 		private static GorgonVertexShader _vertexShader;
 		// The pixel shader.
@@ -78,6 +81,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static Cube _cube;
 		// Sphere primitive.
 		private static Sphere _sphere;
+		// Sphere primitive.
+		private static Sphere _clouds;
 		// Icosphere primitive.
 		private static IcoSphere _icoSphere;
 		// Light for our primitives.
@@ -88,6 +93,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonTexture2D _earf;
         // Rotation value.
 	    private static float _objRotation;
+		// Rotation value.
+		private static float _cloudRotation;
 		// Input factory.
 		private static GorgonInputFactory _input;
 		// Keyboard interface.
@@ -106,6 +113,20 @@ namespace GorgonLibrary.Graphics.Example
 		private static bool _lock;
 		// Mouse sensitivity.
 		private static float _sensitivity = 0.5f;
+		// Normal map.
+		private static GorgonTexture2D _normalMap;
+		// Normal map.
+		private static GorgonTexture2D _normalEarfMap;
+		// Spec map.
+		private static GorgonTexture2D _specMap;
+		// Spec map.
+		private static GorgonTexture2D _specEarfMap;
+		// CLoud map.
+		private static GorgonTexture2D _cloudMap;
+		// Offset buffer for UV mapping.
+		private static GorgonConstantBuffer _uvOffsetBuffer;
+		// UV offset.
+		private static Vector2 _uvOffset;
 
 		/// <summary>
 		/// Main application loop.
@@ -117,7 +138,13 @@ namespace GorgonLibrary.Graphics.Example
 
 			_swapChain.Clear(Color.CornflowerBlue, 1.0f);
 
+			_cloudRotation += 2.0f * GorgonTiming.Delta;
 		    _objRotation += 50.0f * GorgonTiming.Delta;
+
+			if (_cloudRotation > 359.9f)
+			{
+				_cloudRotation -= 359.9f;
+			}
 
 		    if (_objRotation > 359.9f)
 		    {
@@ -127,11 +154,36 @@ namespace GorgonLibrary.Graphics.Example
 			ProcessKeys();
 
             //_triangle.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
-            
-		    world = _triangle.World;
-            _wvp.UpdateWorldMatrix(ref world);
+			var defaultOffset = Vector2.Zero;
 
-            _graphics.Shaders.PixelShader.Resources[0] = _triangle.Texture;
+			//_cube.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
+			world = _cube.World;
+			_wvp.UpdateWorldMatrix(ref world);
+
+			_graphics.Shaders.PixelShader.Current = _bumpShader;
+			_graphics.Shaders.PixelShader.Resources[0] = _cube.Texture;
+			_graphics.Shaders.PixelShader.Resources[1] = _normalMap;
+			_graphics.Shaders.PixelShader.Resources[2] = _specMap;
+
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_cube.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _cube.IndexBuffer;
+			_graphics.Input.PrimitiveType = _cube.PrimitiveType;
+
+			_uvOffsetBuffer.Update(ref _uvOffset);
+
+			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
+
+			_uvOffset.Y -= 0.125f * GorgonTiming.Delta;
+
+			if (_uvOffset.Y < 0.0f)
+			{
+				_uvOffset.Y = 1.0f + _uvOffset.Y;
+			}
+
+			world = _triangle.World;
+			_wvp.UpdateWorldMatrix(ref world);
+
+			_graphics.Shaders.PixelShader.Resources[0] = _triangle.Texture;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_triangle.VertexBuffer, Vertex3D.Size);
 			_graphics.Input.IndexBuffer = _triangle.IndexBuffer;
 			_graphics.Input.PrimitiveType = _triangle.PrimitiveType;
@@ -148,24 +200,45 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Input.PrimitiveType = _plane.PrimitiveType;
 
 			_graphics.Output.DrawIndexed(0, 0, _plane.IndexCount);
+			
+			_uvOffsetBuffer.Update(ref defaultOffset);
 
-			_cube.Rotation = new Vector3(_objRotation, _objRotation, _objRotation);
-			world = _cube.World;
+			var worldRot = _icoSphere.Rotation;
+			worldRot.Y += 4.0f * GorgonTiming.Delta;
+			_icoSphere.Rotation = worldRot;
+			world = _icoSphere.World;
+			_wvp.UpdateWorldMatrix(ref world);
+			_graphics.Shaders.PixelShader.Resources[0] = _icoSphere.Texture;
+			_graphics.Shaders.PixelShader.Resources[1] = _normalEarfMap;
+			_graphics.Shaders.PixelShader.Resources[2] = _specEarfMap;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_icoSphere.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _icoSphere.IndexBuffer;
+			_graphics.Input.PrimitiveType = _icoSphere.PrimitiveType;
+
+			_graphics.Output.DrawIndexed(0, 0, _icoSphere.IndexCount);
+			
+			_graphics.Shaders.PixelShader.Current = _pixelShader;
+			_graphics.Shaders.PixelShader.Resources[0] = _clouds.Texture;
+			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_clouds.VertexBuffer, Vertex3D.Size);
+			_graphics.Input.IndexBuffer = _clouds.IndexBuffer;
+			_graphics.Input.PrimitiveType = _clouds.PrimitiveType;
+
+			_clouds.Rotation = new Vector3(0, _cloudRotation, 0);
+			world = _clouds.World;
 			_wvp.UpdateWorldMatrix(ref world);
 
-			_graphics.Shaders.PixelShader.Resources[0] = _cube.Texture;
-			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_cube.VertexBuffer, Vertex3D.Size);
-			_graphics.Input.IndexBuffer = _cube.IndexBuffer;
-			_graphics.Input.PrimitiveType = _cube.PrimitiveType;
+			_graphics.Output.BlendingState.States = GorgonBlendStates.AdditiveBlending;
 
-			_graphics.Output.DrawIndexed(0, 0, _cube.IndexCount);
+			_graphics.Output.DrawIndexed(0, 0, _clouds.IndexCount);
+
+			_graphics.Output.BlendingState.States = GorgonBlendStates.NoBlending;
 
 			_yPos = (_objRotation.Radians().Sin().Abs() * 2.0f) - 1.10f;
 			_sphere.Position = new Vector3(-2.0f, _yPos, 0.75f);
 			_sphere.Rotation = new Vector3(_objRotation, _objRotation, 0);
 			world = _sphere.World;
 			_wvp.UpdateWorldMatrix(ref world);
-
+			
 			_graphics.Shaders.PixelShader.Resources[0] = _sphere.Texture;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_sphere.VertexBuffer, Vertex3D.Size);
 			_graphics.Input.IndexBuffer = _sphere.IndexBuffer;
@@ -188,15 +261,6 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Shaders.PixelShader.Current = _pixelShader;
 			_graphics.Shaders.VertexShader.Current = _vertexShader;
 			
-			_icoSphere.Rotation = new Vector3(0, _objRotation, 0);
-			world = _icoSphere.World;
-			_wvp.UpdateWorldMatrix(ref world);
-			_graphics.Shaders.PixelShader.Resources[0] = _icoSphere.Texture;
-			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_icoSphere.VertexBuffer, Vertex3D.Size);
-			_graphics.Input.IndexBuffer = _icoSphere.IndexBuffer;
-			_graphics.Input.PrimitiveType = _icoSphere.PrimitiveType;
-
-			_graphics.Output.DrawIndexed(0, 0, _icoSphere.IndexCount);
 
 			var state = _renderer2D.Begin2D();
 			_renderer2D.Drawing.DrawString(_font,
@@ -379,6 +443,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_vertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "PrimVS", Resources.Shaders);
 			_pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "PrimPS", Resources.Shaders);
+			_bumpShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "PrimPSBump", Resources.Shaders);
 			_normalVertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("NormalVertexShader", "NormalVS", Resources.Shaders);
 			_normalPixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("NormalPixelShader", "NormalPS", Resources.Shaders);
 			_vertexLayout = _graphics.Input.CreateInputLayout("Vertex3D", typeof(Vertex3D), _vertexShader);
@@ -402,6 +467,11 @@ namespace GorgonLibrary.Graphics.Example
 
 		    _texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("UVTexture", Resources.UV);
 			_earf = _graphics.Textures.CreateTexture<GorgonTexture2D>("Earf", Resources.earthmap1k);
+			_normalMap = _graphics.Textures.FromMemory<GorgonTexture2D>("RainNRM", Resources.Rain_Height_NRM, new GorgonCodecDDS());
+			_normalEarfMap = _graphics.Textures.FromMemory<GorgonTexture2D>("EarfNRM", Resources.earthbump1k_NRM, new GorgonCodecDDS());
+			_specMap = _graphics.Textures.FromMemory<GorgonTexture2D>("RainSPC", Resources.Rain_Height_SPEC, new GorgonCodecDDS());
+			_specEarfMap = _graphics.Textures.CreateTexture<GorgonTexture2D>("EarfSPC", Resources.earthspec1k);
+			_cloudMap = _graphics.Textures.CreateTexture<GorgonTexture2D>("EarfClouds", Resources.earthcloudmap);
 
 			var depth = new GorgonDepthStencilStates
 			            {
@@ -459,7 +529,7 @@ namespace GorgonLibrary.Graphics.Example
 						 Texture = _texture
 			         };
 
-			_cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(45.0f, 0, 0), 8, 8)
+			_cube = new Cube(_graphics, new Vector3(1, 1, 1), new RectangleF(0, 0, 1.0f, 1.0f), new Vector3(45.0f, 0, 0), 1, 1)
 			        {
 				        Position = new Vector3(0, 0, 1.5f),
 				        Texture = _texture
@@ -469,6 +539,12 @@ namespace GorgonLibrary.Graphics.Example
 			          {
 				          Position = new Vector3(-2.0f, 1.0f, 0.75f),
 				          Texture = _earf
+			          };
+
+			_clouds = new Sphere(_graphics, 5.1f, new RectangleF(0.0f, 0.0f, 1.0f, 1.0f), Vector3.Zero, 32, 32)
+			          {
+				          Position = new Vector3(10, 2, 9.5f),
+				          Texture = _cloudMap
 			          };
 
 			_icoSphere = new IcoSphere(_graphics, 5.0f, new RectangleF(0, 0, 1, 1), Vector3.Zero, 3)
@@ -486,6 +562,27 @@ namespace GorgonLibrary.Graphics.Example
 																   DepthAddressing = TextureAddressing.Wrap,
 																   ComparisonFunction = ComparisonOperators.Always
 			                                                   };
+			_graphics.Shaders.PixelShader.TextureSamplers[2] = new GorgonTextureSamplerStates
+			{
+				TextureFilter = TextureFilter.Linear,
+				HorizontalAddressing = TextureAddressing.Wrap,
+				VerticalAddressing = TextureAddressing.Wrap,
+				DepthAddressing = TextureAddressing.Wrap,
+				ComparisonFunction = ComparisonOperators.Always
+			};
+
+			_graphics.Shaders.PixelShader.TextureSamplers[1] = new GorgonTextureSamplerStates
+			{
+				TextureFilter = TextureFilter.Linear,
+				HorizontalAddressing = TextureAddressing.Wrap,
+				VerticalAddressing = TextureAddressing.Wrap,
+				DepthAddressing = TextureAddressing.Wrap,
+				ComparisonFunction = ComparisonOperators.Always
+			};
+
+			_uvOffsetBuffer = _graphics.Buffers.CreateConstantBuffer("uvOffset", ref _uvOffset, BufferUsage.Default);
+
+			_graphics.Shaders.PixelShader.ConstantBuffers[2] = _uvOffsetBuffer;
 
 			_light = new Light(_graphics);
 			var lightPosition = new Vector3(1.0f, 1.0f, -1.0f);
@@ -588,6 +685,41 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			finally
 			{
+				if (_uvOffsetBuffer != null)
+				{
+					_uvOffsetBuffer.Dispose();
+				}
+
+				if (_normalEarfMap != null)
+				{
+					_normalEarfMap.Dispose();
+				}
+
+				if (_normalMap != null)
+				{
+					_normalMap.Dispose();
+				}
+
+				if (_specEarfMap != null)
+				{
+					_specEarfMap.Dispose();
+				}
+
+				if (_specMap != null)
+				{
+					_specMap.Dispose();
+				}
+
+				if (_cloudMap != null)
+				{
+					_cloudMap.Dispose();
+				}
+
+				if (_clouds != null)
+				{
+					_clouds.Dispose();
+				}
+
 				if (_sphere != null)
 				{
 					_sphere.Dispose();
