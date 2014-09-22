@@ -298,7 +298,7 @@ namespace GorgonLibrary.Graphics.Example
 			                                             GorgonTiming.FPS,
 			                                             GorgonTiming.Delta * 1000,
 			                                             _cameraRotation,
-			                                             (_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount),
+			                                             (_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) + (_clouds.TriangleCount),
 			                                             _mouse.Position.X,
 			                                             _mouse.Position.Y,
 														 _sensitivity),
