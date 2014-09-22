@@ -76,6 +76,7 @@ namespace GorgonLibrary.Examples
 	    private static GorgonSprite[] _carouselSprites;                             // Carousel sprites.
 	    private static Point _startDrag;                                            // Starting drag point.
 	    private static bool _inDrag;                                                // Flag to indicate that we're in a drag.
+	    private static MainWindow _ui;                                              // The user interface element for the application.
 		#endregion
 
 		#region Properties.
@@ -178,6 +179,10 @@ namespace GorgonLibrary.Examples
 		/// <returns></returns>
 		private static bool Idle()
 		{
+            _ui.Paint();
+
+            _renderer.Render();
+		    return true;
             Screen currentScreen = Screen.FromControl(_form);
             var postion = new Vector2(currentScreen.WorkingArea.Left - _form.Left, currentScreen.WorkingArea.Top - _form.Top);
             var size = new Vector2(currentScreen.WorkingArea.Width, currentScreen.WorkingArea.Height);
@@ -339,7 +344,7 @@ namespace GorgonLibrary.Examples
 				_renderer.Effects.GaussianBlur.FreeResources();
 			}
 		}
-			
+
 		/// <summary>
 		/// Function used to initialize the launcher.
 		/// </summary>
@@ -349,7 +354,7 @@ namespace GorgonLibrary.Examples
 
 			_graphics = new GorgonGraphics();
 
-			_marlettFont = _graphics.Fonts.CreateFont("Marlett",
+/*			_marlettFont = _graphics.Fonts.CreateFont("Marlett",
 				new GorgonFontSettings
 				{
 					FontFamilyName = "Marlett",
@@ -378,7 +383,7 @@ namespace GorgonLibrary.Examples
 					Width = _form.Width / 2,
 					Height = _form.Height / 2,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
-				});
+				});*/
 
 			_screen = _graphics.Output.CreateSwapChain("Screen",
 				new GorgonSwapChainSettings
@@ -390,6 +395,9 @@ namespace GorgonLibrary.Examples
 
 			_renderer = _graphics.Output.Create2DRenderer(_screen);
 			_renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+
+            _ui = new MainWindow(_renderer, _form.DisplayRectangle);
+		    return;
 
             _carouselImages = _graphics.Textures.FromFile<GorgonTexture2D>("Common", @"..\..\..\..\Resources\Examples\Common.png", new GorgonCodecPNG());
             _carouselSprites = new GorgonSprite[4];
@@ -599,11 +607,21 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
+			    if (_ui != null)
+			    {
+			        _ui.Dispose();
+			    }
+
 				if (_originalBackground != null)
 				{
 					_originalBackground.Dispose();
 					_originalBackground = null;
 				}
+
+			    if (_renderer != null)
+			    {
+			        _renderer.Dispose();
+			    }
 
 				if (_graphics != null)
 				{
