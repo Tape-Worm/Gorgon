@@ -26,7 +26,7 @@
 
 namespace GorgonLibrary.Examples
 {
-	partial class formMain
+	partial class FormMain
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
 			this.panelContent = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
 			// 
