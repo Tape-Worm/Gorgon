@@ -452,7 +452,7 @@
 			this.buttonCharacterList.UseVisualStyleBackColor = false;
 			this.buttonCharacterList.Click += new System.EventHandler(this.buttonCharacterList_Click);
 			// 
-			// formNewFont
+			// FormNewFont
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -486,10 +486,11 @@
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.InactiveBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "formNewFont";
+			this.Name = "FormNewFont";
 			this.Padding = new System.Windows.Forms.Padding(1);
 			this.Resizable = false;
 			this.ResizeHandleSize = 1;

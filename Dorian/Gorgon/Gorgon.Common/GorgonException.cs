@@ -122,7 +122,8 @@ namespace GorgonLibrary
 		    string indicator = string.Empty;	// Inner exception indicator.
 			string branch = string.Empty;		// Branching character.
 
-			if (Log == null)
+			if ((Log == null)
+				|| (Log.IsClosed))
 			{
 				return;
 			}

@@ -95,7 +95,8 @@ namespace GorgonLibrary.UI
 		private bool _showWindowCaption = true;
 		private int _borderWidth = 1;
 		private bool _border;
-		private Color _borderColor = Color.Black;
+		private Color _borderColor = Color.FromKnownColor(KnownColor.ActiveBorder);
+		private Color _inactiveBorderColor = Color.FromKnownColor(KnownColor.InactiveBorder);
 		private FormWindowState _windowState = FormWindowState.Normal;
 		private FormWindowState _prevMinState = FormWindowState.Normal;
 		private Rectangle _restoreRect;
@@ -154,6 +155,24 @@ namespace GorgonLibrary.UI
 			set
 			{
 				_borderColor = value;
+				Refresh();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color of the border when the window is inactive.
+		/// </summary>
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_INACTIVE_BORDERCOLOR_DESC"),
+		RefreshProperties(RefreshProperties.All)]
+		public Color InactiveBorderColor
+		{
+			get
+			{
+				return _inactiveBorderColor;
+			}
+			set
+			{
+				_inactiveBorderColor = value;
 				Refresh();
 			}
 		}
@@ -801,10 +820,10 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Deactivate(object sender, EventArgs e)
 		{
-			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelClose.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
+			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
+			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
+			labelClose.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
 			using (var graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
@@ -1024,7 +1043,7 @@ namespace GorgonLibrary.UI
 				return;
 			}
 
-			using (var pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
+			using (var pen = new Pen(ActiveForm == this ? BorderColor : InactiveBorderColor, _borderWidth))
 			{
 				graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 			}

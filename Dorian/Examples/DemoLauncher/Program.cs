@@ -25,16 +25,8 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
 using GorgonLibrary.UI;
-using SlimMath;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Examples
 {
@@ -54,7 +46,7 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
-				Gorgon.Run(new AppContext());
+				Application.Run(new AppContext());
 			}
 			catch (Exception ex)
 			{

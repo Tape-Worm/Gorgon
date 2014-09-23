@@ -76,7 +76,7 @@
 			this.buttonCancel.UseVisualStyleBackColor = false;
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
 			// 
-			// formProcess
+			// FormProcess
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -90,9 +90,10 @@
 			this.Controls.Add(this.labelStatus);
 			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.InactiveBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "formProcess";
+			this.Name = "FormProcess";
 			this.Padding = new System.Windows.Forms.Padding(1);
 			this.Resizable = false;
 			this.ShowInTaskbar = false;

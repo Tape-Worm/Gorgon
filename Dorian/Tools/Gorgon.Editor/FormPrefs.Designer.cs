@@ -123,7 +123,7 @@
 			this.tabPrefs.TabPageCloseIconColor = System.Drawing.Color.White;
 			this.tabPrefs.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.Default;
 			// 
-			// formPrefs
+			// FormPreferences
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -137,10 +137,11 @@
 			this.Controls.Add(this.panel1);
 			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.InactiveBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.Margin = new System.Windows.Forms.Padding(5, 8, 5, 8);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "formPrefs";
+			this.Name = "FormPreferences";
 			this.Padding = new System.Windows.Forms.Padding(1);
 			this.Resizable = false;
 			this.ShowInTaskbar = false;
