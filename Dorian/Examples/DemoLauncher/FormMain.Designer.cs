@@ -55,44 +55,51 @@ namespace GorgonLibrary.Examples
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-			this.panelContent = new System.Windows.Forms.Panel();
+			this.tabCategories = new KRBTabControl.KRBTabControl();
 			this.SuspendLayout();
 			// 
-			// panelContent
+			// tabCategories
 			// 
-			this.panelContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+			this.tabCategories.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.panelContent.AutoScroll = true;
-			this.panelContent.BackColor = System.Drawing.Color.White;
-			this.panelContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelContent.Location = new System.Drawing.Point(6, 34);
-			this.panelContent.Name = "panelContent";
-			this.panelContent.Size = new System.Drawing.Size(1268, 760);
-			this.panelContent.TabIndex = 5;
+			this.tabCategories.BackgroundColor = System.Drawing.SystemColors.Control;
+			this.tabCategories.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
+			this.tabCategories.BorderColor = System.Drawing.SystemColors.Control;
+			this.tabCategories.IsCaptionVisible = false;
+			this.tabCategories.IsDrawHeader = false;
+			this.tabCategories.IsUserInteraction = false;
+			this.tabCategories.ItemSize = new System.Drawing.Size(0, 26);
+			this.tabCategories.Location = new System.Drawing.Point(6, 36);
+			this.tabCategories.Name = "tabCategories";
+			this.tabCategories.Size = new System.Drawing.Size(1268, 758);
+			this.tabCategories.TabGradient.ColorEnd = System.Drawing.Color.White;
+			this.tabCategories.TabIndex = 0;
+			this.tabCategories.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.Default;
 			// 
-			// formMain
+			// FormMain
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.Border = true;
-			this.BorderColor = System.Drawing.Color.Gray;
+			this.BorderColor = System.Drawing.SystemColors.ActiveBorder;
 			this.ClientSize = new System.Drawing.Size(1280, 800);
-			this.Controls.Add(this.panelContent);
+			this.Controls.Add(this.tabCategories);
 			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.InactiveBorderColor = System.Drawing.SystemColors.InactiveBorder;
 			this.Margin = new System.Windows.Forms.Padding(5, 8, 5, 8);
-			this.Name = "formMain";
+			this.Name = "FormMain";
 			this.Padding = new System.Windows.Forms.Padding(6);
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Gorgon";
-			this.Controls.SetChildIndex(this.panelContent, 0);
+			this.Text = "Gorgon - Examples";
+			this.Controls.SetChildIndex(this.tabCategories, 0);
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelContent;
+		private KRBTabControl.KRBTabControl tabCategories;
 	}
 }
 

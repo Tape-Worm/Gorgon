@@ -25,17 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
@@ -122,7 +114,7 @@ namespace GorgonLibrary.Examples
 				}
 
 				// Signal quit.
-				Gorgon.Quit();
+				Application.Exit();
 			}
 			finally
 			{

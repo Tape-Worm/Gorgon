@@ -567,7 +567,7 @@ namespace GorgonLibrary.Editor
 			this.panel1.Size = new System.Drawing.Size(795, 38);
 			this.panel1.TabIndex = 11;
 			// 
-			// formEditorFileSelector
+			// FormEditorFileSelector
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -580,10 +580,11 @@ namespace GorgonLibrary.Editor
 			this.Controls.Add(this.splitMainPanes);
 			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.InactiveBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.KeyPreview = true;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "formEditorFileSelector";
+			this.Name = "FormEditorFileSelector";
 			this.Padding = new System.Windows.Forms.Padding(4);
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
