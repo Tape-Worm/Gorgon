@@ -54,29 +54,45 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
-            this.SuspendLayout();
-            // 
-            // formMain
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 262);
-            this.ControlBox = false;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "formMain";
-            this.Opacity = 0D;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Gorgon";
-            this.ResumeLayout(false);
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+			this.panelContent = new System.Windows.Forms.Panel();
+			this.SuspendLayout();
+			// 
+			// panelContent
+			// 
+			this.panelContent.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.panelContent.AutoScroll = true;
+			this.panelContent.BackColor = System.Drawing.Color.White;
+			this.panelContent.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelContent.Location = new System.Drawing.Point(6, 34);
+			this.panelContent.Name = "panelContent";
+			this.panelContent.Size = new System.Drawing.Size(1268, 760);
+			this.panelContent.TabIndex = 5;
+			// 
+			// formMain
+			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.Border = true;
+			this.BorderColor = System.Drawing.Color.Gray;
+			this.ClientSize = new System.Drawing.Size(1280, 800);
+			this.Controls.Add(this.panelContent);
+			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Margin = new System.Windows.Forms.Padding(5, 8, 5, 8);
+			this.Name = "formMain";
+			this.Padding = new System.Windows.Forms.Padding(6);
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.Text = "Gorgon";
+			this.Controls.SetChildIndex(this.panelContent, 0);
+			this.ResumeLayout(false);
 
 		}
 
 		#endregion
+
+		private System.Windows.Forms.Panel panelContent;
 	}
 }
 

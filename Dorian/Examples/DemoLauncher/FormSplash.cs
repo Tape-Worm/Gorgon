@@ -20,38 +20,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, August 26, 2013 10:57:50 PM
+// Created: Monday, September 23, 2013 12:02:10 AM
 // 
 #endregion
 
+using System;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using GorgonLibrary.Examples.Properties;
 
 namespace GorgonLibrary.Examples
 {
 	/// <summary>
-	/// Main interface.
+	/// Splash screen form.
 	/// </summary>
-	public partial class formMain 
-		: ZuneForm
+	partial class FormSplash : Form
 	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
 
+			if (e.CloseReason == CloseReason.UserClosing)
+			{
+				e.Cancel = true;
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			labelVersion.Text = Resources.GOR_PLEASE_WAIT;
+		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain"/> class.
+		/// Initializes a new instance of the <see cref="FormSplash"/> class.
 		/// </summary>
-		public formMain()
+		public FormSplash()
 		{
 			InitializeComponent();
 		}
