@@ -32,7 +32,7 @@ namespace GorgonLibrary.Examples
 	/// <summary>
 	/// Main interface.
 	/// </summary>
-	public partial class formMain 
+	public partial class FormMain 
 		: ZuneForm
 	{
 		#region Variables.
@@ -49,9 +49,9 @@ namespace GorgonLibrary.Examples
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formMain"/> class.
+		/// Initializes a new instance of the <see cref="FormMain"/> class.
 		/// </summary>
-		public formMain()
+		public FormMain()
 		{
 			InitializeComponent();
 		}
