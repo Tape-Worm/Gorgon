@@ -110,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <Content Include="Images\2D\E0_128x128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Examples.xml" />
     <None Include="Resources\Default_128x128.png" />
     <None Include="Images\GorgonLibrary.Common\E4_128x128.png">
