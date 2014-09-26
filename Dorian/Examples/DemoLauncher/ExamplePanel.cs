@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Examples.Properties;
 
@@ -186,8 +187,18 @@ namespace GorgonLibrary.Examples
 					return;
 				}
 
-				var processInfo = new ProcessStartInfo(_example.ExePath);
-				Process process = Process.Start(processInfo);
+			    string exeDirectory = Path.GetDirectoryName(_example.ExePath);
+
+			    if (string.IsNullOrEmpty(exeDirectory))
+			    {
+			        exeDirectory = Application.StartupPath;
+			    }
+
+				var processInfo = new ProcessStartInfo(_example.ExePath)
+				                  {
+				                      WorkingDirectory = exeDirectory
+				                  };
+			    Process process = Process.Start(processInfo);
 
 				if (process == null)
 				{
