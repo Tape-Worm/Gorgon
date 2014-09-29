@@ -33,7 +33,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// Text editor window for the preview text.
 	/// </summary>
 	public partial class FormEditPreviewText 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Properties.
 		/// <summary>

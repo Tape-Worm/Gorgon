@@ -53,8 +53,6 @@ namespace GorgonLibrary.IO
         #endregion
 
         #region Variables.
-        // Lock object for synchronizing multiple threads.
-        private readonly static object _syncLock = new object();
         // Handlers to read our files with.
         private Dictionary<Type, Func<Stream, IReadOnlyDictionary<GorgonEditorDependency, object>, object>> _fileHandlers;
         // The XML document containing the meta data.
@@ -95,6 +93,7 @@ namespace GorgonLibrary.IO
         #endregion
 
         #region Methods.
+
         /// <summary>
         /// Function to retrieve the dependencies file and process it.
         /// </summary>
@@ -106,66 +105,64 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-            lock(_syncLock)
+            // If we've already loaded the file system meta data for this file system, then leave.
+            if (_metaDataFile != null)
             {
-                // If we've already loaded the file system meta data for this file system, then leave.
-                if (_metaDataFile != null)
-                {
-                    return;
-                }
-
-                GorgonFileSystemFileEntry file = FileSystem.GetFile(MetaDataFile);
-
-                if (file == null)
-                {
-                    _hasMetaData = false;
-                    return;
-                }
-
-                // Create and load the object.
-                using(Stream metaFile = file.OpenStream(false))
-                {
-                    _metaDataFile = XDocument.Load(metaFile);
-                }
-
-                XElement rootNode = _metaDataFile.Element(MetaDataRootName);
-
-                if (rootNode == null)
-                {
-                    _hasMetaData = false;
-                    return;
-                }
-
-                XElement dependencyNode = rootNode.Element(ContentDependencyFiles);
-
-                if (dependencyNode == null)
-                {
-                    _hasMetaData = false;
-                    return;
-                }
-
-                IEnumerable<XElement> fileNodes = dependencyNode.Elements(FileNode);
-                var dependencies = new Dictionary<string, GorgonEditorDependencyCollection>();
-
-                foreach (XElement fileNode in fileNodes)
-                {
-                    XAttribute path = fileNode.Attribute(NameAttr);
-
-                    if ((path == null)
-                        || (string.IsNullOrWhiteSpace(path.Value)))
-                    {
-                        continue;
-                    }
-
-                    dependencies.Add(path.Value,
-                                     GorgonEditorDependencyCollection
-                                         .Deserialize(fileNode.Elements(GorgonEditorDependency.DependencyNode)));
-                }
-
-                Dependencies = dependencies;
-                
-                _hasMetaData = Dependencies.Count > 0;    
+                return;
             }
+
+            GorgonFileSystemFileEntry file = FileSystem.GetFile(MetaDataFile);
+
+            if (file == null)
+            {
+                _hasMetaData = false;
+                return;
+            }
+
+            // Create and load the object.
+            using(Stream metaFile = file.OpenStream(false))
+            {
+                _metaDataFile = XDocument.Load(metaFile);
+            }
+
+            XElement rootNode = _metaDataFile.Element(MetaDataRootName);
+
+            if (rootNode == null)
+            {
+                _hasMetaData = false;
+                return;
+            }
+
+            XElement dependencyNode = rootNode.Element(ContentDependencyFiles);
+
+            if (dependencyNode == null)
+            {
+                _hasMetaData = false;
+                return;
+            }
+
+            IEnumerable<XElement> fileNodes = dependencyNode.Elements(FileNode);
+            var dependencies = new Dictionary<string, GorgonEditorDependencyCollection>();
+
+            // Lock here because we're updating a collection that's not thread safe.
+            foreach (XElement fileNode in fileNodes)
+            {
+                XAttribute path = fileNode.Attribute(NameAttr);
+
+                if ((path == null)
+                    || (string.IsNullOrWhiteSpace(path.Value)))
+                {
+                    continue;
+                }
+
+                dependencies.Add(path.Value,
+                                    GorgonEditorDependencyCollection
+                                        .Deserialize(fileNode.Elements(GorgonEditorDependency.DependencyNode)));
+            }
+
+            Dependencies = dependencies;
+
+            _hasMetaData = Dependencies.Count > 0;
         }
 
         /// <summary>

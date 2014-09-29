@@ -39,7 +39,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// Dialog to pick characters for conversion into bitmap glyphs.
 	/// </summary>
 	partial class FormCharacterPicker 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Variables.
 		private int _page;													// Page for characters.

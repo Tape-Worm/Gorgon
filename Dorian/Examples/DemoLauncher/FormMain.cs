@@ -36,7 +36,7 @@ namespace GorgonLibrary.Examples
 	/// Main interface.
 	/// </summary>
 	public partial class FormMain 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Variables.
 		// List of categories.

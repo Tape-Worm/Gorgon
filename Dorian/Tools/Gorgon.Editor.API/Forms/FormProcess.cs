@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor
 	/// A dialog used to indicate a time consuming action is taking place.
 	/// </summary>
 	partial class FormProcess 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Variables.
 		private bool _forceClose;					// Flag to indicate that we should force the window to shut down.

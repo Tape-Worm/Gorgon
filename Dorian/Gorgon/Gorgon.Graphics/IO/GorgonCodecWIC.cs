@@ -158,6 +158,11 @@ namespace GorgonLibrary.IO
 		private readonly string _codec = string.Empty;			// Codec name.
 		private readonly string _description = string.Empty;	// Codec description.
 		private int _actualArrayCount;							// Array count.
+
+        // Supported formats.
+	    private readonly BufferFormat[] _supportedFormats = {
+                                                                BufferFormat.R8G8B8A8_UIntNormal
+	                                                        };
 		#endregion
 
 		#region Properties
@@ -218,7 +223,62 @@ namespace GorgonLibrary.IO
 				return _description;
 			}
 		}
-		#endregion
+
+        /// <summary>
+        /// Property to return whether the image codec supports image arrays.
+        /// </summary>
+	    public override bool SupportsArray
+	    {
+	        get
+	        {
+	            return false;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports mip maps.
+        /// </summary>
+	    public override bool SupportsMipMaps
+	    {
+	        get
+	        {
+	            return false;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports a depth component for volume textures.
+        /// </summary>
+	    public override bool SupportsDepth
+	    {
+	        get
+	        {
+	            return false;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports cub maps.
+        /// </summary>
+	    public override bool SupportsCubeMaps
+	    {
+	        get
+	        {
+	            return false;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to return the data formats for the image.
+        /// </summary>
+        public override IEnumerable<BufferFormat> SupportedFormats
+        {
+            get
+            {
+                return _supportedFormats;
+            }
+        }
+	    #endregion
 
 		#region Methods.
 		/// <summary>

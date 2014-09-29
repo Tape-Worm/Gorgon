@@ -1,6 +1,6 @@
 ﻿namespace GorgonLibrary.UI
 {
-	partial class ZuneForm
+	partial class FlatForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -38,7 +38,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ZuneForm));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FlatForm));
 			this.labelClose = new System.Windows.Forms.Label();
 			this.labelMaxRestore = new System.Windows.Forms.Label();
 			this.labelMinimize = new System.Windows.Forms.Label();

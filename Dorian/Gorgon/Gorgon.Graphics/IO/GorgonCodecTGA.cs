@@ -103,6 +103,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
@@ -305,8 +306,32 @@ namespace GorgonLibrary.IO
         }
 		#endregion
 
-		#region Properties.
-		/// <summary>
+        #region Variables.
+        // List of supported image formats.
+        private BufferFormat[] _supportedFormats =
+        {
+            // 8 bit grayscale.
+            BufferFormat.R8_UIntNormal,
+            // 16 bit.
+            BufferFormat.B5G5R5A1_UIntNormal,
+            // 24 bit.
+            BufferFormat.R8G8B8A8_UIntNormal
+        };
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the data formats for the image.
+        /// </summary>
+        public override IEnumerable<BufferFormat> SupportedFormats
+        {
+            get
+            {
+                return _supportedFormats;
+            }
+        }
+
+        /// <summary>
 		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.
 		/// </summary>
 		/// <remarks>Setting this to TRUE will set all alpha values to an opaque value if the image does not contain an alpha value greater than 0 for any pixel.
@@ -344,7 +369,51 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Property to return whether the image codec supports image arrays.
+        /// </summary>
+        public override bool SupportsArray
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports mip maps.
+        /// </summary>
+        public override bool SupportsMipMaps
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports a depth component for volume textures.
+        /// </summary>
+        public override bool SupportsDepth
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports cub maps.
+        /// </summary>
+        public override bool SupportsCubeMaps
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
 		/// Function to read in the DDS header from a stream.
 		/// </summary>
 		/// <param name="stream">Stream containing the data.</param>
