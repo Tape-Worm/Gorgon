@@ -318,7 +318,47 @@ namespace GorgonLibrary.IO
 		{
 			get;
 		}
-		#endregion
+
+        /// <summary>
+        /// Property to return the data formats supported by the codec.
+        /// </summary>
+	    public abstract IEnumerable<BufferFormat> SupportedFormats
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports a depth component for volume textures.
+        /// </summary>
+	    public abstract bool SupportsDepth
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports image arrays.
+        /// </summary>
+	    public abstract bool SupportsArray
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports mip maps.
+        /// </summary>
+	    public abstract bool SupportsMipMaps
+	    {
+	        get;
+	    }
+
+        /// <summary>
+        /// Property to return whether the image codec supports cub maps.
+        /// </summary>
+	    public abstract bool SupportsCubeMaps
+	    {
+	        get;
+	    }
+	    #endregion
 
 		#region Methods.
 		/// <summary>

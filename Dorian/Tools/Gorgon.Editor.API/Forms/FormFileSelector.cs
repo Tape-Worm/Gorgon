@@ -49,7 +49,7 @@ namespace GorgonLibrary.Editor
 	/// A file selector window for retrieving files from the mounted scratch area.
 	/// </summary>
 	partial class FormEditorFileSelector 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Classes
 		/// <summary>

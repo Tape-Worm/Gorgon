@@ -34,7 +34,7 @@ namespace GorgonLibrary.Editor
     /// A dialog for selecting a color.
     /// </summary>
     public partial class ColorDialog 
-        : ZuneForm
+        : FlatForm
     {
         #region Variables.
 

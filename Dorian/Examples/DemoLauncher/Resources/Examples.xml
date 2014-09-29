@@ -23,7 +23,7 @@ Plug-ins allow for extensible application development.  For example, imagine wri
 Gorgon allows this along with functionality to check the signing for plug-ins to ensure some level of authenticity, and it will also allow multiple plug-in objects to exist within a single assembly.  This is handy when you don't want to distribute a ton of DLLs.
     </Example>
   </Category>
-  <Category name="2D">
+  <Category name="2D Renderer">
     <Example icon="0" caption="Balls" path="Gorgon.Renderers.2D\Balls\Bin\Debug\Balls.exe">Just some balls bouncing all over the screen.  This is used as a stress test to see how many sprites can be displayed, animated, blended and optionally, blurred at the same time.
     
 Note:  This example requires a minimum resoultion of 1280x800.  However, this may be changed by altering the ScreenWidth/ScreenHeight values in the Ball.exe.config file.

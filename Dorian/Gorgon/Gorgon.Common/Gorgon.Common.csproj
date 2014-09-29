@@ -102,6 +102,9 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gorgon.Editor.API">
+      <HintPath>..\..\Tools\Gorgon.Editor.API\obj\Debug\Gorgon.Editor.API.dll</HintPath>
+    </Reference>
     <Reference Include="Gorgon.MemoryAccess">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
@@ -204,6 +207,12 @@
     <Compile Include="UI\ConfirmationDialogEx.designer.cs">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\FlatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FlatForm.Designer.cs">
+      <DependentUpon>FlatForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\WarningDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -224,12 +233,6 @@
     <Compile Include="UI\GorgonSelectablePanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\ZuneForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\ZuneForm.Designer.cs">
-      <DependentUpon>ZuneForm.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -247,14 +250,14 @@
     <EmbeddedResource Include="UI\ConfirmationDialogEx.resx">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\FlatForm.resx">
+      <DependentUpon>FlatForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\WarningDialog.resx">
       <DependentUpon>WarningDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\ZuneForm.resx">
-      <DependentUpon>ZuneForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

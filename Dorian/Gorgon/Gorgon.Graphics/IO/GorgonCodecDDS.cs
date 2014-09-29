@@ -105,6 +105,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
@@ -698,9 +699,10 @@ namespace GorgonLibrary.IO
 			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
-        private readonly BufferFormat[] _formats;       // Buffer formats.
-		private int _actualDepth;						// Actual depth value.
-		private int _actualArrayCount;					// Actual array count.
+        private readonly BufferFormat[] _formats;                       // Buffer formats.
+        private readonly IEnumerable<BufferFormat> _supportedFormats;   // List of formats supported by the DDS codec.
+		private int _actualDepth;						                // Actual depth value.
+		private int _actualArrayCount;					                // Actual array count.
 		#endregion
 
 		#region Properties.
@@ -773,7 +775,62 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Property to return the data formats for the image.
+        /// </summary>
+        public override IEnumerable<BufferFormat> SupportedFormats
+        {
+            get
+            {
+                return _supportedFormats;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports image arrays.
+        /// </summary>
+        public override bool SupportsArray
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports mip maps.
+        /// </summary>
+        public override bool SupportsMipMaps
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports a depth component for volume textures.
+        /// </summary>
+        public override bool SupportsDepth
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Property to return whether the image codec supports cub maps.
+        /// </summary>
+        public override bool SupportsCubeMaps
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
 		/// Function to create a FOURCC value.
 		/// </summary>
 		/// <param name="c1">1st character.</param>
@@ -1933,6 +1990,11 @@ namespace GorgonLibrary.IO
 			Depth = 0;
 			CodecCommonExtensions = new[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+
+		    _supportedFormats = from format in _formats
+		                        let info = GorgonBufferFormatInfo.GetInfo(format)
+		                        where format != BufferFormat.Unknown && !info.IsTypeless
+		                        select format;
 
             LegacyConversionFlags = DDSFlags.None;
 			Palette = new GorgonColor[256];

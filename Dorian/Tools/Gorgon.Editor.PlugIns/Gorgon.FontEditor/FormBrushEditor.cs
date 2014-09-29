@@ -42,7 +42,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     /// An editor that will create a brush for a font.
     /// </summary>
     partial class FormBrushEditor 
-        : ZuneForm
+        : FlatForm
 	{
 		#region Classes.
 		/// <summary>

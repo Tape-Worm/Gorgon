@@ -39,9 +39,21 @@ using GorgonLibrary.Properties;
 namespace GorgonLibrary.UI
 {
 	/// <summary>
-	/// Mimics the Zune (and Visual Studio 2012) UI window.
+	/// A form that provides a flattened interface look.
 	/// </summary>
-	public partial class ZuneForm : Form
+	/// <remarks>
+	/// This is an overload to the standard windows form that mimics the flat style of the old Microsoft Zune application, and, to some degree, Windows 8 windows on 
+	/// operating systems that don't use flat style forms.
+	/// <para>
+    /// To use the form, merely create a new Windows Form in Visual Studio and then change the inheritance from <c>System.Windows.Forms.Form</c> to <c>GorgonLibrary.UI.FlatForm</c>. 
+    /// Once this is done the form will change to the flat style.
+	/// </para>
+	/// <para>
+	/// This form uses the client area of the window to handle the caption, and system buttons (close, minimize, etc...), so it is possible to add new buttons, images, etc.. into 
+	/// the caption of the window for a truly customized look.
+	/// </para>
+	/// </remarks>
+	public partial class FlatForm : Form
 	{
 		#region Enums.
 		/// <summary>
@@ -223,7 +235,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the size of the border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
@@ -258,7 +270,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
@@ -1078,9 +1090,9 @@ namespace GorgonLibrary.UI
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ZuneForm"/> class.
+		/// Initializes a new instance of the <see cref="FlatForm"/> class.
 		/// </summary>
-		public ZuneForm()
+		public FlatForm()
 		{
 			ResizeHandleSize = 6;
 			Resizable = true;

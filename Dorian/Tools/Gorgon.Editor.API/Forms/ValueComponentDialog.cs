@@ -35,7 +35,7 @@ namespace GorgonLibrary.Editor
 	/// Editor dialog for editing vector/point values.
 	/// </summary>
 	public partial class ValueComponentDialog 
-		: ZuneForm
+		: FlatForm
 	{
 		#region Variables.
 		private int _valueComponents = 1;

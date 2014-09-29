@@ -27,6 +27,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -43,8 +44,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #region Variables.
 	    private bool _disposed;													// Flag to indicate that the object was disposed.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
-        private readonly GorgonImageCodec _codec;								// Codec used for the image.
-	    private GorgonSwapChain _swap;											// The swap chain to display our texture.
+        private GorgonSwapChain _swap;											// The swap chain to display our texture.
+        private IImageSettings _imageSettings;                                  // The current settings for the image.
         #endregion
 
         #region Properties.
@@ -61,6 +62,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
+        [Browsable(false)]
         public override bool HasProperties
         {
             get
@@ -72,6 +74,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the type of content.
         /// </summary>
+        [Browsable(false)]
         public override string ContentType
         {
             get
@@ -83,12 +86,129 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return whether the content object supports a renderer interface.
         /// </summary>
+        [Browsable(false)]
         public override bool HasRenderer
         {
             get
             {
                 return true;
             }
+        }
+
+        /// <summary>
+        /// Property to set or return the format for the image.
+        /// </summary>
+        [TypeConverter(typeof(BufferFormatTypeConverter))]
+        public BufferFormat ImageFormat
+        {
+            get
+            {
+                return _imageSettings.Format;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the width of the image.
+        /// </summary>
+        public int Width
+        {
+            get
+            {
+                return _imageSettings.Width;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the height of the image.
+        /// </summary>
+        public int Height
+        {
+            get
+            {
+                return _imageSettings.Height;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the depth for a volume texture.
+        /// </summary>
+        public int Depth
+        {
+            get
+            {
+                return _imageSettings.Depth;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the number of mip maps in the image.
+        /// </summary>
+        public int MipCount
+        {
+            get
+            {
+                return _imageSettings.MipCount;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the number of array indices in the image.
+        /// </summary>
+        public int ArrayCount
+        {
+            get
+            {
+                return _imageSettings.ArrayCount;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the type of image.
+        /// </summary>
+        public ImageType ImageType
+        {
+            get
+            {
+                return _imageSettings.ImageType;
+            }
+            set
+            {
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to return the image codec used for this image.
+        /// </summary>
+        [Browsable(false)]
+        public GorgonImageCodec Codec
+        {
+            get;
+            private set;
         }
         #endregion
 
@@ -140,7 +260,54 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="stream">Stream containing the content data.</param>
         protected override void OnRead(Stream stream)
         {
-            Image = GorgonImageData.FromStream(stream, (int)stream.Length, _codec);
+            Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+            _imageSettings = Image.Settings;
+
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                // If we're running a feature level 9 device, then we have to disable these items
+                // because we cannot save an image.
+                DisableProperty("Width", true);
+                DisableProperty("Height", true);
+                DisableProperty("Depth", true);
+                DisableProperty("ImageType", true);
+                DisableProperty("ImageFormat", true);
+                DisableProperty("ArrayCount", true);
+                DisableProperty("MipCount", true);
+                return;
+            }
+
+            if (!Codec.SupportsArray)
+            {
+                DisableProperty("ArrayCount", true);
+            }
+
+            if (!Codec.SupportsDepth)
+            {
+                DisableProperty("Depth", true);
+            }
+
+            if (!Codec.SupportsMipMaps)
+            {
+                DisableProperty("MipCount", true);
+            }
+
+            if (Codec.SupportedFormats.Count() < 2)
+            {
+                DisableProperty("ImageFormat", true);
+            }
+
+            if (_imageSettings.ImageType == ImageType.Image1D)
+            {
+                DisableProperty("Height", true);
+                DisableProperty("Depth", true);
+            }
+
+            if ((_imageSettings.ImageType == ImageType.Image2D)
+                || (_imageSettings.ImageType == ImageType.ImageCube))
+            {
+                DisableProperty("Depth", true);
+            }
         }
 
         /// <summary>
@@ -274,9 +441,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="stream">The stream containing the file.</param>
 	    public void Load(string fileName, Stream stream)
 	    {
-			if (!_codec.IsReadable(stream))
+			if (!Codec.IsReadable(stream))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, fileName, _codec.CodecDescription));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, fileName, Codec.CodecDescription));
 			}
 
 			OnRead(stream);
@@ -293,7 +460,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             : base(name)
         {
             HasThumbnail = true;
-	        _codec = codec;
+	        Codec = codec;
+
+            // Make a default, empty, 2D settings object so we have something to work with.
+            _imageSettings = new GorgonTexture2DSettings();
         }
         #endregion
 

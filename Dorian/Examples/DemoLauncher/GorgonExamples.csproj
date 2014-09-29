@@ -110,7 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <Content Include="Images\2D\E0_128x128.png">
+    <Content Include="Images\2D Renderer\E0_128x128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Examples.xml" />
