@@ -636,4 +636,10 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_TEXT_SHOW_ANIMATIONS" xml:space="preserve">
     <value>Show transition animations?</value>
   </data>
+  <data name="GORFNT_CANNOT_LOAD_BC_IMAGE" xml:space="preserve">
+    <value>Cannot use a block compressed image.</value>
+  </data>
+  <data name="GORFNT_CANNOT_RESIZE_BC_IMAGE" xml:space="preserve">
+    <value>Cannot resize a block compressed image. The current texture settings for the font are {0}x{1}.  The size of the block compressed texture is {2}x{3}.</value>
+  </data>
 </root>

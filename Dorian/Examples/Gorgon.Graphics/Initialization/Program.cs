@@ -167,10 +167,10 @@ namespace GorgonLibrary.Graphics.Example
 				Screen.PrimaryScreen.WorkingArea.Height / 2 - _mainForm.Height / 2);
 
 
-			// Create the main graphics interface for SM2.0 - Vertex shader 2.0a, Pixel shader 2.0b.
-			// This is basically a Direct 3D 9 capable video device.  This is here to illustrate how to 
+			// Create the main graphics interface for SM 4.0.
+			// This is basically a Direct 3D 10 capable video device.  This is here to illustrate how to 
 			// force a feature level.
-			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM4);
 			
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything, and thus 

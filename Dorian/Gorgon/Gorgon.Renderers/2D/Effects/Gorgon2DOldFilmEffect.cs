@@ -387,7 +387,7 @@ namespace GorgonLibrary.Renderers
 			{
 				Width = textureSize,
 				Height = textureSize,
-				Format = Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? BufferFormat.R8G8B8A8_UIntNormal : BufferFormat.R8_UIntNormal,
+				Format = BufferFormat.R8_UIntNormal,
 				Usage = BufferUsage.Default
 			}))
 			{
@@ -417,11 +417,6 @@ namespace GorgonLibrary.Renderers
 							}
 
 							*(dataPtr++) = (byte)(simplexNoise * 255.0f);
-							
-							if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-							{
-								dataPtr += 3;
-							}
 						}
 					}
 				}
@@ -482,11 +477,6 @@ namespace GorgonLibrary.Renderers
 				SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
 				SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
 			};
-
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				GenerateRandomNoise();
-			}
 		}
 
 		/// <summary>

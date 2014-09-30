@@ -40,10 +40,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal override void Reset()
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
-			{
-				TextureSamplers.Reset();
-			}
+			TextureSamplers.Reset();
 			ConstantBuffers.Reset();
 			Resources.Reset();
 		}
@@ -84,13 +81,6 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetSamplers(int slot, int count, SamplerState[] samplers)
 		{
-#if DEBUG
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                throw new GorgonException(GorgonResult.CannotBind,
-                    string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-            }
-#endif
 		    if (count == 1)
 		    {
 		        Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);

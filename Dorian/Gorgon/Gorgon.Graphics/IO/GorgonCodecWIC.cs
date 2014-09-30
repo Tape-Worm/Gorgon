@@ -163,6 +163,12 @@ namespace GorgonLibrary.IO
 	    private readonly BufferFormat[] _supportedFormats = {
                                                                 BufferFormat.R8G8B8A8_UIntNormal
 	                                                        };
+
+		// Supported image types.
+		private readonly ImageType[] _supportedTypes =
+		{
+			ImageType.Image2D
+		};
 		#endregion
 
 		#region Properties
@@ -224,6 +230,17 @@ namespace GorgonLibrary.IO
 			}
 		}
 
+		/// <summary>
+		/// Property to return whether the image codec supports block compression.
+		/// </summary>
+		public override bool SupportsBlockCompression
+		{
+			get
+			{
+				return false;
+			}
+		}
+
         /// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
@@ -278,7 +295,19 @@ namespace GorgonLibrary.IO
                 return _supportedFormats;
             }
         }
-	    #endregion
+
+		/// <summary>
+		/// Property to return the type of images the codec will support.
+		/// </summary>
+		public override IEnumerable<ImageType> SupportsImageType
+		{
+			get
+			{
+				return _supportedTypes;
+			}
+		}
+
+		#endregion
 
 		#region Methods.
 		/// <summary>

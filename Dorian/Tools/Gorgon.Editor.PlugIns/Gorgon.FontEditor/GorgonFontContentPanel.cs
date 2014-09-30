@@ -158,7 +158,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private float _currentZoom = -1;
 	    private int _currentTextureIndex;
 	    private float _indexTransition;
-	    private GorgonFontContent _content;
+	    private readonly GorgonFontContent _content;
 	    private GorgonText _text;
 	    private GorgonSprite _patternSprite;
 	    private Dictionary<GorgonGlyph, RectangleF> _glyphRegions;
@@ -226,20 +226,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				_rawKeyboard = RawInput.CreateKeyboard(panelTextures);
-				_rawKeyboard.Enabled = true;
-				_rawKeyboard.KeyUp += GorgonFontContentPanel_KeyUp;
-				_rawKeyboard.KeyDown += GorgonFontContentPanel_KeyDown;
-
 				Point lastPosition = Cursor.Position;
 				_rawMouse = RawInput.CreatePointingDevice(panelTextures);
-				_rawMouse.Acquired = false;
 				_rawMouse.Enabled = true;
+				_rawMouse.Acquired = false;
 				_rawMouse.PointingDeviceMove += ClipMouseMove;
                 _rawMouse.PointingDeviceDown += ClipMouseDown;
                 _rawMouse.PointingDeviceUp += ClipMouseUp;
                 _rawMouse.PointingDeviceWheelMove += ClipMouseWheel;
 				Cursor.Position = lastPosition;
+
+				_rawKeyboard = RawInput.CreateKeyboard(panelTextures);
+				_rawKeyboard.Enabled = true;
+				_rawKeyboard.KeyUp += GorgonFontContentPanel_KeyUp;
+				_rawKeyboard.KeyDown += GorgonFontContentPanel_KeyDown;
 
 				_glyphClipper = new Clipper(_content.Renderer, panelTextures)
 				                {
@@ -1248,11 +1248,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						return null;
 					}
 
+					var formatInfo = GorgonBufferFormatInfo.GetInfo(imageContent.Image.Settings.Format);
+
 					// If the size is mismatched with the font textures then ask the user if they wish to resize the 
 					// texture.
 					if ((imageContent.Image.Settings.Width != _content.FontTextureSize.Width)
 						|| (imageContent.Image.Settings.Height != _content.FontTextureSize.Height))
 					{
+						if (formatInfo.IsCompressed)
+						{
+							GorgonDialogs.ErrorBox(ParentForm,
+							                       string.Format(Resources.GORFNT_CANNOT_RESIZE_BC_IMAGE,
+							                                     _content.FontTextureSize.Width,
+							                                     _content.FontTextureSize.Height,
+							                                     imageContent.Image.Settings.Width,
+							                                     imageContent.Image.Settings.Height));
+							return null;
+						}
+
 						// If the image is larger than the font texture size, then ask if clipping is required.
 						if ((imageContent.Image.Settings.Width > _content.FontTextureSize.Width)
 							|| (imageContent.Image.Settings.Height > _content.FontTextureSize.Height))

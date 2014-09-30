@@ -1452,8 +1452,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
 		public static GorgonImageData FromStream(Stream stream, int size, GorgonImageCodec codec)
 		{
-            GorgonDataStream memoryStream = null;
-            GorgonImageData result = null;
+			GorgonImageData result = null;
 
             if (stream == null)
             {

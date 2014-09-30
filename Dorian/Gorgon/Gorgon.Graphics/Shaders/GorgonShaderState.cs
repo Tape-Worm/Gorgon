@@ -364,23 +364,9 @@ namespace GorgonLibrary.Graphics
 			internal TextureSamplerState(GorgonShaderState<T> shaderState)
 				: base(shaderState.Graphics)
 			{
-				int count = D3D.CommonShaderStage.SamplerSlotCount;
-
 				_shader = shaderState;
-				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				{
-				    if (shaderState is GorgonVertexShaderState)
-				    {
-				        count = 0;
-				    }
-				    else
-				    {
-				        count = 16;
-				    }
-				}
-
-				_states = new GorgonTextureSamplerStates[count];
-				_D3DStates = new D3D.SamplerState[count];
+				_states = new GorgonTextureSamplerStates[D3D.CommonShaderStage.SamplerSlotCount];
+				_D3DStates = new D3D.SamplerState[D3D.CommonShaderStage.SamplerSlotCount];
 			}
 			#endregion
 
@@ -1219,17 +1205,8 @@ namespace GorgonLibrary.Graphics
 			{
 				_shader = shader;
 
-				// SM2_a_b devices can't have resources bound to the vertex shader stage.
-				if ((_shader is GorgonVertexShaderState) && (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
-				{
-					_views = new D3D.ShaderResourceView[] { };
-					_resources = new GorgonShaderView[] { };
-				}
-				else
-				{
-					_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
-					_resources = new GorgonShaderView[_views.Length];							
-				}
+				_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
+				_resources = new GorgonShaderView[_views.Length];							
 			}
 			#endregion
 

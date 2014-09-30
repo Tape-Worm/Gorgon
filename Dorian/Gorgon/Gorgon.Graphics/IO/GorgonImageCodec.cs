@@ -358,6 +358,22 @@ namespace GorgonLibrary.IO
 	    {
 	        get;
 	    }
+
+		/// <summary>
+		/// Property to return whether the image codec supports block compression.
+		/// </summary>
+		public abstract bool SupportsBlockCompression
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the type of images the codec will support.
+		/// </summary>
+		public abstract IEnumerable<ImageType> SupportsImageType
+		{
+			get;
+		}
 	    #endregion
 
 		#region Methods.

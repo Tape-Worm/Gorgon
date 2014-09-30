@@ -45,29 +45,19 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This value is exclusive.</remarks>
 		Unsupported = 0,
 		/// <summary>
-		/// Shader model 2.0, with a 2.0a vertex shader profile and a 2.0b pixel shader profile.
-		/// </summary>
-		/// <remarks>
-		/// This the equivalent of a Direct 3D 9.0c video device.
-		/// <para>Please note that this is for video cards that support a vertex shader model of 2.0a and a pixel shader model of 2.0b.  Nothing below that (i.e. vanilla SM 2.0) will work.  This is a limitation
-		/// imposed by Gorgon to keep the code paths smaller.</para>
-		/// <para>The actual restriction of shader model 2.0 is from the Direct 3D 11 API itself.  There is no way around this except to upgrade the hardware to shader model 4 hardware.</para>
-		/// </remarks>
-		SM2_a_b = 1,
-		/// <summary>
 		/// Shader model 4.0
 		/// </summary>
 		/// <remarks>This the equivalent of a Direct 3D 10.0 video device.</remarks>
-		SM4 = 2,
+		SM4 = 1,
 		/// <summary>
 		/// Shader model 4.0 with a 4.1 profile.
 		/// </summary>
 		/// <remarks>This the equivalent of a Direct 3D 10.1 video device.</remarks>
-		SM4_1 = 3,
+		SM4_1 = 2,
 		/// <summary>
 		/// Shader model 5.0.
 		/// </summary>
-		SM5 = 4,
+		SM5 = 3,
 	}
 	// ReSharper restore InconsistentNaming
 
@@ -250,9 +240,6 @@ namespace GorgonLibrary.Graphics
 				case D3DCommon.FeatureLevel.Level_10_0:
 					SupportedFeatureLevel = HardwareFeatureLevel = DeviceFeatureLevel.SM4;
 					break;
-				case D3DCommon.FeatureLevel.Level_9_3:
-					SupportedFeatureLevel = HardwareFeatureLevel = DeviceFeatureLevel.SM2_a_b;
-					break;
 				default:
 					SupportedFeatureLevel = HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
 					break;
@@ -295,12 +282,6 @@ namespace GorgonLibrary.Graphics
 				case DeviceFeatureLevel.SM4:
 					return new[] {
 							D3DCommon.FeatureLevel.Level_10_0,
-							D3DCommon.FeatureLevel.Level_9_3,
-							D3DCommon.FeatureLevel.Level_9_2,
-							D3DCommon.FeatureLevel.Level_9_1
-					};
-				case DeviceFeatureLevel.SM2_a_b:
-					return new[] {
 							D3DCommon.FeatureLevel.Level_9_3,
 							D3DCommon.FeatureLevel.Level_9_2,
 							D3DCommon.FeatureLevel.Level_9_1
@@ -594,7 +575,6 @@ namespace GorgonLibrary.Graphics
 
                 switch (SupportedFeatureLevel)
                 {
-                    case DeviceFeatureLevel.SM2_a_b:
                     case DeviceFeatureLevel.SM4:
                     case DeviceFeatureLevel.SM4_1:
                         return false;

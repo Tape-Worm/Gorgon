@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Linq;
 using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -473,12 +472,6 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				SetViewport(viewPorts.ElementAt(0));
-				return;
-			}
-
 		    _viewPorts = viewPorts;
 
             if ((_dxViewports == null)
@@ -619,12 +612,6 @@ namespace GorgonLibrary.Graphics
 				Graphics.Context.Rasterizer.SetScissorRectangles(null);
 				_clipRects = null;
 				_dxRects = null;
-				return;
-			}
-
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				SetScissorRectangle(rectangles[0]);
 				return;
 			}
 

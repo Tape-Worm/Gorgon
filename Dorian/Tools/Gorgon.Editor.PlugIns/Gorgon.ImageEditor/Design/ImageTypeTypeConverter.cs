@@ -34,14 +34,14 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     /// <summary>
-    /// A type converter used to retrieve a list of applicable image formats.
+    /// A type converter used to retrieve a list of applicable image types.
     /// </summary>
-    class BufferFormatTypeConverter
+    class ImageTypeTypeConverter
         : TypeConverter
     {
         #region Variables.
-        // List of standard values for formats.
-        private StandardValuesCollection _formatValues;
+        // List of standard values for image types.
+        private StandardValuesCollection _imageTypeValues;
         #endregion
 
         #region Methods.
@@ -88,14 +88,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return base.ConvertTo(context, culture, value, destinationType);
             }
 
-            var bufferFormat = BufferFormat.Unknown;
+            var imageType = ImageType.Unknown;
 
             if (value != null)
             {
-                bufferFormat = (BufferFormat)value;
+                imageType = (ImageType)value;
             }
 
-            return bufferFormat.ToString();
+            return imageType.ToString();
         }
 
         /// <summary>
@@ -115,15 +115,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return base.ConvertFrom(context, culture, value);
             }
 
-            string formatString = value.ToString();
-            BufferFormat format;
+            string imageTypeString = value.ToString();
+            ImageType imageType;
 
-            if (!Enum.TryParse(formatString, out format))
+            if (!Enum.TryParse(imageTypeString, out imageType))
             {
-                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT, formatString));
+                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_UNRECOGNIZED_IMAGE_TYPE, imageTypeString));
             }
 
-            return format;
+            return imageType;
         }
 
         /// <summary>
@@ -159,26 +159,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            if (_formatValues != null)
+            if (_imageTypeValues != null)
             {
-                return _formatValues;
+                return _imageTypeValues;
             }
 
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
-
-            // TODO: Need a way to include compressed formats in here for codecs that support them.
-            var formats = from format in (BufferFormat[])Enum.GetValues(typeof(BufferFormat))
-                          let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
-                          where !formatInfo.HasDepth && !formatInfo.HasStencil
-                                && !formatInfo.IsTypeless 
-                                && (content.Codec.SupportedFormats.Any(item => item == format))
-								&& ((content.Codec.SupportsBlockCompression) && (formatInfo.IsCompressed)
-                                || content.Image.CanConvert(format))
-                          select formatInfo;
             
-            _formatValues = new StandardValuesCollection(formats.Select(item => item.Format).ToArray());
+            _imageTypeValues = new StandardValuesCollection(content.Codec.SupportsImageType.ToArray());
 
-            return _formatValues;
+            return _imageTypeValues;
         }
         #endregion
     }

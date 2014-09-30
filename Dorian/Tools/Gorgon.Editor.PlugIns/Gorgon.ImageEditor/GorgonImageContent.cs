@@ -24,10 +24,13 @@
 // 
 #endregion
 
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -48,7 +51,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private IImageSettings _imageSettings;                                  // The current settings for the image.
         #endregion
 
-        #region Properties.
+        #region Properties.		
+		/// <summary>
+		/// Property to return information about the image format.
+		/// </summary>
+	    public GorgonBufferFormatInfo.FormatData FormatInformation
+	    {
+		    get;
+		    private set;
+	    }
+
 		/// <summary>
 		/// Property to return the renderer interface.
 		/// </summary>
@@ -98,7 +110,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the format for the image.
         /// </summary>
-        [TypeConverter(typeof(BufferFormatTypeConverter))]
+        [LocalCategory(typeof(Resources), "CATEGORY_DATA"),
+        LocalDescription(typeof(Resources), "PROP_IMAGEFORMAT_DESC"),
+        LocalDisplayName(typeof(Resources), "PROP_IMAGEFORMAT_NAME"),
+		TypeConverter(typeof(BufferFormatTypeConverter))]
         public BufferFormat ImageFormat
         {
             get
@@ -114,6 +129,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the width of the image.
         /// </summary>
+        [LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
+        LocalDescription(typeof(Resources), "PROP_WIDTH_DESC"),
+        LocalDisplayName(typeof(Resources), "PROP_WIDTH_NAME")]
         public int Width
         {
             get
@@ -122,6 +140,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+	            if (value == _imageSettings.Width)
+	            {
+		            return;
+	            }
+
+	            SetSize(value, _imageSettings.Height, _imageSettings.Depth);
                 NotifyPropertyChanged();
             }
         }
@@ -129,7 +153,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the height of the image.
         /// </summary>
-        public int Height
+		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
+		LocalDescription(typeof(Resources), "PROP_HEIGHT_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_HEIGHT_NAME")]
+		public int Height
         {
             get
             {
@@ -144,7 +171,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the depth for a volume texture.
         /// </summary>
-        public int Depth
+		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
+		LocalDescription(typeof(Resources), "PROP_DEPTH_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_DEPTH_NAME")]
+		public int Depth
         {
             get
             {
@@ -159,7 +189,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the number of mip maps in the image.
         /// </summary>
-        public int MipCount
+		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
+		LocalDescription(typeof(Resources), "PROP_MIPCOUNT_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_MIPCOUNT_NAME")]
+		public int MipCount
         {
             get
             {
@@ -174,7 +207,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the number of array indices in the image.
         /// </summary>
-        public int ArrayCount
+		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
+		LocalDescription(typeof(Resources), "PROP_ARRAYCOUNT_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_ARRAYCOUNT_NAME")]
+		public int ArrayCount
         {
             get
             {
@@ -189,7 +225,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the type of image.
         /// </summary>
-        public ImageType ImageType
+		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
+		LocalDescription(typeof(Resources), "PROP_IMAGETYPE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_IMAGETYPE_NAME"),
+		TypeConverter(typeof(ImageTypeTypeConverter))]
+		public ImageType ImageType
         {
             get
             {
@@ -212,7 +252,75 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
         #endregion
 
-        #region Methods.
+        #region Methods.		
+		/// <summary>
+		/// Function to set the width and height of the image.
+		/// </summary>
+		/// <param name="width">The width of the image.</param>
+		/// <param name="height">The height of the image.</param>
+		/// <param name="depth">The depth of the image.</param>
+	    private void SetSize(int width, int height, int depth)
+	    {
+			if ((width < 1)
+				|| (height < 1)
+				|| (depth < 1))
+			{
+				throw new ArgumentException(Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
+			}
+
+			switch (_imageSettings.ImageType)
+			{
+				case ImageType.Image1D:
+					if ((width > Graphics.Textures.MaxWidth)
+						|| (height > 1)
+						|| (depth > 1))
+					{
+						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
+					}
+
+					Image.Resize(width, height, false);
+					_imageSettings.Width = width;
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					if ((width > Graphics.Textures.MaxWidth)
+						|| (height > Graphics.Textures.MaxHeight)
+						|| (depth > 1))
+					{
+						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_2D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth, Graphics.Textures.MaxHeight));
+					}
+					
+					Image.Resize(width, height, false);
+					_imageSettings.Width = width;
+					_imageSettings.Height = height;
+					break;
+				case ImageType.Image3D:
+					if ((width > Graphics.Textures.MaxWidth)
+						|| (height > Graphics.Textures.MaxHeight)
+						|| (depth > Graphics.Textures.MaxDepth))
+					{
+						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE,
+						                                          Graphics.Textures.MaxWidth,
+						                                          Graphics.Textures.MaxHeight,
+						                                          Graphics.Textures.MaxDepth));
+					}
+
+					// If the depth has changed, then we need to do some special work to get it resized.
+					if (depth != _imageSettings.Depth)
+					{
+						IImageSettings newSettings = _imageSettings.Clone();
+
+						var newImage = new GorgonImageData(newSettings);
+
+						// Copy the image data into the new image.
+						
+					}
+
+					Image.Resize(width, height, false);
+					break;
+			}
+	    }
+
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
@@ -254,7 +362,52 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function called when the name is about to be changed.
+		/// </summary>
+		/// <param name="proposedName">The proposed name for the content.</param>
+		/// <returns>
+		/// A valid name for the content.
+		/// </returns>
+	    protected override string ValidateName(string proposedName)
+		{
+			if (string.IsNullOrWhiteSpace(proposedName))
+			{
+				return string.Empty;
+			}
+
+			// If we have no codec, then we'll have to assume that the name is good for now.
+			if (Codec == null)
+			{
+				return proposedName;
+			}
+
+			// Remember the previous extension.
+			string extension = Path.GetExtension(Name);
+
+			// If the current codec is OK with the extension, then let the proposed name pass.
+			var stringBuffer = new StringBuilder(proposedName.Length);
+			if (Codec.CodecCommonExtensions.Any(item =>
+			                                    {
+				                                    stringBuffer.Length = 0;
+				                                    stringBuffer.Append(".");
+				                                    stringBuffer.Append(item);
+
+				                                    return proposedName.EndsWith(stringBuffer.ToString(), StringComparison.OrdinalIgnoreCase);
+			                                    }))
+			{
+				return proposedName;
+			}
+
+			// Otherwise, attach the old extension.
+			stringBuffer.Length = 0;
+			stringBuffer.Append(proposedName);
+			stringBuffer.Append(extension);
+
+			return stringBuffer.ToString().FormatFileName();
+		}
+
+	    /// <summary>
         /// Function to read the content data from a stream.
         /// </summary>
         /// <param name="stream">Stream containing the content data.</param>
@@ -262,20 +415,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
             Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
             _imageSettings = Image.Settings;
+	
+			var info = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
 
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                // If we're running a feature level 9 device, then we have to disable these items
-                // because we cannot save an image.
-                DisableProperty("Width", true);
-                DisableProperty("Height", true);
-                DisableProperty("Depth", true);
-                DisableProperty("ImageType", true);
-                DisableProperty("ImageFormat", true);
-                DisableProperty("ArrayCount", true);
-                DisableProperty("MipCount", true);
-                return;
-            }
 
             if (!Codec.SupportsArray)
             {
@@ -308,6 +450,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             {
                 DisableProperty("Depth", true);
             }
+
+			if (_imageSettings.ImageType == ImageType.Image3D)
+			{
+				DisableProperty("ArrayCount", true);
+			}
+
+			if (Codec.SupportsImageType.Count() < 2)
+			{
+				DisableProperty("ImageType", true);
+			}
+
+			
         }
 
         /// <summary>
@@ -397,6 +551,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				default:
 					return (Image)Resources.invalid_image_128x128.Clone();
 	        }
+
+		    FormatInformation = GorgonBufferFormatInfo.GetInfo(Image.Settings.Format);
+
+			// We can't thumbnail block compressed images, so show the default.
+		    if (FormatInformation.IsCompressed)
+		    {
+			    return (Image)Resources.image_128x128.Clone();
+		    }
 
             // Resize our image.
             if ((Image[0].Width != 128)
