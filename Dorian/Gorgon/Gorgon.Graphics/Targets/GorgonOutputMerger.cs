@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return _graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 4 : 8;
+				return 8;
 			}
 		}
 
@@ -246,14 +246,6 @@ namespace GorgonLibrary.Graphics
                                                                     typeof(GorgonUnorderedAccessView).FullName));
                         }
                     }
-                }
-
-                if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-                    && (target.Format != view.Format)
-                    && (GorgonBufferFormatInfo.GetInfo(target.Format).BitDepth != GorgonBufferFormatInfo.GetInfo(view.Format).BitDepth))
-                {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_BIT_DEPTH_MISMATCH,
-                                                  view.Resource.Name));
                 }
 
                 if (target.Resource.ResourceType != view.Resource.ResourceType)
@@ -588,13 +580,6 @@ namespace GorgonLibrary.Graphics
             if (settings.Flags == SwapChainUsageFlags.None)
             {
                 settings.Flags = SwapChainUsageFlags.RenderTarget;
-            }
-
-            if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) &&
-                (settings.Flags != SwapChainUsageFlags.RenderTarget))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
             }
 
             // Ensure that we're using SM5 or better hardware if we want an unordered access view to our backbuffer.
@@ -1444,12 +1429,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void DrawAuto()
 		{
-#if DEBUG
-            if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM2_a_b));
-            }
-#endif
 		    unchecked
 		    {
                 GorgonRenderStatistics.DrawCallCount++;    

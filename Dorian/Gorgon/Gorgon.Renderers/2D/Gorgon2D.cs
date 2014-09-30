@@ -307,7 +307,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>This will turn multisampling on or off.
 		/// <para>Please note that if using a video device that supports SM4_1 or SM5, this setting cannot be disabled.  SM4_1/5 video devices always enable multisampling 
-		/// when the sample count is greater than 1 for a render target.  For SM2_a_b or SM4 devices, this setting will disable multisampling regardless of sample count.</para>
+		/// when the sample count is greater than 1 for a render target.  For SM4 devices, this setting will disable multisampling regardless of sample count.</para>
 		/// </remarks>
 		public bool IsMultisamplingEnabled
 		{
@@ -317,8 +317,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) ||
-				    (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)
 				{
 					_multiSampleEnable = value;
 				}

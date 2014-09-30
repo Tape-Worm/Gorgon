@@ -147,6 +147,9 @@
   <data name="GORINP_RAW_HIDINFO_NOT_RAW" xml:space="preserve">
     <value>The HID information object is not a raw HID object.</value>
   </data>
+  <data name="GORINP_RAW_HOOK_STILL_ACTIVE" xml:space="preserve">
+    <value>The window hook for raw input is still active after the object was disposed.</value>
+  </data>
   <data name="GORINP_RAW_NOT_MM_JOYSTICK" xml:space="preserve">
     <value>The joystick information object is not Windows Multimedia specific.</value>
   </data>

@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -283,8 +284,7 @@ namespace GorgonLibrary.Input.Raw
 	    {
             if (_disposed)
             {
-                UnhookWindowProc();
-                return Win32API.CallWindowProc(_oldWndProc, hwnd, msg, wParam, lParam);
+				throw new ObjectDisposedException(Resources.GORINP_RAW_HOOK_STILL_ACTIVE);
             }
 
             if (msg != WindowMessages.RawInput)
@@ -364,12 +364,17 @@ namespace GorgonLibrary.Input.Raw
                 return;
             }
 
-            _hookedWindow = Gorgon.ApplicationForm != null ? Gorgon.ApplicationForm.Handle : windowHandle;
-
-            if (_hookedWindow == IntPtr.Zero)
+            if (windowHandle == IntPtr.Zero)
             {
-                throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
+	            if (Gorgon.ApplicationForm == null)
+	            {
+		            throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
+	            }
+
+	            windowHandle = Gorgon.ApplicationForm.Handle;
             }
+
+			_hookedWindow = windowHandle;
 
             // Hook the window procedure.
             _oldWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
@@ -394,16 +399,17 @@ namespace GorgonLibrary.Input.Raw
 	        }
             
             MessageFilter = null;
-            _hookedWindow = IntPtr.Zero;
 
             IntPtr currentWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
 
-            if (currentWndProc != _newWndProc)
+            if (currentWndProc == _newWndProc)
             {
-                return;
+				Win32API.SetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc, _oldWndProc);
             }
-
-            Win32API.SetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc, _oldWndProc);
+            
+			_hookedWindow = IntPtr.Zero;
+			_newWndProc = IntPtr.Zero;
+	        _oldWndProc = IntPtr.Zero;
 	    }
 
 		/// <summary>
@@ -617,12 +623,27 @@ namespace GorgonLibrary.Input.Raw
 				if (disposing)
 				{
 					UnbindAllDevices();
-
-					if (MessageFilter != null)
+					UnhookWindowProc();
+				}
+				else
+				{
+					if ((_hookedWindow != IntPtr.Zero)
+					    && (_oldWndProc != IntPtr.Zero))
 					{
-                        UnhookWindowProc();
+						IntPtr currentWndProc = Win32API.GetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc);
+
+						// Ensure that we're unhooking our window hook.
+						if (currentWndProc == _newWndProc)
+						{
+							// Attempt to unbind the window if we're being collected without being disposed.
+							Win32API.SetWindowLong(new HandleRef(this, _hookedWindow), WindowLongType.WndProc, _oldWndProc);
+						}
 					}
 				}
+
+				_newWndProc = IntPtr.Zero;
+				_hookedWindow = IntPtr.Zero;
+				_oldWndProc = IntPtr.Zero;
 
 				_disposed = true;
 			}
@@ -638,6 +659,14 @@ namespace GorgonLibrary.Input.Raw
 		public GorgonRawInputFactory()
 			: base("Gorgon Raw Input")
 		{
+		}
+
+		/// <summary>
+		/// Finalizes an instance of the <see cref="GorgonRawInputFactory"/> class.
+		/// </summary>
+		~GorgonRawInputFactory()
+		{
+			Dispose(false);
 		}
 		#endregion
 	}

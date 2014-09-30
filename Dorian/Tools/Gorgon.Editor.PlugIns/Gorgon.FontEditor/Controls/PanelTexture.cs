@@ -534,6 +534,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 								return;
 							}
 
+							var formatInfo = GorgonBufferFormatInfo.GetInfo(imageContent.Image.Settings.Format);
+
+							if (formatInfo.IsCompressed)
+							{
+								GorgonDialogs.ErrorBox(ParentForm, Resources.GORFNT_CANNOT_LOAD_BC_IMAGE);
+								return;
+							}
+
 							// If we've loaded a texture previously and haven't committed it yet, then get rid of it.
 							if (_texture != null)
 							{

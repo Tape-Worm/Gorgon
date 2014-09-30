@@ -49,6 +49,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Design\ImageTypeTypeConverter.cs" />
     <Compile Include="Design\BufferFormatTypeConverter.cs" />
     <Compile Include="GorgonImageContent.cs" />
     <Compile Include="GorgonImageContentSettings.cs" />

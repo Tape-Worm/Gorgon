@@ -382,6 +382,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot use a block compressed image..
+        /// </summary>
+        internal static string GORFNT_CANNOT_LOAD_BC_IMAGE {
+            get {
+                return ResourceManager.GetString("GORFNT_CANNOT_LOAD_BC_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot resize a block compressed image. The current texture settings for the font are {0}x{1}.  The size of the block compressed texture is {2}x{3}..
+        /// </summary>
+        internal static string GORFNT_CANNOT_RESIZE_BC_IMAGE {
+            get {
+                return ResourceManager.GetString("GORFNT_CANNOT_RESIZE_BC_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Font File.
         /// </summary>
         internal static string GORFNT_CONTENT_EXTENSION_DESC {

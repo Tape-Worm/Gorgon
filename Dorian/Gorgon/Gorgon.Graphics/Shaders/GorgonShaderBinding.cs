@@ -906,11 +906,9 @@ namespace GorgonLibrary.Graphics
 			IncludeFiles = new GorgonShaderIncludeCollection();
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
-		    if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM2_a_b)
-		    {
-		        GeometryShader = new GorgonGeometryShaderState(graphics);
-		    }
-            if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1)
+		    GeometryShader = new GorgonGeometryShaderState(graphics);
+
+			if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1)
             {
                 ComputeShader = new GorgonComputeShaderState(graphics);
 				HullShader = new GorgonHullShaderState(graphics);

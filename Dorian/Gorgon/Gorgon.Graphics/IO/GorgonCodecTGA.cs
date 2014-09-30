@@ -308,7 +308,7 @@ namespace GorgonLibrary.IO
 
         #region Variables.
         // List of supported image formats.
-        private BufferFormat[] _supportedFormats =
+        private readonly BufferFormat[] _supportedFormats =
         {
             // 8 bit grayscale.
             BufferFormat.R8_UIntNormal,
@@ -317,10 +317,27 @@ namespace GorgonLibrary.IO
             // 24 bit.
             BufferFormat.R8G8B8A8_UIntNormal
         };
+
+		// Supported image type list.
+	    private readonly ImageType[] _supportedTypes =
+	    {
+			ImageType.Image2D
+	    };
         #endregion
 
         #region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to return the type of images the codec will support.
+		/// </summary>
+	    public override IEnumerable<ImageType> SupportsImageType
+	    {
+		    get
+		    {
+			    return _supportedTypes;
+		    }
+	    }
+
+	    /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
         public override IEnumerable<BufferFormat> SupportedFormats
@@ -330,6 +347,17 @@ namespace GorgonLibrary.IO
                 return _supportedFormats;
             }
         }
+
+		/// <summary>
+		/// Property to return whether the image codec supports block compression.
+		/// </summary>
+		public override bool SupportsBlockCompression
+		{
+			get
+			{
+				return false;
+			}
+		}
 
         /// <summary>
 		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.

@@ -567,7 +567,7 @@ namespace GorgonLibrary.Graphics
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceBox"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
         /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-        /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+        /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
@@ -575,7 +575,7 @@ namespace GorgonLibrary.Graphics
         /// accessing the sub resource.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+        /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_4 device.
         /// <para>-or-</para>
         /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
         /// </exception>
@@ -602,19 +602,6 @@ namespace GorgonLibrary.Graphics
                 Settings.MipCount);
 
 #if DEBUG
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                if ((sourceTexture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
-                {
-                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
-                }
-
-                if ((sourceTexture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (sourceTexture.Settings.Usage != BufferUsage.Staging))
-                {
-                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
-                }
-            }
-
             if (Settings.Usage == BufferUsage.Immutable)
             {
                 throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IMMUTABLE);
@@ -623,7 +610,6 @@ namespace GorgonLibrary.Graphics
             // If the format is different, then check to see if the format group is the same.
             if ((sourceTexture.Settings.Format != Settings.Format)
                 && ((sourceTexture.FormatInformation.Group != FormatInformation.Group)
-                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
                     || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT,
@@ -890,11 +876,6 @@ namespace GorgonLibrary.Graphics
 			where T : GorgonTexture
 		{
 #if DEBUG
-            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
-            {
-                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-            }
-
             if (Settings.Usage == BufferUsage.Immutable)
             {
                 throw new NotSupportedException(Resources.GORGFX_TEXTURE_IMMUTABLE);    
@@ -990,18 +971,9 @@ namespace GorgonLibrary.Graphics
 		/// </list>
 		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 		/// then it is required in order to read/save the files in those formats.</para>
-        /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
-        /// save 3D and 1D textures will throw an exception.</para>
 		/// </remarks>
 		public void Save(Stream stream, GorgonImageCodec codec)
 		{
-            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) 
-				&& ((Settings.Usage != BufferUsage.Staging)
-					|| (Settings.ImageType != ImageType.Image2D)))
-            {
-                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-            }
-
             using (var textureData = GorgonImageData.CreateFromTexture(this))
 			{
 				textureData.Save(stream, codec);
@@ -1047,8 +1019,6 @@ namespace GorgonLibrary.Graphics
 		/// </list>
 		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 		/// then it is required in order to read/save the files in those formats.</para>
-        /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
-        /// save 3D and 1D textures will throw an exception.</para>
         /// </remarks>
 		public void Save(string filePath, GorgonImageCodec codec)
 		{
@@ -1060,13 +1030,6 @@ namespace GorgonLibrary.Graphics
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
-			}
-
-			if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				&& ((Settings.Usage != BufferUsage.Staging)
-					|| (Settings.ImageType != ImageType.Image2D)))
-			{
-				throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 			}
 
 			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -1086,12 +1049,12 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <paramref name="texture"/> dimensions must be have the same dimensions as this texture.  If they do not, an exception will be thrown.</para>
 		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters.</para>
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
 		/// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to copy the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_4 device.
 		/// <para>-or-</para>
 		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
 		/// <para>-or-</para>
@@ -1110,19 +1073,6 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(texture, "texture");
 
 #if DEBUG            
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                if ((texture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
-                {
-                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
-                }
-
-                if ((texture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
-                {
-                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
-                }
-            }
-
 			if (texture.ResourceType != ResourceType)
 			{
 				throw new ArgumentException(
@@ -1143,7 +1093,6 @@ namespace GorgonLibrary.Graphics
 			// If the format is different, then check to see if the format group is the same.
 		    if ((texture.Settings.Format != Settings.Format)
 		        && ((texture.FormatInformation.Group != FormatInformation.Group)
-		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
 		    {
 		        throw new ArgumentException(
@@ -1155,14 +1104,6 @@ namespace GorgonLibrary.Graphics
 		        || (texture.Settings.Height != Settings.Height))
 		    {
 		        throw new ArgumentException(Resources.GORGFX_TEXTURE_MUST_BE_SAME_SIZE, "texture");
-		    }
-
-		    // Ensure that the SM2_a_b devices don't try and copy between CPU and GPU accessible memory.
-		    if ((this is GorgonTexture3D)
-		        && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-		        && (Settings.Usage == BufferUsage.Staging))
-		    {
-                throw new InvalidOperationException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 		    }
 #endif
             if (deferred == null)

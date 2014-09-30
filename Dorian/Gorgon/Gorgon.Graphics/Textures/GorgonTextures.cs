@@ -85,8 +85,6 @@ namespace GorgonLibrary.Graphics
 			{
 				switch (_graphics.VideoDevice.SupportedFeatureLevel)
 				{
-					case DeviceFeatureLevel.SM2_a_b:
-						return 4096;
 					case DeviceFeatureLevel.SM4:
 					case DeviceFeatureLevel.SM4_1:
 						return 8192;
@@ -105,8 +103,6 @@ namespace GorgonLibrary.Graphics
 			{
 				switch (_graphics.VideoDevice.SupportedFeatureLevel)
 				{
-					case DeviceFeatureLevel.SM2_a_b:
-						return 4096;
 					case DeviceFeatureLevel.SM4:
 					case DeviceFeatureLevel.SM4_1:
 						return 8192;
@@ -123,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return _graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 512 : 2048;
+				return 2048;
 			}
 		}
 		#endregion
@@ -185,7 +181,7 @@ namespace GorgonLibrary.Graphics
 
 			// Direct3D 9 video devices require resizing to power of two.
 			// Mip maps also require power of 2 sizing for volume textures.
-			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (settings.MipCount != 1))
+			if (settings.MipCount != 1)
 			{
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, settings.Height, settings.Depth);
 				settings.Width = newSize.Item1;
@@ -251,20 +247,28 @@ namespace GorgonLibrary.Graphics
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
 			}
-			
+
 			if (settings.ArrayCount < 1)
+			{
 				settings.ArrayCount = 1;
+			}
 
 			if (settings.ArrayCount > 2048)
+			{
 				settings.ArrayCount = 2048;
+			}
 
 			if (settings.IsTextureCube)
 			{
-				if ((settings.ArrayCount != 6) && ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
-					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  SM2_a_b and SM4 devices require a maximum of 6 faces.");
+				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  SM4 devices require a maximum of 6 faces.");
+				}
 
 				if ((settings.ArrayCount % 6) != 0)
+				{
 					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  The array count is not a multiple of 6.");
+				}
 			}
 
 			if (settings.MipCount < 0)
@@ -298,14 +302,6 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
-			// Direct3D 9 video devices require resizing to power of two if there is more than 1 mip level.
-			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.MipCount != 1))
-			{
-				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, settings.Height, 0);
-				settings.Width = newSize.Item1;
-				settings.Height = newSize.Item2;
-			}
-
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
                 && (settings.AllowUnorderedAccessViews))
             {
@@ -328,9 +324,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to validate.</param>
 		internal void ValidateTexture1D(ref ITextureSettings settings)
 		{
-			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new GorgonException(GorgonResult.CannotCreate, "1 dimensional textures are not supported on SM2_a_b devices.");
-
 			if (((settings.Usage == BufferUsage.Dynamic) || (settings.Usage == BufferUsage.Staging))
 			    && (settings.AllowUnorderedAccessViews))
 			{
@@ -358,13 +351,6 @@ namespace GorgonLibrary.Graphics
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
 				}
-			}
-
-			// Direct3D 9 video devices require resizing to power of two if there is more than 1 mip level.
-			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.MipCount != 1))
-			{
-				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, 0, 0);
-				settings.Width = newSize.Item1;
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)

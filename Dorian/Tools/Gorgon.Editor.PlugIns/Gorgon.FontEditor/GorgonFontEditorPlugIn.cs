@@ -121,21 +121,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Function to determine if a plug-in can be used.
         /// </summary>
         /// <returns>
-        /// A string containing a list of reasons why the plug-in is not valid for use, or an empty string if the control is not valid for use.
+        /// A string containing a list of reasons why the plug-in is not valid for use, or an empty string if the control is valid.
         /// </returns>        
         protected override string ValidatePlugIn()
         {
-            var invalidReasons = new StringBuilder(512);
-
-            // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
-            if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-	            invalidReasons.AppendFormat(Resources.GORFNT_ERR_PLUGIN_INVALID_SM,
-	                                        ContentObject.Graphics.VideoDevice.Name,
-	                                        ContentObject.Graphics.VideoDevice.SupportedFeatureLevel);
-            }
-
-            return invalidReasons.ToString();
+	        return string.Empty;
         }
 
         /// <summary>

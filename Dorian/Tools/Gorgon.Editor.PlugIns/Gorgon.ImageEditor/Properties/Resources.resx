@@ -163,4 +163,73 @@
   <data name="GORIMG_UNRECOGNIZED_IMAGE_FORMAT" xml:space="preserve">
     <value>The image format '{0}' is unknown.</value>
   </data>
+  <data name="CATEGORY_DATA" xml:space="preserve">
+    <value>Image data</value>
+  </data>
+  <data name="CATEGORY_DIMENSIONS" xml:space="preserve">
+    <value>Image dimensions</value>
+  </data>
+  <data name="CATEGORY_TEXTURE" xml:space="preserve">
+    <value>Texture settings</value>
+  </data>
+  <data name="GORIMG_IMAGE_1D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0} pixels wide.</value>
+  </data>
+  <data name="GORIMG_IMAGE_2D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0}x{1} pixels.</value>
+  </data>
+  <data name="GORIMG_IMAGE_3D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0}x{1}x{2} pixels.</value>
+  </data>
+  <data name="GORIMG_IMAGE_SIZE_NOT_MULTIPLE_OF_4" xml:space="preserve">
+    <value>Block compressed images require a size that is a multiple of 4.</value>
+  </data>
+  <data name="GORIMG_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The image must be at least 1x1 pixels and have 1 depth or 1 array slice.</value>
+  </data>
+  <data name="GORIMG_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
+    <value>The image type '{0}' is unknown.</value>
+  </data>
+  <data name="PROP_ARRAYCOUNT_DESC" xml:space="preserve">
+    <value>Sets the number of array slices for this texture.</value>
+  </data>
+  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
+    <value>Array count</value>
+  </data>
+  <data name="PROP_DEPTH_DESC" xml:space="preserve">
+    <value>Sets the number of depth slices for a volume (3D) image.</value>
+  </data>
+  <data name="PROP_DEPTH_NAME" xml:space="preserve">
+    <value>Image depth</value>
+  </data>
+  <data name="PROP_HEIGHT_DESC" xml:space="preserve">
+    <value>Sets the vertical sizing of the image, in pixels.</value>
+  </data>
+  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
+    <value>Image height</value>
+  </data>
+  <data name="PROP_IMAGEFORMAT_DESC" xml:space="preserve">
+    <value>Sets the arrangement of the pixel components within the image data.  For codecs that support compression, block compression (BCn) formats will be available as well.</value>
+  </data>
+  <data name="PROP_IMAGEFORMAT_NAME" xml:space="preserve">
+    <value>Image format</value>
+  </data>
+  <data name="PROP_IMAGETYPE_DESC" xml:space="preserve">
+    <value>Sets the type of image data, can be one of 1D, 2D, Cube Mapped, or 3D for codecs that support various image types.</value>
+  </data>
+  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="PROP_MIPCOUNT_DESC" xml:space="preserve">
+    <value>Sets the number of mip-map levels for this texture.</value>
+  </data>
+  <data name="PROP_MIPCOUNT_NAME" xml:space="preserve">
+    <value>Mip-map count</value>
+  </data>
+  <data name="PROP_WIDTH_DESC" xml:space="preserve">
+    <value>Sets the horizontal sizing of the image, in pixels.</value>
+  </data>
+  <data name="PROP_WIDTH_NAME" xml:space="preserve">
+    <value>Image width</value>
+  </data>
 </root>

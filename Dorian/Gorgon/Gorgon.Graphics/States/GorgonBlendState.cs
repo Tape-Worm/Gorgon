@@ -941,12 +941,6 @@ namespace GorgonLibrary.Graphics
 										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, ColorWriteMaskFlags.None,
 														"WriteMask"));
 			}
-
-			if ((stateType.IsAlphaCoverageEnabled) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
-			{
-			    throw new GorgonException(GorgonResult.CannotBind,
-			        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-			}
 			#endregion
 #endif
 
