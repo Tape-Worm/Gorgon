@@ -382,11 +382,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use a block compressed image..
+        ///   Looks up a localized string similar to The image &apos;{0}&apos; is a [{1}] format image.  This format is not supported for brush images.  Only 32 bit RGBA (or BGRA) images are supported..
         /// </summary>
-        internal static string GORFNT_CANNOT_LOAD_BC_IMAGE {
+        internal static string GORFNT_BRUSH_IMAGE_WRONG_FORMAT {
             get {
-                return ResourceManager.GetString("GORFNT_CANNOT_LOAD_BC_IMAGE", resourceCulture);
+                return ResourceManager.GetString("GORFNT_BRUSH_IMAGE_WRONG_FORMAT", resourceCulture);
             }
         }
         

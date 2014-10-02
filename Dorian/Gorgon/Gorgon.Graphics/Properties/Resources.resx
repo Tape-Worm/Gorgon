@@ -706,4 +706,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_FONT_BRUSH_INTERPOL_TOSTRING" xml:space="preserve">
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
   </data>
+  <data name="GORGFX_IMAGE_BUFFER_MISMATCH" xml:space="preserve">
+    <value>The buffer being copied into is not the same width, height or format as the source buffer.</value>
+  </data>
 </root>

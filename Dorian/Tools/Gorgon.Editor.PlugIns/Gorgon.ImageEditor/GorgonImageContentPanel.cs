@@ -62,12 +62,44 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
+		/// Function to create a new texture for display.
+		/// </summary>
+	    private void CreateTexture()
+	    {
+			if (_texture != null)
+			{
+				_texture.Dispose();
+			}
+
+			_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
+			_textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
+	    }
+
+		/// <summary>
 		/// Function to localize the text of the controls on the form.
 		/// </summary>
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORIMG_DESC;
 		}
+
+		/// <summary>
+		/// Function called when a property is changed on the related content.
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="value">New value assigned to the property.</param>
+	    protected override void OnContentPropertyChanged(string propertyName, object value)
+	    {
+			switch (propertyName)
+			{
+				case "Width":
+				case "Height":
+				case "Depth":
+				case "ImageType":
+					CreateTexture();
+					break;
+			}
+	    }
 
 	    /// <summary>
 		/// Function called when the content has changed.
@@ -85,8 +117,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (_content.Image != null)
 		    {
-				_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
-				_textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
+				CreateTexture();
 		    }
 
 			ValidateControls();

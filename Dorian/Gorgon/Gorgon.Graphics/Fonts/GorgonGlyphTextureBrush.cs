@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
@@ -242,12 +243,22 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
 		/// </summary>
 		/// <param name="textureImage">The texture to use.</param>
+		/// <remarks>The texture format for the brush must be R8G8B8A8_UIntNormal, R8G8B8A8_UIntNormal_sRGB, B8G8R8A8_UIntNormal, or B8G8R8A8_UintNormal_sRGB.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="textureImage"/> parameter uses an unsupported format.</exception>
 		public GorgonGlyphTextureBrush(GorgonTexture2D textureImage)
 		{
 			if (textureImage == null)
 			{
 				throw new ArgumentNullException("textureImage");	
+			}
+
+			if ((textureImage.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB)
+				&& (textureImage.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
+				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal)
+				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal_sRGB))
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, textureImage.Settings.Format));
 			}
 
 			Texture = textureImage;

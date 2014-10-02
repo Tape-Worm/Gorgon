@@ -24,9 +24,12 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
@@ -120,9 +123,35 @@ namespace GorgonLibrary.Graphics
             get;
             protected set;
         }
-        #endregion
+		#endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to copy the image buffer data from this buffer into another.
+		/// </summary>
+		/// <remarks>The destination <paramref name="buffer"/> must be the same width, height and format as the source buffer.  If it is not, then an exception will be thrown.</remarks>
+		/// <param name="buffer">The buffer to copy into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> is not the same width, height or format as this buffer.</exception>
+	    public void CopyTo(GorgonImageBuffer buffer)
+	    {
+			if ((buffer == null)
+			    || (buffer.Data == null)
+			    || (buffer.Data.Length == 0))
+			{
+				throw new ArgumentNullException("buffer");	
+			}
+
+			if ((buffer.Width != Width)
+			    && (buffer.Height != Height)
+			    && (buffer.Format != Format))
+			{
+				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_MISMATCH);
+			}
+
+			DirectAccess.MemoryCopy(Data.UnsafePointer, buffer.Data.UnsafePointer, (int)Data.Length);
+	    }
+
         /// <summary>
         /// Function to convert this image buffer into a <see cref="System.Drawing.Image"/> object.
         /// </summary>

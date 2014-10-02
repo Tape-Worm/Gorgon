@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -34,7 +35,9 @@ using GorgonLibrary.Design;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -49,12 +52,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
         private GorgonSwapChain _swap;											// The swap chain to display our texture.
         private IImageSettings _imageSettings;                                  // The current settings for the image.
+	    private GorgonImageData _original;										// Original image.
         #endregion
 
         #region Properties.		
 		/// <summary>
 		/// Property to return information about the image format.
 		/// </summary>
+		[Browsable(false)]
 	    public GorgonBufferFormatInfo.FormatData FormatInformation
 	    {
 		    get;
@@ -164,7 +169,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-                NotifyPropertyChanged();
+				if (value == _imageSettings.Height)
+				{
+					return;
+				}
+
+				SetSize(_imageSettings.Width, value, _imageSettings.Depth);
+				NotifyPropertyChanged();
             }
         }
 
@@ -182,6 +193,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+				if (value == _imageSettings.Depth)
+				{
+					return;
+				}
+
+				SetSize(_imageSettings.Width, _imageSettings.Height, value);
+
                 NotifyPropertyChanged();
             }
         }
@@ -254,6 +272,21 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
         #region Methods.		
 		/// <summary>
+		/// Function to determine if the settings for the current image are the same as the original.
+		/// </summary>
+		/// <param name="settings">Settings to test.</param>
+		/// <returns>TRUE if the settings are the same, FALSE if not.</returns>
+	    private bool IsSameAsOriginal(IImageSettings settings)
+		{
+			return ((settings.Width == _original.Settings.Width)
+			        && (settings.Height == _original.Settings.Height)
+			        && (settings.Depth == _original.Settings.Depth)
+			        && (settings.Format == _original.Settings.Format)
+			        && (settings.ArrayCount == _original.Settings.ArrayCount)
+			        && (settings.MipCount == _original.Settings.MipCount));
+		}
+
+		/// <summary>
 		/// Function to set the width and height of the image.
 		/// </summary>
 		/// <param name="width">The width of the image.</param>
@@ -268,56 +301,127 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new ArgumentException(Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
 			}
 
-			switch (_imageSettings.ImageType)
+			// If we're changing back to the original width/height or depth, then just revert to the original image.
+			var newSettings = _imageSettings.Clone();
+
+			newSettings.Width = width;
+
+			if (_imageSettings.ImageType != ImageType.Image1D)
 			{
-				case ImageType.Image1D:
-					if ((width > Graphics.Textures.MaxWidth)
-						|| (height > 1)
-						|| (depth > 1))
-					{
-						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
-					}
+				newSettings.Height = height;
+			}
 
-					Image.Resize(width, height, false);
-					_imageSettings.Width = width;
-					break;
-				case ImageType.Image2D:
-				case ImageType.ImageCube:
-					if ((width > Graphics.Textures.MaxWidth)
-						|| (height > Graphics.Textures.MaxHeight)
-						|| (depth > 1))
-					{
-						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_2D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth, Graphics.Textures.MaxHeight));
-					}
-					
-					Image.Resize(width, height, false);
-					_imageSettings.Width = width;
-					_imageSettings.Height = height;
-					break;
-				case ImageType.Image3D:
-					if ((width > Graphics.Textures.MaxWidth)
-						|| (height > Graphics.Textures.MaxHeight)
-						|| (depth > Graphics.Textures.MaxDepth))
-					{
-						throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE,
-						                                          Graphics.Textures.MaxWidth,
-						                                          Graphics.Textures.MaxHeight,
-						                                          Graphics.Textures.MaxDepth));
-					}
+			if (_imageSettings.ImageType == ImageType.Image3D)
+			{
+				newSettings.Depth = depth;
+			}
+			
+			if (IsSameAsOriginal(newSettings))
+			{
+				_imageSettings = _original.Settings;
 
-					// If the depth has changed, then we need to do some special work to get it resized.
-					if (depth != _imageSettings.Depth)
-					{
-						IImageSettings newSettings = _imageSettings.Clone();
+				if (Image == _original)
+				{
+					return;
+				}
 
-						var newImage = new GorgonImageData(newSettings);
+				Image.Dispose();
+				Image = _original;
 
-						// Copy the image data into the new image.
-						
-					}
+				return;
+			}
 
-					Image.Resize(width, height, false);
-					break;
+			// We want to make adjustments to the original image, so this will be used to create a working copy.
+			GorgonImageData newImage = null;
+
+			try
+			{
+				// Ensure that our new dimensions are within tolerance.
+				switch (_imageSettings.ImageType)
+				{
+					case ImageType.Image1D:
+						if ((width > Graphics.Textures.MaxWidth)
+						    || (height > 1)
+						    || (depth > 1))
+						{
+							throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
+						}
+
+						newImage = _original.Clone();
+						height = 1;
+						break;
+					case ImageType.Image2D:
+					case ImageType.ImageCube:
+						if ((width > Graphics.Textures.MaxWidth)
+						    || (height > Graphics.Textures.MaxHeight)
+						    || (depth > 1))
+						{
+							throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_2D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth, Graphics.Textures.MaxHeight));
+						}
+
+						newImage = _original.Clone();
+						break;
+					case ImageType.Image3D:
+						if ((width > Graphics.Textures.MaxWidth)
+						    || (height > Graphics.Textures.MaxHeight)
+						    || (depth > Graphics.Textures.MaxDepth))
+						{
+							throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE,
+							                                          Graphics.Textures.MaxWidth,
+							                                          Graphics.Textures.MaxHeight,
+							                                          Graphics.Textures.MaxDepth));
+						}
+
+						// If the depth has changed, then we need to do some special work to get it resized.
+						if (depth != _imageSettings.Depth)
+						{
+							newSettings.Width = _imageSettings.Width;
+							newSettings.Height = _imageSettings.Height;
+							newSettings.Depth = depth;
+
+							newImage = new GorgonImageData(newSettings);
+
+							// Copy the image data into the new image.
+							int minDepth = depth.Min(_imageSettings.Depth);
+
+							_imageSettings = newImage.Settings;
+
+							for (int i = 0; i < minDepth; ++i)
+							{
+								for (int mip = 0; i < newSettings.MipCount; ++i)
+								{
+									GorgonImageBuffer sourceBuffer = Image[mip, i];
+									GorgonImageBuffer destBuffer = newImage[mip, i];
+
+									sourceBuffer.CopyTo(destBuffer);
+								}
+							}
+
+						}
+						break;
+				}
+
+				Debug.Assert(newImage != null, "Temporary image not created!");
+
+				newImage.Resize(width, height, false);
+				_imageSettings = newImage.Settings;
+
+				if (Image != _original)
+				{
+					Image.Dispose();
+				}
+
+				Image = newImage;
+			}
+			catch
+			{
+				// Get rid of our working copy.
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+
+				throw;
 			}
 	    }
 
@@ -329,9 +433,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    {
 		    if (!_disposed)
 		    {
-			    if (Image != null)
+				if ((Image != null) && (Image != _original))
+				{
+					Image.Dispose();
+				}
+
+				if (_original != null)
 			    {
-				    Image.Dispose();
+				    _original.Dispose();
 			    }
 
 			    if (Renderer != null)
@@ -347,6 +456,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			    _swap = null;
 				Renderer = null;
 			    Image = null;
+			    _original = null;
 		    }
 
 		    _disposed = true;
@@ -414,10 +524,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         protected override void OnRead(Stream stream)
         {
             Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+
+		    if (_original != null)
+		    {
+			    _original.Dispose();
+			    _original = null;
+		    }
+
+		    _original = Image;
             _imageSettings = Image.Settings;
 	
 			var info = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
-
 
             if (!Codec.SupportsArray)
             {
