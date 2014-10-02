@@ -27,6 +27,7 @@
 using System.IO;
 using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor
 {

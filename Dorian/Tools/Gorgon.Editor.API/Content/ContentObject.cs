@@ -36,6 +36,7 @@ using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor
 {

@@ -173,7 +173,8 @@ namespace GorgonLibrary.Graphics
 		/// Function to initialize the image data.
 		/// </summary>
 		/// <param name="data">Pre-existing data to use.</param>
-		private void Initialize(void* data)
+		/// <param name="copy">TRUE to copy the data, FALSE to take ownership of the pointer.  Only applies when data is non-null.</param>
+		private void Initialize(void* data, bool copy)
         {
 			int bufferIndex = 0;
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(Settings.Format);	// Format information.
@@ -186,7 +187,15 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                _imageData = new GorgonDataStream(data, SizeInBytes);
+	            if (!copy)
+	            {
+		            _imageData = new GorgonDataStream(data, SizeInBytes);
+	            }
+	            else
+	            {
+		            _imageData = new GorgonDataStream(SizeInBytes);
+					DirectAccess.MemoryCopy(_imageData.UnsafePointer, data, SizeInBytes);
+	            }
             }
 
 			// Create buffers.
@@ -1561,6 +1570,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to clone this image.
+		/// </summary>
+		/// <returns>A clone of this image.</returns>
+		/// <remarks>This method performs a deep copy of the image.</remarks>
+	    public GorgonImageData Clone()
+		{
+			return new GorgonImageData(this);
+		}
+
+		/// <summary>
 		/// Function to generate a new mip map chain.
 		/// </summary>
 		/// <param name="mipCount">Number of mip map levels.</param>
@@ -1888,6 +1907,19 @@ namespace GorgonLibrary.Graphics
             Dispose(false);
         }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonImageData"/> class.
+		/// </summary>
+		/// <param name="sourceData">The source data to copy.</param>
+	    private GorgonImageData(GorgonImageData sourceData)
+		{
+			Settings = sourceData.Settings.Clone();
+			SanitizeSettings();
+			SizeInBytes = (int)sourceData._imageData.Length;
+
+			Initialize(sourceData.UnsafePointer, true);
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImageData" /> class.
         /// </summary>
@@ -1927,7 +1959,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_SIZE_MISMATCH, "dataSize");
             }
 
-            Initialize(data);
+            Initialize(data, false);
         }
 
 		/// <summary>

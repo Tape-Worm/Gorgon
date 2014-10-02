@@ -534,11 +534,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 								return;
 							}
 
-							var formatInfo = GorgonBufferFormatInfo.GetInfo(imageContent.Image.Settings.Format);
-
-							if (formatInfo.IsCompressed)
+							if ((imageContent.Image.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB)
+							    && (imageContent.Image.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
+							    && (imageContent.Image.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal)
+							    && (imageContent.Image.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal_sRGB))
 							{
-								GorgonDialogs.ErrorBox(ParentForm, Resources.GORFNT_CANNOT_LOAD_BC_IMAGE);
+								GorgonDialogs.ErrorBox(ParentForm,
+								                       string.Format(Resources.GORFNT_BRUSH_IMAGE_WRONG_FORMAT, imageFileBrowser.Files[0].Name, imageContent.Image.Settings.Format));
 								return;
 							}
 
