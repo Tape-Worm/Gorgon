@@ -53,9 +53,70 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonSwapChain _swap;											// The swap chain to display our texture.
         private IImageSettings _imageSettings;                                  // The current settings for the image.
 	    private GorgonImageData _original;										// Original image.
+        private int _depthArrayIndex;                                           // Current depth/array index.
+        private GorgonConstantBuffer _depthArrayIndexData;                      // Depth array index value.
         #endregion
 
-        #region Properties.		
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the depth/array index.
+        /// </summary>
+        public int DepthArrayIndex
+        {
+            get
+            {
+                return _depthArrayIndex;
+            }
+            set
+            {
+                if (_depthArrayIndex == value)
+                {
+                    return;
+                }
+
+                if (_depthArrayIndex < 0)
+                {
+                    _depthArrayIndex = 0;
+                }
+
+                int maxDepthArray = ImageType == ImageType.Image3D ? _imageSettings.Depth : _imageSettings.ArrayCount;
+
+                if (_depthArrayIndex >= maxDepthArray)
+                {
+                    _depthArrayIndex = maxDepthArray - 1;
+                }
+
+                _depthArrayIndexData.Update(ref _depthArrayIndex);
+            }
+        }
+
+        /// <summary>
+        /// Property to return the 1D texture drawing pixel shader.
+        /// </summary>
+        public GorgonPixelShader Draw1D
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the 2D texture drawing pixel shader.
+        /// </summary>
+        public GorgonPixelShader Draw2D
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the 3D texture drawing pixel shader.
+        /// </summary>
+        public GorgonPixelShader Draw3D
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return information about the image format.
 		/// </summary>
@@ -255,6 +316,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+                if (value == _imageSettings.ImageType)
+                {
+                    return;
+                }
+
+                ChangeType(value);
                 NotifyPropertyChanged();
             }
         }
@@ -270,7 +337,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
         #endregion
 
-        #region Methods.		
+        #region Methods.
+        /// <summary>
+        /// Function to validate the properties for an image.
+        /// </summary>
+        private void ValidateImageProperties()
+        {
+            var info = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
+
+            DisableProperty("ArrayCount",
+                            !Codec.SupportsArray
+                            || _imageSettings.ImageType == ImageType.Image3D);
+
+            DisableProperty("Depth", !Codec.SupportsDepth);
+
+            DisableProperty("MipCount", !Codec.SupportsMipMaps);
+
+            DisableProperty("ImageFormat", Codec.SupportedFormats.Count() < 2);
+
+            DisableProperty("Height", _imageSettings.ImageType == ImageType.Image1D);
+
+            DisableProperty("Depth",
+                            _imageSettings.ImageType == ImageType.Image1D
+                            || _imageSettings.ImageType == ImageType.Image2D
+                            || _imageSettings.ImageType == ImageType.ImageCube);
+
+            DisableProperty("ImageType", Codec.SupportsImageType.Count() < 2);
+        }
+
 		/// <summary>
 		/// Function to determine if the settings for the current image are the same as the original.
 		/// </summary>
@@ -283,8 +377,136 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			        && (settings.Depth == _original.Settings.Depth)
 			        && (settings.Format == _original.Settings.Format)
 			        && (settings.ArrayCount == _original.Settings.ArrayCount)
-			        && (settings.MipCount == _original.Settings.MipCount));
+			        && (settings.MipCount == _original.Settings.MipCount)
+                    && (settings.ImageType == _original.Settings.ImageType));
 		}
+
+        /// <summary>
+        /// Function to change the image type.
+        /// </summary>
+        /// <param name="newType">The new image type.</param>
+        private void ChangeType(ImageType newType)
+        {
+            IImageSettings newSettings = null;
+
+            switch (newType)
+            {
+                case ImageType.Image1D:
+                    if (!Graphics.VideoDevice.Supports1DTextureFormat(ImageFormat))
+                    {
+                        throw new InvalidCastException(string.Format(Resources.GORIMG_INVALID_FORMAT, ImageFormat, "1D"));    
+                    }
+
+                    newSettings = new GorgonTexture1DSettings
+                                  {
+                                      ArrayCount = ArrayCount,
+                                      MipCount = MipCount,
+                                      Format = ImageFormat,
+                                      Width = Width
+                                  };
+
+                    
+                    break;
+                case ImageType.Image2D:
+                case ImageType.ImageCube:
+                    if (!Graphics.VideoDevice.Supports2DTextureFormat(ImageFormat))
+                    {
+                        throw new InvalidCastException(string.Format(Resources.GORIMG_INVALID_FORMAT, ImageFormat, "1D"));
+                    }
+
+                    newSettings = new GorgonTexture2DSettings
+                                  {
+                                      ArrayCount = ArrayCount,
+                                      MipCount = MipCount,
+                                      Format = ImageFormat,
+                                      Width = Width,
+                                      Height = Height,
+                                      IsTextureCube = newType == ImageType.ImageCube
+                                  };
+
+                    // If we have chosen an image cube type, then we need to ensure that the array size is set to a multiple of 6.
+                    if (newType == ImageType.ImageCube)
+                    {
+                        while ((newSettings.ArrayCount % 6) != 0)
+                        {
+                            ++newSettings.ArrayCount;
+                        }
+                    }
+                    break;
+                case ImageType.Image3D:
+                    if (!Graphics.VideoDevice.Supports3DTextureFormat(ImageFormat))
+                    {
+                        throw new InvalidCastException(string.Format(Resources.GORIMG_INVALID_FORMAT, ImageFormat, "1D"));
+                    }
+
+                    newSettings = new GorgonTexture3DSettings
+                                  {
+                                      MipCount = MipCount,
+                                      Format = ImageFormat,
+                                      Width = Width,
+                                      Height = Height,
+                                      Depth = Depth
+                                  };
+                    break;
+                default:
+                    throw new InvalidCastException(string.Format(Resources.GORIMG_UNKNOWN_IMAGE_TYPE, newType));
+            }
+
+            // Do nothing if this image type is not different from the original.
+            if (IsSameAsOriginal(newSettings))
+            {
+                _imageSettings = _original.Settings;
+
+                if (Image == _original)
+                {
+                    return;
+                }
+
+                Image = _original;
+                return;
+            }
+
+            GorgonImageData newImage = null;
+
+            try
+            {
+                newImage = new GorgonImageData(newSettings);
+
+                int depthArrayCount = (newSettings.ImageType == ImageType.Image3D
+                                           ? newSettings.Depth
+                                           : newSettings.ArrayCount).Min(_imageSettings.ImageType == ImageType.Image3D
+                                                                             ? _imageSettings.Depth
+                                                                             : _imageSettings.ArrayCount);
+
+                // Copy the image data back into the new image type.
+                for (int depth = 0; depth < depthArrayCount; ++depth)
+                {
+                    for (int mip = 0; mip < newSettings.MipCount; ++mip)
+                    {
+                        Image[mip, depth].CopyTo(newImage[mip, depth]);
+                    }
+                }
+                
+                if (Image != _original)
+                {
+                    Image.Dispose();
+                }
+
+                _imageSettings = newSettings;
+                Image = newImage;
+            }
+            catch
+            {
+                if (newImage != null)
+                {
+                    newImage.Dispose();    
+                }
+
+                throw;
+            }
+            
+            ValidateImageProperties();
+        }
 
 		/// <summary>
 		/// Function to set the width and height of the image.
@@ -399,6 +621,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 						}
 						break;
+                    default:
+                        throw new InvalidCastException(string.Format(Resources.GORIMG_UNKNOWN_IMAGE_TYPE, _imageSettings.ImageType));
 				}
 
 				Debug.Assert(newImage != null, "Temporary image not created!");
@@ -433,6 +657,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    {
 		    if (!_disposed)
 		    {
+		        if (_depthArrayIndexData != null)
+		        {
+		            _depthArrayIndexData.Dispose();
+		        }
+
 				if ((Image != null) && (Image != _original))
 				{
 					Image.Dispose();
@@ -453,6 +682,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				    _swap.Dispose();
 			    }
 
+		        _depthArrayIndexData = null;
 			    _swap = null;
 				Renderer = null;
 			    Image = null;
@@ -534,51 +764,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    _original = Image;
             _imageSettings = Image.Settings;
 	
-			var info = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
-
-            if (!Codec.SupportsArray)
-            {
-                DisableProperty("ArrayCount", true);
-            }
-
-            if (!Codec.SupportsDepth)
-            {
-                DisableProperty("Depth", true);
-            }
-
-            if (!Codec.SupportsMipMaps)
-            {
-                DisableProperty("MipCount", true);
-            }
-
-            if (Codec.SupportedFormats.Count() < 2)
-            {
-                DisableProperty("ImageFormat", true);
-            }
-
-            if (_imageSettings.ImageType == ImageType.Image1D)
-            {
-                DisableProperty("Height", true);
-                DisableProperty("Depth", true);
-            }
-
-            if ((_imageSettings.ImageType == ImageType.Image2D)
-                || (_imageSettings.ImageType == ImageType.ImageCube))
-            {
-                DisableProperty("Depth", true);
-            }
-
-			if (_imageSettings.ImageType == ImageType.Image3D)
-			{
-				DisableProperty("ArrayCount", true);
-			}
-
-			if (Codec.SupportsImageType.Count() < 2)
-			{
-				DisableProperty("ImageType", true);
-			}
-
-			
+            ValidateImageProperties();
         }
 
         /// <summary>
@@ -602,6 +788,50 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	                                                });
 
 			Renderer = Graphics.Output.Create2DRenderer(_swap);
+
+#if DEBUG
+            Draw1D = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture",
+                                                                      "Gorgon1DTextureView",
+                                                                      Resources.ImageViewShaders);
+
+            Draw2D = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture",
+                                                                      "Gorgon2DTextureView",
+                                                                      Resources.ImageViewShaders);
+
+            Draw3D = Graphics.Shaders.CreateShader<GorgonPixelShader>("3D Texture",
+                                                                      "Gorgon3DTextureView",
+                                                                      Resources.ImageViewShaders);
+#else
+            Draw1D = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture",
+                                                                      "Gorgon1DTextureView",
+                                                                      Resources.ImageViewShaders,
+                                                                      null,
+                                                                      false);
+
+            Draw2D = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture",
+                                                                      "Gorgon2DTextureView",
+                                                                      Resources.ImageViewShaders,
+                                                                      null,
+                                                                      false);
+
+
+            Draw3D = Graphics.Shaders.CreateShader<GorgonPixelShader>("3D Texture",
+                                                                      "Gorgon3DTextureView",
+                                                                      Resources.ImageViewShaders,
+                                                                      null,
+                                                                      false);
+#endif
+
+            // Create our depth/array index value for the shaders.
+            _depthArrayIndexData = Graphics.Buffers.CreateConstantBuffer("DepthArrayIndex",
+                                                                         new GorgonConstantBufferSettings
+                                                                         {
+                                                                             SizeInBytes = 16
+                                                                         });
+            _depthArrayIndexData.Update(ref _depthArrayIndex);
+
+            Graphics.Shaders.PixelShader.ConstantBuffers[1] = _depthArrayIndexData;
+            
 
 	        _contentPanel.CreateResources();
 

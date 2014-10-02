@@ -255,8 +255,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void SanitizeSettings()
         {
-			Settings.ArrayCount = 1.Max(Settings.ArrayCount);
-			Settings.Width = 1.Max(Settings.Width);
+		    if (Settings.ImageType != ImageType.Image3D)
+		    {
+		        Settings.ArrayCount = 1.Max(Settings.ArrayCount);
+		    }
+
+		    Settings.Width = 1.Max(Settings.Width);
 		    if ((Settings.ImageType == ImageType.Image2D)
 		        || (Settings.ImageType == ImageType.ImageCube))
 		    {
