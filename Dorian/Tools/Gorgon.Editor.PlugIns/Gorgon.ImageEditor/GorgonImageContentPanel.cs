@@ -71,8 +71,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_texture.Dispose();
 			}
 
-			_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
-			_textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
+		    if ((_content.ImageType == ImageType.Image2D)
+		        || (_content.ImageType == ImageType.ImageCube))
+		    {
+		        _texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
+		    }
+		    else
+		    {
+		        _texture = _content.Create2DTextureFromImage();
+		    }
+
+
+		    _textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
 	    }
 
 		/// <summary>
