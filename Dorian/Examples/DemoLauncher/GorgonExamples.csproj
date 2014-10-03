@@ -111,21 +111,21 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <Content Include="Images\2D Renderer\E0_128x128.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Examples.xml" />
     <None Include="Resources\Default_128x128.png" />
     <None Include="Images\GorgonLibrary.Common\E4_128x128.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Images\GorgonLibrary.Common\E3_128x128.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Images\GorgonLibrary.Common\E2_128x128.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Images\GorgonLibrary.Common\E1_128x128.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Gorgon_2.x_Logo_Full.png" />
   </ItemGroup>

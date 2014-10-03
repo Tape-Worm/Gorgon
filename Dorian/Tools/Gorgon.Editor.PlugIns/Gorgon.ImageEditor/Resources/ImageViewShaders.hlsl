@@ -7,13 +7,13 @@ Texture3D _gorgonTexture3D : register(t0);
 
 // The depth/array index to view.
 cbuffer GorgonDepthArrayIndex {
-	float depthArrayIndex : register(b1)
-}
+	float depthArrayIndex : register(b1);
+};
 
 // Pixel shader to view a 1D texture.
 float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
-	float2 coords = float2(vertex.u, depthArrayIndex);
+	float2 coords = float2(vertex.uv.x, depthArrayIndex);
 	float4 color = _gorgonTexture1D.Sample(_gorgonSampler, coords);
 
 	REJECT_ALPHA(color.a);
@@ -21,11 +21,11 @@ float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
-// Pixel shader to view a 1D texture.
+// Pixel shader to view a 2D texture.
 float4 Gorgon2DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
-	float3 coords = float3(vertex.u, vertex.v, depthArrayIndex);
-	float4 color = _gorgonTexture1D.Sample(_gorgonSampler, coords);
+	float3 coords = float3(vertex.uv.x, vertex.uv.y, depthArrayIndex);
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, coords);
 
 	REJECT_ALPHA(color.a);
 		
@@ -35,7 +35,7 @@ float4 Gorgon2DTextureView(GorgonSpriteVertex vertex) : SV_Target
 // Pixel shader to view a 3D texture.
 float4 Gorgon3DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
-	float3 coords = float3(vertex.u, vertex.v, depthArrayIndex);
+	float3 coords = float3(vertex.uv.x, vertex.uv.y, depthArrayIndex);
 	float4 color = _gorgonTexture3D.Sample(_gorgonSampler, coords);
 
 	REJECT_ALPHA(color.a);

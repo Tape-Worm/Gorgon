@@ -39,11 +39,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     class ImageTypeTypeConverter
         : TypeConverter
     {
-        #region Variables.
-        // List of standard values for image types.
-        private StandardValuesCollection _imageTypeValues;
-        #endregion
-
         #region Methods.
         /// <summary>
         /// Returns whether this converter can convert the object to the specified type, using the specified context.
@@ -159,16 +154,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            if (_imageTypeValues != null)
-            {
-                return _imageTypeValues;
-            }
-
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
-            
-            _imageTypeValues = new StandardValuesCollection(content.Codec.SupportsImageType.ToArray());
 
-            return _imageTypeValues;
+	        var imageTypes = from imageType in content.Codec.SupportsImageType
+	                         where !content.FormatInformation.IsCompressed || imageType != ImageType.Image1D
+	                         select imageType;
+            
+            return new StandardValuesCollection(imageTypes.ToArray());
         }
         #endregion
     }

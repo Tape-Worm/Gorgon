@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Windows.Forms;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 
@@ -39,11 +40,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     class BufferFormatTypeConverter
         : TypeConverter
     {
-        #region Variables.
-        // List of standard values for formats.
-        private StandardValuesCollection _formatValues;
-        #endregion
-
         #region Methods.
         /// <summary>
         /// Returns whether this converter can convert the object to the specified type, using the specified context.
@@ -159,26 +155,35 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            if (_formatValues != null)
-            {
-                return _formatValues;
-            }
-
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
+	        var formatList = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
-            // TODO: Need a way to include compressed formats in here for codecs that support them.
-            var formats = from format in (BufferFormat[])Enum.GetValues(typeof(BufferFormat))
-                          let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
-                          where !formatInfo.HasDepth && !formatInfo.HasStencil
-                                && !formatInfo.IsTypeless 
-                                && (content.Codec.SupportedFormats.Any(item => item == format))
-								&& ((content.Codec.SupportsBlockCompression) && (formatInfo.IsCompressed)
-                                || content.Image.CanConvert(format))
-                          select formatInfo;
-            
-            _formatValues = new StandardValuesCollection(formats.Select(item => item.Format).ToArray());
+	        var formats = (from format in formatList
+	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
+	                       where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
+	                             && (!formatInfo.IsTypeless)
+	                             && (content.Codec.SupportedFormats.Any(item => item == format))
+	                       select format);
 
-            return _formatValues;
+	        BufferFormat[] availableFormats =
+		        GorgonImageData.CanConvertToAny(content.FormatInformation.IsCompressed ? BufferFormat.R8G8B8A8_UIntNormal : content.ImageFormat, formats);
+
+	        if (!content.Codec.SupportsBlockCompression)
+	        {
+		        return new StandardValuesCollection(availableFormats);
+	        }
+
+			// Append block compressed formats if we can support them.
+	        var compressedFormats = (from format in formatList
+	                                 let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
+	                                 where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
+	                                       && (!formatInfo.IsTypeless) && (formatInfo.IsCompressed)
+	                                       && (content.Codec.SupportedFormats.Any(item => item == format))
+	                                 select format);
+
+	        availableFormats = availableFormats.Concat(compressedFormats).OrderBy(item => item).ToArray();
+
+	        return new StandardValuesCollection(availableFormats);
         }
         #endregion
     }

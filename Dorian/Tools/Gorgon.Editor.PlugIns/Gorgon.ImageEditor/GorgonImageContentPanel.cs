@@ -45,7 +45,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		// Image content.
         private GorgonImageContent _content;
 		// Texture to display.
-	    private GorgonTexture2D _texture;
+	    private GorgonTexture _texture;
 		// Background texture.
 	    private GorgonTexture2D _backgroundTexture;
 		// The texture region in screen space.
@@ -71,18 +71,23 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_texture.Dispose();
 			}
 
-		    if ((_content.ImageType == ImageType.Image2D)
-		        || (_content.ImageType == ImageType.ImageCube))
-		    {
-		        _texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
-		    }
-		    else
-		    {
-		        _texture = _content.Create2DTextureFromImage();
-		    }
+			switch (_content.ImageType)
+			{
+				case ImageType.Image1D:
+					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture1D>("DisplayTexture", _content.Image);
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);	
+					break;
+				case ImageType.Image3D:
+					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture3D>("DisplayTexture", _content.Image);
+					break;
+			}
 
+			Debug.Assert(_texture != null, "Texture is NULL");
 
-		    _textureRegion = new RectangleF(Vector2.Zero, _texture.Settings.Size);
+		    _textureRegion = new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height);
 	    }
 
 		/// <summary>
@@ -154,7 +159,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-			_content.Renderer.Drawing.Blit(_texture, _textureRegion);
+			switch (_content.ImageType)
+			{
+				case ImageType.Image1D:
+					_content.Renderer.PixelShader.Current = _content.Draw1D;
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					_content.Renderer.PixelShader.Current = _content.Draw2D;
+					break;
+				case ImageType.Image3D:
+					_content.Renderer.PixelShader.Current = _content.Draw3D;
+					break;
+			}
+
+			// Send some data to render to the GPU.  We'll set the texture -after- this so that we can trick the 2D renderer into using
+			// a 1D/3D texture.  This works because the blit does not occur until after we have a state change or we force rendering with "Render".
+			var texture2D = _texture as GorgonTexture2D;
+
+			_content.Renderer.Drawing.Blit(texture2D ?? _backgroundTexture, _textureRegion);
+
+			if ((_content.ImageType == ImageType.Image1D)
+			    || (_content.ImageType == ImageType.Image3D))
+			{
+				_content.Renderer.PixelShader.Resources[0] = _texture;
+			}
+
+			_content.Renderer.PixelShader.Current = null;
+			_content.Renderer.PixelShader.Resources[0] = null;
 	    }
 
 		/// <summary>

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.IO;
@@ -739,18 +740,22 @@ namespace GorgonLibrary.Graphics
 	    internal void ValidateRenderTargetSettings(IRenderTargetTextureSettings settings)
         {
 	        var textureSettings = (ITextureSettings)settings;
+	        Size maxSize;
 			
 	        switch (settings.ImageType)
 	        {
 				case ImageType.Image1D:
 					_graphics.Textures.ValidateTexture1D(ref textureSettings);
+					maxSize = new Size(_graphics.Textures.MaxWidth, 1);
 			        break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
 					_graphics.Textures.ValidateTexture2D(ref textureSettings);
+					maxSize = new Size(_graphics.Textures.MaxWidth, _graphics.Textures.MaxHeight);
 			        break;
 				case ImageType.Image3D:
 					_graphics.Textures.ValidateTexture3D(ref textureSettings);
+					maxSize = new Size(_graphics.Textures.Max3DWidth, _graphics.Textures.Max3DHeight);
 			        break;
 				default:
 	                throw new GorgonException(GorgonResult.CannotCreate,
@@ -761,7 +766,7 @@ namespace GorgonLibrary.Graphics
 
             // Ensure the dimensions are valid.
             if ((settings.Width <= 0)
-                || (settings.Width >= _graphics.Textures.MaxWidth))
+                || (settings.Width >= maxSize.Width))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
                     string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID,
@@ -771,7 +776,7 @@ namespace GorgonLibrary.Graphics
             }
             
             if ((settings.RenderTargetType > RenderTargetType.Target1D) && ((settings.Height <= 0)
-                || (settings.Height >= _graphics.Textures.MaxHeight)))
+                || (settings.Height >= maxSize.Height)))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
                     string.Format(Resources.GORGFX_TEXTURE_HEIGHT_INVALID,

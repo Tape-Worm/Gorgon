@@ -295,41 +295,6 @@ namespace GorgonLibrary.Graphics
 			}
         }
 
-        /// <summary>
-        /// Function to determine if this image format can be converted to another format.
-        /// </summary>
-        /// <param name="wic">WIC interface.</param>
-        /// <param name="format">Format to convert to.</param>
-        /// <returns>TRUE if the the current format and the requested format can be converted, FALSE if not.</returns>
-        private bool CanConvert(GorgonWICImage wic, BufferFormat format)
-        {
-            if (format == BufferFormat.Unknown)
-            {
-                return false;
-            }
-
-            if (format == Settings.Format)
-            {
-                return true;
-            }
-
-            Guid sourcePixelFormat = wic.GetGUID(Settings.Format);
-            Guid destPixelFormat = wic.GetGUID(format);
-
-            if ((sourcePixelFormat == Guid.Empty) || (destPixelFormat == Guid.Empty))
-            {
-                return false;
-            }
-
-            // Ensure WIC can convert between the two formats.
-            using (var converter = new FormatConverter(wic.Factory))
-            {
-                converter.CanConvert(sourcePixelFormat, destPixelFormat);
-            }
-
-            return (sourcePixelFormat != Guid.Empty) && (destPixelFormat != Guid.Empty);
-        }
-
 		/// <summary>
 		/// Function convert the data into Direct 3D data boxes.
 		/// </summary>
@@ -1544,11 +1509,127 @@ namespace GorgonLibrary.Graphics
         /// <returns>TRUE if the the current format and the requested format can be converted, FALSE if not.</returns>
         public bool CanConvert(BufferFormat format)
         {
-            using (var wic = new GorgonWICImage())
-            {
-                return CanConvert(wic, format);
-            }
+	        return CanConvert(Settings.Format, format);
         }
+
+		/// <summary>
+		/// Function to determine if the source format can be converted to the destination format.
+		/// </summary>
+		/// <param name="sourceFormat">The source format to compare.</param>
+		/// <param name="destFormat">The destination format to compare.</param>
+		/// <returns>TRUE if the format can be converted, FALSE if not.</returns>
+	    public static bool CanConvert(BufferFormat sourceFormat, BufferFormat destFormat)
+	    {
+			using (var wic = new GorgonWICImage())
+			{
+				if ((sourceFormat == BufferFormat.Unknown)
+					|| (destFormat == BufferFormat.Unknown))
+				{
+					return false;
+				}
+
+				if (destFormat == sourceFormat)
+				{
+					return true;
+				}
+
+				Guid sourcePixelFormat = wic.GetGUID(sourceFormat);
+				Guid destPixelFormat = wic.GetGUID(destFormat);
+
+				if ((sourcePixelFormat == Guid.Empty)
+					|| (destPixelFormat == Guid.Empty))
+				{
+					return false;
+				}
+
+				// Ensure WIC can convert between the two formats.
+				using (var converter = new FormatConverter(wic.Factory))
+				{
+					return converter.CanConvert(sourcePixelFormat, destPixelFormat);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to determine if the source format can convert to any of the formats in the destination list.
+		/// </summary>
+		/// <param name="sourceFormat">The source format to compaare.</param>
+		/// <param name="destFormat">List of destination formats to compare.</param>
+		/// <returns>An array of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
+	    public static BufferFormat[] CanConvertToAny(BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormat)
+	    {
+			if ((sourceFormat == BufferFormat.Unknown)
+				|| (destFormat == null))
+			{
+				return new BufferFormat[0];
+			}
+
+			// ReSharper disable PossibleMultipleEnumeration
+			if (destFormat.All(item => item == sourceFormat))
+			{
+				return destFormat.ToArray();
+			}
+
+			using (var wic = new GorgonWICImage())
+			{
+				Guid sourcePixelFormat = wic.GetGUID(sourceFormat);
+
+				if (sourcePixelFormat == Guid.Empty)
+				{
+					return new BufferFormat[0];
+				}
+
+				// Ensure WIC can convert between the two formats.
+				using (var converter = new FormatConverter(wic.Factory))
+				{
+					return (from dest in destFormat
+					        let destPixelFormat = wic.GetGUID(dest)
+					        where destPixelFormat != Guid.Empty && converter.CanConvert(sourcePixelFormat, destPixelFormat)
+					        select dest).ToArray();
+				}
+			}
+			// ReSharper restore PossibleMultipleEnumeration
+		}
+
+	    /// <summary>
+	    /// Function to determine if one format can be converted to all of the formats listed in the destination list.
+	    /// </summary>
+	    /// <param name="sourceFormat">Source format to compare.</param>
+	    /// <param name="destFormat">List of destination formats to compare.</param>
+	    /// <returns>TRUE if the format can be converted, FALSE if not.</returns>
+	    public static bool CanConvertToAll(BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormat)
+	    {
+			if ((sourceFormat == BufferFormat.Unknown)
+				|| (destFormat == null))
+			{
+				return false;
+			}
+
+			// ReSharper disable PossibleMultipleEnumeration
+			if (destFormat.All(item => item == sourceFormat))
+			{
+				return true;
+			}
+
+			using (var wic = new GorgonWICImage())
+			{
+				Guid sourcePixelFormat = wic.GetGUID(sourceFormat);
+
+				if (sourcePixelFormat == Guid.Empty)
+				{
+					return false;
+				}
+
+				// Ensure WIC can convert between the two formats.
+				using (var converter = new FormatConverter(wic.Factory))
+				{
+					return destFormat
+						.Select(wic.GetGUID)
+						.All(destPixelFormat => (destPixelFormat != Guid.Empty) && (converter.CanConvert(sourcePixelFormat, destPixelFormat)));
+				}
+			}
+			// ReSharper restore PossibleMultipleEnumeration
+	    }
 
 		/// <summary>
 		/// Function to consume the data from another image into this one.

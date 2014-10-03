@@ -37,7 +37,6 @@ using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -61,6 +60,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the depth/array index.
         /// </summary>
+        [Browsable(false)]
         public int DepthArrayIndex
         {
             get
@@ -93,6 +93,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the 1D texture drawing pixel shader.
         /// </summary>
+		[Browsable(false)]
         public GorgonPixelShader Draw1D
         {
             get;
@@ -102,6 +103,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the 2D texture drawing pixel shader.
         /// </summary>
+		[Browsable(false)]
         public GorgonPixelShader Draw2D
         {
             get;
@@ -111,6 +113,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the 3D texture drawing pixel shader.
         /// </summary>
+		[Browsable(false)]
         public GorgonPixelShader Draw3D
         {
             get;
@@ -343,8 +346,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateImageProperties()
         {
-            var info = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
-
             DisableProperty("ArrayCount",
                             !Codec.SupportsArray
                             || _imageSettings.ImageType == ImageType.Image3D);
@@ -387,7 +388,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="newType">The new image type.</param>
         private void ChangeType(ImageType newType)
         {
-            IImageSettings newSettings = null;
+            IImageSettings newSettings;
 
             switch (newType)
             {
@@ -455,14 +456,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             // Do nothing if this image type is not different from the original.
             if (IsSameAsOriginal(newSettings))
             {
-                _imageSettings = _original.Settings;
+                _imageSettings = _original.Settings.Clone();
 
                 if (Image == _original)
                 {
+					ValidateImageProperties();
                     return;
                 }
 
                 Image = _original;
+				
+				ValidateImageProperties();
                 return;
             }
 
@@ -492,7 +496,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                     Image.Dispose();
                 }
 
-                _imageSettings = newSettings;
+                _imageSettings = newSettings.Clone();
                 Image = newImage;
             }
             catch
@@ -540,15 +544,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			
 			if (IsSameAsOriginal(newSettings))
 			{
-				_imageSettings = _original.Settings;
+				_imageSettings = _original.Settings.Clone();
 
 				if (Image == _original)
 				{
+					ValidateImageProperties();
 					return;
 				}
 
 				Image.Dispose();
 				Image = _original;
+				ValidateImageProperties();
 
 				return;
 			}
@@ -584,8 +590,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 						newImage = _original.Clone();
 						break;
 					case ImageType.Image3D:
-						if ((width > Graphics.Textures.MaxWidth)
-						    || (height > Graphics.Textures.MaxHeight)
+						if ((width > Graphics.Textures.Max3DWidth)
+						    || (height > Graphics.Textures.Max3DHeight)
 						    || (depth > Graphics.Textures.MaxDepth))
 						{
 							throw new ArgumentException(string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE,
@@ -606,11 +612,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 							// Copy the image data into the new image.
 							int minDepth = depth.Min(_imageSettings.Depth);
 
-							_imageSettings = newImage.Settings;
-
 							for (int i = 0; i < minDepth; ++i)
 							{
-								for (int mip = 0; i < newSettings.MipCount; ++i)
+								for (int mip = 0; mip < newSettings.MipCount; ++mip)
 								{
 									GorgonImageBuffer sourceBuffer = Image[mip, i];
 									GorgonImageBuffer destBuffer = newImage[mip, i];
@@ -628,7 +632,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				Debug.Assert(newImage != null, "Temporary image not created!");
 
 				newImage.Resize(width, height, false);
-				_imageSettings = newImage.Settings;
+				_imageSettings = newImage.Settings.Clone();
 
 				if (Image != _original)
 				{
@@ -762,7 +766,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    }
 
 		    _original = Image;
-            _imageSettings = Image.Settings;
+            _imageSettings = Image.Settings.Clone();
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
+
+			// TODO: Put in function to convert BC format images into 32 bit RGBA for Image property.
+			// TODO: Put in function to convert Image property format to another BC format.
+			// TODO: Put in function to convert Non BC format to BC format (use external tool).
+			// TODO: Put in function to convert formats to other formats.
 	
             ValidateImageProperties();
         }
