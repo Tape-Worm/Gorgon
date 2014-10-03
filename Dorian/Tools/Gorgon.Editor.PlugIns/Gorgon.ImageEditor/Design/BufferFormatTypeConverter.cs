@@ -157,6 +157,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
 	        var formatList = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+            BufferFormat currentFormat = content.ImageFormat;
+
+            if (content.FormatInformation.IsCompressed)
+            {
+                currentFormat = content.FormatInformation.IssRGB
+                                    ? BufferFormat.R8G8B8A8_UIntNormal_sRGB
+                                    : BufferFormat.R8G8B8A8_UIntNormal;
+            }
 
 	        var formats = (from format in formatList
 	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
@@ -165,8 +173,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	                             && (content.Codec.SupportedFormats.Any(item => item == format))
 	                       select format);
 
-	        BufferFormat[] availableFormats =
-		        GorgonImageData.CanConvertToAny(content.FormatInformation.IsCompressed ? BufferFormat.R8G8B8A8_UIntNormal : content.ImageFormat, formats);
+	        BufferFormat[] availableFormats = GorgonImageData.CanConvertToAny(currentFormat, formats);
 
 	        if (!content.Codec.SupportsBlockCompression)
 	        {
