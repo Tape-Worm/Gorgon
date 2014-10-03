@@ -1585,6 +1585,7 @@ namespace GorgonLibrary.Graphics
 					return (from dest in destFormat
 					        let destPixelFormat = wic.GetGUID(dest)
 					        where destPixelFormat != Guid.Empty && converter.CanConvert(sourcePixelFormat, destPixelFormat)
+                            orderby dest
 					        select dest).ToArray();
 				}
 			}
