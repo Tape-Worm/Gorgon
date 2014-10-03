@@ -100,7 +100,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AmigaBall.ico" />
     <Content Include="AmigaBoingBallSmoothShaded256.ico" />
   </ItemGroup>
   <ItemGroup>

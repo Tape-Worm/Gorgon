@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_MISMATCH);
 			}
 
-			DirectAccess.MemoryCopy(Data.UnsafePointer, buffer.Data.UnsafePointer, (int)Data.Length);
+			DirectAccess.MemoryCopy(buffer.Data.UnsafePointer, Data.UnsafePointer, (int)Data.Length);
 	    }
 
         /// <summary>

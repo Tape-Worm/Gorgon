@@ -77,7 +77,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the maximum width of a texture.
+		/// Property to return the maximum number of array indices for 1D and 2D textures.
+		/// </summary>
+		public int MaxArrayCount
+		{
+			get
+			{
+				return 2048;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the maximum width of a 1D or 2D texture.
 		/// </summary>
 		public int MaxWidth
 		{
@@ -95,7 +106,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the maximum height of a texture.
+		/// Property to return the maximum height of a 2D texture.
 		/// </summary>
 		public int MaxHeight
 		{
@@ -109,6 +120,28 @@ namespace GorgonLibrary.Graphics
 					default:
 						return 16384;
 				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the maximum width of a volume (3D) texture.
+		/// </summary>
+		public int Max3DWidth
+		{
+			get
+			{
+				return 2048;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the maximum height of a volume (3D) texture.
+		/// </summary>
+		public int Max3DHeight
+		{
+			get
+			{
+				return 2048;
 			}
 		}
 
@@ -192,7 +225,7 @@ namespace GorgonLibrary.Graphics
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
                 && (settings.AllowUnorderedAccessViews))
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
             }
 
             // Check texture size if using a compressed format.
@@ -200,27 +233,23 @@ namespace GorgonLibrary.Graphics
 
 			if (formatInfo.IsCompressed)
 			{
-				if ((settings.Width % 4) != 0)
+				if (((settings.Width % 4) != 0)
+					|| ((settings.Height % 4) != 0))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
-				}
-
-				if ((settings.Height % 4) != 0)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a height that is a multiple of 4.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4);
 				}
 			}
 
-			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
-			if (settings.Height > MaxHeight)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight + ".");
+			if (settings.Width > Max3DWidth)
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID, ImageType.Image3D, settings.Width, Max3DWidth));
+			if (settings.Height > Max3DHeight)
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_HEIGHT_INVALID, ImageType.Image3D, settings.Width, Max3DHeight));
 			if (settings.Depth > MaxDepth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture depth must be less than " + MaxDepth + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_DEPTH_INVALID, ImageType.Image3D, settings.Width, MaxDepth));
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports3DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image3D));
 		}
 
 		/// <summary>
@@ -253,21 +282,21 @@ namespace GorgonLibrary.Graphics
 				settings.ArrayCount = 1;
 			}
 
-			if (settings.ArrayCount > 2048)
+			if (settings.ArrayCount > _graphics.Textures.MaxArrayCount)
 			{
-				settings.ArrayCount = 2048;
+				settings.ArrayCount = _graphics.Textures.MaxArrayCount;
 			}
 
 			if (settings.IsTextureCube)
 			{
 				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  SM4 devices require a maximum of 6 faces.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4);
 				}
 
 				if ((settings.ArrayCount % 6) != 0)
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture cube array.  The array count is not a multiple of 6.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX);
 				}
 			}
 
@@ -291,31 +320,27 @@ namespace GorgonLibrary.Graphics
 
 			if (formatInfo.IsCompressed)
 			{
-				if ((settings.Width % 4) != 0)
+				if (((settings.Width % 4) != 0)
+					|| ((settings.Height % 4) != 0))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
-				}
-
-				if ((settings.Height % 4) != 0)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a height that is a multiple of 4.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4);
 				}
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
                 && (settings.AllowUnorderedAccessViews))
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
             }
 
 			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID, ImageType.Image2D, settings.Width, MaxWidth));
 			if (settings.Height > MaxHeight)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_HEIGHT_INVALID, ImageType.Image2D, settings.Height, MaxHeight));
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");			
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image2D));			
 		}
 
 		/// <summary>
@@ -333,6 +358,11 @@ namespace GorgonLibrary.Graphics
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
 
+			if (settings.ArrayCount > _graphics.Textures.MaxArrayCount)
+			{
+				settings.ArrayCount = _graphics.Textures.MaxArrayCount;
+			}
+
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
@@ -349,22 +379,26 @@ namespace GorgonLibrary.Graphics
 			{
 				if ((settings.Width % 4) != 0)
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4);
 				}
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
                 && (settings.AllowUnorderedAccessViews))
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
             }
 
 			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID, ImageType.Image1D, settings.Width, MaxWidth));
+			}
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports1DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image1D));
+			}
 		}
 
         /// <summary>
@@ -963,7 +997,7 @@ namespace GorgonLibrary.Graphics
 			// We cannot create an immutable texture without some initialization data.
 			if (settings.Usage == BufferUsage.Immutable)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Immutable textures require initialization data.");
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA);
 			}
 
 			var textureSettings = settings as ITextureSettings;
@@ -1017,7 +1051,7 @@ namespace GorgonLibrary.Graphics
 			// We cannot create an immutable texture without some initialization data.
 			if (settings.Usage == BufferUsage.Immutable)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Immutable textures require initialization data.");
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA);
 			}
 
 			var textureSettings = settings as ITextureSettings;
@@ -1071,7 +1105,7 @@ namespace GorgonLibrary.Graphics
 			// We cannot create an immutable texture without some initialization data.
 			if (settings.Usage == BufferUsage.Immutable)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Immutable textures require initialization data.");
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA);
 			}
 
 			var textureSettings = settings as ITextureSettings;

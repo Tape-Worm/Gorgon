@@ -1244,6 +1244,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A compressed texture must have a width and height that is a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4 {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Feature level SM2_a_b video devices cannot copy non-staging textures..
         /// </summary>
         internal static string GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING {
@@ -1271,6 +1280,24 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create the texture cube array.  The array count is not a multiple of 6..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_CUBE_MULTIPLE_OF_SIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create the texture cube array.  SM4 devices require a maximum of 6 faces..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4 {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a depth of {1}.  The depth must be between 0 and {2}..
         /// </summary>
         internal static string GORGFX_TEXTURE_DEPTH_INVALID {
@@ -1289,6 +1316,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format &apos;{0}&apos; is not supported for a &apos;{1}&apos; texture..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a height of {1}.  The height must be between 0 and {2}..
         /// </summary>
         internal static string GORGFX_TEXTURE_HEIGHT_INVALID {
@@ -1303,6 +1339,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_TEXTURE_IMMUTABLE {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Immutable textures require initialization data..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_IMMUTABLE_REQUIRES_DATA", resourceCulture);
             }
         }
         
@@ -1753,6 +1798,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VIEW_UAV_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_UAV_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unordered access views for textures requires a SM5 or better video device..
+        /// </summary>
+        internal static string GORGFX_VIEW_UAV_REQUIRES_SM5 {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_UAV_REQUIRES_SM5", resourceCulture);
             }
         }
         
