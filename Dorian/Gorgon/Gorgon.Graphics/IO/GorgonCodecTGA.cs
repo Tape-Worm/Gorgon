@@ -1036,7 +1036,7 @@ namespace GorgonLibrary.IO
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
 		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
-			var buffer = image[0];	        // Get the first buffer only.
+			var buffer = image.Buffers[0];	        // Get the first buffer only.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
 
 			GorgonFormatPitch srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
@@ -1167,8 +1167,8 @@ namespace GorgonLibrary.IO
 				}
 
 				// Get the pointer to the first mip/array/depth level.
-				var srcPointer = (byte *)imageData[0].Data.UnsafePointer;
-				var srcPitch = imageData[0].PitchInformation;
+				var srcPointer = (byte *)imageData.Buffers[0].Data.UnsafePointer;
+				var srcPitch = imageData.Buffers[0].PitchInformation;
 
 				// If the two pitches are equal, then just write out the buffer.
 				if ((pitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))

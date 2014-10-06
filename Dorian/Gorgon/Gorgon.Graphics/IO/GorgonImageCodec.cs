@@ -494,6 +494,24 @@ namespace GorgonLibrary.IO
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is NULL.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+		/// <remarks>Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.</remarks>
+		protected unsafe void SwizzleScanline(IntPtr src, int srcPitch, IntPtr dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
+		{
+			SwizzleScanline(src.ToPointer(), srcPitch, dest.ToPointer(), destPitch, format, bitFlags);
+		}
+
+		/// <summary>
+		/// Function to copy (or update in-place) with bits swizzled to match another format.
+		/// </summary>
+		/// <param name="src">The pointer to the source data.</param>
+		/// <param name="srcPitch">The pitch of the source data.</param>
+		/// <param name="dest">The pointer to the destination data.</param>
+		/// <param name="destPitch">The pitch of the destination data.</param>
+		/// <param name="format">Format of the destination buffer.</param>
+		/// <param name="bitFlags">Image bit conversion control flags.</param>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is NULL.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
@@ -838,11 +856,9 @@ namespace GorgonLibrary.IO
 					return;
 				}
 
-				try
+				// Create our worker buffer.
+				using(destData = new GorgonImageData(destSettings))
 				{
-					// Create our worker buffer.
-					destData = new GorgonImageData(destSettings);
-
 					// The first step is to convert and resize our images:
 					if ((destPixelFormat != Guid.Empty) || (newSize != Rectangle.Empty))
 					{
@@ -852,8 +868,8 @@ namespace GorgonLibrary.IO
 							for (int depth = 0; depth < destSettings.Depth; depth++)
 							{
 								// Get our source/destination buffers.
-								var sourceBuffer = data[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
-                                var destBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
+								var sourceBuffer = data.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
+                                var destBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
 								var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
@@ -884,8 +900,8 @@ namespace GorgonLibrary.IO
 								for (int depth = 0; depth < mipDepth; depth++)
 								{
 									// Get our source/destination buffers.
-								    var sourceBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
-									var destBuffer = destData[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
+								    var sourceBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
+									var destBuffer = destData.Buffers[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
 									var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
@@ -906,16 +922,7 @@ namespace GorgonLibrary.IO
 					}
 
 					// Update our data.
-					data.Import(destData);
-				}
-				catch
-				{
-					if (destData != null)
-					{
-						destData.Dispose();
-					}
-
-					throw;
+					data.TakeOwnership(destData);
 				}
 			}
 		}

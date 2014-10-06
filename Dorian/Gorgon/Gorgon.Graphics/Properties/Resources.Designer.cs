@@ -70,6 +70,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No encoder was found for the format [{0}]..
+        /// </summary>
+        internal static string GORGFX_BC_NO_ENCODER {
+            get {
+                return ResourceManager.GetString("GORGFX_BC_NO_ENCODER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8}).
         /// </summary>
         internal static string GORGFX_BOX_TOSTR {
@@ -560,6 +569,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image is already compressed..
+        /// </summary>
+        internal static string GORGFX_IMAGE_ALREADY_COMPRESSED {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_ALREADY_COMPRESSED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Windows Bitmap.
         /// </summary>
         internal static string GORGFX_IMAGE_BMP_CODEC_DESC {
@@ -583,6 +601,25 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_IMAGE_BUFFER_SIZE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_IMAGE_BUFFER_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot compress image formats that are less than 8 bits.
+        ///The current format uses {0} bits..
+        /// </summary>
+        internal static string GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8 {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot compress images with a typeless format..
+        /// </summary>
+        internal static string GORGFX_IMAGE_CANT_COMPRESS_TYPELESS {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_CANT_COMPRESS_TYPELESS", resourceCulture);
             }
         }
         
@@ -628,6 +665,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_IMAGE_FORMAT_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_IMAGE_FORMAT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format &apos;{0}&apos; is not a valid compressed format..
+        /// </summary>
+        internal static string GORGFX_IMAGE_FORMAT_NOT_COMPRESSED {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_FORMAT_NOT_COMPRESSED", resourceCulture);
             }
         }
         

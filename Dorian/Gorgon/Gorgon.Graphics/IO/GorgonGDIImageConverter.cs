@@ -177,7 +177,7 @@ namespace GorgonLibrary.IO
 			{
 				for (int mipLevel = 0; mipLevel < data.Settings.MipCount; mipLevel++)
 				{
-					var buffer = data[mipLevel];
+					var buffer = data.Buffers[mipLevel];
 
 					// Convert to a GorgonImageData type container.
 					wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
@@ -259,7 +259,7 @@ namespace GorgonLibrary.IO
 					// Using the image, convert to a WIC bitmap object.
 					using (var bitmap = wic.CreateWICImageFromImage(image))
 					{
-						var buffer = data[mipLevel, array];
+						var buffer = data.Buffers[mipLevel, array];
 
 						wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
 					}
@@ -325,7 +325,7 @@ namespace GorgonLibrary.IO
 			{
 				for (int mipLevel = 0; mipLevel < options.MipCount; mipLevel++)
 				{
-					var buffer = data[mipLevel];
+					var buffer = data.Buffers[mipLevel];
 					wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
 				}
 			}
@@ -413,7 +413,7 @@ namespace GorgonLibrary.IO
 					// Using the image, convert to a WIC bitmap object.
 					using (var bitmap = wic.CreateWICImageFromImage(image))
 					{
-						var buffer = data[mipLevel, array];
+						var buffer = data.Buffers[mipLevel, array];
 
 						wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
 					}
@@ -520,7 +520,7 @@ namespace GorgonLibrary.IO
                     // Using the image, convert to a WIC bitmap object.
                     using (var bitmap = wic.CreateWICImageFromImage(image))
                     {
-                        var buffer = data[mipLevel, depth];
+                        var buffer = data.Buffers[mipLevel, depth];
                         wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
                     }
                 }

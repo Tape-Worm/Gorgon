@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics.Test
             _framework.Graphics.Shaders.PixelShader.Current = shader;
             _framework.Graphics.Shaders.PixelShader.Resources[1] = texture;
 
-            texture.UpdateSubResource(imageData[0],
+            texture.UpdateSubResource(imageData.Buffers[0],
                 new Rectangle
                 {
                     Width = 128,
@@ -158,7 +158,7 @@ namespace GorgonLibrary.Graphics.Test
                     Y = 0
                 });
 
-            texture.UpdateSubResource(imageData[1],
+            texture.UpdateSubResource(imageData.Buffers[1],
                 new Rectangle
                 {
                     Width = 64,
@@ -167,6 +167,14 @@ namespace GorgonLibrary.Graphics.Test
                     Y = 0
                 });
 
+	        GorgonTexture2D testIntFormat = _framework.Graphics.Textures.CreateTexture("asas",
+	                                                                                   new GorgonTexture2DSettings
+	                                                                                   {
+																						   Format = BufferFormat.R8G8B8A8_Int,
+																						   Usage = BufferUsage.Dynamic,
+																						   Width = 64,
+																						   Height = 64
+	                                                                                   });
 
             _framework.IdleFunc = () =>
             {
@@ -176,18 +184,18 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     for (int i = 0; i < 4096; ++i)
                     {
-                        int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
-                        int x = GorgonRandom.RandomInt32(0, imageData[0].Width);
+                        int y = GorgonRandom.RandomInt32(0, imageData.Buffers[0].Height);
+                        int x = GorgonRandom.RandomInt32(0, imageData.Buffers[0].Width);
 
                         // 95417E
 
-                        imageData[0].Data.Position = (y * imageData[0].PitchInformation.RowPitch)
+                        imageData.Buffers[0].Data.Position = (y * imageData.Buffers[0].PitchInformation.RowPitch)
                                                      + (x * 4);
 
                         lockData.Data.Position = (y * lockData.PitchInformation.RowPitch)
                                                  + (x * dynTexture.FormatInformation.SizeInBytes);
 
-                        var color = new GorgonColor(imageData[0].Data.ReadInt32());
+                        var color = new GorgonColor(imageData.Buffers[0].Data.ReadInt32());
 
                         color = new GorgonColor(color.Red / diver, color.Green / diver, color.Blue / diver);
 
@@ -208,7 +216,7 @@ namespace GorgonLibrary.Graphics.Test
                     diver = 1.0f;
                 }
 
-                _framework.Graphics.Shaders.PixelShader.Resources[2] = dynTexture;
+	            _framework.Graphics.Shaders.PixelShader.Resources[2] = dynTexture;
 
                 return false;
             };
@@ -372,9 +380,9 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     for (int i = 0; i < 5000; i++)
                     {
-                        data[0].Data.Position = ((GorgonRandom.RandomInt32(0, 256) * data[0].PitchInformation.RowPitch)
+                        data.Buffers[0].Data.Position = ((GorgonRandom.RandomInt32(0, 256) * data.Buffers[0].PitchInformation.RowPitch)
                                                 + GorgonRandom.RandomInt32(0, 256) * 4);
-						data[0].Data.Write((int)((GorgonRandom.RandomSingle() * 2.0f - 1.0f) * (Int32.MaxValue - 2)));
+						data.Buffers[0].Data.Write((int)((GorgonRandom.RandomSingle() * 2.0f - 1.0f) * (Int32.MaxValue - 2)));
                     }
 
                     texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);

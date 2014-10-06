@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 
 			// Create the texture.
 			D3DResource = initialData != null
-				              ? new Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+							  ? new Texture2D(Graphics.D3DDevice, desc, initialData.Buffers.DataBoxes)
 				              : new Texture2D(Graphics.D3DDevice, desc);
 
 			GorgonRenderStatistics.DepthBufferCount++;

@@ -22,16 +22,17 @@
 // 
 // Created: Friday, September 02, 2011 6:32:30 AM
 // 
+//
+// Portions of this code were pulled from the DirectXPackedVector.inl and DirectXPackedVector.h from the Direct X APIs. 
+// All Copyrights for those portions belong to Microsoft.
 #endregion
 
-using System.Drawing;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX;
-using SlimMath;
-using Color = System.Drawing.Color;
-using Vector3 = SlimMath.Vector3;
 using Vector4 = SlimMath.Vector4;
+using Vector3 = SlimMath.Vector3;
+using Color = System.Drawing.Color;
 
 namespace GorgonLibrary.Graphics
 {

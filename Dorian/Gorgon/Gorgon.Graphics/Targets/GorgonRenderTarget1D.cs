@@ -165,7 +165,7 @@ namespace GorgonLibrary.Graphics
 
             // Create the texture.
             D3DResource = initialData != null
-                              ? new D3D.Texture1D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+							  ? new D3D.Texture1D(Graphics.D3DDevice, desc, initialData.Buffers.DataBoxes)
                               : new D3D.Texture1D(Graphics.D3DDevice, desc);
 
             // Create the default render target view.

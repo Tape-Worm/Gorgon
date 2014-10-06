@@ -487,7 +487,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 {
                     for (int mip = 0; mip < newSettings.MipCount; ++mip)
                     {
-                        Image[mip, depth].CopyTo(newImage[mip, depth]);
+                        Image.Buffers[mip, depth].CopyTo(newImage.Buffers[mip, depth]);
                     }
                 }
                 
@@ -616,8 +616,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 							{
 								for (int mip = 0; mip < newSettings.MipCount; ++mip)
 								{
-									GorgonImageBuffer sourceBuffer = Image[mip, i];
-									GorgonImageBuffer destBuffer = newImage[mip, i];
+									GorgonImageBuffer sourceBuffer = Image.Buffers[mip, i];
+									GorgonImageBuffer destBuffer = newImage.Buffers[mip, i];
 
 									sourceBuffer.CopyTo(destBuffer);
 								}
@@ -871,14 +871,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public override Image GetThumbNailImage()
         {
             Image resultImage;
-            float aspect = (float)Image[0].Width / Image[0].Height;
+            float aspect = (float)Image.Buffers[0].Width / Image.Buffers[0].Height;
             var newSize = new Size(128, 128);
 
 			// If this device can't support loading the image, then show
 			// a thumbnail that will indicate that we can't load it.
-	        if ((Image[0].Width >= Graphics.Textures.MaxWidth)
-	            || (Image[0].Height >= Graphics.Textures.MaxHeight)
-	            || (Image[0].Depth >= Graphics.Textures.MaxDepth))
+	        if ((Image.Buffers[0].Width >= Graphics.Textures.MaxWidth)
+	            || (Image.Buffers[0].Height >= Graphics.Textures.MaxHeight)
+	            || (Image.Buffers[0].Depth >= Graphics.Textures.MaxDepth))
 	        {
 		        return (Image)Resources.invalid_image_128x128.Clone();
 	        }
@@ -918,8 +918,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    }
 
             // Resize our image.
-            if ((Image[0].Width != 128)
-                || (Image[0].Height != 128))
+            if ((Image.Buffers[0].Width != 128)
+                || (Image.Buffers[0].Height != 128))
             {
                 if (aspect > 1.0f)
                 {
@@ -935,7 +935,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             try
             {
-                resultImage = Image[0].ToGDIImage();
+                resultImage = Image.Buffers[0].ToGDIImage();
             }
             catch (GorgonException gex)
             {

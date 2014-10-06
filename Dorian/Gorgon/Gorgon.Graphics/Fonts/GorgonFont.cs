@@ -505,13 +505,13 @@ namespace GorgonLibrary.Graphics
 						int* offset = pixels + (y * bitmap.Width);
 						for (int x = 0; x < bitmap.Width; x++)
 						{
-							data[0].Data.Write(GorgonColor.FromABGR(*offset).ToARGB());
+							data.Buffers[0].Data.Write(GorgonColor.FromABGR(*offset).ToARGB());
 							offset++;
 						}
 					}
 
-                    data[0].Data.Position = 0;
-                    texture.UpdateSubResource(data[0], new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+                    data.Buffers[0].Data.Position = 0;
+                    texture.UpdateSubResource(data.Buffers[0], new Rectangle(0, 0, bitmap.Width, bitmap.Height));
 				}
 			}
 			finally

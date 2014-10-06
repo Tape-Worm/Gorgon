@@ -1161,7 +1161,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("data");
 			}
 
-			if (data.Count == 0)
+			if (data.Buffers.Count == 0)
 			{
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
 			}

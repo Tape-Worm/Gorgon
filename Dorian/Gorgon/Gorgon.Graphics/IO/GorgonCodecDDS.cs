@@ -1647,7 +1647,7 @@ namespace GorgonLibrary.IO
 					&& (pitchFlags == PitchFlags.None) && (image.Settings.ArrayCount == _actualArrayCount) && (image.Settings.Depth == _actualDepth))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
-                DirectAccess.MemoryCopy(image[0].Data.UnsafePointer, stream.PositionPointerUnsafe, sizeInBytes);
+                DirectAccess.MemoryCopy(image.Buffers[0].Data.UnsafePointer, stream.PositionPointerUnsafe, sizeInBytes);
                 return;
 			}
 
@@ -1673,7 +1673,7 @@ namespace GorgonLibrary.IO
 				for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
 				{
 					// Get our destination buffer.
-					var destBuffer = image[mipLevel, array];
+					var destBuffer = image.Buffers[mipLevel, array];
 					var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
 					var destPointer = (byte*)destBuffer.Data.UnsafePointer;
 
@@ -1867,7 +1867,7 @@ namespace GorgonLibrary.IO
 						{
 							for (int mipLevel = 0; mipLevel < imageData.Settings.MipCount; mipLevel++)
 							{
-								var buffer = imageData[mipLevel, array];
+								var buffer = imageData.Buffers[mipLevel, array];
 								
 								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
 							}
@@ -1879,7 +1879,7 @@ namespace GorgonLibrary.IO
 						{							
 							for (int slice = 0; slice < depth; slice++)
 							{
-								var buffer = imageData[mipLevel, slice];
+								var buffer = imageData.Buffers[mipLevel, slice];
 								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
 							}
 
