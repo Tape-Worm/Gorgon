@@ -25,18 +25,25 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
     /// An image buffer containing data about the image.
     /// </summary>
-    public unsafe class GorgonImageBuffer
+    public class GorgonImageBuffer
     {
         #region Properties.
         /// <summary>
@@ -133,7 +140,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">The buffer to copy into.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> is not the same width, height or format as this buffer.</exception>
-	    public void CopyTo(GorgonImageBuffer buffer)
+	    public unsafe void CopyTo(GorgonImageBuffer buffer)
 	    {
 			if ((buffer == null)
 			    || (buffer.Data == null)
@@ -194,7 +201,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="height">The height for the buffer.</param>
         /// <param name="depth">The depth for the buffer.</param>
         /// <param name="format">Format of the buffer.</param>
-        internal GorgonImageBuffer(void* dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
+        internal unsafe GorgonImageBuffer(void* dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
         {
             Data = new GorgonDataStream(dataStart, pitchInfo.SlicePitch);
             PitchInformation = pitchInfo;

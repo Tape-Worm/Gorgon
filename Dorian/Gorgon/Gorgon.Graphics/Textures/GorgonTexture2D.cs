@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 		    D3DResource = initialData != null
-		                      ? new D3D.Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+							  ? new D3D.Texture2D(Graphics.D3DDevice, desc, initialData.Buffers.DataBoxes)
 		                      : new D3D.Texture2D(Graphics.D3DDevice, desc);
 		}
 

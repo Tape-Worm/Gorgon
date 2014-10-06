@@ -123,9 +123,9 @@ namespace GorgonLibrary.Graphics
 			}
 			
 
-			if ((initialData != null) && (initialData.Count > 0))
+			if ((initialData != null) && (initialData.Buffers.Count > 0))
 			{
-				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc, initialData.GetDataBoxes());
+				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc, initialData.Buffers.DataBoxes);
 			}
 			else
 			{

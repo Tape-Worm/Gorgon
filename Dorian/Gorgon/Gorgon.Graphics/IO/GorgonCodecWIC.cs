@@ -331,7 +331,7 @@ namespace GorgonLibrary.IO
 
 			for (int array = 0; array < arrayCount; array++)
 			{
-				var buffer = data[0, array];
+				var buffer = data.Buffers[0, array];
 
 				// Get the frame data.
 				using (var frame = decoder.GetFrame(array))
@@ -441,7 +441,7 @@ namespace GorgonLibrary.IO
 		/// <param name="frame">Frame containing the image data.</param>
 		private void ReadFrame(GorgonWICImage wic, GorgonImageData data, Guid srcFormat, Guid convertFormat, BitmapFrameDecode frame)
 		{
-			var buffer = data[0];
+			var buffer = data.Buffers[0];
 
 			// We don't need to convert, so just leave.
 			if ((convertFormat == Guid.Empty) || (srcFormat == convertFormat))
@@ -689,7 +689,7 @@ namespace GorgonLibrary.IO
 							{
 								using (var frame = new BitmapFrameEncode(encoder))
 								{
-									var buffer = imageData[0, frameIndex];
+									var buffer = imageData.Buffers[0, frameIndex];
 
 									frame.Initialize();
 									frame.SetSize(buffer.Width, buffer.Height);

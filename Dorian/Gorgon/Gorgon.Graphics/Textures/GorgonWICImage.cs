@@ -498,10 +498,10 @@ namespace GorgonLibrary.Graphics
             }
 
             // Make room for all the buffers.
-            var bitmaps = new WIC.Bitmap[data.Count];
+            var bitmaps = new WIC.Bitmap[data.Buffers.Count];
 
             // Copy to the bitmap.
-            foreach (var buffer in data)
+            foreach (var buffer in data.Buffers)
             {
                 var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
                 bitmaps[bitmapIndex] = new WIC.Bitmap(Factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);

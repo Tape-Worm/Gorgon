@@ -727,4 +727,20 @@ Log file location: "{0}"</value>
   <data name="GORGFX_VIEW_UAV_REQUIRES_SM5" xml:space="preserve">
     <value>Unordered access views for textures requires a SM5 or better video device.</value>
   </data>
+  <data name="GORGFX_BC_NO_ENCODER" xml:space="preserve">
+    <value>No encoder was found for the format [{0}].</value>
+  </data>
+  <data name="GORGFX_IMAGE_ALREADY_COMPRESSED" xml:space="preserve">
+    <value>The image is already compressed.</value>
+  </data>
+  <data name="GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8" xml:space="preserve">
+    <value>Cannot compress image formats that are less than 8 bits.
+The current format uses {0} bits.</value>
+  </data>
+  <data name="GORGFX_IMAGE_CANT_COMPRESS_TYPELESS" xml:space="preserve">
+    <value>Cannot compress images with a typeless format.</value>
+  </data>
+  <data name="GORGFX_IMAGE_FORMAT_NOT_COMPRESSED" xml:space="preserve">
+    <value>The format '{0}' is not a valid compressed format.</value>
+  </data>
 </root>
