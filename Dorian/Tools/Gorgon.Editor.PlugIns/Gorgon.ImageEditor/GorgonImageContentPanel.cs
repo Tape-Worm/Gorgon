@@ -50,15 +50,69 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private GorgonTexture2D _backgroundTexture;
 		// The texture region in screen space.
 	    private RectangleF _textureRegion;
+        // The current shader view.
+        private GorgonTextureShaderView _currentView;
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Handles the Click event of the buttonPrevMipLevel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonPrevMipLevel_Click(object sender, EventArgs e)
+        {
+            int currentMip = (_currentView.MipStart - 1);
+
+            if (currentMip < 0)
+            {
+                currentMip = 0;
+            }
+
+            GetCurrentShaderView(currentMip, _currentView.ArrayStart);
+
+            labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, currentMip);
+
+            ValidateControls();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the buttonNextMipLevel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonNextMipLevel_Click(object sender, EventArgs e)
+        {
+            int currentMip = (_currentView.MipStart + 1);
+
+            if (currentMip >= _content.MipCount)
+            {
+                currentMip = _content.MipCount - 1;
+            }
+
+            GetCurrentShaderView(currentMip, _currentView.ArrayStart);
+
+            labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, currentMip);
+
+            ValidateControls();
+        }
+
         /// <summary>
         /// Function to validate control state.
         /// </summary>
         private void ValidateControls()
         {
-            
+            buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart > 0);
+            buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart < _content.MipCount);
+            buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
+                                           && (_currentView.ArrayStart > 0);
+            buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
+                                           && (_currentView.ArrayStart < _content.ArrayCount);
+
+            // Volume textures don't have array indices.
+            buttonPrevArrayIndex.Visible =
+                buttonNextArrayIndex.Visible =
+                sepArray.Visible = labelArrayIndex.Visible = _content.ImageType != ImageType.Image3D;
         }
 
 		/// <summary>
@@ -88,7 +142,77 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			Debug.Assert(_texture != null, "Texture is NULL");
 
 		    _textureRegion = new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height);
+
+		    if (_currentView != null)
+		    {
+		        GetCurrentShaderView(_currentView.MipStart < _content.MipCount
+		                                 ? _currentView.MipStart
+		                                 : _content.MipCount - 1,
+		                             _currentView.ArrayStart < _content.ArrayCount
+		                                 ? _currentView.ArrayStart
+		                                 : _content.ArrayCount - 1);
+		    }
+		    else
+		    {
+                GetCurrentShaderView(0, 0);
+		    }
 	    }
+
+        /// <summary>
+        /// Function to scale the image to the window.
+        /// </summary>
+        /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
+        private RectangleF ScaleImage()
+        {
+            Vector2 windowSize = panelTextureDisplay.ClientSize;
+            var imageSize = new Vector2(_content.Width, _content.Height);
+            var location = new Vector2(panelTextureDisplay.ClientSize.Width / 2.0f,
+                                       panelTextureDisplay.ClientSize.Height / 2.0f);
+            var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y); ;
+
+            if (scale.Y > scale.X)
+            {
+                scale.Y = scale.X;
+            }
+            else
+            {
+                scale.X = scale.Y;
+            }
+
+            Vector2.Modulate(ref imageSize, ref scale, out imageSize);
+            location.X = location.X - imageSize.X / 2.0f;
+            location.Y = location.Y - imageSize.Y / 2.0f;
+
+            return new RectangleF(location, imageSize);
+        }
+
+        /// <summary>
+        /// Function to retrieve the shader view for the texture.
+        /// </summary>
+        /// <param name="mipIndex">Index of the mip map level.</param>
+        /// <param name="arrayIndex">Index of the array level.</param>
+        private void GetCurrentShaderView(int mipIndex, int arrayIndex)
+        {
+            switch (_content.ImageType)
+            {
+                case ImageType.Image1D:
+                    _currentView = ((GorgonTexture1D)_texture).GetShaderView(_texture.Settings.Format,
+                                                                             mipIndex,
+                                                                             1,
+                                                                             arrayIndex);
+                    break;
+                case ImageType.Image2D:
+                    _currentView = ((GorgonTexture2D)_texture).GetShaderView(_texture.Settings.Format,
+                                                                             mipIndex,
+                                                                             1,
+                                                                             arrayIndex);
+                    break;
+                case ImageType.Image3D:
+                    _currentView = ((GorgonTexture3D)_texture).GetShaderView(_texture.Settings.Format,
+                                                                             mipIndex);
+                    break;
+            }
+        }
 
 		/// <summary>
 		/// Function to localize the text of the controls on the form.
@@ -96,6 +220,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORIMG_DESC;
+		    labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, 0);
+		    labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, 0);
 		}
 
 		/// <summary>
@@ -114,6 +240,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					CreateTexture();
 					break;
 			}
+
+            ValidateControls();
 	    }
 
 	    /// <summary>
@@ -176,14 +304,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			// Send some data to render to the GPU.  We'll set the texture -after- this so that we can trick the 2D renderer into using
 			// a 1D/3D texture.  This works because the blit does not occur until after we have a state change or we force rendering with "Render".
 			var texture2D = _texture as GorgonTexture2D;
+            
+			_content.Renderer.Drawing.Blit(texture2D ?? _backgroundTexture, ScaleImage());
 
-			_content.Renderer.Drawing.Blit(texture2D ?? _backgroundTexture, _textureRegion);
-
-			if ((_content.ImageType == ImageType.Image1D)
-			    || (_content.ImageType == ImageType.Image3D))
-			{
-				_content.Renderer.PixelShader.Resources[0] = _texture;
-			}
+		    _content.Renderer.PixelShader.Resources[0] = _currentView;
 
 			_content.Renderer.PixelShader.Current = null;
 			_content.Renderer.PixelShader.Resources[0] = null;
