@@ -63,6 +63,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_16x16png1 {
+            get {
+                object obj = ResourceManager.GetObject("back_16x16png1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
@@ -94,6 +104,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string CATEGORY_TEXTURE {
             get {
                 return ResourceManager.GetString("CATEGORY_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap forward_16x161 {
+            get {
+                object obj = ResourceManager.GetObject("forward_16x161", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -224,6 +244,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Array index: {0}.
+        /// </summary>
+        internal static string GORIMG_TEXT_ARRAY_INDEX {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mip-map level: {0}.
+        /// </summary>
+        internal static string GORIMG_TEXT_MIP_LEVEL {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_MIP_LEVEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The image type &apos;{0}&apos; is unknown..
         /// </summary>
         internal static string GORIMG_UNKNOWN_IMAGE_TYPE {
@@ -280,14 +318,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         ///
         ///// The depth/array index to view.
         ///cbuffer GorgonDepthArrayIndex {
-        ///	float depthArrayIndex : register(b1)
-        ///}
+        ///	float depthArrayIndex : register(b1);
+        ///};
         ///
         ///// Pixel shader to view a 1D texture.
         ///float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
         ///{
-        ///	float2 coords = float2(vertex.u, depthArrayIndex);
-        ///	float4 color = _gorgonTexture1D.Sample(_gor [rest of string was truncated]&quot;;.
+        ///	float2 coords = float2(vertex.uv.x, depthArrayIndex);
+        ///	float4 color = _gorgonTexture1D.Sample [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImageViewShaders {
             get {

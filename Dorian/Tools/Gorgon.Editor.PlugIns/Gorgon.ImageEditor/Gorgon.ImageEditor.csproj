@@ -72,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\back_16x16png1.png" />
+    <None Include="Resources\forward_16x161.png" />
     <Content Include="Resources\ImageViewShaders.hlsl" />
     <None Include="Resources\Pattern.bmp" />
     <None Include="Resources\invalid_image_128x128.png" />
