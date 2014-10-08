@@ -253,4 +253,8 @@
   <data name="GORIMG_TEXT_MIP_LEVEL" xml:space="preserve">
     <value>Mip-map level: {0}</value>
   </data>
+  <data name="GORIMG_ERROR_DECOMPRESSING" xml:space="preserve">
+    <value>There was an error decompressing the file.
+See the details pane for more information.</value>
+  </data>
 </root>

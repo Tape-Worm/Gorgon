@@ -1945,6 +1945,7 @@ namespace GorgonLibrary.IO
                 using (var memoryStream = new GorgonDataStream(size))
                 {
                     memoryStream.ReadFromStream(stream, size);
+	                memoryStream.Position = 0;
                     return ReadHeader(memoryStream, size, out flags);
                 }
             }

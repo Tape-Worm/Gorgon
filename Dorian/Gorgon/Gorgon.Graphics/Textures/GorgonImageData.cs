@@ -1746,29 +1746,47 @@ namespace GorgonLibrary.Graphics
 					destSettings.Height = height;
 				}
 
+				int calcMipLevels = GetMaxMipCount(destSettings.Width, destSettings.Height, destSettings.Depth);
+
+				if (calcMipLevels < destSettings.MipCount)
+				{
+					destSettings.MipCount = calcMipLevels;
+				}
+
 				using (var destData = new GorgonImageData(destSettings))
 				{
 					for (int array = 0; array < Settings.ArrayCount; array++)
 					{
-						for (int depth = 0; depth < Settings.Depth; depth++)
+						for (int mip = 0; mip < destSettings.MipCount; mip++)
 						{
-							// Get the array/mip/depth buffer.
-							var destBuffer = destData.Buffers[0, Settings.ImageType == ImageType.Image3D ? depth : array];
-							var srcBuffer = Buffers[0, Settings.ImageType == ImageType.Image3D ? depth : array];
-							var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
+							int mipDepth = GetDepthCount(mip);
 
-							// Create a WIC bitmap so we have a source for conversion.
-							using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
+							// Keep the buffer empty if the number of source mips are less than the current mip level.
+							if (mip >= Settings.MipCount)
 							{
-								wic.TransformImageData(wicBmp,
-								                       destBuffer.Data.BasePointer,
-								                       destBuffer.PitchInformation.RowPitch,
-								                       destBuffer.PitchInformation.SlicePitch,
-								                       Guid.Empty,
-								                       ImageDithering.None,
-								                       new Rectangle(0, 0, width, height),
-								                       clip,
-								                       filter);
+								break;
+							}
+
+							for (int depth = 0; depth < mipDepth; depth++)
+							{
+								// Get the array/mip/depth buffer.
+								var destBuffer = destData.Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
+								var srcBuffer = Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
+								var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
+
+								// Create a WIC bitmap so we have a source for conversion.
+								using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch))
+								{
+									wic.TransformImageData(wicBmp,
+									                       destBuffer.Data.BasePointer,
+									                       destBuffer.PitchInformation.RowPitch,
+									                       destBuffer.PitchInformation.SlicePitch,
+									                       Guid.Empty,
+									                       ImageDithering.None,
+									                       new Rectangle(0, 0, destBuffer.Width, destBuffer.Height),
+									                       clip,
+									                       filter);
+								}
 							}
 						}
 					}

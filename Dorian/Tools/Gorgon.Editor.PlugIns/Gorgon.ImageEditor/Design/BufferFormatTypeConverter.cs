@@ -170,27 +170,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
 	                       where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
 	                             && (!formatInfo.IsTypeless)
+								 && (!formatInfo.IsCompressed)
+								 && (((content.ImageType == ImageType.Image1D) && (ContentObject.Graphics.VideoDevice.Supports1DTextureFormat(format)))
+								 || ((content.ImageType == ImageType.Image2D || content.ImageType == ImageType.ImageCube) && (ContentObject.Graphics.VideoDevice.Supports2DTextureFormat(format)))
+								 || ((content.ImageType == ImageType.Image3D) && (ContentObject.Graphics.VideoDevice.Supports3DTextureFormat(format))))
 	                             && (content.Codec.SupportedFormats.Any(item => item == format))
 	                       select format);
 
-	        BufferFormat[] availableFormats = GorgonImageData.CanConvertToAny(currentFormat, formats);
-
-	        if (!content.Codec.SupportsBlockCompression)
-	        {
-		        return new StandardValuesCollection(availableFormats);
-	        }
-
-			// Append block compressed formats if we can support them.
-	        var compressedFormats = (from format in formatList
-	                                 let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
-	                                 where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
-	                                       && (!formatInfo.IsTypeless) && (formatInfo.IsCompressed)
-	                                       && (content.Codec.SupportedFormats.Any(item => item == format))
-	                                 select format);
-
-	        availableFormats = availableFormats.Concat(compressedFormats).OrderBy(item => item).ToArray();
-
-	        return new StandardValuesCollection(availableFormats);
+	        return new StandardValuesCollection(GorgonImageData.CanConvertToAny(currentFormat, formats));
         }
         #endregion
     }

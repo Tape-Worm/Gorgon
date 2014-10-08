@@ -70,9 +70,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
             GetCurrentShaderView(currentMip, _currentView.ArrayStart);
-
-            labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, currentMip);
-
             ValidateControls();
         }
 
@@ -91,9 +88,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
             GetCurrentShaderView(currentMip, _currentView.ArrayStart);
-
-            labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, currentMip);
-
             ValidateControls();
         }
 
@@ -103,11 +97,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private void ValidateControls()
         {
             buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart > 0);
-            buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart < _content.MipCount);
+            buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart < _content.MipCount - 1);
             buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
                                            && (_currentView.ArrayStart > 0);
             buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
-                                           && (_currentView.ArrayStart < _content.ArrayCount);
+                                           && (_currentView.ArrayStart < _content.ArrayCount - 1);
 
             // Volume textures don't have array indices.
             buttonPrevArrayIndex.Visible =
@@ -212,6 +206,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                                                                              mipIndex);
                     break;
             }
+
+			labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, mipIndex + 1);
+	        labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, arrayIndex + 1);
         }
 
 		/// <summary>
@@ -236,6 +233,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case "Width":
 				case "Height":
 				case "Depth":
+				case "ImageFormat":
 				case "ImageType":
 					CreateTexture();
 					break;
