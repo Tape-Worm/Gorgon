@@ -96,11 +96,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    },
 		    {
 				BufferFormat.BC6H_SF16,
-   				"R16G16B16A16_SNORM"
+   				"R16G16B16A16_FLOAT"
 		    },
 		    {
 				BufferFormat.BC6H_UF16,
-   				"R16G16B16A16_UNORM"
+   				"R16G16B16A16_FLOAT"
 		    },
 		    {
 				BufferFormat.BC7_UIntNormal,
@@ -120,6 +120,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private int _depthArrayIndex;                                           // Current depth/array index.
         private GorgonConstantBuffer _depthArrayIndexData;                      // Depth array index value.
 	    private byte[] _copyBuffer = new byte[80000];							// 80k copy buffer.
+        private BufferFormat _blockCompression = BufferFormat.Unknown;          // Block compression type.
         #endregion
 
         #region Properties.
@@ -274,6 +275,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	            }
 
 				ChangeFormat(value);
+
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the level of block compression used.
+        /// </summary>
+        [LocalCategory(typeof(Resources), "CATEGORY_DATA"),
+        LocalDescription(typeof(Resources), "PROP_BLOCKCOMP_DESC"),
+        LocalDisplayName(typeof(Resources), "PROP_BLOCKCOMP_NAME"),
+        TypeConverter(typeof(CompressionTypeConverter))]
+        public BufferFormat BlockCompression
+        {
+            get
+            {
+                return _blockCompression;
+            }
+            set
+            {
+                if ((value != _blockCompression)
+                    || (_contentPanel == null))
+                {
+                    return;
+                }
+
+                // This property is only applied when we save.
+                _blockCompression = value;
 
                 NotifyPropertyChanged();
             }
@@ -445,6 +474,31 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
         #region Methods.
         /// <summary>
+        /// Function to return whether an image format can be block compressed.
+        /// </summary>
+        /// <returns>TRUE if format can be block compressed, FALSE if not.</returns>
+        private bool FormatCanBlockCompress()
+        {
+            switch (ImageFormat)
+            {
+                case BufferFormat.R8G8B8A8_UIntNormal:
+                case BufferFormat.B8G8R8X8_UIntNormal:
+                case BufferFormat.B8G8R8A8_UIntNormal:
+                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+                case BufferFormat.R8_IntNormal:
+                case BufferFormat.R8_UIntNormal:
+                case BufferFormat.R8G8_IntNormal:
+                case BufferFormat.R8G8_UIntNormal:
+                case BufferFormat.R16G16B16A16_Float:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// Function to validate the properties for an image.
         /// </summary>
         private void ValidateImageProperties()
@@ -460,9 +514,28 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				DisableProperty("Width", false);
 				DisableProperty("Depth",false);
 				DisableProperty("ImageType", false);
+                DisableProperty("BlockCompression", false);
 				return;
 	        }
 
+            bool blockCompressionDisabled = !Codec.SupportsBlockCompression;
+
+            if (!blockCompressionDisabled)
+            {
+                // Ensure that the current format can be block compressed.
+                blockCompressionDisabled = !FormatCanBlockCompress();
+                
+                if (blockCompressionDisabled)
+                {
+                    BlockCompression = BufferFormat.Unknown;
+                }
+            }
+            else
+            {
+                BlockCompression = BufferFormat.Unknown;                
+            }
+            
+            DisableProperty("BlockCompression", blockCompressionDisabled);
             DisableProperty("ArrayCount",
                             (!Codec.SupportsArray
                             || _imageSettings.ImageType == ImageType.Image3D));
@@ -700,6 +773,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 
 			Image = newImage;
+
+            ValidateImageProperties();
 	    }
 
         /// <summary>

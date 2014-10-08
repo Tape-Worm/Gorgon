@@ -20,24 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, September 29, 2014 9:55:43 PM
+// Created: Wednesday, October 08, 2014 8:16:21 PM
 // 
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Windows.Forms;
+using System.Runtime.Serialization.Formatters;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     /// <summary>
-    /// A type converter used to retrieve a list of applicable image formats.
+    /// A type converter used to retrieve a list of compression formats.
     /// </summary>
-    class BufferFormatTypeConverter
+    class CompressionTypeConverter
         : TypeConverter
     {
         #region Methods.
@@ -91,7 +92,22 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 bufferFormat = (BufferFormat)value;
             }
 
-            return bufferFormat.ToString();
+            if (bufferFormat != BufferFormat.Unknown)
+            {
+                return bufferFormat.ToString();
+            }
+
+            CultureInfo prevCulture = Resources.Culture;
+
+            try
+            {
+                Resources.Culture = culture;
+                return Resources.GORIMG_TEXT_NONE;
+            }
+            finally
+            {
+                Resources.Culture = prevCulture;
+            }
         }
 
         /// <summary>
@@ -112,14 +128,32 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
             string formatString = value.ToString();
-            BufferFormat format;
 
-            if (!Enum.TryParse(formatString, out format))
+            // Why doesn't string.Equals have an overload that takes a culture object?
+            CultureInfo prevCulture = Resources.Culture;
+
+            try
             {
-                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT, formatString));
-            }
+                Resources.Culture = culture;
+                if (string.Compare(formatString, Resources.GORIMG_TEXT_NONE, culture, CompareOptions.IgnoreCase) == 0)
+                {
+                    return BufferFormat.Unknown;
+                }
 
-            return format;
+                BufferFormat format;
+                if (!Enum.TryParse(formatString, out format))
+                {
+                    throw new InvalidCastException(string.Format(culture,
+                                                                 Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT,
+                                                                 formatString));
+                }
+
+                return format;
+            }
+            finally
+            {
+                Resources.Culture = prevCulture;
+            }
         }
 
         /// <summary>
@@ -156,21 +190,67 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
-	        var formatList = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
             BufferFormat currentFormat = content.ImageFormat;
 
-	        var formats = (from format in formatList
-	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
-	                       where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
-	                             && (!formatInfo.IsTypeless)
-								 && (!formatInfo.IsCompressed)
-								 && (((content.ImageType == ImageType.Image1D) && (ContentObject.Graphics.VideoDevice.Supports1DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image2D || content.ImageType == ImageType.ImageCube) && (ContentObject.Graphics.VideoDevice.Supports2DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image3D) && (ContentObject.Graphics.VideoDevice.Supports3DTextureFormat(format))))
-	                             && (content.Codec.SupportedFormats.Any(item => item == format))
-	                       select format);
+            var formats = new List<BufferFormat>
+                          {
+                              BufferFormat.Unknown
+                          };
 
-	        return new StandardValuesCollection(GorgonImageData.CanConvertToAny(currentFormat, formats));
+            // Image width/height must be a multiple of four to compress.
+            if (((content.Width % 4) != 0)
+                || ((content.Height % 4) != 0))
+            {
+                return new StandardValuesCollection(formats);
+            }
+
+            switch (currentFormat)
+            {
+                case BufferFormat.R8G8B8A8_UIntNormal:
+                case BufferFormat.B8G8R8X8_UIntNormal:
+                case BufferFormat.B8G8R8A8_UIntNormal:
+                    formats.Add(BufferFormat.BC1_UIntNormal);
+                    formats.Add(BufferFormat.BC2_UIntNormal);
+                    formats.Add(BufferFormat.BC3_UIntNormal);
+
+                    if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
+                    {
+                        formats.Add(BufferFormat.BC7_UIntNormal);
+                    }
+
+                    break;
+                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+                    formats.Add(BufferFormat.BC1_UIntNormal_sRGB);
+                    formats.Add(BufferFormat.BC2_UIntNormal_sRGB);
+                    formats.Add(BufferFormat.BC3_UIntNormal_sRGB);
+
+                    if (ContentObject.Graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
+                    {
+                        formats.Add(BufferFormat.BC7_UIntNormal_sRGB);
+                    }
+                    break;
+                case BufferFormat.R8_IntNormal:
+                    formats.Add(BufferFormat.BC4_IntNormal);
+                    break;
+                case BufferFormat.R8_UIntNormal:
+                    formats.Add(BufferFormat.BC4_UIntNormal);
+                    break;
+                case BufferFormat.R8G8_IntNormal:
+                    formats.Add(BufferFormat.BC5_IntNormal);
+                    break;
+                case BufferFormat.R8G8_UIntNormal:
+                    formats.Add(BufferFormat.BC5_UIntNormal);
+                    break;
+                case BufferFormat.R16G16B16A16_Float:
+                    formats.Add(BufferFormat.BC6H_UF16);
+                    formats.Add(BufferFormat.BC6H_SF16);
+                    break;
+            }
+
+
+	        return new StandardValuesCollection(formats);
         }
         #endregion
     }
