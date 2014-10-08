@@ -25,18 +25,21 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -47,6 +50,68 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         : ContentObject, IImageEditorContent
     {
         #region Variables.
+		// List of D3D formats for use with texconv.exe.
+	    // ReSharper disable once InconsistentNaming
+	    private readonly Dictionary<BufferFormat, string> _d3dFormats = new Dictionary<BufferFormat, string>
+	    {
+		    {
+				BufferFormat.BC1_UIntNormal,
+   				"B8G8R8A8_UNORM"
+		    },
+		    {
+				BufferFormat.BC1_UIntNormal_sRGB,
+   				"B8G8R8A8_UNORM_SRGB"
+		    },
+		    {
+				BufferFormat.BC2_UIntNormal,
+   				"B8G8R8A8_UNORM"
+		    },
+		    {
+				BufferFormat.BC2_UIntNormal_sRGB,
+   				"B8G8R8A8_UNORM_SRGB"
+		    },
+		    {
+				BufferFormat.BC3_UIntNormal,
+   				"R8G8B8A8_UNORM"
+		    },
+		    {
+				BufferFormat.BC3_UIntNormal_sRGB,
+   				"R8G8B8A8_UNORM_SRGB"
+		    },
+		    {
+				BufferFormat.BC4_IntNormal,
+   				"R8_SNORM"
+		    },
+		    {
+				BufferFormat.BC4_UIntNormal,
+   				"R8_UNORM"
+		    },
+		    {
+				BufferFormat.BC5_IntNormal,
+   				"R8G8_SNORM"
+		    },
+		    {
+				BufferFormat.BC5_UIntNormal,
+   				"R8G8_UNORM"
+		    },
+		    {
+				BufferFormat.BC6H_SF16,
+   				"R16G16B16A16_SNORM"
+		    },
+		    {
+				BufferFormat.BC6H_UF16,
+   				"R16G16B16A16_UNORM"
+		    },
+		    {
+				BufferFormat.BC7_UIntNormal,
+   				"R8G8B8A8_UNORM"
+		    },
+		    {
+				BufferFormat.BC7_UIntNormal_sRGB,
+   				"R8G8B8A8_UNORM_SRGB"
+		    }
+	    };
+
 	    private bool _disposed;													// Flag to indicate that the object was disposed.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
         private GorgonSwapChain _swap;											// The swap chain to display our texture.
@@ -54,9 +119,20 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private GorgonImageData _original;										// Original image.
         private int _depthArrayIndex;                                           // Current depth/array index.
         private GorgonConstantBuffer _depthArrayIndexData;                      // Depth array index value.
+	    private byte[] _copyBuffer = new byte[80000];							// 80k copy buffer.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return whether the image editor can modify block compressed images.
+		/// </summary>
+		[Browsable(false)]
+	    public bool CanChangeBCImages
+	    {
+		    get;
+		    private set;
+	    }
+
         /// <summary>
         /// Property to set or return the depth/array index.
         /// </summary>
@@ -191,6 +267,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+				if ((value == _imageSettings.Format)
+					|| (_contentPanel == null))
+	            {
+		            return;
+	            }
+
+				ChangeFormat(value);
+
                 NotifyPropertyChanged();
             }
         }
@@ -200,7 +284,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         [LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
         LocalDescription(typeof(Resources), "PROP_WIDTH_DESC"),
-        LocalDisplayName(typeof(Resources), "PROP_WIDTH_NAME")]
+        LocalDisplayName(typeof(Resources), "PROP_WIDTH_NAME"),
+		RefreshProperties(RefreshProperties.All)]
         public int Width
         {
             get
@@ -209,7 +294,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-	            if (value == _imageSettings.Width)
+	            if ((value == _imageSettings.Width)
+					|| (_contentPanel == null))
 	            {
 		            return;
 	            }
@@ -224,7 +310,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
 		LocalDescription(typeof(Resources), "PROP_HEIGHT_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_HEIGHT_NAME")]
+		LocalDisplayName(typeof(Resources), "PROP_HEIGHT_NAME"),
+		RefreshProperties(RefreshProperties.All)]
 		public int Height
         {
             get
@@ -233,7 +320,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-				if (value == _imageSettings.Height)
+				if ((value == _imageSettings.Height)
+					|| (_contentPanel == null))
 				{
 					return;
 				}
@@ -248,7 +336,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
 		LocalDescription(typeof(Resources), "PROP_DEPTH_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_DEPTH_NAME")]
+		LocalDisplayName(typeof(Resources), "PROP_DEPTH_NAME"),
+		RefreshProperties(RefreshProperties.All)]
 		public int Depth
         {
             get
@@ -257,7 +346,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-				if (value == _imageSettings.Depth)
+				if ((value == _imageSettings.Depth)
+					|| (_contentPanel == null))
 				{
 					return;
 				}
@@ -282,6 +372,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+	            if ((value == _imageSettings.MipCount)
+	                || (_contentPanel == null))
+	            {
+		            return;
+	            }
+
                 NotifyPropertyChanged();
             }
         }
@@ -300,6 +396,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
+				if ((value == _imageSettings.ArrayCount)
+					|| (_contentPanel == null))
+	            {
+		            return;
+	            }
+
                 NotifyPropertyChanged();
             }
         }
@@ -319,7 +421,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-                if (value == _imageSettings.ImageType)
+                if ((value == _imageSettings.ImageType)
+					|| (_contentPanel == null))
                 {
                     return;
                 }
@@ -346,9 +449,23 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateImageProperties()
         {
+	        if ((!CanChangeBCImages)
+	            && (FormatInformation.IsCompressed))
+	        {
+		        DisableProperty("ArrayCount", false);
+				DisableProperty("Depth", false);
+				DisableProperty("MipCount", false);
+				DisableProperty("ImageFormat", false);
+				DisableProperty("Height", false);
+				DisableProperty("Width", false);
+				DisableProperty("Depth",false);
+				DisableProperty("ImageType", false);
+				return;
+	        }
+
             DisableProperty("ArrayCount",
-                            !Codec.SupportsArray
-                            || _imageSettings.ImageType == ImageType.Image3D);
+                            (!Codec.SupportsArray
+                            || _imageSettings.ImageType == ImageType.Image3D));
 
             DisableProperty("Depth", !Codec.SupportsDepth);
 
@@ -381,6 +498,209 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			        && (settings.MipCount == _original.Settings.MipCount)
                     && (settings.ImageType == _original.Settings.ImageType));
 		}
+
+		/// <summary>
+		/// Function to delete a temporary image file.
+		/// </summary>
+		/// <param name="path">The path to the temporary image file.</param>
+	    private static void DeleteTempImageFile(string path)
+	    {
+		    try
+		    {
+			    if (!File.Exists(path))
+			    {
+				    return;
+			    }
+
+				File.Delete(path);
+		    }
+			// ReSharper disable once EmptyGeneralCatchClause
+		    catch 
+		    {
+				// Intentionally left blank.
+				// We don't care if the delete was not successful.
+		    }
+	    }
+
+		/// <summary>
+		/// Function to decompress a block compressed image into an uncompressed texture format.
+		/// </summary>
+		/// <param name="stream">Stream containing the image format.</param>
+		/// <param name="size">Size of the image data within the stream, in bytes.</param>
+		/// <param name="codec">Codec used to read the image data.</param>
+		/// <returns>The image data for the decompressed image.</returns>
+	    private GorgonImageData DecompressBCImage(Stream stream, int size, GorgonImageCodec codec)
+		{
+			Process texConvProcess = null;
+
+			if ((_contentPanel == null)
+				|| (_contentPanel.ParentForm == null))
+			{
+				return null;
+			}
+
+			string texConvPath = Gorgon.ApplicationDirectory + "texconv.exe";
+
+			// If we can't find our converter, then we're out of luck.
+			if (!File.Exists(texConvPath))
+			{
+				return null;
+			}
+
+			// We'll need to copy this data and decompress it in an external source.
+			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), Path.GetExtension(Name));
+			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
+			string outputName = tempFileDirectory + "decomp_" + Path.GetFileName(tempFilePath);
+
+			Debug.Assert(!string.IsNullOrWhiteSpace(tempFileDirectory), "No temporary directory!");
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+
+				// Copy our file.
+				using (Stream outStream = File.Open(tempFilePath, FileMode.Create, FileAccess.Write))
+				{
+					int remaining = size;
+
+					while (remaining > 0)
+					{
+						int readLength = remaining > _copyBuffer.Length ? _copyBuffer.Length : remaining;
+
+						int readAmount = stream.Read(_copyBuffer, 0, readLength);
+						outStream.Write(_copyBuffer, 0, readAmount);
+
+						remaining -= readAmount;
+					}
+				}
+
+				// If we can't find our converter, then we're out of luck.
+				if (!File.Exists(texConvPath))
+				{
+					DeleteTempImageFile(tempFilePath);
+					return null;
+				}
+
+				var info = new ProcessStartInfo
+				           {
+					           Arguments =
+						           "-f " + _d3dFormats[FormatInformation.Format] + " -fl " +
+						           (Graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1 ? "11.0" : "10.0") + " -ft DDS -o \"" +
+						           Path.GetDirectoryName(tempFilePath) + "\" -nologo -px decomp_ \"" + tempFilePath + "\"",
+					           ErrorDialog = true,
+					           ErrorDialogParentHandle = _contentPanel.ParentForm.Handle,
+					           FileName = texConvPath,
+					           WorkingDirectory = tempFileDirectory,
+					           UseShellExecute = false,
+#if DEBUG
+							   CreateNoWindow = false,
+#else
+							   CreateNoWindow = true,
+#endif
+							   RedirectStandardError = true,
+							   RedirectStandardOutput = true
+				           };
+
+				texConvProcess = Process.Start(info);
+
+				if (texConvProcess == null)
+				{
+					return null;
+				}
+
+				// Wait until we're done converting.
+				texConvProcess.WaitForExit();
+
+				// Check standard the error stream for errors.
+				string errorData = texConvProcess.StandardError.ReadToEnd();
+
+				if (!string.IsNullOrWhiteSpace(errorData))
+				{
+					GorgonDialogs.ErrorBox(_contentPanel.ParentForm, Resources.GORIMG_ERROR_DECOMPRESSING, string.Empty, errorData, true);
+					return null;
+				}
+
+				errorData = texConvProcess.StandardOutput.ReadToEnd();
+
+				// Check for invalid parameters.
+				if (errorData.StartsWith("Invalid value", StringComparison.OrdinalIgnoreCase))
+				{
+					GorgonDialogs.ErrorBox(_contentPanel.ParentForm,
+					                       Resources.GORIMG_ERROR_DECOMPRESSING,
+					                       string.Empty,
+					                       errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)),
+					                       true);
+					return null;
+				}
+
+				// Check for failure.
+				if (!errorData.Contains("FAILED"))
+				{
+					return GorgonImageData.FromFile(outputName, new GorgonCodecDDS());
+				}
+
+				// Get rid of the temporary path and use the file name.
+				errorData = errorData.Replace(tempFilePath, "\"" + Name + "\"");
+				GorgonDialogs.ErrorBox(_contentPanel.ParentForm,
+				                       Resources.GORIMG_ERROR_DECOMPRESSING,
+				                       string.Empty,
+				                       errorData,
+				                       true);
+				return null;
+			}
+			finally
+			{
+				if (texConvProcess != null)
+				{
+					texConvProcess.Close();
+				}
+
+				// Remove the copied file.
+				DeleteTempImageFile(tempFilePath);
+				DeleteTempImageFile(outputName);
+			}
+		}
+
+		/// <summary>
+		/// Function to change the image pixel format.
+		/// </summary>
+		/// <param name="format">New format to convert to.</param>
+	    private void ChangeFormat(BufferFormat format)
+		{
+			IImageSettings tempSettings = _imageSettings.Clone();
+			tempSettings.Format = format;
+
+			// Do nothing if this image type is not different from the original.
+			if (IsSameAsOriginal(tempSettings))
+			{
+				_imageSettings = _original.Settings.Clone();
+
+				if (Image == _original)
+				{
+					ValidateImageProperties();
+					return;
+				}
+
+				Image = _original;
+
+				ValidateImageProperties();
+				return;
+			}
+
+			// Convert to the specified format.
+			GorgonImageData newImage = _original.Clone();
+			// TODO: 2 problems, R8G8B8A8_sRGB is not working (goes back to non-sRGB) and R10G10B10A2 XR bias not working, causing crash in WIC.
+			newImage.ConvertFormat(format);
+			_imageSettings = newImage.Settings.Clone();
+
+			// If this image is not the original image, then destroy it.
+			if (_original != Image)
+			{
+				Image.Dispose();
+			}
+
+			Image = newImage;
+	    }
 
         /// <summary>
         /// Function to change the image type.
@@ -757,7 +1077,36 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="stream">Stream containing the content data.</param>
         protected override void OnRead(Stream stream)
         {
-            Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+			// If we're not actuallying "editing" the image, but using this interface to load an image, 
+			// then just leave so we can keep the image data lightweight.
+		    if (_contentPanel == null)
+		    {
+				// Get image metadata first to determine if it's compressed.
+				Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+				_imageSettings = Image.Settings;
+				FormatInformation = GorgonBufferFormatInfo.GetInfo(Image.Settings.Format);
+				return;
+		    }
+
+		    IImageSettings settings = Codec.GetMetaData(stream);
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+		    if (FormatInformation.IsCompressed)
+		    {
+			    Image = DecompressBCImage(stream, (int)stream.Length, Codec);
+		    }
+
+		    if (Image == null)
+		    {
+				// If this is a result of the image not being decompressed, then lock down editing on the compressed image.
+			    if (FormatInformation.IsCompressed)
+			    {
+				    CanChangeBCImages = false;
+			    }
+
+			    // Get image metadata first to determine if it's compressed.
+			    Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+		    }
 
 		    if (_original != null)
 		    {
@@ -785,6 +1134,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentPanel OnInitialize()
         {
+	        CanChangeBCImages = File.Exists(Gorgon.ApplicationDirectory + "texconv.exe");
+
 	        _contentPanel = new GorgonImageContentPanel
 	                        {
 		                        Content = this

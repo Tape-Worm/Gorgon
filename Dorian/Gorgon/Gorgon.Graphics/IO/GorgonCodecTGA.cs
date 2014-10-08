@@ -1259,6 +1259,7 @@ namespace GorgonLibrary.IO
                 using (var memoryStream = new GorgonDataStream(headerSize))
                 {
                     memoryStream.ReadFromStream(stream, headerSize);
+					memoryStream.Position = 0;
                     return ReadHeader(memoryStream, out conversion);
                 }
             }
