@@ -257,4 +257,21 @@
     <value>There was an error decompressing the file.
 See the details pane for more information.</value>
   </data>
+  <data name="GORIMG_TEXT_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="PROP_BLOCKCOMP_DESC" xml:space="preserve">
+    <value>Sets the type of block compression to apply to the image when it is saved.
+
+The block compression can only be changed with the image width and height is a multiple of 4, and one of the following formats:  
+R8G8B8A8/sRGB (int/uint) 
+B8G8R8A8/sRGB (int/uint) 
+R8G8B8X8/sRGB (int/uint)
+R8 (int/uint)
+R8G8 (int/uint)
+R16B16G16A16 (floating point)</value>
+  </data>
+  <data name="PROP_BLOCKCOMP_NAME" xml:space="preserve">
+    <value>Block compression</value>
+  </data>
 </root>
