@@ -121,6 +121,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonConstantBuffer _depthArrayIndexData;                      // Depth array index value.
 	    private byte[] _copyBuffer = new byte[80000];							// 80k copy buffer.
         private BufferFormat _blockCompression = BufferFormat.Unknown;          // Block compression type.
+	    private GorgonImageCodec _codec;										// The codec used.
         #endregion
 
         #region Properties.
@@ -295,7 +296,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
             set
             {
-                if ((value != _blockCompression)
+                if ((value == _blockCompression)
                     || (_contentPanel == null))
                 {
                     return;
@@ -407,6 +408,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		            return;
 	            }
 
+				SetMipLevels(value);
+
                 NotifyPropertyChanged();
             }
         }
@@ -430,6 +433,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	            {
 		            return;
 	            }
+
+				SetArrayCount(value);
 
                 NotifyPropertyChanged();
             }
@@ -464,11 +469,39 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the image codec used for this image.
         /// </summary>
-        [Browsable(false)]
+        [LocalCategory(typeof(Resources), "CATEGORY_DATA"),
+		LocalDescription(typeof(Resources), "PROP_CODEC_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_COEC_NAME"),
+		TypeConverter(typeof(CodecFormatTypeConverter))]
         public GorgonImageCodec Codec
         {
-            get;
-            private set;
+	        get
+	        {
+		        return _codec;
+	        }
+	        set
+	        {
+		        if ((value == null)
+					|| (value == _codec)
+					|| (_contentPanel == null))
+		        {
+			        return;
+		        }
+
+		        _codec = value;
+
+		        string newName = ValidateName(Name);
+
+				// If we've changed the codec, we have to change the name of the file too.
+		        if (!string.Equals(newName, Name, StringComparison.CurrentCulture))
+		        {
+			        Name = newName;
+		        }
+
+		        ValidateImageProperties();
+
+				NotifyPropertyChanged();
+	        }
         }
         #endregion
 
@@ -506,15 +539,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        if ((!CanChangeBCImages)
 	            && (FormatInformation.IsCompressed))
 	        {
-		        DisableProperty("ArrayCount", false);
-				DisableProperty("Depth", false);
-				DisableProperty("MipCount", false);
-				DisableProperty("ImageFormat", false);
-				DisableProperty("Height", false);
-				DisableProperty("Width", false);
-				DisableProperty("Depth",false);
-				DisableProperty("ImageType", false);
-                DisableProperty("BlockCompression", false);
+		        DisableProperty("ArrayCount", true);
+				DisableProperty("Depth", true);
+				DisableProperty("MipCount", true);
+				DisableProperty("ImageFormat", true);
+				DisableProperty("Height", true);
+				DisableProperty("Width", true);
+				DisableProperty("Depth",true);
+				DisableProperty("ImageType", true);
+                DisableProperty("BlockCompression", true);
 				return;
 	        }
 
@@ -600,9 +633,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 		/// <param name="stream">Stream containing the image format.</param>
 		/// <param name="size">Size of the image data within the stream, in bytes.</param>
-		/// <param name="codec">Codec used to read the image data.</param>
 		/// <returns>The image data for the decompressed image.</returns>
-	    private GorgonImageData DecompressBCImage(Stream stream, int size, GorgonImageCodec codec)
+	    private GorgonImageData DecompressBCImage(Stream stream, int size)
 		{
 			Process texConvProcess = null;
 
@@ -735,6 +767,164 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		}
 
 		/// <summary>
+		/// Function to set the array count for the current image.
+		/// </summary>
+		/// <param name="arrayCount">Number of array indices.</param>
+	    private void SetArrayCount(int arrayCount)
+	    {
+			if ((arrayCount < 1)
+			    || (arrayCount > Graphics.Textures.MaxArrayCount))
+			{
+				throw new ArgumentOutOfRangeException("arrayCount", string.Format(Resources.GORIMG_ARRAY_COUNT_INVALID, Graphics.Textures.MaxArrayCount));
+			}
+
+			IImageSettings newSettings = _imageSettings.Clone();
+			newSettings.ArrayCount = arrayCount;
+
+			// Do nothing if this image type is not different from the original.
+			if (IsSameAsOriginal(newSettings))
+			{
+				_imageSettings = _original.Settings.Clone();
+
+				if (Image == _original)
+				{
+					ValidateImageProperties();
+					return;
+				}
+
+				Image = _original;
+
+				ValidateImageProperties();
+				return;
+			}
+
+			// Convert to the specified format.
+			GorgonImageData newImage = null;
+
+			try
+			{
+				newImage = new GorgonImageData(newSettings);
+
+				int maxArrayCount = newSettings.ArrayCount.Min(_original.Settings.ArrayCount);
+
+				// Copy the existing mip-map info over to the new image.
+				for (int arrayIndex = 0; arrayIndex < maxArrayCount; ++arrayIndex)
+				{
+					for (int mip = 0; mip < newSettings.MipCount; ++mip)
+					{
+						_original.Buffers[mip, arrayIndex].CopyTo(newImage.Buffers[mip, arrayIndex]);
+					}
+				}
+
+				_imageSettings = newImage.Settings.Clone();
+
+				// If this image is not the original image, then destroy it.
+				if (_original != Image)
+				{
+					Image.Dispose();
+				}
+
+				Image = newImage;
+			}
+			catch
+			{
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+
+				throw;
+			}
+			finally
+			{
+				ValidateImageProperties();
+			}
+	    }
+
+		/// <summary>
+		/// Function to set the mip map levels for the current image.
+		/// </summary>
+		/// <param name="mipLevels">Number of mip map levels.</param>
+	    private void SetMipLevels(int mipLevels)
+		{
+			int calcMaxMip = GorgonImageData.GetMaxMipCount(Width, Height, Depth);
+
+			if ((mipLevels < 1)
+				|| (mipLevels > calcMaxMip))
+			{
+				throw new ArgumentOutOfRangeException("mipLevels", string.Format(Resources.GORIMG_MIP_COUNT_INVALID, calcMaxMip));
+			}
+
+			IImageSettings newSettings = _imageSettings.Clone();
+			newSettings.MipCount = mipLevels;
+
+			// Do nothing if this image type is not different from the original.
+			if (IsSameAsOriginal(newSettings))
+			{
+				_imageSettings = _original.Settings.Clone();
+
+				if (Image == _original)
+				{
+					ValidateImageProperties();
+					return;
+				}
+
+				Image = _original;
+
+				ValidateImageProperties();
+				return;
+			}
+
+			// Convert to the specified format.
+			GorgonImageData newImage = null;
+
+			try
+			{
+				newImage = new GorgonImageData(newSettings);
+
+				int maxArrayDepthIndex = newSettings.ImageType == ImageType.Image3D ? newSettings.Depth : newSettings.ArrayCount;
+				int maxMipCount = newSettings.MipCount.Min(_original.Settings.MipCount);
+
+				// Copy the existing mip-map info over to the new image.
+				for (int mip = 0; mip < maxMipCount; ++mip)
+				{
+					if (newSettings.ImageType == ImageType.Image3D)
+					{
+						maxArrayDepthIndex = newImage.GetDepthCount(mip).Min(_original.GetDepthCount(mip));
+					}
+
+					for (int arrayDepthIndex = 0; arrayDepthIndex < maxArrayDepthIndex; ++arrayDepthIndex)
+					{
+						_original.Buffers[mip, arrayDepthIndex].CopyTo(newImage.Buffers[mip, arrayDepthIndex]);
+					}
+				}
+
+				_imageSettings = newImage.Settings.Clone();
+
+				// If this image is not the original image, then destroy it.
+				if (_original != Image)
+				{
+					Image.Dispose();
+				}
+
+				Image = newImage;
+			}
+			catch
+			{
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+
+				throw;
+			}
+			finally
+			{
+				ValidateImageProperties();
+			}
+		}
+
+		/// <summary>
 		/// Function to change the image pixel format.
 		/// </summary>
 		/// <param name="format">New format to convert to.</param>
@@ -760,22 +950,37 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-			// Convert to the specified format.
-			GorgonImageData newImage = _original.Clone();
-			// TODO: 2 problems, R8G8B8A8_sRGB is not working (goes back to non-sRGB) and R10G10B10A2 XR bias not working, causing crash in WIC.
-			newImage.ConvertFormat(format);
-			_imageSettings = newImage.Settings.Clone();
+			GorgonImageData newImage = null;
 
-			// If this image is not the original image, then destroy it.
-			if (_original != Image)
+			try
 			{
-				Image.Dispose();
+				// Convert to the specified format.
+				newImage = _original.Clone();
+				// TODO: 2 problems, R8G8B8A8_sRGB is not working (goes back to non-sRGB) and R10G10B10A2 XR bias not working, causing crash in WIC.
+				newImage.ConvertFormat(format);
+				_imageSettings = newImage.Settings.Clone();
+
+				// If this image is not the original image, then destroy it.
+				if (_original != Image)
+				{
+					Image.Dispose();
+				}
+
+				Image = newImage;
 			}
-
-			Image = newImage;
-
-            ValidateImageProperties();
-	    }
+			catch
+			{
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+				throw;
+			}
+			finally
+			{
+				ValidateImageProperties();
+			}
+		}
 
         /// <summary>
         /// Function to change the image type.
@@ -867,44 +1072,47 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             GorgonImageData newImage = null;
 
-            try
-            {
-                newImage = new GorgonImageData(newSettings);
+	        try
+	        {
+		        newImage = new GorgonImageData(newSettings);
 
-                int depthArrayCount = (newSettings.ImageType == ImageType.Image3D
-                                           ? newSettings.Depth
-                                           : newSettings.ArrayCount).Min(_imageSettings.ImageType == ImageType.Image3D
-                                                                             ? _imageSettings.Depth
-                                                                             : _imageSettings.ArrayCount);
+		        int depthArrayCount = newSettings.ArrayCount.Min(_original.Settings.ArrayCount);
 
-                // Copy the image data back into the new image type.
-                for (int depth = 0; depth < depthArrayCount; ++depth)
-                {
-                    for (int mip = 0; mip < newSettings.MipCount; ++mip)
-                    {
-                        Image.Buffers[mip, depth].CopyTo(newImage.Buffers[mip, depth]);
-                    }
-                }
-                
-                if (Image != _original)
-                {
-                    Image.Dispose();
-                }
+		        // Copy the image data back into the new image type.
+		        for (int mip = 0; mip < newSettings.MipCount; ++mip)
+		        {
+					if (newSettings.ImageType == ImageType.Image3D)
+					{
+						depthArrayCount = newImage.GetDepthCount(mip).Min(_original.GetDepthCount(mip));
+					}
 
-                _imageSettings = newSettings.Clone();
-                Image = newImage;
-            }
-            catch
-            {
-                if (newImage != null)
-                {
-                    newImage.Dispose();    
-                }
+					for (int depth = 0; depth < depthArrayCount; ++depth)
+			        {
+				        _original.Buffers[mip, depth].CopyTo(newImage.Buffers[mip, depth]);
+			        }
+		        }
 
-                throw;
-            }
-            
-            ValidateImageProperties();
+		        if (Image != _original)
+		        {
+			        Image.Dispose();
+		        }
+
+		        _imageSettings = newSettings.Clone();
+		        Image = newImage;
+	        }
+	        catch
+	        {
+		        if (newImage != null)
+		        {
+			        newImage.Dispose();
+		        }
+
+		        throw;
+	        }
+	        finally
+	        {
+		        ValidateImageProperties();
+	        }
         }
 
 		/// <summary>
@@ -1005,11 +1213,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 							newImage = new GorgonImageData(newSettings);
 
 							// Copy the image data into the new image.
-							int minDepth = depth.Min(_imageSettings.Depth);
-
-							for (int i = 0; i < minDepth; ++i)
+							for (int mip = 0; mip < newSettings.MipCount; ++mip)
 							{
-								for (int mip = 0; mip < newSettings.MipCount; ++mip)
+								int minDepth = newImage.GetDepthCount(mip).Min(Image.GetDepthCount(mip));
+
+								for (int i = 0; i < minDepth; ++i)
 								{
 									GorgonImageBuffer sourceBuffer = Image.Buffers[mip, i];
 									GorgonImageBuffer destBuffer = newImage.Buffers[mip, i];
@@ -1017,11 +1225,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 									sourceBuffer.CopyTo(destBuffer);
 								}
 							}
-
 						}
 						break;
-                    default:
-                        throw new InvalidCastException(string.Format(Resources.GORIMG_UNKNOWN_IMAGE_TYPE, _imageSettings.ImageType));
+					default:
+						throw new InvalidCastException(string.Format(Resources.GORIMG_UNKNOWN_IMAGE_TYPE, _imageSettings.ImageType));
 				}
 
 				Debug.Assert(newImage != null, "Temporary image not created!");
@@ -1045,6 +1252,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				}
 
 				throw;
+			}
+			finally
+			{
+				ValidateImageProperties();
 			}
 	    }
 
@@ -1121,9 +1332,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return proposedName;
 			}
 
-			// Remember the previous extension.
-			string extension = Path.GetExtension(Name);
-
 			// If the current codec is OK with the extension, then let the proposed name pass.
 			var stringBuffer = new StringBuilder(proposedName.Length);
 			if (Codec.CodecCommonExtensions.Any(item =>
@@ -1137,13 +1345,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				return proposedName;
 			}
+			
+			// If we couldn't find the new name in the current codec, check to ensure that the old extension is still valid.
+			if (string.IsNullOrWhiteSpace(Name))
+			{
+				return Path.ChangeExtension(proposedName, Codec.CodecCommonExtensions.First()).FormatFileName();
+			}
 
-			// Otherwise, attach the old extension.
-			stringBuffer.Length = 0;
-			stringBuffer.Append(proposedName);
-			stringBuffer.Append(extension);
+			string extension = Path.GetExtension(Name);
+			string proposedNameOriginalExt = Path.ChangeExtension(proposedName, extension);
 
-			return stringBuffer.ToString().FormatFileName();
+			return Codec.CodecCommonExtensions.Any(item =>
+			                                       {
+				                                       stringBuffer.Length = 0;
+				                                       stringBuffer.Append(".");
+				                                       stringBuffer.Append(item);
+
+				                                       return proposedNameOriginalExt.EndsWith(stringBuffer.ToString(), StringComparison.OrdinalIgnoreCase);
+			                                       })
+				       ? proposedNameOriginalExt
+				       : Path.ChangeExtension(proposedName, Codec.CodecCommonExtensions.First()).FormatFileName();
 		}
 
 	    /// <summary>
@@ -1166,20 +1387,25 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    IImageSettings settings = Codec.GetMetaData(stream);
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
+		    long position = stream.Position;
+
 		    if (FormatInformation.IsCompressed)
 		    {
-			    Image = DecompressBCImage(stream, (int)stream.Length, Codec);
+				_blockCompression = settings.Format;
+			    Image = DecompressBCImage(stream, (int)stream.Length);
 		    }
 
 		    if (Image == null)
 		    {
+				// Reset the stream if we've attempted to load a compressed image.
+			    stream.Position = position;
+
 				// If this is a result of the image not being decompressed, then lock down editing on the compressed image.
 			    if (FormatInformation.IsCompressed)
 			    {
 				    CanChangeBCImages = false;
 			    }
 
-			    // Get image metadata first to determine if it's compressed.
 			    Image = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
 		    }
 
@@ -1192,11 +1418,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    _original = Image;
             _imageSettings = Image.Settings.Clone();
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
-
-			// TODO: Put in function to convert BC format images into 32 bit RGBA for Image property.
-			// TODO: Put in function to convert Image property format to another BC format.
-			// TODO: Put in function to convert Non BC format to BC format (use external tool).
-			// TODO: Put in function to convert formats to other formats.
 	
             ValidateImageProperties();
         }
@@ -1405,7 +1626,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             : base(name)
         {
             HasThumbnail = true;
-	        Codec = codec;
+	        _codec = codec;
 
             // Make a default, empty, 2D settings object so we have something to work with.
             _imageSettings = new GorgonTexture2DSettings();

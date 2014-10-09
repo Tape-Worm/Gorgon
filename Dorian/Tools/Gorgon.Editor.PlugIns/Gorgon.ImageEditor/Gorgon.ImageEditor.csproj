@@ -51,6 +51,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Design\CodecTypeConverter.cs" />
     <Compile Include="Design\CompressionTypeConverter.cs" />
     <Compile Include="Design\ImageTypeTypeConverter.cs" />
     <Compile Include="Design\BufferFormatTypeConverter.cs" />

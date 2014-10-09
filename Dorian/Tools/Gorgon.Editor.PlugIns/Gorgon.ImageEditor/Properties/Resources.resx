@@ -248,10 +248,10 @@
     <value>..\Resources\forward_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORIMG_TEXT_ARRAY_INDEX" xml:space="preserve">
-    <value>Array index: {0}</value>
+    <value>Array index: {0}/{1}</value>
   </data>
   <data name="GORIMG_TEXT_MIP_LEVEL" xml:space="preserve">
-    <value>Mip-map level: {0}</value>
+    <value>Mip-map level: {0}/{1} ({2}x{3})</value>
   </data>
   <data name="GORIMG_ERROR_DECOMPRESSING" xml:space="preserve">
     <value>There was an error decompressing the file.
@@ -273,5 +273,50 @@ R16B16G16A16 (floating point)</value>
   </data>
   <data name="PROP_BLOCKCOMP_NAME" xml:space="preserve">
     <value>Block compression</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
+    <value>Image size: {0}x{1}.  Format: {2}.</value>
+  </data>
+  <data name="GORIMG_ARRAY_COUNT_INVALID" xml:space="preserve">
+    <value>The number of array indices must be between 1 and {0}.</value>
+  </data>
+  <data name="GORIMG_MIP_COUNT_INVALID" xml:space="preserve">
+    <value>The number of mip-map levels must be between 1 and {0}.</value>
+  </data>
+  <data name="GORIMG_TEXT_DEPTH_SLICE" xml:space="preserve">
+    <value>Depth slice: {0}/{1}</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_1D" xml:space="preserve">
+    <value>Image size: {0} pixels wide.  Format: {1}.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
+    <value>Image size: {0}x{1}x{2}.  Format: {2}.</value>
+  </data>
+  <data name="GORIMG_TEXT_INVALID_CODEC" xml:space="preserve">
+    <value>(Invalid codec)</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_ARRAY" xml:space="preserve">
+    <value>Go to the next array index.</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_DEPTH" xml:space="preserve">
+    <value>Go to the next depth slice.</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_MIP" xml:space="preserve">
+    <value>Go to the next mip-map level.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
+    <value>Go to the previous array index.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_DEPTH" xml:space="preserve">
+    <value>Go to the previous depth slice.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_MIP" xml:space="preserve">
+    <value>Go to the previous mip-map level.</value>
+  </data>
+  <data name="PROP_CODEC_DESC" xml:space="preserve">
+    <value>Sets the file format when writing the image.</value>
+  </data>
+  <data name="PROP_CODEC_NAME" xml:space="preserve">
+    <value>File codec</value>
   </data>
 </root>

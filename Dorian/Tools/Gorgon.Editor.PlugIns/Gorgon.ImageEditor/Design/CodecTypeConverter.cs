@@ -29,14 +29,14 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// A type converter used to retrieve a list of applicable image formats.
     /// </summary>
-    class BufferFormatTypeConverter
+    class CodecFormatTypeConverter
         : TypeConverter
     {
         #region Methods.
@@ -83,14 +83,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return base.ConvertTo(context, culture, value, destinationType);
             }
 
-            var bufferFormat = BufferFormat.Unknown;
+	        var codec = (GorgonImageCodec)value;
+	        int codecIndex = Array.IndexOf(GorgonImageEditorPlugIn.CodecDropDownList, codec);
 
-            if (value != null)
-            {
-                bufferFormat = (BufferFormat)value;
-            }
+	        if (codecIndex != -1)
+	        {
+		        return GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].CodecDescription;
+	        }
 
-            return bufferFormat.ToString();
+	        CultureInfo prevCulture = Resources.Culture;
+
+	        Resources.Culture = culture;
+
+	        try
+	        {
+		        return Resources.GORIMG_TEXT_INVALID_CODEC;
+	        }
+	        finally
+	        {
+		        Resources.Culture = prevCulture;
+	        }
         }
 
         /// <summary>
@@ -111,14 +123,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
             string formatString = value.ToString();
-            BufferFormat format;
+	        GorgonImageCodec codec =
+		        GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(
+		                                                                 item =>
+		                                                                 string.Equals(item.CodecDescription, formatString, StringComparison.OrdinalIgnoreCase));
 
-            if (!Enum.TryParse(formatString, out format))
-            {
-                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT, formatString));
-            }
+	        if (codec == null)
+	        {
+		        throw new InvalidCastException(Resources.GORIMG_TEXT_INVALID_CODEC);
+	        }
 
-            return format;
+	        return codec;
         }
 
         /// <summary>
@@ -154,22 +169,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
-	        var formatList = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
-            BufferFormat currentFormat = content.ImageFormat;
-
-	        var formats = (from format in formatList
-	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
-	                       where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
-	                             && (!formatInfo.IsTypeless)
-								 && (!formatInfo.IsCompressed)
-								 && (((content.ImageType == ImageType.Image1D) && (ContentObject.Graphics.VideoDevice.Supports1DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image2D || content.ImageType == ImageType.ImageCube) && (ContentObject.Graphics.VideoDevice.Supports2DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image3D) && (ContentObject.Graphics.VideoDevice.Supports3DTextureFormat(format))))
-	                             && (content.Codec.SupportedFormats.Any(item => item == format))
-	                       select format);
-
-	        return new StandardValuesCollection(GorgonImageData.CanConvertToAny(currentFormat, formats));
+			return new StandardValuesCollection(GorgonImageEditorPlugIn.CodecDropDownList);
         }
         #endregion
     }
