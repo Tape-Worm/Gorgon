@@ -102,9 +102,6 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.Editor.API">
-      <HintPath>..\..\Tools\Gorgon.Editor.API\obj\Debug\Gorgon.Editor.API.dll</HintPath>
-    </Reference>
     <Reference Include="Gorgon.MemoryAccess">
       <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
