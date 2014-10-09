@@ -45,6 +45,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#region Variables.
 		private bool _disposed;                                                             // Flag to indicate whether the object was disposed.
         private static Dictionary<GorgonFileExtension, GorgonImageCodec> _codecs;           // Codecs for the image editor.
+	    private static GorgonImageCodec[] _codecDropDown;									// List of codecs for the drop down list.
         private static readonly List<string> _codecPlugInErrors = new List<string>();       // List of errors that may occur when loading a codec plug-in.
 		#endregion
 
@@ -57,6 +58,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             get;
             private set;
         }
+
+	    internal static GorgonImageCodec[] CodecDropDownList
+	    {
+		    get
+		    {
+			    if (_codecs == null)
+			    {
+				    GetCodecs();
+			    }
+
+			    return _codecDropDown;
+		    }
+	    }
 
         /// <summary>
         /// Property to return a list of codecs that can be used to read image file formats.
@@ -165,6 +179,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             {
                 LoadExternalCodec(assemblyPath);
             }
+
+			_codecDropDown = _codecs.Values.Distinct().ToArray();
         }
 
         /// <summary>
