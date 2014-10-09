@@ -97,7 +97,11 @@
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
 copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"</PostBuildEvent>
+copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
+copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfiguratinName)\PlugIns"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfiguratinName)\PlugIns"
+copy "$(SolutionDir)..\plugins\bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfiguratinName)\PlugIns"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
