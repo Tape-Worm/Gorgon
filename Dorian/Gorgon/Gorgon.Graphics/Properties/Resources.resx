@@ -733,14 +733,13 @@ Log file location: "{0}"</value>
   <data name="GORGFX_IMAGE_ALREADY_COMPRESSED" xml:space="preserve">
     <value>The image is already compressed.</value>
   </data>
-  <data name="GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8" xml:space="preserve">
-    <value>Cannot compress image formats that are less than 8 bits.
-The current format uses {0} bits.</value>
-  </data>
-  <data name="GORGFX_IMAGE_CANT_COMPRESS_TYPELESS" xml:space="preserve">
-    <value>Cannot compress images with a typeless format.</value>
-  </data>
   <data name="GORGFX_IMAGE_FORMAT_NOT_COMPRESSED" xml:space="preserve">
     <value>The format '{0}' is not a valid compressed format.</value>
+  </data>
+  <data name="GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH" xml:space="preserve">
+    <value>Cannot copy the image.  The source width, height (if applicable) and format must be the same as the destination.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
+    <value>The texture format [{0}] must be used with a mip map count of 1.</value>
   </data>
 </root>

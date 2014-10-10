@@ -355,7 +355,7 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, HasChanged ? "*" : string.Empty);
+			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Filename, HasChanged ? "*" : string.Empty);
 		}
 
 		/// <summary>

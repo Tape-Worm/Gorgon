@@ -44,7 +44,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
-        /// <summary>
+	    /// <summary>
         /// Property to return the settings for the font.
         /// </summary>
         public GorgonFontSettings Settings
@@ -55,33 +55,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function used to validate the name of the content object.
-        /// </summary>
-        /// <param name="name">Current name of the object.</param>
-        /// <returns>
-        /// The updated and validated name of the content object.
-        /// </returns>
-        /// <remarks>
-        /// This method should be used to determine if a name for a content object is valid or not.  Implementors should return NULL (Nothing in VB.Net) to indicate that the
-        /// name was not valid.
-        /// </remarks>
-        protected override string ValidateName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return null;
-            }
-
-            if (!name.EndsWith(GorgonFont.DefaultExtension, StringComparison.OrdinalIgnoreCase))
-            {
-                return name + GorgonFont.DefaultExtension;
-            }
-
-            return name;
-        }
-
-        /// <summary>
+	    /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>
@@ -108,7 +82,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                 Name = newFont.FontName.FormatFileName();
 
-                Settings.FontFamilyName = newFont.FontFamilyName;
+	            if (!Name.EndsWith(GorgonFontContent.FileExtension, StringComparison.OrdinalIgnoreCase))
+	            {
+		            Filename = Name + GorgonFontContent.FileExtension;
+	            }
+	            else
+	            {
+		            Filename = Name;
+	            }
+
+	            Settings.FontFamilyName = newFont.FontFamilyName;
                 Settings.Size = newFont.FontSize;
                 Settings.FontHeightMode = newFont.FontHeightMode;
                 Settings.AntiAliasingMode = newFont.FontAntiAliasMode;

@@ -232,15 +232,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         protected override ContentObject OnCreateContentObject(ContentSettings settings)
         {
 	        GorgonImageCodec codec;
-	        var extension = new GorgonFileExtension(Path.GetExtension(settings.Name));
+	        var imageSettings = (GorgonImageContentSettings)settings;
+	        var extension = new GorgonFileExtension(Path.GetExtension(settings.Filename));
 
 			// Use the proper codec for the image.
 	        if (!Codecs.TryGetValue(extension, out codec))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, settings.Name));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, settings.Filename));
 	        }
 
-            return new GorgonImageContent(settings.Name, codec);
+	        imageSettings.Codec = codec;
+
+            return new GorgonImageContent(imageSettings);
         }
 
 		/// <summary>
@@ -307,18 +310,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         /// <param name="fileName">The name of the file to load.</param>
         /// <param name="imageDataStream">The stream containing the image data.</param>
-        /// <param name="newWidth">[Optional] The new width of the image.</param>
-        /// <param name="newHeight">[Optional] The new height of the image.</param>
-        /// <param name="clip">[Optional] TRUE to clip the image when changing its size, FALSE to stretch it.</param>
-        /// <param name="newFormat">[Optional] The new format for the image.</param>
         /// <returns>
         /// An image editor content object.
         /// </returns>
-        /// <remarks>
-        /// Leave the <paramref name="newWidth" /> and <paramref name="newHeight" /> values at 0 to preserve the width and height of the image.  The overridden height will
-        /// only apply to 2D, Cube and 3D image types.  Leave the <paramref name="newFormat" /> parameter at Unknown to preserve the image format.
-        /// </remarks>
-        IImageEditorContent IImageEditorPlugIn.ImportContent(string fileName, Stream imageDataStream, int newWidth, int newHeight, bool clip, BufferFormat newFormat)
+        IImageEditorContent IImageEditorPlugIn.ImportContent(string fileName, Stream imageDataStream)
         {
             GorgonImageCodec codec;
 
@@ -342,20 +337,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, fileName));
             }
 
-            // Return the codec to the default overrides.
-            codec.Clip = clip;
-            codec.Format = newFormat;
-            codec.Height = newHeight;
-            codec.Width = newWidth;
-
-            var content = new GorgonImageContent(fileName, codec);
-            content.Load(fileName, imageDataStream);
-
-            // Reset the codec to its default settings.
+            // Return the codec to the default settings.
             codec.Clip = true;
             codec.Format = BufferFormat.Unknown;
             codec.Height = 0;
             codec.Width = 0;
+
+            var content = new GorgonImageContent(new GorgonImageContentSettings
+                                                 {
+	                                                 Name = fileName,
+													 Codec = codec,
+													 Filename = fileName,
+													 ImageStream = imageDataStream
+                                                 });
 
             return content;
         }

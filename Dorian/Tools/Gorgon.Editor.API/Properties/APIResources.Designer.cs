@@ -361,6 +361,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file must have a name..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_MUST_HAVE_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_MUST_HAVE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name contains invalid characters.
         ///The following characters are not allowed:
         ///{0}.

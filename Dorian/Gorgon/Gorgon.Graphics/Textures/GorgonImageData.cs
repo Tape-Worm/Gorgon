@@ -1567,14 +1567,47 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to clone this image.
+		/// Function to copy this image data into another image.
 		/// </summary>
-		/// <returns>A clone of this image.</returns>
-		/// <remarks>This method performs a deep copy of the image.</remarks>
-	    public GorgonImageData Clone()
-		{
-			return new GorgonImageData(this);
-		}
+		/// <param name="dest">The image data that will receive the copy of this image.</param>
+		/// <remarks>This method requires that the image format, width, and height be the same as the destination.  If these conditions are not met, then an exception will be thrown.</remarks>
+		public void CopyTo(GorgonImageData dest)
+	    {
+			if (dest == null)
+			{
+				throw new ArgumentNullException("dest");
+			}
+
+			if ((dest.Settings.Format != Settings.Format)
+			    || (dest.Settings.Width != Settings.Width)
+			    || (dest.Settings.Height != Settings.Height))
+			{
+				throw new ArgumentException(Resources.GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH, "dest");
+			}
+
+			for (int array = 0; array < Settings.ArrayCount.Min(dest.Settings.ArrayCount); array++)
+			{
+				int mipDepth = Settings.Depth.Min(dest.Settings.Depth);
+
+				// Start at 1 because we've either already copied the first levels, or we're using the source data.
+				for (int mipLevel = 0; mipLevel < Settings.MipCount.Min(dest.Settings.MipCount); mipLevel++)
+				{
+					for (int depth = 0; depth < mipDepth; depth++)
+					{
+						var sourceBuffer = Buffers[mipLevel, Settings.ImageType == ImageType.Image3D ? depth : array];
+						var destBuffer = dest.Buffers[mipLevel, Settings.ImageType == ImageType.Image3D ? depth : array];
+
+						sourceBuffer.CopyTo(destBuffer);
+					}
+
+					// Scale the depth.
+					if (mipDepth > 1)
+					{
+						mipDepth >>= 1;
+					}
+				}
+			}
+	    }
 
 		/// <summary>
 		/// Function to generate a new mip map chain.

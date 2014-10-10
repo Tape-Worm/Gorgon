@@ -795,6 +795,12 @@ namespace GorgonLibrary.Graphics
                         _graphics.Textures.MaxDepth));
             }
 
+	        if ((settings.MipCount > 1)
+	            && (!_graphics.VideoDevice.SupportsMipMaps(settings.Format)))
+	        {
+		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
+	        }
+
             int quality = _graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.Multisampling.Count);
 
             // Ensure that the quality of the sampling does not exceed what the card can do.

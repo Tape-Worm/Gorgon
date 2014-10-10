@@ -308,7 +308,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image size: {0}x{1}x{2}.  Format: {2}..
+        ///   Looks up a localized string similar to Image size: {0}x{1}x{2}.  Format: {3}..
         /// </summary>
         internal static string GORIMG_TEXT_IMAGE_INFO_3D {
             get {
@@ -394,6 +394,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_PREV_MIP {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_PREV_MIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format [{0}] is not valid when the mip count is greater than 1..
+        /// </summary>
+        internal static string GORIMG_TEXTURE_FORMAT_CANNOT_MIP {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXTURE_FORMAT_CANNOT_MIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map..
+        /// </summary>
+        internal static string GORIMG_TEXTURE_MIP_POW_2 {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXTURE_MIP_POW_2", resourceCulture);
             }
         }
         

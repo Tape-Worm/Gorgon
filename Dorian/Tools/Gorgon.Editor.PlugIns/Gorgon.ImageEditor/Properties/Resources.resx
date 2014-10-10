@@ -290,7 +290,7 @@ R16B16G16A16 (floating point)</value>
     <value>Image size: {0} pixels wide.  Format: {1}.</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
-    <value>Image size: {0}x{1}x{2}.  Format: {2}.</value>
+    <value>Image size: {0}x{1}x{2}.  Format: {3}.</value>
   </data>
   <data name="GORIMG_TEXT_INVALID_CODEC" xml:space="preserve">
     <value>(Invalid codec)</value>
@@ -318,5 +318,11 @@ R16B16G16A16 (floating point)</value>
   </data>
   <data name="PROP_CODEC_NAME" xml:space="preserve">
     <value>File codec</value>
+  </data>
+  <data name="GORIMG_TEXTURE_FORMAT_CANNOT_MIP" xml:space="preserve">
+    <value>The format [{0}] is not valid when the mip count is greater than 1.</value>
+  </data>
+  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
+    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
   </data>
 </root>

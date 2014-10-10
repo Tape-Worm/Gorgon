@@ -1182,9 +1182,10 @@ namespace GorgonLibrary.Editor
 
 			newName = Path.GetFileName(newName);
 
-			if (string.IsNullOrWhiteSpace(newName))
+			if ((string.IsNullOrWhiteSpace(newName))
+				|| (string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(newName))))
 			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
+				throw new ArgumentException(APIResources.GOREDIT_ERR_FILE_MUST_HAVE_NAME);
 			}
 
 			// Ensure we've got a valid file name.
@@ -1218,7 +1219,12 @@ namespace GorgonLibrary.Editor
 
 		    try
 		    {
-		        newName = file.Directory.FullPath + newName;
+				if (!newName.EndsWith(file.Extension, StringComparison.OrdinalIgnoreCase))
+				{
+					newName += file.Extension;
+				}
+				
+				newName = file.Directory.FullPath + newName;
 
 		        string physicalNewName = newName.FormatDirectory('/');
 		        physicalNewName = ScratchFiles.WriteLocation + physicalNewName.Substring(1);

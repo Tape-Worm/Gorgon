@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.IO;
+
 namespace GorgonLibrary.Editor
 {
     /// <summary>
@@ -52,7 +54,16 @@ namespace GorgonLibrary.Editor
             internal set;
         }
 
-        /// <summary>
+		/// <summary>
+		/// Property to set or return the filename for the content.
+		/// </summary>
+	    public string Filename
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
         /// Property to set or return the name of the content.
         /// </summary>
         /// <remarks>This property will return NULL (Nothing in VB.Net) if the name is not valid.</remarks>
@@ -69,7 +80,7 @@ namespace GorgonLibrary.Editor
                     value = string.Empty;
                 }
 
-                value = ValidateName(value);
+	            value = string.IsNullOrWhiteSpace(value) ? null : value.FormatFileName();
 
                 if (value == null)
                 {
@@ -83,16 +94,7 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function used to validate the name of the content object.
-        /// </summary>
-        /// <param name="name">Current name of the object.</param>
-        /// <returns>The updated and validated name of the content object.</returns>
-        /// <remarks>This method should be used to determine if a name for a content object is valid or not.  Implementors should return NULL (Nothing in VB.Net) to indicate that the 
-        /// name was not valid.</remarks>
-        protected abstract string ValidateName(string name);
-
-        /// <summary>
+	    /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>TRUE if the object was set up, FALSE if not.</returns>

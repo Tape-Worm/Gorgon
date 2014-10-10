@@ -502,7 +502,8 @@ namespace GorgonLibrary.Editor
 		    if (settings != null)
 		    {
                 // Assign the name from the file.
-                settings.Name = file.Name;
+			    settings.Filename = file.Name;
+                settings.Name = Path.GetFileNameWithoutExtension(file.Name);
 		        settings.CreateContent = false;
 		    }
 

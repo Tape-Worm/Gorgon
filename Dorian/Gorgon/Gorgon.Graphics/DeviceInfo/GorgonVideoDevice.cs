@@ -659,6 +659,35 @@ namespace GorgonLibrary.Graphics
         }
 
 		/// <summary>
+		/// Function to determine if the specified format supports mip maps.
+		/// </summary>
+		/// <param name="format">Format to check.</param>
+		/// <returns>TRUE if mipmaps are supported for the format, FALSE if not.</returns>
+		public bool SupportsMipMaps(BufferFormat format)
+		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
+			try
+			{
+				if (device != null)
+				{
+					return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Mip)
+							== D3D.FormatSupport.Mip);
+				}
+
+				tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+				device = tempInterfaces.Item3;
+
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Mip) == D3D.FormatSupport.Mip);
+			}
+			finally
+			{
+				ReleaseInterfaces(tempInterfaces);
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if the specified depth buffer format is supported.
 		/// </summary>
 		/// <param name="format">Format to check.</param>

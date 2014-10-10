@@ -88,7 +88,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 	        if (codecIndex != -1)
 	        {
-		        return GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].CodecDescription;
+		        return GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].Codec + " - " + GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].CodecDescription;
 	        }
 
 	        CultureInfo prevCulture = Resources.Culture;
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        GorgonImageCodec codec =
 		        GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(
 		                                                                 item =>
-		                                                                 string.Equals(item.CodecDescription, formatString, StringComparison.OrdinalIgnoreCase));
+		                                                                 string.Equals(item.Codec + " - " + item.CodecDescription, formatString, StringComparison.OrdinalIgnoreCase));
 
 	        if (codec == null)
 	        {

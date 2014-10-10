@@ -91,6 +91,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	{
 		#region Constants.
 		/// <summary>
+		/// The extension used for a Gorgon font file.
+		/// </summary>
+	    public const string FileExtension = ".gorFont";
+		/// <summary>
 		/// The size of the transformed texture.
 		/// </summary>
 		public const string GlyphTextureSizeProp = "TransformSize";
@@ -115,7 +119,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the active state for the editor.
 		/// </summary>
 		[Browsable(false)]
@@ -723,7 +727,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    /// <param name="stream">Stream containing the content data.</param>
 	    protected override void OnRead(Stream stream)
 	    {
-		    Font = Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name),
+		    Font = Graphics.Fonts.FromStream(Name,
 		                                     stream,
 		                                     (name, size) => _badGlyphTexture ??
 		                                                     (_badGlyphTexture = Graphics.Textures.CreateTexture
@@ -739,29 +743,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	        DisableProperty("FontTextureSize", _settings.Glyphs.Count > 0);
 	    }
 
-        /// <summary>
-        /// Function called when the name is about to be changed.
-        /// </summary>
-        /// <param name="proposedName">The proposed name for the content.</param>
-        /// <returns>
-        /// A valid name for the content.
-        /// </returns>
-        protected override string ValidateName(string proposedName)
-        {
-	        if (string.IsNullOrWhiteSpace(proposedName))
-	        {
-		        return string.Empty;
-	        }
-
-            if (!proposedName.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
-            {
-                return proposedName + ".gorFont";
-            }
-
-            return proposedName;
-        }
-
-		/// <summary>
+	    /// <summary>
 		/// Function to initialize the content editor.
 		/// </summary>
 		/// <returns>
@@ -844,12 +826,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					newSize = (Size)sizeObject;
 				}
 
-				imageContent = ImageEditor.ImportContent(dependency.Path,
-				                                         stream,
-				                                         newSize.Width,
-				                                         newSize.Height,
-				                                         true,
-				                                         BufferFormat.R8G8B8A8_UIntNormal);
+				imageContent = ImageEditor.ImportContent(dependency.Path, stream);
+
+				// Clip the image to a new size if necessary.
+				if ((newSize.Width != imageContent.Image.Settings.Width)
+				    || (newSize.Height != imageContent.Image.Settings.Height))
+				{
+					imageContent.Image.Resize(newSize.Width, newSize.Height, true);
+				}
 
 				if (imageContent.Image == null)
 				{
@@ -1029,7 +1013,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="plugIn">The plug-in that creates this object.</param>
 		/// <param name="initialSettings">The initial settings for the content.</param>
         public GorgonFontContent(ContentPlugIn plugIn, GorgonFontContentSettings initialSettings)
-			: base(initialSettings.Name)
+			: base(initialSettings)
         {
 			PlugIn = plugIn;
 			_settings = initialSettings.Settings;
