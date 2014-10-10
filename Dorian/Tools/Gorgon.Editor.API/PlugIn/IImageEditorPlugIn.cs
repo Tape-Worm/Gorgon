@@ -66,13 +66,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="fileName">The name of the file to load.</param>
 		/// <param name="imageDataStream">The stream containing the image data.</param>
-		/// <param name="newWidth">[Optional] The new width of the image.</param>
-		/// <param name="newHeight">[Optional] The new height of the image.</param>
-		/// <param name="clip">[Optional] TRUE to clip the image when changing its size, FALSE to stretch it.</param>
-		/// <param name="newFormat">[Optional] The new format for the image.</param>
-		/// <remarks>Leave the <paramref name="newWidth"/> and <paramref name="newHeight"/> values at 0 to preserve the width and height of the image.  The overridden height will 
-		/// only apply to 2D, Cube and 3D image types.  Leave the <paramref name="newFormat"/> parameter at Unknown to preserve the image format.</remarks>
 		/// <returns>An image editor content object.</returns>
-		IImageEditorContent ImportContent(string fileName, Stream imageDataStream, int newWidth = 0, int newHeight = 0, bool clip = true, BufferFormat newFormat = BufferFormat.Unknown);
+		IImageEditorContent ImportContent(string fileName, Stream imageDataStream);
     }
 }

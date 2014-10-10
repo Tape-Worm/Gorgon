@@ -52,6 +52,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private RectangleF _textureRegion;
         // The current shader view.
         private GorgonTextureShaderView _currentView;
+		// The current array index.
+	    private int _arrayIndex;
+		// The current mip level.
+	    private int _mipLevel;
+		// The current depth slice.
+	    private int _depthSlice;
         #endregion
 
         #region Methods.
@@ -62,14 +68,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonPrevMipLevel_Click(object sender, EventArgs e)
         {
-            int currentMip = (_currentView.MipStart - 1);
+	        _mipLevel--;
 
-            if (currentMip < 0)
+			if (_mipLevel < 0)
             {
-                currentMip = 0;
+				_mipLevel = 0;
             }
 
-            GetCurrentShaderView(currentMip, _currentView.ArrayStart);
+            GetCurrentShaderView(_mipLevel, _arrayIndex);
             ValidateControls();
         }
 
@@ -80,14 +86,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonNextArrayIndex_Click(object sender, EventArgs e)
 		{
-			int currentIndex = (_currentView.ArrayStart + 1);
+			_arrayIndex++;
 
-			if (currentIndex >= _content.ArrayCount)
+			if (_arrayIndex >= _content.ArrayCount)
 			{
-				currentIndex = _content.ArrayCount - 1;
+				_arrayIndex = _content.ArrayCount - 1;
 			}
 
-			GetCurrentShaderView(_currentView.MipStart, currentIndex);
+			GetCurrentShaderView(_mipLevel, _arrayIndex);
 			ValidateControls();
 		}
 
@@ -98,14 +104,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonPrevArrayIndex_Click(object sender, EventArgs e)
 		{
-			int currentIndex = (_currentView.ArrayStart - 1);
+			_arrayIndex--;
 
-			if (currentIndex < 0)
+			if (_arrayIndex < 0)
 			{
-				currentIndex = 0;
+				_arrayIndex = 0;
 			}
 
-			GetCurrentShaderView(_currentView.MipStart, currentIndex);
+			GetCurrentShaderView(_mipLevel, _arrayIndex);
 			ValidateControls();
 		}
 
@@ -116,14 +122,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonNextMipLevel_Click(object sender, EventArgs e)
         {
-            int currentMip = (_currentView.MipStart + 1);
+	        _mipLevel++;
 
-            if (currentMip >= _content.MipCount)
+            if (_mipLevel >= _content.MipCount)
             {
-				currentMip = _content.MipCount - 1;
+				_mipLevel = _content.MipCount - 1;
             }
 
-            GetCurrentShaderView(currentMip, _currentView.ArrayStart);
+            GetCurrentShaderView(_mipLevel, _arrayIndex);
             ValidateControls();
         }
 
@@ -132,12 +138,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateControls()
         {
-            buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart > 0);
-            buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_currentView.MipStart < _content.MipCount - 1);
+            buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel > 0);
+            buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel < _content.MipCount - 1);
             buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
-                                           && (_currentView.ArrayStart > 0);
+                                           && (_arrayIndex > 0);
             buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
-                                           && (_currentView.ArrayStart < _content.ArrayCount - 1);
+                                           && (_arrayIndex < _content.ArrayCount - 1);
 
             // Volume textures don't have array indices.
 	        buttonPrevArrayIndex.Visible =
@@ -146,6 +152,38 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 	        buttonPrevMipLevel.Visible = buttonNextMipLevel.Visible = sepMip.Visible = labelMipLevel.Visible = _content.Codec.SupportsMipMaps;
         }
+
+		/// <summary>
+		/// Function to update the image information text.
+		/// </summary>
+	    private void UpdateImageInfo()
+	    {
+			switch (_content.ImageType)
+			{
+				case ImageType.Image1D:
+					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_1D,
+														_texture.Settings.Width,
+														_texture.Settings.Format +
+														(_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_2D,
+														_texture.Settings.Width,
+														_texture.Settings.Height,
+														_texture.Settings.Format +
+														(_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
+					break;
+				case ImageType.Image3D:
+					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_3D,
+														_texture.Settings.Width,
+														_texture.Settings.Height,
+														_texture.Settings.Depth,
+														_texture.Settings.Format +
+														(_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
+					break;
+			}
+	    }
 
 		/// <summary>
 		/// Function to create a new texture for display.
@@ -161,44 +199,31 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				case ImageType.Image1D:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture1D>("DisplayTexture", _content.Image);
-					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_1D,
-					                                    _texture.Settings.Width,
-					                                    _texture.Settings.Format +
-					                                    (_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
 					break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
-					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_2D,
-					                                    _texture.Settings.Width,
-					                                    _texture.Settings.Height,
-					                                    _texture.Settings.Format +
-														(_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
 					break;
 				case ImageType.Image3D:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture3D>("DisplayTexture", _content.Image);
-					labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_3D,
-					                                    _texture.Settings.Width,
-					                                    _texture.Settings.Height,
-					                                    _texture.Settings.Depth,
-					                                    _texture.Settings.Format +
-														(_content.BlockCompression != BufferFormat.Unknown ? " (" + _content.BlockCompression + ") " : string.Empty));
 					break;
 			}
 
 		    if (_currentView != null)
 		    {
-		        GetCurrentShaderView(_currentView.MipStart < _content.MipCount
-		                                 ? _currentView.MipStart
+		        GetCurrentShaderView(_mipLevel < _content.MipCount
+		                                 ? _mipLevel
 		                                 : _content.MipCount - 1,
-		                             _currentView.ArrayStart < _content.ArrayCount
-		                                 ? _currentView.ArrayStart
+		                             _arrayIndex < _content.ArrayCount
+		                                 ? _arrayIndex
 		                                 : _content.ArrayCount - 1);
 		    }
 		    else
 		    {
                 GetCurrentShaderView(0, 0);
 		    }
+
+			UpdateImageInfo();
 	    }
 
         /// <summary>
@@ -255,6 +280,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 case ImageType.Image3D:
                     _currentView = ((GorgonTexture3D)_texture).GetShaderView(_texture.Settings.Format,
                                                                              mipIndex);
+		            arrayIndex = 0;
                     break;
             }
 
@@ -298,6 +324,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case "ArrayCount":
 					CreateTexture();
 					break;
+				case "Codec":
+					UpdateImageInfo();
+					break;
 			}
 
             ValidateControls();
@@ -319,7 +348,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new InvalidCastException(string.Format(Resources.GORIMG_CONTENT_NOT_IMAGE, Content.Name));
 			}
 
-		    if (_content.Image != null)
+		    if ((_content.Image != null) && (_texture == null))
 		    {
 				CreateTexture();
 		    }

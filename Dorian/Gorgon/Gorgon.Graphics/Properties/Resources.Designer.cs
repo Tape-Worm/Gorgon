@@ -605,21 +605,11 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot compress image formats that are less than 8 bits.
-        ///The current format uses {0} bits..
+        ///   Looks up a localized string similar to Cannot copy the image.  The source width, height (if applicable) and format must be the same as the destination..
         /// </summary>
-        internal static string GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8 {
+        internal static string GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH {
             get {
-                return ResourceManager.GetString("GORGFX_IMAGE_CANNOT_COMPRESS_LESS_THAN_8", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot compress images with a typeless format..
-        /// </summary>
-        internal static string GORGFX_IMAGE_CANT_COMPRESS_TYPELESS {
-            get {
-                return ResourceManager.GetString("GORGFX_IMAGE_CANT_COMPRESS_TYPELESS", resourceCulture);
+                return ResourceManager.GetString("GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH", resourceCulture);
             }
         }
         
@@ -1439,6 +1429,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_TEXTURE_MUST_BE_SAME_SIZE {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_MUST_BE_SAME_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture format [{0}] must be used with a mip map count of 1..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_NO_MIP_SUPPORT {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_NO_MIP_SUPPORT", resourceCulture);
             }
         }
         

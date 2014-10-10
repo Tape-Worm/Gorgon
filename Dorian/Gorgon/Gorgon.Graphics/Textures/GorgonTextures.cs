@@ -212,10 +212,14 @@ namespace GorgonLibrary.Graphics
 			if (settings.Height < 0)
 				settings.Height = 0;
 
-			// Direct3D 9 video devices require resizing to power of two.
 			// Mip maps also require power of 2 sizing for volume textures.
 			if (settings.MipCount != 1)
 			{
+				if (!_graphics.VideoDevice.SupportsMipMaps(settings.Format))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
+				}
+
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, settings.Height, settings.Depth);
 				settings.Width = newSize.Item1;
 				settings.Height = newSize.Item2;
@@ -303,6 +307,12 @@ namespace GorgonLibrary.Graphics
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
+			if ((settings.MipCount > 1)
+				&& (!_graphics.VideoDevice.SupportsMipMaps(settings.Format)))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
+			}
+
 			if (settings.Multisampling.Count == 0)
 				settings.Multisampling = new GorgonMultisampling(1, 0);
 
@@ -371,6 +381,12 @@ namespace GorgonLibrary.Graphics
 
 			if (settings.Width < 0)
 				settings.Width = 0;
+
+			if ((settings.MipCount > 1)
+				&& (!_graphics.VideoDevice.SupportsMipMaps(settings.Format)))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
+			}
 
 			// Check texture size if using a compressed format.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);

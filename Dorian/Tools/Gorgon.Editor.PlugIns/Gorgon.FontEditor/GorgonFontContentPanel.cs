@@ -1234,12 +1234,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			using (var fileStream = textureFile.OpenStream(false))
 			{
-				using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath,
-				                                                             fileStream,
-				                                                             0,
-				                                                             0,
-				                                                             true,
-				                                                             BufferFormat.R8G8B8A8_UIntNormal))
+				using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath, fileStream))
 				{
 					// We can only use 2D content.
 					if (imageContent.Image.Settings.ImageType != ImageType.Image2D)

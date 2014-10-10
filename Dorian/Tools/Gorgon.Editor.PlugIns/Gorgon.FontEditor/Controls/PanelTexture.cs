@@ -521,12 +521,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					// Load the image.
 					using (Stream stream = imageFileBrowser.Files[0].OpenStream(false))
 					{
-						using (IImageEditorContent imageContent = ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath,
-																											stream,
-																											0,
-																											0,
-																											false,
-																											BufferFormat.R8G8B8A8_UIntNormal))
+						using (IImageEditorContent imageContent = ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath, stream))
 						{
 							if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 							{

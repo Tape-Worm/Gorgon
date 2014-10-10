@@ -162,11 +162,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	                       let formatInfo = GorgonBufferFormatInfo.GetInfo(format)
 	                       where (!formatInfo.HasDepth) && (!formatInfo.HasStencil)
 	                             && (!formatInfo.IsTypeless)
-								 && (!formatInfo.IsCompressed)
-								 && (((content.ImageType == ImageType.Image1D) && (ContentObject.Graphics.VideoDevice.Supports1DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image2D || content.ImageType == ImageType.ImageCube) && (ContentObject.Graphics.VideoDevice.Supports2DTextureFormat(format)))
-								 || ((content.ImageType == ImageType.Image3D) && (ContentObject.Graphics.VideoDevice.Supports3DTextureFormat(format))))
+	                             && (!formatInfo.IsCompressed)
+	                             && (((content.ImageType == ImageType.Image1D) && (ContentObject.Graphics.VideoDevice.Supports1DTextureFormat(format)))
+	                                 ||
+	                                 ((content.ImageType == ImageType.Image2D || content.ImageType == ImageType.ImageCube) &&
+	                                  (ContentObject.Graphics.VideoDevice.Supports2DTextureFormat(format)))
+	                                 || ((content.ImageType == ImageType.Image3D) && (ContentObject.Graphics.VideoDevice.Supports3DTextureFormat(format))))
 	                             && (content.Codec.SupportedFormats.Any(item => item == format))
+	                             && ((content.MipCount == 1)
+	                                 || ((content.MipCount > 1) && (ContentObject.Graphics.VideoDevice.SupportsMipMaps(format))))
 	                       select format);
 
 	        return new StandardValuesCollection(GorgonImageData.CanConvertToAny(currentFormat, formats));

@@ -34,37 +34,30 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     /// </summary>
     class GorgonImageContentSettings
         : ContentSettings
-    {
-        #region Methods.
-        /// <summary>
-        /// Function used to validate the name of the content object.
-        /// </summary>
-        /// <param name="name">Current name of the object.</param>
-        /// <returns>
-        /// The updated and validated name of the content object.
-        /// </returns>
-        /// <remarks>
-        /// This method should be used to determine if a name for a content object is valid or not.  Implementors should return NULL (Nothing in VB.Net) to indicate that the
-        /// name was not valid.
-        /// </remarks>
-        protected override string ValidateName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return null;
-            }
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the image codec to used to read the image.
+		/// </summary>
+	    public GorgonImageCodec Codec
+	    {
+		    get;
+		    set;
+	    }
 
-			var extension = new GorgonFileExtension(Path.GetExtension(name));
+		/// <summary>
+		/// Property to set or return the stream that holds the image.
+		/// </summary>
+		/// <remarks>Set this to NULL (Nothing in VB.Net) to skip loading image data.</remarks>
+	    public Stream ImageStream
+	    {
+		    get;
+		    set;
+	    }
+		#endregion
 
-	        if (string.IsNullOrWhiteSpace(extension.Extension))
-	        {
-		        return null;
-	        }
-
-	        return !GorgonImageEditorPlugIn.Codecs.ContainsKey(extension) ? null : name;
-        }
-
-        /// <summary>
+		#region Methods.
+		/// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>

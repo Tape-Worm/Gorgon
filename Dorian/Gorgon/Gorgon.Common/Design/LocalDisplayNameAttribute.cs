@@ -34,7 +34,7 @@ namespace GorgonLibrary.Design
 	/// <summary>
 	/// A localizable version of the display name attribute.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
 	public class LocalDisplayNameAttribute
 		: DisplayNameAttribute
 	{

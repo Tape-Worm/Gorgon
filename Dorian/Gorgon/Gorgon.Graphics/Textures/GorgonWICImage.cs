@@ -843,6 +843,8 @@ namespace GorgonLibrary.Graphics
 
             try
             {
+				// TODO: Add in something to allow for shift in color context (sRGB).
+				// TODO: Check http://msdn.microsoft.com/en-us/library/windows/desktop/ee690202(v=vs.85).aspx for more detail.
                 if (destFormat != Guid.Empty)
                 {
                     converter = new WIC.FormatConverter(Factory);
@@ -854,7 +856,6 @@ namespace GorgonLibrary.Graphics
 					}
 
                     converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
-                    source = converter;
                 }
 
                 if (!destRect.IsEmpty)

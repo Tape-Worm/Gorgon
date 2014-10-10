@@ -746,7 +746,7 @@ namespace GorgonLibrary.Editor
 			result = GorgonDialogs.ConfirmBox(this,
 			                                  string.Format(Resources.GOREDIT_DLG_CONTENT_CHANGED_SAVE,
 			                                                ContentManagement.Current.ContentType,
-			                                                ContentManagement.Current.Name),
+			                                                ContentManagement.Current.Filename),
 			                                  null,
 			                                  true);
 
@@ -1522,8 +1522,8 @@ namespace GorgonLibrary.Editor
 			    }
 
 				// If the file already exists, then ask the user if they want to overwrite it.
-				if ((directoryNode.Directory.Files.Contains(content.Name))
-					&& (ImportConfirmFileOverwrite(directoryNode.Directory.FullPath + content.Name, 1) == ConfirmationResult.No))
+				if ((directoryNode.Directory.Files.Contains(content.Filename))
+					&& (ImportConfirmFileOverwrite(directoryNode.Directory.FullPath + content.Filename, 1) == ConfirmationResult.No))
 				{
 					return;
 				}
@@ -1535,12 +1535,12 @@ namespace GorgonLibrary.Editor
 				ContentManagement.LoadContentPane(content);
 
                 // Create the file in the scratch area.
-                newFile = ScratchArea.CreateFile(content.Name, content.ContentType, directoryNode.Directory);
+                newFile = ScratchArea.CreateFile(content.Filename, content.ContentType, directoryNode.Directory);
 
                 // The file did not get created, then display an error to that effect.
                 if (newFile == null)
 			    {
-					throw new IOException(string.Format(Resources.GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE, content.Name));
+					throw new IOException(string.Format(Resources.GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE, content.Filename));
 			    }
 				
 				// Persist the content to the file.
@@ -1901,6 +1901,12 @@ namespace GorgonLibrary.Editor
 			{
 				if (node.EditState == NodeEditState.RenameFile)
 				{
+					// If we try to get clever and only provide an extension and no base name, then cancel.
+					if (label.StartsWith(".", StringComparison.OrdinalIgnoreCase))
+					{
+						return;
+					}
+
 				    RenameFileNode((TreeNodeFile)node, label);
 				}
 
@@ -2197,7 +2203,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Update the current name in the current content.
-			ContentManagement.Current.Name = newFile.Name;
+			ContentManagement.Current.Name = newFile.BaseFileName;
 			CurrentOpenFile = newFile;
         }
 

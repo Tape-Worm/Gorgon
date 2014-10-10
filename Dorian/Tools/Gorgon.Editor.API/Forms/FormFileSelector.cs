@@ -1388,18 +1388,18 @@ namespace GorgonLibrary.Editor
 					content.Read(contentStream);
 				}
 
-				Image result = content.GetThumbNailImage();
+				Image scaledThumbNail;
 
-				// If the image isn't the correct size then we need to rescale it.
-				if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
+				using (Image result = content.GetThumbNailImage())
 				{
-					return result;
-				}
+					// If the image isn't the correct size then we need to rescale it.
+					if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
+					{
+						return result;
+					}
 
-				var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
+					scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
 
-				try
-				{
 					using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
 					{
 						float aspect = (float)result.Width / result.Height;
@@ -1424,10 +1424,6 @@ namespace GorgonLibrary.Editor
 							                new RectangleF(0, 0, result.Width, result.Height),
 							                GraphicsUnit.Pixel);
 					}
-				}
-				finally
-				{
-					result.Dispose();
 				}
 
 				return scaledThumbNail;

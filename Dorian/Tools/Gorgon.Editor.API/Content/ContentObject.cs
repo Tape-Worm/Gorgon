@@ -31,11 +31,13 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor
@@ -58,6 +60,7 @@ namespace GorgonLibrary.Editor
         private string _name = "Content";			// Name of the content.
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
+	    private int _renameLock;					// Lock flag for renaming.
 		#endregion
 
         #region Properties.
@@ -78,6 +81,16 @@ namespace GorgonLibrary.Editor
 	    {
 		    get;
 		    private set;
+	    }
+
+		/// <summary>
+		/// Property to return the file name of this content.
+		/// </summary>
+		[Browsable(false)]
+	    public string Filename
+	    {
+			get;
+			private set;
 	    }
 
 		/// <summary>
@@ -175,38 +188,61 @@ namespace GorgonLibrary.Editor
 			}
 			set
 			{
-				if (string.IsNullOrWhiteSpace(value))
+				try
 				{
-					return;
+					// We're already in the middle of a rename operation, so do nothing.
+					if (Interlocked.Increment(ref _renameLock) > 1)
+					{
+						return;
+					}
+
+					if (string.IsNullOrWhiteSpace(value))
+					{
+						return;
+					}
+
+					if (string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
+					{
+						return;
+					}
+
+					string newName = value.FormatFileName();
+
+					if (string.IsNullOrWhiteSpace(newName))
+					{
+						return;
+					}
+
+					if ((ContentManagement.ContentRenamed != null)
+					    && (ContentManagement.Current == this)
+					    && (HasProperties))
+					{
+						// The changing of the name for content is special in that it's persisted
+						// immediately.  When the name is changed, no change tracking is performed.
+						string filename = newName;
+						string extension = Path.GetExtension(Filename) ?? string.Empty;
+
+						if (!filename.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
+						{
+							filename += extension;
+						}
+
+						ContentManagement.ContentRenamed(filename);
+
+						Filename = filename;
+					}
+
+					_name = newName;
+
+					// If we have a content UI, then tell it of the change to the property.
+					if (ContentControl != null)
+					{
+						ContentControl.UpdateCaption();
+					}
 				}
-
-				if (string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
+				finally
 				{
-					return;
-				}
-
-				string newName = ValidateName(value);
-
-				if (string.IsNullOrWhiteSpace(newName))
-				{
-					return;
-				}
-
-				if ((ContentManagement.ContentRenamed != null)
-					&& (ContentManagement.Current == this)
-					&& (HasProperties))
-				{
-					// The changing of the name for content is special in that it's persisted
-					// immediately.  When the name is changed, no change tracking is performed.
-					ContentManagement.ContentRenamed(newName);
-				}
-
-				_name = newName;
-
-				// If we have a content UI, then tell it of the change to the property.
-				if (ContentControl != null)
-				{
-					ContentControl.UpdateCaption();
+					Interlocked.Decrement(ref _renameLock);
 				}
 			}
 		}
@@ -294,16 +330,6 @@ namespace GorgonLibrary.Editor
 	    }
 
         /// <summary>
-        /// Function called when the name is about to be changed.
-        /// </summary>
-        /// <param name="proposedName">The proposed name for the content.</param>
-        /// <returns>A valid name for the content.</returns>
-        protected virtual string ValidateName(string proposedName)
-        {
-            return proposedName;
-        }
-
-        /// <summary>
         /// Function called when the content is being initialized.
         /// </summary>
         /// <returns>A control to place in the primary interface window.</returns>
@@ -351,6 +377,22 @@ namespace GorgonLibrary.Editor
 			}
 
 			NotifyPropertyChanged(propertyName, value);
+	    }
+
+		/// <summary>
+		/// Function called before the content is closed.
+		/// </summary>
+	    protected virtual void OnBeforeCloseContent()
+	    {
+		    
+	    }
+
+		/// <summary>
+		/// Function called after the content is closed.
+		/// </summary>
+	    protected virtual void OnAfterCloseContent()
+	    {
+		    
 	    }
 
 		/// <summary>
@@ -593,14 +635,20 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentObject"/> class.
 		/// </summary>
-		/// <param name="name">Name of the content.</param>
-		protected ContentObject(string name)
+		/// <param name="settings">The settings for the content.</param>
+		protected ContentObject(ContentSettings settings)
 		{
 			Dependencies = new DependencyCollection();
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 
-			Name = name;
+			if (settings == null)
+			{
+				return;
+			}
+
+			Filename = settings.Filename;
+			Name = settings.Name;
 		}
 		#endregion
 
