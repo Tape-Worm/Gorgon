@@ -1062,7 +1062,7 @@ namespace GorgonLibrary.IO
 			var scanSize = (int)(stream.Length - stream.Position);
 			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
 
-			int opaqueLineCount = image.Settings.Height;
+			int opaqueLineCount = 0;
 			for (int y = 0; y < image.Settings.Height; y++)
 			{
 				bool setOpaque;
@@ -1079,7 +1079,7 @@ namespace GorgonLibrary.IO
 
 				if ((setOpaque) && (SetOpaqueIfZeroAlpha))
 				{
-					opaqueLineCount--;
+					opaqueLineCount++;
 				}
 					
 				if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
@@ -1102,6 +1102,7 @@ namespace GorgonLibrary.IO
 			for (int y = 0; y < image.Settings.Height; y++)
 			{
 				CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
+				destPtr += buffer.PitchInformation.RowPitch;
 			}
 		}
 
