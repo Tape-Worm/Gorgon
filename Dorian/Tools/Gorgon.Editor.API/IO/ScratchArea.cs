@@ -1172,8 +1172,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File to rename.</param>
 		/// <param name="newName">New name for the file.</param>
+		/// <param name="modifyExtension">TRUE to allow the extension to be modified, FALSE to force it to stay the same.</param>
 		/// <returns>The file with the new name.</returns>
-		public static GorgonFileSystemFileEntry Rename(GorgonFileSystemFileEntry file, string newName)
+		public static GorgonFileSystemFileEntry Rename(GorgonFileSystemFileEntry file, string newName, bool modifyExtension)
 		{
 			if (file == null)
 			{
@@ -1219,7 +1220,8 @@ namespace GorgonLibrary.Editor
 
 		    try
 		    {
-				if (!newName.EndsWith(file.Extension, StringComparison.OrdinalIgnoreCase))
+				if ((!modifyExtension)
+					&& (!newName.EndsWith(file.Extension, StringComparison.OrdinalIgnoreCase)))
 				{
 					newName += file.Extension;
 				}

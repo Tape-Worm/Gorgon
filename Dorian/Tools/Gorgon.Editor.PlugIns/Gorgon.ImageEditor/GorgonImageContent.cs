@@ -49,6 +49,67 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         : ContentObject, IImageEditorContent
     {
         #region Variables.
+		// Compression format strings.
+	    private readonly Dictionary<BufferFormat, string> _compFormats = new Dictionary<BufferFormat, string>
+	                                                                     {
+		                                                                     {
+			                                                                     BufferFormat.BC1_UIntNormal,
+			                                                                     "BC1_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC1_UIntNormal_sRGB,
+			                                                                     "BC1_UNORM_SRGB"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC2_UIntNormal,
+			                                                                     "BC2_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC2_UIntNormal_sRGB,
+			                                                                     "BC2_UNORM_SRGB"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC3_UIntNormal,
+			                                                                     "BC3_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC3_UIntNormal_sRGB,
+			                                                                     "BC3_UNORM_SRGB"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC4_UIntNormal,
+			                                                                     "BC4_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC4_IntNormal,
+			                                                                     "BC4_SNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC5_UIntNormal,
+			                                                                     "BC5_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC5_IntNormal,
+			                                                                     "BC5_SNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC6H_SF16,
+			                                                                     "BC6H_SF16"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC6H_UF16,
+			                                                                     "BC6H_UF16"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC7_UIntNormal,
+			                                                                     "BC7_UNORM"
+		                                                                     },
+		                                                                     {
+			                                                                     BufferFormat.BC7_UIntNormal_sRGB,
+			                                                                     "BC7_UNORM_SRGB"
+		                                                                     },
+	                                                                     };
+
 		// List of D3D formats for use with texconv.exe.
 	    // ReSharper disable once InconsistentNaming
 	    private readonly Dictionary<BufferFormat, string> _d3dFormats = new Dictionary<BufferFormat, string>
@@ -541,14 +602,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_original.CopyTo(newImage);
 
 				// Convert the format.
-				if (convertFormat != _imageSettings.Format)
+				if (convertFormat != newSettings.Format)
 				{
 					newImage.ConvertFormat(convertFormat);
 				}
 
 				// Resize the image.
-				if ((convertWidth != _imageSettings.Width)
-				    || (convertHeight != _imageSettings.Height))
+				if ((convertWidth != newSettings.Width)
+				    || (convertHeight != newSettings.Height))
 				{
 					newImage.Resize(convertWidth, convertHeight, false);
 				}
@@ -789,7 +850,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 	        }
 
-            bool blockCompressionDisabled = !Codec.SupportsBlockCompression;
+	        bool blockCompressionDisabled = !Codec.SupportsBlockCompression || ((Width % 4) != 0) || ((Height % 4) != 0);
 
             if (!blockCompressionDisabled)
             {
@@ -824,6 +885,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                             || _imageSettings.ImageType == ImageType.ImageCube);
 
             DisableProperty("ImageType", Codec.SupportsImageType.Count() < 2);
+
+	        DisableProperty("Codec", GorgonImageEditorPlugIn.CodecDropDownList.Count(CodecSupportsImage) <= 1);
         }
 
 		/// <summary>
@@ -863,6 +926,132 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				// Intentionally left blank.
 				// We don't care if the delete was not successful.
 		    }
+	    }
+
+		/// <summary>
+		/// Functon to compress the current image into a block compressed image.
+		/// </summary>
+		/// <param name="stream">Stream that will receive the compressed data.</param>
+	    private void CompressBCImage(Stream stream)
+	    {
+			Process texConvProcess = null;
+			GorgonImageData tempImage = null;
+
+			if ((_contentPanel == null)
+				|| (_contentPanel.ParentForm == null))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+			}
+
+			string texConvPath = Gorgon.ApplicationDirectory + "texconv.exe";
+
+			// If we can't find our converter, then we're out of luck.
+			if (!File.Exists(texConvPath))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+			}
+
+			// We'll need to copy this data and decompress it in an external source.
+			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dds");
+			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
+			string outputName = tempFileDirectory + "comp_" + Path.GetFileName(tempFilePath);
+
+			Debug.Assert(!string.IsNullOrWhiteSpace(tempFileDirectory), "No temporary directory!");
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				var ddsCodec = new GorgonCodecDDS();
+				
+				// Save our image to the temporary area.
+				Image.Save(tempFilePath, ddsCodec);
+
+				// If we can't find our converter, then we're out of luck.
+				if (!File.Exists(texConvPath))
+				{
+					DeleteTempImageFile(tempFilePath);
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+				}
+
+				var info = new ProcessStartInfo
+				{
+					Arguments =
+						"-f " + _compFormats[BlockCompression] + " -fl " +
+						(Graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1 ? "11.0" : "10.0") + " -ft DDS -o \"" +
+						Path.GetDirectoryName(tempFilePath) + "\" -nologo -px comp_ \"" + tempFilePath + "\"",
+					ErrorDialog = true,
+					ErrorDialogParentHandle = _contentPanel.ParentForm.Handle,
+					FileName = texConvPath,
+					WorkingDirectory = tempFileDirectory,
+					UseShellExecute = false,
+#if DEBUG
+					CreateNoWindow = false,
+#else
+					CreateNoWindow = true,
+#endif
+					RedirectStandardError = true,
+					RedirectStandardOutput = true
+				};
+
+				texConvProcess = Process.Start(info);
+
+				if (texConvProcess == null)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+				}
+
+				// Wait until we're done converting.
+				texConvProcess.WaitForExit();
+
+				// Check standard the error stream for errors.
+				string errorData = texConvProcess.StandardError.ReadToEnd();
+
+				if (!string.IsNullOrWhiteSpace(errorData))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData);
+				}
+
+				errorData = texConvProcess.StandardOutput.ReadToEnd();
+
+				// Check for invalid parameters.
+				if (errorData.StartsWith("Invalid value", StringComparison.OrdinalIgnoreCase))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)));
+				}
+
+				// Check for failure.
+				if (errorData.Contains("FAILED"))
+				{
+					// Get rid of the temporary path and use the file name.
+					errorData = errorData.Replace(tempFilePath, "\"" + Filename + "\"");
+					throw new GorgonException(GorgonResult.CannotCreate,
+											  Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData);
+				}
+				
+				texConvProcess.Close();
+				texConvProcess = null;
+
+				// Copy the data into our image stream.
+				tempImage = GorgonImageData.FromFile(outputName, ddsCodec);
+				tempImage.Save(stream, Codec);
+			}
+			finally
+			{
+				if (tempImage != null)
+				{
+					tempImage.Dispose();
+				}
+
+				if (texConvProcess != null)
+				{
+					texConvProcess.Close();
+				}
+
+				// Remove the copied file.
+				DeleteTempImageFile(tempFilePath);
+				DeleteTempImageFile(outputName);
+			}		    
 	    }
 
 		/// <summary>
@@ -1054,9 +1243,49 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="stream">Stream that will receive the data.</param>
         protected override void OnPersist(Stream stream)
         {
+		    if (BlockCompression == BufferFormat.Unknown)
+		    {
+			    // Write the image out.
+			    Image.Save(stream, Codec);
+			}
+		    else
+		    {
+			    CompressBCImage(stream);
+		    }
+
+			_originalCodec = Codec;
+
+			// Make this image the original.
+		    if (_original == Image)
+		    {
+			    return;
+		    }
+
+		    _original.Dispose();
+		    _original = Image;
         }
 
 		/// <summary>
+		/// Function to perform actions on the content file before it is persisted.
+		/// </summary>
+		/// <returns>
+		/// The current file name for the content.
+		/// </returns>
+		/// <remarks>
+		/// Return the current file name if the content file should change its name after persisting.
+		/// <para>
+		/// This value may return NULL (Nothing in VB.Net) or an empty string if renaming is not desired.
+		/// </para>
+		/// </remarks>
+	    protected override string OnBeforePersist()
+		{
+			// Rename the image to match our new codec.
+			string newName = Codec == _originalCodec ? null : RenameImageForCodec();
+
+			return newName;
+		}
+
+	    /// <summary>
 		/// Function to update the filename for this content.
 		/// </summary>
 		/// <returns>
@@ -1222,6 +1451,25 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             return _contentPanel;
         }
+
+		/// <summary>
+		/// Function to determine if the codec supports the current image information.
+		/// </summary>
+		/// <param name="codec">The codec to evaluate.</param>
+		/// <returns>TRUE if the codec supports the current image information, FALSE if not.</returns>
+	    public bool CodecSupportsImage(GorgonImageCodec codec)
+	    {
+			bool hasArray = (ArrayCount > 1 && codec.SupportsArray) || ArrayCount == 1;
+			bool hasDepth = (Depth > 1 && codec.SupportsDepth) || Depth == 1;
+			bool hasMips = (MipCount > 1 && codec.SupportsMipMaps) || MipCount == 1;
+			bool hasImageType = codec.SupportsImageType.Any(imgType => imgType == ImageType);
+			bool hasFormat = codec.SupportedFormats.Any(format => format == ImageFormat);
+			bool hasBC = (codec.SupportsBlockCompression && BlockCompression != BufferFormat.Unknown) ||
+						 BlockCompression == BufferFormat.Unknown;
+
+			return hasBC && hasArray & hasDepth && hasMips && hasImageType && hasFormat;
+		    
+	    }
 
 		/// <summary>
 		/// Function to draw the interface for the content editor.

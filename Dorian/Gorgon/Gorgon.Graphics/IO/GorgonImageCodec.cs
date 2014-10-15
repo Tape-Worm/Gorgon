@@ -762,11 +762,12 @@ namespace GorgonLibrary.IO
 								// If not in-place copy, then copy from the source.
 								if (src != dest)
 								{
-									*destPtr = (ushort)((*srcPtr) & 0x7FFF);
-									srcPtr++;
+									*(destPtr++) = (ushort)((*srcPtr++) | 0x8000);
 								}
-								*destPtr |= 0x8000;
-								destPtr++;
+								else
+								{
+									*(destPtr++) |= 0x8000;
+								}
 							}
 						}
 						return;
@@ -804,13 +805,14 @@ namespace GorgonLibrary.IO
 		internal void PostProcess(GorgonImageData data)
 		{
 			IImageSettings destSettings = data.Settings.Clone();
-			GorgonImageData destData = null;
 			int width = Width > 0 ? Width : data.Settings.Width;
 			int height = Height > 0 ? Height : data.Settings.Height;
 			int mipCount = MipCount > 0 ? MipCount : data.Settings.MipCount;
 			BufferFormat format = (Format != BufferFormat.Unknown) ? Format : data.Settings.Format;
 			Rectangle newSize = Rectangle.Empty;
 			int mipStart = 0;
+			var sourceInfo = GorgonBufferFormatInfo.GetInfo(data.Settings.Format);
+			var destInfo = GorgonBufferFormatInfo.GetInfo(format);
 
 			// First, confirm whether we can perform format conversions.
 			using (var wic = new GorgonWICImage())
@@ -857,6 +859,7 @@ namespace GorgonLibrary.IO
 				}
 
 				// Create our worker buffer.
+				GorgonImageData destData;
 				using(destData = new GorgonImageData(destSettings))
 				{
 					// The first step is to convert and resize our images:
@@ -876,8 +879,17 @@ namespace GorgonLibrary.IO
 								// Create a temporary WIC bitmap to work with.
 								using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 								{
-									wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
-															destPixelFormat, Dithering, newSize, Clip, Filter);
+									wic.TransformImageData(bitmap,
+									                       destBuffer.Data.BasePointer,
+									                       destBuffer.PitchInformation.RowPitch,
+									                       destBuffer.PitchInformation.SlicePitch,
+									                       destPixelFormat,
+									                       sourceInfo.IssRGB,
+									                       destInfo.IssRGB,
+									                       Dithering,
+									                       newSize,
+									                       Clip,
+									                       Filter);
 								}
 							}
 						}
@@ -909,7 +921,7 @@ namespace GorgonLibrary.IO
 									using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 									{
 										wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
-																Guid.Empty, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);
+																Guid.Empty, false, false, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);
 									}
 								}
 

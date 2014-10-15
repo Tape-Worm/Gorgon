@@ -28,9 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
@@ -141,8 +143,8 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the method to call when content is renamed.
 		/// </summary>
-		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c></remarks>
-	    public static Action<string> ContentRenamed
+		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c>, <c>bool overrideExtension</c></remarks>
+	    public static Action<string, bool> ContentRenamed
 	    {
 		    get;
 		    set;
@@ -589,6 +591,22 @@ namespace GorgonLibrary.Editor
 		    {
 		        throw new ArgumentNullException("file");
 		    }
+			
+			// Finalize the content after persisting to the file store.
+			string newName = Current.OnBeforePersist();
+
+			if ((!string.IsNullOrWhiteSpace(newName))
+			    && (!Current.HasOwner))
+			{
+				// Ensure that this file doesn't already exist.
+				if (ScratchArea.ScratchFiles.GetFile(file.Directory.FullPath + newName) != null)
+				{
+					throw new GorgonException(GorgonResult.AccessDenied,
+					                          string.Format(APIResources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
+					                                        APIResources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
+					                                        newName));
+				}
+			}
 
 			// Write the content out to the scratch file system.
 			using (var contentStream = file.OpenStream(true))
@@ -609,6 +627,13 @@ namespace GorgonLibrary.Editor
 					EditorMetaDataFile.Dependencies[file.FullPath] = Current.Dependencies;
 					EditorMetaDataFile.Save();
 				}
+			}
+
+			if ((!string.IsNullOrWhiteSpace(newName))
+				&& (!Current.HasOwner))
+			{
+				// Rename the content.
+				ContentRenamed(newName, true);
 			}
 
 			_contentChanged = false;

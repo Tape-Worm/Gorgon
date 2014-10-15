@@ -325,4 +325,7 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
     <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
   </data>
+  <data name="GORIMG_CANNOT_COMPRESS" xml:space="preserve">
+    <value>There was an error compressing the image.</value>
+  </data>
 </root>

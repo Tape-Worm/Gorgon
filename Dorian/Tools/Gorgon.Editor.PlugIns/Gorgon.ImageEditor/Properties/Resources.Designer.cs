@@ -127,6 +127,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error compressing the image..
+        /// </summary>
+        internal static string GORIMG_CANNOT_COMPRESS {
+            get {
+                return ResourceManager.GetString("GORIMG_CANNOT_COMPRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; could not be read by the &apos;{1}&apos; codec..
         /// </summary>
         internal static string GORIMG_CODEC_CANNOT_READ {
