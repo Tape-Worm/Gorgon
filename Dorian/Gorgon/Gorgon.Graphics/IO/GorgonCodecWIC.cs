@@ -161,7 +161,9 @@ namespace GorgonLibrary.IO
 
         // Supported formats.
 	    private readonly BufferFormat[] _supportedFormats = {
-                                                                BufferFormat.R8G8B8A8_UIntNormal
+                                                                BufferFormat.R8G8B8A8_UIntNormal,
+																BufferFormat.B8G8R8A8_UIntNormal,
+																BufferFormat.B8G8R8X8_UIntNormal
 	                                                        };
 
 		// Supported image types.

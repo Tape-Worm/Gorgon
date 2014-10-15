@@ -830,16 +830,21 @@ namespace GorgonLibrary.Graphics
         /// <param name="rowPitch">Number of bytes per row in the image.</param>
         /// <param name="slicePitch">Number of bytes in total for the image.</param>
         /// <param name="destFormat">Destination format for transformation.</param>
+        /// <param name="isSourcesRGB">TRUE if the source format is sRGB.</param>
+        /// <param name="isDestsRGB">TRUE if the destination format is sRGB.</param>
         /// <param name="dither">Dithering to apply to images that get converted to a lower bit depth.</param>
         /// <param name="destRect">Rectangle containing the area to scale or clip</param>
         /// <param name="clip">TRUE to perform clipping instead of scaling.</param>
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
-        public void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
+        public void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, bool isSourcesRGB, bool isDestsRGB, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
             WIC.BitmapSource source = sourceData;
             WIC.FormatConverter converter = null;
             WIC.BitmapClipper clipper = null;
             WIC.BitmapScaler scaler = null;
+	        WIC.ColorContext sourceContext = null;
+	        WIC.ColorContext destContext = null;
+	        WIC.ColorTransform sRGBTransform = null;
 
             try
             {
@@ -847,15 +852,33 @@ namespace GorgonLibrary.Graphics
 				// TODO: Check http://msdn.microsoft.com/en-us/library/windows/desktop/ee690202(v=vs.85).aspx for more detail.
                 if (destFormat != Guid.Empty)
                 {
-                    converter = new WIC.FormatConverter(Factory);
+	                if (sourceData.PixelFormat != destFormat)
+	                {
+		                converter = new WIC.FormatConverter(Factory);
 
-					if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
-					{
-					    throw new GorgonException(GorgonResult.FormatNotSupported,
-					        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, destFormat));
-					}
+		                if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
+		                {
+			                throw new GorgonException(GorgonResult.FormatNotSupported,
+			                                          string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, destFormat));
+		                }
 
-                    converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
+		                converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
+		                source = converter;
+	                }
+
+	                if ((isDestsRGB)
+						|| (isSourcesRGB))
+	                {
+		                sRGBTransform = new WIC.ColorTransform(Factory);
+						sourceContext = new WIC.ColorContext(Factory);
+		                destContext = new WIC.ColorContext(Factory);
+
+			            sourceContext.InitializeFromExifColorSpace(isSourcesRGB ? 1 : 2);
+		                destContext.InitializeFromExifColorSpace(isDestsRGB ? 1 : 2);
+
+		                sRGBTransform.Initialize(source, sourceContext, destContext, destFormat);
+		                source = sRGBTransform;
+	                }
                 }
 
                 if (!destRect.IsEmpty)
@@ -905,6 +928,21 @@ namespace GorgonLibrary.Graphics
                 {
                     converter.Dispose();
                 }
+
+	            if (sourceContext != null)
+	            {
+		            sourceContext.Dispose();
+	            }
+
+	            if (destContext != null)
+	            {
+		            destContext.Dispose();
+	            }
+
+	            if (sRGBTransform != null)
+	            {
+		            sRGBTransform.Dispose();
+	            }
 
                 if (scaler != null)
                 {

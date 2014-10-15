@@ -1680,6 +1680,8 @@ namespace GorgonLibrary.Graphics
 										                       depthBuffer.PitchInformation.RowPitch,
 										                       depthBuffer.PitchInformation.SlicePitch,
 										                       Guid.Empty,
+															   false,
+															   false,
 										                       ImageDithering.None,
 										                       new Rectangle(0, 0, depthBuffer.Width, depthBuffer.Height),
 										                       false,
@@ -1815,6 +1817,8 @@ namespace GorgonLibrary.Graphics
 									                       destBuffer.PitchInformation.RowPitch,
 									                       destBuffer.PitchInformation.SlicePitch,
 									                       Guid.Empty,
+														   false,
+														   false,
 									                       ImageDithering.None,
 									                       new Rectangle(0, 0, destBuffer.Width, destBuffer.Height),
 									                       clip,
@@ -1865,6 +1869,8 @@ namespace GorgonLibrary.Graphics
 
 	        using (var wic = new GorgonWICImage())
 	        {
+		        var sourceInfo = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+		        var destInfo = GorgonBufferFormatInfo.GetInfo(format);
 		        Guid sourceFormat = wic.GetGUID(Settings.Format);
 		        Guid destFormat = wic.GetGUID(format);
 
@@ -1879,7 +1885,8 @@ namespace GorgonLibrary.Graphics
 		        }
 
 		        // Well, that was easy...
-		        if (sourceFormat == destFormat)
+		        if ((sourceFormat == destFormat)
+					&& (sourceInfo.IssRGB == destInfo.IssRGB))
 		        {
 			        return;
 		        }
@@ -1904,13 +1911,15 @@ namespace GorgonLibrary.Graphics
 						        var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
 
 						        // Create a WIC bitmap so we have a source for conversion.
-						        using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
+						        using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch))
 						        {
 							        wic.TransformImageData(wicBmp,
 							                               destBuffer.Data.BasePointer,
 							                               destBuffer.PitchInformation.RowPitch,
 							                               destBuffer.PitchInformation.SlicePitch,
 							                               destFormat,
+														   sourceInfo.IssRGB,
+														   destInfo.IssRGB,
 							                               ditherMode,
 							                               Rectangle.Empty,
 							                               true,

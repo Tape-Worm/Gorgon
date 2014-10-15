@@ -948,8 +948,9 @@ namespace GorgonLibrary.Editor
 		/// Function called when the name property of the content has been changed.
 		/// </summary>
 		/// <param name="newName">The new name for the content.</param>
+		/// <param name="overrideExtension">TRUE to override the extension for the file, FALSE to force it to stay the same.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
-		private void ContentNamePropertyChanged(string newName)
+		private void ContentNamePropertyChanged(string newName, bool overrideExtension)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 			try
@@ -966,7 +967,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				RenameFileNode(node, newName);
+				RenameFileNode(node, newName, overrideExtension);
 			}
 			finally
 			{
@@ -1907,7 +1908,7 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-				    RenameFileNode((TreeNodeFile)node, label);
+				    RenameFileNode((TreeNodeFile)node, label, false);
 				}
 
 			    if (node.EditState == NodeEditState.RenameDirectory)
@@ -2177,12 +2178,13 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="sourceFileNode">The file to rename.</param>
         /// <param name="newName">The new name for the file.</param>
-        private void RenameFileNode(TreeNodeFile sourceFileNode, string newName)
+		/// <param name="overrideExtension">TRUE to override the extension for the file, FALSE to force it to stay the same.</param>
+        private void RenameFileNode(TreeNodeFile sourceFileNode, string newName, bool overrideExtension)
         {
 	        string sourcePath = sourceFileNode.File.FullPath;
 	        bool openContentRenamed = sourceFileNode.File == CurrentOpenFile;
 			
-			GorgonFileSystemFileEntry newFile = ScratchArea.Rename(sourceFileNode.File, newName);
+			GorgonFileSystemFileEntry newFile = ScratchArea.Rename(sourceFileNode.File, newName, overrideExtension);
 
 			if (newFile == null)
 			{

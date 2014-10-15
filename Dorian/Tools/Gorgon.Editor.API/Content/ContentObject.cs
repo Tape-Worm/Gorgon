@@ -227,7 +227,7 @@ namespace GorgonLibrary.Editor
 							filename += extension;
 						}
 
-						ContentManagement.ContentRenamed(filename);
+						ContentManagement.ContentRenamed(filename, false);
 
 						Filename = filename;
 					}
@@ -517,6 +517,21 @@ namespace GorgonLibrary.Editor
 			{
 				ContentControl.ContentPersisted();
 			}
+		}
+
+		/// <summary>
+		/// Function to perform actions on the content file before it is persisted.
+		/// </summary>
+		/// <returns>The current file name for the content.</returns>
+		/// <remarks>
+		/// Return the current file name if the content file should change its name after persisting.
+		/// <para>
+		/// This value may return NULL (Nothing in VB.Net) or an empty string if renaming is not desired.
+		/// </para>
+		/// </remarks>
+	    protected virtual internal string OnBeforePersist()
+		{
+			return null;
 		}
 
         /// <summary>

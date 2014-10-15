@@ -315,7 +315,9 @@ namespace GorgonLibrary.IO
             // 16 bit.
             BufferFormat.B5G5R5A1_UIntNormal,
             // 24 bit.
-            BufferFormat.R8G8B8A8_UIntNormal
+            BufferFormat.R8G8B8A8_UIntNormal,
+			BufferFormat.B8G8R8A8_UIntNormal,
+			BufferFormat.B8G8R8X8_UIntNormal,
         };
 
 		// Supported image type list.
@@ -730,13 +732,12 @@ namespace GorgonLibrary.IO
 									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 								}
 
-								var pixel = (ushort)(*src | (*(src + 1) << 8));
+								var pixel = (ushort)(*(src++) | (*(src++) << 8));
 
 								if ((pixel & 0x8000) != 0)
 								{
 									setOpaque = false;
 								}
-								src += 2;
 
 								for (; size > 0; size--, ++x)
 								{
@@ -769,8 +770,7 @@ namespace GorgonLibrary.IO
 										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
-									var pixel = (ushort)(*src | (*(src + 1) << 8));
-									src += 2;
+									var pixel = (ushort)(*(src++) | (*(src++) << 8));
 
 									if ((pixel & 0x8000) != 0)
 									{
@@ -959,7 +959,7 @@ namespace GorgonLibrary.IO
 
 						for (int x = 0; x < srcPitch; x += 2)
 						{
-							var pixel = (ushort)(*(src++) | (byte)(*(src++) << 8));
+							var pixel = (ushort)(*(src++) | (*(src++) << 8));
 
 							if ((pixel & 0x8000) != 0)
 							{
@@ -1062,6 +1062,7 @@ namespace GorgonLibrary.IO
 			var scanSize = (int)(stream.Length - stream.Position);
 			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
 
+			int opaqueLineCount = image.Settings.Height;
 			for (int y = 0; y < image.Settings.Height; y++)
 			{
 				bool setOpaque;
@@ -1078,8 +1079,7 @@ namespace GorgonLibrary.IO
 
 				if ((setOpaque) && (SetOpaqueIfZeroAlpha))
 				{
-					// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
-					CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);						
+					opaqueLineCount--;
 				}
 					
 				if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
@@ -1090,6 +1090,18 @@ namespace GorgonLibrary.IO
 				{
 					destPtr += buffer.PitchInformation.RowPitch;
 				}
+			}
+
+			if (opaqueLineCount != image.Settings.Height)
+			{
+				return;
+			}
+
+			// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
+			destPtr = (byte*)buffer.Data.UnsafePointer;
+			for (int y = 0; y < image.Settings.Height; y++)
+			{
+				CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
 			}
 		}
 

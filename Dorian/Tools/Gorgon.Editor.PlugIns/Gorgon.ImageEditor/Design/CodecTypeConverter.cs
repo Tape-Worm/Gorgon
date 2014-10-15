@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
@@ -169,7 +170,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-			return new StandardValuesCollection(GorgonImageEditorPlugIn.CodecDropDownList);
+			var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
+
+	        return new StandardValuesCollection(
+		        GorgonImageEditorPlugIn
+			        .CodecDropDownList
+			        .Where(content.CodecSupportsImage)
+			        .ToArray());
         }
         #endregion
     }
