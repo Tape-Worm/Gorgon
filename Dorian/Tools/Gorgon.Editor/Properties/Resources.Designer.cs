@@ -764,6 +764,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exclude &apos;{0}&apos; from editor.
+        /// </summary>
+        internal static string GOREDIT_TEXT_EXCLUDE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_EXCLUDE_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed plug-ins.
         /// </summary>
         internal static string GOREDIT_TEXT_FAILED_PLUGINS {
@@ -823,6 +832,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_IMAGE_EDITOR {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_IMAGE_EDITOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include &apos;{0}&apos; in editor.
+        /// </summary>
+        internal static string GOREDIT_TEXT_INCLUDE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_INCLUDE_FILE", resourceCulture);
             }
         }
         
@@ -1007,6 +1025,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show all files..
+        /// </summary>
+        internal static string GOREDIT_TEXT_SHOW_ALL {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_SHOW_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Type.
         /// </summary>
         internal static string GOREDIT_TEXT_TYPE {
@@ -1145,6 +1172,16 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap remove_16x16 {
             get {
                 object obj = ResourceManager.GetObject("remove_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_all_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("show_all_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

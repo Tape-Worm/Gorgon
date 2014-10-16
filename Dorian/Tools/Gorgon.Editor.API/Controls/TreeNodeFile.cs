@@ -53,15 +53,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to set or return the font for open files.
-		/// </summary>
-		public Font OpenFont
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets the foreground color of the tree node.
 		/// </summary>
 		/// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
@@ -80,6 +71,11 @@ namespace GorgonLibrary.Editor
 				if (IsCut)
 				{
 					return Color.Silver;
+				}
+
+				if (!EditorMetaDataFile.Files.Contains(File.FullPath))
+				{
+					return DarkFormsRenderer.MenuHilightBackground;
 				}
 
 				// Draw the text as disabled.

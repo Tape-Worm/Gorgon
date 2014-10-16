@@ -279,6 +279,7 @@ namespace GorgonLibrary.Editor
         #region Variables.
         private bool _disposed;							// Flag to indicate that the object was disposed.
         private Font _openContent;						// Font used for open content items.
+	    private Font _excludedContent;					// Font used for excluded content items.
         private Brush _selectBrush;						// Brush used for selection background.
         private Pen _focusPen;							// Pen used for focus.
 		private TextBox _renameBox;						// Text box used to rename a node.
@@ -388,6 +389,11 @@ namespace GorgonLibrary.Editor
                         _focusPen.Dispose();
                     }
 
+	                if (_excludedContent != null)
+	                {
+		                _excludedContent.Dispose();
+	                }
+
                     if (_openContent != null)
                     {
                         _openContent.Dispose();
@@ -396,6 +402,7 @@ namespace GorgonLibrary.Editor
 
                 _selectBrush = null;
                 _focusPen = null;
+	            _excludedContent = null;
                 _openContent = null;
                 _disposed = true;
             }
@@ -438,6 +445,14 @@ namespace GorgonLibrary.Editor
             }
 
             _openContent = new Font(Font, FontStyle.Bold);
+
+		    if (_excludedContent != null)
+		    {
+			    _excludedContent.Dispose();
+			    _excludedContent = null;
+		    }
+
+			_excludedContent = new Font(Font, FontStyle.Italic);
         }
             	
         /// <summary>
@@ -505,6 +520,23 @@ namespace GorgonLibrary.Editor
 			{
 				attribs = _fadeAttributes;
 			}
+
+	        if ((nodeFile != null) && ((nodeFile.File == null) || (!EditorMetaDataFile.Files.Contains(nodeFile.File.FullPath))))
+	        {
+				if ((_excludedContent == null)
+					|| (_excludedContent.FontFamily.Name != font.FontFamily.Name)
+					|| (!_excludedContent.Size.EqualsEpsilon(font.Size)))
+				{
+					if (_excludedContent != null)
+					{
+						_excludedContent.Dispose();
+					}
+
+					_excludedContent = new Font(font, FontStyle.Bold);
+				}
+
+		        font = _excludedContent;
+	        }
 
             if ((ContentManagement.Current != null) && (nodeFile != null) && (ScratchArea.CurrentOpenFile == nodeFile.File))
             {
