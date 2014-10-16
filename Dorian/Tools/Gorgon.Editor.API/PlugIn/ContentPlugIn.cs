@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
@@ -84,6 +86,13 @@ namespace GorgonLibrary.Editor
 		{
 			return OnCreateContentObject(settings ?? GetContentSettings());
 		}
+
+		/// <summary>
+		/// Function to populate file editor attributes for imported content.
+		/// </summary>
+		/// <param name="stream">Stream to the file.</param>
+		/// <param name="attributes">Attributes to populate.</param>
+		public abstract void GetEditorFileAttributes(Stream stream, IDictionary<string, string> attributes);
 
         /// <summary>
         /// Function to retrieve the settings for the content.

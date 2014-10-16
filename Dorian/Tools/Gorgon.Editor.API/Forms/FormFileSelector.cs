@@ -1292,7 +1292,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Filter the files.
-				directoryFiles = directoryFiles.Where(item => !ScratchArea.IsBlocked(item)
+				directoryFiles = directoryFiles.Where(item => EditorMetaDataFile.Files.Contains(item.FullPath)
 				                                              && ((extension == null)
 				                                                  || (extension.Any(ext =>
 				                                                                    ext.Equals(item.Extension)))));

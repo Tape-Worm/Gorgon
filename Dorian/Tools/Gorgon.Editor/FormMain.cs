@@ -108,6 +108,122 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Function to include a file in the editor.
+		/// </summary>
+		/// <param name="file">File entry to include.</param>
+		private static void IncludeItem(GorgonFileSystemFileEntry file)
+		{
+			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
+
+			string plugInType = string.Empty;
+
+			if (plugIn != null)
+			{
+				plugInType = plugIn.GetType().FullName;
+			}
+
+
+			var fileItem = new EditorFile(file.FullPath)
+			{
+				PlugInType = plugInType
+			};
+
+			if (plugIn != null)
+			{
+				using (Stream fileStream = file.OpenStream(false))
+				{
+					plugIn.GetEditorFileAttributes(fileStream, fileItem.Attributes);
+				}
+			}
+
+			EditorMetaDataFile.Files[fileItem.FilePath] = fileItem;
+			FileManagement.FileChanged = true;
+		}
+
+		/// <summary>
+		/// Function to exclude a file from the editor.
+		/// </summary>
+		/// <param name="file">File entry to include.</param>
+		private static void ExcludeItem(GorgonFileSystemFileEntry file)
+		{
+			EditorFile fileItem;
+
+			if (EditorMetaDataFile.Files.TryGetValue(file.FullPath, out fileItem))
+			{
+				EditorMetaDataFile.Files[fileItem.FilePath] = null;
+			}
+
+			FileManagement.FileChanged = true;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the popupItemInclude control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void popupItemInclude_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
+				GorgonFileSystemFileEntry file = fileNode.File;
+
+				IncludeItem(file);
+				treeFiles.Refresh();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the popupItemExclude control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void popupItemExclude_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
+				GorgonFileSystemFileEntry file = fileNode.File;
+				
+				ExcludeItem(file);
+
+
+				// Remove the node from the tree if we're not showing all files.
+				if (!buttonShowAll.Checked)
+				{
+					treeFiles.SelectedNode = null;
+					fileNode.Remove();
+				}
+				else
+				{
+					treeFiles.Refresh();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Opening event of the popupFileSystem control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -616,7 +732,10 @@ namespace GorgonLibrary.Editor
 	        itemCreateFolder.Enabled = false;
 			buttonEditContent.Enabled = false;
 			buttonDeleteContent.Enabled = false;
+	        popupItemExclude.Visible = false;
+	        popupItemInclude.Visible = false;
 			popupItemCut.Enabled = popupItemCopy.Enabled = popupItemPaste.Enabled = itemCopy.Enabled = itemCut.Enabled = itemPaste.Enabled = false;
+	        toolStripSeparator10.Visible = false;
 
             menuRecentFiles.Enabled = Program.Settings.RecentFiles.Count > 0;
 
@@ -668,40 +787,44 @@ namespace GorgonLibrary.Editor
 			        toolStripSeparator5.Visible = false;
 			        popupItemRename.Visible = false;
 		        }
+
+		        return;
 	        }
 
-	        GorgonFileSystemFileEntry file;
+	        GorgonFileSystemFileEntry file = ((TreeNodeFile)selectedNode).File;
+	        EditorFile editorFile;
+
+			EditorMetaDataFile.Files.TryGetValue(file.FullPath, out editorFile);
 
 			// If this is a dependency node, then we have very limited options.
 	        if ((selectedNode.NodeType & NodeType.Dependency) == NodeType.Dependency)
 	        {
-				file = ((TreeNodeFile)selectedNode).File;
-
-				toolStripSeparator4.Visible =
-					buttonEditContent.Enabled =
-					popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
+		        toolStripSeparator4.Visible =
+			        buttonEditContent.Enabled =
+			        popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(editorFile);
 				popupItemAddContent.Visible = false;
 		        return;
 	        }
 
-            if ((selectedNode.NodeType & NodeType.File) != NodeType.File)
-            {
-                return;
-            }
-
-            file = ((TreeNodeFile)selectedNode).File;
-
 	        dependencies = EditorMetaDataFile.HasFileLinks(file);
 
-			toolStripSeparator4.Visible =
-				buttonEditContent.Enabled =
-				popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
+			buttonEditContent.Enabled =
+				popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(editorFile) && !dependencies;
 			popupItemAddContent.Visible = false;
 			popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
 	        popupItemCopy.Enabled = itemCopy.Enabled = true;
+			
+			popupItemExclude.Text = string.Format(Resources.GOREDIT_TEXT_EXCLUDE_FILE, file.Name);
+			popupItemInclude.Text = string.Format(Resources.GOREDIT_TEXT_INCLUDE_FILE, file.Name);
+
+			popupItemInclude.Visible = editorFile == null;
+			popupItemExclude.Visible = editorFile != null && !dependencies;
+			toolStripSeparator10.Visible = buttonEditContent.Enabled;
+			toolStripSeparator4.Visible = !dependencies || buttonEditContent.Enabled;
 
 	        if (dependencies)
 	        {
+				// Disable exclusion of items that are linked to other objects.
 		        return;
 	        }
 
@@ -791,6 +914,12 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				if (!EditorMetaDataFile.Files.Contains(fileNode.File.Name))
+				{
+					GorgonDialogs.ErrorBox(this, "This is a temporary message.  I will confirm that you want to include the file in the editor later.");
+					return;
+				}
+
 				ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(fileNode.File.Name);
 
 				// Ensure we can actually open this type.
@@ -1352,7 +1481,7 @@ namespace GorgonLibrary.Editor
 		/// Function to retrieve the folder nodes.
 		/// </summary>
 		/// <param name="rootNode">Node to add folder information into.</param>
-		private static void GetFolders(TreeNodeDirectory rootNode)
+		private void GetFolders(TreeNodeDirectory rootNode)
 		{
 			// Get the sub directories.
 			rootNode.Nodes.Clear();
@@ -1367,8 +1496,7 @@ namespace GorgonLibrary.Editor
 				
 
 				if ((subDirectory.Directories.Count > 0) 
-                    || ((subDirectory.Files.Count > 0)
-                    && (CanShowDirectoryFiles(subDirectory))))
+                    || (CanShowDirectoryFiles(subDirectory)))
 				{
 					subNode.Nodes.Add(new TreeNode("DummyNode"));
 				}
@@ -1377,13 +1505,13 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Add file nodes.
-			foreach (var fileEntry in from file in rootNode.Directory.Files.OrderBy(item => item.Name) 
-                                     where !ScratchArea.IsBlocked(file) 
-                                     select file)
+			foreach (var fileEntry in from file in rootNode.Directory.Files.OrderBy(item => item.Name)
+			                          where ((buttonShowAll.Checked) && (!ScratchArea.IsBlocked(file))) || (EditorMetaDataFile.Files.Contains(file.FullPath))
+			                          select file)
 			{
 				var fileNode = new TreeNodeFile();
 				fileNode.UpdateFile(fileEntry);
-			    rootNode.Nodes.Add(fileNode);
+				rootNode.Nodes.Add(fileNode);
 			}
 		}
 
@@ -1392,9 +1520,11 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="directory">Directory to evaluate.</param>
         /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
-        private static bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
+        private bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
         {
-			return !directory.Files.All(ScratchArea.IsBlocked);
+	        return directory.Files.Count != 0 &&
+	               (((buttonShowAll.Checked) && (!directory.Files.All(ScratchArea.IsBlocked))) ||
+	                directory.Files.Any(item => EditorMetaDataFile.Files.Contains(item.FullPath)));
         }
 
 		/// <summary>
@@ -1410,8 +1540,7 @@ namespace GorgonLibrary.Editor
 
 			// If we have files or sub directories, dump them in here.
 			if ((ScratchArea.ScratchFiles.RootDirectory.Directories.Count > 0)
-				|| ((ScratchArea.ScratchFiles.RootDirectory.Files.Count > 0)
-				&& (CanShowDirectoryFiles(ScratchArea.ScratchFiles.RootDirectory))))
+				|| (CanShowDirectoryFiles(ScratchArea.ScratchFiles.RootDirectory)))
 			{
                 _rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
@@ -2915,6 +3044,8 @@ namespace GorgonLibrary.Editor
 			popupItemCopy.Text = itemCopy.Text = Resources.GOREDIT_ACC_TEXT_COPY;
 			popupItemPaste.Text = itemPaste.Text = Resources.GOREDIT_ACC_TEXT_PASTE;
 			popupItemDelete.Text = itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE);
+			popupItemInclude.Text = Resources.GOREDIT_TEXT_INCLUDE_FILE;
+			popupItemExclude.Text = Resources.GOREDIT_TEXT_EXCLUDE_FILE;
 			itemPreferences.Text = Resources.GOREDIT_ACC_TEXT_PREFERENCES;
 			
 			popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_RENAME);
@@ -2922,6 +3053,8 @@ namespace GorgonLibrary.Editor
 			dropNewContent.Text = dropNewContent.ToolTipText = Resources.GOREDIT_TEXT_NEW_CONTENT;
 			buttonEditContent.Text = buttonEditContent.ToolTipText = Resources.GOREDIT_TEXT_EDIT_CONTENT;
 			buttonDeleteContent.Text = buttonDeleteContent.ToolTipText = Resources.GOREDIT_TEXT_DELETE_CONTENT;
+
+			buttonShowAll.Text = Resources.GOREDIT_TEXT_SHOW_ALL;
 
 			itemResetValue.Text = Resources.GOREDIT_ACC_TEXT_RESET_VALUE;
 		}
@@ -3083,5 +3216,28 @@ namespace GorgonLibrary.Editor
             ScratchArea.CopyDirectoryConflictFunction = CopyConfirmDirectoryOverwrite;
 		}
 		#endregion
+
+		/// <summary>
+		/// Handles the CheckedChanged event of the buttonShowAll control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonShowAll_CheckedChanged(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				// Refresh the tree.
+				InitializeTree();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
 	}
 }

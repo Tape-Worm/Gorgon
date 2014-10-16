@@ -409,6 +409,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon font.
+        /// </summary>
+        internal static string GORFNT_CONTENT_TYPE {
+            get {
+                return ResourceManager.GetString("GORFNT_CONTENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The quick brown fox jumps over the lazy dog.
         ///1234567890 !@#$%^&amp;*()
         ///ABCDEFGHIJKLMNOPQRSTUVWXYZ

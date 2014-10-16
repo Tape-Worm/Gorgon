@@ -642,4 +642,7 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_CANNOT_RESIZE_BC_IMAGE" xml:space="preserve">
     <value>Cannot resize a block compressed image. The current texture settings for the font are {0}x{1}.  The size of the block compressed texture is {2}x{3}.</value>
   </data>
+  <data name="GORFNT_CONTENT_TYPE" xml:space="preserve">
+    <value>Gorgon font</value>
+  </data>
 </root>

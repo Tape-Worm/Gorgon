@@ -143,6 +143,8 @@
     <Compile Include="Forms\FormProcess.Designer.cs">
       <DependentUpon>FormProcess.cs</DependentUpon>
     </Compile>
+    <Compile Include="MetaData\EditorFile.cs" />
+    <Compile Include="MetaData\EditorFileCollection.cs" />
     <Compile Include="MetaData\EditorMetaDataFile.cs" />
     <Compile Include="PlugIn\ContentPlugIn.cs" />
     <Compile Include="PlugIn\DisabledPlugIn.cs" />

@@ -45,6 +45,8 @@ namespace GorgonLibrary.Editor
 		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
 		private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
 		private const string ContentDependencyFiles = "ContentFileDependencies";     // Content dependency files node.
+		// Node containing the list of editor files.
+		private const string EditorFilesNode = "EditorFiles";
 		private const string WriterPlugInNode = "WriterPlugIn";						// Node name for the writer plug-in used by this file.
 		private const string TypeNameAttr = "TypeName";								// Fully qualified type name for the plug-in interface.
 		private const string FileNode = "File";										// Name of the file node.
@@ -71,6 +73,15 @@ namespace GorgonLibrary.Editor
 		/// Property to return the list of files and associated dependencies.
 		/// </summary>
 		public static IDictionary<string, DependencyCollection> Dependencies
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the list of editor files in the file system.
+		/// </summary>
+		public static EditorFileCollection Files
 		{
 			get;
 			private set;
@@ -152,6 +163,27 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to retrieve the list of files for the editor.
+		/// </summary>
+		/// <param name="parent">Parent node.</param>
+		private static void GetFiles(XElement parent)
+		{
+			if (parent == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, APIResources.GOREDIT_ERR_METADATA_CORRUPT);
+			}
+
+			XElement filesNode = parent.Element(EditorFilesNode);
+
+			if (filesNode == null)
+			{
+				return;
+			}
+
+			Files = EditorFileCollection.Deserialize(filesNode.Elements(EditorFile.EditorFileNode));
+		}
+
+		/// <summary>
 		/// Function to retrieve the dependency list.
 		/// </summary>
 		/// <param name="parent">Parent node.</param>
@@ -200,6 +232,7 @@ namespace GorgonLibrary.Editor
 
 			WriterPlugInType = string.Empty;
 			Dependencies = new Dictionary<string, DependencyCollection>(StringComparer.OrdinalIgnoreCase);
+			Files = new EditorFileCollection();
 		}
 
 		/// <summary>
@@ -228,6 +261,8 @@ namespace GorgonLibrary.Editor
 			XElement rootNode = _metaData.Element(MetaDataRootName);
 
 			GetWriterSettings(rootNode);
+
+			GetFiles(rootNode);
 
 			GetDependencies(rootNode);
 
@@ -278,6 +313,13 @@ namespace GorgonLibrary.Editor
 				dependencyList.Add(file);
 
 				file.Add(files.Value.Serialize());
+			}
+
+			// Add files.
+			if (Files.Count > 0)
+			{
+				XElement fileList = AddOrUpdateNode(root, EditorFilesNode);
+				fileList.Add(Files.Serialize());
 			}
 
 			_metaDataFile = ScratchArea.ScratchFiles.WriteFile(_path, null);

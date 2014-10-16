@@ -285,6 +285,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			return Resources.image_16x16;
 		}
+
+		/// <summary>
+		/// Function to populate file editor attributes for imported content.
+		/// </summary>
+		/// <param name="stream">Stream to the file.</param>
+		/// <param name="attributes">Attributes to populate.</param>
+		public override void GetEditorFileAttributes(Stream stream, IDictionary<string, string> attributes)
+		{
+			GorgonImageCodec codec = CodecDropDownList.FirstOrDefault(item => item.IsReadable(stream));
+
+			if (codec == null)
+			{
+				return;
+			}
+
+			attributes["Codec"] = codec.GetType().FullName;
+			attributes["Type"] = Resources.GORIMG_CONTENT_TYPE;
+		}
 	    #endregion
 
         #region Constructor/Destructor.

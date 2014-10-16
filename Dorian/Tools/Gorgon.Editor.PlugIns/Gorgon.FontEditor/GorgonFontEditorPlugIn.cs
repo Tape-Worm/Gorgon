@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -191,7 +192,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to populate file editor attributes for imported content.
+		/// </summary>
+		/// <param name="stream">Stream to the file.</param>
+		/// <param name="attributes">Attributes to populate.</param>
+	    public override void GetEditorFileAttributes(Stream stream, IDictionary<string, string> attributes)
+		{
+			attributes["Type"] = Resources.GORFNT_CONTENT_TYPE;
+		}
+
+	    /// <summary>
         /// Function to retrieve the settings for the content.
         /// </summary>
         /// <returns>

@@ -343,6 +343,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; meta data is corrupt and cannot be read..
+        /// </summary>
+        internal static string GOREDIT_ERR_EDITFILE_CORRUPT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_EDITFILE_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The {0} &apos;{1}&apos; already exists..
         /// </summary>
         internal static string GOREDIT_ERR_FILE_ALREADY_EXISTS {

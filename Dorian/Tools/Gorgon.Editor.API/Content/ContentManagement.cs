@@ -47,6 +47,7 @@ namespace GorgonLibrary.Editor
     {
         #region Variables.
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
+	    private readonly static HashSet<string> _availablePlugIns;
 	    private static ContentObject _currentContentObject;
 	    private static bool _contentChanged ;
 	    private static Type _defaultContentType;
@@ -301,33 +302,38 @@ namespace GorgonLibrary.Editor
         /// <returns>The plug-in used to access the file.</returns>
         public static ContentPlugIn GetContentPlugInForFile(string fileExtension)
         {
+	        if (string.IsNullOrWhiteSpace(fileExtension))
+	        {
+		        return null;
+	        }
+
             if (fileExtension.IndexOf('.') > 0)
             {
                 fileExtension = Path.GetExtension(fileExtension);
             }
 
-            return !CanOpenContent(fileExtension) ? null : _contentFiles[new GorgonFileExtension(fileExtension, null)];
+	        ContentPlugIn plugIn;
+
+	        _contentFiles.TryGetValue(new GorgonFileExtension(fileExtension, null), out plugIn);
+
+	        return plugIn;
         }
 
-        /// <summary>
-        /// Function to determine if a certain type of content can be opened by a plug-in.
-        /// </summary>
-        /// <param name="fileName">Filename of the content.</param>
-        /// <returns>TRUE if the content can be opened, FALSE if not.</returns>
-        public static bool CanOpenContent(string fileName)
-        {
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                return false;
-            }
+		/// <summary>
+		/// Function to determine if a file can be opened for viewing/editing.
+		/// </summary>
+		/// <param name="file">File to evaluate.</param>
+		/// <returns>TRUE if the file can be opened, FALSE if not.</returns>
+	    public static bool CanOpenContent(EditorFile file)
+	    {
+			if (file == null)
+			{
+				return false;
+			}
 
-            if (fileName.IndexOf('.') > 0)
-            {
-                fileName = Path.GetExtension(fileName);
-            }
-
-            return !string.IsNullOrWhiteSpace(fileName) && _contentFiles.ContainsKey(new GorgonFileExtension(fileName, null));
-        }
+			// Check to see if the plug-in exists.
+			return !string.IsNullOrWhiteSpace(file.PlugInType) && _availablePlugIns.Contains(file.PlugInType);
+	    }
 
 		/// <summary>
 		/// Function to unload any current content.
@@ -658,6 +664,13 @@ namespace GorgonLibrary.Editor
                     continue;
                 }
 
+				string plugInType = contentPlugIn.Value.GetType().FullName;
+
+				if (!_availablePlugIns.Contains(plugInType))
+				{
+					_availablePlugIns.Add(plugInType);
+				}
+
                 // Associate the content file type with the plug-in.
                 foreach (var extension in contentPlugIn.Value.FileExtensions)
                 {
@@ -674,6 +687,7 @@ namespace GorgonLibrary.Editor
         static ContentManagement()
         {
             _contentFiles = new Dictionary<GorgonFileExtension, ContentPlugIn>();
+			_availablePlugIns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
         #endregion
     }

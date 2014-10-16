@@ -179,6 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\show_all_16x16.png" />
     <None Include="Resources\folder_open_16x161.png" />
     <None Include="Resources\folder_16x161.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />

@@ -443,4 +443,7 @@ The following characters are not allowed:
   <data name="GOREDIT_ERR_FILE_MUST_HAVE_NAME" xml:space="preserve">
     <value>The file must have a name.</value>
   </data>
+  <data name="GOREDIT_ERR_EDITFILE_CORRUPT" xml:space="preserve">
+    <value>The file '{0}' meta data is corrupt and cannot be read.</value>
+  </data>
 </root>

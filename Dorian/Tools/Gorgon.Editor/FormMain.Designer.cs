@@ -91,6 +91,9 @@ namespace GorgonLibrary.Editor
 			this.popupFileSystem = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.popupItemEdit = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupItemCreateFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.popupItemInclude = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemExclude = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.popupItemCut = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupItemCopy = new System.Windows.Forms.ToolStripMenuItem();
@@ -102,6 +105,8 @@ namespace GorgonLibrary.Editor
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonEditContent = new System.Windows.Forms.ToolStripButton();
 			this.buttonDeleteContent = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonShowAll = new System.Windows.Forms.ToolStripButton();
 			this.pageProperties = new KRBTabControl.TabPageEx();
 			this.propertyItem = new System.Windows.Forms.PropertyGrid();
 			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -382,7 +387,7 @@ namespace GorgonLibrary.Editor
 			this.tabDocumentManager.ItemSize = new System.Drawing.Size(0, 28);
 			this.tabDocumentManager.Location = new System.Drawing.Point(0, 0);
 			this.tabDocumentManager.Name = "tabDocumentManager";
-			this.tabDocumentManager.SelectedIndex = 1;
+			this.tabDocumentManager.SelectedIndex = 0;
 			this.tabDocumentManager.Size = new System.Drawing.Size(234, 691);
 			this.tabDocumentManager.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
@@ -462,6 +467,9 @@ namespace GorgonLibrary.Editor
             this.popupItemAddContent,
             this.popupItemEdit,
             this.popupItemCreateFolder,
+            this.toolStripSeparator10,
+            this.popupItemInclude,
+            this.popupItemExclude,
             this.toolStripSeparator4,
             this.popupItemCut,
             this.popupItemCopy,
@@ -470,7 +478,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator5,
             this.popupItemRename});
 			this.popupFileSystem.Name = "popupFileSystem";
-			this.popupFileSystem.Size = new System.Drawing.Size(182, 192);
+			this.popupFileSystem.Size = new System.Drawing.Size(182, 242);
 			this.popupFileSystem.Opening += new System.ComponentModel.CancelEventHandler(this.popupFileSystem_Opening);
 			// 
 			// popupItemEdit
@@ -488,6 +496,25 @@ namespace GorgonLibrary.Editor
 			this.popupItemCreateFolder.Size = new System.Drawing.Size(181, 22);
 			this.popupItemCreateFolder.Text = "&Create Folder...";
 			this.popupItemCreateFolder.Click += new System.EventHandler(this.itemCreateFolder_Click);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(178, 6);
+			// 
+			// popupItemInclude
+			// 
+			this.popupItemInclude.Name = "popupItemInclude";
+			this.popupItemInclude.Size = new System.Drawing.Size(181, 22);
+			this.popupItemInclude.Text = "no local";
+			this.popupItemInclude.Click += new System.EventHandler(this.popupItemInclude_Click);
+			// 
+			// popupItemExclude
+			// 
+			this.popupItemExclude.Name = "popupItemExclude";
+			this.popupItemExclude.Size = new System.Drawing.Size(181, 22);
+			this.popupItemExclude.Text = "no local";
+			this.popupItemExclude.Click += new System.EventHandler(this.popupItemExclude_Click);
 			// 
 			// toolStripSeparator4
 			// 
@@ -552,7 +579,9 @@ namespace GorgonLibrary.Editor
             this.dropNewContent,
             this.toolStripButton1,
             this.buttonEditContent,
-            this.buttonDeleteContent});
+            this.buttonDeleteContent,
+            this.toolStripSeparator9,
+            this.buttonShowAll});
 			this.stripContent.Location = new System.Drawing.Point(0, 0);
 			this.stripContent.Name = "stripContent";
 			this.stripContent.Size = new System.Drawing.Size(232, 25);
@@ -585,6 +614,22 @@ namespace GorgonLibrary.Editor
 			this.buttonDeleteContent.Size = new System.Drawing.Size(23, 22);
 			this.buttonDeleteContent.Text = "Delete selected content";
 			this.buttonDeleteContent.Click += new System.EventHandler(this.itemDelete_Click);
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			this.toolStripSeparator9.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonShowAll
+			// 
+			this.buttonShowAll.CheckOnClick = true;
+			this.buttonShowAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
+			this.buttonShowAll.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonShowAll.Name = "buttonShowAll";
+			this.buttonShowAll.Size = new System.Drawing.Size(23, 22);
+			this.buttonShowAll.Text = "no local";
+			this.buttonShowAll.CheckedChanged += new System.EventHandler(this.buttonShowAll_CheckedChanged);
 			// 
 			// pageProperties
 			// 
@@ -824,6 +869,11 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.FolderBrowserDialog dialogExport;
 		private System.Windows.Forms.ToolStripMenuItem itemCreateFolder;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
+		private System.Windows.Forms.ToolStripButton buttonShowAll;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+		private System.Windows.Forms.ToolStripMenuItem popupItemInclude;
+		private System.Windows.Forms.ToolStripMenuItem popupItemExclude;
 	}
 }
 
