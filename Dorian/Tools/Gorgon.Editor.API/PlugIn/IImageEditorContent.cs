@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
@@ -36,6 +37,14 @@ namespace GorgonLibrary.Editor
 	public interface IImageEditorContent
         : INamedObject, IDisposable
 	{
+		/// <summary>
+		/// Property to return the editor file associated with the content.
+		/// </summary>
+		EditorFile EditorFile
+		{
+			get;
+		}
+
         /// <summary>
         /// Property to return the image held in the content object.
         /// </summary>
@@ -43,5 +52,12 @@ namespace GorgonLibrary.Editor
 	    {
 	        get;
 	    }
+
+		/// <summary>
+		/// Function to load data into the image.
+		/// </summary>
+		/// <param name="stream">Stream containing the data to load.</param>
+		/// <remarks>This method is used by the editor to import images into various places.  The <see cref="Image"/> property will remain NULL (Nothing in VB.Net) until this method is called.</remarks>
+		void Load(Stream stream);
 	}
 }

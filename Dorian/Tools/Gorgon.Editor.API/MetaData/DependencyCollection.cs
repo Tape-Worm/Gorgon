@@ -48,9 +48,9 @@ namespace GorgonLibrary.Editor
 		{
 			#region Variables.
 			/// <summary>
-			/// The name for the dependency.
+			/// The file for the dependency
 			/// </summary>
-			public readonly string Name;
+			public readonly EditorFile File;
 
 			/// <summary>
 			/// The type of dependency.
@@ -67,7 +67,7 @@ namespace GorgonLibrary.Editor
 			/// <returns>TRUE if equal, FALSE if not.</returns>
 			public static bool Equals(ref DependencyKey left, ref DependencyKey right)
 			{
-				return ((string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
+				return ((left.File == right.File)
 				        && (string.Equals(left.Type, right.Type, StringComparison.OrdinalIgnoreCase)));
 			}
 
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Editor
 			/// </returns>
 			public override int GetHashCode()
 			{
-				return 281.GenerateHash(Name).GenerateHash(Type);
+				return 281.GenerateHash(File).GenerateHash(Type);
 			}
 
 			/// <summary>
@@ -106,20 +106,20 @@ namespace GorgonLibrary.Editor
 			/// </summary>
 			/// <param name="dependency">The dependency to derive a key from.</param>
 			public DependencyKey(Dependency dependency)
-				: this(dependency.Path, dependency.Type)
+				: this(dependency.EditorFile, dependency.Type)
 			{
 			}
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="DependencyKey"/> struct.
 			/// </summary>
-			/// <param name="name">The name.</param>
+			/// <param name="file">The editor file.</param>
 			/// <param name="type">The type.</param>
-			public DependencyKey(string name, string type)
+			public DependencyKey(EditorFile file, string type)
 			{
-				if (name == null)
+				if (file == null)
 				{
-					throw new ArgumentNullException("name");
+					throw new ArgumentNullException("file");
 				}
 
 				if (type == null)
@@ -127,17 +127,12 @@ namespace GorgonLibrary.Editor
 					throw new ArgumentNullException("type");
 				}
 
-				if (string.IsNullOrWhiteSpace(name))
-				{
-					throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-				}
-
 				if (string.IsNullOrWhiteSpace(type))
 				{
 					throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
 				}
 
-				Name = name;
+				File = file;
 				Type = type;
 			}
 			#endregion
@@ -205,15 +200,15 @@ namespace GorgonLibrary.Editor
 		/// Property to set or return a dependency by name.
 		/// </summary>
 		/// <remarks>Setting a dependency to NULL (Nothing in VB.Net) will remove it from the collection.</remarks>
-		public Dependency this[string name, string type]
+		public Dependency this[EditorFile file, string type]
 		{
 			get
 			{
-				return _dependencies[new DependencyKey(name, type)];
+				return _dependencies[new DependencyKey(file, type)];
 			}
 			set
 			{
-				var key = new DependencyKey(name, type);
+				var key = new DependencyKey(file, type);
 				bool hasItem = _dependencies.ContainsKey(key);
 
 				if (value == null)
@@ -226,7 +221,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				if ((hasItem) && ((!string.Equals(name, value.Path, StringComparison.OrdinalIgnoreCase))
+				if ((hasItem) && ((file != value.EditorFile)
 				                  || (!string.Equals(type, value.Type, StringComparison.OrdinalIgnoreCase))))
 				{
 					_dependencies.Remove(key);
@@ -250,32 +245,60 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to deserialize a dependency collection from an XML node.
 		/// </summary>
+		/// <param name="files">Available files to evaluate.</param>
 		/// <param name="dependenciesNode">The list of nodes that contain the dependencies.</param>
 		/// <returns>The deserialized dependencies.</returns>
-		internal static DependencyCollection Deserialize(IEnumerable<XElement> dependenciesNode)
+		internal static DependencyCollection Deserialize(EditorFileCollection files, IEnumerable<XElement> dependenciesNode)
 		{
 			var result = new DependencyCollection();
 
+			if (dependenciesNode == null)
+			{
+				return result;
+			}
+
 			foreach (XElement dependencyNode in dependenciesNode)
 			{
-				Dependency dependency = Dependency.Deserialize(dependencyNode);
-				result[dependency.Path, dependency.Type] = dependency;
+				Dependency dependency = Dependency.Deserialize(files, dependencyNode);
+
+				// We couldn't find the dependency, skip it.
+				if (dependency == null)
+				{
+					continue;
+				}
+
+				result[dependency.EditorFile, dependency.Type] = dependency;
 			}
 
 			return result;
 		}
 
 		/// <summary>
+		/// Function to copy a list of dependencies.
+		/// </summary>
+		/// <param name="dependencies">Dependencies to copy.</param>
+		internal void CopyFrom(DependencyCollection dependencies)
+		{
+			_dependencies.Clear();
+
+			foreach (Dependency dependency in dependencies)
+			{
+				var copy = new Dependency(dependency.EditorFile, dependency.Type);
+				_dependencies.Add(new DependencyKey(copy), copy);
+			}
+		}
+
+		/// <summary>
 		/// Function to determine if the collection contains a dependency with the specified name and type.
 		/// </summary>
-		/// <param name="name">Name of the dependency.</param>
+		/// <param name="file">The dependency file.</param>
 		/// <param name="type">Type of the dependency.</param>
 		/// <returns>TRUE if found, FALSE if not.</returns>
-		public bool Contains(string name, string type = null)
+		public bool Contains(EditorFile file, string type = null)
 		{
 			return !string.IsNullOrWhiteSpace(type)
-				       ? _dependencies.ContainsKey(new DependencyKey(name, type))
-				       : this.Any(item => string.Equals(name, item.Path, StringComparison.OrdinalIgnoreCase));
+				       ? _dependencies.ContainsKey(new DependencyKey(file, type))
+				       : this.Any(item => item.EditorFile == file);
 		}
 
 		#endregion
@@ -333,9 +356,9 @@ namespace GorgonLibrary.Editor
 
 			var key = new DependencyKey(item);
 
-			if (Contains(key.Name, key.Type))
+			if (Contains(item.EditorFile, key.Type))
 			{
-				throw new ArgumentException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_EXISTS, key.Type, key.Name));
+				throw new ArgumentException(string.Format(APIResources.GOREDIT_ERR_DEPENDENCY_EXISTS, key.Type, key.File.FilePath));
 			}
 
 			_dependencies[key] = item;
@@ -387,7 +410,7 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentNullException("item");
 			}
 
-			return Contains(item.Path, item.Type) && _dependencies.Remove(new DependencyKey(item.Path, item.Type));
+			return Contains(item.EditorFile, item.Type) && _dependencies.Remove(new DependencyKey(item.EditorFile, item.Type));
 		}
 		#endregion
 		#endregion

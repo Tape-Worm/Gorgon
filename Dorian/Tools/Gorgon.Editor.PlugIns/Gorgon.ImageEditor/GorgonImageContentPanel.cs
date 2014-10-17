@@ -148,9 +148,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             // Volume textures don't have array indices.
 	        buttonPrevArrayIndex.Visible =
 		        buttonNextArrayIndex.Visible =
-		        sepArray.Visible = labelArrayIndex.Visible = _content.ImageType != ImageType.Image3D && _content.Codec.SupportsArray;
+		        sepArray.Visible = labelArrayIndex.Visible = _content.ImageType != ImageType.Image3D && _content.Codec != null && _content.Codec.SupportsArray;
 
-	        buttonPrevMipLevel.Visible = buttonNextMipLevel.Visible = sepMip.Visible = labelMipLevel.Visible = _content.Codec.SupportsMipMaps;
+			buttonPrevMipLevel.Visible = buttonNextMipLevel.Visible = sepMip.Visible = labelMipLevel.Visible = _content.Codec != null && _content.Codec.SupportsMipMaps;
         }
 
 		/// <summary>

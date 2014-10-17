@@ -38,7 +38,6 @@ using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
 using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor
 {
@@ -67,7 +66,6 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
-        [Browsable(false)]
         internal ContentTypeDescriptor TypeDescriptor
         {
             get;
@@ -84,13 +82,13 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Property to return the file name of this content.
+		/// Property to return the editor file associated with this content.
 		/// </summary>
 		[Browsable(false)]
-	    public string Filename
+	    public EditorFile EditorFile
 	    {
-			get;
-			private set;
+		    get;
+		    protected internal set;
 	    }
 
 		/// <summary>
@@ -217,19 +215,7 @@ namespace GorgonLibrary.Editor
 					    && (ContentManagement.Current == this)
 					    && (HasProperties))
 					{
-						// The changing of the name for content is special in that it's persisted
-						// immediately.  When the name is changed, no change tracking is performed.
-						string filename = newName;
-						string extension = Path.GetExtension(Filename) ?? string.Empty;
-
-						if (!filename.EndsWith(extension, StringComparison.OrdinalIgnoreCase))
-						{
-							filename += extension;
-						}
-
-						ContentManagement.ContentRenamed(filename, false);
-
-						Filename = filename;
+						ContentManagement.ContentRenamed(newName);
 					}
 
 					_name = newName;
@@ -246,16 +232,6 @@ namespace GorgonLibrary.Editor
 				}
 			}
 		}
-
-		/// <summary>
-		/// Property to return the list of dependencies for this content.
-		/// </summary>
-		[Browsable(false)]
-	    public DependencyCollection Dependencies
-	    {
-		    get;
-		    internal set;
-	    }
 
 		/// <summary>
 		/// Property to return whether this content has an owner or not.
@@ -519,21 +495,6 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
-		/// <summary>
-		/// Function to perform actions on the content file before it is persisted.
-		/// </summary>
-		/// <returns>The current file name for the content.</returns>
-		/// <remarks>
-		/// Return the current file name if the content file should change its name after persisting.
-		/// <para>
-		/// This value may return NULL (Nothing in VB.Net) or an empty string if renaming is not desired.
-		/// </para>
-		/// </remarks>
-	    protected virtual internal string OnBeforePersist()
-		{
-			return null;
-		}
-
         /// <summary>
         /// Function to determine if a content property is available to the UI.
         /// </summary>
@@ -653,7 +614,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="settings">The settings for the content.</param>
 		protected ContentObject(ContentSettings settings)
 		{
-			Dependencies = new DependencyCollection();
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 
@@ -662,7 +622,6 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			Filename = settings.Filename;
 			Name = settings.Name;
 		}
 		#endregion

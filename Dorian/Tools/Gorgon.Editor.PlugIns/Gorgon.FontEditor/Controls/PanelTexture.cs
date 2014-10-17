@@ -82,7 +82,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// Property to return the path to an existing texture brush.
 		/// </summary>
 		[Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public string TextureBrushPath
+		public EditorFile TextureBrushFile
 		{
 			get;
 			set;
@@ -509,9 +509,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 				{
+					EditorFile editorFile = null;
+					throw new Exception("Fix this so that the file dialog returns an array of EditorFiles instead of paths.");
 					// Don't load the same image.
-					if ((!string.IsNullOrWhiteSpace(TextureBrushPath)) &&
-						(string.Equals(TextureBrushPath, imageFileBrowser.Files[0].FullPath)))
+					if ((TextureBrushFile != null) &&
+						(string.Equals(TextureBrushFile.FilePath, imageFileBrowser.Files[0].FullPath)))
 					{
 						return;
 					}
@@ -521,7 +523,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					// Load the image.
 					using (Stream stream = imageFileBrowser.Files[0].OpenStream(false))
 					{
-						using (IImageEditorContent imageContent = ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath, stream))
+						using (IImageEditorContent imageContent = ImageEditor.ImportContent(editorFile, stream))
 						{
 							if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 							{
@@ -559,7 +561,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 							// Function to retrieve the transformation and node point values from the image.
 							InitializeClipper(_texture, new RectangleF(0, 0, settings.Width, settings.Height));
 
-							TextureBrushPath = imageFileBrowser.Files[0].FullPath;
+							// TODO: Don't miss this one.
+							TextureBrushFile = null;//imageFileBrowser.Files[0].FullPath;
 
 							OnBrushChanged();
 						}

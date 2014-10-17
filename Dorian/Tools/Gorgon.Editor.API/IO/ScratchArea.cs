@@ -316,6 +316,16 @@ namespace GorgonLibrary.Editor
             set;
         }
 
+		/// <summary>
+		/// Property to set or return the method that is called when a file is successfully imported.
+		/// </summary>
+		/// <remarks>The parameter will be a Gorgon file system entry containing information about the file being copied.</remarks>
+		public static Action<GorgonFileSystemFileEntry> FileImported
+		{
+			get;
+			set;
+		}
+
         /// <summary>
         /// Property to set or return the function to call when a file that is being created already exists.
         /// </summary>
@@ -491,31 +501,31 @@ namespace GorgonLibrary.Editor
 		            // Find out if this file already exists.
 		            var fileEntry = ScratchFiles.GetFile(file.Item2);
 
-		            if (fileEntry != null)
-		            {
-		                if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-		                {
-		                    result = ImportExportFileConflictFunction(fileEntry.FullPath, settings.Files.Count);
-		                }
+			        if (fileEntry != null)
+			        {
+				        if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+				        {
+					        result = ImportExportFileConflictFunction(fileEntry.FullPath, settings.Files.Count);
+				        }
 
-		                // Stop copying.
-		                if (result == ConfirmationResult.Cancel)
-		                {
-		                    return;
-		                }
+				        // Stop copying.
+				        if (result == ConfirmationResult.Cancel)
+				        {
+					        return;
+				        }
 
-		                // Skip this file.
-		                if ((result & ConfirmationResult.No) == ConfirmationResult.No)
-		                {
-		                    continue;
-		                }
+				        // Skip this file.
+				        if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+				        {
+					        continue;
+				        }
 
-		                // Ensure that the file isn't open.
-		                if (!CanImportFunction(fileEntry))
-		                {
-		                    continue;
-		                }
-		            }
+				        // Ensure that the file isn't open.
+				        if (!CanImportFunction(fileEntry))
+				        {
+					        continue;
+				        }
+			        }
 
 		            // Copy file data.
 		            using(var inputStream = File.Open(file.Item1, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -525,6 +535,12 @@ namespace GorgonLibrary.Editor
 		                    inputStream.CopyTo(outputStream);
 		                }
 		            }
+
+					// Inform the interface that we've imported a new file.
+			        if (FileImported != null)
+			        {
+				        FileImported(ScratchFiles.GetFile(file.Item2));
+			        }
 
 		            // Increment the file counter.
 		            settings.FileCounter++;
@@ -557,9 +573,9 @@ namespace GorgonLibrary.Editor
 					processForm.Task = Task.Factory.StartNew(() =>
 					{
 						ImportFilesThread(settings);
-
+						
 						ImportExportFileCompleteAction(settings.IsCancelled, true, settings.FileCounter + settings.Directories.Count,
-													   settings.Files.Count + settings.Directories.Count);
+													settings.Files.Count + settings.Directories.Count);
 					},
 					settings.CancelToken);
 					
@@ -1172,9 +1188,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File to rename.</param>
 		/// <param name="newName">New name for the file.</param>
-		/// <param name="modifyExtension">TRUE to allow the extension to be modified, FALSE to force it to stay the same.</param>
 		/// <returns>The file with the new name.</returns>
-		public static GorgonFileSystemFileEntry Rename(GorgonFileSystemFileEntry file, string newName, bool modifyExtension)
+		public static GorgonFileSystemFileEntry Rename(GorgonFileSystemFileEntry file, string newName)
 		{
 			if (file == null)
 			{
@@ -1220,12 +1235,6 @@ namespace GorgonLibrary.Editor
 
 		    try
 		    {
-				if ((!modifyExtension)
-					&& (!newName.EndsWith(file.Extension, StringComparison.OrdinalIgnoreCase)))
-				{
-					newName += file.Extension;
-				}
-				
 				newName = file.Directory.FullPath + newName;
 
 		        string physicalNewName = newName.FormatDirectory('/');

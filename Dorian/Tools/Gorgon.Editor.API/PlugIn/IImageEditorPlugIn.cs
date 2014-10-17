@@ -26,8 +26,6 @@
 
 using System.IO;
 using GorgonLibrary.IO;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor
 {
@@ -64,9 +62,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to import content from a file system file.
 		/// </summary>
-		/// <param name="fileName">The name of the file to load.</param>
+		/// <param name="editorFile">The editor file to load.</param>
 		/// <param name="imageDataStream">The stream containing the image data.</param>
 		/// <returns>An image editor content object.</returns>
-		IImageEditorContent ImportContent(string fileName, Stream imageDataStream);
+		IImageEditorContent ImportContent(EditorFile editorFile, Stream imageDataStream);
     }
 }

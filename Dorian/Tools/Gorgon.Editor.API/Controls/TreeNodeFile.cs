@@ -38,6 +38,8 @@ namespace GorgonLibrary.Editor
 		: TreeNodeEditor
 	{
 		#region Variables.
+		// Editor file attached to this node.
+		private EditorFile _editorFile;
 		#endregion
 
 		#region Properties.
@@ -111,6 +113,17 @@ namespace GorgonLibrary.Editor
 				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetFile(Name);
 			}
 		}
+
+		/// <summary>
+		/// Property to return the editor file for this node.
+		/// </summary>
+		public EditorFile EditorFile
+		{
+			get
+			{
+				return _editorFile;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -123,12 +136,9 @@ namespace GorgonLibrary.Editor
 			CollapsedImage = ExpandedImage;
 			PlugIn = null;
 
-			if (string.IsNullOrWhiteSpace(File.Extension))
-			{
-				return;
-			}
+			EditorMetaDataFile.Files.TryGetValue(File.FullPath, out _editorFile);
 
-            PlugIn = ContentManagement.GetContentPlugInForFile(File.Extension);
+			PlugIn = ContentManagement.GetContentPlugInForFile(_editorFile) ?? ContentManagement.GetContentPlugInForFile(File.Extension);
 
 			if (PlugIn != null)
 			{
@@ -147,7 +157,7 @@ namespace GorgonLibrary.Editor
 			GetFileData();
 
 			// We have dependencies, so update.
-			if (EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath))
+			if ((_editorFile != null) && (_editorFile.DependsOn.Count > 0))
 			{
 				Nodes.Add(new TreeNode("DummyNode"));
 			}

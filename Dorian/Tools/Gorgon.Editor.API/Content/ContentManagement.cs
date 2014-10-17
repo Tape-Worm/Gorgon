@@ -28,11 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
@@ -47,7 +45,6 @@ namespace GorgonLibrary.Editor
     {
         #region Variables.
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
-	    private readonly static HashSet<string> _availablePlugIns;
 	    private static ContentObject _currentContentObject;
 	    private static bool _contentChanged ;
 	    private static Type _defaultContentType;
@@ -144,8 +141,8 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the method to call when content is renamed.
 		/// </summary>
-		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c>, <c>bool overrideExtension</c></remarks>
-	    public static Action<string, bool> ContentRenamed
+		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c>.</remarks>
+	    public static Action<string> ContentRenamed
 	    {
 		    get;
 		    set;
@@ -295,6 +292,26 @@ namespace GorgonLibrary.Editor
             return _contentFiles.Keys;
         }
 
+		/// <summary>
+		/// Function to return a related plug-in for the given editor file.
+		/// </summary>
+		/// <param name="file">Editor file to evaluate.</param>
+		/// <returns>The plug-in for the editor file.</returns>
+	    public static ContentPlugIn GetContentPlugInForFile(EditorFile file)
+	    {
+			if ((file == null)
+				|| (string.IsNullOrWhiteSpace(file.PlugInType)))
+			{
+				return null;
+			}
+
+			ContentPlugIn plugIn;
+
+			PlugIns.ContentPlugIns.TryGetValue(file.PlugInType, out plugIn);
+
+			return plugIn;
+	    }
+
         /// <summary>
         /// Function to return a related plug-in for the given content file.
         /// </summary>
@@ -332,7 +349,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Check to see if the plug-in exists.
-			return !string.IsNullOrWhiteSpace(file.PlugInType) && _availablePlugIns.Contains(file.PlugInType);
+			return !string.IsNullOrWhiteSpace(file.PlugInType) && PlugIns.ContentPlugIns.ContainsKey(file.PlugInType);
 	    }
 
 		/// <summary>
@@ -418,7 +435,7 @@ namespace GorgonLibrary.Editor
 
             // Perform any set up required on the content.
             ContentSettings settings = plugIn.GetContentSettings();
-
+			
             if (settings != null)
             {
                 if (!settings.PerformSetup())
@@ -451,25 +468,24 @@ namespace GorgonLibrary.Editor
 		/// Function to load dependencies for a file.
 		/// </summary>
 		/// <param name="content">The content that is being loaded.</param>
-		/// <param name="filePath">Path to the file that may contain dependencies.</param>
+		/// <param name="file">The file that contains the dependencies.</param>
 		/// <param name="missing">A list of dependencies that are missing.</param>
-	    private static void LoadDependencies(ContentObject content, string filePath, List<string> missing)
+	    private static void LoadDependencies(ContentObject content, EditorFile file, List<string> missing)
 	    {
-			foreach (Dependency dependencyFile in EditorMetaDataFile.Dependencies[filePath])
+			foreach (Dependency dependencyFile in file.DependsOn)
 			{
-				GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Path);
+				GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.EditorFile.FilePath);
 
 				if (externalFile == null)
 				{
 					throw new FileNotFoundException(string.Format(APIResources.GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE,
-						                                                        dependencyFile.Path));
+																				dependencyFile.EditorFile.FilePath));
 				}
 
 				// If the dependency file contains any dependencies, then we need to load it them prior to loading the actual dependency.
-				if ((EditorMetaDataFile.Dependencies.ContainsKey(dependencyFile.Path))
-					&& (EditorMetaDataFile.Dependencies[dependencyFile.Path].Count > 0))
+				if (dependencyFile.EditorFile.DependsOn.Count > 0)
 				{
-					LoadDependencies(content, dependencyFile.Path, missing);
+					LoadDependencies(content, dependencyFile.EditorFile, missing);
 				}
 
 				// Read the external content.
@@ -480,15 +496,11 @@ namespace GorgonLibrary.Editor
 					{
 						case DependencyLoadState.FatalError:
 							throw new GorgonException(GorgonResult.CannotRead,
-							                          string.Format(APIResources.GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
+							                          string.Format(APIResources.GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY, dependencyFile.EditorFile.FilePath, result.Message));
 						case DependencyLoadState.ErrorContinue:
-							missing.Add(string.Format(APIResources.GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, result.Message));
-							break;
-						default:
-							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;
+							missing.Add(string.Format(APIResources.GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY, dependencyFile.EditorFile.FilePath, result.Message));
 							break;
 					}
-					
 				}
 			}
 	    }
@@ -496,9 +508,10 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to load content data from the file system.
 		/// </summary>
+		/// <param name="editorFile">The editor file data.</param>
 		/// <param name="file">The file system file that contains the content data.</param>
 		/// <param name="plugIn">The plug-in used to open the file.</param>
-	    public static void Load(GorgonFileSystemFileEntry file, ContentPlugIn plugIn)
+	    public static void Load(EditorFile editorFile, GorgonFileSystemFileEntry file, ContentPlugIn plugIn)
 	    {
 		    if (file == null)
 		    {
@@ -510,8 +523,7 @@ namespace GorgonLibrary.Editor
 		    if (settings != null)
 		    {
                 // Assign the name from the file.
-			    settings.Filename = file.Name;
-                settings.Name = Path.GetFileNameWithoutExtension(file.Name);
+                settings.Name = file.Name;
 		        settings.CreateContent = false;
 		    }
 
@@ -527,26 +539,32 @@ namespace GorgonLibrary.Editor
 
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
+
+			EditorFile contentFile;
+			EditorMetaDataFile.Files.TryGetValue(file.FullPath, out contentFile);
+
+			content.EditorFile = contentFile;
+
 			// Indicate that this content is linked to another piece of content.
-			content.HasOwner = EditorMetaDataFile.HasFileLinks(file);
+			content.HasOwner = EditorMetaDataFile.HasFileLinks(contentFile);
 
 			// Load the content dependencies if any exist.
 			// Check for dependencies.
-			if ((EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath))
-				&& (EditorMetaDataFile.Dependencies[file.FullPath].Count > 0))
+			if ((contentFile != null)
+				&& (contentFile.DependsOn.Count > 0))
 			{
 				var missingDependencies = new List<string>();
 
 				try
 				{
-					LoadDependencies(content, file.FullPath, missingDependencies);
+					LoadDependencies(content, contentFile, missingDependencies);
 				}
 				catch
 				{
 					// If we have a major failure, ensure that any dependencies that were loaded 
 					// are cleaned up (if they require it).
-					var cleanUp = from dependency in EditorMetaDataFile.Dependencies
-					              from dependencyObject in dependency.Value
+					var cleanUp = from editFile in EditorMetaDataFile.Files
+					              from dependencyObject in editorFile.DependsOn
 					              let disposable = dependencyObject.DependencyObject as IDisposable
 					              where disposable != null
 					              select new
@@ -598,49 +616,14 @@ namespace GorgonLibrary.Editor
 		        throw new ArgumentNullException("file");
 		    }
 			
-			// Finalize the content after persisting to the file store.
-			string newName = Current.OnBeforePersist();
-
-			if ((!string.IsNullOrWhiteSpace(newName))
-			    && (!Current.HasOwner))
-			{
-				// Ensure that this file doesn't already exist.
-				if (ScratchArea.ScratchFiles.GetFile(file.Directory.FullPath + newName) != null)
-				{
-					throw new GorgonException(GorgonResult.AccessDenied,
-					                          string.Format(APIResources.GOREDIT_ERR_FILE_ALREADY_EXISTS,
-					                                        APIResources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
-					                                        newName));
-				}
-			}
-
 			// Write the content out to the scratch file system.
 			using (var contentStream = file.OpenStream(true))
 			{
 				Current.Persist(contentStream);
 			}
 
-			if ((Current.Dependencies.Count == 0)
-				&& (EditorMetaDataFile.Dependencies.ContainsKey(file.FullPath)))
-			{
-				EditorMetaDataFile.Dependencies.Remove(file.FullPath);
-				EditorMetaDataFile.Save();
-			}
-			else
-			{
-				if (Current.Dependencies.Count > 0)
-				{
-					EditorMetaDataFile.Dependencies[file.FullPath] = Current.Dependencies;
-					EditorMetaDataFile.Save();
-				}
-			}
-
-			if ((!string.IsNullOrWhiteSpace(newName))
-				&& (!Current.HasOwner))
-			{
-				// Rename the content.
-				ContentRenamed(newName, true);
-			}
+			// Save any metadata.
+			EditorMetaDataFile.Save();
 
 			_contentChanged = false;
 
@@ -664,13 +647,6 @@ namespace GorgonLibrary.Editor
                     continue;
                 }
 
-				string plugInType = contentPlugIn.Value.GetType().FullName;
-
-				if (!_availablePlugIns.Contains(plugInType))
-				{
-					_availablePlugIns.Add(plugInType);
-				}
-
                 // Associate the content file type with the plug-in.
                 foreach (var extension in contentPlugIn.Value.FileExtensions)
                 {
@@ -687,7 +663,6 @@ namespace GorgonLibrary.Editor
         static ContentManagement()
         {
             _contentFiles = new Dictionary<GorgonFileExtension, ContentPlugIn>();
-			_availablePlugIns = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         }
         #endregion
     }

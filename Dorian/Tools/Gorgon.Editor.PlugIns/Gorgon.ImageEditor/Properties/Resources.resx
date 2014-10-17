@@ -191,7 +191,7 @@
     <value>Sets the arrangement of the pixel components within the image data.  For codecs that support compression, block compression (BCn) formats will be available as well.</value>
   </data>
   <data name="GORIMG_CODEC_NONE_FOUND" xml:space="preserve">
-    <value>No valid image codecs were found in the file '{0}'.</value>
+    <value>No valid image codecs were found for the file '{0}'.</value>
   </data>
   <data name="GORIMG_UNRECOGNIZED_IMAGE_FORMAT" xml:space="preserve">
     <value>The image format '{0}' is unknown.</value>

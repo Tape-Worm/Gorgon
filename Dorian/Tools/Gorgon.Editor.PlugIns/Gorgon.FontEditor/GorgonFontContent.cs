@@ -667,7 +667,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	                }
 
 					// Remove any externally linked dependencies.
-	                foreach (Dependency dependency in Dependencies)
+	                foreach (Dependency dependency in EditorFile.DependsOn)
 	                {
 		                var disposable = dependency.DependencyObject as IDisposable;
 
@@ -826,7 +826,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					newSize = (Size)sizeObject;
 				}
 
-				imageContent = ImageEditor.ImportContent(dependency.Path, stream);
+				imageContent = ImageEditor.ImportContent(dependency.EditorFile, stream);
+
+				if (newSize.Width == 0)
+				{
+					newSize.Width = imageContent.Image.Settings.Width;
+				}
+
+				if (newSize.Height == 0)
+				{
+					newSize.Height = imageContent.Image.Settings.Height;
+				}
 
 				// Clip the image to a new size if necessary.
 				if ((newSize.Width != imageContent.Image.Settings.Width)
@@ -843,10 +853,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 				{
 					return new DependencyLoadResult(DependencyLoadState.ErrorContinue,
-					                                string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.Path));
+					                                string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.EditorFile.FilePath));
 				}
 
-				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.Path, imageContent.Image);
+				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.EditorFile.FilePath, imageContent.Image);
 
 				return new DependencyLoadResult(DependencyLoadState.Successful, null);
 			}

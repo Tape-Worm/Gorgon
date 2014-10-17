@@ -446,4 +446,7 @@ The following characters are not allowed:
   <data name="GOREDIT_ERR_EDITFILE_CORRUPT" xml:space="preserve">
     <value>The file '{0}' meta data is corrupt and cannot be read.</value>
   </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' depends on the file '{1}', which was not found.</value>
+  </data>
 </root>

@@ -93,15 +93,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	        try
 	        {
-		        string textureBrushPath = string.Empty;
+		        EditorFile textureBrushFile = null;
 
 		        if (document.Brush.BrushType == GlyphBrushType.Texture)
 		        {
-			        Dependency dependency = document.Dependencies.SingleOrDefault(item => string.Equals(item.Type, GorgonFontContent.TextureBrushTextureType));
+			        Dependency dependency = document.EditorFile.DependsOn.SingleOrDefault(item => string.Equals(item.Type, GorgonFontContent.TextureBrushTextureType));
 
 			        if (dependency != null)
 			        {
-				        textureBrushPath = dependency.Path;
+				        textureBrushFile = dependency.EditorFile;
 			        }
 		        }
 
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					case GlyphBrushType.Texture:
 						brushEditor.TextureBrush = (GorgonGlyphTextureBrush)document.Brush;
-						brushEditor.TextureBrushPath = textureBrushPath;
+						brushEditor.TextureBrushPath = textureBrushFile;
 						break;
 					case GlyphBrushType.Hatched:
 						brushEditor.PatternBrush = (GorgonGlyphHatchBrush)document.Brush;
@@ -145,10 +145,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					}
 
 					// Remove the old texture brush dependency (if it existed).
-					if ((!string.IsNullOrWhiteSpace(textureBrushPath))
-						&& (document.Dependencies.Contains(textureBrushPath)))
+					if ((textureBrushFile != null)
+						&& (document.EditorFile.DependsOn.Contains(textureBrushFile)))
 					{
-						document.Dependencies[textureBrushPath, GorgonFontContent.TextureBrushTextureType] = null;
+						document.EditorFile.DependsOn[textureBrushFile, GorgonFontContent.TextureBrushTextureType] = null;
 					}
 			    }
 
@@ -158,9 +158,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			            brush = brushEditor.TextureBrush;
 
 						// Add the updated texture brush dependency path.
-						if (!string.IsNullOrWhiteSpace(brushEditor.TextureBrushPath))
+						if (textureBrushFile != null)
 						{
-							document.Dependencies[brushEditor.TextureBrushPath, GorgonFontContent.TextureBrushTextureType] =
+							document.EditorFile.DependsOn[brushEditor.TextureBrushPath, GorgonFontContent.TextureBrushTextureType] =
 								new Dependency(brushEditor.TextureBrushPath,
 								               GorgonFontContent.TextureBrushTextureType);
 						}

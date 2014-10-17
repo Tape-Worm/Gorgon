@@ -1364,7 +1364,10 @@ namespace GorgonLibrary.Editor
 				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
 			}
 
-			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
+			EditorFile editorFile;
+			EditorMetaDataFile.Files.TryGetValue(file.FullPath, out editorFile);
+
+			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(editorFile);
 
 			if (plugIn == null)
 			{
@@ -1382,6 +1385,9 @@ namespace GorgonLibrary.Editor
 				{
 					return null;
 				}
+
+				// Bind to the editor file information.
+				content.EditorFile = editorFile;
 
 				using (Stream contentStream = file.OpenStream(false))
 				{

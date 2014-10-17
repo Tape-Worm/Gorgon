@@ -447,6 +447,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; must be included with the editor files before it can be opened.  Do you wish to include this file in the editor?.
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_NEEDS_IMPORT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_NEEDS_IMPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source file must not be the same as the destination file..
         /// </summary>
         internal static string GOREDIT_DLG_FILE_SOURCE_SAME_AS_DEST {
