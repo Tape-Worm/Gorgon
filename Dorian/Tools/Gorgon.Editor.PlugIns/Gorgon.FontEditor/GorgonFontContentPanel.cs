@@ -1163,11 +1163,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    return;
 		    }
 
-		    Dependency dependency = _content.Dependencies.FirstOrDefault(item => item.DependencyObject == glyph.Texture);
+		    Dependency dependency = _content.EditorFile.DependsOn.FirstOrDefault(item => item.DependencyObject == glyph.Texture);
 
 		    if (dependency != null)
 		    {
-			    _content.Dependencies[dependency.Path, dependency.Type] = null;
+			    _content.EditorFile.DependsOn[dependency.EditorFile, dependency.Type] = null;
 		    }
 
 			glyph.Texture.Dispose();
@@ -1234,7 +1234,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			using (var fileStream = textureFile.OpenStream(false))
 			{
-				using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath, fileStream))
+				EditorFile editorFile = null;
+				throw new Exception("Make sure the file dialog returns a bunch of editor file objects instead of strings");
+				using (var imageContent = _content.ImageEditor.ImportContent(editorFile, fileStream))
 				{
 					// We can only use 2D content.
 					if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
@@ -1294,17 +1296,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name, imageContent.Image, settings);
 
                     // Attach the dependency to link the texture to this font.
-					var dependency = new Dependency(textureFile.FullPath, GorgonFontContent.GlyphTextureType)
-					                        {
-						                        DependencyObject = texture
-					                        };
+					var dependency = new Dependency(imageContent.EditorFile, GorgonFontContent.GlyphTextureType)
+					                 {
+						                 DependencyObject = texture
+					                 };
 
 					var converter = new SizeConverter();
 
 					dependency.Properties[GorgonFontContent.GlyphTextureSizeProp] =
 						new DependencyProperty(GorgonFontContent.GlyphTextureSizeProp, converter.ConvertToInvariantString(settings.Size));
 
-					_content.Dependencies[dependency.Path, GorgonFontContent.GlyphTextureType] = dependency;
+					_content.EditorFile.DependsOn[dependency.EditorFile, GorgonFontContent.GlyphTextureType] = dependency;
 				}
 			}
 
@@ -1424,13 +1426,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
 			    imageFileBrowser.DefaultExtension = GorgonFontEditorPlugIn.Settings.LastTextureExtension;
 
+				throw new Exception("We need to update the file browser to return editor files.");
 			    if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 			    {
 				    GorgonTexture2D texture = null;
 				    GorgonFileSystemFileEntry file = imageFileBrowser.Files[0];
-				    Dependency dependency = _content.Dependencies.FirstOrDefault(item =>
+				    Dependency dependency = _content.EditorFile.DependsOn.FirstOrDefault(item =>
 				                                                                 item.DependencyObject == _selectedGlyph.Texture 
-																				 && string.Equals(item.Path,
+																				 && string.Equals(item.EditorFile.FilePath,
 				                                                                               file.FullPath,
 				                                                                               StringComparison.OrdinalIgnoreCase));
 
@@ -1442,10 +1445,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					    return;
 				    }
 
-				    if (_content.Dependencies.Contains(file.FullPath, GorgonFontContent.GlyphTextureType))
+					// TODO: Fix this.
+				    /*if (_content.Dependencies.Contains(file.FullPath, GorgonFontContent.GlyphTextureType))
 				    {
 					    texture = _content.Dependencies[file.FullPath, GorgonFontContent.GlyphTextureType].DependencyObject as GorgonTexture2D;
-				    }
+				    }*/
 
 					// We have no pre-loaded texture, so go get it.
 				    if (texture == null)

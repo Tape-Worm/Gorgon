@@ -66,15 +66,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the path of the file that is being depended upon.
-		/// </summary>
-		public string Path
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property set or return the object that was created because of this dependency.
 		/// </summary>
 		public object DependencyObject
@@ -82,6 +73,15 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to return the file that has the dependency.
+		/// </summary>
+	    public EditorFile EditorFile
+	    {
+		    get;
+		    internal set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -92,7 +92,8 @@ namespace GorgonLibrary.Editor
 		internal XElement Serialize()
 		{
 			var result = new XElement(DependencyNode,
-				new XAttribute(DependencyTypeAttr, Type), new XElement(DependencyPathNode, Path));
+			                          new XAttribute(DependencyTypeAttr, Type),
+			                          new XElement(DependencyPathNode, EditorFile.FilePath));
 
 			result.Add(Properties.Serialize());
 
@@ -102,9 +103,10 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to deserialize a dependency from an XML node.
 		/// </summary>
+		/// <param name="files">Available files to evaluate.</param>
 		/// <param name="element">Element containing the serialized dependency.</param>
 		/// <returns>A dependency deserialized from the XML node.</returns>
-		internal static Dependency Deserialize(XElement element)
+		internal static Dependency Deserialize(EditorFileCollection files, XElement element)
 		{
 			XAttribute typeAttr = element.Attribute(DependencyTypeAttr);
 			XElement pathNode = element.Element(DependencyPathNode);
@@ -117,7 +119,14 @@ namespace GorgonLibrary.Editor
 				throw new GorgonException(GorgonResult.CannotRead, APIResources.GOREDIT_ERR_DEPENDENCY_CORRUPT);
 			}
 
-			var result = new Dependency(pathNode.Value, typeAttr.Value);
+			EditorFile file;
+
+			if (!files.TryGetValue(pathNode.Value, out file))
+			{
+				return null;
+			}
+
+			var result = new Dependency(file, typeAttr.Value);
 
 			XElement propertiesNode = element.Element(DependencyPropertyCollection.PropertiesNode);
 
@@ -134,26 +143,18 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Dependency"/> class.
 		/// </summary>
-		/// <param name="name">The name of the dependency.</param>
+		/// <param name="file">The file that has the dependency.</param>
 		/// <param name="type">The type of dependency.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="name"/> parameter is an empty string.</para>
-		/// </exception>
-		public Dependency(string name, string type)
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="type"/> parameter is an empty string.</exception>
+		public Dependency(EditorFile file, string type)
 		{
-			if (name == null)
+			if (file == null)
 			{
-				throw new ArgumentNullException("name");
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentNullException("file");
 			}
 
 			if (type == null)
@@ -166,9 +167,9 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
 			}
 
-			Path = name;
 			Properties = new DependencyPropertyCollection();
 			Type = type;
+			EditorFile = file;
 		}
 		#endregion
 
@@ -180,7 +181,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Path;
+				return EditorFile.FilePath;
 			}
 		}
 		#endregion

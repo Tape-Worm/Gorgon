@@ -55,15 +55,6 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
-		/// Property to set or return the filename for the content.
-		/// </summary>
-	    public string Filename
-	    {
-		    get;
-		    set;
-	    }
-
-		/// <summary>
         /// Property to set or return the name of the content.
         /// </summary>
         /// <remarks>This property will return NULL (Nothing in VB.Net) if the name is not valid.</remarks>

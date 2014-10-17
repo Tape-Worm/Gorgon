@@ -84,9 +84,9 @@ namespace GorgonLibrary.Editor
 		/// <param name="dependency">Path to the file.</param>
 		public void UpdateBroken(Dependency dependency)
 		{
-			string fileName = Path.GetFileName(dependency.Path);
+			string fileName = Path.GetFileName(dependency.EditorFile.FilePath);
 
-			Name = dependency.Path;
+			Name = dependency.EditorFile.FilePath;
 			PlugIn = null;
 			CollapsedImage = ExpandedImage = APIResources.image_missing_16x16;
 

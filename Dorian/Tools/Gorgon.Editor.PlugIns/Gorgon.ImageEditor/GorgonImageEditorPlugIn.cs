@@ -31,7 +31,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
@@ -231,19 +230,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentObject OnCreateContentObject(ContentSettings settings)
         {
-	        GorgonImageCodec codec;
-	        var imageSettings = (GorgonImageContentSettings)settings;
-	        var extension = new GorgonFileExtension(Path.GetExtension(settings.Filename));
-
-			// Use the proper codec for the image.
-	        if (!Codecs.TryGetValue(extension, out codec))
-			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, settings.Filename));
-	        }
-
-	        imageSettings.Codec = codec;
-
-            return new GorgonImageContent(imageSettings);
+            return new GorgonImageContent((GorgonImageContentSettings)settings);
         }
 
 		/// <summary>
@@ -323,26 +310,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
 		#region IImageEditorPlugIn Members
-        /// <summary>
-        /// Function to import content from a file system file.
-        /// </summary>
-        /// <param name="fileName">The name of the file to load.</param>
-        /// <param name="imageDataStream">The stream containing the image data.</param>
-        /// <returns>
-        /// An image editor content object.
-        /// </returns>
-        IImageEditorContent IImageEditorPlugIn.ImportContent(string fileName, Stream imageDataStream)
+		/// <summary>
+		/// Function to import content from a file system file.
+		/// </summary>
+		/// <param name="editorFile">The editor file to load.</param>
+		/// <param name="imageDataStream">The stream containing the image data.</param>
+		/// <returns>
+		/// An image editor content object.
+		/// </returns>
+        IImageEditorContent IImageEditorPlugIn.ImportContent(EditorFile editorFile, Stream imageDataStream)
         {
-            GorgonImageCodec codec;
-
-	        if (fileName == null)
+	        if (editorFile == null)
 	        {
-		        throw new ArgumentNullException("fileName");
-	        }
-
-	        if (string.IsNullOrWhiteSpace(fileName))
-	        {
-		        throw new ArgumentException(Resources.GORIMG_PARAMETER_MUST_NOT_BE_EMPTY);
+		        throw new ArgumentNullException("editorFile");
 	        }
 
             if (imageDataStream == null)
@@ -350,24 +330,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 throw new ArgumentNullException("imageDataStream");
             }
 
-            if (!Codecs.TryGetValue(new GorgonFileExtension(Path.GetExtension(fileName)), out codec))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, fileName));
-            }
+			IImageEditorContent content = new GorgonImageContent(new GorgonImageContentSettings
+			                                                     {
+				                                                     Name = Path.GetFileName(editorFile.FilePath),
+				                                                     EditorFile = editorFile
+			                                                     });
 
-            // Return the codec to the default settings.
-            codec.Clip = true;
-            codec.Format = BufferFormat.Unknown;
-            codec.Height = 0;
-            codec.Width = 0;
-
-            var content = new GorgonImageContent(new GorgonImageContentSettings
-                                                 {
-	                                                 Name = fileName,
-													 Codec = codec,
-													 Filename = fileName,
-													 ImageStream = imageDataStream
-                                                 });
+			content.Load(imageDataStream);
 
             return content;
         }

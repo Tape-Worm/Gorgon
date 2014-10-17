@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System.IO;
-using GorgonLibrary.IO;
-
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     /// <summary>
@@ -37,19 +34,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the image codec to used to read the image.
+		/// Property to set or return the editor file to use for the content.
 		/// </summary>
-	    public GorgonImageCodec Codec
-	    {
-		    get;
-		    set;
-	    }
-
-		/// <summary>
-		/// Property to set or return the stream that holds the image.
-		/// </summary>
-		/// <remarks>Set this to NULL (Nothing in VB.Net) to skip loading image data.</remarks>
-	    public Stream ImageStream
+	    public EditorFile EditorFile
 	    {
 		    get;
 		    set;

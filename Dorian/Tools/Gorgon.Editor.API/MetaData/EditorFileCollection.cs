@@ -71,8 +71,14 @@ namespace GorgonLibrary.Editor
 
 					return;
 				}
+
+				// If the file existed, but we're changing its name, then remove the previous file.
+				if ((file != null) && (!string.Equals(name, value.FilePath, StringComparison.OrdinalIgnoreCase)))
+				{
+					_files.Remove(name);
+				}
 			
-				_files[name] = value;
+				_files[value.FilePath] = value;
 			}
 		}
 		#endregion
@@ -90,23 +96,51 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to deserialize a file collection from an XML node.
 		/// </summary>
-		/// <param name="dependenciesNode">The list of nodes that contain the files.</param>
+		/// <param name="fileNodes">The list of nodes that contain the files.</param>
 		/// <returns>The deserialized files.</returns>
-		internal static EditorFileCollection Deserialize(IEnumerable<XElement> dependenciesNode)
+		internal static EditorFileCollection Deserialize(IEnumerable<XElement> fileNodes)
 		{
 			var result = new EditorFileCollection();
 
-			if (dependenciesNode == null)
+			if (fileNodes == null)
 			{
 				return result;
 			}
 
-			foreach (XElement dependencyNode in dependenciesNode)
+			// Get the files.
+			// ReSharper disable PossibleMultipleEnumeration
+			foreach (XElement fileNode in fileNodes)
 			{
-				EditorFile file = EditorFile.Deserialize(dependencyNode);
+				EditorFile file = EditorFile.Deserialize(fileNode);
 				result[file.FilePath] = file;
 			}
 
+			// Now that all the files are loaded, get the dependencies.
+			foreach (EditorFile file in result)
+			{
+				XElement fileNode = fileNodes.FirstOrDefault(item =>
+				                                             {
+					                                             XAttribute attr = item.Attribute(EditorFile.EditorFilePathAttr);
+
+					                                             return attr != null && string.Equals(file.FilePath, attr.Value, StringComparison.OrdinalIgnoreCase);
+				                                             });
+
+				if (fileNode == null)
+				{
+					continue;
+				}
+
+				XElement dependRoot = fileNode.Element(EditorFile.EditorDependenciesNodeRoot);
+
+				if (dependRoot == null)
+				{
+					continue;
+				}
+
+				file.DependsOn.CopyFrom(DependencyCollection.Deserialize(result, dependRoot.Elements(Dependency.DependencyNode)));
+			}
+
+			// ReSharper restore PossibleMultipleEnumeration
 			return result;
 		}
 

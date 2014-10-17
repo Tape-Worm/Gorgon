@@ -82,15 +82,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                 Name = newFont.FontName.FormatFileName();
 
-	            if (!Name.EndsWith(GorgonFontContent.FileExtension, StringComparison.OrdinalIgnoreCase))
-	            {
-		            Filename = Name + GorgonFontContent.FileExtension;
-	            }
-	            else
-	            {
-		            Filename = Name;
-	            }
-
 	            Settings.FontFamilyName = newFont.FontFamilyName;
                 Settings.Size = newFont.FontSize;
                 Settings.FontHeightMode = newFont.FontHeightMode;

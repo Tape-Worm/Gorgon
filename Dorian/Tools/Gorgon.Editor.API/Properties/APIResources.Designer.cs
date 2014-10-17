@@ -307,6 +307,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; depends on the file &apos;{1}&apos;, which was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_DEPENDENCY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_DEPENDENCY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to read the dependency property.  It has been corrupted..
         /// </summary>
         internal static string GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT {

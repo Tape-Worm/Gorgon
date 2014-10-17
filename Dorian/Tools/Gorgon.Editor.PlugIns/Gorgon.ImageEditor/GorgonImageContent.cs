@@ -1024,7 +1024,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if (errorData.Contains("FAILED"))
 				{
 					// Get rid of the temporary path and use the file name.
-					errorData = errorData.Replace(tempFilePath, "\"" + Filename + "\"");
+					errorData = errorData.Replace(tempFilePath, "\"" + Name + "\"");
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData);
 				}
@@ -1079,7 +1079,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 
 			// We'll need to copy this data and decompress it in an external source.
-			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), Path.GetExtension(Filename));
+			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), Path.GetExtension(Name));
 			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
 			string outputName = tempFileDirectory + "decomp_" + Path.GetFileName(tempFilePath);
 
@@ -1171,7 +1171,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				}
 
 				// Get rid of the temporary path and use the file name.
-				errorData = errorData.Replace(tempFilePath, "\"" + Filename + "\"");
+				errorData = errorData.Replace(tempFilePath, "\"" + Name + "\"");
 				GorgonDialogs.ErrorBox(_contentPanel.ParentForm,
 				                       Resources.GORIMG_ERROR_DECOMPRESSING,
 				                       string.Empty,
@@ -1264,72 +1264,52 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    _original.Dispose();
 		    _original = Image;
         }
-
+		
 		/// <summary>
-		/// Function to perform actions on the content file before it is persisted.
+		/// Function to retrieve the proper codec to use for the image.
 		/// </summary>
-		/// <returns>
-		/// The current file name for the content.
-		/// </returns>
-		/// <remarks>
-		/// Return the current file name if the content file should change its name after persisting.
-		/// <para>
-		/// This value may return NULL (Nothing in VB.Net) or an empty string if renaming is not desired.
-		/// </para>
-		/// </remarks>
-	    protected override string OnBeforePersist()
+		/// <param name="stream">The stream to read.</param>
+	    private void GetCodecForStream(Stream stream)
 		{
-			// Rename the image to match our new codec.
-			string newName = Codec == _originalCodec ? null : RenameImageForCodec();
+			GorgonImageCodec codec;
 
-			return newName;
+			// Find the codec in the editor file attributes.
+			string codecTypeName;
+
+			EditorFile.Attributes.TryGetValue("Codec", out codecTypeName);
+
+			if (!string.IsNullOrWhiteSpace(codecTypeName))
+			{
+				// Find a codec with the appropriate type name.
+				codec = GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(item => string.Equals(item.GetType().FullName, codecTypeName, StringComparison.OrdinalIgnoreCase));
+
+				if ((codec != null) && (codec.IsReadable(stream)))
+				{
+					_originalCodec = _codec = codec;
+					return;
+				}
+			}
+
+			// We didn't have codec information in the meta data, fall back to the file extension.
+			string fileExtension = Path.GetExtension(EditorFile.FilePath);
+
+			if (!GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, EditorFile.FilePath));
+			}
+
+			_originalCodec = _codec = codec;
 		}
-
-	    /// <summary>
-		/// Function to update the filename for this content.
-		/// </summary>
-		/// <returns>
-		/// The new file name.
-		/// </returns>
-	    private string RenameImageForCodec()
-	    {
-			if (Codec == null)
-			{
-				return null;
-			}
-
-			string extension = Path.GetExtension(Filename);
-			var stringBuffer = new StringBuilder(Name.Length + 4);
-
-			// The current filename is sufficient.
-			if ((string.IsNullOrWhiteSpace(extension))
-			    || (!Codec.CodecCommonExtensions.Any(item =>
-			                                         {
-				                                         stringBuffer.Length = 0;
-				                                         stringBuffer.Append(".");
-				                                         stringBuffer.Append(item);
-
-				                                         return string.Equals(extension, stringBuffer.ToString(), StringComparison.OrdinalIgnoreCase);
-			                                         })))
-			{
-				extension = Codec.CodecCommonExtensions.First();
-			}
-
-			// Otherwise, use the first common extension for the codec.
-			stringBuffer.Length = 0;
-			stringBuffer.Append(Name);
-			stringBuffer.Append(".");
-			stringBuffer.Append(extension);
-
-			return stringBuffer.ToString();
-	    }
 
 	    /// <summary>
         /// Function to read the content data from a stream.
         /// </summary>
         /// <param name="stream">Stream containing the content data.</param>
         protected override void OnRead(Stream stream)
-        {
+	    {
+			// Get the appropriate image codec.
+		    GetCodecForStream(stream);
+
 			// If we're not actuallying "editing" the image, but using this interface to load an image, 
 			// then just leave so we can keep the image data lightweight.
 		    if (_contentPanel == null)
@@ -1585,28 +1565,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public GorgonImageContent(GorgonImageContentSettings settings)
             : base(settings)
         {
+	        EditorFile = settings.EditorFile;
             HasThumbnail = true;
-	        _originalCodec = _codec = settings.Codec;
 
             // Make a default, empty, 2D settings object so we have something to work with.
             _imageSettings = new GorgonTexture2DSettings();
-
-	        if (settings.ImageStream == null)
-	        {
-		        return;
-	        }
-
-			if (!Codec.IsReadable(settings.ImageStream))
-			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, settings.Name, Codec.CodecDescription));
-			}
-
-			OnRead(settings.ImageStream);
         }
         #endregion
 
         #region IImageEditorContent Members
-
         /// <summary>
         /// Property to return the image held in the content object.
         /// </summary>
@@ -1616,6 +1583,21 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             get;
             private set;
         }
+
+		/// <summary>
+		/// Function to load an image from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the image to load.</param>
+		void IImageEditorContent.Load(Stream stream)
+		{
+			if ((stream == null)
+				|| (stream.Length == 0))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CONTENT_NOT_IMAGE, EditorFile.FilePath));
+			}
+
+			OnRead(stream);
+		}
         #endregion
     }
 }

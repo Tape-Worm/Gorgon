@@ -41,8 +41,6 @@ namespace GorgonLibrary.Editor
 		#region Constants.
 		// The attribute containing the type of plug-in used to open the file.
 		private const string EditorFilePlugInTypeAttr = "PlugIn";
-		// The attribute containing the path to the file in the file system.
-		private const string EditorFilePathAttr = "FilePath";
 		// The root node for custom attributes.
 		private const string EditorFileCustomNodeRoot = "Attributes";
 		// The node for a custom attribute.
@@ -50,8 +48,20 @@ namespace GorgonLibrary.Editor
 		// The attribute containing the name of a custom file attribute.
 		private const string EditorCustomNameAttr = "Name";
 
-		// The name of the node containing the file.
+		/// <summary>
+		/// The root node for file dependencies.
+		/// </summary>
+		internal const string EditorDependenciesNodeRoot = "Dependencies";
+		
+		/// <summary>
+		/// The name of the node containing the file. 
+		/// </summary>
 		internal const string EditorFileNode = "File";
+
+		/// <summary>
+		/// The attribute containing the path to the file in the file system. 
+		/// </summary>
+		internal const string EditorFilePathAttr = "FilePath";
 		#endregion
 
 		#region Variables.
@@ -100,6 +110,15 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to return the items that this file depends on.
+		/// </summary>
+		public DependencyCollection DependsOn
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the attributes for this file.
 		/// </summary>
 		public Dictionary<string, string> Attributes
@@ -119,6 +138,12 @@ namespace GorgonLibrary.Editor
 			var result = new XElement(EditorFileNode,
 			                          new XAttribute(EditorFilePathAttr, FilePath),
 			                          new XAttribute(EditorFilePlugInTypeAttr, PlugInType ?? string.Empty));
+
+			if (DependsOn.Count > 0)
+			{
+				// Serialize any dependencies.
+				result.Add(new XElement(EditorDependenciesNodeRoot, DependsOn.Serialize()));
+			}
 
 			if (Attributes.Count == 0)
 			{
@@ -174,7 +199,7 @@ namespace GorgonLibrary.Editor
 			var result = new EditorFile(filePath)
 			             {
 				             PlugInType = plugIn,
-							 FileType = fileType
+				             FileType = fileType
 			             };
 
 			// Check for custom attributes.
@@ -204,6 +229,20 @@ namespace GorgonLibrary.Editor
 
 			return result;
 		}
+
+		/// <summary>
+		/// Function to rename this editor file.
+		/// </summary>
+		/// <param name="newName">New name for the editor file.</param>
+		internal void Rename(string newName)
+		{
+			if (string.IsNullOrWhiteSpace(newName))
+			{
+				throw new ArgumentException(APIResources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS, "newName");
+			}
+
+			FilePath = newName;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -225,6 +264,7 @@ namespace GorgonLibrary.Editor
 
 			_filePath = filePath;
 			Attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			DependsOn = new DependencyCollection();
 		}
 		#endregion
 

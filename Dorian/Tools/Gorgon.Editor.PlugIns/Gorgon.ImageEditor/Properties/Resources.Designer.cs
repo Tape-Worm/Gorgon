@@ -154,7 +154,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No valid image codecs were found in the file &apos;{0}&apos;..
+        ///   Looks up a localized string similar to No valid image codecs were found for the file &apos;{0}&apos;..
         /// </summary>
         internal static string GORIMG_CODEC_NONE_FOUND {
             get {

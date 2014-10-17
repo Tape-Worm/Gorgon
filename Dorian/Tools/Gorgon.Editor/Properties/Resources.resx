@@ -505,4 +505,7 @@ and re-opened to use the new image editor.</value>
   <data name="GOREDIT_TEXT_SHOW_ALL" xml:space="preserve">
     <value>Show all files.</value>
   </data>
+  <data name="GOREDIT_DLG_FILE_NEEDS_IMPORT" xml:space="preserve">
+    <value>The file '{0}' must be included with the editor files before it can be opened.  Do you wish to include this file in the editor?</value>
+  </data>
 </root>
