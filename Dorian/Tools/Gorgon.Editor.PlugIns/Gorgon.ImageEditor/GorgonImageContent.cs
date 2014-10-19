@@ -31,14 +31,15 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
+using SlimMath;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -177,12 +178,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonSwapChain _swap;											// The swap chain to display our texture.
         private IImageSettings _imageSettings;                                  // The current settings for the image.
 	    private GorgonImageData _original;										// Original image.
-        private int _depthArrayIndex;                                           // Current depth/array index.
-        private GorgonConstantBuffer _depthArrayIndexData;                      // Depth array index value.
+        private int _depthSlice;												// Current depth/array index.
+        private GorgonConstantBuffer _depthSliceBuffer;							// Depth slice value.
 	    private readonly byte[] _copyBuffer = new byte[80000];					// 80k copy buffer.
         private BufferFormat _blockCompression = BufferFormat.Unknown;          // Block compression type.
 	    private GorgonImageCodec _codec;										// The codec used.
-	    private GorgonImageCodec _originalCodec;								// The original codec used.
         #endregion
 
         #region Properties.
@@ -200,32 +200,35 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Property to set or return the depth/array index.
         /// </summary>
         [Browsable(false)]
-        public int DepthArrayIndex
+        public int DepthSlice
         {
             get
             {
-                return _depthArrayIndex;
+                return _depthSlice;
             }
             set
             {
-                if (_depthArrayIndex == value)
+                if ((ImageType != ImageType.Image3D) 
+					|| (_depthSlice == value))
                 {
                     return;
                 }
 
-                if (_depthArrayIndex < 0)
+	            _depthSlice = value;
+
+                if (_depthSlice < 0)
                 {
-                    _depthArrayIndex = 0;
+                    _depthSlice = 0;
                 }
 
-                int maxDepthArray = ImageType == ImageType.Image3D ? _imageSettings.Depth : _imageSettings.ArrayCount;
-
-                if (_depthArrayIndex >= maxDepthArray)
+                if (_depthSlice >= Depth)
                 {
-                    _depthArrayIndex = maxDepthArray - 1;
+                    _depthSlice = Depth - 1;
                 }
 
-                _depthArrayIndexData.Update(ref _depthArrayIndex);
+	            float depthScalar = (_depthSlice / (float)(Depth - 1).Max(1));
+
+                _depthSliceBuffer.Update(ref depthScalar);
             }
         }
 
@@ -568,30 +571,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="newSettings">Settings to apply.</param>
 	    private void ProcessTransform(IImageSettings newSettings)
 		{
-			// Don't change if we have the same settings as the original.
-			if (IsSameAsOriginal(newSettings))
-			{
-				_imageSettings = _original.Settings.Clone();
-
-				if (Image != _original)
-				{
-					Image.Dispose();
-				}
-
-				Image = _original;
-				ValidateImageProperties();
-				return;
-			}
-
 			BufferFormat convertFormat = newSettings.Format;
 			int convertWidth = newSettings.Width;
 			int convertHeight = newSettings.ImageType == ImageType.Image1D ? 1 : newSettings.Height;
-			newSettings.Format = _original.Settings.Format;
-			newSettings.Width = _original.Settings.Width;
+			newSettings.Format = Image.Settings.Format;
+			newSettings.Width = Image.Settings.Width;
 
 			if (newSettings.ImageType != ImageType.Image1D)
 			{
-				newSettings.Height = _original.Settings.Height;
+				newSettings.Height = Image.Settings.Height;
 			}
 
 			GorgonImageData newImage = null;
@@ -599,7 +587,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			try
 			{
 				newImage = new GorgonImageData(newSettings);
-				_original.CopyTo(newImage);
+				Image.CopyTo(newImage);
 
 				// Convert the format.
 				if (convertFormat != newSettings.Format)
@@ -890,22 +878,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
-		/// Function to determine if the settings for the current image are the same as the original.
-		/// </summary>
-		/// <param name="settings">Settings to test.</param>
-		/// <returns>TRUE if the settings are the same, FALSE if not.</returns>
-	    private bool IsSameAsOriginal(IImageSettings settings)
-		{
-			return ((settings.Width == _original.Settings.Width)
-			        && (settings.Height == _original.Settings.Height)
-			        && (settings.Depth == _original.Settings.Depth)
-			        && (settings.Format == _original.Settings.Format)
-			        && (settings.ArrayCount == _original.Settings.ArrayCount)
-			        && (settings.MipCount == _original.Settings.MipCount)
-                    && (settings.ImageType == _original.Settings.ImageType));
-		}
-
-		/// <summary>
 		/// Function to delete a temporary image file.
 		/// </summary>
 		/// <param name="path">The path to the temporary image file.</param>
@@ -1079,7 +1051,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 
 			// We'll need to copy this data and decompress it in an external source.
-			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), Path.GetExtension(Name));
+			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dds");
 			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
 			string outputName = tempFileDirectory + "decomp_" + Path.GetFileName(tempFilePath);
 
@@ -1088,20 +1060,32 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-
 				// Copy our file.
 				using (Stream outStream = File.Open(tempFilePath, FileMode.Create, FileAccess.Write))
 				{
-					int remaining = size;
-
-					while (remaining > 0)
+					if (!(Codec is GorgonCodecDDS))
 					{
-						int readLength = remaining > _copyBuffer.Length ? _copyBuffer.Length : remaining;
+						// If the image is not already a DDS image, then convert it to one so the texture conversion utility can 
+						// use it.
+						using (GorgonImageData tempImage = GorgonImageData.FromStream(stream, size, Codec))
+						{
+							tempImage.Save(tempFilePath, new GorgonCodecDDS());
+						}
+					}
+					else
+					{
+						// Else just copy it out as-is and save us some memory.
+						int remaining = size;
 
-						int readAmount = stream.Read(_copyBuffer, 0, readLength);
-						outStream.Write(_copyBuffer, 0, readAmount);
+						while (remaining > 0)
+						{
+							int readLength = remaining > _copyBuffer.Length ? _copyBuffer.Length : remaining;
 
-						remaining -= readAmount;
+							int readAmount = stream.Read(_copyBuffer, 0, readLength);
+							outStream.Write(_copyBuffer, 0, readAmount);
+
+							remaining -= readAmount;
+						}
 					}
 				}
 
@@ -1200,9 +1184,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    {
 		    if (!_disposed)
 		    {
-		        if (_depthArrayIndexData != null)
+		        if (_depthSliceBuffer != null)
 		        {
-		            _depthArrayIndexData.Dispose();
+		            _depthSliceBuffer.Dispose();
 		        }
 
 				if ((Image != null) && (Image != _original))
@@ -1227,7 +1211,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				    _swap.Dispose();
 			    }
 
-		        _depthArrayIndexData = null;
+		        _depthSliceBuffer = null;
 			    _swap = null;
 				Renderer = null;
 			    Image = null;
@@ -1254,8 +1238,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    {
 			    CompressBCImage(stream);
 		    }
-
-			_originalCodec = Codec;
 
 			// Make this image the original.
 		    if (_original == Image)
@@ -1287,7 +1269,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if ((codec != null) && (codec.IsReadable(stream)))
 				{
-					_originalCodec = _codec = codec;
+					_codec = codec;
 					return;
 				}
 			}
@@ -1300,7 +1282,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, EditorFile.FilePath));
 			}
 
-			_originalCodec = _codec = codec;
+			_codec = codec;
 		}
 
 	    /// <summary>
@@ -1322,6 +1304,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				FormatInformation = GorgonBufferFormatInfo.GetInfo(Image.Settings.Format);
 				return;
 		    }
+
+			// If we've previously loaded an image, and it's not the same as the original image,
+			// then get rid of it.
+			if ((Image != null)
+				&& (_original != null)
+				&& (Image != _original))
+			{
+				Image.Dispose();
+				Image = null;
+			}
 
 		    IImageSettings settings = Codec.GetMetaData(stream);
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(settings.Format);
@@ -1419,14 +1411,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 #endif
 
             // Create our depth/array index value for the shaders.
-            _depthArrayIndexData = Graphics.Buffers.CreateConstantBuffer("DepthArrayIndex",
+            _depthSliceBuffer = Graphics.Buffers.CreateConstantBuffer("DepthArrayIndex",
                                                                          new GorgonConstantBufferSettings
                                                                          {
                                                                              SizeInBytes = 16
                                                                          });
-            _depthArrayIndexData.Update(ref _depthArrayIndex);
+	        Vector4 depthSlice = Vector4.Zero;
+            _depthSliceBuffer.Update(ref depthSlice);
 
-            Graphics.Shaders.PixelShader.ConstantBuffers[1] = _depthArrayIndexData;
+            Graphics.Shaders.PixelShader.ConstantBuffers[1] = _depthSliceBuffer;
             
 
 	        _contentPanel.CreateResources();

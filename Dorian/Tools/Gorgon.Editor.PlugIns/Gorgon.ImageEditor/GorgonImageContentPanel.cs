@@ -61,7 +61,43 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the Click event of the buttonPrevDepthSlice control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonPrevDepthSlice_Click(object sender, EventArgs e)
+		{
+			_depthSlice--;
+
+			if (_depthSlice < 0)
+			{
+				_depthSlice = 0;
+			}
+
+			SetDepthSlice();
+			ValidateControls();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonNextDepthSlice control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonNextDepthSlice_Click(object sender, EventArgs e)
+		{
+			_depthSlice++;
+
+			if (_depthSlice >= _content.Depth)
+			{
+				_depthSlice = _content.Depth - 1;
+			}
+
+			SetDepthSlice();
+			ValidateControls();
+		}
+
+		/// <summary>
         /// Handles the Click event of the buttonPrevMipLevel control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -145,12 +181,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
                                            && (_arrayIndex < _content.ArrayCount - 1);
 
+	        buttonPrevDepthSlice.Enabled = _content.Depth > 1 && _depthSlice > 0;
+	        buttonNextDepthSlice.Enabled = _content.Depth > 1 && _depthSlice < _content.Depth - 1;
+
             // Volume textures don't have array indices.
 	        buttonPrevArrayIndex.Visible =
 		        buttonNextArrayIndex.Visible =
-		        sepArray.Visible = labelArrayIndex.Visible = _content.ImageType != ImageType.Image3D && _content.Codec != null && _content.Codec.SupportsArray;
+		        labelArrayIndex.Visible = _content.ImageType != ImageType.Image3D && _content.Codec != null && _content.Codec.SupportsArray;
 
 			buttonPrevMipLevel.Visible = buttonNextMipLevel.Visible = sepMip.Visible = labelMipLevel.Visible = _content.Codec != null && _content.Codec.SupportsMipMaps;
+
+	        buttonPrevDepthSlice.Visible = buttonNextDepthSlice.Visible = labelDepthSlice.Visible = _content.Codec != null && _content.Codec.SupportsDepth && _content.ImageType == ImageType.Image3D;
+
+	        sepArray.Visible = labelArrayIndex.Visible || labelDepthSlice.Visible;
         }
 
 		/// <summary>
@@ -206,6 +249,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					break;
 				case ImageType.Image3D:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture3D>("DisplayTexture", _content.Image);
+					SetDepthSlice();
 					break;
 			}
 
@@ -254,6 +298,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             return new RectangleF(location, imageSize);
         }
 
+		/// <summary>
+		/// Function to set the current depth slice.
+		/// </summary>
+	    private void SetDepthSlice()
+		{
+			_content.DepthSlice = _depthSlice;
+
+			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, _depthSlice + 1, _content.Depth);
+		}
+
         /// <summary>
         /// Function to retrieve the shader view for the texture.
         /// </summary>
@@ -299,7 +353,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			labelImageInfo.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_INFO_2D, 0, 0, BufferFormat.Unknown);
 		    labelMipLevel.Text = string.Format(Resources.GORIMG_TEXT_MIP_LEVEL, 0, 0, 0, 0);
 		    labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, 0, 0);
+			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, 0, 0);
 
+			buttonNextDepthSlice.Text = Resources.GORIMG_TEXT_NEXT_DEPTH;
+			buttonPrevDepthSlice.Text = Resources.GORIMG_TEXT_PREV_DEPTH;
 			buttonNextMipLevel.Text = Resources.GORIMG_TEXT_NEXT_MIP;
 			buttonPrevMipLevel.Text = Resources.GORIMG_TEXT_PREV_MIP;
 			buttonPrevArrayIndex.Text = Resources.GORIMG_TEXT_PREV_ARRAY;
