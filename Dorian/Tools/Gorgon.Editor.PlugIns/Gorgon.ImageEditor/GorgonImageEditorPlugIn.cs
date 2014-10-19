@@ -340,6 +340,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             return content;
         }
-        #endregion
-    }
+
+		/// <summary>
+		/// Property to return the content type for this image editor plug-in.
+		/// </summary>
+		public string ContentType
+		{
+			get
+			{
+				return Resources.GORIMG_CONTENT_TYPE;
+			}
+		}
+		#endregion
+	}
 }

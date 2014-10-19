@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
@@ -36,7 +38,7 @@ namespace GorgonLibrary.Editor
 	/// Metadata for a file contained within the file system.
 	/// </summary>
 	public class EditorFile
-		: INamedObject
+		: INamedObject, ICloneable<EditorFile>
 	{
 		#region Constants.
 		// The attribute containing the type of plug-in used to open the file.
@@ -87,23 +89,24 @@ namespace GorgonLibrary.Editor
 				}
 
 				_filePath = value;
+
+				Filename = Path.GetFileName(_filePath).FormatFileName();
 			}
 		}
 
+		/// <summary>
+		/// Property to return the file name for this file.
+		/// </summary>
+		public string Filename
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to set or return the fully qualified type name of the plug-in that can open this file.
 		/// </summary>
 		public string PlugInType
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of file.
-		/// </summary>
-		public string FileType
 		{
 			get;
 			set;
@@ -179,7 +182,6 @@ namespace GorgonLibrary.Editor
 			XAttribute filePathAttr = node.Attribute(EditorFilePathAttr);
 
 			string plugIn = string.Empty;
-			string fileType = string.Empty;
 
 			if ((filePathAttr == null)
 			    || (string.IsNullOrWhiteSpace(filePathAttr.Value)))
@@ -198,8 +200,7 @@ namespace GorgonLibrary.Editor
 			// Create our file.
 			var result = new EditorFile(filePath)
 			             {
-				             PlugInType = plugIn,
-				             FileType = fileType
+				             PlugInType = plugIn
 			             };
 
 			// Check for custom attributes.
@@ -263,6 +264,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			_filePath = filePath;
+			Filename = Path.GetFileName(_filePath).FormatFileName();
 			Attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			DependsOn = new DependencyCollection();
 		}
@@ -278,6 +280,30 @@ namespace GorgonLibrary.Editor
 			{
 				return _filePath;
 			}
+		}
+		#endregion
+
+		#region ICloneable<EditorFile> Members
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>
+		/// The cloned object.
+		/// </returns>
+		public EditorFile Clone()
+		{
+			var result = new EditorFile(_filePath)
+			             {
+				             DependsOn = DependsOn.Clone(),
+				             PlugInType = PlugInType
+			             };
+
+			foreach (KeyValuePair<string, string> attrib in Attributes)
+			{
+				result.Attributes[attrib.Key] = attrib.Value;
+			}
+
+			return result;
 		}
 		#endregion
 	}

@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor
 	/// A collection of dependency properties.
 	/// </summary>
 	public class DependencyPropertyCollection
-		: GorgonBaseNamedObjectCollection<DependencyProperty>
+		: GorgonBaseNamedObjectCollection<DependencyProperty>, ICloneable<DependencyPropertyCollection>
 	{
 		#region Constants.
 		/// <summary>
@@ -223,6 +223,26 @@ namespace GorgonLibrary.Editor
 			: base(true)
 		{
 			
+		}
+		#endregion
+
+		#region ICloneable<DependencyPropertyCollection> Members
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>
+		/// The cloned object.
+		/// </returns>
+		public DependencyPropertyCollection Clone()
+		{
+			var result = new DependencyPropertyCollection();
+
+			foreach (var property in this)
+			{
+				result.Add(property.Clone());
+			}
+
+			return result;
 		}
 		#endregion
 	}

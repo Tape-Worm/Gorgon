@@ -73,7 +73,6 @@
 			// 
 			// imageFileBrowser
 			// 
-			this.imageFileBrowser.DefaultExtension = "png";
 			this.imageFileBrowser.Filename = null;
 			this.imageFileBrowser.StartDirectory = null;
 			this.imageFileBrowser.Text = "Open Image";

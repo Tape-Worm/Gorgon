@@ -37,7 +37,7 @@ namespace GorgonLibrary.Editor
 	/// A collection of dependencies.
 	/// </summary>
 	public class DependencyCollection
-		: ICollection<Dependency>, ICollection
+		: ICollection<Dependency>, ICollection, ICloneable<DependencyCollection>
 	{
 		#region Value Types.
 		/// <summary>
@@ -283,7 +283,7 @@ namespace GorgonLibrary.Editor
 
 			foreach (Dependency dependency in dependencies)
 			{
-				var copy = new Dependency(dependency.EditorFile, dependency.Type);
+				var copy = dependency.Clone();
 				_dependencies.Add(new DependencyKey(copy), copy);
 			}
 		}
@@ -485,6 +485,23 @@ namespace GorgonLibrary.Editor
 			throw new NotSupportedException();
 		}
 		#endregion
+		#endregion
+
+		#region ICloneable<DependencyCollection> Members
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>
+		/// The cloned object.
+		/// </returns>
+		public DependencyCollection Clone()
+		{
+			var result = new DependencyCollection();
+
+			result.CopyFrom(this);
+
+			return result;
+		}
 		#endregion
 	}
 }

@@ -60,6 +60,7 @@ namespace GorgonLibrary.Editor
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
 	    private int _renameLock;					// Lock flag for renaming.
+	    private EditorFile _editorFile;				// The editor file for the content.
 		#endregion
 
         #region Properties.
@@ -87,8 +88,37 @@ namespace GorgonLibrary.Editor
 		[Browsable(false)]
 	    public EditorFile EditorFile
 	    {
-		    get;
-		    protected internal set;
+			get
+			{
+				return _editorFile;
+			}
+			protected internal set
+			{
+				if (value == null)
+				{
+					// Clean up any disposable objects attached to the dependencies for the file.
+					if ((_editorFile != null) && (_editorFile.DependsOn.Count > 0))
+					{
+						foreach (Dependency dependency in _editorFile.DependsOn)
+						{
+							var disposer = dependency.DependencyObject as IDisposable;
+
+							if (disposer == null)
+							{
+								continue;
+							}
+
+							disposer.Dispose();
+							dependency.DependencyObject = null;
+						}
+					}
+
+					_editorFile = null;
+					return;
+				}
+
+				_editorFile = value.Clone();
+			}
 	    }
 
 		/// <summary>
@@ -353,22 +383,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			NotifyPropertyChanged(propertyName, value);
-	    }
-
-		/// <summary>
-		/// Function called before the content is closed.
-		/// </summary>
-	    protected virtual void OnBeforeCloseContent()
-	    {
-		    
-	    }
-
-		/// <summary>
-		/// Function called after the content is closed.
-		/// </summary>
-	    protected virtual void OnAfterCloseContent()
-	    {
-		    
 	    }
 
 		/// <summary>

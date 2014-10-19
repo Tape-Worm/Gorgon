@@ -496,24 +496,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					imageFileBrowser.StartDirectory = GorgonFontEditorPlugIn.Settings.LastTextureImportPath;
 				}
 
-				imageFileBrowser.FileExtensions.Clear();
-				foreach (var extension in ImageEditor.FileExtensions)
-				{
-					imageFileBrowser.FileExtensions[extension.Extension] = extension;
-				}
-
-				imageFileBrowser.FileExtensions["*"] = new GorgonFileExtension("*", Resources.GORFNT_DLG_ALL_FILES);
+				imageFileBrowser.FileTypes.Clear();
+				imageFileBrowser.FileTypes.Add(ImageEditor.ContentType);
 
 				imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
-				imageFileBrowser.DefaultExtension = GorgonFontEditorPlugIn.Settings.LastTextureExtension;
 
 				if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 				{
-					EditorFile editorFile = null;
-					throw new Exception("Fix this so that the file dialog returns an array of EditorFiles instead of paths.");
 					// Don't load the same image.
 					if ((TextureBrushFile != null) &&
-						(string.Equals(TextureBrushFile.FilePath, imageFileBrowser.Files[0].FullPath)))
+						(string.Equals(TextureBrushFile.FilePath, imageFileBrowser.Files[0].FilePath)))
 					{
 						return;
 					}
@@ -521,9 +513,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					Cursor.Current = Cursors.WaitCursor;
 
 					// Load the image.
-					using (Stream stream = imageFileBrowser.Files[0].OpenStream(false))
+					using (Stream stream = imageFileBrowser.OpenFile())
 					{
-						using (IImageEditorContent imageContent = ImageEditor.ImportContent(editorFile, stream))
+						using (IImageEditorContent imageContent = ImageEditor.ImportContent(imageFileBrowser.Files[0], stream))
 						{
 							if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 							{
@@ -537,7 +529,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 							    && (imageContent.Image.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal_sRGB))
 							{
 								GorgonDialogs.ErrorBox(ParentForm,
-								                       string.Format(Resources.GORFNT_BRUSH_IMAGE_WRONG_FORMAT, imageFileBrowser.Files[0].Name, imageContent.Image.Settings.Format));
+								                       string.Format(Resources.GORFNT_BRUSH_IMAGE_WRONG_FORMAT, imageFileBrowser.Files[0].Filename, imageContent.Image.Settings.Format));
 								return;
 							}
 
@@ -560,19 +552,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 							// Function to retrieve the transformation and node point values from the image.
 							InitializeClipper(_texture, new RectangleF(0, 0, settings.Width, settings.Height));
-
-							// TODO: Don't miss this one.
-							TextureBrushFile = null;//imageFileBrowser.Files[0].FullPath;
+							
+							TextureBrushFile = imageFileBrowser.Files[0];
 
 							OnBrushChanged();
 						}
 					}
 
-					GorgonFontEditorPlugIn.Settings.LastTextureImportPath = imageFileBrowser.Files[0].Directory.FullPath;
+					GorgonFontEditorPlugIn.Settings.LastTextureImportPath = Path.GetDirectoryName(imageFileBrowser.Files[0].FilePath).FormatDirectory('/');
 				}
 
 				GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
-				GorgonFontEditorPlugIn.Settings.LastTextureExtension = imageFileBrowser.DefaultExtension;
 			}
 			catch (Exception ex)
 			{

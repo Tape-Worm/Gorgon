@@ -108,6 +108,14 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Function called after content is persisted.
+		/// </summary>
+		private void ContentSaved()
+		{
+			
+		}
+
+		/// <summary>
 		/// Handles the CheckedChanged event of the buttonShowAll control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -892,16 +900,15 @@ namespace GorgonLibrary.Editor
 			                                                ContentManagement.Current.Name),
 			                                  null,
 			                                  true);
-
-			if (result != ConfirmationResult.Yes)
+			switch (result)
 			{
-				return result;
+				case ConfirmationResult.Yes:
+					ContentManagement.Save(CurrentOpenFile);
+					FileManagement.FileChanged = true;
+					return result;
+				default:
+					return result;
 			}
-
-			ContentManagement.Save(CurrentOpenFile);
-			FileManagement.FileChanged = true;
-
-			return result;
 		}
         
         /// <summary>
@@ -1162,6 +1169,7 @@ namespace GorgonLibrary.Editor
 
 			if (currentNode != null)
 			{
+				currentNode.UpdateFile(CurrentOpenFile);
 				GetDependencyNodes(currentNode);
 			}
 			
@@ -1381,6 +1389,7 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentInitializedAction = null;
 				ContentManagement.OnGetDependency = null;
 				ContentManagement.DependencyNotFound = null;
+				ContentManagement.ContentSaved = null;
 
 
                 // Unhook from file management functionality.
@@ -2543,6 +2552,13 @@ namespace GorgonLibrary.Editor
 
 			if (!isCopy)
 			{
+				// If we have the content open for editing, then rename the copy of the file.
+				if ((ContentManagement.Current != null) && (ContentManagement.Current.EditorFile != null)
+				    && (string.Equals(file.FilePath, ContentManagement.Current.EditorFile.FilePath, StringComparison.OrdinalIgnoreCase)))
+				{
+					ContentManagement.Current.EditorFile.Rename(destFile);
+				}
+
 				file.Rename(destFile);
 				EditorMetaDataFile.Files[sourceFile] = file;
 
@@ -3265,6 +3281,8 @@ namespace GorgonLibrary.Editor
 
 			ContentManagement.ContentRenamed = ContentNamePropertyChanged;
 			ContentManagement.ContentPropertyStateChanged = () => propertyItem.Refresh();
+
+			ContentManagement.ContentSaved = ContentSaved;
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

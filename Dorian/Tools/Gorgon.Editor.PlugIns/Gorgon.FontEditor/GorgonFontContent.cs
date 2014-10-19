@@ -667,18 +667,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	                }
 
 					// Remove any externally linked dependencies.
-	                foreach (Dependency dependency in EditorFile.DependsOn)
-	                {
-		                var disposable = dependency.DependencyObject as IDisposable;
-
-		                if (disposable == null)
-		                {
-			                continue;
-		                }
-
-		                disposable.Dispose();
-		                dependency.DependencyObject = null;
-	                }
+	                EditorFile = null;
 					
                     if (Font != null)
                     {

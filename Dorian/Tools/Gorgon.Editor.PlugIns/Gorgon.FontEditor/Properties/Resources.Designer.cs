@@ -439,15 +439,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All files (*.*).
-        /// </summary>
-        internal static string GORFNT_DLG_ALL_FILES {
-            get {
-                return ResourceManager.GetString("GORFNT_DLG_ALL_FILES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select a background color for the preview text.
         /// </summary>
         internal static string GORFNT_DLG_BACKGROUND_COLOR_CAPTION {

@@ -1210,6 +1210,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					Image.Dispose();
 				}
 
+			    EditorFile = null;
+
 				if (_original != null)
 			    {
 				    _original.Dispose();

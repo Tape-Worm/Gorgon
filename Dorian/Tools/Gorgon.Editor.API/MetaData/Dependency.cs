@@ -34,8 +34,8 @@ namespace GorgonLibrary.Editor
     /// A dependency for content files.
     /// </summary>
 	public class Dependency
-		: INamedObject
-	{
+		: INamedObject, ICloneable<Dependency>
+    {
 		#region Constants.
 		private const string DependencyTypeAttr = "Type";			// Type attribute for the dependency type.
 		private const string DependencyPathNode = "Path";			// Path node for the dependency path.
@@ -183,6 +183,23 @@ namespace GorgonLibrary.Editor
 			{
 				return EditorFile.FilePath;
 			}
+		}
+		#endregion
+
+		#region ICloneable<Dependency> Members
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>
+		/// The cloned object.
+		/// </returns>
+		public Dependency Clone()
+		{
+			return new Dependency(EditorFile, Type)
+			       {
+				       Properties = Properties.Clone(),
+					   DependencyObject = DependencyObject
+			       };
 		}
 		#endregion
 	}

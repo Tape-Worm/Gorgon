@@ -35,6 +35,14 @@ namespace GorgonLibrary.Editor
 	/// <remarks>All image editing plug-ins must implement this on their plug-in entry objects.</remarks>
     public interface IImageEditorPlugIn
     {
+		/// <summary>
+		/// Property to return the content type for this image editor plug-in.
+		/// </summary>
+		string ContentType
+		{
+			get;
+		}
+
         /// <summary>
         /// Property to return the name of the image editor plug-in.
         /// </summary>
