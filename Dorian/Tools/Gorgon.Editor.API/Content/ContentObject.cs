@@ -54,13 +54,13 @@ namespace GorgonLibrary.Editor
         public const string GorgonRawInputTypeName = "GorgonLibrary.Input.GorgonRawPlugIn";
         #endregion
 
-        #region Variables.
-        private GorgonInputFactory _input;          // Raw input interface.
-        private string _name = "Content";			// Name of the content.
-	    private bool _disposed;						// Flag to indicate that the object was disposed.
-	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
-	    private int _renameLock;					// Lock flag for renaming.
-	    private EditorFile _editorFile;				// The editor file for the content.
+		#region Variables.
+		private GorgonInputFactory _input;									// Raw input interface.
+        private string _name = "Content";									// Name of the content.
+	    private bool _disposed;												// Flag to indicate that the object was disposed.
+	    private bool _isOwned;												// Flag to indicate that this content is linked to another piece of content.
+	    private int _renameLock;											// Lock flag for renaming.
+	    private EditorFile _editorFile;										// The editor file for the content.
 		#endregion
 
         #region Properties.
@@ -83,6 +83,17 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Property to return the list of working dependencies for the content.
+		/// </summary>
+		/// <remarks>Whenever dependencies need to be updated for content, this is the collection that must be used.</remarks>
+		[Browsable(false)]
+	    public ContentDependencies Dependencies
+	    {
+		    get;
+		    private set;
+	    }
+
+		/// <summary>
 		/// Property to return the editor file associated with this content.
 		/// </summary>
 		[Browsable(false)]
@@ -94,30 +105,20 @@ namespace GorgonLibrary.Editor
 			}
 			protected internal set
 			{
-				if (value == null)
+				Dependencies.Clear();
+
+				_editorFile = value;
+
+				if (_editorFile == null)
 				{
-					// Clean up any disposable objects attached to the dependencies for the file.
-					if ((_editorFile != null) && (_editorFile.DependsOn.Count > 0))
-					{
-						foreach (Dependency dependency in _editorFile.DependsOn)
-						{
-							var disposer = dependency.DependencyObject as IDisposable;
-
-							if (disposer == null)
-							{
-								continue;
-							}
-
-							disposer.Dispose();
-							dependency.DependencyObject = null;
-						}
-					}
-
-					_editorFile = null;
 					return;
 				}
 
-				_editorFile = value.Clone();
+				// Add existing dependencies.
+				foreach (Dependency dependency in _editorFile.DependsOn)
+				{
+					Dependencies.Add(dependency.Clone());
+				}
 			}
 	    }
 
@@ -386,6 +387,24 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Function to finalize the dependency list to the file.
+		/// </summary>
+	    internal void CommitDependencies()
+	    {
+			if (EditorFile == null)
+			{
+				return;
+			}
+
+			EditorFile.DependsOn.Clear();
+
+			foreach (Dependency dependency in Dependencies)
+			{
+				EditorFile.DependsOn[dependency.EditorFile, dependency.Type] = dependency;
+			}
+	    }
+
+		/// <summary>
 		/// Function to retrieve the registered image editor for the system.
 		/// </summary>
 		/// <param name="defaultEditor">The name of the default image editor.</param>
@@ -509,7 +528,7 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
-        /// <summary>
+		/// <summary>
         /// Function to determine if a content property is available to the UI.
         /// </summary>
         /// <param name="propertyName">The name of the property to look up.</param>
@@ -630,6 +649,7 @@ namespace GorgonLibrary.Editor
 		{
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
+			Dependencies = new ContentDependencies();
 
 			if (settings == null)
 			{
@@ -665,15 +685,20 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-		    if (_input != null)
-		    {
-		        _input.Dispose();
-		    }
-
-			if ((ContentControl != null)
-				&& (!ContentControl.IsDisposed))
+			if (disposing)
 			{
-				ContentControl.Dispose();
+				Dependencies.Clear();
+
+				if (_input != null)
+				{
+					_input.Dispose();
+				}
+
+				if ((ContentControl != null)
+				    && (!ContentControl.IsDisposed))
+				{
+					ContentControl.Dispose();
+				}
 			}
 
 			_disposed = true;

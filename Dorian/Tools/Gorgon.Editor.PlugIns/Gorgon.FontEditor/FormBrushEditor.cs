@@ -106,7 +106,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the texture brush path.
 		/// </summary>
-	    public EditorFile TextureBrushPath
+	    public EditorFile TextureBrushFile
 	    {
 			get
 			{

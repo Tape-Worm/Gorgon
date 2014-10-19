@@ -108,14 +108,6 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
-		/// Function called after content is persisted.
-		/// </summary>
-		private void ContentSaved()
-		{
-			
-		}
-
-		/// <summary>
 		/// Handles the CheckedChanged event of the buttonShowAll control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1389,7 +1381,6 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentInitializedAction = null;
 				ContentManagement.OnGetDependency = null;
 				ContentManagement.DependencyNotFound = null;
-				ContentManagement.ContentSaved = null;
 
 
                 // Unhook from file management functionality.
@@ -3281,8 +3272,6 @@ namespace GorgonLibrary.Editor
 
 			ContentManagement.ContentRenamed = ContentNamePropertyChanged;
 			ContentManagement.ContentPropertyStateChanged = () => propertyItem.Refresh();
-
-			ContentManagement.ContentSaved = ContentSaved;
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

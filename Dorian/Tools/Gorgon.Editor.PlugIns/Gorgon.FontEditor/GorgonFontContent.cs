@@ -555,7 +555,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             get 
             {
-                return "Gorgon Font";
+                return Resources.GORFNT_CONTENT_TYPE;
             }
         }		
 
@@ -845,7 +845,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					                                string.Format(Resources.GORFNT_ERR_IMAGE_NOT_2D, dependency.EditorFile.FilePath));
 				}
 
-				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.EditorFile.FilePath, imageContent.Image);
+				if (!Dependencies.Contains(dependency.EditorFile, dependency.Type))
+				{
+					Dependencies[dependency.EditorFile, dependency.Type] = dependency.Clone();
+				}
+
+				Dependencies.CacheDependencyObject(dependency.EditorFile,
+				                                   dependency.Type,
+				                                   Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.EditorFile.FilePath, imageContent.Image));
 
 				return new DependencyLoadResult(DependencyLoadState.Successful, null);
 			}

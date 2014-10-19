@@ -66,15 +66,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property set or return the object that was created because of this dependency.
-		/// </summary>
-		public object DependencyObject
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to return the file that has the dependency.
 		/// </summary>
 	    public EditorFile EditorFile
@@ -197,8 +188,7 @@ namespace GorgonLibrary.Editor
 		{
 			return new Dependency(EditorFile, Type)
 			       {
-				       Properties = Properties.Clone(),
-					   DependencyObject = DependencyObject
+				       Properties = Properties.Clone()
 			       };
 		}
 		#endregion

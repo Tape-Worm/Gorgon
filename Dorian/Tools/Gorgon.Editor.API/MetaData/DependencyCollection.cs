@@ -206,7 +206,7 @@ namespace GorgonLibrary.Editor
 			{
 				return _dependencies[new DependencyKey(file, type)];
 			}
-			set
+			internal set
 			{
 				var key = new DependencyKey(file, type);
 				bool hasItem = _dependencies.ContainsKey(key);
@@ -286,6 +286,43 @@ namespace GorgonLibrary.Editor
 				var copy = dependency.Clone();
 				_dependencies.Add(new DependencyKey(copy), copy);
 			}
+		}
+
+		/// <summary>
+		/// Function to clear the dependency list.
+		/// </summary>
+		internal void Clear()
+		{
+			_dependencies.Clear();
+		}
+
+		/// <summary>
+		/// Function to try and retrieve a dependency with the specified file and type.
+		/// </summary>
+		/// <param name="file">Editor file for the dependency.</param>
+		/// <param name="type">Type of dependency.</param>
+		/// <param name="value">The dependency, if found.  NULL (Nothing in VB.Net) if not.</param>
+		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> or the <paramref name="type"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="type"/> parameter is empty.</exception>
+		public bool TryGetValue(EditorFile file, string type, out Dependency value)
+		{
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+			if (type == null)
+			{
+				throw new ArgumentNullException("type");
+			}
+
+			if (string.IsNullOrWhiteSpace(type))
+			{
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+			}
+
+			return _dependencies.TryGetValue(new DependencyKey(file, type), out value);
 		}
 
 		/// <summary>
