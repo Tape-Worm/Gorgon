@@ -127,9 +127,6 @@
   <data name="GORFNT_TEXT_SIZE" xml:space="preserve">
     <value>Size</value>
   </data>
-  <data name="GORFNT_DLG_ALL_FILES" xml:space="preserve">
-    <value>All files (*.*)</value>
-  </data>
   <data name="GORFNT_TEXT_CURSOR_POSITION" xml:space="preserve">
     <value>Cursor position</value>
   </data>

@@ -173,42 +173,86 @@ namespace GorgonLibrary.Editor
 			}
 			#endregion
 		}
+
+		/// <summary>
+		/// A comparer for file dialog entries.
+		/// </summary>
+		private class DialogFileEntryEqualityComparer
+			: IEqualityComparer<DialogFileEntry>
+		{
+			#region IEqualityComparer<DialogFileEntry> Members
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
+			/// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			public bool Equals(DialogFileEntry x, DialogFileEntry y)
+			{
+				return x.File == y.File || string.Equals(x.File.FilePath, y.File.FilePath, StringComparison.OrdinalIgnoreCase);
+			}
+
+			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <param name="obj">The object.</param>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public int GetHashCode(DialogFileEntry obj)
+			{
+				return obj.GetHashCode();
+			}
+			#endregion
+		}
 		#endregion
 
 		#region Value Types.
 		/// <summary>
-		/// An item for the filter combo.
+		/// A file system entry for the dialog.
 		/// </summary>
-		private struct FilterItem
+		private struct DialogFileEntry
 		{
-			private readonly string _description;			// Description of the extension.
-
 			/// <summary>
-			/// The extension for the filter.
+			/// Editor file for this entry.
 			/// </summary>
-			public readonly IEnumerable<GorgonFileExtension> Extensions;
+			public readonly EditorFile File;
+			/// <summary>
+			/// Physical file for the dialog file entry.
+			/// </summary>
+			public readonly GorgonFileSystemFileEntry PhysicalFile;
+			/// <summary>
+			/// Date/time of file creation.
+			/// </summary>
+			public readonly DateTime CreateDate;
+			/// <summary>
+			/// Size of the file, in bytes.
+			/// </summary>
+			public readonly long Size;
 
 			/// <summary>
-			/// Returns a <see cref="System.String" /> that represents this instance.
+			/// Returns a hash code for this instance.
 			/// </summary>
 			/// <returns>
-			/// A <see cref="System.String" /> that represents this instance.
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
 			/// </returns>
-			public override string ToString()
+			public override int GetHashCode()
 			{
-				return _description;
+				return File == null ? 0 : File.FilePath.GetHashCode();
 			}
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="FilterItem"/> struct.
+			/// Initializes a new instance of the <see cref="DialogFileEntry"/> struct.
 			/// </summary>
-			/// <param name="extensions">The extensions.</param>
-			public FilterItem(IEnumerable<GorgonFileExtension> extensions)
+			/// <param name="entry">The file system entry to evaluate.</param>
+			public DialogFileEntry(GorgonFileSystemFileEntry entry)
 			{
-				// ReSharper disable PossibleMultipleEnumeration
-				Extensions = extensions;
-				_description = extensions.FirstOrDefault().Description;
-				// ReSharper restore PossibleMultipleEnumeration
+				PhysicalFile = entry;
+				File = EditorMetaDataFile.Files[entry.FullPath];
+				Size = entry.Size;
+				CreateDate = entry.CreateDate;
 			}
 		}
 		#endregion
@@ -246,16 +290,25 @@ namespace GorgonLibrary.Editor
 		private int _fillTreeLock;																		// Lock used to keep the call to fill the tree from being re-entrant.
 		private SortOrder _sort = SortOrder.Ascending;													// Current sort direction.
 		private SortColumn _currentSortColumn = SortColumn.Name;										// Currently sorted column.
-		private readonly GorgonFileExtensionCollection _fileExtensions;									// The list of file extensions to filter.
-		private readonly HashSet<GorgonFileSystemFileEntry> _thumbNailFiles;							// Thumbnails awaiting loading.
+		private readonly IList<string> _fileTypes;														// The list of file types to filter.
+		private readonly HashSet<DialogFileEntry> _thumbNailFiles;										// Thumbnails awaiting loading.
 		private CancellationTokenSource _cancelSource;													// Cancellation source.
 		private readonly List<GorgonFileSystemDirectory> _paths = new List<GorgonFileSystemDirectory>();// The selected paths.
 		private Size _thumbNailSize;																	// Thumbnail size.
 		private int _pathIndex;																			// The current path index.
-		private readonly List<GorgonFileSystemFileEntry> _selectedFiles;								// The list of selected files.
+		private readonly List<DialogFileEntry> _selectedFiles;											// The list of selected files.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the default file type to use.
+		/// </summary>
+		public string DefaultFileType
+		{
+			get;
+			set;
+		}
+
         /// <summary>
         /// Property to set or return the default file name.
         /// </summary>
@@ -272,15 +325,6 @@ namespace GorgonLibrary.Editor
 		{
 		    get;
 		    set;
-		}
-
-		/// <summary>
-		/// Property to set or return the default extension.
-		/// </summary>
-		public string DefaultExtension
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -510,7 +554,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="files">File entries used to populate the list view.</param>
 		/// <param name="doNotClear">TRUE to disable the clearing of items in the list, FALSE to clear the items in the list.</param>
-		private void FillListView(IEnumerable<GorgonFileSystemFileEntry> files, bool doNotClear)
+		private void FillListView(IEnumerable<DialogFileEntry> files, bool doNotClear)
 		{
 			if (!doNotClear)
 			{
@@ -525,19 +569,19 @@ namespace GorgonLibrary.Editor
 				// Add to the list view.
 				foreach (var file in files)
 				{
-					var item = new ListViewItem(file.Name)
+					var item = new ListViewItem(file.File.Filename)
 					           {
-						           Name = file.FullPath,
+						           Name = file.File.FilePath,
 						           ImageKey = @"unknown_file",
 						           Tag = file
 					           };
 
 					// Add the files in this directory to the auto complete of the filename textbox.
-					comboFile.AutoCompleteCustomSource.Add(file.Name);
+					comboFile.AutoCompleteCustomSource.Add(file.File.Filename);
 
 					if (CurrentView != FileViews.Large)
 					{
-						using (ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension))
+						using (ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.File))
 						{
 							if (plugIn != null)
 							{
@@ -554,7 +598,7 @@ namespace GorgonLibrary.Editor
 						if (panelSearchLabel.Visible)
 						{
 							listFiles.ShowItemToolTips = true;
-							item.ToolTipText = file.FullPath;
+							item.ToolTipText = file.File.FilePath;
 						}
 						else
 						{
@@ -566,10 +610,10 @@ namespace GorgonLibrary.Editor
 						// and fill in the list view item image when the thumbnail creation is complete.
 						// This thread will run for a maximum of 10 minutes.  If all thumbnails are not generated in that time,
 						// then they will be generated on the next refresh (as they'll still be in the queue).
-						if (imagesFilesLarge.Images.ContainsKey(file.FullPath))
+						if (imagesFilesLarge.Images.ContainsKey(file.File.FilePath))
 						{
 							// We already loaded this guy, so let's not add it to the queue.
-							item.ImageKey = file.FullPath;
+							item.ImageKey = file.File.FilePath;
 						}
 						else
 						{
@@ -631,8 +675,6 @@ namespace GorgonLibrary.Editor
 		        rootDirectory = _rootDirectory.Directory;
 	        }
 
-	        var files = ScratchArea.ScratchFiles.FindFiles(rootDirectory.FullPath, textSearch.Text, true);
-
 			// Turn off the tree.
 			splitFiles.Panel1Collapsed = true;
 			panelSearchLabel.Visible = true;
@@ -642,7 +684,7 @@ namespace GorgonLibrary.Editor
             ClearThumbNailCache();
 
 			// Sort and filter our files.
-		    files = GetSortedFiles(files);
+		    IEnumerable<DialogFileEntry> files = GetSortedFiles(ScratchArea.ScratchFiles.FindFiles(rootDirectory.FullPath, textSearch.Text, true));
 			FillListView(files, false);
 
 	        if (listFiles.Items.Count == 0)
@@ -851,8 +893,8 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				var currentFiles = (from ListViewItem item in listFiles.SelectedItems select item.Tag)
-					.OfType<GorgonFileSystemFileEntry>()
-					.Select(fileEntry => !panelSearchLabel.Visible ? fileEntry.Name : fileEntry.FullPath)
+					.OfType<DialogFileEntry>()
+					.Select(fileEntry => !panelSearchLabel.Visible ? fileEntry.File.Filename : fileEntry.File.FilePath)
 					.ToArray();
 
 				var fileText = new StringBuilder(512);
@@ -922,14 +964,9 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				var file = item.Item.Tag as GorgonFileSystemFileEntry;
+				var file = (DialogFileEntry)item.Item.Tag;
 
-				if (file == null)
-				{
-					return;
-				}
-
-				comboFile.Text = !panelSearchLabel.Visible ? file.Name : file.FullPath;
+				comboFile.Text = !panelSearchLabel.Visible ? file.File.Filename : file.File.FilePath;
 
 				buttonOK.PerformClick();
 			}
@@ -1274,28 +1311,29 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="directoryFiles">Directory containing the files.</param>
 		/// <returns>A sorted list of files.</returns>
-		private IEnumerable<GorgonFileSystemFileEntry> GetSortedFiles(IEnumerable<GorgonFileSystemFileEntry> directoryFiles)
+		private IEnumerable<DialogFileEntry> GetSortedFiles(IEnumerable<GorgonFileSystemFileEntry> directoryFiles)
 		{
-			GorgonFileExtension[] extension = null;
+			string fileType = string.Empty;
+			var editorFileList = from file in directoryFiles
+			                     where EditorMetaDataFile.Files.Contains(file.FullPath)
+			                     select new DialogFileEntry(file);
 
 			if (!panelSearchLabel.Visible)
 			{
 				if (comboFilters.SelectedItem != null)
 				{
-					extension = ((FilterItem)comboFilters.SelectedItem).Extensions.ToArray();
+					fileType = comboFilters.SelectedItem.ToString();
 				}
 
-				// If we select all files, the just use the default.
-				if ((extension != null) && (extension[0].Equals("*")))
+				// Apply file type filter.
+				if ((!string.IsNullOrWhiteSpace(fileType))
+				    && (!string.Equals(fileType, APIResources.GOREDIT_TEXT_ALL_FILES, StringComparison.CurrentCultureIgnoreCase)))
 				{
-					extension = null;
+					editorFileList = from file in editorFileList
+					                 where file.File.Attributes.ContainsKey("Type")
+					                       && string.Equals(file.File.Attributes["Type"], fileType, StringComparison.CurrentCultureIgnoreCase)
+					                 select file;
 				}
-
-				// Filter the files.
-				directoryFiles = directoryFiles.Where(item => EditorMetaDataFile.Files.Contains(item.FullPath)
-				                                              && ((extension == null)
-				                                                  || (extension.Any(ext =>
-				                                                                    ext.Equals(item.Extension)))));
 			}
 
 			if (listFiles.View == View.Details)
@@ -1306,12 +1344,12 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in directoryFiles
-								       orderby file.Name.ToLower(CultureInfo.CurrentUICulture)
+								return from file in editorFileList
+								       orderby file.File.Filename.ToLower(CultureInfo.CurrentUICulture)
 								       select file;
 							case SortOrder.Descending:
-								return from file in directoryFiles
-								       orderby file.Name.ToLower(CultureInfo.CurrentUICulture) descending
+								return from file in editorFileList
+									   orderby file.File.Filename.ToLower(CultureInfo.CurrentUICulture) descending
 								       select file;
 						}
 						break;
@@ -1319,11 +1357,11 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in directoryFiles
+								return from file in editorFileList
 								       orderby file.CreateDate
 								       select file;
 							case SortOrder.Descending:
-								return from file in directoryFiles
+								return from file in editorFileList
 								       orderby file.CreateDate descending
 								       select file;
 						}
@@ -1332,11 +1370,11 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in directoryFiles
+								return from file in editorFileList
 								       orderby file.Size
 								       select file;
 							case SortOrder.Descending:
-								return from file in directoryFiles
+								return from file in editorFileList
 								       orderby file.Size descending
 								       select file;
 						}
@@ -1345,10 +1383,10 @@ namespace GorgonLibrary.Editor
 			}
 			else
 			{
-				return directoryFiles.OrderBy(item => item.Name.ToLower(CultureInfo.CurrentUICulture));
+				return editorFileList.OrderBy(item => item.File.Filename.ToLower(CultureInfo.CurrentUICulture));
 			}
 
-			return directoryFiles;
+			return editorFileList;
 		}
 
 		/// <summary>
@@ -1356,18 +1394,15 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File that holds the content.</param>
 		/// <returns>The thumbnail bitmap for the content.</returns>
-		private Image GetContentThumbNail(GorgonFileSystemFileEntry file)
+		private Image GetContentThumbNail(DialogFileEntry file)
 		{
 			// If we have this open in the editor, then use that so we get unsaved changes as well.
-			if ((ScratchArea.CurrentOpenFile == file) && (ContentManagement.Current != null))
+			if ((ScratchArea.CurrentOpenFile == file.PhysicalFile) && (ContentManagement.Current != null))
 			{
 				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
 			}
 
-			EditorFile editorFile;
-			EditorMetaDataFile.Files.TryGetValue(file.FullPath, out editorFile);
-
-			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(editorFile);
+			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.File);
 
 			if (plugIn == null)
 			{
@@ -1375,7 +1410,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			ContentSettings settings = plugIn.GetContentSettings();
-			settings.Name = file.Name;
+			settings.Name = file.File.Filename;
 			settings.CreateContent = false;
 
 			// We need to load the content so we can generate a thumbnail (or retrieve the cached version).
@@ -1387,9 +1422,9 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Bind to the editor file information.
-				content.EditorFile = editorFile;
+				content.EditorFile = file.File;
 
-				using (Stream contentStream = file.OpenStream(false))
+				using (Stream contentStream = file.PhysicalFile.OpenStream(false))
 				{
 					content.Read(contentStream);
 				}
@@ -1401,7 +1436,7 @@ namespace GorgonLibrary.Editor
 					// If the image isn't the correct size then we need to rescale it.
 					if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
 					{
-						return result;
+						return (Image)result.Clone();
 					}
 
 					scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
@@ -1444,7 +1479,7 @@ namespace GorgonLibrary.Editor
 			// Get the first item that needs a thumbnail.
 			while ((_thumbNailFiles.Count > 0) && (!_cancelSource.Token.IsCancellationRequested))
 			{
-				GorgonFileSystemFileEntry item = _thumbNailFiles.First();
+				DialogFileEntry item = _thumbNailFiles.First();
 
 				try
 				{
@@ -1477,16 +1512,16 @@ namespace GorgonLibrary.Editor
 
 								                         _thumbNailFiles.Remove(item);
 
-								                         if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
+								                         if (!imagesFilesLarge.Images.ContainsKey(item.File.FilePath))
 								                         {
-									                         imagesFilesLarge.Images.Add(item.FullPath, thumbNail);
+									                         imagesFilesLarge.Images.Add(item.File.FilePath, thumbNail);
 								                         }
 
 								                         // If the list view no longer contains this item, then we should dump it.
 								                         // It'll still be cached in our image list for later.
-								                         if (listFiles.Items.ContainsKey(item.FullPath))
+								                         if (listFiles.Items.ContainsKey(item.File.FilePath))
 								                         {
-									                         listFiles.Items[item.FullPath].ImageKey = item.FullPath;
+									                         listFiles.Items[item.File.FilePath].ImageKey = item.File.FilePath;
 								                         }
 							                         }));
 						}
@@ -1506,17 +1541,17 @@ namespace GorgonLibrary.Editor
 						                         {
 #if DEBUG
 							                         GorgonDialogs.ErrorBox(this, string.Format(APIResources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
-							                                                              item.FullPath), null, ex);
+							                                                              item.File.FilePath), null, ex);
 #endif
 
-													 if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
+													 if (!imagesFilesLarge.Images.ContainsKey(item.File.FilePath))
 													 {
-														 imagesFilesLarge.Images.Add(item.FullPath, (Bitmap)APIResources.image_missing_128x128.Clone());
+														 imagesFilesLarge.Images.Add(item.File.FilePath, (Bitmap)APIResources.image_missing_128x128.Clone());
 													 }
 
-							                         if (listFiles.Items.ContainsKey(item.FullPath))
+													 if (listFiles.Items.ContainsKey(item.File.FilePath))
 							                         {
-								                         listFiles.Items[item.FullPath].ImageKey = item.FullPath;
+														 listFiles.Items[item.File.FilePath].ImageKey = item.File.FilePath;
 							                         }
 						                         }));
 					}
@@ -1585,7 +1620,7 @@ namespace GorgonLibrary.Editor
 					listFiles.Items.Add(item);
 				}
 
-				IEnumerable<GorgonFileSystemFileEntry> sortedFiles = GetSortedFiles(directory.Files);
+				IEnumerable<DialogFileEntry> sortedFiles = GetSortedFiles(directory.Files);
 
 				// If we have over 256 large images cached, then clear the cache.
                 ClearThumbNailCache();
@@ -1622,7 +1657,7 @@ namespace GorgonLibrary.Editor
 
 			comboFilters.SelectedIndexChanged -= comboFilters_SelectedIndexChanged;
 			
-			if (_fileExtensions.Count == 0)
+			if (_fileTypes.Count == 0)
 			{
 				panelFilters.Visible = false;
 				return;
@@ -1637,36 +1672,22 @@ namespace GorgonLibrary.Editor
 				{
 					panelFilters.Visible = true;
 
-					var filterGroups = _fileExtensions.GroupBy(item => item.Description, StringComparer.OrdinalIgnoreCase);
-
 					// Add extensions to the list.
-					foreach (var filterGroup in filterGroups)
+					foreach (string filter in _fileTypes)
 					{
-						var filter = new FilterItem(filterGroup);
 						comboFilters.Items.Add(filter);
 
-						if (string.IsNullOrWhiteSpace(DefaultExtension))
+						if (string.Equals(filter, DefaultFileType, StringComparison.CurrentCultureIgnoreCase))
 						{
-							continue;
+							comboFilters.Text = filter;
 						}
-						
-						// Capture the default extension.
-						var currentFilter = filter.Extensions.FirstOrDefault(item =>
-						                                                     string.Equals(item.Extension,
-						                                                                   DefaultExtension,
-						                                                                   StringComparison.InvariantCultureIgnoreCase));
-
-						if (!string.IsNullOrWhiteSpace(currentFilter.Extension))
-						{
-							comboFilters.Text = currentFilter.Description;
-						}
-
-						// Determine maximum combo box drop down width.
-						maxWidth = filterGroup.Aggregate(maxWidth,
-						                            (current, groupExtension) =>
-						                            current.Max(TextRenderer.MeasureText(g, groupExtension.Description, comboFilters.Font)
-						                                                    .Width));
 					}
+					
+					// Determine maximum combo box drop down width.
+					maxWidth = _fileTypes.Aggregate(maxWidth,
+					                                (current, fileType) =>
+					                                current.Max(TextRenderer.MeasureText(g, fileType, comboFilters.Font)
+					                                                        .Width));
 
 					comboFilters.DropDownWidth = maxWidth.Max(comboFilters.Width);
 
@@ -1740,12 +1761,11 @@ namespace GorgonLibrary.Editor
 					{
 						string selectedFileName = file;
 
-						directoryName = (from item in listFiles.Items.Cast<ListViewItem>()
-						                    let filterFile = item.Tag as GorgonFileSystemFileEntry
-						                    where filterFile != null &&
-							                    (string.Equals(filterFile.Name, fileName, StringComparison.OrdinalIgnoreCase)
-							                     || string.Equals(filterFile.FullPath, selectedFileName, StringComparison.OrdinalIgnoreCase))
-						                    select filterFile.Directory.FullPath).FirstOrDefault();
+						directoryName = (from item in listFiles.Items.Cast<ListViewItem>() where item.Tag is DialogFileEntry select item.Tag)
+							.OfType<DialogFileEntry>()
+							.Where(item => (string.Equals(item.File.Filename, fileName, StringComparison.OrdinalIgnoreCase)
+							                || string.Equals(item.File.FilePath, selectedFileName, StringComparison.OrdinalIgnoreCase)))
+							.Select(item => item.PhysicalFile.Directory.FullPath).FirstOrDefault();
 
 						// If we can't find the directory, then default to the root.
 						if (string.IsNullOrWhiteSpace(directoryName))
@@ -1763,16 +1783,16 @@ namespace GorgonLibrary.Editor
 					return false;
 				}
 
-				_selectedFiles.Add(fileEntry);
+				_selectedFiles.Add(new DialogFileEntry(fileEntry));
 			}
 
 			foreach (var file in _selectedFiles.Where(file => string.IsNullOrWhiteSpace(_fileComboList
 				                                                                            .Find(searchValue =>
 				                                                                                  string.Equals(searchValue,
-				                                                                                                file.FullPath,
+				                                                                                                file.File.FilePath,
 				                                                                                                StringComparison.OrdinalIgnoreCase)))))
 			{
-				_fileComboList.Add(file.FullPath);
+				_fileComboList.Add(file.File.FilePath);
 			}
 
 			return true;
@@ -1803,7 +1823,7 @@ namespace GorgonLibrary.Editor
 			// Retrieve the selected extension.
 			if (comboFilters.SelectedItem != null)
 			{
-				DefaultExtension = ((FilterItem)comboFilters.SelectedItem).Extensions.First().Extension;
+				DefaultFileType = comboFilters.SelectedItem.ToString();
 			}
 
 			try
@@ -2053,9 +2073,9 @@ namespace GorgonLibrary.Editor
         /// Function to return the list of selected file names.
         /// </summary>
         /// <returns>An array containing the paths of all the selected files.</returns>
-        public GorgonFileSystemFileEntry[] GetFilenames()
+        public EditorFile[] GetFilenames()
         {
-            return _selectedFiles.ToArray();
+            return _selectedFiles.Select(item => item.File).ToArray();
         }
 		#endregion
 
@@ -2064,15 +2084,17 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="FormEditorFileSelector"/> class.
 		/// </summary>
 		/// <param name="extensions">File extensions used to filter the file list.</param>
-		public FormEditorFileSelector(GorgonFileExtensionCollection extensions)
+		/// <param name="defaultFileType">The default file type to use.</param>
+		public FormEditorFileSelector(IList<string> extensions, string defaultFileType)
 		{
 			InitializeComponent();
 
 			CurrentView = FileViews.Details;
-			_fileExtensions = extensions;
-			_thumbNailFiles = new HashSet<GorgonFileSystemFileEntry>();
+			DefaultFileType = defaultFileType;
+			_fileTypes = extensions;
+			_thumbNailFiles = new HashSet<DialogFileEntry>(new DialogFileEntryEqualityComparer());
 			_thumbNailSize = new Size(128, 128);
-			_selectedFiles = new List<GorgonFileSystemFileEntry>(); 
+			_selectedFiles = new List<DialogFileEntry>(); 
 		}
 		#endregion
 	}

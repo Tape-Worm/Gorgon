@@ -388,6 +388,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The name contains invalid characters.
         ///The following characters are not allowed:
         ///{0}.
@@ -413,6 +422,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_NO_APP_SETTINGS {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NO_APP_SETTINGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No files were selected..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_FILES_SELECTED {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_FILES_SELECTED", resourceCulture);
             }
         }
         
@@ -476,6 +494,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_STREAM_WRITE_ONLY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_STREAM_WRITE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All files.
+        /// </summary>
+        internal static string GOREDIT_TEXT_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_ALL_FILES", resourceCulture);
             }
         }
         
@@ -877,6 +904,15 @@ namespace GorgonLibrary.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("project_node_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets whether or not to allow the dialog to show all files in the filter list..
+        /// </summary>
+        internal static string PROP_ALLOW_ALL_FILES_DESC {
+            get {
+                return ResourceManager.GetString("PROP_ALLOW_ALL_FILES_DESC", resourceCulture);
             }
         }
         

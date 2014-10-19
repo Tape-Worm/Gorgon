@@ -615,6 +615,14 @@ namespace GorgonLibrary.Editor
 		    {
 		        throw new ArgumentNullException("file");
 		    }
+
+			// Update the meta data for this file.
+			if (Current.EditorFile != null)
+			{
+				// Content clones the file entry so that we may work without fear of damaging the 
+				// metadata permanently.  
+				EditorMetaDataFile.Files[Current.EditorFile.FilePath] = Current.EditorFile;
+			}
 			
 			// Write the content out to the scratch file system.
 			using (var contentStream = file.OpenStream(true))

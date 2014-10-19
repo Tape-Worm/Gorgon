@@ -449,4 +449,16 @@ The following characters are not allowed:
   <data name="GOREDIT_ERR_DEPENDENCY_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' depends on the file '{1}', which was not found.</value>
   </data>
+  <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="PROP_ALLOW_ALL_FILES_DESC" xml:space="preserve">
+    <value>Sets whether or not to allow the dialog to show all files in the filter list.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_FILES_SELECTED" xml:space="preserve">
+    <value>No files were selected.</value>
+  </data>
 </root>

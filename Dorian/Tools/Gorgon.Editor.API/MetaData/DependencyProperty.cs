@@ -34,7 +34,7 @@ namespace GorgonLibrary.Editor
 	/// A user defined property that is assigned to dependency objects.
 	/// </summary>
 	public struct DependencyProperty
-		: INamedObject, IEquatable<DependencyProperty>
+		: INamedObject, IEquatable<DependencyProperty>, ICloneable<DependencyProperty>
 	{
 		#region Constants.
 		private const string NameAttr = "Name";					// Name of the property name attribute.
@@ -207,6 +207,19 @@ namespace GorgonLibrary.Editor
 		public bool Equals(DependencyProperty other)
 		{
 			return Equals(ref this, ref other);
+		}
+		#endregion
+
+		#region ICloneable<DependencyProperty> Members
+		/// <summary>
+		/// Function to clone an object.
+		/// </summary>
+		/// <returns>
+		/// The cloned object.
+		/// </returns>
+		public DependencyProperty Clone()
+		{
+			return new DependencyProperty(Name, Value);
 		}
 		#endregion
 	}

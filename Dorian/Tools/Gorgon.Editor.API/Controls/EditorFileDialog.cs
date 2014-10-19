@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
@@ -53,17 +55,13 @@ namespace GorgonLibrary.Editor
 	public class EditorFileDialog
 		: Component
 	{
-		#region Variables.
-		private string _defaultExtension = string.Empty;
-		#endregion
-
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of file name extensions to filter on.
+		/// Property to return the list of file types to filter.
 		/// </summary>
 		/// <remarks>Clear this list to retrieve all files.</remarks>
 		[Browsable(false)]
-		public GorgonFileExtensionCollection FileExtensions
+		public IList<string> FileTypes
 		{
 			get;
 			private set;
@@ -108,34 +106,6 @@ namespace GorgonLibrary.Editor
 	    }
 
 	    /// <summary>
-	    /// Property to set or return the default extension for the filter.
-	    /// </summary>
-	    [Browsable(true)]
-	    [LocalCategory(typeof(APIResources), "PROP_CATEGORY_BEHAVIOR")]
-	    [LocalDescription(typeof(APIResources), "PROP_DEFAULTEXTENSION_DESC")]
-	    public string DefaultExtension
-	    {
-	        get
-	        {
-	            return _defaultExtension;
-	        }
-	        set
-	        {
-	            if (value == null)
-	            {
-	                value = string.Empty;
-	            }
-
-	            if (value.StartsWith("."))
-	            {
-	                value = value.Substring(1);
-	            }
-
-	            _defaultExtension = value;
-	        }
-	    }
-
-	    /// <summary>
 	    /// Property to set or return the caption text for the dialog.
 	    /// </summary>
 	    [Browsable(true)]
@@ -160,11 +130,33 @@ namespace GorgonLibrary.Editor
 	        set;
 	    }
 
+		/// <summary>
+		/// Property to set or return whether to allow all files to be shown or only those on the <see cref="FileTypes"/> list.
+		/// </summary>
+		[Browsable(true)]
+		[LocalCategory(typeof(APIResources), "PROP_CATEGORY_BEHAVIOR")]
+		[LocalDescription(typeof(APIResources), "PROP_ALLOW_ALL_FILES_DESC")]
+		public bool AllowAllFiles
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the default file type.
+		/// </summary>
+		[Browsable(false)]
+		public string DefaultFileType
+		{
+			get;
+			set;
+		}
+
 	    /// <summary>
         /// Property to return the array of selected file names.
         /// </summary>
         [Browsable(false)]
-	    public GorgonFileSystemFileEntry[] Files
+	    public EditorFile[] Files
 	    {
 	        get;
             private set;
@@ -172,6 +164,29 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to open a file stream to the first selected file.
+		/// </summary>
+		/// <returns>A read-only stream to the first select file.</returns>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown if no files were selected, or the file was not found in the file system.</exception>
+		public Stream OpenFile()
+		{
+			if ((Files.Length == 0)
+				|| (Files[0] == null))
+			{
+				throw new FileNotFoundException(APIResources.GOREDIT_ERR_NO_FILES_SELECTED);
+			}
+
+			GorgonFileSystemFileEntry file = ScratchArea.ScratchFiles.GetFile(Files[0].FilePath);
+
+			if (file == null)
+			{
+				throw new FileNotFoundException(string.Format(APIResources.GOREDIT_ERR_FILE_NOT_FOUND, Files[0].FilePath));
+			}
+
+			return file.OpenStream(false);
+		}
+
 	    /// <summary>
 	    /// Function to show the dialog on the screen.
 	    /// </summary>
@@ -180,30 +195,35 @@ namespace GorgonLibrary.Editor
 	    /// <remarks>Depending on which button was clicked, either DialogResult.OK or DialogResult.Cancel will be returned from this method.</remarks>
 	    public DialogResult ShowDialog(IWin32Window owner = null)
 	    {
-	        using(var selector = new FormEditorFileSelector(FileExtensions))
-	        {
-	            selector.Text = Text;
-	            selector.DefaultExtension = DefaultExtension;
-	            selector.CurrentView = FileView;
-	            selector.StartDirectory = StartDirectory;
-	            selector.AllowMultipleSelection = MultipleSelection;
-	            selector.DefaultFilename = Filename;
+		    if ((AllowAllFiles)
+				&& (!FileTypes.Contains(APIResources.GOREDIT_TEXT_ALL_FILES)))
+		    {
+			    FileTypes.Insert(0, APIResources.GOREDIT_TEXT_ALL_FILES);
+		    }
 
-	            DialogResult result = selector.ShowDialog(owner);
+		    using (var selector = new FormEditorFileSelector(FileTypes, string.IsNullOrWhiteSpace(DefaultFileType) ? FileTypes[0] : DefaultFileType))
+		    {
+			    selector.Text = Text;
+			    selector.CurrentView = FileView;
+			    selector.StartDirectory = StartDirectory;
+			    selector.AllowMultipleSelection = MultipleSelection;
+			    selector.DefaultFilename = Filename;
 
-				FileView = selector.CurrentView;
+			    DialogResult result = selector.ShowDialog(owner);
 
-		        if (result != DialogResult.OK)
-		        {
-			        return result;
-		        }
+			    FileView = selector.CurrentView;
 
-		        DefaultExtension = selector.DefaultExtension;
-		        Files = selector.GetFilenames();
-		        Filename = Files.Length > 0 ? Files[0].FullPath : string.Empty;
+			    if (result != DialogResult.OK)
+			    {
+				    return result;
+			    }
 
-		        return result;
-	        }
+			    DefaultFileType = selector.DefaultFileType;
+			    Files = selector.GetFilenames();
+			    Filename = Files.Length > 0 ? Files[0].FilePath : string.Empty;
+
+			    return result;
+		    }
 	    }
 		#endregion
 
@@ -213,7 +233,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public EditorFileDialog()
 		{
-			FileExtensions = new GorgonFileExtensionCollection();
+			FileTypes = new List<string>();
+			DefaultFileType = string.Empty;
 			Text = APIResources.GOREDIT_TEXT_SELECT_FILE;
 		}
 		#endregion

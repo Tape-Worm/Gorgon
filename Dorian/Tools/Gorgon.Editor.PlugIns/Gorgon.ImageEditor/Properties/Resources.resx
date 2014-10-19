@@ -229,9 +229,6 @@
   <data name="PROP_IMAGETYPE_DESC" xml:space="preserve">
     <value>Sets the type of image data, can be one of 1D, 2D, Cube Mapped, or 3D for codecs that support various image types.</value>
   </data>
-  <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
-    <value>Image</value>
-  </data>
   <data name="GORIMG_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
@@ -327,5 +324,8 @@ R16B16G16A16 (floating point)</value>
   </data>
   <data name="GORIMG_CANNOT_COMPRESS" xml:space="preserve">
     <value>There was an error compressing the image.</value>
+  </data>
+  <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
+    <value>Image</value>
   </data>
 </root>
