@@ -59,6 +59,9 @@
 			this.buttonPrevArrayIndex = new System.Windows.Forms.ToolStripButton();
 			this.labelArrayIndex = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNextArrayIndex = new System.Windows.Forms.ToolStripButton();
+			this.buttonPrevDepthSlice = new System.Windows.Forms.ToolStripButton();
+			this.labelDepthSlice = new System.Windows.Forms.ToolStripLabel();
+			this.buttonNextDepthSlice = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.stripPanelImageEditor.BottomToolStripPanel.SuspendLayout();
 			this.stripPanelImageEditor.ContentPanel.SuspendLayout();
@@ -73,6 +76,8 @@
 			// 
 			// imageFileBrowser
 			// 
+			this.imageFileBrowser.AllowAllFiles = false;
+			this.imageFileBrowser.DefaultFileType = "";
 			this.imageFileBrowser.Filename = null;
 			this.imageFileBrowser.StartDirectory = null;
 			this.imageFileBrowser.Text = "Open Image";
@@ -117,6 +122,9 @@
             this.labelMipLevel,
             this.buttonNextMipLevel,
             this.sepArray,
+            this.buttonPrevDepthSlice,
+            this.labelDepthSlice,
+            this.buttonNextDepthSlice,
             this.buttonPrevArrayIndex,
             this.labelArrayIndex,
             this.buttonNextArrayIndex});
@@ -206,6 +214,41 @@
 			this.buttonNextArrayIndex.Text = "this was not set in localization";
 			this.buttonNextArrayIndex.Click += new System.EventHandler(this.buttonNextArrayIndex_Click);
 			// 
+			// buttonPrevDepthSlice
+			// 
+			this.buttonPrevDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonPrevDepthSlice.Enabled = false;
+			this.buttonPrevDepthSlice.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
+			this.buttonPrevDepthSlice.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonPrevDepthSlice.Name = "buttonPrevDepthSlice";
+			this.buttonPrevDepthSlice.Size = new System.Drawing.Size(23, 22);
+			this.buttonPrevDepthSlice.Text = "this was not set in localization";
+			this.buttonPrevDepthSlice.Visible = false;
+			this.buttonPrevDepthSlice.Click += new System.EventHandler(this.buttonPrevDepthSlice_Click);
+			// 
+			// labelDepthSlice
+			// 
+			this.labelDepthSlice.AutoSize = false;
+			this.labelDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.labelDepthSlice.Image = ((System.Drawing.Image)(resources.GetObject("labelDepthSlice.Image")));
+			this.labelDepthSlice.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.labelDepthSlice.Name = "labelDepthSlice";
+			this.labelDepthSlice.Size = new System.Drawing.Size(110, 22);
+			this.labelDepthSlice.Text = "array index: N/A";
+			this.labelDepthSlice.Visible = false;
+			// 
+			// buttonNextDepthSlice
+			// 
+			this.buttonNextDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonNextDepthSlice.Enabled = false;
+			this.buttonNextDepthSlice.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
+			this.buttonNextDepthSlice.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonNextDepthSlice.Name = "buttonNextDepthSlice";
+			this.buttonNextDepthSlice.Size = new System.Drawing.Size(23, 22);
+			this.buttonNextDepthSlice.Text = "this was not set in localization";
+			this.buttonNextDepthSlice.Visible = false;
+			this.buttonNextDepthSlice.Click += new System.EventHandler(this.buttonNextDepthSlice_Click);
+			// 
 			// GorgonImageContentPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -240,6 +283,9 @@
         private System.Windows.Forms.ToolStripButton buttonNextArrayIndex;
 		private System.Windows.Forms.ToolStripLabel labelImageInfo;
 		private System.Windows.Forms.ToolStripSeparator sepMip;
+		private System.Windows.Forms.ToolStripButton buttonPrevDepthSlice;
+		private System.Windows.Forms.ToolStripLabel labelDepthSlice;
+		private System.Windows.Forms.ToolStripButton buttonNextDepthSlice;
 
     }
 }

@@ -1123,7 +1123,7 @@ namespace GorgonLibrary.IO
                 {
                     settings = new GorgonTexture3DSettings
 	                    {
-		                    Depth = (int)header.Depth.Min(1)
+		                    Depth = (int)header.Depth.Max(1)
 	                    };
                 }
                 else
