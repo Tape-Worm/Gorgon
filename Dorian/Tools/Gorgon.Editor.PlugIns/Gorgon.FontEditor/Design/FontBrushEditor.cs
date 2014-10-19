@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					case GlyphBrushType.Texture:
 						brushEditor.TextureBrush = (GorgonGlyphTextureBrush)document.Brush;
-						brushEditor.TextureBrushPath = textureBrushFile;
+						brushEditor.TextureBrushFile = textureBrushFile;
 						break;
 					case GlyphBrushType.Hatched:
 						brushEditor.PatternBrush = (GorgonGlyphHatchBrush)document.Brush;
@@ -145,10 +145,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					}
 
 					// Remove the old texture brush dependency (if it existed).
-					if ((textureBrushFile != null)
-						&& (document.EditorFile.DependsOn.Contains(textureBrushFile)))
+
+				    if (textureBrushFile != null)
 					{
-						document.EditorFile.DependsOn[textureBrushFile, GorgonFontContent.TextureBrushTextureType] = null;
+						if (document.Dependencies.Contains(textureBrushFile, GorgonFontContent.TextureBrushTextureType))
+						{
+							document.Dependencies.Remove(textureBrushFile, GorgonFontContent.TextureBrushTextureType);
+						}
 					}
 			    }
 
@@ -160,9 +163,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						// Add the updated texture brush dependency path.
 						if (textureBrushFile != null)
 						{
-							document.EditorFile.DependsOn[brushEditor.TextureBrushPath, GorgonFontContent.TextureBrushTextureType] =
-								new Dependency(brushEditor.TextureBrushPath,
-								               GorgonFontContent.TextureBrushTextureType);
+							document.Dependencies[brushEditor.TextureBrushFile, GorgonFontContent.TextureBrushTextureType] = new Dependency(brushEditor.TextureBrushFile,
+							                                                                                                                GorgonFontContent.TextureBrushTextureType);
 						}
 			            break;
 			        case GlyphBrushType.Solid:

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
@@ -143,15 +142,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <remarks>This only takes effect if properties are available for public use on the content.  The parameter for the method is as follows: <c>string newName</c>.</remarks>
 	    public static Action<string> ContentRenamed
-	    {
-		    get;
-		    set;
-	    }
-
-		/// <summary>
-		/// Property to set or return the method to call when the current content is persisted back to the file system.
-		/// </summary>
-	    public static Action ContentSaved
 	    {
 		    get;
 		    set;
@@ -470,7 +460,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="content">The content that is being loaded.</param>
 		/// <param name="file">The file that contains the dependencies.</param>
 		/// <param name="missing">A list of dependencies that are missing.</param>
-	    private static void LoadDependencies(ContentObject content, EditorFile file, List<string> missing)
+	    private static void LoadDependencies(ContentObject content, EditorFile file, ICollection<string> missing)
 	    {
 			foreach (Dependency dependencyFile in file.DependsOn)
 			{
@@ -557,28 +547,11 @@ namespace GorgonLibrary.Editor
 
 				try
 				{
-					LoadDependencies(content, contentFile, missingDependencies);
+					LoadDependencies(content, content.EditorFile, missingDependencies);
 				}
 				catch
 				{
-					// If we have a major failure, ensure that any dependencies that were loaded 
-					// are cleaned up (if they require it).
-					var cleanUp = from editFile in EditorMetaDataFile.Files
-					              from dependencyObject in editorFile.DependsOn
-					              let disposable = dependencyObject.DependencyObject as IDisposable
-					              where disposable != null
-					              select new
-					                     {
-						                     Dependency = dependencyObject,
-						                     Disposer = disposable
-					                     };
-
-					foreach (var dependency in cleanUp)
-					{
-						dependency.Dependency.DependencyObject = null;
-						dependency.Disposer.Dispose();
-					}
-
+					content.Dependencies.Clear();
 					throw;
 				}
 
@@ -617,12 +590,7 @@ namespace GorgonLibrary.Editor
 		    }
 
 			// Update the meta data for this file.
-			if (Current.EditorFile != null)
-			{
-				// Content clones the file entry so that we may work without fear of damaging the 
-				// metadata permanently.  
-				EditorMetaDataFile.Files[Current.EditorFile.FilePath] = Current.EditorFile;
-			}
+			Current.CommitDependencies();
 			
 			// Write the content out to the scratch file system.
 			using (var contentStream = file.OpenStream(true))
@@ -634,12 +602,6 @@ namespace GorgonLibrary.Editor
 			EditorMetaDataFile.Save();
 
 			_contentChanged = false;
-
-			// Indicate that we've saved the content.
-			if (ContentSaved != null)
-			{
-				ContentSaved();
-			}
 	    }
 
 	    /// <summary>

@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Content\Clipper.cs" />
+    <Compile Include="Content\ContentDependencies.cs" />
     <Compile Include="Content\ContentManagement.cs" />
     <Compile Include="Content\ContentObject.cs" />
     <Compile Include="Content\ContentSettings.cs" />
