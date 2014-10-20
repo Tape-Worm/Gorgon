@@ -56,17 +56,24 @@
 			this.labelMipLevel = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNextMipLevel = new System.Windows.Forms.ToolStripButton();
 			this.sepArray = new System.Windows.Forms.ToolStripSeparator();
-			this.buttonPrevArrayIndex = new System.Windows.Forms.ToolStripButton();
-			this.labelArrayIndex = new System.Windows.Forms.ToolStripLabel();
-			this.buttonNextArrayIndex = new System.Windows.Forms.ToolStripButton();
 			this.buttonPrevDepthSlice = new System.Windows.Forms.ToolStripButton();
 			this.labelDepthSlice = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNextDepthSlice = new System.Windows.Forms.ToolStripButton();
+			this.buttonPrevArrayIndex = new System.Windows.Forms.ToolStripButton();
+			this.labelArrayIndex = new System.Windows.Forms.ToolStripLabel();
+			this.buttonNextArrayIndex = new System.Windows.Forms.ToolStripButton();
+			this.containerTexture = new System.Windows.Forms.ToolStripContainer();
+			this.stripTexture = new System.Windows.Forms.ToolStrip();
+			this.buttonEditFileExternal = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.stripPanelImageEditor.BottomToolStripPanel.SuspendLayout();
 			this.stripPanelImageEditor.ContentPanel.SuspendLayout();
 			this.stripPanelImageEditor.SuspendLayout();
 			this.stripImageEditor.SuspendLayout();
+			this.containerTexture.ContentPanel.SuspendLayout();
+			this.containerTexture.TopToolStripPanel.SuspendLayout();
+			this.containerTexture.SuspendLayout();
+			this.stripTexture.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// PanelDisplay
@@ -87,7 +94,7 @@
 			this.panelTextureDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelTextureDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelTextureDisplay.Name = "panelTextureDisplay";
-			this.panelTextureDisplay.Size = new System.Drawing.Size(806, 581);
+			this.panelTextureDisplay.Size = new System.Drawing.Size(806, 556);
 			this.panelTextureDisplay.TabIndex = 0;
 			// 
 			// stripPanelImageEditor
@@ -99,7 +106,7 @@
 			// 
 			// stripPanelImageEditor.ContentPanel
 			// 
-			this.stripPanelImageEditor.ContentPanel.Controls.Add(this.panelTextureDisplay);
+			this.stripPanelImageEditor.ContentPanel.Controls.Add(this.containerTexture);
 			this.stripPanelImageEditor.ContentPanel.Size = new System.Drawing.Size(806, 581);
 			this.stripPanelImageEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.stripPanelImageEditor.LeftToolStripPanelVisible = false;
@@ -182,38 +189,6 @@
 			this.sepArray.Name = "sepArray";
 			this.sepArray.Size = new System.Drawing.Size(6, 25);
 			// 
-			// buttonPrevArrayIndex
-			// 
-			this.buttonPrevArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonPrevArrayIndex.Enabled = false;
-			this.buttonPrevArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
-			this.buttonPrevArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonPrevArrayIndex.Name = "buttonPrevArrayIndex";
-			this.buttonPrevArrayIndex.Size = new System.Drawing.Size(23, 22);
-			this.buttonPrevArrayIndex.Text = "this was not set in localization";
-			this.buttonPrevArrayIndex.Click += new System.EventHandler(this.buttonPrevArrayIndex_Click);
-			// 
-			// labelArrayIndex
-			// 
-			this.labelArrayIndex.AutoSize = false;
-			this.labelArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-			this.labelArrayIndex.Image = ((System.Drawing.Image)(resources.GetObject("labelArrayIndex.Image")));
-			this.labelArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.labelArrayIndex.Name = "labelArrayIndex";
-			this.labelArrayIndex.Size = new System.Drawing.Size(110, 22);
-			this.labelArrayIndex.Text = "array index: N/A";
-			// 
-			// buttonNextArrayIndex
-			// 
-			this.buttonNextArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonNextArrayIndex.Enabled = false;
-			this.buttonNextArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
-			this.buttonNextArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonNextArrayIndex.Name = "buttonNextArrayIndex";
-			this.buttonNextArrayIndex.Size = new System.Drawing.Size(23, 22);
-			this.buttonNextArrayIndex.Text = "this was not set in localization";
-			this.buttonNextArrayIndex.Click += new System.EventHandler(this.buttonNextArrayIndex_Click);
-			// 
 			// buttonPrevDepthSlice
 			// 
 			this.buttonPrevDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -249,6 +224,78 @@
 			this.buttonNextDepthSlice.Visible = false;
 			this.buttonNextDepthSlice.Click += new System.EventHandler(this.buttonNextDepthSlice_Click);
 			// 
+			// buttonPrevArrayIndex
+			// 
+			this.buttonPrevArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonPrevArrayIndex.Enabled = false;
+			this.buttonPrevArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
+			this.buttonPrevArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonPrevArrayIndex.Name = "buttonPrevArrayIndex";
+			this.buttonPrevArrayIndex.Size = new System.Drawing.Size(23, 22);
+			this.buttonPrevArrayIndex.Text = "this was not set in localization";
+			this.buttonPrevArrayIndex.Click += new System.EventHandler(this.buttonPrevArrayIndex_Click);
+			// 
+			// labelArrayIndex
+			// 
+			this.labelArrayIndex.AutoSize = false;
+			this.labelArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this.labelArrayIndex.Image = ((System.Drawing.Image)(resources.GetObject("labelArrayIndex.Image")));
+			this.labelArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.labelArrayIndex.Name = "labelArrayIndex";
+			this.labelArrayIndex.Size = new System.Drawing.Size(110, 22);
+			this.labelArrayIndex.Text = "array index: N/A";
+			// 
+			// buttonNextArrayIndex
+			// 
+			this.buttonNextArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonNextArrayIndex.Enabled = false;
+			this.buttonNextArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
+			this.buttonNextArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonNextArrayIndex.Name = "buttonNextArrayIndex";
+			this.buttonNextArrayIndex.Size = new System.Drawing.Size(23, 22);
+			this.buttonNextArrayIndex.Text = "this was not set in localization";
+			this.buttonNextArrayIndex.Click += new System.EventHandler(this.buttonNextArrayIndex_Click);
+			// 
+			// containerTexture
+			// 
+			// 
+			// containerTexture.ContentPanel
+			// 
+			this.containerTexture.ContentPanel.Controls.Add(this.panelTextureDisplay);
+			this.containerTexture.ContentPanel.Size = new System.Drawing.Size(806, 556);
+			this.containerTexture.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.containerTexture.Location = new System.Drawing.Point(0, 0);
+			this.containerTexture.Name = "containerTexture";
+			this.containerTexture.Size = new System.Drawing.Size(806, 581);
+			this.containerTexture.TabIndex = 1;
+			this.containerTexture.Text = "toolStripContainer1";
+			// 
+			// containerTexture.TopToolStripPanel
+			// 
+			this.containerTexture.TopToolStripPanel.Controls.Add(this.stripTexture);
+			// 
+			// stripTexture
+			// 
+			this.stripTexture.Dock = System.Windows.Forms.DockStyle.None;
+			this.stripTexture.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripTexture.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonEditFileExternal});
+			this.stripTexture.Location = new System.Drawing.Point(0, 0);
+			this.stripTexture.Name = "stripTexture";
+			this.stripTexture.Size = new System.Drawing.Size(806, 25);
+			this.stripTexture.Stretch = true;
+			this.stripTexture.TabIndex = 0;
+			// 
+			// buttonEditFileExternal
+			// 
+			this.buttonEditFileExternal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonEditFileExternal.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.pencil_16x16;
+			this.buttonEditFileExternal.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonEditFileExternal.Name = "buttonEditFileExternal";
+			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
+			this.buttonEditFileExternal.Text = "no localization";
+			this.buttonEditFileExternal.Click += new System.EventHandler(this.buttonEditFileExternal_Click);
+			// 
 			// GorgonImageContentPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -264,6 +311,13 @@
 			this.stripPanelImageEditor.PerformLayout();
 			this.stripImageEditor.ResumeLayout(false);
 			this.stripImageEditor.PerformLayout();
+			this.containerTexture.ContentPanel.ResumeLayout(false);
+			this.containerTexture.TopToolStripPanel.ResumeLayout(false);
+			this.containerTexture.TopToolStripPanel.PerformLayout();
+			this.containerTexture.ResumeLayout(false);
+			this.containerTexture.PerformLayout();
+			this.stripTexture.ResumeLayout(false);
+			this.stripTexture.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -286,6 +340,9 @@
 		private System.Windows.Forms.ToolStripButton buttonPrevDepthSlice;
 		private System.Windows.Forms.ToolStripLabel labelDepthSlice;
 		private System.Windows.Forms.ToolStripButton buttonNextDepthSlice;
+		private System.Windows.Forms.ToolStripContainer containerTexture;
+		private System.Windows.Forms.ToolStrip stripTexture;
+		private System.Windows.Forms.ToolStripButton buttonEditFileExternal;
 
     }
 }

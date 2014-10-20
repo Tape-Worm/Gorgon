@@ -118,6 +118,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access to &apos;{0}&apos; is denied..
+        /// </summary>
+        internal static string GORIMG_ACCESS_DENIED {
+            get {
+                return ResourceManager.GetString("GORIMG_ACCESS_DENIED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number of array indices must be between 1 and {0}..
         /// </summary>
         internal static string GORIMG_ARRAY_COUNT_INVALID {
@@ -196,6 +205,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_ERROR_DECOMPRESSING {
             get {
                 return ResourceManager.GetString("GORIMG_ERROR_DECOMPRESSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GORIMG_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORIMG_FILE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -281,6 +299,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not valid..
+        /// </summary>
+        internal static string GORIMG_PATH_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORIMG_PATH_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Array index: {0}/{1}.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDEX {
@@ -295,6 +322,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_DEPTH_SLICE {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit this file in an external image editor application..
+        /// </summary>
+        internal static string GORIMG_TEXT_EDIT_EXTERNAL {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_EDIT_EXTERNAL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit this file in {0}..
+        /// </summary>
+        internal static string GORIMG_TEXT_EDIT_EXTERNAL_APPNAME {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_EDIT_EXTERNAL_APPNAME", resourceCulture);
             }
         }
         
@@ -425,6 +470,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unknown error..
+        /// </summary>
+        internal static string GORIMG_UNKNOWN_ERROR {
+            get {
+                return ResourceManager.GetString("GORIMG_UNKNOWN_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The image type &apos;{0}&apos; is unknown..
         /// </summary>
         internal static string GORIMG_UNKNOWN_IMAGE_TYPE {
@@ -479,16 +533,20 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         ///Texture1D _gorgonTexture1D : register(t0);
         ///Texture3D _gorgonTexture3D : register(t0);
         ///
-        ///// The depth/array index to view.
-        ///cbuffer GorgonDepthArrayIndex {
-        ///	float depthArrayIndex : register(b1);
+        ///// The depth slice to view.
+        ///cbuffer GorgonDepthSlice : register(b1)
+        ///{
+        ///	float depthSlice;
         ///};
         ///
         ///// Pixel shader to view a 1D texture.
         ///float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
         ///{
-        ///	float2 coords = float2(vertex.uv.x, depthArrayIndex);
-        ///	float4 color = _gorgonTexture1D.Sample [rest of string was truncated]&quot;;.
+        ///	float4 color = _gorgonTexture1D.Sample(_gorgonSampler, vertex.uv.x);
+        ///
+        ///	REJECT_ALPHA(color.a);
+        ///		
+        ///	return  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImageViewShaders {
             get {
@@ -522,6 +580,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap Pattern {
             get {
                 object obj = ResourceManager.GetObject("Pattern", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pencil_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("pencil_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

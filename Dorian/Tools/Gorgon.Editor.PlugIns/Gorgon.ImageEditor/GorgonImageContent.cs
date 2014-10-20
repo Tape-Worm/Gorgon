@@ -48,8 +48,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     /// </summary>
     sealed class GorgonImageContent
         : ContentObject, IImageEditorContent
-    {
-        #region Variables.
+	{
+		#region Classes.
+		/// <summary>
+		/// Values for the file watcher.
+		/// </summary>
+	    private class FileWatchValues
+	    {
+			/// <summary>
+			/// Property to set or return whether the file being watched has been changed.
+			/// </summary>
+			public bool IsChanged
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to set or return the file name of the file being watched.
+			/// </summary>
+			public string Filename
+			{
+				get;
+				set;
+			}
+	    }
+		#endregion
+
+		#region Variables.
 		// Compression format strings.
 	    private readonly Dictionary<BufferFormat, string> _compFormats = new Dictionary<BufferFormat, string>
 	                                                                     {
@@ -186,6 +212,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the path to the executable that can open this file type.
+		/// </summary>
+		[Browsable(false)]
+	    public string ExePath
+	    {
+		    get;
+		    private set;
+	    }
+
+		/// <summary>
+		/// Property to return the friendly name of the executable file that open this file type.
+		/// </summary>
+		[Browsable(false)]
+	    public string ExeName
+	    {
+		    get;
+		    private set;
+	    }
+
 	    /// <summary>
 		/// Property to return whether the image editor can modify block compressed images.
 		/// </summary>
@@ -324,7 +370,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         [LocalCategory(typeof(Resources), "CATEGORY_DATA"),
         LocalDescription(typeof(Resources), "PROP_IMAGEFORMAT_DESC"),
         LocalDisplayName(typeof(Resources), "PROP_IMAGEFORMAT_NAME"),
-		TypeConverter(typeof(BufferFormatTypeConverter))]
+		TypeConverter(typeof(BufferFormatTypeConverter)),
+		DefaultValue(typeof(BufferFormat), "Unknown"),
+		RefreshProperties(RefreshProperties.All)]
         public BufferFormat ImageFormat
         {
             get
@@ -351,7 +399,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         [LocalCategory(typeof(Resources), "CATEGORY_DATA"),
         LocalDescription(typeof(Resources), "PROP_BLOCKCOMP_DESC"),
         LocalDisplayName(typeof(Resources), "PROP_BLOCKCOMP_NAME"),
-        TypeConverter(typeof(CompressionTypeConverter))]
+        TypeConverter(typeof(CompressionTypeConverter)),
+		DefaultValue(typeof(BufferFormat), "Unknown"),
+		RefreshProperties(RefreshProperties.All)]
         public BufferFormat BlockCompression
         {
             get
@@ -379,6 +429,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         [LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
         LocalDescription(typeof(Resources), "PROP_WIDTH_DESC"),
         LocalDisplayName(typeof(Resources), "PROP_WIDTH_NAME"),
+		DefaultValue(1),
 		RefreshProperties(RefreshProperties.All)]
         public int Width
         {
@@ -406,6 +457,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
 		LocalDescription(typeof(Resources), "PROP_HEIGHT_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_HEIGHT_NAME"),
+		DefaultValue(1),
 		RefreshProperties(RefreshProperties.All)]
 		public int Height
         {
@@ -433,6 +485,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
 		LocalDescription(typeof(Resources), "PROP_DEPTH_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_DEPTH_NAME"),
+		DefaultValue(1),
 		RefreshProperties(RefreshProperties.All)]
 		public int Depth
         {
@@ -459,7 +512,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
 		LocalDescription(typeof(Resources), "PROP_MIPCOUNT_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_MIPCOUNT_NAME")]
+		LocalDisplayName(typeof(Resources), "PROP_MIPCOUNT_NAME"),
+		DefaultValue(1),
+		RefreshProperties(RefreshProperties.All)]
 		public int MipCount
         {
             get
@@ -485,7 +540,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
 		LocalDescription(typeof(Resources), "PROP_ARRAYCOUNT_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_ARRAYCOUNT_NAME")]
+		LocalDisplayName(typeof(Resources), "PROP_ARRAYCOUNT_NAME"),
+		DefaultValue(1),
+		RefreshProperties(RefreshProperties.All)]
 		public int ArrayCount
         {
             get
@@ -512,6 +569,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		[LocalCategory(typeof(Resources), "CATEGORY_DIMENSIONS"),
 		LocalDescription(typeof(Resources), "PROP_IMAGETYPE_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_IMAGETYPE_NAME"),
+		DefaultValue(typeof(ImageType), "Image2D"),
+		RefreshProperties(RefreshProperties.All),
 		TypeConverter(typeof(ImageTypeTypeConverter))]
 		public ImageType ImageType
         {
@@ -557,9 +616,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		        _codec = value;
 
-		        ValidateImageProperties();
+		        Cursor.Current = Cursors.WaitCursor;
+		        try
+		        {
+			        ValidateImageProperties();
 
-				NotifyPropertyChanged();
+					GetExecutable();
+
+					NotifyPropertyChanged();
+		        }
+		        finally
+		        {
+			        Cursor.Current = Cursors.Default;
+		        }
 	        }
         }
         #endregion
@@ -878,29 +947,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
-		/// Function to delete a temporary image file.
-		/// </summary>
-		/// <param name="path">The path to the temporary image file.</param>
-	    private static void DeleteTempImageFile(string path)
-	    {
-		    try
-		    {
-			    if (!File.Exists(path))
-			    {
-				    return;
-			    }
-
-				File.Delete(path);
-		    }
-			// ReSharper disable once EmptyGeneralCatchClause
-		    catch 
-		    {
-				// Intentionally left blank.
-				// We don't care if the delete was not successful.
-		    }
-	    }
-
-		/// <summary>
 		/// Functon to compress the current image into a block compressed image.
 		/// </summary>
 		/// <param name="stream">Stream that will receive the compressed data.</param>
@@ -924,7 +970,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 
 			// We'll need to copy this data and decompress it in an external source.
-			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dds");
+			string tempFilePath = Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.ChangeExtension(Path.GetRandomFileName(), ".dds");
 			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
 			string outputName = tempFileDirectory + "comp_" + Path.GetFileName(tempFilePath);
 
@@ -1051,7 +1097,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 
 			// We'll need to copy this data and decompress it in an external source.
-			string tempFilePath = Path.ChangeExtension(Path.GetTempFileName(), ".dds");
+			string tempFilePath = Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.ChangeExtension(Path.GetRandomFileName(), ".dds");
 			string tempFileDirectory = Path.GetDirectoryName(tempFilePath).FormatDirectory(Path.DirectorySeparatorChar);
 			string outputName = tempFileDirectory + "decomp_" + Path.GetFileName(tempFilePath);
 
@@ -1285,6 +1331,41 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			_codec = codec;
 		}
 
+		/// <summary>
+		/// Function to find path to the executable that can open this file.
+		/// </summary>
+	    private void GetExecutable()
+		{
+			string tempFilePath = null;
+
+			try
+			{
+				ExePath = string.Empty;
+				ExeName = string.Empty;
+
+				// Save a temporary copy of the file.
+				tempFilePath = SaveToTemporaryFile();
+
+				if (!Win32API.HasAssociation(tempFilePath))
+				{
+					return;
+				}
+
+				ExePath = Win32API.GetAssociatedExecutable(tempFilePath);
+
+				if (string.IsNullOrWhiteSpace(ExePath))
+				{
+					return;
+				}
+
+				ExeName = Win32API.GetFriendlyExeName(ExePath);
+			}
+			finally
+			{
+				DeleteTempImageFile(tempFilePath);
+			}
+		}
+
 	    /// <summary>
         /// Function to read the content data from a stream.
         /// </summary>
@@ -1349,6 +1430,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    _original = Image;
             _imageSettings = Image.Settings.Clone();
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
+
+			// Find the executable associated with the file.
+			GetExecutable();
 	
             ValidateImageProperties();
         }
@@ -1426,6 +1510,51 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             return _contentPanel;
         }
+
+		/// <summary>
+		/// Function to delete a temporary image file.
+		/// </summary>
+		/// <param name="path">The path to the temporary image file.</param>
+		public static void DeleteTempImageFile(string path)
+		{
+			try
+			{
+				if (!File.Exists(path))
+				{
+					return;
+				}
+
+				File.Delete(path);
+			}
+			// ReSharper disable once EmptyGeneralCatchClause
+			catch
+			{
+				// Intentionally left blank.
+				// We don't care if the delete was not successful.
+			}
+		}
+
+		/// <summary>
+		/// Function to save the image to a temporary file.
+		/// </summary>
+		/// <returns>The path to the temporary file, or an empty string if the file was not created.</returns>
+		public string SaveToTemporaryFile()
+		{
+			if ((Codec == null)
+			    || (!Codec.CodecCommonExtensions.Any()))
+			{
+				return string.Empty;
+			}
+
+			string tempFilePath = Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) +
+								  Path.ChangeExtension(Path.GetRandomFileName(), Codec.CodecCommonExtensions.FirstOrDefault());
+
+			// Save the image to a temporary location.
+			Image.Save(tempFilePath, Codec);
+
+			return tempFilePath;
+		}
+
 
 		/// <summary>
 		/// Function to determine if the codec supports the current image information.
@@ -1550,6 +1679,144 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             return resultImage;
         }
+
+		/// <summary>
+		/// Function to edit the file in an associated external application.
+		/// </summary>
+	    public void EditExternal()
+		{
+			Process exeProcess = null;
+			FileSystemWatcher watcher = null;
+			string filePath = string.Empty;
+			GorgonImageData newImage = null;
+			var watchValues = new FileWatchValues();
+
+			try
+			{
+				filePath = SaveToTemporaryFile();
+
+				var info = new ProcessStartInfo
+				           {
+					           FileName = ExePath,
+					           ErrorDialogParentHandle = _contentPanel.Handle,
+					           ErrorDialog = true,
+					           UseShellExecute = false,
+					           WorkingDirectory = Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar),
+					           Arguments = "\"" + filePath + "\"",
+					           CreateNoWindow = false
+				           };
+
+				if ((_contentPanel != null)
+				    && (_contentPanel.ParentForm != null))
+				{
+					_contentPanel.ParentForm.Visible = false;
+				}
+
+				watchValues.Filename = Path.GetFileName(filePath);
+				watchValues.IsChanged = false;
+
+				watcher = new FileSystemWatcher
+				          {
+					          NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size,
+					          Path = Path.GetDirectoryName(filePath).FormatDirectory(Path.DirectorySeparatorChar),
+					          InternalBufferSize = 4 * 1024 * 1024,
+					          Filter = "*" + Path.GetExtension(filePath),
+					          IncludeSubdirectories = false,
+					          EnableRaisingEvents = true
+				          };
+
+				// Monitor this file for changes.
+				watcher.Changed += (sender, args) =>
+				                   {
+					                   // If our file did not change, then leave.
+					                   if (!string.Equals(args.Name, watchValues.Filename, StringComparison.OrdinalIgnoreCase))
+					                   {
+						                   return;
+					                   }
+
+					                   watchValues.IsChanged = true;
+				                   };
+
+				// Get the existing process, or start a new one.
+				exeProcess = Process.Start(info);
+
+				if (exeProcess == null)
+				{
+					throw new GorgonException(GorgonResult.AccessDenied);
+				}
+
+				exeProcess.WaitForExit();
+
+				if (!watchValues.IsChanged)
+				{
+					return;
+				}
+				
+				using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					IImageSettings newSettings = Codec.GetMetaData(stream);
+					FormatInformation = GorgonBufferFormatInfo.GetInfo(newSettings.Format);
+
+					if ((FormatInformation.IsCompressed)
+					    && (Codec.SupportsBlockCompression))
+					{
+						_blockCompression = newSettings.Format;
+						newImage = DecompressBCImage(stream, (int)stream.Length);
+					}
+
+					if (newImage == null)
+					{
+						if (FormatInformation.IsCompressed)
+						{
+							CanChangeBCImages = false;
+						}
+
+						newImage = GorgonImageData.FromStream(stream, (int)stream.Length, Codec);
+					}
+				}
+
+				if (Image != _original)
+				{
+					Image.Dispose();
+				}
+
+				Image = newImage;
+				_imageSettings = Image.Settings.Clone();
+
+				NotifyPropertyChanged("ImageEditExternal", null);
+				ValidateImageProperties();
+			}
+			catch
+			{
+				if (newImage != null)
+				{
+					newImage.Dispose();
+				}
+
+				throw;
+			}
+			finally
+			{
+				if (watcher != null)
+				{
+					watcher.Dispose();
+				}
+
+				if ((_contentPanel != null)
+				    && (_contentPanel.ParentForm != null))
+				{
+					_contentPanel.ParentForm.Visible = true;
+				}
+
+				if (exeProcess != null)
+				{
+					exeProcess.Close();
+					exeProcess.Dispose();
+				}
+
+				DeleteTempImageFile(filePath);
+			}
+	    }
         #endregion
 
         #region Constructor/Destructor.
