@@ -28,9 +28,11 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
@@ -61,6 +63,29 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Handles the Click event of the buttonEditFileExternal control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonEditFileExternal_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				_content.EditExternal();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the buttonPrevDepthSlice control.
 		/// </summary>
@@ -174,6 +199,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateControls()
         {
+	        buttonEditFileExternal.Enabled = !string.IsNullOrWhiteSpace(_content.ExePath);
+
             buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel > 0);
             buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel < _content.MipCount - 1);
             buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
@@ -201,6 +228,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 	    private void UpdateImageInfo()
 	    {
+			buttonEditFileExternal.Text = string.IsNullOrWhiteSpace(_content.ExeName)
+											  ? Resources.GORIMG_TEXT_EDIT_EXTERNAL
+											  : string.Format(Resources.GORIMG_TEXT_EDIT_EXTERNAL_APPNAME, _content.ExeName);
+
 			switch (_content.ImageType)
 			{
 				case ImageType.Image1D:
@@ -355,6 +386,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, 0, 0);
 			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, 0, 0);
 
+			buttonEditFileExternal.Text = string.IsNullOrWhiteSpace(_content.ExeName)
+				                              ? Resources.GORIMG_TEXT_EDIT_EXTERNAL
+				                              : string.Format(Resources.GORIMG_TEXT_EDIT_EXTERNAL_APPNAME, _content.ExeName);
 			buttonNextDepthSlice.Text = Resources.GORIMG_TEXT_NEXT_DEPTH;
 			buttonPrevDepthSlice.Text = Resources.GORIMG_TEXT_PREV_DEPTH;
 			buttonNextMipLevel.Text = Resources.GORIMG_TEXT_NEXT_MIP;
@@ -379,6 +413,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case "ImageType":
 				case "MipCount":
 				case "ArrayCount":
+				case "ImageEditExternal":
 					CreateTexture();
 					break;
 				case "Codec":
