@@ -452,6 +452,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Revert back to original image..
+        /// </summary>
+        internal static string GORIMG_TEXT_REVERT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_REVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format [{0}] is not valid when the mip count is greater than 1..
         /// </summary>
         internal static string GORIMG_TEXTURE_FORMAT_CANNOT_MIP {
@@ -761,6 +770,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string PROP_WIDTH_NAME {
             get {
                 return ResourceManager.GetString("PROP_WIDTH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap revert_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("revert_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }

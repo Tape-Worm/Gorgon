@@ -64,6 +64,29 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
         #region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonRevert control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonRevert_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				_content.Revert();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the buttonEditFileExternal control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -199,6 +222,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateControls()
         {
+	        buttonRevert.Enabled = HasChanged;
 	        buttonEditFileExternal.Enabled = !string.IsNullOrWhiteSpace(_content.ExePath);
 
             buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel > 0);
@@ -386,6 +410,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, 0, 0);
 			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, 0, 0);
 
+			buttonRevert.Text = Resources.GORIMG_TEXT_REVERT;
 			buttonEditFileExternal.Text = string.IsNullOrWhiteSpace(_content.ExeName)
 				                              ? Resources.GORIMG_TEXT_EDIT_EXTERNAL
 				                              : string.Format(Resources.GORIMG_TEXT_EDIT_EXTERNAL_APPNAME, _content.ExeName);
@@ -414,6 +439,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case "MipCount":
 				case "ArrayCount":
 				case "ImageEditExternal":
+				case "Revert":
 					CreateTexture();
 					break;
 				case "Codec":
@@ -421,9 +447,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					break;
 			}
 
-            ValidateControls();
-
 			base.OnContentPropertyChanged(propertyName, value);
+
+			ValidateControls();
 	    }
 
 	    /// <summary>

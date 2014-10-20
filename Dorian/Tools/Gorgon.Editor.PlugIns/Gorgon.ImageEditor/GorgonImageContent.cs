@@ -209,6 +209,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private readonly byte[] _copyBuffer = new byte[80000];					// 80k copy buffer.
         private BufferFormat _blockCompression = BufferFormat.Unknown;          // Block compression type.
 	    private GorgonImageCodec _codec;										// The codec used.
+	    private GorgonImageCodec _originalCodec;								// The original codec.
+	    private BufferFormat _originalBlockCompression = BufferFormat.Unknown;	// Original block compression state.
         #endregion
 
         #region Properties.
@@ -1315,7 +1317,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if ((codec != null) && (codec.IsReadable(stream)))
 				{
-					_codec = codec;
+					_originalCodec = _codec = codec;
 					return;
 				}
 			}
@@ -1328,7 +1330,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, EditorFile.FilePath));
 			}
 
-			_codec = codec;
+			_originalCodec = _codec = codec;
 		}
 
 		/// <summary>
@@ -1403,7 +1405,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (FormatInformation.IsCompressed)
 		    {
-				_blockCompression = settings.Format;
+				_originalBlockCompression = _blockCompression = settings.Format;
 			    Image = DecompressBCImage(stream, (int)stream.Length);
 		    }
 
@@ -1715,6 +1717,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				watchValues.Filename = Path.GetFileName(filePath);
 				watchValues.IsChanged = false;
 
+				// Monitor this file for changes.
 				watcher = new FileSystemWatcher
 				          {
 					          NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.Size,
@@ -1725,7 +1728,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					          EnableRaisingEvents = true
 				          };
 
-				// Monitor this file for changes.
+				
 				watcher.Changed += (sender, args) =>
 				                   {
 					                   // If our file did not change, then leave.
@@ -1737,7 +1740,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					                   watchValues.IsChanged = true;
 				                   };
 
-				// Get the existing process, or start a new one.
 				exeProcess = Process.Start(info);
 
 				if (exeProcess == null)
@@ -1747,16 +1749,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				exeProcess.WaitForExit();
 
+				// If the file didn't change, then get out.
 				if (!watchValues.IsChanged)
 				{
 					return;
 				}
 				
+				// Reload the image data.
 				using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					IImageSettings newSettings = Codec.GetMetaData(stream);
 					FormatInformation = GorgonBufferFormatInfo.GetInfo(newSettings.Format);
 
+					// If the file is compressed, then decompress it.
 					if ((FormatInformation.IsCompressed)
 					    && (Codec.SupportsBlockCompression))
 					{
@@ -1764,6 +1769,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 						newImage = DecompressBCImage(stream, (int)stream.Length);
 					}
 
+					// If we couldn't decompress the file, or it wasn't compressed, then load it as normal.
 					if (newImage == null)
 					{
 						if (FormatInformation.IsCompressed)
@@ -1816,6 +1822,30 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				DeleteTempImageFile(filePath);
 			}
+	    }
+
+		/// <summary>
+		/// Function to revert the image back to the original state.
+		/// </summary>
+	    public void Revert()
+	    {
+			if (_original == Image)
+			{
+				return;
+			}
+
+			// TODO: We should reset the changed flag here.
+			// TODO: Perhaps make this a global method so that all content can be reverted back to its original form.
+
+			Image.Dispose();
+			Image = _original;
+			_imageSettings = _original.Settings.Clone();
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
+			_codec = _originalCodec;
+			_blockCompression = _originalBlockCompression;
+
+			NotifyPropertyChanged("Revert", null);
+			ValidateImageProperties();
 	    }
         #endregion
 

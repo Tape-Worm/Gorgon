@@ -65,6 +65,7 @@
 			this.containerTexture = new System.Windows.Forms.ToolStripContainer();
 			this.stripTexture = new System.Windows.Forms.ToolStrip();
 			this.buttonEditFileExternal = new System.Windows.Forms.ToolStripButton();
+			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.stripPanelImageEditor.BottomToolStripPanel.SuspendLayout();
 			this.stripPanelImageEditor.ContentPanel.SuspendLayout();
@@ -279,6 +280,7 @@
 			this.stripTexture.Dock = System.Windows.Forms.DockStyle.None;
 			this.stripTexture.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripTexture.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonRevert,
             this.buttonEditFileExternal});
 			this.stripTexture.Location = new System.Drawing.Point(0, 0);
 			this.stripTexture.Name = "stripTexture";
@@ -295,6 +297,16 @@
 			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
 			this.buttonEditFileExternal.Text = "no localization";
 			this.buttonEditFileExternal.Click += new System.EventHandler(this.buttonEditFileExternal_Click);
+			// 
+			// buttonRevert
+			// 
+			this.buttonRevert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonRevert.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.revert_16x16;
+			this.buttonRevert.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonRevert.Name = "buttonRevert";
+			this.buttonRevert.Size = new System.Drawing.Size(23, 22);
+			this.buttonRevert.Text = "not localized";
+			this.buttonRevert.Click += new System.EventHandler(this.buttonRevert_Click);
 			// 
 			// GorgonImageContentPanel
 			// 
@@ -343,6 +355,7 @@
 		private System.Windows.Forms.ToolStripContainer containerTexture;
 		private System.Windows.Forms.ToolStrip stripTexture;
 		private System.Windows.Forms.ToolStripButton buttonEditFileExternal;
+		private System.Windows.Forms.ToolStripButton buttonRevert;
 
     }
 }
