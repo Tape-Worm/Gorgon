@@ -70,6 +70,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonRevert_Click(object sender, EventArgs e)
 		{
+			if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORIMG_DLG_CONFIRM_REVERT) == ConfirmationResult.No)
+			{
+				return;
+			}
+
 			Cursor.Current = Cursors.WaitCursor;
 
 			try
