@@ -199,6 +199,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
+        ///
+        ///Are you sure you wish to do this?.
+        /// </summary>
+        internal static string GORIMG_DLG_CONFIRM_REVERT {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CONFIRM_REVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error decompressing the file.
         ///See the details pane for more information..
         /// </summary>

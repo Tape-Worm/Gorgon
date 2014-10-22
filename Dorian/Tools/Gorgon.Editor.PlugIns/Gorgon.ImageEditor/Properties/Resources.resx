@@ -355,4 +355,9 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_REVERT" xml:space="preserve">
     <value>Revert back to original image.</value>
   </data>
+  <data name="GORIMG_DLG_CONFIRM_REVERT" xml:space="preserve">
+    <value>Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
+
+Are you sure you wish to do this?</value>
+  </data>
 </root>
