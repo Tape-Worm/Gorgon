@@ -68,6 +68,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for a font.
 	/// </summary>
 	public class GorgonFontSettings
+        : ICloneable<GorgonFontSettings>
 	{
 		#region Variables.
 		private Size _textureSize = new Size(256, 256);						// Texture size.
@@ -388,5 +389,51 @@ namespace GorgonLibrary.Graphics
 			AntiAliasingMode = FontAntiAliasMode.AntiAlias;
 		}
 		#endregion		
-	}
+	
+        #region ICloneable<GorgonFontSettings> Members
+
+        /// <summary>
+        /// Function to clone an object.
+        /// </summary>
+        /// <returns>
+        /// The cloned object.
+        /// </returns>
+        public GorgonFontSettings Clone()
+        {
+            var result = new GorgonFontSettings
+                         {
+                             AntiAliasingMode = AntiAliasingMode,
+                             Brush = Brush,
+                             Characters = Characters == null ? null : Characters.ToArray(),
+                             DefaultCharacter = DefaultCharacter,
+                             FontFamilyName = FontFamilyName,
+                             FontHeightMode = FontHeightMode,
+                             FontStyle = FontStyle,
+                             OutlineColor1 = OutlineColor1,
+                             OutlineColor2 = OutlineColor2,
+                             OutlineSize = OutlineSize,
+                             PackingSpacing = PackingSpacing,
+                             Size = Size,
+                             TextureSize = TextureSize
+                         };
+
+            foreach (KeyValuePair<char, int> advance in Advances)
+            {
+                result.Advances[advance.Key] = advance.Value;
+            }
+
+            foreach (KeyValuePair<GorgonKerningPair, int> pair in KerningPairs)
+            {
+               result.KerningPairs[pair.Key] = pair.Value;
+            }
+
+            foreach (KeyValuePair<char, Point> offset in Offsets)
+            {
+                result.Offsets[offset.Key] = offset.Value;
+            }
+
+            return result;
+        }
+        #endregion
+    }
 }

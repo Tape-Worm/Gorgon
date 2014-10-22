@@ -227,7 +227,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateControls()
         {
-	        buttonRevert.Enabled = HasChanged;
+	        buttonRevert.Enabled = _content.HasChanges;
 	        buttonEditFileExternal.Enabled = !string.IsNullOrWhiteSpace(_content.ExePath);
 
             buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel > 0);

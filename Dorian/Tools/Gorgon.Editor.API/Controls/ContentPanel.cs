@@ -65,16 +65,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return whether there have been changes made to the content.
-		/// </summary>
-		[Browsable(false)]
-		public bool HasChanged
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the background color for the panel.
 		/// </summary>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
@@ -322,7 +312,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">New value assigned to the property.</param>
 		protected internal virtual void OnContentPropertyChanged(string propertyName, object value)
 		{
-			HasChanged = true;
 			UpdateCaption();
 		}
 
@@ -340,7 +329,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		internal void ContentPersisted()
 		{
-			HasChanged = false;
 			RefreshContent();
 		}
 
@@ -351,11 +339,11 @@ namespace GorgonLibrary.Editor
 		{
 			if (_content == null)
 			{
-				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED, HasChanged ? "*" : string.Empty);
+				labelCaption.Text = string.Format("{0} - {1}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED);
 				return;
 			}
 
-			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, HasChanged ? "*" : string.Empty);
+			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, _content.HasChanges ? "*" : string.Empty);
 		}
 
 		/// <summary>

@@ -116,6 +116,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
         private readonly bool _createFont;                  // Flag to indicate that the font should be created after initialization.
 	    private GorgonTexture2D _badGlyphTexture;			// Texture used as a stand-in when a glyph is missing its texture.
+        private GorgonFont _originalFont;                   // The original font.
         #endregion
 
         #region Properties.
@@ -580,12 +581,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             float fontSize = FontSize;
             if (FontHeightMode == FontHeightMode.Points)
+            {
                 fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, OutlineSize));
+            }
             else
+            {
                 fontSize += OutlineSize;
+            }
 
-            if ((fontSize > FontTextureSize.Width) || (fontSize > FontTextureSize.Height))
+            if ((fontSize > FontTextureSize.Width)
+                || (fontSize > FontTextureSize.Height))
+            {
                 FontTextureSize = new Size((int)fontSize, (int)fontSize);
+            }
+        }
+
+        /// <summary>
+        /// Function called when the content is reverted back to its original state.
+        /// </summary>
+        /// <returns>
+        /// TRUE if reverted, FALSE if not.
+        /// </returns>
+        protected override bool OnRevert()
+        {
+            if (_originalFont == Font)
+            {
+                return false;
+            }
+
+            Font.Dispose();
+            _originalFont = Font;
+            _settings = _originalFont.Settings.Clone();
+
+            return true;
         }
 
         /// <summary>
@@ -632,14 +660,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Restore the settings.
 				if (Font != null)
 				{
-					_settings = Font.Settings;
+					_settings = Font.Settings.Clone();
 				}
-
+                
 				throw;
 			}
 
 			// Wipe out the previous font.
-			if (Font != null)
+			if ((Font != null) && (Font != _originalFont))
 			{
 				Font.Dispose();
 				Font = null;
@@ -668,6 +696,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					// Remove any externally linked dependencies.
 	                EditorFile = null;
+
+                    if (_originalFont != Font)
+                    {
+                        _originalFont.Dispose();
+                    }
 					
                     if (Font != null)
                     {
@@ -692,6 +725,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_swap = null;
 				Renderer = null;
+                _originalFont = null;
                 Font = null;
 				_panel = null;
                 _textDisplay = null;
@@ -708,7 +742,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		protected override void OnPersist(Stream stream)
 		{
 			Font.Save(stream);
-	    }
+
+            if (_originalFont == Font)
+            {
+                return;
+		    }
+
+            _originalFont.Dispose();
+		    _originalFont = Font;
+		}
 
 	    /// <summary>
 	    /// Function to read the content data from a stream.
@@ -716,18 +758,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    /// <param name="stream">Stream containing the content data.</param>
 	    protected override void OnRead(Stream stream)
 	    {
-		    Font = Graphics.Fonts.FromStream(Name,
-		                                     stream,
-		                                     (name, size) => _badGlyphTexture ??
-		                                                     (_badGlyphTexture = Graphics.Textures.CreateTexture
-			                                                                         <GorgonTexture2D>(name,Resources.bad_glyph_256x256,
-			                                                                                           new GorgonGDIOptions
-			                                                                                           {
-				                                                                                           Width = size.Width,
-				                                                                                           Height = size.Height,
-				                                                                                           Filter = ImageFilter.Point
-			                                                                                           })));
-		    _settings = Font.Settings;
+	        _originalFont = Font = Graphics.Fonts.FromStream(Name,
+	                                                         stream,
+	                                                         (name, size) => _badGlyphTexture ??
+	                                                                         (_badGlyphTexture =
+	                                                                          Graphics.Textures.CreateTexture
+	                                                                              <GorgonTexture2D>(name,
+	                                                                                                Resources.bad_glyph_256x256,
+	                                                                                                new GorgonGDIOptions
+	                                                                                                {
+	                                                                                                    Width = size.Width,
+	                                                                                                    Height = size.Height,
+	                                                                                                    Filter = ImageFilter.Point
+	                                                                                                })));
+		    _settings = Font.Settings.Clone();
 	        DisableProperty("OutlineColor2", _settings.OutlineSize < 3);
 	        DisableProperty("FontTextureSize", _settings.Glyphs.Count > 0);
 	    }
@@ -759,7 +803,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // If the font needs to be created, do so now.
 		    if (_createFont)
 		    {
-		        Font = Graphics.Fonts.CreateFont(Name, _settings);
+		        _originalFont = Font = Graphics.Fonts.CreateFont(Name, _settings);
 		    }
 
 		    _panel.CreateResources();

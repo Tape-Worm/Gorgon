@@ -218,7 +218,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonRevert control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonRevert_Click(object sender, EventArgs e)
+        {
+            if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORFNT_DLG_CONFIRM_REVERT) == ConfirmationResult.No)
+            {
+                return;
+            }
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                _content.Revert();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        /// <summary>
 		/// Handles the Load event of the GorgonFontContentPanel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>

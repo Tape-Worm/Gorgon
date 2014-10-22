@@ -90,6 +90,17 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return whether the current content has been changed.
+        /// </summary>
+	    private static bool HasContentChanged
+	    {
+	        get
+	        {
+	            return ContentManagement.Current != null && ContentManagement.Current.HasChanges;
+	        }
+	    }
+
 		/// <summary>
 		/// Property to return the file that is currently open.
 		/// </summary>
@@ -733,7 +744,7 @@ namespace GorgonLibrary.Editor
             itemSave.Enabled = !string.IsNullOrWhiteSpace(FileManagement.FilePath)
                                 && (FileManagement.GetWriterPlugIn(FileManagement.FilePath) != null)
                                 && ((FileManagement.FileChanged) 
-									|| (ContentManagement.Changed))
+									|| (HasContentChanged))
 								&& itemSaveAs.Enabled;
 
             // Check to see if the current content can export.
@@ -880,7 +891,7 @@ namespace GorgonLibrary.Editor
 		{
 			var result = ConfirmationResult.No;
 
-			if ((!ContentManagement.Changed)
+			if ((!HasContentChanged)
 			    || (CurrentOpenFile == null))
 			{
 				return result;
@@ -1322,7 +1333,7 @@ namespace GorgonLibrary.Editor
 		{
 			// Ensure both the content and the file change flags are checked.
 			if (((!FileManagement.FileChanged) &&
-			     (!ContentManagement.Changed)) 
+			     (!HasContentChanged)) 
 				 || (PlugIns.WriterPlugIns.Count == 0))
 			{
 				return false;
@@ -1782,7 +1793,7 @@ namespace GorgonLibrary.Editor
 			try
 			{
                 // Save outstanding edits on the content.
-				if ((CurrentOpenFile != null) && (ContentManagement.Changed))
+				if ((CurrentOpenFile != null) && (HasContentChanged))
 				{
 					ContentManagement.Save(CurrentOpenFile);
 				}
@@ -1974,7 +1985,7 @@ namespace GorgonLibrary.Editor
 				Cursor.Current = Cursors.WaitCursor;
 
 				// Save outstanding edits on the content.
-				if ((CurrentOpenFile != null) && (ContentManagement.Changed))
+				if ((CurrentOpenFile != null) && (HasContentChanged))
 				{
 					ContentManagement.Save(CurrentOpenFile);
 				}

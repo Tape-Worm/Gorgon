@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -45,7 +44,6 @@ namespace GorgonLibrary.Editor
         #region Variables.
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
 	    private static ContentObject _currentContentObject;
-	    private static bool _contentChanged ;
 	    private static Type _defaultContentType;
         #endregion
 
@@ -88,17 +86,6 @@ namespace GorgonLibrary.Editor
 				_defaultContentType = value;
 			}
 		}
-
-		/// <summary>
-		/// Property to return whether the current content has been changed or not.
-		/// </summary>
-	    public static bool Changed
-	    {
-		    get
-		    {
-			    return ((Current != null) && (_contentChanged));
-			}
-	    }
 
 		/// <summary>
 		/// Property to set or return the method to call if a dependency could not be loaded.
@@ -190,16 +177,6 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Function called when a property on the content has been changed.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event parameters.</param>
-		private static void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			_contentChanged = true;
-		}
-
-		/// <summary>
 		/// Function to load the content and its related UI.
 		/// </summary>
 		/// <param name="contentObject">Content to load.</param>
@@ -236,11 +213,6 @@ namespace GorgonLibrary.Editor
 			{
 				// Enumerate properties for the content.
 				ContentEnumerateProperties(contentObject.HasProperties);
-			}
-
-			if (contentObject.HasProperties)
-			{
-				contentObject.PropertyChanged += OnPropertyChanged;
 			}
 
 			// Force focus to the content window.
@@ -364,7 +336,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Close the content object.  This should preserve any changes.
-			_currentContentObject.PropertyChanged -= OnPropertyChanged;
 			_currentContentObject.Dispose();
 			_currentContentObject = null;
 	    }
@@ -569,8 +540,6 @@ namespace GorgonLibrary.Editor
 		    {
 		        content.Read(stream);
 		    }
-
-		    _contentChanged = false;
 	    }
 
 		/// <summary>
@@ -588,9 +557,6 @@ namespace GorgonLibrary.Editor
 		    {
 		        throw new ArgumentNullException("file");
 		    }
-
-			// Update the meta data for this file.
-			Current.CommitDependencies();
 			
 			// Write the content out to the scratch file system.
 			using (var contentStream = file.OpenStream(true))
@@ -600,8 +566,6 @@ namespace GorgonLibrary.Editor
 
 			// Save any metadata.
 			EditorMetaDataFile.Save();
-
-			_contentChanged = false;
 	    }
 
 	    /// <summary>

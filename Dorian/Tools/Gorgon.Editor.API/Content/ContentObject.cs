@@ -45,7 +45,7 @@ namespace GorgonLibrary.Editor
 	/// Base object for content that can be created/modified by the editor.
 	/// </summary>
 	public abstract class ContentObject
-		: IDisposable, INamedObject, INotifyPropertyChanged
+		: IDisposable, INamedObject
     {
         #region Constants.
         /// <summary>
@@ -81,6 +81,16 @@ namespace GorgonLibrary.Editor
 		    get;
 		    private set;
 	    }
+
+        /// <summary>
+        /// Property to return whether this content has changed or not.
+        /// </summary>
+        [Browsable(false)]
+        public bool HasChanges
+        {
+            get;
+            internal set;
+        }
 
 		/// <summary>
 		/// Property to return the list of working dependencies for the content.
@@ -284,6 +294,24 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Function to finalize the dependency list to the file.
+        /// </summary>
+        private void CommitDependencies()
+        {
+            if (EditorFile == null)
+            {
+                return;
+            }
+
+            EditorFile.DependsOn.Clear();
+
+            foreach (Dependency dependency in Dependencies)
+            {
+                EditorFile.DependsOn[dependency.EditorFile, dependency.Type] = dependency;
+            }
+        }
+
+        /// <summary>
         /// Function to return the raw input object from the editor.
         /// </summary>
         /// <returns>The raw input interface from the editor.</returns>
@@ -356,11 +384,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">New value for the property.</param>
 	    protected void NotifyPropertyChanged(string property, object value)
 	    {
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(property));
-			}
-
 			// If we have a content UI, then tell it of the change to the property.
 			if (ContentControl == null)
 			{
@@ -386,23 +409,14 @@ namespace GorgonLibrary.Editor
 			NotifyPropertyChanged(propertyName, value);
 	    }
 
-		/// <summary>
-		/// Function to finalize the dependency list to the file.
-		/// </summary>
-	    internal void CommitDependencies()
-	    {
-			if (EditorFile == null)
-			{
-				return;
-			}
-
-			EditorFile.DependsOn.Clear();
-
-			foreach (Dependency dependency in Dependencies)
-			{
-				EditorFile.DependsOn[dependency.EditorFile, dependency.Type] = dependency;
-			}
-	    }
+        /// <summary>
+        /// Function called when the content is reverted back to its original state.
+        /// </summary>
+        /// <returns>TRUE if reverted, FALSE if not.</returns>
+        protected virtual bool OnRevert()
+        {
+            return false;
+        }
 
 		/// <summary>
 		/// Function to retrieve the registered image editor for the system.
@@ -494,6 +508,8 @@ namespace GorgonLibrary.Editor
 
 			OnRead(stream);
 
+            HasChanges = false;
+
             // Update the properties.
             SetDefaults();
 
@@ -520,7 +536,11 @@ namespace GorgonLibrary.Editor
 				throw new IOException(APIResources.GOREDIT_ERR_STREAM_READ_ONLY);
 			}
 
+            CommitDependencies();
+
 			OnPersist(stream);
+
+            HasChanges = false;
 
 			if (ContentControl != null)
 			{
@@ -638,6 +658,20 @@ namespace GorgonLibrary.Editor
 				ContentManagement.LoadDefaultContentPane();
 			}
 	    }
+
+        /// <summary>
+        /// Function to revert the image back to the original state.
+        /// </summary>
+        public void Revert()
+        {
+            if (!OnRevert())
+            {
+                return;
+            }
+
+            HasChanges = false;
+            NotifyPropertyChanged("Revert", null);
+        }
 	    #endregion
 
 		#region Constructor/Destructor.
@@ -715,12 +749,5 @@ namespace GorgonLibrary.Editor
 			GC.SuppressFinalize(this);
 		}
 		#endregion
-
-		#region INotifyPropertyChanged Members
-		/// <summary>
-		/// Occurs when a property value changes.
-		/// </summary>
-	    public event PropertyChangedEventHandler PropertyChanged;
-	    #endregion
     }
 }
