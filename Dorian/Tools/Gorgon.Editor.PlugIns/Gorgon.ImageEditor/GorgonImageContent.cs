@@ -1224,7 +1224,31 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the content is reverted back to its original state.
+        /// </summary>
+        /// <returns>
+        /// TRUE if reverted, FALSE if not.
+        /// </returns>
+        protected override bool OnRevert()
+        {
+            if (_original == Image)
+            {
+                return false;
+            }
+
+            Image.Dispose();
+            Image = _original;
+            _imageSettings = _original.Settings.Clone();
+            FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
+            _codec = _originalCodec;
+            _blockCompression = _originalBlockCompression;
+            ValidateImageProperties();
+
+            return true;
+        }
+
+        /// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -1293,6 +1317,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			    return;
 		    }
 
+	        _originalCodec = Codec;
 		    _original.Dispose();
 		    _original = Image;
         }
@@ -1822,30 +1847,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				DeleteTempImageFile(filePath);
 			}
-	    }
-
-		/// <summary>
-		/// Function to revert the image back to the original state.
-		/// </summary>
-	    public void Revert()
-	    {
-			if (_original == Image)
-			{
-				return;
-			}
-
-			// TODO: We should reset the changed flag here.
-			// TODO: Perhaps make this a global method so that all content can be reverted back to its original form.
-
-			Image.Dispose();
-			Image = _original;
-			_imageSettings = _original.Settings.Clone();
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(_imageSettings.Format);
-			_codec = _originalCodec;
-			_blockCompression = _originalBlockCompression;
-
-			NotifyPropertyChanged("Revert", null);
-			ValidateImageProperties();
 	    }
         #endregion
 
