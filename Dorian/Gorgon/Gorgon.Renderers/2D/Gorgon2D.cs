@@ -754,19 +754,23 @@ namespace GorgonLibrary.Renderers
 			// Set up our index buffer.
 			using (var ibData = new GorgonDataStream(spriteIndexBufferSize))
 			{
-				int index = 0;
-				for (int i = 0; i < _cache.CacheSize; i++)
+				unsafe
 				{
-					ibData.Write(index);
-					ibData.Write(index + 1);
-					ibData.Write(index + 2);
-					ibData.Write(index + 1);
-					ibData.Write(index + 3);
-					ibData.Write(index + 2);
-					index += 4;
+					ushort index = 0;
+					var buffer = (int*)ibData.UnsafePointer;
+					for (int i = 0; i < _cache.CacheSize; i++)
+					{
+						*(buffer++) = index;
+						*(buffer++) = (index + 1);
+						*(buffer++) = (index + 2);
+						*(buffer++) = (index + 1);
+						*(buffer++) = (index + 3);
+						*(buffer++) = (index + 2);
+
+						index += 4;
+					}
 				}
 
-				ibData.Position = 0;
 				DefaultIndexBuffer = Graphics.ImmediateContext.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings
 					{
 						IsOutput = false,
