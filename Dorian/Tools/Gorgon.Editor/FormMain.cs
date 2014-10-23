@@ -118,7 +118,115 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to include/exclude all files under a directory.
+        /// </summary>
+        /// <param name="directory">The directory containing the files.</param>
+        /// <param name="exclude">TRUE to exclude the files, FALSE to include.</param>
+	    private static void IncludeExcludeAll(GorgonFileSystemDirectory directory, bool exclude)
+	    {
+            IEnumerable<GorgonFileSystemFileEntry> files =
+                ScratchArea.ScratchFiles.FindFiles(directory.FullPath, "*", true)
+                .Where(item => !ScratchArea.IsBlocked(item));
+
+            foreach (GorgonFileSystemFileEntry file in files)
+            {
+                if (!exclude)
+                {
+                    IncludeItem(file);
+                }
+                else
+                {
+                    EditorMetaDataFile.Files[file.FullPath] = null;
+                }
+            }
+
+            FileManagement.FileChanged = true;
+
+            EditorMetaDataFile.Save();
+	    }
+
+        /// <summary>
+        /// Handles the Click event of the popupItemIncludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void popupItemIncludeAll_Click(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+            try
+            {
+                var dirNode = treeFiles.SelectedNode as TreeNodeDirectory;
+
+                if (dirNode == null)
+                {
+                    return;
+                }
+
+                IncludeExcludeAll(dirNode.Directory, false);
+
+                if (dirNode.IsExpanded)
+                {
+                    dirNode.Collapse();
+                }
+
+                if ((dirNode.Nodes.Count == 0)
+                    && (dirNode.Directory.Files.Count(item => !ScratchArea.IsBlocked(item)) > 0))
+                {
+                    dirNode.Nodes.Add(new TreeNode("DummyNode"));
+                }
+
+                dirNode.Expand();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the popupItemExcludeAll control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void popupItemExcludeAll_Click(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+            try
+            {
+                var dirNode = treeFiles.SelectedNode as TreeNodeDirectory;
+
+                if (dirNode == null)
+                {
+                    return;
+                }
+
+                IncludeExcludeAll(dirNode.Directory, true);
+
+                if (dirNode.IsExpanded)
+                {
+                    dirNode.Collapse();
+                }
+
+                dirNode.Expand();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
+
+        /// <summary>
 		/// Handles the CheckedChanged event of the buttonShowAll control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -227,11 +335,11 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				EditorMetaDataFile.Files[fileNode.EditorFile.FilePath] = null;
+                EditorMetaDataFile.Files[fileNode.EditorFile.FilePath] = null;
+                
+                FileManagement.FileChanged = true;
 
-				FileManagement.FileChanged = true;
-
-				EditorMetaDataFile.Save();
+                EditorMetaDataFile.Save();
 
 				// Remove the node from the tree if we're not showing all files.
 				if (!buttonShowAll.Checked)
@@ -724,6 +832,35 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Function to determine if a directory has excluded files.
+        /// </summary>
+        /// <param name="directory">Directory to evaluate.</param>
+        /// <returns>TRUE if excluded files are present, FALSE if not.</returns>
+	    private static bool DirectoryHasExcludedFiles(GorgonFileSystemDirectory directory)
+        {
+            IEnumerable<GorgonFileSystemFileEntry> files = ScratchArea.ScratchFiles.FindFiles(directory.FullPath,
+                                                                                              "*",
+                                                                                              true);
+
+            return files.Any(item => !EditorMetaDataFile.Files.Contains(item.FullPath));
+        }
+
+        /// <summary>
+        /// Function to determine if a directory has included files.
+        /// </summary>
+        /// <param name="directory">Directory to evaluate.</param>
+        /// <returns>TRUE if excluded files are present, FALSE if not.</returns>
+        private static bool DirectoryHasIncludedFiles(GorgonFileSystemDirectory directory)
+        {
+            IEnumerable<GorgonFileSystemFileEntry> files = ScratchArea.ScratchFiles.FindFiles(directory.FullPath,
+                                                                                              "*",
+                                                                                              true);
+
+            return files.Any(item => EditorMetaDataFile.Files.Contains(item.FullPath));
+        }
+
+
+        /// <summary>
         /// Function to validate the controls on the display.
         /// </summary>
         private void ValidateControls()
@@ -769,6 +906,8 @@ namespace GorgonLibrary.Editor
 	        popupItemInclude.Visible = false;
 			popupItemCut.Enabled = popupItemCopy.Enabled = popupItemPaste.Enabled = itemCopy.Enabled = itemCut.Enabled = itemPaste.Enabled = false;
 	        toolStripSeparator10.Visible = false;
+            popupItemIncludeAll.Visible = false;
+            popupItemExcludeAll.Visible = false;
 
             menuRecentFiles.Enabled = Program.Settings.RecentFiles.Count > 0;
 
@@ -779,15 +918,24 @@ namespace GorgonLibrary.Editor
             }
 
 			if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
-	        {
+			{
+			    GorgonFileSystemDirectory directory = ((TreeNodeDirectory)selectedNode).Directory;
+
 				// Don't check the root node.
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
-			        dependencies = EditorMetaDataFile.HasFileLinks(((TreeNodeDirectory)selectedNode).Directory);
+			        dependencies = EditorMetaDataFile.HasFileLinks(directory);
 		        }
 
 		        toolStripSeparator4.Visible = true;
-		        popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
+	            toolStripSeparator10.Visible = true;
+
+			    popupItemExcludeAll.Text = string.Format(Resources.GOREDIT_TEXT_EXCLUDE_ALL, directory.Name);
+                popupItemIncludeAll.Text = string.Format(Resources.GOREDIT_TEXT_INCLUDE_ALL, directory.Name);
+
+			    popupItemIncludeAll.Visible = DirectoryHasExcludedFiles(directory);
+			    popupItemExcludeAll.Visible = DirectoryHasIncludedFiles(directory);
+                popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
 		        popupItemAddContent.Enabled = itemAddContent.Enabled;
 		        dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
 		        buttonDeleteContent.Enabled = !dependencies;

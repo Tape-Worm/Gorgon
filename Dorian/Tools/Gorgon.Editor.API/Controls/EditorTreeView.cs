@@ -410,7 +410,24 @@ namespace GorgonLibrary.Editor
             base.Dispose(disposing);
         }
 
-		/// <summary>
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Right)
+            {
+                base.OnMouseDown(e);
+                return;
+            }
+
+            SelectedNode = GetNodeAt(e.Location) as TreeNodeEditor;
+
+            base.OnMouseDown(e);
+        }
+
+        /// <summary>
 		/// Sends the specified message to the default window procedure.
 		/// </summary>
 		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
