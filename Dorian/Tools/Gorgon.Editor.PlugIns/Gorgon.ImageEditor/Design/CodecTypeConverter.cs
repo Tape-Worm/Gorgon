@@ -29,7 +29,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn

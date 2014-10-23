@@ -84,6 +84,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.panel6 = new System.Windows.Forms.Panel();
 			this.checkShowAnimations = new System.Windows.Forms.CheckBox();
 			this.labelFontEditorSettings = new System.Windows.Forms.Label();
+			this.labelBlendMode = new System.Windows.Forms.Label();
+			this.comboBlendMode = new System.Windows.Forms.ComboBox();
 			((System.ComponentModel.ISupportInitialize)(this.numericZoomWindowSize)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericZoomAmount)).BeginInit();
 			this.panel1.SuspendLayout();
@@ -272,6 +274,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// panel4
 			// 
 			this.panel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.panel4.Controls.Add(this.comboBlendMode);
+			this.panel4.Controls.Add(this.labelBlendMode);
 			this.panel4.Controls.Add(this.labelBackgroundColor);
 			this.panel4.Controls.Add(this.flowLayoutPanel3);
 			this.panel4.Controls.Add(this.labelTextColor);
@@ -498,6 +502,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.labelFontEditorSettings.TabIndex = 0;
 			this.labelFontEditorSettings.Text = "font editor settings";
 			// 
+			// labelBlendMode
+			// 
+			this.labelBlendMode.AutoSize = true;
+			this.labelBlendMode.Location = new System.Drawing.Point(220, 74);
+			this.labelBlendMode.Name = "labelBlendMode";
+			this.labelBlendMode.Size = new System.Drawing.Size(74, 15);
+			this.labelBlendMode.TabIndex = 5;
+			this.labelBlendMode.Text = "not localized";
+			this.labelBlendMode.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// comboBlendMode
+			// 
+			this.comboBlendMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBlendMode.FormattingEnabled = true;
+			this.comboBlendMode.Location = new System.Drawing.Point(222, 92);
+			this.comboBlendMode.Name = "comboBlendMode";
+			this.comboBlendMode.Size = new System.Drawing.Size(121, 23);
+			this.comboBlendMode.TabIndex = 6;
+			// 
 			// PanelFontPreferences
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -560,6 +583,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private System.Windows.Forms.Panel panel6;
 		private System.Windows.Forms.CheckBox checkShowAnimations;
 		private System.Windows.Forms.Label labelFontEditorSettings;
+		private System.Windows.Forms.ComboBox comboBlendMode;
+		private System.Windows.Forms.Label labelBlendMode;
 
     }
 }

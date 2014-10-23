@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX.WIC;
 
@@ -38,9 +39,30 @@ namespace GorgonLibrary.IO
     /// </remarks>
     public sealed class GorgonCodecBMP
         : GorgonCodecWIC
-    {
-        #region Constructor/Destructor.
-        /// <summary>
+	{
+		#region Variables.
+		// Supported formats.
+		private readonly BufferFormat[] _supportedFormats = {
+																BufferFormat.B8G8R8X8_UIntNormal,
+																BufferFormat.B5G6R5_UIntNormal
+	                                                        };
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the data formats for the image.
+		/// </summary>
+		public override System.Collections.Generic.IEnumerable<BufferFormat> SupportedFormats
+		{
+			get
+			{
+				return _supportedFormats;
+			}
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
         /// Initializes a new instance of the <see cref="GorgonCodecBMP"/> class.
         /// </summary>
         public GorgonCodecBMP()

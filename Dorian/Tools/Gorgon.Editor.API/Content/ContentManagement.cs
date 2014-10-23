@@ -67,6 +67,15 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Property to set or return the current content file.
+		/// </summary>
+	    public static GorgonFileSystemFileEntry ContentFile
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to set or return the type of the default content object.
 		/// </summary>
 	    public static Type DefaultContentType
@@ -85,6 +94,15 @@ namespace GorgonLibrary.Editor
 
 				_defaultContentType = value;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return the method to call when content is saved.
+		/// </summary>
+	    public static Action ContentSaved
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -164,6 +182,56 @@ namespace GorgonLibrary.Editor
 
         #region Methods.
 		/// <summary>
+		/// Function to close the current content.
+		/// </summary>
+		/// <param name="content">The content that's asking to be closed.</param>
+		/// <remarks>This will close the current content without asking to save, ensure that data is saved before calling this method.</remarks>
+	    private static void CloseCurrentContent(ContentObject content)
+	    {
+		    if ((Current == null)
+				|| (Current != content))
+		    {
+			    return;
+		    }
+
+			LoadDefaultContentPane();
+	    }
+
+		/// <summary>
+		/// Function to rename the current content.
+		/// </summary>
+		/// <param name="content">The content that's being renamed.</param>
+		/// <param name="newName">The new name for the content.</param>
+	    private static void RenameCurrentContent(ContentObject content, string newName)
+	    {
+			if ((ContentRenamed == null)
+				|| (Current == null)
+				|| (Current != content))
+			{
+				return;
+			}
+
+			ContentRenamed(newName);
+	    }
+
+		/// <summary>
+		/// Function to disable a property for the content.
+		/// </summary>
+		/// <param name="content">Content that is disabling the property.</param>
+	    private static void DisableContentProperty(ContentObject content)
+	    {
+
+			if ((ContentPropertyStateChanged == null)
+				|| (Current == null)
+				|| (Current != content))
+			{
+				return;
+			}
+
+			ContentPropertyStateChanged();
+	    }
+
+		/// <summary>
 		/// Function called during idle time for rendering.
 		/// </summary>
 		/// <returns>TRUE to continue rendering, FALSE to stop.</returns>
@@ -225,6 +293,58 @@ namespace GorgonLibrary.Editor
 			{
 				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
 			}
+	    }
+
+		/// <summary>
+		/// Function to create a content object instance.
+		/// </summary>
+		/// <param name="plugIn">The plug-in to use when creating the content.</param>
+		/// <param name="settings">Settings to pass to the content.</param>
+		/// <param name="editorFile">Editor file that holds the content.</param>
+		/// <param name="recordDefaults">TRUE to record the default property values for the content, FALSE to treat as new property values.</param>
+		/// <returns>The new content object.</returns>
+	    private static ContentObject CreateContentObjectInstance(ContentPlugIn plugIn, ContentSettings settings, EditorFile editorFile, bool recordDefaults)
+	    {
+			ContentObject content = plugIn.CreateContentObject(settings);
+
+			content.OnCloseCurrent = CloseCurrentContent;
+			content.OnRenameContent = RenameCurrentContent;
+			content.OnPropertyDisabled = DisableContentProperty;
+			content.OnCommit = contentItem =>
+			                   {
+				                   if ((Current == null)
+				                       || (contentItem != Current))
+				                   {
+					                   return;
+				                   }
+
+								   // Save the content and its metadata.
+								   Save();
+			                   };
+
+			if ((content.HasProperties)
+				&& (recordDefaults))
+			{
+				content.SetDefaults();
+			}
+
+			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
+
+			if ((content.ImageEditor != null)
+				&& (string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn)))
+			{
+				DefaultImageEditorPlugIn = content.ImageEditor.Name;
+			}
+
+			content.EditorFile = editorFile;
+
+			if (content.EditorFile != null)
+			{
+				// Indicate that this content is linked to another piece of content.
+				content.HasOwner = EditorMetaDataFile.HasFileLinks(editorFile);
+			}
+
+			return content;
 	    }
 
 		/// <summary>
@@ -325,6 +445,14 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Turn off the public facing content object.
+			if (Current != null)
+			{
+				Current.OnCloseCurrent = null;
+				Current.OnRenameContent = null;
+				Current.OnPropertyDisabled = null;
+				Current.OnCommit = null;
+			}
+
 			Current = null;
 
 			// Turn off any idle time activity during the load.
@@ -372,6 +500,8 @@ namespace GorgonLibrary.Editor
 			    return;
 		    }
 
+			ContentFile = null;
+
 			var defaultContent = (ContentObject)Activator.CreateInstance(DefaultContentType,
 			                                                             BindingFlags.CreateInstance,
 			                                                             null,
@@ -407,22 +537,7 @@ namespace GorgonLibrary.Editor
                 settings.CreateContent = true;
             }
 
-            ContentObject content = plugIn.CreateContentObject(settings);
-
-            if (content.HasProperties)
-            {
-                content.SetDefaults();
-            }
-
-			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
-
-	        if ((content.ImageEditor != null)
-	            && (string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn)))
-	        {
-		        DefaultImageEditorPlugIn = content.ImageEditor.Name;
-	        }
-
-            return content;
+	        return CreateContentObjectInstance(plugIn, settings, null, true);
         }
 
 		/// <summary>
@@ -478,7 +593,7 @@ namespace GorgonLibrary.Editor
 		    {
 		        throw new ArgumentNullException("file");
 		    }
-
+			
 		    ContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
 
 		    if (settings != null)
@@ -488,31 +603,14 @@ namespace GorgonLibrary.Editor
 		        settings.CreateContent = false;
 		    }
 
-            ContentObject content = plugIn.CreateContentObject(settings);
-
-			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
-
-			if ((string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn))
-			    && (content.ImageEditor != null))
-			{
-				DefaultImageEditorPlugIn = content.ImageEditor.Name;
-			}
+			ContentObject content = CreateContentObjectInstance(plugIn, settings, editorFile, false);
 
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
-
-			EditorFile contentFile;
-			EditorMetaDataFile.Files.TryGetValue(file.FullPath, out contentFile);
-
-			content.EditorFile = contentFile;
-
-			// Indicate that this content is linked to another piece of content.
-			content.HasOwner = EditorMetaDataFile.HasFileLinks(contentFile);
-
 			// Load the content dependencies if any exist.
 			// Check for dependencies.
-			if ((contentFile != null)
-				&& (contentFile.DependsOn.Count > 0))
+			if ((editorFile != null)
+				&& (editorFile.DependsOn.Count > 0))
 			{
 				var missingDependencies = new List<string>();
 
@@ -540,32 +638,42 @@ namespace GorgonLibrary.Editor
 		    {
 		        content.Read(stream);
 		    }
+
+			ContentFile = file;
 	    }
 
 		/// <summary>
 		/// Function to save the current content.
 		/// </summary>
-		/// <param name="file">The file that will contain the content data.</param>
-	    public static void Save(GorgonFileSystemFileEntry file)
+		/// <param name="persistMetaData">[Optional] TRUE to persist the meta data for the file, FALSE to leave it.</param>
+	    public static void Save(bool persistMetaData = true)
 	    {
-		    if (Current == null)
+		    if ((Current == null)
+				|| (ContentFile == null))
 		    {
 			    return;
 		    }
-
-		    if (file == null)
-		    {
-		        throw new ArgumentNullException("file");
-		    }
 			
 			// Write the content out to the scratch file system.
-			using (var contentStream = file.OpenStream(true))
+			using (var contentStream = ContentFile.OpenStream(true))
 			{
 				Current.Persist(contentStream);
 			}
 
 			// Save any metadata.
+			if (!persistMetaData)
+			{
+				return;
+			}
+
 			EditorMetaDataFile.Save();
+
+			if (ContentSaved == null)
+			{
+				return;
+			}
+
+			ContentSaved();
 	    }
 
 	    /// <summary>

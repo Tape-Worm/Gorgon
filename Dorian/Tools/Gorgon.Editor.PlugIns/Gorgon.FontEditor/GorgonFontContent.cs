@@ -182,15 +182,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		            return;
 	            }
 
-				// Show the secondardy outline color if we have enough space in our outline.
-		        if (HasProperty("OutlineColor2"))
-		        {
-		            DisableProperty("OutlineColor2", value < 3);
-		        }
-				
 	            _settings.OutlineSize = value;
 	            OnContentUpdated();
 				NotifyPropertyChanged();
+				ValidateProperties();
             }
         }
 
@@ -574,6 +569,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to validate the properties for the font.
+		/// </summary>
+	    private void ValidateProperties()
+	    {
+			DisableProperty("OutlineColor2", _settings.OutlineSize < 3);
+			DisableProperty("FontTextureSize", _settings.Glyphs.Count > 0);
+	    }
+
         /// <summary>
         /// Function to limit the font texture size based on the font size.
         /// </summary>
@@ -610,8 +614,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
 
             Font.Dispose();
-            _originalFont = Font;
+            Font = _originalFont;
             _settings = _originalFont.Settings.Clone();
+
+			ValidateProperties();
 
             return true;
         }
@@ -750,6 +756,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             _originalFont.Dispose();
 		    _originalFont = Font;
+			_settings = _originalFont.Settings.Clone();
+
+			ValidateProperties();
 		}
 
 	    /// <summary>
@@ -772,8 +781,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	                                                                                                    Filter = ImageFilter.Point
 	                                                                                                })));
 		    _settings = Font.Settings.Clone();
-	        DisableProperty("OutlineColor2", _settings.OutlineSize < 3);
-	        DisableProperty("FontTextureSize", _settings.Glyphs.Count > 0);
+
+			ValidateProperties();
 	    }
 
 	    /// <summary>
@@ -804,6 +813,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    if (_createFont)
 		    {
 		        _originalFont = Font = Graphics.Fonts.CreateFont(Name, _settings);
+			    _settings = Font.Settings.Clone();
 		    }
 
 		    _panel.CreateResources();
@@ -1069,8 +1079,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
 	        HasThumbnail = true;
-            DisableProperty("OutlineColor2", initialSettings.Settings.OutlineSize < 3);
-            DisableProperty("FontTextureSize", initialSettings.Settings.Glyphs.Count > 0);
+
+			ValidateProperties();
         }
         #endregion
     }

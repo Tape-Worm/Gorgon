@@ -270,15 +270,6 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
-		/// Property to set or return the currently open file from the file system.
-		/// </summary>
-		public static GorgonFileSystemFileEntry CurrentOpenFile
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the method called to determine if a file is able to be imported or not.
 		/// </summary>
 		public static Func<GorgonFileSystemFileEntry, bool> CanImportFunction

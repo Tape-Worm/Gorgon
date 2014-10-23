@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX.WIC;
 
@@ -67,11 +69,30 @@ namespace GorgonLibrary.IO
         : GorgonCodecWIC
     {
         #region Variables.
-        private float _compressionQuality = 1.0f;       // Compression quality.        
+		// Supported formats.
+		private readonly BufferFormat[] _supportedFormats = {
+																BufferFormat.R8G8B8A8_UIntNormal,
+																BufferFormat.B8G8R8A8_UIntNormal,
+																BufferFormat.B8G8R8X8_UIntNormal,
+																BufferFormat.R16G16B16A16_UIntNormal
+	                                                        };
+
+		private float _compressionQuality = 1.0f;       // Compression quality.        
         #endregion
 
         #region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to return the data formats for the image.
+		/// </summary>
+	    public override IEnumerable<BufferFormat> SupportedFormats
+	    {
+		    get
+		    {
+			    return _supportedFormats;
+		    }
+	    }
+
+	    /// <summary>
         /// Property to set or return the amount of compression to use.
         /// </summary>
         /// <remarks>

@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\save_16x16.png" />
     <None Include="Resources\revert_16x16.png" />
     <None Include="Resources\glyph_tools_16x16.png" />
     <None Include="Resources\back_16x16png.png" />

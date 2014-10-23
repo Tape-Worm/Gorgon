@@ -185,6 +185,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonGlyph _newGlyph;
 	    private GorgonGlyph _kernGlyph;
         private Font _kernComboFont;
+	    private BlendingMode _previewBlendMode = BlendingMode.Modulate;
         #endregion
 
 		#region Properties.
@@ -218,7 +219,43 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the Click event of the buttonSave control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonSave_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				_content.Commit();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the SelectedIndexChanged event of the comboBlendMode control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void comboBlendMode_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_previewBlendMode = string.Equals(comboBlendMode.Text, Resources.GORFNT_TEXT_BLEND_MOD, StringComparison.CurrentCultureIgnoreCase)
+				                    ? BlendingMode.Modulate
+				                    : BlendingMode.Additive;
+
+			GorgonFontEditorPlugIn.Settings.BlendMode = comboBlendMode.Text;
+		}
+
+	    /// <summary>
         /// Handles the Click event of the buttonRevert control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -1823,6 +1860,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
             if ((_content != null) && (_content.Font != null))
             {
+	            buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
+
 				// If we can't use the image editor plug-in, then don't allow us to edit the glyph image dimensions.
 				if (_currentTextureIndex < 0)
 				{
@@ -2924,6 +2963,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
 
             textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
+			comboBlendMode.Text = comboBlendMode.Items.Contains(GorgonFontEditorPlugIn.Settings.BlendMode)
+						  ? GorgonFontEditorPlugIn.Settings.BlendMode
+						  : comboBlendMode.Items[0].ToString();
 
             itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
             itemPreviewShadowEnable_Click(this, EventArgs.Empty);
@@ -2976,6 +3018,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    buttonGoHome.ToolTipText = Resources.GORFNT_TIP_GO_BACK;
 			buttonGlyphKern.Text = Resources.GORFNT_TIP_EDIT_KERNING;
 			buttonGlyphTools.ToolTipText = Resources.GORFNT_TEXT_EDIT_GLYPH_IMAGE;
+			buttonRevert.Text = Resources.GORFNT_TEXT_REVERT;
+			buttonSave.Text = Resources.GORFNT_TEXT_SAVE;
 			menuItemSetGlyph.Text = Resources.GORFNT_ACC_TEXT_UPDATE_GLYPH_RGN;
 			menuItemLoadGlyphImage.Text = Resources.GORFNT_ACC_TEXT_LOAD_GLYPH_IMAGE;
 			menuTextColor.Text = Resources.GORFNT_TIP_DISPLAY_COLORS;
@@ -2997,6 +3041,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			menuItem75.Text = 0.75.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			labelBlendMode.Text = Resources.GORFNT_TEXT_BLEND_MODE;
 		}
 
 		/// <summary>
@@ -3041,46 +3086,54 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnContentPropertyChanged(propertyName, value);
 
-			switch (propertyName)
+			try
 			{
-				// Skip the resize functionality when updating the glyph advancement, offset and kerning.
-				case "SelectedGlyphAdvance":
-				case "SelectedGlyphOffset":
-					break;
-				case "Characters":
-					PopulateSearchCharacterList();
-					TextureDisplayResize(this, EventArgs.Empty);
-					break;
-				default:
-					TextureDisplayResize(this, EventArgs.Empty);
-					break;
+				switch (propertyName)
+				{
+						// Skip the resize functionality when updating the glyph advancement, offset and kerning.
+					case "SelectedGlyphAdvance":
+					case "SelectedGlyphOffset":
+						break;
+					case "Revert":
+					case "Characters":
+						PopulateSearchCharacterList();
+						TextureDisplayResize(this, EventArgs.Empty);
+						break;
+					default:
+						TextureDisplayResize(this, EventArgs.Empty);
+						break;
+				}
+
+				GetGlyphAdvancementAndOffset();
+				SetKerningComboFont();
+
+				// Get the current kerning value for the font face (if we've not customized it already).
+				if (_content == null)
+				{
+					return;
+				}
+
+				if (_content.CurrentState != DrawState.KernPair)
+				{
+					return;
+				}
+
+				// If we're editing the kerning for a glyph, and we've disabled kerning, then 
+				// reset the editor state.
+				if (_content.UseKerningPairs)
+				{
+					GetCurrentKerningValue();
+				}
+				else
+				{
+					buttonGlyphKern.Checked = false;
+					buttonGlyphKern_Click(this, EventArgs.Empty);
+				}
 			}
-
-			GetGlyphAdvancementAndOffset();
-			SetKerningComboFont();
-
-            // Get the current kerning value for the font face (if we've not customized it already).
-		    if (_content == null)
-		    {
-		        return;
-		    }
-
-		    if (_content.CurrentState != DrawState.KernPair)
-		    {
-		        return;
-		    }
-
-            // If we're editing the kerning for a glyph, and we've disabled kerning, then 
-            // reset the editor state.
-		    if (_content.UseKerningPairs)
-		    {
-		        GetCurrentKerningValue();
-		    }
-		    else
-		    {
-		        buttonGlyphKern.Checked = false;
-		        buttonGlyphKern_Click(this, EventArgs.Empty);
-		    }
+			finally
+			{
+				ValidateControls();
+			}
 		}
 
 		/// <summary>
@@ -3119,6 +3172,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
 			panelText.BackColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
+			comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_MOD);
+			comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_ADD);
+			comboBlendMode.Text = comboBlendMode.Items.Contains(GorgonFontEditorPlugIn.Settings.BlendMode)
+						  ? GorgonFontEditorPlugIn.Settings.BlendMode
+						  : comboBlendMode.Items[0].ToString();
 			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
 			textPreviewText.Select();
 
@@ -3199,6 +3257,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 
+			_text.BlendingMode = _previewBlendMode;
 			_text.Color = new GorgonColor(GorgonFontEditorPlugIn.Settings.TextColor);		
 
 			if (scrollTextVertical.Visible)
