@@ -300,6 +300,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             labelTextColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FOREGROUND_COLOR);
             labelBackgroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_BACKGROUND_COLOR);
             labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
+	        labelBlendMode.Text = Resources.GORFNT_TEXT_BLEND_MODE;
+	        comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_MOD);
+			comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_ADD);
         }
 
         /// <summary>
@@ -328,6 +331,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
             settings.SampleText = textPreviewText.Text;
 
+	        settings.BlendMode = comboBlendMode.Text;
+
             // Persist to the plug-in settings file.
             settings.Save();
         }
@@ -352,6 +357,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _textColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.TextColor);
                 _backColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
                 textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
+
+	            comboBlendMode.Text = comboBlendMode.Items.Contains(GorgonFontEditorPlugIn.Settings.BlendMode)
+		                                  ? GorgonFontEditorPlugIn.Settings.BlendMode
+		                                  : comboBlendMode.Items[0].ToString();
+
 
                 panelShadowOpacity.Refresh();
                 panelTextColor.Refresh();

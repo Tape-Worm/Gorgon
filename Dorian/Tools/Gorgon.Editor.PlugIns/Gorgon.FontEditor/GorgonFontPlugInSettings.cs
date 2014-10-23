@@ -100,6 +100,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return the blending mode for the preview text.
+		/// </summary>
+		[ApplicationSetting("PreviewBlendMode", typeof(string), "PreviewText")]
+		public string BlendMode
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return whether transition animations are shown for the editor.
 		/// </summary>
 		[ApplicationSetting("ShowAnimations", typeof(bool), "FontEditor")]
@@ -219,6 +229,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			ShadowOpacity = 0.5f;
             SampleText = Resources.GORFNT_DEFAULT_PREVIEW_TEXT;
             LastTextureImportDialogView = FileViews.Large;
+			BlendMode = Resources.GORFNT_TEXT_BLEND_MOD;
 		}
 		#endregion
 	}

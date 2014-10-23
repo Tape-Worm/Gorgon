@@ -1397,7 +1397,7 @@ namespace GorgonLibrary.Editor
 		private Image GetContentThumbNail(DialogFileEntry file)
 		{
 			// If we have this open in the editor, then use that so we get unsaved changes as well.
-			if ((ScratchArea.CurrentOpenFile == file.PhysicalFile) && (ContentManagement.Current != null))
+			if ((ContentManagement.ContentFile == file.PhysicalFile) && (ContentManagement.Current != null))
 			{
 				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
 			}

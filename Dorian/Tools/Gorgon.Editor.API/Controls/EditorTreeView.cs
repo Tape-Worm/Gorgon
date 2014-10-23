@@ -538,7 +538,7 @@ namespace GorgonLibrary.Editor
 		        font = _excludedContent;
 	        }
 
-            if ((ContentManagement.Current != null) && (nodeFile != null) && (ScratchArea.CurrentOpenFile == nodeFile.File))
+            if ((ContentManagement.Current != null) && (nodeFile != null) && (ContentManagement.ContentFile == nodeFile.File))
             {
                 // Create the open content font if it's been changed or doesn't exist.
                 if ((_openContent == null) 

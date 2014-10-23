@@ -108,11 +108,11 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return ScratchArea.CurrentOpenFile;
+				return ContentManagement.ContentFile;
 			}
 			private set
 			{
-				ScratchArea.CurrentOpenFile = value;
+				ContentManagement.ContentFile = value;
 			}
 		}
 		#endregion
@@ -906,8 +906,7 @@ namespace GorgonLibrary.Editor
 			switch (result)
 			{
 				case ConfirmationResult.Yes:
-					ContentManagement.Save(CurrentOpenFile);
-					FileManagement.FileChanged = true;
+					ContentManagement.Save();
 					return result;
 				default:
 					return result;
@@ -979,7 +978,6 @@ namespace GorgonLibrary.Editor
 				}
 
                 ContentManagement.Load(editorFile, fileNode.File, plugIn);
-                CurrentOpenFile = fileNode.File;
                 treeFiles.Refresh();
 
 				if (ContentManagement.Current.HasProperties)
@@ -989,7 +987,6 @@ namespace GorgonLibrary.Editor
 			}
 			catch (Exception ex)
 			{
-			    CurrentOpenFile = null;
 				ContentManagement.LoadDefaultContentPane();
                 GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, fileNode.File.Name), null, ex);
 			}
@@ -1170,13 +1167,13 @@ namespace GorgonLibrary.Editor
 			// Update the node dependencies if any exist.
 			TreeNodeFile currentNode = treeFiles.GetCurrentContentNode(CurrentOpenFile);
 
-			if (currentNode != null)
+			if (currentNode == null)
 			{
-				currentNode.UpdateFile(CurrentOpenFile);
-				GetDependencyNodes(currentNode);
+				return;
 			}
-			
-            CurrentOpenFile = null;
+
+			currentNode.UpdateFile(CurrentOpenFile);
+			GetDependencyNodes(currentNode);
 		}
 
 		/// <summary>
@@ -1392,7 +1389,7 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentInitializedAction = null;
 				ContentManagement.OnGetDependency = null;
 				ContentManagement.DependencyNotFound = null;
-
+				ContentManagement.ContentSaved = null;
 
                 // Unhook from file management functionality.
 			    ScratchArea.ImportExportFileConflictFunction = null;
@@ -1712,12 +1709,27 @@ namespace GorgonLibrary.Editor
 					throw new IOException(string.Format(Resources.GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE, content.Name));
 			    }
 
+				content.EditorFile = new EditorFile(newFile.FullPath)
+				                     {
+										 PlugInType = plugIn.GetType().FullName
+				                     };
+
 				// Load the content.
 				// We're doing this first because in order to save the file, the content needs be to active in the editor.
 				ContentManagement.LoadContentPane(content);
-				
+
 				// Persist the content to the file.
-				ContentManagement.Save(newFile);
+				CurrentOpenFile = newFile;
+				ContentManagement.Save(false);
+
+				// Store the file link.
+				EditorMetaDataFile.Files[content.EditorFile.FilePath] = content.EditorFile;
+
+				// Get the attribute information for the file.
+				using (Stream stream = newFile.OpenStream(false))
+				{
+					plugIn.GetEditorFileAttributes(stream, content.EditorFile.Attributes);
+				}
 
 				// Create the file node in our tree.
                 newNode = new TreeNodeFile();
@@ -1727,8 +1739,6 @@ namespace GorgonLibrary.Editor
                 directoryNode.Nodes.Add(newNode);
                 treeFiles.SelectedNode = newNode;
 
-                // We set this to true to indicate that this is a new file.
-				CurrentOpenFile = newFile;
 				FileManagement.FileChanged = true;
 			}
 			catch (Exception ex)
@@ -1738,6 +1748,14 @@ namespace GorgonLibrary.Editor
 				
 				if (content != null)
 				{
+					if ((content.EditorFile != null)
+						&& (EditorMetaDataFile.Files.Contains(content.EditorFile)))
+					{
+						// Remove this entry.
+						EditorMetaDataFile.Files[content.EditorFile.FilePath] = null;
+						EditorMetaDataFile.Save();
+					}
+
 					content.Dispose();
 				}
 
@@ -1775,6 +1793,9 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				// Persist the meta data.
+				EditorMetaDataFile.Save();
+
 				treeFiles.Refresh();
 				Cursor.Current = Cursors.Default;
                 ValidateControls();
@@ -1795,7 +1816,7 @@ namespace GorgonLibrary.Editor
                 // Save outstanding edits on the content.
 				if ((CurrentOpenFile != null) && (HasContentChanged))
 				{
-					ContentManagement.Save(CurrentOpenFile);
+					ContentManagement.Save();
 				}
 
 			    FileWriterPlugIn plugIn = FileManagement.GetWriterPlugIn(FileManagement.FilePath);
@@ -1987,7 +2008,7 @@ namespace GorgonLibrary.Editor
 				// Save outstanding edits on the content.
 				if ((CurrentOpenFile != null) && (HasContentChanged))
 				{
-					ContentManagement.Save(CurrentOpenFile);
+					ContentManagement.Save();
 				}
 
 				// Get the plug-in and write out the file.
@@ -3283,6 +3304,7 @@ namespace GorgonLibrary.Editor
 
 			ContentManagement.ContentRenamed = ContentNamePropertyChanged;
 			ContentManagement.ContentPropertyStateChanged = () => propertyItem.Refresh();
+			ContentManagement.ContentSaved = () => FileManagement.FileChanged = true;
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

@@ -64,8 +64,10 @@
 			this.buttonNextArrayIndex = new System.Windows.Forms.ToolStripButton();
 			this.containerTexture = new System.Windows.Forms.ToolStripContainer();
 			this.stripTexture = new System.Windows.Forms.ToolStrip();
-			this.buttonEditFileExternal = new System.Windows.Forms.ToolStripButton();
+			this.buttonSave = new System.Windows.Forms.ToolStripButton();
 			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonEditFileExternal = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.stripPanelImageEditor.BottomToolStripPanel.SuspendLayout();
 			this.stripPanelImageEditor.ContentPanel.SuspendLayout();
@@ -280,7 +282,9 @@
 			this.stripTexture.Dock = System.Windows.Forms.DockStyle.None;
 			this.stripTexture.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripTexture.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonSave,
             this.buttonRevert,
+            this.toolStripSeparator1,
             this.buttonEditFileExternal});
 			this.stripTexture.Location = new System.Drawing.Point(0, 0);
 			this.stripTexture.Name = "stripTexture";
@@ -288,15 +292,15 @@
 			this.stripTexture.Stretch = true;
 			this.stripTexture.TabIndex = 0;
 			// 
-			// buttonEditFileExternal
+			// buttonSave
 			// 
-			this.buttonEditFileExternal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonEditFileExternal.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.pencil_16x16;
-			this.buttonEditFileExternal.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonEditFileExternal.Name = "buttonEditFileExternal";
-			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
-			this.buttonEditFileExternal.Text = "no localization";
-			this.buttonEditFileExternal.Click += new System.EventHandler(this.buttonEditFileExternal_Click);
+			this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonSave.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.save_16x16;
+			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonSave.Name = "buttonSave";
+			this.buttonSave.Size = new System.Drawing.Size(23, 22);
+			this.buttonSave.Text = "not localized";
+			this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
 			// 
 			// buttonRevert
 			// 
@@ -307,6 +311,21 @@
 			this.buttonRevert.Size = new System.Drawing.Size(23, 22);
 			this.buttonRevert.Text = "not localized";
 			this.buttonRevert.Click += new System.EventHandler(this.buttonRevert_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonEditFileExternal
+			// 
+			this.buttonEditFileExternal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonEditFileExternal.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.pencil_16x16;
+			this.buttonEditFileExternal.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonEditFileExternal.Name = "buttonEditFileExternal";
+			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
+			this.buttonEditFileExternal.Text = "no localization";
+			this.buttonEditFileExternal.Click += new System.EventHandler(this.buttonEditFileExternal_Click);
 			// 
 			// GorgonImageContentPanel
 			// 
@@ -356,6 +375,8 @@
 		private System.Windows.Forms.ToolStrip stripTexture;
 		private System.Windows.Forms.ToolStripButton buttonEditFileExternal;
 		private System.Windows.Forms.ToolStripButton buttonRevert;
+		private System.Windows.Forms.ToolStripButton buttonSave;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 
     }
 }

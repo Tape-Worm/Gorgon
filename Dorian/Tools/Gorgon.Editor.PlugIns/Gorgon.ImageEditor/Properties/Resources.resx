@@ -117,18 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
-    <value>Image size: {0}x{1}x{2}.  Format: {3}.</value>
-  </data>
   <data name="GORIMG_TEXT_NEXT_DEPTH" xml:space="preserve">
     <value>Go to the next depth slice.</value>
-  </data>
-  <data name="GORIMG_TEXT_EDIT_EXTERNAL_APPNAME" xml:space="preserve">
-    <value>Edit this file in {0}.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="revert_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\revert_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -164,8 +161,8 @@ See the details pane for more information.</value>
   <data name="GORIMG_TEXT_MIP_LEVEL" xml:space="preserve">
     <value>Mip-map level: {0}/{1} ({2}x{3})</value>
   </data>
-  <data name="GORIMG_UNKNOWN_ERROR" xml:space="preserve">
-    <value>Unknown error.</value>
+  <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
+    <value>Image size: {0}x{1}x{2}.  Format: {3}.</value>
   </data>
   <data name="GORIMG_TEXT_NONE" xml:space="preserve">
     <value>None</value>
@@ -206,6 +203,9 @@ See the details pane for more information.</value>
   <data name="GORIMG_TEXT_NEXT_MIP" xml:space="preserve">
     <value>Go to the next mip-map level.</value>
   </data>
+  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
     <value>Image</value>
   </data>
@@ -238,20 +238,17 @@ R16B16G16A16 (floating point)</value>
   <data name="CATEGORY_TEXTURE" xml:space="preserve">
     <value>Texture settings</value>
   </data>
-  <data name="GORIMG_ACCESS_DENIED" xml:space="preserve">
-    <value>Access to '{0}' is denied.</value>
+  <data name="GORIMG_UNKNOWN_ERROR" xml:space="preserve">
+    <value>Unknown error.</value>
   </data>
   <data name="GORIMG_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
     <value>The image type '{0}' is unknown.</value>
   </data>
-  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
-    <value>Array count</value>
-  </data>
   <data name="PROP_ARRAYCOUNT_DESC" xml:space="preserve">
     <value>Sets the number of array slices for this texture.</value>
   </data>
-  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
-    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
+  <data name="GORIMG_TEXT_EDIT_EXTERNAL_APPNAME" xml:space="preserve">
+    <value>Edit this file in {0}.</value>
   </data>
   <data name="ImageViewShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImageViewShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -283,8 +280,16 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_NEXT_ARRAY" xml:space="preserve">
     <value>Go to the next array index.</value>
   </data>
+  <data name="GORIMG_DLG_CONFIRM_REVERT" xml:space="preserve">
+    <value>Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
+
+Are you sure you wish to do this?</value>
+  </data>
   <data name="GORIMG_CANNOT_COMPRESS" xml:space="preserve">
     <value>There was an error compressing the image.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
+    <value>Go to the previous array index.</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
     <value>Image size: {0}x{1}.  Format: {2}.</value>
@@ -301,11 +306,17 @@ R16B16G16A16 (floating point)</value>
   <data name="PROP_CODEC_NAME" xml:space="preserve">
     <value>File codec</value>
   </data>
+  <data name="GORIMG_TEXT_REVERT" xml:space="preserve">
+    <value>Revert back to the original image settings.</value>
+  </data>
   <data name="CATEGORY_DIMENSIONS" xml:space="preserve">
     <value>Image dimensions</value>
   </data>
   <data name="back_16x16png1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\back_16x16png1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
+    <value>Image height</value>
   </data>
   <data name="GORIMG_PATH_NOT_VALID" xml:space="preserve">
     <value>The path '{0}' is not valid.</value>
@@ -319,11 +330,11 @@ R16B16G16A16 (floating point)</value>
   <data name="pencil_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pencil_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
-    <value>Type</value>
+  <data name="GORIMG_ACCESS_DENIED" xml:space="preserve">
+    <value>Access to '{0}' is denied.</value>
   </data>
-  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
-    <value>Image height</value>
+  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
+    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
   </data>
   <data name="PROP_CODEC_DESC" xml:space="preserve">
     <value>Sets the file format when writing the image.</value>
@@ -337,8 +348,8 @@ R16B16G16A16 (floating point)</value>
   <data name="PROP_DEPTH_NAME" xml:space="preserve">
     <value>Image depth</value>
   </data>
-  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
-    <value>Go to the previous array index.</value>
+  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
+    <value>Array count</value>
   </data>
   <data name="GORIMG_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The image must be at least 1x1 pixels and have 1 depth or 1 array slice.</value>
@@ -349,15 +360,10 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_INVALID_FORMAT" xml:space="preserve">
     <value>The format '{0}' is not valid for {1} images.</value>
   </data>
-  <data name="revert_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\revert_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_TEXT_REVERT" xml:space="preserve">
-    <value>Revert back to the original image settings.</value>
-  </data>
-  <data name="GORIMG_DLG_CONFIRM_REVERT" xml:space="preserve">
-    <value>Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
-
-Are you sure you wish to do this?</value>
+  <data name="GORIMG_TEXT_SAVE" xml:space="preserve">
+    <value>Save the changes to this image.</value>
   </data>
 </root>

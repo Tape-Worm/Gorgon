@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX.WIC;
 
@@ -40,10 +41,26 @@ namespace GorgonLibrary.IO
         : GorgonCodecWIC
     {
         #region Variables.
-        private float _imageQuality = 1.0f;         // Image quality for lossy compressed images.
+		// Supported formats.
+		private readonly BufferFormat[] _supportedFormats = {
+        														BufferFormat.B8G8R8X8_UIntNormal
+	                                                        };
+
+		private float _imageQuality = 1.0f;         // Image quality for lossy compressed images.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the data formats for the image.
+		/// </summary>
+		public override System.Collections.Generic.IEnumerable<Graphics.BufferFormat> SupportedFormats
+		{
+			get
+			{
+				return _supportedFormats;
+			}
+		}
+
         /// <summary>
         /// Property to set or return the quality of an image compressed with lossy compression.
         /// </summary>

@@ -64,6 +64,42 @@ namespace GorgonLibrary.Editor
 		#endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to set or return the action to use when closing the current content.
+		/// </summary>
+	    internal Action<ContentObject> OnCloseCurrent
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the action to use when content is renamed by changing the name property.
+		/// </summary>
+	    internal Action<ContentObject, string> OnRenameContent
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the action to use when disabling properties on the property panel.
+		/// </summary>
+	    internal Action<ContentObject> OnPropertyDisabled
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the action to use when committing this content.
+		/// </summary>
+	    internal Action<ContentObject> OnCommit
+	    {
+		    get;
+		    set;
+	    }
+
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
@@ -252,11 +288,10 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					if ((ContentManagement.ContentRenamed != null)
-					    && (ContentManagement.Current == this)
-					    && (HasProperties))
+					if ((HasProperties)
+					    && (OnRenameContent != null))
 					{
-						ContentManagement.ContentRenamed(newName);
+						OnRenameContent(this, newName);
 					}
 
 					_name = newName;
@@ -390,6 +425,8 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
+			HasChanges = !string.Equals(property, "revert", StringComparison.OrdinalIgnoreCase) 
+							&& !string.Equals(property, "commit", StringComparison.OrdinalIgnoreCase);
 			ContentControl.OnContentPropertyChanged(property, value);
 		}
 
@@ -602,14 +639,13 @@ namespace GorgonLibrary.Editor
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;
 
-	        if ((ContentManagement.ContentPropertyStateChanged == null)
-				|| (ContentManagement.Current != this))
+	        if (OnPropertyDisabled == null)
 	        {
 		        return;
 	        }
 
-	        ContentManagement.ContentPropertyStateChanged();
-		}
+	        OnPropertyDisabled(this);
+        }
 
 		/// <summary>
 		/// Function to retrieve a thumbnail image for the content plug-in.
@@ -652,15 +688,34 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <remarks>Ensure that any changes to the content are persisted before calling this method, otherwise those changes will be lost.</remarks>
 	    public void CloseContent()
-	    {
-			if (ContentManagement.Current == this)
+		{
+			if (OnCloseCurrent == null)
 			{
-				ContentManagement.LoadDefaultContentPane();
+				return;
 			}
+
+			OnCloseCurrent(this);
+	    }
+
+		/// <summary>
+		/// Function to commit this content back to the file system.
+		/// </summary>
+	    public void Commit()
+	    {
+			if ((!HasChanges)
+			    || (OnCommit == null))
+			{
+				return;
+			}
+
+			OnCommit(this);
+
+			HasChanges = false;
+			NotifyPropertyChanged("Commit", null);
 	    }
 
         /// <summary>
-        /// Function to revert the image back to the original state.
+        /// Function to revert the content back to the original state.
         /// </summary>
         public void Revert()
         {
@@ -669,7 +724,6 @@ namespace GorgonLibrary.Editor
                 return;
             }
 
-            HasChanges = false;
             NotifyPropertyChanged("Revert", null);
         }
 	    #endregion

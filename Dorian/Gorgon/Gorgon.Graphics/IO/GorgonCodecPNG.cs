@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX.WIC;
 
@@ -73,9 +74,30 @@ namespace GorgonLibrary.IO
     /// </remarks>
     public sealed class GorgonCodecPNG
         : GorgonCodecWIC
-    {
-        #region Properties.
-        /// <summary>
+	{
+		#region Variables.
+		// Supported formats.
+		private readonly BufferFormat[] _supportedFormats = {
+																BufferFormat.R8G8B8A8_UIntNormal,
+																BufferFormat.B8G8R8A8_UIntNormal,
+																BufferFormat.B8G8R8X8_UIntNormal,
+																BufferFormat.R16G16B16A16_UIntNormal
+	                                                        };
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the data formats for the image.
+		/// </summary>
+		public override System.Collections.Generic.IEnumerable<BufferFormat> SupportedFormats
+		{
+			get
+			{
+				return _supportedFormats;
+			}
+		}
+
+		/// <summary>
         /// Property to set or return the filter to apply.
         /// </summary>
         /// <remarks>This property will control the filtering applied to the image for compression optimization.

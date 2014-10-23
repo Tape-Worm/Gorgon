@@ -25,9 +25,7 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -50,8 +48,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private GorgonTexture _texture;
 		// Background texture.
 	    private GorgonTexture2D _backgroundTexture;
-		// The texture region in screen space.
-	    private RectangleF _textureRegion;
         // The current shader view.
         private GorgonTextureShaderView _currentView;
 		// The current array index.
@@ -63,6 +59,28 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Handles the Click event of the buttonSave control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonSave_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				_content.Commit();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
 		/// <summary>
 		/// Handles the Click event of the buttonRevert control.
 		/// </summary>
@@ -227,7 +245,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </summary>
         private void ValidateControls()
         {
-	        buttonRevert.Enabled = _content.HasChanges;
+	        buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
 	        buttonEditFileExternal.Enabled = !string.IsNullOrWhiteSpace(_content.ExePath);
 
             buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_mipLevel > 0);
@@ -340,7 +358,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             var imageSize = new Vector2(_content.Width, _content.Height);
             var location = new Vector2(panelTextureDisplay.ClientSize.Width / 2.0f,
                                        panelTextureDisplay.ClientSize.Height / 2.0f);
-            var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y); ;
+            var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
             if (scale.Y > scale.X)
             {
@@ -416,6 +434,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, 0, 0);
 
 			buttonRevert.Text = Resources.GORIMG_TEXT_REVERT;
+			buttonSave.Text = Resources.GORIMG_TEXT_SAVE;
 			buttonEditFileExternal.Text = string.IsNullOrWhiteSpace(_content.ExeName)
 				                              ? Resources.GORIMG_TEXT_EDIT_EXTERNAL
 				                              : string.Format(Resources.GORIMG_TEXT_EDIT_EXTERNAL_APPNAME, _content.ExeName);

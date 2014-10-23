@@ -1311,6 +1311,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			    CompressBCImage(stream);
 		    }
 
+			// Change the codec type.
+			EditorFile.Attributes["Codec"] = Codec.GetType().FullName;
+
 			// Make this image the original.
 		    if (_original == Image)
 		    {
