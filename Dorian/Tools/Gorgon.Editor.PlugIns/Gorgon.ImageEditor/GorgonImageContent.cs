@@ -648,7 +648,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			newSettings.Format = Image.Settings.Format;
 			newSettings.Width = Image.Settings.Width;
 
-			if (newSettings.ImageType != ImageType.Image1D)
+			if ((Image.Settings.ImageType != ImageType.Image1D)
+				&& (newSettings.ImageType != ImageType.Image1D))
 			{
 				newSettings.Height = Image.Settings.Height;
 			}
@@ -1079,8 +1080,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 		/// <param name="stream">Stream containing the image format.</param>
 		/// <param name="size">Size of the image data within the stream, in bytes.</param>
+		/// <param name="codec">The codec to use for reading the file.</param>
+		/// <param name="compressionFormat">The compression format.</param>
 		/// <returns>The image data for the decompressed image.</returns>
-	    private GorgonImageData DecompressBCImage(Stream stream, int size)
+	    public GorgonImageData DecompressBCImage(Stream stream, int size, GorgonImageCodec codec, BufferFormat compressionFormat)
 		{
 			Process texConvProcess = null;
 
@@ -1111,11 +1114,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				// Copy our file.
 				using (Stream outStream = File.Open(tempFilePath, FileMode.Create, FileAccess.Write))
 				{
-					if (!(Codec is GorgonCodecDDS))
+					if (!(codec is GorgonCodecDDS))
 					{
 						// If the image is not already a DDS image, then convert it to one so the texture conversion utility can 
 						// use it.
-						using (GorgonImageData tempImage = GorgonImageData.FromStream(stream, size, Codec))
+						using (GorgonImageData tempImage = GorgonImageData.FromStream(stream, size, codec))
 						{
 							tempImage.Save(tempFilePath, new GorgonCodecDDS());
 						}
@@ -1147,7 +1150,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				var info = new ProcessStartInfo
 				           {
 					           Arguments =
-						           "-f " + _d3dFormats[FormatInformation.Format] + " -fl " +
+						           "-f " + _d3dFormats[compressionFormat] + " -fl " +
 						           (Graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1 ? "11.0" : "10.0") + " -ft DDS -o \"" +
 						           Path.GetDirectoryName(tempFilePath) + "\" -nologo -px decomp_ \"" + tempFilePath + "\"",
 					           ErrorDialog = true,
@@ -1256,6 +1259,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    {
 		    if (!_disposed)
 		    {
+				GorgonImageEditorPlugIn.Settings.Save();
+
 		        if (_depthSliceBuffer != null)
 		        {
 		            _depthSliceBuffer.Dispose();
@@ -1328,15 +1333,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to retrieve the proper codec to use for the image.
 		/// </summary>
+		/// <param name="file">The editor file to evaluate.</param>
 		/// <param name="stream">The stream to read.</param>
-	    private void GetCodecForStream(Stream stream)
+		/// <returns>The codec for the stream.</returns>
+	    public GorgonImageCodec GetCodecForStream(EditorFile file, Stream stream)
 		{
 			GorgonImageCodec codec;
 
 			// Find the codec in the editor file attributes.
 			string codecTypeName;
 
-			EditorFile.Attributes.TryGetValue("Codec", out codecTypeName);
+			file.Attributes.TryGetValue("Codec", out codecTypeName);
 
 			if (!string.IsNullOrWhiteSpace(codecTypeName))
 			{
@@ -1345,20 +1352,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if ((codec != null) && (codec.IsReadable(stream)))
 				{
-					_originalCodec = _codec = codec;
-					return;
+					return codec;
 				}
 			}
 
 			// We didn't have codec information in the meta data, fall back to the file extension.
-			string fileExtension = Path.GetExtension(EditorFile.FilePath);
+			string fileExtension = Path.GetExtension(file.FilePath);
 
 			if (!GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, EditorFile.FilePath));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, file.FilePath));
 			}
 
-			_originalCodec = _codec = codec;
+			return codec;
 		}
 
 		/// <summary>
@@ -1403,7 +1409,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         protected override void OnRead(Stream stream)
 	    {
 			// Get the appropriate image codec.
-		    GetCodecForStream(stream);
+		    _originalCodec = _codec = GetCodecForStream(EditorFile, stream);
 
 			// If we're not actuallying "editing" the image, but using this interface to load an image, 
 			// then just leave so we can keep the image data lightweight.
@@ -1434,7 +1440,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    if (FormatInformation.IsCompressed)
 		    {
 				_originalBlockCompression = _blockCompression = settings.Format;
-			    Image = DecompressBCImage(stream, (int)stream.Length);
+			    Image = DecompressBCImage(stream, (int)stream.Length, Codec, settings.Format);
 		    }
 
 		    if (Image == null)
@@ -1711,6 +1717,76 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
+		/// Function to convert the image to a format that's compatible with the image buffer currently selected.
+		/// </summary>
+		/// <param name="image">Image to convert.</param>
+		/// <param name="mipLevel">Currently selected mip map level.</param>
+		/// <param name="arrayDepth">Currently selected array index or depth slice.</param>
+		public void ConvertImageToBuffer(GorgonImageData image, int mipLevel, int arrayDepth)
+		{
+			try
+			{
+				// If we're using the original image, then create a new image to work on.
+				if (Image == _original)
+				{
+					Image = new GorgonImageData(_original.Settings);
+					_original.CopyTo(Image);
+					_imageSettings = Image.Settings.Clone();
+				}
+
+				// If the formats are mismatched, then change it.
+				if (image.Settings.Format != ImageFormat)
+				{
+					image.ConvertFormat(ImageFormat);
+				}
+
+				// Get the buffer we're currently on.
+				GorgonImageBuffer buffer = Image.Buffers[mipLevel, arrayDepth];
+
+				// If the buffer is not the same size as the image we've loaded, then resize the image.
+				if ((buffer.Width != image.Settings.Width)
+				    || (buffer.Height != image.Settings.Height))
+				{
+					var confirm = GorgonDialogs.ConfirmBox(_contentPanel.ParentForm,
+					                                       string.Format(Resources.GORIMG_DLG_CROP_RESIZE_IMAGE,
+					                                                     image.Settings.Width,
+					                                                     image.Settings.Height,
+					                                                     buffer.Width,
+					                                                     buffer.Height),
+					                                       null,
+					                                       true);
+
+					switch (confirm)
+					{
+						case ConfirmationResult.No:
+							image.Resize(buffer.Width, buffer.Height, true);
+							break;
+						case ConfirmationResult.Yes:
+							image.Resize(buffer.Width, buffer.Height, false);
+							break;
+						default:
+							throw new GorgonException(GorgonResult.CannotCreate,
+							                          string.Format(Resources.GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER,
+							                                        image.Settings.Width,
+							                                        image.Settings.Height,
+							                                        buffer.Width,
+							                                        buffer.Height));
+
+					}
+				}
+
+				// Copy the data into the buffer.
+				image.Buffers[0].CopyTo(buffer);
+
+				NotifyPropertyChanged("ImageImport", null);
+			}
+			finally
+			{
+				ValidateImageProperties();
+			}
+		}
+
+		/// <summary>
 		/// Function to edit the file in an associated external application.
 		/// </summary>
 	    public void EditExternal()
@@ -1794,7 +1870,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					    && (Codec.SupportsBlockCompression))
 					{
 						_blockCompression = newSettings.Format;
-						newImage = DecompressBCImage(stream, (int)stream.Length);
+						newImage = DecompressBCImage(stream, (int)stream.Length, Codec, _blockCompression);
 					}
 
 					// If we couldn't decompress the file, or it wasn't compressed, then load it as normal.

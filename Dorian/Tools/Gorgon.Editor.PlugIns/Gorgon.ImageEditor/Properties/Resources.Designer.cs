@@ -118,6 +118,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Cancel.
+        /// </summary>
+        internal static string GORIMG_ACC_TEXT_CANCEL {
+            get {
+                return ResourceManager.GetString("GORIMG_ACC_TEXT_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;OK.
+        /// </summary>
+        internal static string GORIMG_ACC_TEXT_OK {
+            get {
+                return ResourceManager.GetString("GORIMG_ACC_TEXT_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access to &apos;{0}&apos; is denied..
         /// </summary>
         internal static string GORIMG_ACCESS_DENIED {
@@ -199,6 +217,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select an image to import.
+        /// </summary>
+        internal static string GORIMG_DLG_CAPTION_IMPORT_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CAPTION_IMPORT_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
         ///
         ///Are you sure you wish to do this?.
@@ -206,6 +233,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_DLG_CONFIRM_REVERT {
             get {
                 return ResourceManager.GetString("GORIMG_DLG_CONFIRM_REVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image being loaded has a size of {0}x{1}.  The destination buffer has a size of {2}x{3}.  This image must be scaled or cropped to fit into the buffer.
+        ///
+        ///Would you like to scale the image?  Selecting No will crop the image..
+        /// </summary>
+        internal static string GORIMG_DLG_CROP_RESIZE_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CROP_RESIZE_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot load the image.  It has a size of {0}x{1} and the size of the currently selected mip/array/depth buffer is {2}x{3}..
+        /// </summary>
+        internal static string GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER", resourceCulture);
             }
         }
         
@@ -319,6 +366,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All image types.
+        /// </summary>
+        internal static string GORIMG_TEXT_ALL_IMAGE_TYPES {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ALL_IMAGE_TYPES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Array index: {0}/{1}.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDEX {
@@ -378,6 +434,33 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_IMAGE_INFO_3D {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_IMAGE_INFO_3D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import image.
+        /// </summary>
+        internal static string GORIMG_TEXT_IMPORT_IMAGE {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMPORT_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import image from disk.
+        /// </summary>
+        internal static string GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import image from editor file.
+        /// </summary>
+        internal static string GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR", resourceCulture);
             }
         }
         
@@ -580,6 +663,36 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string ImageViewShaders {
             get {
                 return ResourceManager.GetString("ImageViewShaders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("import_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_disk_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("import_disk_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap import_image_filesystem_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("import_image_filesystem_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

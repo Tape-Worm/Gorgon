@@ -300,6 +300,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             : base(Resources.GORIMG_DESC)
         {
             Settings = new GorgonImageProperties();
+			Settings.Load();
 
             // Update the list of available extensions (because they're not static) when we create our content for display.
             foreach (var codec in Codecs.Where(codec => !FileExtensions.Contains(codec.Key)))

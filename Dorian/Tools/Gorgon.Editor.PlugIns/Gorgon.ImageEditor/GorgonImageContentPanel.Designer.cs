@@ -68,6 +68,12 @@
 			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonEditFileExternal = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonImport = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemImportFileDisk = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemImportFileSystem = new System.Windows.Forms.ToolStripMenuItem();
+			this.dialogOpenImage = new System.Windows.Forms.OpenFileDialog();
+			this.dialogImportImage = new GorgonLibrary.Editor.EditorFileDialog();
 			this.PanelDisplay.SuspendLayout();
 			this.stripPanelImageEditor.BottomToolStripPanel.SuspendLayout();
 			this.stripPanelImageEditor.ContentPanel.SuspendLayout();
@@ -94,11 +100,15 @@
 			// 
 			// panelTextureDisplay
 			// 
+			this.panelTextureDisplay.AllowDrop = true;
 			this.panelTextureDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelTextureDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelTextureDisplay.Name = "panelTextureDisplay";
 			this.panelTextureDisplay.Size = new System.Drawing.Size(806, 556);
 			this.panelTextureDisplay.TabIndex = 0;
+			this.panelTextureDisplay.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragDrop);
+			this.panelTextureDisplay.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragEnter);
+			this.panelTextureDisplay.DragOver += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragOver);
 			// 
 			// stripPanelImageEditor
 			// 
@@ -285,7 +295,9 @@
             this.buttonSave,
             this.buttonRevert,
             this.toolStripSeparator1,
-            this.buttonEditFileExternal});
+            this.buttonEditFileExternal,
+            this.toolStripSeparator2,
+            this.buttonImport});
 			this.stripTexture.Location = new System.Drawing.Point(0, 0);
 			this.stripTexture.Name = "stripTexture";
 			this.stripTexture.Size = new System.Drawing.Size(806, 25);
@@ -326,6 +338,50 @@
 			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
 			this.buttonEditFileExternal.Text = "no localization";
 			this.buttonEditFileExternal.Click += new System.EventHandler(this.buttonEditFileExternal_Click);
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonImport
+			// 
+			this.buttonImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemImportFileDisk,
+            this.itemImportFileSystem});
+			this.buttonImport.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_image_filesystem_16x16;
+			this.buttonImport.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonImport.Name = "buttonImport";
+			this.buttonImport.Size = new System.Drawing.Size(103, 22);
+			this.buttonImport.Text = "not localized";
+			// 
+			// itemImportFileDisk
+			// 
+			this.itemImportFileDisk.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_disk_16x16;
+			this.itemImportFileDisk.Name = "itemImportFileDisk";
+			this.itemImportFileDisk.Size = new System.Drawing.Size(141, 22);
+			this.itemImportFileDisk.Text = "not localized";
+			this.itemImportFileDisk.Click += new System.EventHandler(this.itemImportFileDisk_Click);
+			// 
+			// itemImportFileSystem
+			// 
+			this.itemImportFileSystem.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_16x16;
+			this.itemImportFileSystem.Name = "itemImportFileSystem";
+			this.itemImportFileSystem.Size = new System.Drawing.Size(141, 22);
+			this.itemImportFileSystem.Text = "not localized";
+			this.itemImportFileSystem.Click += new System.EventHandler(this.itemImportFileSystem_Click);
+			// 
+			// dialogOpenImage
+			// 
+			this.dialogOpenImage.Title = "Not localized";
+			// 
+			// dialogImportImage
+			// 
+			this.dialogImportImage.AllowAllFiles = false;
+			this.dialogImportImage.DefaultFileType = "";
+			this.dialogImportImage.Filename = null;
+			this.dialogImportImage.StartDirectory = null;
+			this.dialogImportImage.Text = "Select a file";
 			// 
 			// GorgonImageContentPanel
 			// 
@@ -377,6 +433,12 @@
 		private System.Windows.Forms.ToolStripButton buttonRevert;
 		private System.Windows.Forms.ToolStripButton buttonSave;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripDropDownButton buttonImport;
+		private System.Windows.Forms.ToolStripMenuItem itemImportFileDisk;
+		private System.Windows.Forms.ToolStripMenuItem itemImportFileSystem;
+		private System.Windows.Forms.OpenFileDialog dialogOpenImage;
+		private EditorFileDialog dialogImportImage;
 
     }
 }
