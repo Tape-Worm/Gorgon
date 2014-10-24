@@ -26,9 +26,14 @@
 
 using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -56,9 +61,314 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private int _mipLevel;
 		// The current depth slice.
 	    private int _depthSlice;
+		// The number of depth slices for the image at the specified mip level.
+	    private int _depthCount;
         #endregion
 
         #region Methods.
+		// TODO: Add drag/drop functionality for images from the file system AND from the physical file system.
+
+		/// <summary>
+		/// Handles the DragDrop event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_DragDrop(object sender, DragEventArgs e)
+		{
+			try
+			{
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the DragEnter event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_DragEnter(object sender, DragEventArgs e)
+		{
+			try
+			{
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the DragOver event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_DragOver(object sender, DragEventArgs e)
+		{
+			try
+			{
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve a list of extensions from the codecs available.
+		/// </summary>
+		/// <returns>A string containing the list of extensions available for all codecs.</returns>
+		private static string GetExtensionsForOpenFileDialog()
+		{
+			var extensions = GorgonImageEditorPlugIn.Codecs.GroupBy(item => item.Key.Description);
+			var result = new StringBuilder();
+			var imageDescriptions = new StringBuilder();
+			var allImageExtensions = new StringBuilder();
+			var imageExtensions = new StringBuilder();
+
+			foreach (var desc in extensions)
+			{
+				if (imageDescriptions.Length > 0)
+				{
+					imageDescriptions.Append("|");
+				}
+
+				imageDescriptions.Append(desc.Key);
+
+				imageExtensions.Length = 0;
+				foreach (var fileExtension in desc)
+				{
+					if (allImageExtensions.Length > 0)
+					{
+						allImageExtensions.Append(";");
+					}
+
+					allImageExtensions.Append("*.");
+					allImageExtensions.Append(fileExtension.Key.Extension);
+
+					if (imageExtensions.Length > 0)
+					{
+						imageExtensions.Append(";");
+					}
+
+					imageExtensions.Append("*.");
+					imageExtensions.Append(fileExtension.Key.Extension);
+				}
+
+				imageDescriptions.Append("|");
+				imageDescriptions.Append(imageExtensions);
+			}
+
+			result.Append(Resources.GORIMG_TEXT_ALL_IMAGE_TYPES);
+			result.Append("|");
+			result.Append(allImageExtensions);
+			result.Append("|");
+			result.Append(imageDescriptions);
+
+			return result.ToString();
+		}
+
+		/// <summary>
+		/// Function to create a copy of a codec.
+		/// </summary>
+		/// <returns>A copy of the codec that best matches the file, or NULL if no codec was found.</returns>
+	    private GorgonImageCodec CreateCodecCopy(string fileName)
+	    {
+			GorgonImageCodec codec;
+
+			if (GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(Path.GetExtension(fileName)), out codec))
+			{
+				return (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
+			}
+
+			GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, dialogOpenImage.FileName));
+			return null;
+	    }
+
+		/// <summary>
+		/// Function to load an image file.
+		/// </summary>
+		/// <param name="fileStream">Stream to the file.</param>
+		/// <param name="codec">Codec for the image.</param>
+		/// <returns>The image data.</returns>
+	    private GorgonImageData LoadImageFile(Stream fileStream, GorgonImageCodec codec)
+	    {
+			IImageSettings metaData = codec.GetMetaData(fileStream);
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(metaData.Format);
+
+			return formatInfo.IsCompressed
+				       ? _content.DecompressBCImage(fileStream, (int)fileStream.Length, codec, metaData.Format)
+				       : GorgonImageData.FromStream(fileStream, (int)fileStream.Length, codec);
+	    }
+
+		/// <summary>
+		/// Function to retrieve an image from a physical file system.
+		/// </summary>
+		/// <returns>The image data for the file selected, or NULL if cancelled.</returns>
+	    private GorgonImageData GetImageFromDisk()
+		{
+			if (string.IsNullOrWhiteSpace(dialogOpenImage.InitialDirectory))
+			{
+				dialogOpenImage.InitialDirectory = !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath)
+					                                   ? GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath
+					                                   : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
+			}
+
+			dialogOpenImage.Filter = GetExtensionsForOpenFileDialog();
+
+			// Attempt to read the file.
+			if (dialogOpenImage.ShowDialog(ParentForm) == DialogResult.Cancel)
+			{
+				return null;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			GorgonImageCodec codec = CreateCodecCopy(dialogOpenImage.FileName);
+
+			if (codec == null)
+			{
+				return null;
+			}
+
+			codec.MipCount = 1;
+			codec.ArrayCount = 1;
+
+			using (Stream stream = dialogOpenImage.OpenFile())
+			{
+				GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath = Path.GetDirectoryName(dialogOpenImage.FileName);
+
+				return LoadImageFile(stream, codec);
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve an image from the currently loaded file system.
+		/// </summary>
+		/// <returns>The image data for the file selected, or NULL if cancelled.</returns>
+		private GorgonImageData GetImageFromFileSystem()
+		{
+			dialogImportImage.Text = Resources.GORIMG_DLG_CAPTION_IMPORT_IMAGE;
+			
+			if (string.IsNullOrWhiteSpace(dialogImportImage.StartDirectory))
+			{
+				dialogImportImage.StartDirectory = !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath)
+					                                   ? GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath
+					                                   : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
+			}
+
+			dialogImportImage.FileTypes.Add(_content.ContentType);
+			dialogImportImage.FileView = FileViews.Large;
+
+			// Attempt to read the file.
+			if ((dialogImportImage.ShowDialog(ParentForm) == DialogResult.Cancel)
+			    || ((dialogImportImage.Files[0] == _content.EditorFile)
+			        && (_mipLevel == 0) && (_arrayIndex == 0) && (_depthSlice == 0)))
+			{
+				return null;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			using (Stream stream = dialogImportImage.OpenFile())
+			{
+				GorgonImageCodec codec = _content.GetCodecForStream(dialogImportImage.Files[0], stream);
+				
+				if (codec == null)
+				{
+					GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, dialogImportImage.Files[0].FilePath));
+					return null;
+				}
+
+				var copyCodec = (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
+
+				copyCodec.MipCount = 1;
+				copyCodec.ArrayCount = 1;
+
+				GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath = Path.GetDirectoryName(dialogImportImage.Files[0].FilePath).FormatDirectory('/');
+
+				return LoadImageFile(stream, copyCodec);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemImportFileDisk control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemImportFileDisk_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				using (GorgonImageData image = GetImageFromDisk())
+				{
+					if (image == null)
+					{
+						return;
+					}
+
+					_content.ConvertImageToBuffer(image, _mipLevel, _content.ImageType == ImageType.Image3D ? _depthSlice : _arrayIndex);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemImportFileSystem control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemImportFileSystem_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				using (GorgonImageData image = GetImageFromFileSystem())
+				{
+					if (image == null)
+					{
+						return;
+					}
+
+					_content.ConvertImageToBuffer(image, _mipLevel, _content.ImageType == ImageType.Image3D ? _depthSlice : _arrayIndex);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
 		/// <summary>
 		/// Handles the Click event of the buttonSave control.
 		/// </summary>
@@ -78,6 +388,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -106,6 +417,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -129,6 +441,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -159,11 +472,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_depthSlice++;
 
-			if (_depthSlice >= _content.Depth)
-			{
-				_depthSlice = _content.Depth - 1;
-			}
-
 			SetDepthSlice();
 			ValidateControls();
 		}
@@ -181,6 +489,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             {
 				_mipLevel = 0;
             }
+
+			if (_content.ImageType == ImageType.Image3D)
+			{
+				SetDepthSlice();
+			}
 
             GetCurrentShaderView(_mipLevel, _arrayIndex);
             ValidateControls();
@@ -236,6 +549,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_mipLevel = _content.MipCount - 1;
             }
 
+	        if (_content.ImageType == ImageType.Image3D)
+	        {
+				SetDepthSlice();
+	        }
+
             GetCurrentShaderView(_mipLevel, _arrayIndex);
             ValidateControls();
         }
@@ -255,8 +573,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
                                            && (_arrayIndex < _content.ArrayCount - 1);
 
-	        buttonPrevDepthSlice.Enabled = _content.Depth > 1 && _depthSlice > 0;
-	        buttonNextDepthSlice.Enabled = _content.Depth > 1 && _depthSlice < _content.Depth - 1;
+	        buttonPrevDepthSlice.Enabled = _depthCount > 1 && _depthSlice > 0;
+	        buttonNextDepthSlice.Enabled = _depthCount > 1 && _depthSlice < _depthCount - 1;
 
             // Volume textures don't have array indices.
 	        buttonPrevArrayIndex.Visible =
@@ -316,6 +634,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_texture.Dispose();
 			}
 
+			if (_mipLevel >= _content.MipCount)
+			{
+				_mipLevel = _content.MipCount - 1;
+			}
+
+			if (_arrayIndex >= _content.ArrayCount)
+			{
+				_arrayIndex = _content.ArrayCount - 1;
+			}
+
 			switch (_content.ImageType)
 			{
 				case ImageType.Image1D:
@@ -333,12 +661,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (_currentView != null)
 		    {
-		        GetCurrentShaderView(_mipLevel < _content.MipCount
-		                                 ? _mipLevel
-		                                 : _content.MipCount - 1,
-		                             _arrayIndex < _content.ArrayCount
-		                                 ? _arrayIndex
-		                                 : _content.ArrayCount - 1);
+		        GetCurrentShaderView(_mipLevel, _arrayIndex);
 		    }
 		    else
 		    {
@@ -381,9 +704,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 	    private void SetDepthSlice()
 		{
+			_depthCount = _content.Image.GetDepthCount(_mipLevel);
+			
+			if (_depthSlice >= _depthCount)
+			{
+				_depthSlice = _depthCount - 1;
+			}
+
 			_content.DepthSlice = _depthSlice;
 
-			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, _depthSlice + 1, _content.Depth);
+			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, _depthSlice + 1, _depthCount);
 		}
 
         /// <summary>
@@ -444,6 +774,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			buttonPrevMipLevel.Text = Resources.GORIMG_TEXT_PREV_MIP;
 			buttonPrevArrayIndex.Text = Resources.GORIMG_TEXT_PREV_ARRAY;
 			buttonNextArrayIndex.Text = Resources.GORIMG_TEXT_NEXT_ARRAY;
+			buttonImport.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE;
+
+			itemImportFileDisk.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK;
+			itemImportFileSystem.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR;
 		}
 
 		/// <summary>
@@ -464,6 +798,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case "ArrayCount":
 				case "ImageEditExternal":
 				case "Revert":
+				case "ImageImport":
 					CreateTexture();
 					break;
 				case "Codec":

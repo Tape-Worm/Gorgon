@@ -157,7 +157,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
 
 	        var imageTypes = from imageType in content.Codec.SupportsImageType
-	                         where !content.FormatInformation.IsCompressed || imageType != ImageType.Image1D
+	                         where imageType != ImageType.Image1D
 	                         select imageType;
             
             return new StandardValuesCollection(imageTypes.ToArray());

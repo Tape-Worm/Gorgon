@@ -111,14 +111,7 @@ namespace GorgonLibrary.Graphics
 				buffer.Data.Dispose();
 			}
 
-			if (!disposing)
-			{
-				_buffers = new GorgonImageBuffer[0];
-			}
-			else
-			{
-				_buffers = null;
-			}
+			_buffers = !disposing ? new GorgonImageBuffer[0] : null;
 		}
 
 		/// <summary>
@@ -195,17 +188,31 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
+		#region IReadOnlyList<GorgonImageBuffer> Members
+		/// <summary>
+		/// Gets the element at the specified index in the read-only list.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">This list is read only.</exception>
+		GorgonImageBuffer IReadOnlyList<GorgonImageBuffer>.this[int index]
+		{
+			get
+			{
+				return this[index];
+			}
+		}
+		#endregion
+
 		#region IList<GorgonImageBuffer> Members
 		#region Properties.
 		/// <summary>
 		/// Gets the element at the specified index in the read-only list.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">This list is read only.</exception>
-		public GorgonImageBuffer this[int index]
+		GorgonImageBuffer IList<GorgonImageBuffer>.this[int index]
 		{
 			get
 			{
-				return _buffers[index];
+				return this[index];
 			}
 			set
 			{

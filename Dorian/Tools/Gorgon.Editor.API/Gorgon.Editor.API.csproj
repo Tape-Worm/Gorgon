@@ -64,6 +64,9 @@
     <Compile Include="Content\ContentObject.cs" />
     <Compile Include="Content\ContentSettings.cs" />
     <Compile Include="Content\Magnifier.cs" />
+    <Compile Include="Controls\DragData.cs" />
+    <Compile Include="Controls\DragDirectory.cs" />
+    <Compile Include="Controls\DragFile.cs" />
     <Compile Include="Forms\AlphaChannelDialog.cs">
       <SubType>Form</SubType>
     </Compile>

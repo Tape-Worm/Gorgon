@@ -2190,9 +2190,22 @@ namespace GorgonLibrary.Editor
 			{
 				var node = e.Item as TreeNodeEditor;
 				
-				if ((node != null) && (node != _rootNode) && (node.NodeType != NodeType.Dependency))
+				if ((node == null) || (node == _rootNode) || (node.NodeType == NodeType.Dependency))
 				{
-					treeFiles.DoDragDrop(new Tuple<TreeNodeEditor, MouseButtons>(node, e.Button), DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+					return;
+				}
+
+				var file = node as TreeNodeFile;
+				if (file != null)
+				{
+					treeFiles.DoDragDrop(new DragFile(file, e.Button), DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+					return;
+				}
+
+				var directory = node as TreeNodeDirectory;
+				if (directory != null)
+				{
+					treeFiles.DoDragDrop(new DragDirectory(directory, e.Button), DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);	
 				}
 			}
 			catch (Exception ex)
@@ -2596,15 +2609,32 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				// If we're moving one of our directories or files, then process those items.
-			    if (!e.Data.GetDataPresent(typeof(Tuple<TreeNodeEditor, MouseButtons>)))
-			    {
-			        return;
-			    }
+				// Handle nodes.
+				TreeNodeEditor sourceNode = null;
+				bool isCopy = false;
 
-			    var data = (Tuple<TreeNodeEditor, MouseButtons>)e.Data.GetData(typeof(Tuple<TreeNodeEditor, MouseButtons>));
+				if (e.Data.GetDataPresent(typeof(DragFile)))
+				{
+					var data = (DragFile)e.Data.GetData(typeof(DragFile));
 
-				MoveCopyNode(data.Item1, destDir, data.Item2 != MouseButtons.Left);
+					sourceNode = data.FileNode;
+					isCopy = data.MouseButton != MouseButtons.Left;
+				}
+
+				if (e.Data.GetDataPresent(typeof(DragDirectory)))
+				{
+					var data = (DragDirectory)e.Data.GetData(typeof(DragDirectory));
+
+					sourceNode = data.DirectoryNode;
+					isCopy = data.MouseButton != MouseButtons.Left;
+				}
+
+				if (sourceNode == null)
+				{
+					return;
+				}
+
+				MoveCopyNode(sourceNode, destDir, isCopy);
 			}
 			catch (Exception ex)
 			{
@@ -2972,6 +3002,12 @@ namespace GorgonLibrary.Editor
 				var destDirectory = overNode as TreeNodeDirectory;
 				var destFile = overNode as TreeNodeFile;
 
+				// Don't drag over a file.
+				if (destFile != null)
+				{
+					return;
+				}
+
 				e.Effect = DragDropEffects.None;
 
 				// If we're over nothing, then assume we're over the root node.
@@ -2993,41 +3029,42 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-			    if (!e.Data.GetDataPresent(typeof(Tuple<TreeNodeEditor, MouseButtons>)))
-			    {
-			        return;
-			    }
+				var currentMouseButton = MouseButtons.None;
 
-			    // Get our source data.
-			    var dragData = (Tuple<TreeNodeEditor, MouseButtons>)e.Data.GetData(typeof(Tuple<TreeNodeEditor, MouseButtons>));
-			    var sourceDirectory = dragData.Item1 as TreeNodeDirectory;
-			    var sourceFile = dragData.Item1 as TreeNodeFile;
+				if (e.Data.GetDataPresent(typeof(DragFile)))
+				{
+					var dragData = (DragFile)e.Data.GetData(typeof(DragFile));
 
-			    // Don't drag into ourselves, that's just dumb.
-			    // Likewise, if we're over our current parent, do nothing.
-				if ((sourceDirectory == overNode) || (overNode == dragData.Item1.Parent))
-			    {
-			        return;
-			    }
+					// Don't allow a drag-drop on the immediate parent of this node.
+					if (overNode == dragData.FileNode.Parent)
+					{
+						return;
+					}
 
-			    // If we drag a directory over a file, then we can't do use that.
-			    if (destFile != null)
-			    {
-			        if (sourceDirectory != null)
-			        {
-			            return;
-			        }
+					currentMouseButton = dragData.MouseButton;
+				}
 
-			        // In the future, we may allow file linking, but we'll need to test for it.
-			        // Until that time, just disable the drag/drop.
-			        if (sourceFile != null)
-			        {
-			            return;
-			        }
-			    }
+				if (e.Data.GetDataPresent(typeof(DragDirectory)))
+				{
+					var dragData = (DragDirectory)e.Data.GetData(typeof(DragDirectory));
 
-			    treeFiles.SelectedNode = overNode;
-			    e.Effect = dragData.Item2 == MouseButtons.Left ? DragDropEffects.Move : DragDropEffects.Copy;
+					// Don't allow a drag-drop on the immediate parent of this node or on to itself.
+					if ((overNode == dragData.DirectoryNode.Parent)
+						|| (overNode == dragData.DirectoryNode))
+					{
+						return;
+					}
+
+					currentMouseButton = dragData.MouseButton;
+				}
+
+				if (currentMouseButton == MouseButtons.None)
+				{
+					return;
+				}
+
+				treeFiles.SelectedNode = overNode;
+				e.Effect = currentMouseButton == MouseButtons.Left ? DragDropEffects.Move : DragDropEffects.Copy;
 			}
 			catch (Exception ex)
 			{

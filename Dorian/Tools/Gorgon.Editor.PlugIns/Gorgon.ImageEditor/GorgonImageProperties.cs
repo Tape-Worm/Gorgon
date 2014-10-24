@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     class GorgonImageProperties
         : EditorPlugInSettings
     {
-        #region Methods.
+        #region Properties.
         /// <summary>
         /// Property to return the paths to assemblies that hold custom image codecs.
         /// </summary>
@@ -46,7 +46,27 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             get;
             private set;
         }
-        #endregion
+
+		/// <summary>
+		/// Property to set or return the last path used when importing an image file from disk.
+		/// </summary>
+		[ApplicationSetting("LastImportDiskDirectory", typeof(string), "Paths")]
+	    public string LastImageImportDiskPath
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the last path used when importing an image file from the file system.
+		/// </summary>
+		[ApplicationSetting("LastImportFSDirectory", typeof(string), "Paths")]
+		public string LastImageImportFileSystemPath
+		{
+			get;
+			set;
+		}
+		#endregion
 
         #region Constructor/Destructor.
         /// <summary>
