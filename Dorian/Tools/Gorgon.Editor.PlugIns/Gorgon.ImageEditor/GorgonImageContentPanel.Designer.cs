@@ -108,7 +108,6 @@
 			this.panelTextureDisplay.TabIndex = 0;
 			this.panelTextureDisplay.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragDrop);
 			this.panelTextureDisplay.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragEnter);
-			this.panelTextureDisplay.DragOver += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragOver);
 			// 
 			// stripPanelImageEditor
 			// 

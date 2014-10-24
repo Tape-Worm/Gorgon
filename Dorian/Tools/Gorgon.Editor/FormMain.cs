@@ -650,13 +650,22 @@ namespace GorgonLibrary.Editor
 	    {
             var result = ConfirmationResult.None;
 	        Action invokeAction =
-		        () => result = GorgonDialogs.ConfirmBox(null,
-		                                                string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
-		                                                              Resources.GOREDIT_TEXT_FILE.ToLower(CultureInfo.CurrentUICulture),
-		                                                              filePath),
-		                                                null,
-		                                                totalFileCount > 1,
-		                                                totalFileCount > 1);
+		        () =>
+		        {
+		            Cursor prevCursor = Cursor.Current;
+
+		            result = GorgonDialogs.ConfirmBox(null,
+		                                              string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
+		                                                            Resources.GOREDIT_TEXT_FILE.ToLower(
+		                                                                                                CultureInfo
+		                                                                                                    .CurrentUICulture),
+		                                                            filePath),
+		                                              null,
+		                                              totalFileCount > 1,
+		                                              totalFileCount > 1);
+		            Cursor.Current = prevCursor;
+		        };
+
 	        if (InvokeRequired)
 	        {
                 Invoke(new MethodInvoker(invokeAction));
@@ -2552,26 +2561,40 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="destDir">Destination directory node.</param>
 		/// <param name="files">Paths to the files/directories to copy.</param>
-		private static void AddFilesFromExplorer(TreeNodeDirectory destDir, IEnumerable<string> files)
+		private void AddFilesFromExplorer(TreeNodeDirectory destDir, IEnumerable<string> files)
 		{
-			if (ScratchArea.Import(files, destDir.Directory) == 0)
-			{
-				return;
-			}
+		    Cursor prevCursor = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
 
-			FileManagement.FileChanged = true;
+		    try
+		    {
+		        if (ScratchArea.Import(files, destDir.Directory) == 0)
+		        {
+		            return;
+		        }
 
-			if (destDir.IsExpanded)
-			{
-				destDir.Collapse();
-			}
+		        FileManagement.FileChanged = true;
 
-			if (destDir.Nodes.Count == 0)
-			{
-				destDir.Nodes.Add(new TreeNode("DUMMYNODE"));
-			}
+		        if (destDir.IsExpanded)
+		        {
+		            destDir.Collapse();
+		        }
 
-			destDir.Expand();
+		        if (destDir.Nodes.Count == 0)
+		        {
+		            destDir.Nodes.Add(new TreeNode("DUMMYNODE"));
+		        }
+
+		        destDir.Expand();
+		    }
+		    catch (Exception ex)
+		    {
+		        GorgonDialogs.ErrorBox(this, ex);
+		    }
+		    finally
+		    {
+		        Cursor.Current = prevCursor;
+		    }
 		}
 
 		/// <summary>
@@ -2604,7 +2627,8 @@ namespace GorgonLibrary.Editor
 
 					if (dropData.Length > 0)
 					{
-						AddFilesFromExplorer(destDir, dropData);						
+                        // Schedule the copy operation to occur after the drag/drop is complete.
+					    BeginInvoke(new Action(() => AddFilesFromExplorer(destDir, dropData)));
 					}					
 					return;
 				}
@@ -2634,11 +2658,11 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				MoveCopyNode(sourceNode, destDir, isCopy);
+			    BeginInvoke(new Action(() => MoveCopyNode(sourceNode, destDir, isCopy)));
 			}
 			catch (Exception ex)
 			{
-				GorgonDialogs.ErrorBox(this, ex);
+                BeginInvoke(new Action(() => GorgonDialogs.ErrorBox(this, ex)));
 			}
 			finally
 			{
@@ -2923,11 +2947,14 @@ namespace GorgonLibrary.Editor
 		{
 			TreeNodeEditor newNode = null;
 			string sourcePath = sourceNode.FullPath;
-
+            
 			if (destinationNode == null)
 			{
 				return;
 			}
+
+		    Cursor prevCursor = Cursor.Current;
+		    Cursor.Current = Cursors.WaitCursor;
 
 			try
 			{
@@ -2964,6 +2991,8 @@ namespace GorgonLibrary.Editor
 				{
 					Clipboard.Clear();
 				}
+
+			    Cursor.Current = prevCursor;
 			}
 		}
 

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -66,7 +67,81 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
-		// TODO: Add drag/drop functionality for images from the file system AND from the physical file system.
+        /// <summary>
+        /// Function called after a drag/drop operation is finished.
+        /// </summary>
+        /// <param name="dragFile">The file being dragged.</param>
+        private void OnDrop(DragFile dragFile)
+        {
+            GorgonImageData image = null;
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                Debug.Assert(ParentForm != null, "No parent form!?");
+                ParentForm.Focus();
+                ParentForm.BringToFront();
+                
+                image = GetImageFromFileSystem(dragFile);
+
+                _content.ConvertImageToBuffer(image,
+                                              _mipLevel,
+                                              _content.ImageType == ImageType.Image3D ? _depthSlice : _arrayIndex);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+			finally
+			{
+			    if (image != null)
+			    {
+			        image.Dispose();
+			    }
+
+				ValidateControls();
+			    Cursor.Current = Cursors.Default;
+			}
+        }
+
+        /// <summary>
+        /// Function called after a drag/drop operation is finished.
+        /// </summary>
+        /// <param name="filePath">The path of the file being dragged in from explorer.</param>
+        private void OnDrop(string filePath)
+        {
+            GorgonImageData image = null;
+
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                Debug.Assert(ParentForm != null, "No parent form!?");
+                ParentForm.Focus();
+                ParentForm.BringToFront();
+
+                image = GetImageFromDisk(filePath);
+
+                _content.ConvertImageToBuffer(image,
+                                              _mipLevel,
+                                              _content.ImageType == ImageType.Image3D ? _depthSlice : _arrayIndex);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+            finally
+            {
+                if (image != null)
+                {
+                    image.Dispose();
+                }
+
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+            }
+        }
 
 		/// <summary>
 		/// Handles the DragDrop event of the panelTextureDisplay control.
@@ -75,17 +150,27 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_DragDrop(object sender, DragEventArgs e)
 		{
+		    Cursor.Current = Cursors.WaitCursor;
+
 			try
 			{
+			    if (e.Data.GetDataPresent(typeof(DragFile)))
+			    {
+			        BeginInvoke(new Action(() => OnDrop((DragFile)e.Data.GetData(typeof(DragFile)))));
+			        return;
+			    }
 
+			    if (!e.Data.GetDataPresent(DataFormats.FileDrop, false))
+			    {
+			        return;
+			    }
+
+			    var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+			    BeginInvoke(new Action(() => OnDrop(files[0])));
 			}
 			catch (Exception ex)
 			{
-				GorgonDialogs.ErrorBox(ParentForm, ex);
-			}
-			finally
-			{
-				ValidateControls();
+			    BeginInvoke(new Action(() => GorgonDialogs.ErrorBox(ParentForm, ex)));
 			}
 		}
 
@@ -98,28 +183,50 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			try
 			{
+                e.Effect = DragDropEffects.None;
+			    
+                // Check to see if the file node we're dragging is an image.
+			    if (e.Data.GetDataPresent(typeof(DragFile)))
+			    {
+			        var data = (DragFile)e.Data.GetData(typeof(DragFile));
+			        string dataType;
 
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(ParentForm, ex);
-			}
-			finally
-			{
-				ValidateControls();
-			}
-		}
+			        if (data.EditorFile == null)
+			        {
+			            return;
+			        }
 
-		/// <summary>
-		/// Handles the DragOver event of the panelTextureDisplay control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
-		private void panelTextureDisplay_DragOver(object sender, DragEventArgs e)
-		{
-			try
-			{
+                    // If this file is not an image, then leave.
+			        if ((!data.EditorFile.Attributes.TryGetValue("Type", out dataType))
+                        || (!string.Equals(dataType, Resources.GORIMG_CONTENT_TYPE, StringComparison.CurrentCultureIgnoreCase)))
+			        {
+			            return;
+			        }
 
+			        e.Effect = DragDropEffects.Copy;
+			        return;
+			    }
+
+                // Handle files coming from explorer.
+			    if (!e.Data.GetDataPresent(DataFormats.FileDrop, false))
+			    {
+			        return;
+			    }
+
+                Debug.Assert(ParentForm != null, "How don't we have a parent!?");
+
+                ParentForm.BringToFront();
+
+			    var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                // We can only support one file at a time for now.  And the file must be a known image file type.
+			    if ((files.Length != 1)
+                    || (!GorgonImageEditorPlugIn.Codecs.ContainsKey(new GorgonFileExtension(Path.GetExtension(files[0])))))
+			    {
+			        return;
+			    }
+                
+                e.Effect = DragDropEffects.Copy;
 			}
 			catch (Exception ex)
 			{
@@ -221,91 +328,122 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to retrieve an image from a physical file system.
 		/// </summary>
+		/// <param name="fileName">The filename of the file to load. If omitted, a file dialog will appear.</param>
 		/// <returns>The image data for the file selected, or NULL if cancelled.</returns>
-	    private GorgonImageData GetImageFromDisk()
+	    private GorgonImageData GetImageFromDisk(string fileName)
 		{
-			if (string.IsNullOrWhiteSpace(dialogOpenImage.InitialDirectory))
-			{
-				dialogOpenImage.InitialDirectory = !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath)
-					                                   ? GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath
-					                                   : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
-			}
+		    string pathToFile = fileName;
 
-			dialogOpenImage.Filter = GetExtensionsForOpenFileDialog();
+		    if (string.IsNullOrEmpty(pathToFile))
+		    {
+		        if (string.IsNullOrWhiteSpace(dialogOpenImage.InitialDirectory))
+		        {
+		            dialogOpenImage.InitialDirectory =
+		                !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath)
+		                    ? GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath
+		                    : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
+		        }
 
-			// Attempt to read the file.
-			if (dialogOpenImage.ShowDialog(ParentForm) == DialogResult.Cancel)
-			{
-				return null;
-			}
+		        dialogOpenImage.Filter = GetExtensionsForOpenFileDialog();
 
-			Cursor.Current = Cursors.WaitCursor;
+		        // Attempt to read the file.
+		        if (dialogOpenImage.ShowDialog(ParentForm) == DialogResult.Cancel)
+		        {
+		            return null;
+		        }
 
-			GorgonImageCodec codec = CreateCodecCopy(dialogOpenImage.FileName);
+                Cursor.Current = Cursors.WaitCursor;
+		        pathToFile = dialogOpenImage.FileName;
+		    }
 
-			if (codec == null)
-			{
-				return null;
-			}
+		    GorgonImageCodec codec = CreateCodecCopy(pathToFile);
 
-			codec.MipCount = 1;
-			codec.ArrayCount = 1;
+		    if (codec == null)
+		    {
+		        return null;
+		    }
 
-			using (Stream stream = dialogOpenImage.OpenFile())
-			{
-				GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath = Path.GetDirectoryName(dialogOpenImage.FileName);
+		    codec.MipCount = 1;
+		    codec.ArrayCount = 1;
 
-				return LoadImageFile(stream, codec);
-			}
+            // Load the image data.
+		    using(Stream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+		    {
+                if (!string.IsNullOrEmpty(fileName))
+		        {
+		            GorgonImageEditorPlugIn.Settings.LastImageImportDiskPath = Path.GetDirectoryName(pathToFile);
+		        }
+
+		        return LoadImageFile(stream, codec);
+		    }
 		}
 
 		/// <summary>
 		/// Function to retrieve an image from the currently loaded file system.
 		/// </summary>
+		/// <param name="dragNode">The node being dragged into the image, or NULL to pop up a file selector.</param>
 		/// <returns>The image data for the file selected, or NULL if cancelled.</returns>
-		private GorgonImageData GetImageFromFileSystem()
+		private GorgonImageData GetImageFromFileSystem(DragFile dragNode)
 		{
-			dialogImportImage.Text = Resources.GORIMG_DLG_CAPTION_IMPORT_IMAGE;
-			
-			if (string.IsNullOrWhiteSpace(dialogImportImage.StartDirectory))
-			{
-				dialogImportImage.StartDirectory = !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath)
-					                                   ? GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath
-					                                   : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
-			}
+		    EditorFile file = dragNode == null ? null : dragNode.EditorFile;
+		    Stream fileStream = dragNode == null ? null : dragNode.OpenFile();
 
-			dialogImportImage.FileTypes.Add(_content.ContentType);
-			dialogImportImage.FileView = FileViews.Large;
+            // If we didn't drag a file into this texture, then bring up the file selector.
+		    if (dragNode == null)
+		    {
+		        dialogImportImage.Text = Resources.GORIMG_DLG_CAPTION_IMPORT_IMAGE;
 
-			// Attempt to read the file.
-			if ((dialogImportImage.ShowDialog(ParentForm) == DialogResult.Cancel)
-			    || ((dialogImportImage.Files[0] == _content.EditorFile)
-			        && (_mipLevel == 0) && (_arrayIndex == 0) && (_depthSlice == 0)))
-			{
-				return null;
-			}
+		        if (string.IsNullOrWhiteSpace(dialogImportImage.StartDirectory))
+		        {
+		            dialogImportImage.StartDirectory =
+		                !string.IsNullOrWhiteSpace(GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath)
+		                    ? GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath
+		                    : GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyPictures);
+		        }
 
-			Cursor.Current = Cursors.WaitCursor;
+		        dialogImportImage.FileTypes.Add(_content.ContentType);
+		        dialogImportImage.FileView = FileViews.Large;
 
-			using (Stream stream = dialogImportImage.OpenFile())
-			{
-				GorgonImageCodec codec = _content.GetCodecForStream(dialogImportImage.Files[0], stream);
-				
-				if (codec == null)
-				{
-					GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, dialogImportImage.Files[0].FilePath));
-					return null;
-				}
+		        // Attempt to read the file.
+		        if ((dialogImportImage.ShowDialog(ParentForm) == DialogResult.Cancel)
+		            || ((dialogImportImage.Files[0] == _content.EditorFile)
+		                && (_mipLevel == 0) && (_arrayIndex == 0) && (_depthSlice == 0)))
+		        {
+		            return null;
+		        }
 
-				var copyCodec = (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
+		        file = dialogImportImage.Files[0];
+		        Cursor.Current = Cursors.WaitCursor;
+		        fileStream = dialogImportImage.OpenFile();
+		    }
 
-				copyCodec.MipCount = 1;
-				copyCodec.ArrayCount = 1;
+            // Read the image from the stream.
+		    using(fileStream)
+		    {
+		        GorgonImageCodec codec = _content.GetCodecForStream(file, fileStream);
 
-				GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath = Path.GetDirectoryName(dialogImportImage.Files[0].FilePath).FormatDirectory('/');
+		        if (codec == null)
+		        {
+		            GorgonDialogs.ErrorBox(ParentForm,
+		                                    string.Format(Resources.GORIMG_CODEC_NONE_FOUND,
+		                                                    file.FilePath));
+		            return null;
+		        }
 
-				return LoadImageFile(stream, copyCodec);
-			}
+                // Copy the codec from the original so we don't mess up any settings.
+		        var copyCodec = (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
+
+		        copyCodec.MipCount = 1;
+		        copyCodec.ArrayCount = 1;
+
+		        if (dragNode == null)
+		        {
+		            GorgonImageEditorPlugIn.Settings.LastImageImportFileSystemPath =
+		                Path.GetDirectoryName(file.FilePath).FormatDirectory('/');
+		        }
+
+		        return LoadImageFile(fileStream, copyCodec);
+		    }
 		}
 
 		/// <summary>
@@ -317,7 +455,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			try
 			{
-				using (GorgonImageData image = GetImageFromDisk())
+				using (GorgonImageData image = GetImageFromDisk(null))
 				{
 					if (image == null)
 					{
@@ -349,7 +487,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			try
 			{
-				using (GorgonImageData image = GetImageFromFileSystem())
+				using (GorgonImageData image = GetImageFromFileSystem(null))
 				{
 					if (image == null)
 					{

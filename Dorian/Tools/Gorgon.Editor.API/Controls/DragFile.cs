@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.IO;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor
@@ -56,8 +57,25 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
+        #region Methods.
+        /// <summary>
+        /// Function to open a stream to the file.
+        /// </summary>
+        /// <returns>A read-only stream to the file, or NULL (Nothing in VB.Net) if no file is attached to this drag node.</returns>
+	    public Stream OpenFile()
+	    {
+            if ((FileNode == null)
+                || (FileNode.File == null))
+            {
+                return null;
+            }
+
+            return FileNode.File.OpenStream(false);
+	    }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="DragFile"/> class.
 		/// </summary>
 		/// <param name="file">The file node being dragged.</param>
