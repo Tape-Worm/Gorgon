@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using GorgonLibrary.Configuration;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -66,6 +67,36 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return whether cropping or resizing is the default value.
+		/// </summary>
+		[ApplicationSetting("CropDefault", typeof(bool), "CropResize")]
+	    public bool CropDefault
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the image filter to use when resizing an image.
+		/// </summary>
+		[ApplicationSetting("ResizeImageFilter", typeof(ImageFilter), "CropResize")]
+	    public ImageFilter ResizeImageFilter
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the image filtering to use when generating mip-maps.
+		/// </summary>
+		[ApplicationSetting("MipFilter", typeof(ImageFilter), "MipMaps")]
+	    public ImageFilter MipFilter
+	    {
+		    get;
+		    set;
+	    }
 		#endregion
 
         #region Constructor/Destructor.
@@ -76,6 +107,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             : base("ImageEditor.PlugIn", new Version(1, 0))
         {
             CustomCodecs = new List<string>();
+	        CropDefault = true;
+	        ResizeImageFilter = ImageFilter.Point;
+			MipFilter = ImageFilter.Fant;
         }
         #endregion
     }

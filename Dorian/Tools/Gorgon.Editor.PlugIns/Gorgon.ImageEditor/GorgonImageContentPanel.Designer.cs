@@ -72,6 +72,7 @@
 			this.buttonImport = new System.Windows.Forms.ToolStripDropDownButton();
 			this.itemImportFileDisk = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemImportFileSystem = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonGenerateMips = new System.Windows.Forms.ToolStripButton();
 			this.dialogOpenImage = new System.Windows.Forms.OpenFileDialog();
 			this.dialogImportImage = new GorgonLibrary.Editor.EditorFileDialog();
 			this.PanelDisplay.SuspendLayout();
@@ -296,7 +297,8 @@
             this.toolStripSeparator1,
             this.buttonEditFileExternal,
             this.toolStripSeparator2,
-            this.buttonImport});
+            this.buttonImport,
+            this.buttonGenerateMips});
 			this.stripTexture.Location = new System.Drawing.Point(0, 0);
 			this.stripTexture.Name = "stripTexture";
 			this.stripTexture.Size = new System.Drawing.Size(806, 25);
@@ -370,6 +372,15 @@
 			this.itemImportFileSystem.Text = "not localized";
 			this.itemImportFileSystem.Click += new System.EventHandler(this.itemImportFileSystem_Click);
 			// 
+			// buttonGenerateMips
+			// 
+			this.buttonGenerateMips.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.gen_mips_16x16;
+			this.buttonGenerateMips.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGenerateMips.Name = "buttonGenerateMips";
+			this.buttonGenerateMips.Size = new System.Drawing.Size(94, 22);
+			this.buttonGenerateMips.Text = "not localized";
+			this.buttonGenerateMips.Click += new System.EventHandler(this.buttonGenerateMips_Click);
+			// 
 			// dialogOpenImage
 			// 
 			this.dialogOpenImage.Title = "Not localized";
@@ -438,6 +449,7 @@
 		private System.Windows.Forms.ToolStripMenuItem itemImportFileSystem;
 		private System.Windows.Forms.OpenFileDialog dialogOpenImage;
 		private EditorFileDialog dialogImportImage;
+		private System.Windows.Forms.ToolStripButton buttonGenerateMips;
 
     }
 }

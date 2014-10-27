@@ -251,7 +251,7 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="EditorFile" /> class.
 		/// </summary>
 		/// <param name="filePath">The friendly name for the file.</param>
-		internal EditorFile(string filePath)
+		public EditorFile(string filePath)
 		{
 			if (filePath == null)
 			{
