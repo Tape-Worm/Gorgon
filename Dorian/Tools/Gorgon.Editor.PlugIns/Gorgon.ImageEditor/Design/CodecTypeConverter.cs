@@ -83,12 +83,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return base.ConvertTo(context, culture, value, destinationType);
             }
 
-	        var codec = (GorgonImageCodec)value;
-	        int codecIndex = Array.IndexOf(GorgonImageEditorPlugIn.CodecDropDownList, codec);
+	        var codec = value as GorgonImageCodec;
 
-	        if (codecIndex != -1)
+	        if (codec != null)
 	        {
-		        return GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].Codec + " - " + GorgonImageEditorPlugIn.CodecDropDownList[codecIndex].CodecDescription;
+		        return codec.Codec + " - " + codec.CodecDescription;
 	        }
 
 	        CultureInfo prevCulture = Resources.Culture;

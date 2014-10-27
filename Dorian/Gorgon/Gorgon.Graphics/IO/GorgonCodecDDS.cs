@@ -1758,40 +1758,25 @@ namespace GorgonLibrary.IO
             }
 
 			// Read the header information.
-			IImageSettings settings = ReadHeader(stream, size, out flags);			
+			IImageSettings settings = ReadHeader(stream, size, out flags);
+	        _actualDepth = settings.Depth;
+	        _actualArrayCount = settings.ArrayCount;
             
-			// Create our image data structure.
-			_actualDepth = settings.Depth;
-			_actualArrayCount = settings.ArrayCount;
-
-			// Override depth settings.
-			if ((Depth > 0) && (settings.ImageType == ImageType.Image3D))
-			{				
-				settings.Depth = Depth;
-			}			
-
-			// Override the array count.
-            if (settings.ImageType != ImageType.Image3D)
-            {
-                if (ArrayCount > 0)
-                {
-                    if (ArrayCount > 1)
-                    {
-                        _actualDepth = 1;
-                        settings.Depth = 1;
-                    }
-                    settings.ArrayCount = ArrayCount;
-                }
-                else
-                {
-                    // Reset depth override if we have an array in the image and we're not overriding the array count.
-                    if (_actualArrayCount > 1)
-                    {
-                        _actualDepth = 1;
-                        settings.Depth = 1;
-                    }
-                }
-            }
+			// Override array/depth settings.
+	        if (settings.ImageType == ImageType.Image3D)
+	        {
+		        if (Depth > 0)
+		        {
+			        settings.Depth = Depth;
+		        }
+	        }
+	        else
+	        {
+		        if (ArrayCount > 0)
+		        {
+			        settings.ArrayCount = ArrayCount;
+		        }
+	        }
 
             var imageData = new GorgonImageData(settings);
 

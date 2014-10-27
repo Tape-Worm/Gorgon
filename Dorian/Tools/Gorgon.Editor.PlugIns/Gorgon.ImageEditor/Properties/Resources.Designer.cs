@@ -118,6 +118,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap gen_mips_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("gen_mips_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Cancel.
         /// </summary>
         internal static string GORIMG_ACC_TEXT_CANCEL {
@@ -226,6 +236,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Crop/resize the image.
+        /// </summary>
+        internal static string GORIMG_DLG_CAPTION_RESIZE_CROP {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CAPTION_RESIZE_CROP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
         ///
         ///Are you sure you wish to do this?.
@@ -237,13 +256,35 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The image being loaded has a size of {0}x{1}.  The destination buffer has a size of {2}x{3}.  This image must be scaled or cropped to fit into the buffer.
+        ///   Looks up a localized string similar to This will generate mip map levels using the first image.  Any subsequent images will be replaced with their respective mip-map levels.
         ///
-        ///Would you like to scale the image?  Selecting No will crop the image..
+        ///Do you wish to continue?.
         /// </summary>
-        internal static string GORIMG_DLG_CROP_RESIZE_IMAGE {
+        internal static string GORIMG_DLG_GENERATE_MIPS {
             get {
-                return ResourceManager.GetString("GORIMG_DLG_CROP_RESIZE_IMAGE", resourceCulture);
+                return ResourceManager.GetString("GORIMG_DLG_GENERATE_MIPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer at mip level {0} and array index {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+        ///
+        ///Would you like to continue?.
+        /// </summary>
+        internal static string GORIMG_DLG_OVERWRITE_ARRAY_BUFFER {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_OVERWRITE_ARRAY_BUFFER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer at mip level {0} and depth slice {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+        ///
+        ///Would you like to continue?.
+        /// </summary>
+        internal static string GORIMG_DLG_OVERWRITE_DEPTH_BUFFER {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_OVERWRITE_DEPTH_BUFFER", resourceCulture);
             }
         }
         
@@ -384,11 +425,38 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions..
+        /// </summary>
+        internal static string GORIMG_TEXT_CROP_RESIZE_TEXT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CROP_RESIZE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crop to {0}x{1}.
+        /// </summary>
+        internal static string GORIMG_TEXT_CROP_TO {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CROP_TO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Depth slice: {0}/{1}.
         /// </summary>
         internal static string GORIMG_TEXT_DEPTH_SLICE {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_DEPTH_SLICE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffer dimensions: {0}x{1}.
+        /// </summary>
+        internal static string GORIMG_TEXT_DEST_DIMENSIONS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_DEST_DIMENSIONS", resourceCulture);
             }
         }
         
@@ -407,6 +475,69 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_EDIT_EXTERNAL_APPNAME {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_EDIT_EXTERNAL_APPNAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        internal static string GORIMG_TEXT_FILTER {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FILTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cubic.
+        /// </summary>
+        internal static string GORIMG_TEXT_FILTER_CUBIC {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FILTER_CUBIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fant.
+        /// </summary>
+        internal static string GORIMG_TEXT_FILTER_FANT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FILTER_FANT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Linear.
+        /// </summary>
+        internal static string GORIMG_TEXT_FILTER_LINEAR {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FILTER_LINEAR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Point.
+        /// </summary>
+        internal static string GORIMG_TEXT_FILTER_POINT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FILTER_POINT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generate mip-map levels.
+        /// </summary>
+        internal static string GORIMG_TEXT_GENERATE_MIPS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_GENERATE_MIPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image file: {0}.
+        /// </summary>
+        internal static string GORIMG_TEXT_IMAGE_FILE_PATH {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMAGE_FILE_PATH", resourceCulture);
             }
         }
         
@@ -546,6 +677,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Resize to {0}x{1}.
+        /// </summary>
+        internal static string GORIMG_TEXT_RESIZE_TO {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_RESIZE_TO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Revert back to the original image settings..
         /// </summary>
         internal static string GORIMG_TEXT_REVERT {
@@ -560,6 +700,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_SAVE {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_SAVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image file dimensions: {0}x{1}.
+        /// </summary>
+        internal static string GORIMG_TEXT_SRC_DIMENSIONS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_SRC_DIMENSIONS", resourceCulture);
             }
         }
         

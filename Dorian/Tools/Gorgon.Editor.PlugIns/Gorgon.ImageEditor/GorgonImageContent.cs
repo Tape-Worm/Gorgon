@@ -211,9 +211,110 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private GorgonImageCodec _codec;										// The codec used.
 	    private GorgonImageCodec _originalCodec;								// The original codec.
 	    private BufferFormat _originalBlockCompression = BufferFormat.Unknown;	// Original block compression state.
+	    private int _mipLevel;													// The current mip-map level to view.
+	    private int _arrayIndex;												// The current array index.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the current buffer for the selected mip, array index, or depth slice.
+		/// </summary>
+		[Browsable(false)]
+	    public GorgonImageBuffer Buffer
+	    {
+			get
+			{
+				if (Image == null)
+				{
+					return null;
+				}
+
+				return ImageType == ImageType.Image3D ? Image.Buffers[_mipLevel, _depthSlice] : Image.Buffers[_mipLevel, _arrayIndex];
+			}
+	    }
+
+		/// <summary>
+		/// Property to return the number of depth levels for the current mipmap level.
+		/// </summary>
+		[Browsable(false)]
+		public int DepthMipCount
+		{
+			get
+			{
+				return Image == null ? 1 : Image.GetDepthCount(_mipLevel);
+			}
+		}
+
+		/// <summary>
+		/// Property to return the array index for the image.
+		/// </summary>
+		[Browsable(false)]
+	    public int ArrayIndex
+	    {
+			get
+			{
+				return _arrayIndex;
+			}
+			set
+			{
+				if (Image == null)
+				{
+					return;
+				}
+
+				if (value < 0)
+				{
+					value = 0;
+				}
+
+				if (value >= ArrayCount)
+				{
+					value = ArrayCount - 1;
+				}
+
+				_arrayIndex = value;
+			}
+	    }
+
+		/// <summary>
+		/// Property to set or return the mip map level.
+		/// </summary>
+		[Browsable(false)]
+	    public int MipLevel
+	    {
+			get
+			{
+				return _mipLevel;
+			}
+			set
+			{
+				if (Image == null)
+				{
+					return;
+				}
+
+				if (value < 0)
+				{
+					value = 0;
+				}
+
+				if (value >= MipCount)
+				{
+					value = MipCount - 1;
+				}
+
+				_mipLevel = value;
+
+				if (ImageType != ImageType.Image3D)
+				{
+					return;
+				}
+
+				// Update the depth slice based on the number of current mip levels.
+				DepthSlice = DepthSlice;
+			}
+	    }
+
 		/// <summary>
 		/// Property to return the path to the executable that can open this file type.
 		/// </summary>
@@ -257,7 +358,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             set
             {
                 if ((ImageType != ImageType.Image3D) 
-					|| (_depthSlice == value))
+					|| (Image == null))
                 {
                     return;
                 }
@@ -269,12 +370,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                     _depthSlice = 0;
                 }
 
-                if (_depthSlice >= Depth)
+                if (_depthSlice >= DepthMipCount)
                 {
-                    _depthSlice = Depth - 1;
+                    _depthSlice = DepthMipCount - 1;
                 }
 
-	            float depthScalar = (_depthSlice / (float)(Depth - 1).Max(1));
+	            float depthScalar = (_depthSlice / (float)(DepthMipCount - 1).Max(1));
 
                 _depthSliceBuffer.Update(ref depthScalar);
             }
@@ -531,6 +632,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		            return;
 	            }
 
+				// Don't go above the maximum size for this image.
+	            int maxMips = GorgonImageData.GetMaxMipCount(Width, Height, Depth);
+	            if (value > maxMips)
+	            {
+		            value = maxMips;
+	            }
+
 				TransformImage(ImageType, Width, Height, Depth, value, ArrayCount, ImageFormat);
 
                 NotifyPropertyChanged();
@@ -587,7 +695,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 {
                     return;
                 }
-
+				
 				TransformImage(value, Width, Height, Depth, MipCount, ArrayCount, ImageFormat);
 
                 NotifyPropertyChanged();
@@ -681,6 +789,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				Image = newImage;
 				_imageSettings = newImage.Settings.Clone();
+
+				
+				if (ImageType != ImageType.Image3D)
+				{
+					// Reset the array index to ensure it gets clipped to any new range.
+					ArrayIndex = ArrayIndex;
+				}
+
+				// Reset the mip level to same value to ensure it gets clipped to any new range (this also cascades to depth slice as well).
+				MipLevel = MipLevel;
 			}
 			catch
 			{
@@ -997,7 +1115,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				var info = new ProcessStartInfo
 				{
 					Arguments =
-						"-f " + _compFormats[BlockCompression] + " -fl " +
+						"-f " + _compFormats[BlockCompression] + " -m " + MipCount + " -fl " + 
 						(Graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1 ? "11.0" : "10.0") + " -ft DDS -o \"" +
 						Path.GetDirectoryName(tempFilePath) + "\" -nologo -px comp_ \"" + tempFilePath + "\"",
 					ErrorDialog = true,
@@ -1082,8 +1200,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="size">Size of the image data within the stream, in bytes.</param>
 		/// <param name="codec">The codec to use for reading the file.</param>
 		/// <param name="compressionFormat">The compression format.</param>
+		/// <param name="mipLevels">Number of desired mip map levels.</param>
 		/// <returns>The image data for the decompressed image.</returns>
-	    public GorgonImageData DecompressBCImage(Stream stream, int size, GorgonImageCodec codec, BufferFormat compressionFormat)
+	    private GorgonImageData DecompressBCImage(Stream stream, int size, GorgonImageCodec codec, BufferFormat compressionFormat, int mipLevels)
 		{
 			Process texConvProcess = null;
 
@@ -1150,7 +1269,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				var info = new ProcessStartInfo
 				           {
 					           Arguments =
-						           "-f " + _d3dFormats[compressionFormat] + " -fl " +
+						           "-f " + _d3dFormats[compressionFormat] + " -m " + mipLevels + " -fl " +
 						           (Graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1 ? "11.0" : "10.0") + " -ft DDS -o \"" +
 						           Path.GetDirectoryName(tempFilePath) + "\" -nologo -px decomp_ \"" + tempFilePath + "\"",
 					           ErrorDialog = true,
@@ -1319,13 +1438,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			// Change the codec type.
 			EditorFile.Attributes["Codec"] = Codec.GetType().FullName;
 
+			_originalCodec = Codec;
+
 			// Make this image the original.
 		    if (_original == Image)
 		    {
 			    return;
 		    }
-
-	        _originalCodec = Codec;
+	        
 		    _original.Dispose();
 		    _original = Image;
         }
@@ -1336,35 +1456,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="file">The editor file to evaluate.</param>
 		/// <param name="stream">The stream to read.</param>
 		/// <returns>The codec for the stream.</returns>
-	    public GorgonImageCodec GetCodecForStream(EditorFile file, Stream stream)
+	    private static GorgonImageCodec GetCodecForStream(EditorFile file, Stream stream)
 		{
 			GorgonImageCodec codec;
 
 			// Find the codec in the editor file attributes.
 			string codecTypeName;
 
-			file.Attributes.TryGetValue("Codec", out codecTypeName);
-
-			if (!string.IsNullOrWhiteSpace(codecTypeName))
+			if (file.Attributes.TryGetValue("Codec", out codecTypeName))
 			{
 				// Find a codec with the appropriate type name.
 				codec = GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(item => string.Equals(item.GetType().FullName, codecTypeName, StringComparison.OrdinalIgnoreCase));
 
 				if ((codec != null) && (codec.IsReadable(stream)))
 				{
-					return codec;
+					return (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
 				}
 			}
 
 			// We didn't have codec information in the meta data, fall back to the file extension.
 			string fileExtension = Path.GetExtension(file.FilePath);
 
-			if (!GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
+			if ((!GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
+				|| (!codec.IsReadable(stream)))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, file.FilePath));
+				return null;
 			}
 
-			return codec;
+			return (GorgonImageCodec)Activator.CreateInstance(codec.GetType());
 		}
 
 		/// <summary>
@@ -1440,7 +1559,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    if (FormatInformation.IsCompressed)
 		    {
 				_originalBlockCompression = _blockCompression = settings.Format;
-			    Image = DecompressBCImage(stream, (int)stream.Length, Codec, settings.Format);
+			    Image = DecompressBCImage(stream, (int)stream.Length, Codec, settings.Format, settings.MipCount);
 		    }
 
 		    if (Image == null)
@@ -1717,12 +1836,36 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
+		/// Function to determine if the currently selected mip/array/depth buffer has data in it.
+		/// </summary>
+		/// <returns>TRUE if the buffer has data, FALSE if not.</returns>
+	    public unsafe bool ImageBufferHasData()
+		{
+			var bufferPtr = (byte*)Buffer.Data.UnsafePointer;
+
+			for (int y = 0; y < Buffer.Height; y++)
+			{
+				byte* data = bufferPtr + (y * Buffer.PitchInformation.RowPitch);
+
+				for (int x = 0; x < Buffer.PitchInformation.RowPitch; x++)
+				{
+					if ((*(data++)) != 0)
+					{
+						return true;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Function to convert the image to a format that's compatible with the image buffer currently selected.
 		/// </summary>
 		/// <param name="image">Image to convert.</param>
-		/// <param name="mipLevel">Currently selected mip map level.</param>
-		/// <param name="arrayDepth">Currently selected array index or depth slice.</param>
-		public void ConvertImageToBuffer(GorgonImageData image, int mipLevel, int arrayDepth)
+		/// <param name="crop">TRUE to crop the image instead of resize, FALSE to resize.</param>
+		/// <param name="filter">The filter to apply when resizing.</param>
+		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter)
 		{
 			try
 			{
@@ -1740,43 +1883,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					image.ConvertFormat(ImageFormat);
 				}
 
-				// Get the buffer we're currently on.
-				GorgonImageBuffer buffer = Image.Buffers[mipLevel, arrayDepth];
-
 				// If the buffer is not the same size as the image we've loaded, then resize the image.
-				if ((buffer.Width != image.Settings.Width)
-				    || (buffer.Height != image.Settings.Height))
+				if ((Buffer.Width != image.Settings.Width)
+				    || (Buffer.Height != image.Settings.Height))
 				{
-					var confirm = GorgonDialogs.ConfirmBox(_contentPanel.ParentForm,
-					                                       string.Format(Resources.GORIMG_DLG_CROP_RESIZE_IMAGE,
-					                                                     image.Settings.Width,
-					                                                     image.Settings.Height,
-					                                                     buffer.Width,
-					                                                     buffer.Height),
-					                                       null,
-					                                       true);
-
-					switch (confirm)
-					{
-						case ConfirmationResult.No:
-							image.Resize(buffer.Width, buffer.Height, true);
-							break;
-						case ConfirmationResult.Yes:
-							image.Resize(buffer.Width, buffer.Height, false);
-							break;
-						default:
-							throw new GorgonException(GorgonResult.CannotCreate,
-							                          string.Format(Resources.GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER,
-							                                        image.Settings.Width,
-							                                        image.Settings.Height,
-							                                        buffer.Width,
-							                                        buffer.Height));
-
-					}
+					image.Resize(Buffer.Width, Buffer.Height, crop, filter);
 				}
 
 				// Copy the data into the buffer.
-				image.Buffers[0].CopyTo(buffer);
+				image.Buffers[0].CopyTo(Buffer);
 
 				NotifyPropertyChanged("ImageImport", null);
 			}
@@ -1785,6 +1900,52 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				ValidateImageProperties();
 			}
 		}
+
+		/// <summary>
+		/// Function to load an image from a stream.
+		/// </summary>
+		/// <param name="editorFile">Editor file linked to the image.</param>
+		/// <param name="stream">Stream containing the image data.</param>
+		/// <param name="topLevelOnly">TRUE to retrieve only the first mip map level and/or array index.</param>
+		/// <returns>
+		/// An image data object containing the image.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="editorFile"/>, or the <paramref name="stream"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="GorgonException">Thrown when the no codec could be found for the image data.</exception>
+	    public GorgonImageData ReadFrom(EditorFile editorFile, Stream stream, bool topLevelOnly)
+	    {
+			if (editorFile == null)
+			{
+				throw new ArgumentNullException("editorFile");
+			}
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+		    GorgonImageCodec codec = GetCodecForStream(editorFile, stream);
+
+			if (codec == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, editorFile.FilePath));
+			}
+
+			// ReSharper disable once InvertIf
+			if (topLevelOnly)
+			{
+				codec.MipCount = 1;
+				codec.ArrayCount = 1;
+			}
+
+			// If the image is a compressed image, then decompress it so we can manipulate it.
+			IImageSettings metaData = codec.GetMetaData(stream);
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(metaData.Format);
+
+			return formatInfo.IsCompressed
+					   ? DecompressBCImage(stream, (int)stream.Length, codec, metaData.Format, metaData.MipCount)
+					   : GorgonImageData.FromStream(stream, (int)stream.Length, codec);
+	    }
 
 		/// <summary>
 		/// Function to edit the file in an associated external application.
@@ -1870,7 +2031,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					    && (Codec.SupportsBlockCompression))
 					{
 						_blockCompression = newSettings.Format;
-						newImage = DecompressBCImage(stream, (int)stream.Length, Codec, _blockCompression);
+						newImage = DecompressBCImage(stream, (int)stream.Length, Codec, _blockCompression, newSettings.MipCount);
 					}
 
 					// If we couldn't decompress the file, or it wasn't compressed, then load it as normal.
@@ -1926,6 +2087,21 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				DeleteTempImageFile(filePath);
 			}
+	    }
+
+		/// <summary>
+		/// Function to generate mip map data for this image.
+		/// </summary>
+	    public void GenerateMipMaps()
+	    {
+			if (Image == null)
+			{
+				return;
+			}
+
+			Image.GenerateMipMaps(MipCount, GorgonImageEditorPlugIn.Settings.MipFilter);
+			NotifyPropertyChanged("MipGenerate", null);
+			ValidateImageProperties();
 	    }
         #endregion
 

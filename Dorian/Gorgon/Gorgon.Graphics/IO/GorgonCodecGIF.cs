@@ -60,9 +60,20 @@ namespace GorgonLibrary.IO
 
 		#region Properties.
 		/// <summary>
+		/// Property to return whether the image codec supports image arrays.
+		/// </summary>
+		public override bool SupportsArray
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the delays between each frame in 1/10 of a second.
 		/// </summary>
-		/// <remarks>This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (Nothing in VB.Net), the no frame delays 
+		/// <remarks>This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (Nothing in VB.Net), then no frame delays 
 		/// will be put in to the GIF file.  If the array has less elements than the number of frames available, then a delay of 0 will be used for remaining delays and if the array has more 
 		/// delays than frames, then any frame delays after the number of images will be discarded.
 		/// <para>This property is only used on image data with multiple array indices.</para>
@@ -74,23 +85,6 @@ namespace GorgonLibrary.IO
 			get;
 			set;
 		}
-
-		// Looping won't work.  We need to write out NETSCAPE2.0 to the global encoder block and 
-		// SharpDX's WIC implementation isn't encoding our byte array properly (or at least, I 
-		// can't make it work).  Disable this for now.
-		/*/// <summary>
-		/// Property to set or return whether an encoded animation is looped or not.
-		/// </summary>
-		/// <remarks>This property will set the looping flag for a GIF animation.
-		/// <para>This property is only used on image data with multiple array indices and the <see cref="P:GorgonLibrary.IO.GorgonCodecGIF.FrameDelays">FrameDelays</see> property must be non-NULL (Nothing in VB.Net).</para>
-		/// <para>This property only applies to encoding of the image.</para>
-		/// <para>The default value is FALSE.</para>
-		/// </remarks>
-		public bool LoopAnimation
-		{
-			get;
-			set;
-		}*/
 
 		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.

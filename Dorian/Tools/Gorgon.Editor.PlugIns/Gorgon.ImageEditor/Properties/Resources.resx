@@ -120,15 +120,23 @@
   <data name="GORIMG_UNKNOWN_IMAGE_TYPE" xml:space="preserve">
     <value>The image type '{0}' is unknown.</value>
   </data>
-  <data name="GORIMG_ACCESS_DENIED" xml:space="preserve">
-    <value>Access to '{0}' is denied.</value>
+  <data name="GORIMG_DLG_CAPTION_IMPORT_IMAGE" xml:space="preserve">
+    <value>Select an image to import</value>
   </data>
   <data name="GORIMG_TEXT_NEXT_DEPTH" xml:space="preserve">
     <value>Go to the next depth slice.</value>
   </data>
+  <data name="GORIMG_TEXT_FILTER" xml:space="preserve">
+    <value>Filter</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_DLG_OVERWRITE_ARRAY_BUFFER" xml:space="preserve">
+    <value>The buffer at mip level {0} and array index {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+
+Would you like to continue?</value>
   </data>
   <data name="import_disk_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import_disk_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -145,14 +153,17 @@
   <data name="PROP_MIPCOUNT_DESC" xml:space="preserve">
     <value>Sets the number of mip-map levels for this texture.</value>
   </data>
-  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
-    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
+  <data name="GORIMG_DLG_CAPTION_RESIZE_CROP" xml:space="preserve">
+    <value>Crop/resize the image</value>
   </data>
   <data name="GORIMG_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found.</value>
   </data>
   <data name="GORIMG_TEXT_INVALID_CODEC" xml:space="preserve">
     <value>(Invalid codec)</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_FILE_PATH" xml:space="preserve">
+    <value>Image file: {0}</value>
   </data>
   <data name="PROP_HEIGHT_DESC" xml:space="preserve">
     <value>Sets the vertical sizing of the image, in pixels.</value>
@@ -179,6 +190,9 @@ See the details pane for more information.</value>
   <data name="GORIMG_TEXT_NONE" xml:space="preserve">
     <value>None</value>
   </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK" xml:space="preserve">
+    <value>Import image from disk</value>
+  </data>
   <data name="PROP_IMAGETYPE_DESC" xml:space="preserve">
     <value>Sets the type of image data, can be one of 1D, 2D, Cube Mapped, or 3D for codecs that support various image types.</value>
   </data>
@@ -187,6 +201,12 @@ See the details pane for more information.</value>
   </data>
   <data name="GORIMG_TEXT_DEPTH_SLICE" xml:space="preserve">
     <value>Depth slice: {0}/{1}</value>
+  </data>
+  <data name="GORIMG_TEXT_EDIT_EXTERNAL" xml:space="preserve">
+    <value>Edit this file in an external image editor application.</value>
+  </data>
+  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
+    <value>Image height</value>
   </data>
   <data name="GORIMG_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
@@ -206,11 +226,20 @@ See the details pane for more information.</value>
   <data name="GORIMG_TEXT_PREV_DEPTH" xml:space="preserve">
     <value>Go to the previous depth slice.</value>
   </data>
+  <data name="GORIMG_TEXT_FILTER_CUBIC" xml:space="preserve">
+    <value>Cubic</value>
+  </data>
   <data name="PROP_MIPCOUNT_NAME" xml:space="preserve">
     <value>Mip-map count</value>
   </data>
+  <data name="GORIMG_TEXT_CROP_TO" xml:space="preserve">
+    <value>Crop to {0}x{1}</value>
+  </data>
   <data name="GORIMG_TEXT_NEXT_MIP" xml:space="preserve">
     <value>Go to the next mip-map level.</value>
+  </data>
+  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
+    <value>Type</value>
   </data>
   <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
     <value>Image</value>
@@ -232,11 +261,20 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_PREV_MIP" xml:space="preserve">
     <value>Go to the previous mip-map level.</value>
   </data>
+  <data name="GORIMG_TEXT_FILTER_FANT" xml:space="preserve">
+    <value>Fant</value>
+  </data>
+  <data name="GORIMG_TEXT_ALL_IMAGE_TYPES" xml:space="preserve">
+    <value>All image types</value>
+  </data>
   <data name="invalid_image_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\invalid_image_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_TEXT_EDIT_EXTERNAL" xml:space="preserve">
-    <value>Edit this file in an external image editor application.</value>
+  <data name="import_image_filesystem_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\import_image_filesystem_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_DESC" xml:space="preserve">
+    <value>Gorgon Image Editor</value>
   </data>
   <data name="forward_16x161" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\forward_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -253,14 +291,8 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
     <value>The image type '{0}' is unknown.</value>
   </data>
-  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
-    <value>Array count</value>
-  </data>
   <data name="PROP_ARRAYCOUNT_DESC" xml:space="preserve">
     <value>Sets the number of array slices for this texture.</value>
-  </data>
-  <data name="GORIMG_DESC" xml:space="preserve">
-    <value>Gorgon Image Editor</value>
   </data>
   <data name="GORIMG_TEXT_EDIT_EXTERNAL_APPNAME" xml:space="preserve">
     <value>Edit this file in {0}.</value>
@@ -268,11 +300,20 @@ R16B16G16A16 (floating point)</value>
   <data name="ImageViewShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImageViewShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="GORIMG_TEXT_FILTER_POINT" xml:space="preserve">
+    <value>Point</value>
+  </data>
+  <data name="GORIMG_TEXT_SRC_DIMENSIONS" xml:space="preserve">
+    <value>Image file dimensions: {0}x{1}</value>
+  </data>
   <data name="GORIMG_CODEC_CANNOT_READ" xml:space="preserve">
     <value>The file '{0}' could not be read by the '{1}' codec.</value>
   </data>
   <data name="PROP_IMAGEFORMAT_NAME" xml:space="preserve">
     <value>Image format</value>
+  </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE" xml:space="preserve">
+    <value>Import image</value>
   </data>
   <data name="GORIMG_IMAGE_1D_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The image must be less than or equal to {0} pixels wide.</value>
@@ -297,8 +338,20 @@ Are you sure you wish to do this?</value>
   <data name="GORIMG_TEXT_NEXT_ARRAY" xml:space="preserve">
     <value>Go to the next array index.</value>
   </data>
+  <data name="GORIMG_TEXT_DEST_DIMENSIONS" xml:space="preserve">
+    <value>Buffer dimensions: {0}x{1}</value>
+  </data>
   <data name="GORIMG_CANNOT_COMPRESS" xml:space="preserve">
     <value>There was an error compressing the image.</value>
+  </data>
+  <data name="GORIMG_ACC_TEXT_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_LINEAR" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
+    <value>Go to the previous array index.</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
     <value>Image size: {0}x{1}.  Format: {2}.</value>
@@ -327,6 +380,9 @@ Are you sure you wish to do this?</value>
   <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORIMG_TEXT_RESIZE_TO" xml:space="preserve">
+    <value>Resize to {0}x{1}</value>
+  </data>
   <data name="GORIMG_PATH_NOT_VALID" xml:space="preserve">
     <value>The path '{0}' is not valid.</value>
   </data>
@@ -339,11 +395,24 @@ Are you sure you wish to do this?</value>
   <data name="pencil_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pencil_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
-    <value>Type</value>
+  <data name="GORIMG_ACCESS_DENIED" xml:space="preserve">
+    <value>Access to '{0}' is denied.</value>
   </data>
-  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
-    <value>Image height</value>
+  <data name="GORIMG_TEXT_CROP_RESIZE_TEXT" xml:space="preserve">
+    <value>The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions.</value>
+  </data>
+  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
+    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
+  </data>
+  <data name="GORIMG_ACC_TEXT_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+    <comment>Cancel button text.</comment>
+  </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR" xml:space="preserve">
+    <value>Import image from editor file</value>
+  </data>
+  <data name="GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER" xml:space="preserve">
+    <value>Cannot load the image.  It has a size of {0}x{1} and the size of the currently selected mip/array/depth buffer is {2}x{3}.</value>
   </data>
   <data name="PROP_CODEC_DESC" xml:space="preserve">
     <value>Sets the file format when writing the image.</value>
@@ -354,14 +423,19 @@ Are you sure you wish to do this?</value>
   <data name="PROP_DEPTH_DESC" xml:space="preserve">
     <value>Sets the number of depth slices for a volume (3D) image.</value>
   </data>
+  <data name="GORIMG_DLG_OVERWRITE_DEPTH_BUFFER" xml:space="preserve">
+    <value>The buffer at mip level {0} and depth slice {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+
+Would you like to continue?</value>
+  </data>
   <data name="image_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_DEPTH_NAME" xml:space="preserve">
     <value>Image depth</value>
   </data>
-  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
-    <value>Go to the previous array index.</value>
+  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
+    <value>Array count</value>
   </data>
   <data name="GORIMG_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The image must be at least 1x1 pixels and have 1 depth or 1 array slice.</value>
@@ -372,37 +446,15 @@ Are you sure you wish to do this?</value>
   <data name="GORIMG_INVALID_FORMAT" xml:space="preserve">
     <value>The format '{0}' is not valid for {1} images.</value>
   </data>
-  <data name="import_image_filesystem_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\import_image_filesystem_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="gen_mips_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen_mips_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_DLG_CAPTION_IMPORT_IMAGE" xml:space="preserve">
-    <value>Select an image to import</value>
-  </data>
-  <data name="GORIMG_TEXT_IMPORT_IMAGE" xml:space="preserve">
-    <value>Import image</value>
-  </data>
-  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK" xml:space="preserve">
-    <value>Import image from disk</value>
-  </data>
-  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR" xml:space="preserve">
-    <value>Import image from editor file</value>
-  </data>
-  <data name="GORIMG_TEXT_ALL_IMAGE_TYPES" xml:space="preserve">
-    <value>All image types</value>
-  </data>
-  <data name="GORIMG_ACC_TEXT_CANCEL" xml:space="preserve">
-    <value>&amp;Cancel</value>
-    <comment>Cancel button text.</comment>
-  </data>
-  <data name="GORIMG_ACC_TEXT_OK" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
-  <data name="GORIMG_DLG_CROP_RESIZE_IMAGE" xml:space="preserve">
-    <value>The image being loaded has a size of {0}x{1}.  The destination buffer has a size of {2}x{3}.  This image must be scaled or cropped to fit into the buffer.
+  <data name="GORIMG_DLG_GENERATE_MIPS" xml:space="preserve">
+    <value>This will generate mip map levels using the first image.  Any subsequent images will be replaced with their respective mip-map levels.
 
-Would you like to scale the image?  Selecting No will crop the image.</value>
+Do you wish to continue?</value>
   </data>
-  <data name="GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER" xml:space="preserve">
-    <value>Cannot load the image.  It has a size of {0}x{1} and the size of the currently selected mip/array/depth buffer is {2}x{3}.</value>
+  <data name="GORIMG_TEXT_GENERATE_MIPS" xml:space="preserve">
+    <value>Generate mip-map levels</value>
   </data>
 </root>
