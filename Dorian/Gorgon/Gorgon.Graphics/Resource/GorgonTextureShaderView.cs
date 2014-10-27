@@ -88,6 +88,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return whether the texture is a texture cube or not.
+        /// </summary>
+	    public bool IsCube
+	    {
+	        get;
+	        private set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -122,7 +131,6 @@ namespace GorgonLibrary.Graphics
 		{
 			bool isMultiSampled = ((texture.Settings.Multisampling.Count > 1)
 			                       || (texture.Settings.Multisampling.Quality > 0));
-			int arrayCount = texture.Settings.IsTextureCube ? ArrayCount / 6 : ArrayCount;
 
 			if (!isMultiSampled)
 			{
@@ -130,16 +138,14 @@ namespace GorgonLibrary.Graphics
 					{
 						Format = (Format)Format,
 						Dimension = texture.Settings.ArrayCount > 1
-							            ? texture.Settings.IsTextureCube ? ShaderResourceViewDimension.TextureCubeArray 
-								              : ShaderResourceViewDimension.Texture2DArray
-							            : texture.Settings.IsTextureCube ? ShaderResourceViewDimension.TextureCube
-								              : ShaderResourceViewDimension.Texture2D,
+							            ? ShaderResourceViewDimension.Texture2DArray
+							            : ShaderResourceViewDimension.Texture2D,
 						Texture2DArray = 
 							{
 								MipLevels = MipCount,
 								MostDetailedMip = MipStart,
 								FirstArraySlice = ArrayStart,
-								ArraySize = arrayCount
+								ArraySize = ArrayCount
 							}
 					};
 			}
@@ -157,6 +163,41 @@ namespace GorgonLibrary.Graphics
 						}
 				};
 		}
+
+        /// <summary>
+        /// Function to retrieve the view description for a 2D texture cube.
+        /// </summary>
+        /// <param name="texture">The texture to bind to the view.</param>
+        /// <returns>The shader view description.</returns>
+        /// <exception cref="GorgonException"></exception>
+	    private D3D.ShaderResourceViewDescription GetDesc2DCube(GorgonTexture texture)
+	    {
+            bool isMultiSampled = ((texture.Settings.Multisampling.Count > 1)
+                                   || (texture.Settings.Multisampling.Quality > 0));
+
+	        if (isMultiSampled)
+	        {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE);
+            }
+
+            int cubeArrayCount = texture.Settings.ArrayCount / 6;
+
+            return new D3D.ShaderResourceViewDescription
+                   {
+                       Format = (Format)Format,
+                       Dimension =
+                           cubeArrayCount > 1
+                               ? ShaderResourceViewDimension.TextureCubeArray
+                               : ShaderResourceViewDimension.TextureCube,
+                       TextureCubeArray =
+                       {
+                           CubeCount = cubeArrayCount,
+                           First2DArrayFace = ArrayStart,
+                           MipLevels = MipCount,
+                           MostDetailedMip = MipStart
+                       }
+                   };
+	    }
 
 		/// <summary>
 		/// Function to retrieve the view description for a 3D texture.
@@ -194,8 +235,8 @@ namespace GorgonLibrary.Graphics
 					desc = GetDesc1D(texture);
 					break;
 				case ResourceType.Texture2D:
-					desc = GetDesc2D(texture);
-					break;
+			        desc = IsCube ? GetDesc2DCube(texture) : GetDesc2D(texture);
+			        break;
 				case ResourceType.Texture3D:
 					desc = GetDesc3D();
 					break;
@@ -345,6 +386,7 @@ namespace GorgonLibrary.Graphics
 			MipCount = mipCount;
 			ArrayStart = arrayIndex;
 			ArrayCount = arrayCount;
+		    IsCube = texture.Settings.ImageType == ImageType.ImageCube;
 
 		    switch (texture.ResourceType)
 		    {

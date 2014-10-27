@@ -760,6 +760,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_content.MipLevel < _content.MipCount - 1);
             buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
                                            && (_content.ArrayIndex > 0);
+
             buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
 										   && (_content.ArrayIndex < _content.ArrayCount - 1);
 
@@ -898,6 +899,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, _content.ArrayIndex + 1, _content.ArrayCount);
                     break;
                 case ImageType.Image2D:
+                case ImageType.ImageCube:
                     _currentView = ((GorgonTexture2D)_texture).GetShaderView(_texture.Settings.Format,
 																			 _content.MipLevel,
                                                                              1,
@@ -1022,19 +1024,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-			switch (_content.ImageType)
-			{
-				case ImageType.Image1D:
-					_content.Renderer.PixelShader.Current = _content.Draw1D;
-					break;
-				case ImageType.Image2D:
-				case ImageType.ImageCube:
-					_content.Renderer.PixelShader.Current = _content.Draw2D;
-					break;
-				case ImageType.Image3D:
-					_content.Renderer.PixelShader.Current = _content.Draw3D;
-					break;
-			}
+		    _content.Renderer.PixelShader.Current = _content.PixelShader;
 
 			// Send some data to render to the GPU.  We'll set the texture -after- this so that we can trick the 2D renderer into using
 			// a 1D/3D texture.  This works because the blit does not occur until after we have a state change or we force rendering with "Render".
@@ -1044,6 +1034,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    _content.Renderer.PixelShader.Resources[0] = _currentView;
 
+            // This triggers a render and resets our pixel shader back to the current.
 			_content.Renderer.PixelShader.Current = null;
 			_content.Renderer.PixelShader.Resources[0] = null;
 	    }

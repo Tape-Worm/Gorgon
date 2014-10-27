@@ -41,7 +41,7 @@ namespace GorgonLibrary.Graphics
         /// A key for the SRV cache.
         /// </summary>
         struct ViewKey
-            : IEquatable<ViewKey>
+            : IEquatable<ViewKey>, IEqualityComparer<ViewKey>
         {
             #region Variables.
             private readonly BufferFormat _format;
@@ -49,6 +49,7 @@ namespace GorgonLibrary.Graphics
             private readonly int _value2;
             private readonly int _value3;
             private readonly int _value4;
+            private readonly bool _value5;
             #endregion
 
             #region Methods.
@@ -80,7 +81,8 @@ namespace GorgonLibrary.Graphics
                        .GenerateHash(_value1)
                        .GenerateHash(_value2)
                        .GenerateHash(_value3)
-                       .GenerateHash(_value4);
+                       .GenerateHash(_value4)
+                       .GenerateHash(_value5);
             }
             #endregion
 
@@ -93,13 +95,15 @@ namespace GorgonLibrary.Graphics
             /// <param name="value2">Second key component.</param>
             /// <param name="value3">Third key component.</param>
             /// <param name="value4">Fourth key component.</param>
-            public ViewKey(BufferFormat format, int value1, int value2, int value3, int value4)
+            /// <param name="value5">Fifth key component.</param>
+            public ViewKey(BufferFormat format, int value1, int value2, int value3, int value4, bool value5 = false)
             {
                 _format = format;
                 _value1 = value1;
                 _value2 = value2;
                 _value3 = value3;
                 _value4 = value4;
+                _value5 = value5;
             }
             #endregion
 
@@ -117,7 +121,35 @@ namespace GorgonLibrary.Graphics
                        && other._value1 == _value1
                        && other._value2 == _value2
                        && other._value3 == _value3
-                       && other._value4 == _value4;
+                       && other._value4 == _value4
+                       && other._value5 == _value5;
+            }
+            #endregion
+
+            #region IEqualityComparer<ViewKey> Members
+            /// <summary>
+            /// Determines whether the specified objects are equal.
+            /// </summary>
+            /// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
+            /// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
+            /// <returns>
+            /// true if the specified objects are equal; otherwise, false.
+            /// </returns>
+            bool IEqualityComparer<ViewKey>.Equals(ViewKey x, ViewKey y)
+            {
+                return x.Equals(y);
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <param name="obj">The object.</param>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            int IEqualityComparer<ViewKey>.GetHashCode(ViewKey obj)
+            {
+                return obj.GetHashCode();
             }
             #endregion
         }
@@ -396,7 +428,8 @@ namespace GorgonLibrary.Graphics
                                         firstMip,
                                         mipCount,
                                         buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
-                                        buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
+                                        buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1,
+                                        buffer.Settings.IsTextureCube);
 
             lock (_syncLock)
             {

@@ -742,4 +742,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_TEXTURE_NO_MIP_SUPPORT" xml:space="preserve">
     <value>The texture format [{0}] must be used with a mip map count of 1.</value>
   </data>
+  <data name="GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE" xml:space="preserve">
+    <value>Cannot use a multi-sampled texture as a texture cube.</value>
+  </data>
 </root>
