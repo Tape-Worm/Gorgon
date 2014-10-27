@@ -326,11 +326,11 @@ namespace GorgonLibrary.Graphics
                                                         Settings.MipCount));
             }
 
-            if ((Settings.IsTextureCube)
+            /*if ((Settings.IsTextureCube)
                 && ((arrayCount % 6) != 0))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
-            }
+            }*/
 
             return _viewCache.GetTextureView(format, mipStart, mipCount, arrayStart, arrayCount);
         }

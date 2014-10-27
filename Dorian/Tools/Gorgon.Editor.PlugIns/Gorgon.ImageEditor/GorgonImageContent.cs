@@ -213,6 +213,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private BufferFormat _originalBlockCompression = BufferFormat.Unknown;	// Original block compression state.
 	    private int _mipLevel;													// The current mip-map level to view.
 	    private int _arrayIndex;												// The current array index.
+        private GorgonPixelShader _1DShader;                                    // 1D pixel shader.
+        private GorgonPixelShader _1DArrayShader;                               // 1D array pixel shader.
+        private GorgonPixelShader _2DShader;                                    // 2D pixel shader.
+        private GorgonPixelShader _2DArrayShader;                               // 2D array pixel shader.
+        private GorgonPixelShader _2DCubeShader;                                // 2D cube pixel shader.
+        private GorgonPixelShader _2DCubeArrayShader;                           // 2D cube array pixel shader.
+        private GorgonPixelShader _3DShader;                                    // 3D pixel shader.
         #endregion
 
         #region Properties.
@@ -382,33 +389,27 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
         /// <summary>
-        /// Property to return the 1D texture drawing pixel shader.
+        /// Property to return the current texture drawing pixel shader.
         /// </summary>
 		[Browsable(false)]
-        public GorgonPixelShader Draw1D
+        public GorgonPixelShader PixelShader
         {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the 2D texture drawing pixel shader.
-        /// </summary>
-		[Browsable(false)]
-        public GorgonPixelShader Draw2D
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the 3D texture drawing pixel shader.
-        /// </summary>
-		[Browsable(false)]
-        public GorgonPixelShader Draw3D
-        {
-            get;
-            private set;
+            get
+            {
+                switch (ImageType)
+                {
+                    case ImageType.Image1D:
+                        return ArrayCount > 1 ? _1DArrayShader : _1DShader;
+                    case ImageType.Image2D:
+                        return ArrayCount > 1 ? _2DArrayShader : _2DShader;
+                    case ImageType.ImageCube:
+                        return (ArrayCount % 6) > 1 ? _2DCubeArrayShader : _2DCubeShader;
+                    case ImageType.Image3D:
+                        return _3DShader;
+                    default:
+                        return null;
+                }
+            }
         }
 
 		/// <summary>
@@ -1380,6 +1381,41 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    {
 				GorgonImageEditorPlugIn.Settings.Save();
 
+		        if (_1DArrayShader != null)
+		        {
+		            _1DArrayShader.Dispose();
+		        }
+
+		        if (_1DShader != null)
+		        {
+		            _1DShader.Dispose();
+		        }
+
+		        if (_2DArrayShader != null)
+		        {
+		            _2DArrayShader.Dispose();
+		        }
+
+		        if (_2DShader != null)
+		        {
+		            _2DShader.Dispose();
+		        }
+
+		        if (_2DCubeArrayShader != null)
+		        {
+		            _2DCubeArrayShader.Dispose();
+		        }
+
+		        if (_2DCubeShader != null)
+		        {
+		            _2DCubeShader.Dispose();
+		        }
+
+		        if (_3DShader != null)
+		        {
+		            _3DShader.Dispose();
+		        }
+
 		        if (_depthSliceBuffer != null)
 		        {
 		            _depthSliceBuffer.Dispose();
@@ -1407,6 +1443,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				    _swap.Dispose();
 			    }
 
+		        _1DShader = _1DArrayShader = null;
+		        _2DShader = _2DArrayShader = _2DCubeShader = _2DCubeArrayShader = null;
+		        _3DShader = null;
 		        _depthSliceBuffer = null;
 			    _swap = null;
 				Renderer = null;
@@ -1616,38 +1655,66 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			Renderer = Graphics.Output.Create2DRenderer(_swap);
 
+          
 #if DEBUG
-            Draw1D = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture",
-                                                                      "Gorgon1DTextureView",
-                                                                      Resources.ImageViewShaders);
-
-            Draw2D = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture",
-                                                                      "Gorgon2DTextureView",
-                                                                      Resources.ImageViewShaders);
-
-            Draw3D = Graphics.Shaders.CreateShader<GorgonPixelShader>("3D Texture",
-                                                                      "Gorgon3DTextureView",
-                                                                      Resources.ImageViewShaders);
+            const bool useDebug = true;
 #else
-            Draw1D = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture",
+            const bool useDebug = false;
+#endif
+            GorgonShaderMacro[] macros = null;
+
+            if (Graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM4_1)
+            {
+                macros = new[]
+                         {
+                             new GorgonShaderMacro("SM41")
+                         };
+            }
+            
+            _1DShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture",
                                                                       "Gorgon1DTextureView",
                                                                       Resources.ImageViewShaders,
-                                                                      null,
-                                                                      false);
+                                                                      macros,
+                                                                      useDebug);
 
-            Draw2D = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture",
+            _1DArrayShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("1D Texture array",
+                                                                      "Gorgon1DTextureArrayView",
+                                                                      Resources.ImageViewShaders,
+                                                                      macros,
+                                                                      useDebug);
+
+            _2DShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture",
                                                                       "Gorgon2DTextureView",
                                                                       Resources.ImageViewShaders,
-                                                                      null,
-                                                                      false);
+                                                                      macros,
+                                                                      useDebug);
 
+            _2DArrayShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture array",
+                                                                      "Gorgon2DTextureArrayView",
+                                                                      Resources.ImageViewShaders,
+                                                                      macros,
+                                                                      useDebug);
 
-            Draw3D = Graphics.Shaders.CreateShader<GorgonPixelShader>("3D Texture",
+            _2DCubeShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture cube",
+                                                                      "Gorgon2DTextureCubeView",
+                                                                      Resources.ImageViewShaders,
+                                                                      macros,
+                                                                      useDebug);
+
+            if (Graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM4_1)
+            {
+                _2DCubeArrayShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("2D Texture cube array",
+                                                                                 "Gorgon2DTextureCubeArrayView",
+                                                                                 Resources.ImageViewShaders,
+                                                                                 macros,
+                                                                                 useDebug);
+            }
+
+            _3DShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("3D Texture",
                                                                       "Gorgon3DTextureView",
                                                                       Resources.ImageViewShaders,
-                                                                      null,
-                                                                      false);
-#endif
+                                                                      macros,
+                                                                      useDebug);
 
             // Create our depth/array index value for the shaders.
             _depthSliceBuffer = Graphics.Buffers.CreateConstantBuffer("DepthArrayIndex",
@@ -1659,7 +1726,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             _depthSliceBuffer.Update(ref depthSlice);
 
             Graphics.Shaders.PixelShader.ConstantBuffers[1] = _depthSliceBuffer;
-            
 
 	        _contentPanel.CreateResources();
 
