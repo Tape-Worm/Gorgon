@@ -935,16 +935,19 @@ namespace GorgonLibrary.IO
 	                    };
 		            break;
                 case ImageType.Image2D:
-                    settings = new GorgonTexture2DSettings();
+                    settings = new GorgonTexture2DSettings
+                               {
+	                               Height = (int)header.Height,
+								   ArrayCount = (int)dx10Header.ArrayCount
+                               };
 
-                    // Get cube texture settings.
-                    if ((dx10Header.MiscFlags & DDSHeaderMiscFlags.TextureCube) == DDSHeaderMiscFlags.TextureCube)
-                    {
-                        settings.ArrayCount = (int)dx10Header.ArrayCount * 6;
-                        ((GorgonTexture2DSettings)settings).IsTextureCube = true;
-                    }
-                    settings.Height = (int)header.Height;
-					settings.ArrayCount = (int)dx10Header.ArrayCount;
+		            // Get cube texture settings.
+		            if ((dx10Header.MiscFlags & DDSHeaderMiscFlags.TextureCube) == DDSHeaderMiscFlags.TextureCube)
+		            {
+			            settings.ArrayCount = (int)dx10Header.ArrayCount * 6;
+			            ((GorgonTexture2DSettings)settings).IsTextureCube = true;
+		            }
+                    
                     break;
                 case ImageType.Image3D:
                     if ((header.Flags & DDSHeaderFlags.Volume) != DDSHeaderFlags.Volume)

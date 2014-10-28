@@ -100,6 +100,15 @@ namespace GorgonLibrary.Editor
 		    set;
 	    }
 
+		/// <summary>
+		/// Property to set or return the action to use when the content changes.
+		/// </summary>
+	    internal Action OnChanged
+	    {
+		    get;
+		    set;
+	    }
+
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
@@ -428,6 +437,11 @@ namespace GorgonLibrary.Editor
 			HasChanges = !string.Equals(property, "revert", StringComparison.OrdinalIgnoreCase) 
 							&& !string.Equals(property, "commit", StringComparison.OrdinalIgnoreCase);
 			ContentControl.OnContentPropertyChanged(property, value);
+
+			if (OnChanged != null)
+			{
+				OnChanged();
+			}
 		}
 
 		/// <summary>

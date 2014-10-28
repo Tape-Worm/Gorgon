@@ -185,7 +185,7 @@ See the details pane for more information.</value>
     <value>Mip-map level: {0}/{1} ({2}x{3})</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
-    <value>Image size: {0}x{1}x{2}.  Format: {3}.</value>
+    <value>Image size: {0}x{1}x{2}  Format: {3}</value>
   </data>
   <data name="GORIMG_TEXT_NONE" xml:space="preserve">
     <value>None</value>
@@ -218,7 +218,7 @@ See the details pane for more information.</value>
     <value>Image data</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_1D" xml:space="preserve">
-    <value>Image size: {0} pixels wide.  Format: {1}.</value>
+    <value>Image size: {0} pixels wide  Format: {1}</value>
   </data>
   <data name="PROP_BLOCKCOMP_NAME" xml:space="preserve">
     <value>Block compression</value>
@@ -354,7 +354,7 @@ Are you sure you wish to do this?</value>
     <value>Go to the previous array index.</value>
   </data>
   <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
-    <value>Image size: {0}x{1}.  Format: {2}.</value>
+    <value>Image size: {0}x{1}  Format: {2}</value>
   </data>
   <data name="GORIMG_CONTENT_NOT_IMAGE" xml:space="preserve">
     <value>The content '{0}' is not an image.</value>
@@ -456,5 +456,8 @@ Do you wish to continue?</value>
   </data>
   <data name="GORIMG_TEXT_GENERATE_MIPS" xml:space="preserve">
     <value>Generate mip-map levels</value>
+  </data>
+  <data name="GORIMG_TEXT_FACE" xml:space="preserve">
+    <value>Face: {0} ({1})</value>
   </data>
 </root>

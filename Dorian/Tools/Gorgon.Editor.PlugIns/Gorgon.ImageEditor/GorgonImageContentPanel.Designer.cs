@@ -25,6 +25,11 @@
 			        _backgroundTexture.Dispose();
 		        }
 
+		        if (_font != null)
+		        {
+			        _font.Dispose();
+		        }
+
 		        if (_texture != null)
 		        {
 			        _texture.Dispose();
@@ -47,7 +52,7 @@
         {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonImageContentPanel));
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
-			this.panelTextureDisplay = new System.Windows.Forms.Panel();
+			this.panelTextureDisplay = new GorgonLibrary.UI.GorgonSelectablePanel();
 			this.stripPanelImageEditor = new System.Windows.Forms.ToolStripContainer();
 			this.stripImageEditor = new System.Windows.Forms.ToolStrip();
 			this.labelImageInfo = new System.Windows.Forms.ToolStripLabel();
@@ -105,10 +110,16 @@
 			this.panelTextureDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelTextureDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelTextureDisplay.Name = "panelTextureDisplay";
+			this.panelTextureDisplay.ShowFocus = false;
 			this.panelTextureDisplay.Size = new System.Drawing.Size(806, 556);
 			this.panelTextureDisplay.TabIndex = 0;
 			this.panelTextureDisplay.DragDrop += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragDrop);
 			this.panelTextureDisplay.DragEnter += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragEnter);
+			this.panelTextureDisplay.DragOver += new System.Windows.Forms.DragEventHandler(this.panelTextureDisplay_DragOver);
+			this.panelTextureDisplay.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextureDisplay_MouseDown);
+			this.panelTextureDisplay.MouseLeave += new System.EventHandler(this.panelTextureDisplay_MouseLeave);
+			this.panelTextureDisplay.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelTextureDisplay_MouseMove);
+			this.panelTextureDisplay.Resize += new System.EventHandler(this.panelTextureDisplay_Resize);
 			// 
 			// stripPanelImageEditor
 			// 
@@ -422,7 +433,7 @@
         #endregion
 
 		private EditorFileDialog imageFileBrowser;
-		internal System.Windows.Forms.Panel panelTextureDisplay;
+		internal GorgonLibrary.UI.GorgonSelectablePanel panelTextureDisplay;
         private System.Windows.Forms.ToolStripContainer stripPanelImageEditor;
         private System.Windows.Forms.ToolStrip stripImageEditor;
         private System.Windows.Forms.ToolStripLabel labelMipLevel;

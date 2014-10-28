@@ -1547,6 +1547,7 @@ namespace GorgonLibrary.Editor
 				ContentManagement.OnGetDependency = null;
 				ContentManagement.DependencyNotFound = null;
 				ContentManagement.ContentSaved = null;
+				ContentManagement.ContentPropertyChanged = null;
 
                 // Unhook from file management functionality.
 			    ScratchArea.ImportExportFileConflictFunction = null;
@@ -3519,6 +3520,7 @@ namespace GorgonLibrary.Editor
 			ContentManagement.ContentRenamed = ContentNamePropertyChanged;
 			ContentManagement.ContentPropertyStateChanged = () => propertyItem.Refresh();
 			ContentManagement.ContentSaved = () => FileManagement.FileChanged = true;
+			ContentManagement.ContentPropertyChanged = ValidateControls;
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

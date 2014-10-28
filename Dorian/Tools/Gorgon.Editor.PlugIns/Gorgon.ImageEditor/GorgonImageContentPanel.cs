@@ -35,6 +35,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -56,9 +57,199 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private GorgonTexture2D _backgroundTexture;
         // The current shader view.
         private GorgonTextureShaderView _currentView;
+		// Pattern for selector box.
+	    private GorgonTexture2D _pattern;
+		// The cube face locations.
+		private readonly Rectangle[] _cubeFaceLocations = new Rectangle[6];
+		// Names for the cube faces.
+		private readonly string[] _cubeFaceNames = new string[6];
+		// Font for our dislpay.
+	    private GorgonFont _font;
+		// Text sprite.
+	    private GorgonText _text;
+		// Scroller for the selector pattern.
+	    private Vector2 _selectScroll;
+		// Selector sprite.
+		private GorgonSprite _selectorSprite;
+		// Face we're currently over with the mouse.
+	    private int _hoverFace = -1;
+		// The index of the current cube we're on.
+	    private int _cubeIndex;
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Panels the texture display on mouse wheel.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="mouseEventArgs">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_MouseWheel(object sender, MouseEventArgs mouseEventArgs)
+		{
+			if ((_content == null)
+				|| (_content.ImageType != ImageType.ImageCube))
+			{
+				return;
+			}
+
+			if (_content.ArrayCount <= 6)
+			{
+				return;
+			}
+
+			int selectedFace = _content.ArrayIndex - _cubeIndex;
+
+			if (mouseEventArgs.Delta < 0)
+			{
+				_cubeIndex -= 6;
+
+				if (_cubeIndex < 0)
+				{
+					_cubeIndex = 0;
+				}
+			}
+
+			if (mouseEventArgs.Delta > 0)
+			{
+				int maxCubeIndices = _content.ArrayCount - 6;
+
+				_cubeIndex += 6;
+
+				if (_cubeIndex >= maxCubeIndices)
+				{
+					_cubeIndex = maxCubeIndices;
+				}
+			}
+			
+			_content.ArrayIndex = _cubeIndex + selectedFace;
+
+			ValidateControls();
+			UpdateBufferInfoLabels();
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_MouseDown(object sender, MouseEventArgs e)
+		{
+			panelTextureDisplay.Focus();
+
+			if ((_content == null)
+			    || (_content.ImageType != ImageType.ImageCube)
+				|| (_hoverFace == -1))
+			{
+				return;
+			}
+
+			// Set the current array index.
+			_content.ArrayIndex = _cubeIndex + _hoverFace;
+			ValidateControls();
+			UpdateBufferInfoLabels();
+		}
+
+		/// <summary>
+		/// Handles the MouseLeave event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_MouseLeave(object sender, EventArgs e)
+		{
+			_hoverFace = -1;
+		}
+
+		/// <summary>
+		/// Function to perform a hit test for a cube face.
+		/// </summary>
+		/// <param name="mouseCursor">Cursor position.</param>
+		/// <returns>The index of the face that the cursor is over, or -1 if over no faces.</returns>
+	    private int CubeFaceHitTest(Point mouseCursor)
+	    {
+			for (int i = 0; i < _cubeFaceLocations.Length; ++i)
+			{
+				if (!_cubeFaceLocations[i].Contains(mouseCursor))
+				{
+					continue;
+				}
+
+				return i;
+			}
+
+			return -1;
+	    }
+
+		/// <summary>
+		/// Handles the MouseMove event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_MouseMove(object sender, MouseEventArgs e)
+		{
+			if ((_content == null)
+			    || (_content.ImageType != ImageType.ImageCube))
+			{
+				return;
+			}
+
+			_hoverFace = CubeFaceHitTest(e.Location);
+		}
+
+		/// <summary>
+		/// Function to update the cube face location list.
+		/// </summary>
+	    private void GetCubeFaceLocations()
+	    {
+		    if ((_texture == null)
+		        || (_content == null)
+		        || (_content.ImageType != ImageType.ImageCube))
+		    {
+			    return;
+		    }
+
+			Vector2 clientSize = panelTextureDisplay.ClientSize;
+			var blockSize = (Size)(new Vector2(clientSize.X / 4.0f, clientSize.Y / 3.0f));
+			
+			// Set -X
+			var position = (Point)(new Vector2(0, (clientSize.Y / 2.0f) - (blockSize.Height / 2.0f)));
+			_cubeFaceLocations[1] = new Rectangle(position, blockSize);
+			_cubeFaceNames[1] = @"-X";
+
+			// Set +Z
+			position = new Point(blockSize.Width, position.Y);
+			_cubeFaceLocations[4] = new Rectangle(position, blockSize);
+			_cubeFaceNames[4] = @"+Z";
+
+			// Set +X
+			position = new Point(blockSize.Width * 2, position.Y);
+			_cubeFaceLocations[0] = new Rectangle(position, blockSize);
+			_cubeFaceNames[0] = @"+X";
+
+			// Set -Z
+			position = new Point(blockSize.Width * 3, position.Y);
+			_cubeFaceLocations[5] = new Rectangle(position, blockSize);
+			_cubeFaceNames[5] = @"-Z";
+
+			// Set +Y
+			position = new Point(blockSize.Width, position.Y - blockSize.Height);
+			_cubeFaceLocations[2] = new Rectangle(position, blockSize);
+			_cubeFaceNames[2] = @"+Y";
+
+			// Set -Y
+			position = new Point(blockSize.Width, position.Y + (blockSize.Height * 2));
+			_cubeFaceLocations[3] = new Rectangle(position, blockSize);
+			_cubeFaceNames[3] = @"-Y";
+	    }
+
+		/// <summary>
+		/// Handles the Resize event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_Resize(object sender, EventArgs e)
+		{
+			GetCubeFaceLocations();
+		}
+
 		/// <summary>
 		/// Handles the Click event of the buttonGenerateMips control.
 		/// </summary>
@@ -171,6 +362,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		            return;
 	            }
 
+	            if (_content.ImageType == ImageType.ImageCube)
+	            {
+		            _content.ArrayIndex = _hoverFace + _cubeIndex;
+					UpdateBufferInfoLabels();
+	            }
+
 	            _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
             }
             catch (Exception ex)
@@ -219,6 +416,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if (cropOpts == null)
 				{
 					return;
+				}
+
+				if (_content.ImageType == ImageType.ImageCube)
+				{
+					_content.ArrayIndex = _hoverFace + _cubeIndex;
+					UpdateBufferInfoLabels();
 				}
 
                 _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
@@ -271,6 +474,30 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		}
 
 		/// <summary>
+		/// Handles the DragOver event of the panelTextureDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void panelTextureDisplay_DragOver(object sender, DragEventArgs e)
+		{
+			if (_content == null)
+			{
+				e.Effect = DragDropEffects.None;
+				return;
+			}
+
+			if (_content.ImageType != ImageType.ImageCube)
+			{
+				e.Effect = DragDropEffects.Copy;
+				return;
+			}
+
+			_hoverFace = CubeFaceHitTest(panelTextureDisplay.PointToClient(new Point(e.X, e.Y)));
+
+			e.Effect = _hoverFace == -1 ? DragDropEffects.None : DragDropEffects.Copy;
+		}
+
+		/// <summary>
 		/// Handles the DragEnter event of the panelTextureDisplay control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -279,6 +506,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			try
 			{
+				_hoverFace = CubeFaceHitTest(panelTextureDisplay.PointToClient(new Point(e.X, e.Y)));
+
                 e.Effect = DragDropEffects.None;
 			    
                 // Check to see if the file node we're dragging is an image.
@@ -677,7 +906,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.DepthSlice--;
 
-			GetCurrentShaderView();
+			UpdateBufferInfoLabels();
 
 			ValidateControls();
 		}
@@ -691,7 +920,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.DepthSlice++;
 
-			GetCurrentShaderView();
+			UpdateBufferInfoLabels();
 
 			ValidateControls();
 		}
@@ -705,7 +934,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
 			_content.MipLevel--;
 
-			GetCurrentShaderView();
+			UpdateBufferInfoLabels();
             ValidateControls();
         }
 
@@ -718,7 +947,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.ArrayIndex++;
 
-			GetCurrentShaderView();
+			if (_content.ImageType == ImageType.ImageCube)
+			{
+				_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+			}
+
+			UpdateBufferInfoLabels();
 			ValidateControls();
 		}
 
@@ -731,7 +965,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.ArrayIndex--;
 
-			GetCurrentShaderView();
+			if (_content.ImageType == ImageType.ImageCube)
+			{
+				_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+			}
+
+			UpdateBufferInfoLabels();
 			ValidateControls();
 		}
 
@@ -744,7 +983,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
 			_content.MipLevel++;
 
-			GetCurrentShaderView();
+			UpdateBufferInfoLabels();
             ValidateControls();
         }
 
@@ -756,13 +995,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
 	        buttonEditFileExternal.Enabled = !string.IsNullOrWhiteSpace(_content.ExePath);
 
-			buttonPrevMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_content.MipLevel > 0);
-			buttonNextMipLevel.Enabled = (_currentView != null) && (_content.MipCount > 1) && (_content.MipLevel < _content.MipCount - 1);
-            buttonPrevArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
-                                           && (_content.ArrayIndex > 0);
+			buttonPrevMipLevel.Enabled = (_content.MipCount > 1) && (_content.MipLevel > 0);
+			buttonNextMipLevel.Enabled = (_content.MipCount > 1) && (_content.MipLevel < _content.MipCount - 1);
+            buttonPrevArrayIndex.Enabled = (_content.ArrayCount > 1) && (_content.ArrayIndex > 0);
 
-            buttonNextArrayIndex.Enabled = (_currentView != null) && (_content.ArrayCount > 1)
-										   && (_content.ArrayIndex < _content.ArrayCount - 1);
+            buttonNextArrayIndex.Enabled = (_content.ArrayCount > 1) && (_content.ArrayIndex < _content.ArrayCount - 1);
 
 			buttonPrevDepthSlice.Enabled = _content.DepthMipCount > 1 && _content.DepthSlice > 0;
 			buttonNextDepthSlice.Enabled = _content.DepthMipCount > 1 && _content.DepthSlice < _content.DepthMipCount - 1;
@@ -841,17 +1078,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				case ImageType.Image1D:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture1D>("DisplayTexture", _content.Image);
+					_currentView = ((GorgonTexture1D)_texture).GetShaderView(_texture.Settings.Format, 0, _content.MipCount, 0, _content.ArrayCount);
 					break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
-					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image);
+					GorgonTexture2DSettings settings = null;
+
+					if (_content.ImageType == ImageType.ImageCube)
+					{
+						settings = (GorgonTexture2DSettings)_content.Image.Settings.Clone();
+						settings.IsTextureCube = false;
+						_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+					}
+
+					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("DisplayTexture", _content.Image, settings);
+					_currentView = ((GorgonTexture2D)_texture).GetShaderView(_texture.Settings.Format,
+					                                                         0,
+					                                                         _content.MipCount,
+					                                                         0,
+					                                                         _content.ArrayCount);
+					GetCubeFaceLocations();
 					break;
 				case ImageType.Image3D:
 					_texture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture3D>("DisplayTexture", _content.Image);
+					_currentView = ((GorgonTexture3D)_texture).GetShaderView(_texture.Settings.Format, 0, _content.MipCount);
 					break;
 			}
 
-			GetCurrentShaderView();
+			UpdateBufferInfoLabels();
 
 			UpdateImageInfo();
 	    }
@@ -885,30 +1139,21 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
         /// <summary>
-        /// Function to retrieve the shader view for the texture.
+        /// Function to update the labels for the current buffer view.
         /// </summary>
-        private void GetCurrentShaderView()
+        private void UpdateBufferInfoLabels()
         {
             switch (_content.ImageType)
             {
                 case ImageType.Image1D:
-                    _currentView = ((GorgonTexture1D)_texture).GetShaderView(_texture.Settings.Format,
-                                                                             _content.MipLevel,
-                                                                             1,
-																			 _content.ArrayIndex);
 					labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, _content.ArrayIndex + 1, _content.ArrayCount);
                     break;
                 case ImageType.Image2D:
                 case ImageType.ImageCube:
-                    _currentView = ((GorgonTexture2D)_texture).GetShaderView(_texture.Settings.Format,
-																			 _content.MipLevel,
-                                                                             1,
-																			 _content.ArrayIndex);
 					labelArrayIndex.Text = string.Format(Resources.GORIMG_TEXT_ARRAY_INDEX, _content.ArrayIndex + 1, _content.ArrayCount);
                     break;
                 case ImageType.Image3D:
-                    _currentView = ((GorgonTexture3D)_texture).GetShaderView(_texture.Settings.Format,
-																			 _content.MipLevel);
+					labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, _content.DepthSlice + 1, _content.DepthMipCount);
                     break;
             }
 
@@ -916,8 +1161,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 											   _content.MipLevel + 1, _content.MipCount,
 											   _content.Buffer.Width,
 											   _content.Buffer.Height);
-
-			labelDepthSlice.Text = string.Format(Resources.GORIMG_TEXT_DEPTH_SLICE, _content.DepthSlice + 1, _content.DepthMipCount);
         }
 
 		/// <summary>
@@ -1004,20 +1247,109 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		}
 
 		/// <summary>
-		/// Function to draw the texture.
+		/// Function to scroll the background in the selector.
 		/// </summary>
-	    public void Draw()
+	    private void AnimateSelector()
 	    {
-		    _content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+			_selectScroll.X += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Width;
+			_selectScroll.Y += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Height;
+
+			if (_selectScroll.X > 1.0f)
+			{
+				_selectScroll.X = 0.0f;
+			}
+
+			if (_selectScroll.Y > 1.0f)
+			{
+				_selectScroll.Y = 0.0f;
+			}
+	    }
+
+		/// <summary>
+		/// Function to draw the background pattern for the image.
+		/// </summary>
+	    private void DrawBackground()
+	    {
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
 			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 
 			_content.Renderer.Drawing.Blit(_backgroundTexture,
-			                               panelTextureDisplay.ClientRectangle,
-			                               _backgroundTexture.ToTexel(panelTextureDisplay.ClientRectangle));
+										   panelTextureDisplay.ClientRectangle,
+										   _backgroundTexture.ToTexel(panelTextureDisplay.ClientRectangle));
 
 			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;
 			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Clamp;
+	    }
+
+		/// <summary>
+		/// Draws the unwrapped cube.
+		/// </summary>
+	    public void DrawUnwrappedCube()
+	    {
+			DrawBackground();
+
+			if (_texture == null)
+			{
+				return;
+			}
+
+			var texture2D = _texture as GorgonTexture2D;
+
+			AnimateSelector();
+
+			for (int i = 0; i < _cubeFaceLocations.Length; ++i)
+			{
+				_content.Renderer.PixelShader.Current = _content.PixelShader;
+				_content.Renderer.PixelShader.Resources[0] = _currentView;
+
+				_content.SetCubeArrayIndex(_cubeIndex + i);
+				_content.Renderer.Drawing.Blit(texture2D, _cubeFaceLocations[i]);
+
+				// Reset our pixel shader.
+				_content.Renderer.PixelShader.Current = null;
+
+				// Hilight the selected cube face.
+				if ((i + _cubeIndex) == _content.ArrayIndex)
+				{
+					_selectorSprite.Position = _cubeFaceLocations[i].Location;
+					_selectorSprite.Size = _cubeFaceLocations[i].Size;
+					_selectorSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
+					_selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
+																  _selectScroll.Y,
+																  _cubeFaceLocations[i].Width / _pattern.Settings.Width,
+																  _cubeFaceLocations[i].Height / _pattern.Settings.Height);
+					_selectorSprite.Draw();
+				}
+
+				if (_hoverFace == i)
+				{
+					_selectorSprite.Position = _cubeFaceLocations[i].Location;
+					_selectorSprite.Size = _cubeFaceLocations[i].Size;
+					_selectorSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
+					_selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
+																  _selectScroll.Y,
+																  _cubeFaceLocations[i].Width / _pattern.Settings.Width,
+																  _cubeFaceLocations[i].Height / _pattern.Settings.Height);
+					_selectorSprite.Draw();
+				}
+
+				// Draw a border around each.
+				_content.Renderer.Drawing.FilledRectangle(new RectangleF(_cubeFaceLocations[i].Location, new SizeF(_cubeFaceLocations[i].Width, _text.Size.Y + 4)), Color.FromArgb(128, Color.Black));
+				_content.Renderer.Drawing.DrawRectangle(_cubeFaceLocations[i], Color.Black);
+
+				_text.Text = string.Format(Resources.GORIMG_TEXT_FACE, i + 1, _cubeFaceNames[i]);
+				_text.Position = new Vector2((int)(_cubeFaceLocations[i].X + (_cubeFaceLocations[i].Width / 2.0f) - _text.Size.X / 2.0f), _cubeFaceLocations[i].Y + 2);
+				_text.Draw();
+			}
+	    }
+
+		/// <summary>
+		/// Function to draw the texture.
+		/// </summary>
+	    public void Draw()
+	    {
+			DrawBackground();
 
 			if (_texture == null)
 			{
@@ -1036,7 +1368,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             // This triggers a render and resets our pixel shader back to the current.
 			_content.Renderer.PixelShader.Current = null;
-			_content.Renderer.PixelShader.Resources[0] = null;
 	    }
 
 		/// <summary>
@@ -1045,6 +1376,27 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    public void CreateResources()
 		{
 			_backgroundTexture = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
+			_font = ContentObject.Graphics.Fonts.CreateFont("ImageEditorFont", new GorgonFontSettings
+			                                                                   {
+				                                                                   FontFamilyName = Font.FontFamily.Name,
+																				   FontHeightMode = FontHeightMode.Points,
+																				   Size = Font.Size,
+																				   AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+																				   FontStyle = FontStyle.Bold,
+																				   OutlineSize = 2,
+																				   OutlineColor1 = Color.Black
+			                                                                   });
+			_text = _content.Renderer.Renderables.CreateText("ImageEditorCubeLabel", _font, string.Empty, Color.White);
+			_pattern = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
+			_selectorSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings
+			{
+				Color = new GorgonColor(1, 0, 0, 0.4f),
+				Texture = _pattern,
+				TextureRegion = new RectangleF(0, 0, 1, 1),
+				Size = _pattern.Settings.Size
+			});
+			_selectorSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_selectorSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 		}
 		#endregion
 
@@ -1055,7 +1407,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public GorgonImageContentPanel()
         {
             InitializeComponent();
+
+			panelTextureDisplay.MouseWheel += panelTextureDisplay_MouseWheel;
         }
-        #endregion
+	    #endregion
 	}
 }
