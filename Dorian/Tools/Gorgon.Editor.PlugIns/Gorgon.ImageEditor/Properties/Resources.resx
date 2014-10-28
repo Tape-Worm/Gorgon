@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORIMG_UNKNOWN_IMAGE_TYPE" xml:space="preserve">
+  <data name="GORIMG_ERR_UNKNOWN_IMAGE_TYPE" xml:space="preserve">
     <value>The image type '{0}' is unknown.</value>
   </data>
   <data name="GORIMG_DLG_CAPTION_IMPORT_IMAGE" xml:space="preserve">
@@ -147,7 +147,7 @@ Would you like to continue?</value>
   <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_TEXTURE_FORMAT_CANNOT_MIP" xml:space="preserve">
+  <data name="GORIMG_ERR_TEXTURE_FORMAT_CANNOT_MIP" xml:space="preserve">
     <value>The format [{0}] is not valid when the mip count is greater than 1.</value>
   </data>
   <data name="PROP_MIPCOUNT_DESC" xml:space="preserve">
@@ -156,7 +156,7 @@ Would you like to continue?</value>
   <data name="GORIMG_DLG_CAPTION_RESIZE_CROP" xml:space="preserve">
     <value>Crop/resize the image</value>
   </data>
-  <data name="GORIMG_FILE_NOT_FOUND" xml:space="preserve">
+  <data name="GORIMG_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found.</value>
   </data>
   <data name="GORIMG_TEXT_INVALID_CODEC" xml:space="preserve">
@@ -171,13 +171,13 @@ Would you like to continue?</value>
   <data name="GORIMG_TEXT_ARRAY_INDEX" xml:space="preserve">
     <value>Array index: {0}/{1}</value>
   </data>
-  <data name="GORIMG_IMAGE_2D_SIZE_TOO_LARGE" xml:space="preserve">
+  <data name="GORIMG_ERR_IMAGE_2D_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The image must be less than or equal to {0}x{1} pixels.</value>
   </data>
   <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_ERROR_DECOMPRESSING" xml:space="preserve">
+  <data name="GORIMG_ERR_DECOMPRESSING" xml:space="preserve">
     <value>There was an error decompressing the file.
 See the details pane for more information.</value>
   </data>
@@ -195,9 +195,6 @@ See the details pane for more information.</value>
   </data>
   <data name="PROP_IMAGETYPE_DESC" xml:space="preserve">
     <value>Sets the type of image data, can be one of 1D, 2D, Cube Mapped, or 3D for codecs that support various image types.</value>
-  </data>
-  <data name="GORIMG_NO_CODEC" xml:space="preserve">
-    <value>There is no codec available that can open the file '{0}'.</value>
   </data>
   <data name="GORIMG_TEXT_DEPTH_SLICE" xml:space="preserve">
     <value>Depth slice: {0}/{1}</value>
@@ -285,10 +282,10 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_SAVE" xml:space="preserve">
     <value>Save the changes to this image.</value>
   </data>
-  <data name="GORIMG_UNKNOWN_ERROR" xml:space="preserve">
+  <data name="GORIMG_ERR_UNKNOWN" xml:space="preserve">
     <value>Unknown error.</value>
   </data>
-  <data name="GORIMG_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
+  <data name="GORIMG_ERR_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
     <value>The image type '{0}' is unknown.</value>
   </data>
   <data name="PROP_ARRAYCOUNT_DESC" xml:space="preserve">
@@ -306,7 +303,7 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_SRC_DIMENSIONS" xml:space="preserve">
     <value>Image file dimensions: {0}x{1}</value>
   </data>
-  <data name="GORIMG_CODEC_CANNOT_READ" xml:space="preserve">
+  <data name="GORIMG_ERR_CODEC_CANNOT_READ" xml:space="preserve">
     <value>The file '{0}' could not be read by the '{1}' codec.</value>
   </data>
   <data name="PROP_IMAGEFORMAT_NAME" xml:space="preserve">
@@ -315,10 +312,10 @@ R16B16G16A16 (floating point)</value>
   <data name="GORIMG_TEXT_IMPORT_IMAGE" xml:space="preserve">
     <value>Import image</value>
   </data>
-  <data name="GORIMG_IMAGE_1D_SIZE_TOO_LARGE" xml:space="preserve">
+  <data name="GORIMG_ERR_IMAGE_1D_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The image must be less than or equal to {0} pixels wide.</value>
   </data>
-  <data name="GORIMG_CODEC_LOAD_NOT_A_PLUGIN" xml:space="preserve">
+  <data name="GORIMG_ERR_CODEC_LOAD_NOT_A_PLUGIN" xml:space="preserve">
     <value>The file '{0}' is not a valid image codec plug-in.</value>
   </data>
   <data name="GORIMG_DLG_CONFIRM_REVERT" xml:space="preserve">
@@ -329,10 +326,10 @@ Are you sure you wish to do this?</value>
   <data name="PROP_WIDTH_DESC" xml:space="preserve">
     <value>Sets the horizontal sizing of the image, in pixels.</value>
   </data>
-  <data name="GORIMG_IMAGE_SIZE_NOT_MULTIPLE_OF_4" xml:space="preserve">
+  <data name="GORIMG_ERR_IMAGE_SIZE_NOT_MULTIPLE_OF_4" xml:space="preserve">
     <value>Block compressed images require a size that is a multiple of 4.</value>
   </data>
-  <data name="GORIMG_MIP_COUNT_INVALID" xml:space="preserve">
+  <data name="GORIMG_ERR_MIP_COUNT_INVALID" xml:space="preserve">
     <value>The number of mip-map levels must be between 1 and {0}.</value>
   </data>
   <data name="GORIMG_TEXT_NEXT_ARRAY" xml:space="preserve">
@@ -341,7 +338,7 @@ Are you sure you wish to do this?</value>
   <data name="GORIMG_TEXT_DEST_DIMENSIONS" xml:space="preserve">
     <value>Buffer dimensions: {0}x{1}</value>
   </data>
-  <data name="GORIMG_CANNOT_COMPRESS" xml:space="preserve">
+  <data name="GORIMG_ERR_CANNOT_COMPRESS" xml:space="preserve">
     <value>There was an error compressing the image.</value>
   </data>
   <data name="GORIMG_ACC_TEXT_OK" xml:space="preserve">
@@ -356,13 +353,13 @@ Are you sure you wish to do this?</value>
   <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
     <value>Image size: {0}x{1}  Format: {2}</value>
   </data>
-  <data name="GORIMG_CONTENT_NOT_IMAGE" xml:space="preserve">
+  <data name="GORIMG_ERR_CONTENT_NOT_IMAGE" xml:space="preserve">
     <value>The content '{0}' is not an image.</value>
   </data>
   <data name="import_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\import_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_ARRAY_COUNT_INVALID" xml:space="preserve">
+  <data name="GORIMG_ERR_ARRAY_COUNT_INVALID" xml:space="preserve">
     <value>The number of array indices must be between 1 and {0}.</value>
   </data>
   <data name="PROP_CODEC_NAME" xml:space="preserve">
@@ -383,25 +380,25 @@ Are you sure you wish to do this?</value>
   <data name="GORIMG_TEXT_RESIZE_TO" xml:space="preserve">
     <value>Resize to {0}x{1}</value>
   </data>
-  <data name="GORIMG_PATH_NOT_VALID" xml:space="preserve">
+  <data name="GORIMG_ERR_PATH_NOT_VALID" xml:space="preserve">
     <value>The path '{0}' is not valid.</value>
   </data>
   <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_CODEC_NONE_FOUND" xml:space="preserve">
+  <data name="GORIMG_ERR_CODEC_NONE_FOUND" xml:space="preserve">
     <value>No valid image codecs were found for the file '{0}'.</value>
   </data>
   <data name="pencil_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pencil_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORIMG_ACCESS_DENIED" xml:space="preserve">
+  <data name="GORIMG_ERR_ACCESS_DENIED" xml:space="preserve">
     <value>Access to '{0}' is denied.</value>
   </data>
   <data name="GORIMG_TEXT_CROP_RESIZE_TEXT" xml:space="preserve">
     <value>The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions.</value>
   </data>
-  <data name="GORIMG_TEXTURE_MIP_POW_2" xml:space="preserve">
+  <data name="GORIMG_ERR_TEXTURE_MIP_POW_2" xml:space="preserve">
     <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
   </data>
   <data name="GORIMG_ACC_TEXT_CANCEL" xml:space="preserve">
@@ -417,7 +414,7 @@ Are you sure you wish to do this?</value>
   <data name="PROP_CODEC_DESC" xml:space="preserve">
     <value>Sets the file format when writing the image.</value>
   </data>
-  <data name="GORIMG_IMAGE_3D_SIZE_TOO_LARGE" xml:space="preserve">
+  <data name="GORIMG_ERR_IMAGE_3D_SIZE_TOO_LARGE" xml:space="preserve">
     <value>The image must be less than or equal to {0}x{1}x{2} pixels.</value>
   </data>
   <data name="PROP_DEPTH_DESC" xml:space="preserve">
@@ -437,13 +434,13 @@ Would you like to continue?</value>
   <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
     <value>Array count</value>
   </data>
-  <data name="GORIMG_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
+  <data name="GORIMG_ERR_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The image must be at least 1x1 pixels and have 1 depth or 1 array slice.</value>
   </data>
-  <data name="GORIMG_UNRECOGNIZED_IMAGE_FORMAT" xml:space="preserve">
+  <data name="GORIMG_ERR_UNRECOGNIZED_IMAGE_FORMAT" xml:space="preserve">
     <value>The image format '{0}' is unknown.</value>
   </data>
-  <data name="GORIMG_INVALID_FORMAT" xml:space="preserve">
+  <data name="GORIMG_ERR_INVALID_FORMAT" xml:space="preserve">
     <value>The format '{0}' is not valid for {1} images.</value>
   </data>
   <data name="gen_mips_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
