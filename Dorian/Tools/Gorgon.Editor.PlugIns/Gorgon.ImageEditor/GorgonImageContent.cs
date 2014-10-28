@@ -41,6 +41,7 @@ using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
+using SlimMath;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
@@ -1965,7 +1966,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="image">Image to convert.</param>
 		/// <param name="crop">TRUE to crop the image instead of resize, FALSE to resize.</param>
 		/// <param name="filter">The filter to apply when resizing.</param>
-		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter)
+		/// <param name="preserveAspect">TRUE to preserve the aspect ratio of the source image, FALSE to ignore it.</param>
+		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter, bool preserveAspect)
 		{
 			try
 			{
@@ -1987,7 +1989,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if ((Buffer.Width != image.Settings.Width)
 				    || (Buffer.Height != image.Settings.Height))
 				{
-					image.Resize(Buffer.Width, Buffer.Height, crop, filter);
+				    var newSize = new Vector2(Buffer.Width, Buffer.Height);
+				    var offset = Point.Empty;
+
+				    if (preserveAspect)
+				    {
+				        unsafe
+				        {
+                            // Clear the buffer so we don't get garbage left over.
+				            DirectAccess.ZeroMemory(Buffer.Data.UnsafePointer, (int)Buffer.Data.Length);
+				        }
+
+				        float aspect = (float)image.Settings.Height / image.Settings.Width;
+
+				        if (image.Settings.Width > image.Settings.Height)
+				        {
+				            newSize.Y *= aspect;
+				            offset.X = 0;
+				            offset.Y = (int)(Buffer.Height / 2.0f - newSize.Y / 2.0f);
+				        }
+                        else
+				        {
+				            newSize.X *= aspect;
+                            offset.X = (int)(Buffer.Width / 2.0f - newSize.X / 2.0f);
+                            offset.Y = 0;
+                        }
+				    }
+
+				    image.Resize((int)newSize.X, (int)newSize.Y, crop, filter);
 				}
 
 				// Copy the data into the buffer.
