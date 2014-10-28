@@ -162,6 +162,15 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Property to set or return the method to call when a property has been changed on the content.
+		/// </summary>
+	    public static Action ContentPropertyChanged
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to set or return the method to call when a dependency needs to be loaded for content..
 		/// </summary>
 	    public static Func<string, GorgonFileSystemFileEntry> OnGetDependency
@@ -310,6 +319,7 @@ namespace GorgonLibrary.Editor
 			content.OnCloseCurrent = CloseCurrentContent;
 			content.OnRenameContent = RenameCurrentContent;
 			content.OnPropertyDisabled = DisableContentProperty;
+			content.OnChanged = ContentPropertyChanged;
 			content.OnCommit = contentItem =>
 			                   {
 				                   if ((Current == null)
@@ -451,6 +461,7 @@ namespace GorgonLibrary.Editor
 				Current.OnRenameContent = null;
 				Current.OnPropertyDisabled = null;
 				Current.OnCommit = null;
+				Current.OnChanged = null;
 			}
 
 			Current = null;

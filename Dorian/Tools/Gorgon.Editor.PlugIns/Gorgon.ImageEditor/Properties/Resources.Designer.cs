@@ -479,6 +479,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Face: {0} ({1}).
+        /// </summary>
+        internal static string GORIMG_TEXT_FACE {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_FACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Filter.
         /// </summary>
         internal static string GORIMG_TEXT_FILTER {
@@ -542,7 +551,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image size: {0} pixels wide.  Format: {1}..
+        ///   Looks up a localized string similar to Image size: {0} pixels wide  Format: {1}.
         /// </summary>
         internal static string GORIMG_TEXT_IMAGE_INFO_1D {
             get {
@@ -551,7 +560,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image size: {0}x{1}.  Format: {2}..
+        ///   Looks up a localized string similar to Image size: {0}x{1}  Format: {2}.
         /// </summary>
         internal static string GORIMG_TEXT_IMAGE_INFO_2D {
             get {
@@ -560,7 +569,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image size: {0}x{1}x{2}.  Format: {3}..
+        ///   Looks up a localized string similar to Image size: {0}x{1}x{2}  Format: {3}.
         /// </summary>
         internal static string GORIMG_TEXT_IMAGE_INFO_3D {
             get {
@@ -792,22 +801,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         ///
         ///// Our default texture and sampler.
         ///Texture1D _gorgonTexture1D : register(t0);
+        ///Texture1DArray _gorgonTexture1DArray : register(t0);
+        ///Texture2DArray _gorgonTexture2DArray : register(t0);
         ///Texture3D _gorgonTexture3D : register(t0);
+        ///TextureCube _gorgonTextureCube : register(t0);
+        ///#ifdef SM41
+        ///TextureCubeArray _gorgonTextureCubeArray : register(t0);
+        ///#endif
         ///
-        ///// The depth slice to view.
-        ///cbuffer GorgonDepthSlice : register(b1)
+        ///// The texture parameters
+        ///cbuffer GorgonTextureParams : register(b1)
         ///{
-        ///	float depthSlice;
-        ///};
-        ///
-        ///// Pixel shader to view a 1D texture.
-        ///float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
-        ///{
-        ///	float4 color = _gorgonTexture1D.Sample(_gorgonSampler, vertex.uv.x);
-        ///
-        ///	REJECT_ALPHA(color.a);
-        ///		
-        ///	return  [rest of string was truncated]&quot;;.
+        ///	// Depth [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ImageViewShaders {
             get {
