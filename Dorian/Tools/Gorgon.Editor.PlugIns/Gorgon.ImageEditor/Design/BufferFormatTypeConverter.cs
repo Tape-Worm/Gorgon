@@ -115,7 +115,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             if (!Enum.TryParse(formatString, out format))
             {
-                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT, formatString));
+                throw new InvalidCastException(string.Format(culture, Resources.GORIMG_ERR_UNRECOGNIZED_IMAGE_FORMAT, formatString));
             }
 
             return format;

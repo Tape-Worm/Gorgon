@@ -142,7 +142,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 if (!Enum.TryParse(formatString, out format))
                 {
                     throw new InvalidCastException(string.Format(culture,
-                                                                 Resources.GORIMG_UNRECOGNIZED_IMAGE_FORMAT,
+                                                                 Resources.GORIMG_ERR_UNRECOGNIZED_IMAGE_FORMAT,
                                                                  formatString));
                 }
 

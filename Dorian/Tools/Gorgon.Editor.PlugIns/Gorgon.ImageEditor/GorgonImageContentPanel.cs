@@ -1235,7 +1235,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			if (_content == null)
 			{
-				throw new InvalidCastException(string.Format(Resources.GORIMG_CONTENT_NOT_IMAGE, Content.Name));
+				throw new InvalidCastException(string.Format(Resources.GORIMG_ERR_CONTENT_NOT_IMAGE, Content.Name));
 			}
 
 		    if ((_content.Image != null) && (_texture == null))

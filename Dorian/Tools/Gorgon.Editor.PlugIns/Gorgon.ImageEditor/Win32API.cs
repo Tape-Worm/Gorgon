@@ -298,7 +298,7 @@ namespace GorgonLibrary.Editor
 
 			if (!Enum.IsDefined(typeof(FindExecutableResult), errorCode))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORIMG_UNKNOWN_ERROR);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORIMG_ERR_UNKNOWN);
 			}
 
 			var error = (FindExecutableResult)errorCode;
@@ -306,17 +306,17 @@ namespace GorgonLibrary.Editor
 			switch (error)
 			{
 				case FindExecutableResult.AccessDenied:
-					throw new UnauthorizedAccessException(string.Format(Resources.GORIMG_ACCESS_DENIED, filePath));
+					throw new UnauthorizedAccessException(string.Format(Resources.GORIMG_ERR_ACCESS_DENIED, filePath));
 				case FindExecutableResult.FileNotFound:
-					throw new FileNotFoundException(string.Format(Resources.GORIMG_FILE_NOT_FOUND, filePath));
+					throw new FileNotFoundException(string.Format(Resources.GORIMG_ERR_FILE_NOT_FOUND, filePath));
 				case FindExecutableResult.PathNotValid:
-					throw new IOException(string.Format(Resources.GORIMG_PATH_NOT_VALID, filePath));
+					throw new IOException(string.Format(Resources.GORIMG_ERR_PATH_NOT_VALID, filePath));
 				case FindExecutableResult.OutOfMemory:
 					throw new OutOfMemoryException();
 				case FindExecutableResult.NoAssociation:
 					return string.Empty;
 				default:
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORIMG_UNKNOWN_ERROR);
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORIMG_ERR_UNKNOWN);
 			}
 		}
 	}

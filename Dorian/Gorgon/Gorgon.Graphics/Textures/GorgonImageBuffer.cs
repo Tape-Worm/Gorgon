@@ -137,12 +137,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to copy the image buffer data from this buffer into another.
 		/// </summary>
-		/// <remarks>The destination <paramref name="buffer"/> must be the same width, height and format as the source buffer.  If it is not, then an exception will be thrown.</remarks>
+		/// <remarks>The destination <paramref name="buffer"/> must be the same format as the source buffer.  If it is not, then an exception will be thrown.</remarks>
 		/// <param name="buffer">The buffer to copy into.</param>
 		/// <param name="offsetX">Horizontal offset in the destination buffer.</param>
 		/// <param name="offsetY">Vertical offset in the destination buffer.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> is not the same width, height or format as this buffer.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> is not the same format as this buffer.</exception>
 	    public unsafe void CopyTo(GorgonImageBuffer buffer, int offsetX = 0, int offsetY = 0)
 	    {
 			if ((buffer == null)
@@ -152,57 +152,61 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("buffer");	
 			}
 
-			if ((buffer.Width != Width)
-			    && (buffer.Height != Height)
-			    && (buffer.Format != Format))
+			if (buffer.Format != Format)
 			{
 				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_MISMATCH);
 			}
 
-		    if (offsetX < 0)
-		    {
-		        offsetX = 0;
-		    }
+			if (offsetX < 0)
+			{
+				offsetX = 0;
+			}
 
-		    if (offsetY < 0)
-		    {
-		        offsetY = 0;
-		    }
+			if (offsetY < 0)
+			{
+				offsetY = 0;
+			}
 
 		    if ((offsetX == 0)
-		        && (offsetY == 0))
+		        && (offsetY == 0)
+				&& (buffer.Width == Width)
+				&& (buffer.Height == Height))
 		    {
 		        DirectAccess.MemoryCopy(buffer.Data.UnsafePointer, Data.UnsafePointer, (int)Data.Length);
 		        return;
 		    }
 
-            var srcRectangle = new Rectangle(0, 0, Width, Height);
-		    var destRectangle = new Rectangle(offsetX, offsetY, Width, Height);
-		    Rectangle clipRect = Rectangle.Intersect(srcRectangle, destRectangle);
+			var destBufferRect = new Rectangle(0, 0, buffer.Width, buffer.Height);
+			var destRectangle = Rectangle.Intersect(new Rectangle(offsetX, offsetY, buffer.Width, buffer.Height),
+			                                        new Rectangle(offsetX, offsetY, Width, Height));
+
+			if (!destBufferRect.Contains(destRectangle))
+			{
+				destRectangle = Rectangle.Intersect(destRectangle, destBufferRect);
+			}
 
             // Do nothing if we've moved outside of the range.
-		    if (clipRect.IsEmpty)
+		    if (destRectangle.IsEmpty)
 		    {
 		        return;
 		    }
 
             // Copy using a "slow" method to ensure that we don't exceed the bounds.
-            unsafe
+			int width = destRectangle.Width.Min(destBufferRect.Width);
+			int height = destRectangle.Height.Min(destBufferRect.Height);
+            int dataSize = (buffer.PitchInformation.RowPitch / buffer.Width);
+            int pitch = dataSize * width;
+			int offset = dataSize * destRectangle.X;
+            var sourceBuffer = (byte*)Data.UnsafePointer;
+			var destBuffer = ((byte*)buffer.Data.UnsafePointer) + (destRectangle.Y * buffer.PitchInformation.RowPitch) + offset;
+
+			for (int i = 0; i < height; i++)
 		    {
-                int dataSize = (buffer.PitchInformation.RowPitch / buffer.Width);
-                int pitch = dataSize * clipRect.Width;
-		        int offset = dataSize * clipRect.X;
-                var sourceBuffer = (byte*)Data.UnsafePointer;
-		        var destBuffer = ((byte*)buffer.Data.UnsafePointer) + (clipRect.Y * buffer.PitchInformation.RowPitch) + (clipRect.X * dataSize);
+		        DirectAccess.MemoryCopy(destBuffer, sourceBuffer, pitch);
 
-		        for (int y = clipRect.Y; y < clipRect.Height; y++)
-		        {
-		            DirectAccess.MemoryCopy(destBuffer, sourceBuffer, pitch);
-
-                    // Move to the next scanline.
-		            sourceBuffer += PitchInformation.RowPitch;
-		            destBuffer += pitch + offset;
-		        }
+                // Move to the next scanline.
+		        sourceBuffer += PitchInformation.RowPitch;
+		        destBuffer += pitch + offset;
 		    }
 	    }
 

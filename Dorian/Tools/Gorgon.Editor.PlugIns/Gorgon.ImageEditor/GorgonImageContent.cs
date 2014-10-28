@@ -874,13 +874,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			if (!Graphics.VideoDevice.SupportsMipMaps(format))
 			{
-				throw new ArgumentException(string.Format(Resources.GORIMG_TEXTURE_FORMAT_CANNOT_MIP, format), "format");
+				throw new ArgumentException(string.Format(Resources.GORIMG_ERR_TEXTURE_FORMAT_CANNOT_MIP, format), "format");
 			}
 
 			if ((type != ImageType.Image3D) && ((arrayCount < 1)
 				|| (arrayCount > Graphics.Textures.MaxArrayCount)))
 			{
-				throw new ArgumentOutOfRangeException("arrayCount", string.Format(Resources.GORIMG_ARRAY_COUNT_INVALID, Graphics.Textures.MaxArrayCount));
+				throw new ArgumentOutOfRangeException("arrayCount", string.Format(Resources.GORIMG_ERR_ARRAY_COUNT_INVALID, Graphics.Textures.MaxArrayCount));
 			}
 
 			int calcMaxMip = GorgonImageData.GetMaxMipCount(Width, Height, Depth);
@@ -888,14 +888,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			if ((mipCount < 1)
 				|| (mipCount > calcMaxMip))
 			{
-				throw new ArgumentOutOfRangeException("mipCount", string.Format(Resources.GORIMG_MIP_COUNT_INVALID, calcMaxMip));
+				throw new ArgumentOutOfRangeException("mipCount", string.Format(Resources.GORIMG_ERR_MIP_COUNT_INVALID, calcMaxMip));
 			}
 
 
 			// Ensure that we can resize.
 			if (width < 1)
 			{
-				throw new ArgumentOutOfRangeException("width", Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
+				throw new ArgumentOutOfRangeException("width", Resources.GORIMG_ERR_IMAGE_SIZE_TOO_SMALL);
 			}
 
 			switch (type)
@@ -903,12 +903,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				case ImageType.Image1D:
                     if (!Graphics.VideoDevice.Supports1DTextureFormat(format))
                     {
-                        throw new ArgumentException(string.Format(Resources.GORIMG_INVALID_FORMAT, format, "1D"), "format");    
+                        throw new ArgumentException(string.Format(Resources.GORIMG_ERR_INVALID_FORMAT, format, "1D"), "format");    
                     }
 
 					if (width > Graphics.Textures.MaxWidth)
 					{
-						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
+						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_ERR_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
 					}
 
                     newSettings = new GorgonTexture1DSettings
@@ -924,7 +924,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 case ImageType.ImageCube:
                     if (!Graphics.VideoDevice.Supports2DTextureFormat(format))
                     {
-                        throw new ArgumentException(string.Format(Resources.GORIMG_INVALID_FORMAT, ImageFormat, "2D"), "format");
+                        throw new ArgumentException(string.Format(Resources.GORIMG_ERR_INVALID_FORMAT, ImageFormat, "2D"), "format");
                     }
 
                     newSettings = new GorgonTexture2DSettings
@@ -948,63 +948,63 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 						// If we adjusted the array count, then ensure we didn't exceed the maximum.
 						if (newSettings.ArrayCount > Graphics.Textures.MaxArrayCount)
 						{
-							throw new ArgumentOutOfRangeException("arrayCount", string.Format(Resources.GORIMG_ARRAY_COUNT_INVALID, Graphics.Textures.MaxArrayCount));
+							throw new ArgumentOutOfRangeException("arrayCount", string.Format(Resources.GORIMG_ERR_ARRAY_COUNT_INVALID, Graphics.Textures.MaxArrayCount));
 						}
 					}
 
 					// Ensure that we can resize.
 					if (width > Graphics.Textures.MaxWidth)
 					{
-						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
+						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_ERR_IMAGE_1D_SIZE_TOO_LARGE, Graphics.Textures.MaxWidth));
 					}
 
 					if (height < 1)
 					{
-						throw new ArgumentOutOfRangeException("height", Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
+						throw new ArgumentOutOfRangeException("height", Resources.GORIMG_ERR_IMAGE_SIZE_TOO_SMALL);
 					}
 
 					if (height > Graphics.Textures.MaxHeight)
 					{
-						throw new ArgumentOutOfRangeException("height", string.Format(Resources.GORIMG_IMAGE_2D_SIZE_TOO_LARGE, Graphics.Textures.MaxHeight));
+						throw new ArgumentOutOfRangeException("height", string.Format(Resources.GORIMG_ERR_IMAGE_2D_SIZE_TOO_LARGE, Graphics.Textures.MaxHeight));
 					}
 
                     break;
                 case ImageType.Image3D:
                     if (!Graphics.VideoDevice.Supports3DTextureFormat(ImageFormat))
                     {
-                        throw new ArgumentException(string.Format(Resources.GORIMG_INVALID_FORMAT, ImageFormat, "3D"), "format");
+                        throw new ArgumentException(string.Format(Resources.GORIMG_ERR_INVALID_FORMAT, ImageFormat, "3D"), "format");
                     }
 
 		            if ((MipCount > 1)
 						&& (!_imageSettings.IsPowerOfTwo))
 		            {
-			            throw new ArgumentException(Resources.GORIMG_TEXTURE_MIP_POW_2, "type");
+			            throw new ArgumentException(Resources.GORIMG_ERR_TEXTURE_MIP_POW_2, "type");
 		            }
 
 					// Ensure that we can resize.
 					if (width > Graphics.Textures.Max3DWidth)
 					{
-						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.Max3DWidth));
+						throw new ArgumentOutOfRangeException("width", string.Format(Resources.GORIMG_ERR_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.Max3DWidth));
 					}
 
 					if (height < 1)
 					{
-						throw new ArgumentOutOfRangeException("height", Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
+						throw new ArgumentOutOfRangeException("height", Resources.GORIMG_ERR_IMAGE_SIZE_TOO_SMALL);
 					}
 
 					if (height > Graphics.Textures.Max3DHeight)
 					{
-						throw new ArgumentOutOfRangeException("height", string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.Max3DHeight));
+						throw new ArgumentOutOfRangeException("height", string.Format(Resources.GORIMG_ERR_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.Max3DHeight));
 					}
 
 					if (depth < 1)
 					{
-						throw new ArgumentOutOfRangeException("depth", Resources.GORIMG_IMAGE_SIZE_TOO_SMALL);
+						throw new ArgumentOutOfRangeException("depth", Resources.GORIMG_ERR_IMAGE_SIZE_TOO_SMALL);
 					}
 
 					if (depth > Graphics.Textures.MaxDepth)
 					{
-						throw new ArgumentOutOfRangeException("depth", string.Format(Resources.GORIMG_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.MaxDepth));
+						throw new ArgumentOutOfRangeException("depth", string.Format(Resources.GORIMG_ERR_IMAGE_3D_SIZE_TOO_LARGE, Graphics.Textures.MaxDepth));
 					}
 
 					newSettings = new GorgonTexture3DSettings
@@ -1018,7 +1018,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 					break;
 				default:
-					throw new InvalidCastException(string.Format(Resources.GORIMG_UNKNOWN_IMAGE_TYPE, type));
+					throw new InvalidCastException(string.Format(Resources.GORIMG_ERR_UNKNOWN_IMAGE_TYPE, type));
 			}
 
 			ProcessTransform(newSettings);
@@ -1123,7 +1123,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			if ((_contentPanel == null)
 				|| (_contentPanel.ParentForm == null))
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 			}
 
 			string texConvPath = Gorgon.ApplicationDirectory + "texconv.exe";
@@ -1131,7 +1131,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			// If we can't find our converter, then we're out of luck.
 			if (!File.Exists(texConvPath))
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 			}
 
 			// We'll need to copy this data and decompress it in an external source.
@@ -1153,7 +1153,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if (!File.Exists(texConvPath))
 				{
 					DeleteTempImageFile(tempFilePath);
-					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 				}
 
 				var info = new ProcessStartInfo
@@ -1180,7 +1180,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if (texConvProcess == null)
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS);
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 				}
 
 				// Wait until we're done converting.
@@ -1191,7 +1191,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if (!string.IsNullOrWhiteSpace(errorData))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData);
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS + "\n\n" + errorData);
 				}
 
 				errorData = texConvProcess.StandardOutput.ReadToEnd();
@@ -1200,7 +1200,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if (errorData.StartsWith("Invalid value", StringComparison.OrdinalIgnoreCase))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
-					                          Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)));
+					                          Resources.GORIMG_ERR_CANNOT_COMPRESS + "\n\n" + errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)));
 				}
 
 				// Check for failure.
@@ -1209,7 +1209,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					// Get rid of the temporary path and use the file name.
 					errorData = errorData.Replace(tempFilePath, "\"" + Name + "\"");
 					throw new GorgonException(GorgonResult.CannotCreate,
-											  Resources.GORIMG_CANNOT_COMPRESS + "\n\n" + errorData);
+											  Resources.GORIMG_ERR_CANNOT_COMPRESS + "\n\n" + errorData);
 				}
 				
 				texConvProcess.Close();
@@ -1345,7 +1345,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				if (!string.IsNullOrWhiteSpace(errorData))
 				{
-					GorgonDialogs.ErrorBox(_contentPanel.ParentForm, Resources.GORIMG_ERROR_DECOMPRESSING, string.Empty, errorData, true);
+					GorgonDialogs.ErrorBox(_contentPanel.ParentForm, Resources.GORIMG_ERR_DECOMPRESSING, string.Empty, errorData, true);
 					return null;
 				}
 
@@ -1355,7 +1355,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if (errorData.StartsWith("Invalid value", StringComparison.OrdinalIgnoreCase))
 				{
 					GorgonDialogs.ErrorBox(_contentPanel.ParentForm,
-					                       Resources.GORIMG_ERROR_DECOMPRESSING,
+					                       Resources.GORIMG_ERR_DECOMPRESSING,
 					                       string.Empty,
 					                       errorData.Substring(0, errorData.IndexOf("\n", StringComparison.OrdinalIgnoreCase)),
 					                       true);
@@ -1371,7 +1371,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				// Get rid of the temporary path and use the file name.
 				errorData = errorData.Replace(tempFilePath, "\"" + Name + "\"");
 				GorgonDialogs.ErrorBox(_contentPanel.ParentForm,
-				                       Resources.GORIMG_ERROR_DECOMPRESSING,
+				                       Resources.GORIMG_ERR_DECOMPRESSING,
 				                       string.Empty,
 				                       errorData,
 				                       true);
@@ -1985,12 +1985,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 					image.ConvertFormat(ImageFormat);
 				}
 
+
+				var offset = Point.Empty;
+
 				// If the buffer is not the same size as the image we've loaded, then resize the image.
 				if ((Buffer.Width != image.Settings.Width)
 				    || (Buffer.Height != image.Settings.Height))
 				{
 				    var newSize = new Vector2(Buffer.Width, Buffer.Height);
-				    var offset = Point.Empty;
+				    
 
 				    if (preserveAspect)
 				    {
@@ -2020,7 +2023,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				}
 
 				// Copy the data into the buffer.
-				image.Buffers[0].CopyTo(Buffer);
+				image.Buffers[0].CopyTo(Buffer, offset.X, offset.Y);
 
 				NotifyPropertyChanged("ImageImport", null);
 			}
@@ -2057,7 +2060,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			if (codec == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_NONE_FOUND, editorFile.FilePath));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_CODEC_NONE_FOUND, editorFile.FilePath));
 			}
 
 			// ReSharper disable once InvertIf
@@ -2270,7 +2273,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			if ((stream == null)
 				|| (stream.Length == 0))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CONTENT_NOT_IMAGE, EditorFile.FilePath));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_CONTENT_NOT_IMAGE, EditorFile.FilePath));
 			}
 
 			OnRead(stream);

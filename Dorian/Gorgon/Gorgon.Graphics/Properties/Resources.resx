@@ -707,7 +707,7 @@ Log file location: "{0}"</value>
     <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
   </data>
   <data name="GORGFX_IMAGE_BUFFER_MISMATCH" xml:space="preserve">
-    <value>The buffer being copied into is not the same width, height or format as the source buffer.</value>
+    <value>The buffer being copied into is not the same format as the source buffer.</value>
   </data>
   <data name="GORGFX_TEXTURE_BC_SIZE_NOT_MOD_4" xml:space="preserve">
     <value>A compressed texture must have a width and height that is a multiple of 4.</value>

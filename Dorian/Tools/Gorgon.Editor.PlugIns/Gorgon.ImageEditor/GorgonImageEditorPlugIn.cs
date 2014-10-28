@@ -103,13 +103,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             // Check to see if the assembly is an image codec plug-in.
             if (!Gorgon.PlugIns.IsPlugInAssembly(assemblyPath))
             {
-                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_CODEC_LOAD_NOT_A_PLUGIN, assemblyPath));
+                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_NOT_A_PLUGIN, assemblyPath));
                 return;
             }
 
             if (Gorgon.PlugIns.EnumeratePlugIns(assemblyPath).Count == 0)
             {
-                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_CODEC_NONE_FOUND, assemblyPath));
+                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_NONE_FOUND, assemblyPath));
                 return;
             }
 
