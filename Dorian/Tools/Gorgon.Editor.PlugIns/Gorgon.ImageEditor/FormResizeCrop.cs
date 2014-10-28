@@ -163,6 +163,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return whether to preserve the aspect ratio for the image.
+        /// </summary>
+	    public bool PreserveAspectRatio
+	    {
+	        get
+	        {
+	            return checkPreserveAspect.Checked;
+	        }
+	    }
+
 		/// <summary>
 		/// Property to return the selected filter.
 		/// </summary>
@@ -187,15 +198,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Handles the SelectedIndexChanged event of the comboFilter control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void comboFilter_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			GorgonImageEditorPlugIn.Settings.ResizeImageFilter = ((FilterComboItem)comboFilter.SelectedItem).Filter;
-		}
+        /// <summary>
+        /// Handles the Click event of the buttonOK control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            GorgonImageEditorPlugIn.Settings.ResizeImageFilter = Filter;
+            GorgonImageEditorPlugIn.Settings.PreserveAspectRatio = checkPreserveAspect.Checked;
+            GorgonImageEditorPlugIn.Settings.CropDefault = radioCrop.Checked;
+        }
 
 		/// <summary>
 		/// Handles the CheckedChanged event of the radioCrop control.
@@ -204,7 +217,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void radioCrop_CheckedChanged(object sender, EventArgs e)
 		{
-			GorgonImageEditorPlugIn.Settings.CropDefault = radioCrop.Checked;
 			ValidateControls();
 		}
 
@@ -213,7 +225,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 		private void ValidateControls()
 		{
-			comboFilter.Enabled = labelFilter.Enabled = radioResize.Checked;
+			checkPreserveAspect.Enabled = comboFilter.Enabled = labelFilter.Enabled = radioResize.Checked;
 		}
 
 		/// <summary>
@@ -227,6 +239,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			labelDesc.Text = Resources.GORIMG_TEXT_CROP_RESIZE_TEXT;
 			labelFilter.Text = Resources.GORIMG_TEXT_FILTER;
+
+		    checkPreserveAspect.Text = Resources.GORIMG_TEXT_PRESERVE_ASPECT;
 			
 			comboFilter.Items.Add(new FilterComboItem(ImageFilter.Point));
 			comboFilter.Items.Add(new FilterComboItem(ImageFilter.Linear));
@@ -247,6 +261,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			radioCrop.Checked = GorgonImageEditorPlugIn.Settings.CropDefault;
 			radioResize.Checked = !GorgonImageEditorPlugIn.Settings.CropDefault;
 			comboFilter.SelectedItem = new FilterComboItem(GorgonImageEditorPlugIn.Settings.ResizeImageFilter);
+		    checkPreserveAspect.Checked = GorgonImageEditorPlugIn.Settings.PreserveAspectRatio;
 
 			ValidateControls();
 		}

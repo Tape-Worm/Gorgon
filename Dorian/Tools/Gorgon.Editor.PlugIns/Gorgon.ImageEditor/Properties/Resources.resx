@@ -460,4 +460,7 @@ Do you wish to continue?</value>
   <data name="GORIMG_TEXT_FACE" xml:space="preserve">
     <value>Face: {0} ({1})</value>
   </data>
+  <data name="GORIMG_TEXT_PRESERVE_ASPECT" xml:space="preserve">
+    <value>Preserve the aspect ratio of the image.</value>
+  </data>
 </root>

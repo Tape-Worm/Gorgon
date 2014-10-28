@@ -88,6 +88,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    set;
 	    }
 
+        /// <summary>
+        /// Property to set or return whether to preserve the aspect ratio of the source image.
+        /// </summary>
+        [ApplicationSetting("PreserveAspectRatio", typeof(bool), "CropResize")]
+        public bool PreserveAspectRatio
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return the image filtering to use when generating mip-maps.
 		/// </summary>
@@ -110,6 +120,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        CropDefault = true;
 	        ResizeImageFilter = ImageFilter.Point;
 			MipFilter = ImageFilter.Fant;
+            PreserveAspectRatio = true;
         }
         #endregion
     }

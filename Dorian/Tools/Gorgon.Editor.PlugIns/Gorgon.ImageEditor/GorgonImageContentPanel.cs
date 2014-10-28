@@ -306,19 +306,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="path">Path to the image to crop/resize.</param>
 		/// <param name="image">Image data to crop/resize</param>
 		/// <returns>The selected operation and filter.</returns>
-	    private Tuple<bool, ImageFilter> ConfirmCropResize(string path, GorgonImageData image)
+	    private Tuple<bool, ImageFilter, bool> ConfirmCropResize(string path, GorgonImageData image)
 	    {
 		    if ((_content.Buffer.Width == image.Settings.Width)
 				&& (_content.Buffer.Height == image.Settings.Height))
 		    {
-				return new Tuple<bool, ImageFilter>(true, ImageFilter.Point);
+				return new Tuple<bool, ImageFilter, bool>(true, ImageFilter.Point, true);
 		    }
 
 			using (var resizeCrop = new FormResizeCrop(path, new Size(image.Settings.Width, image.Settings.Height), new Size(_content.Buffer.Width, _content.Buffer.Height)))
 		    {
 			    if (resizeCrop.ShowDialog(ParentForm) != DialogResult.Cancel)
 			    {
-				    return new Tuple<bool, ImageFilter>(resizeCrop.CropImage, resizeCrop.Filter);
+				    return new Tuple<bool, ImageFilter, bool>(resizeCrop.CropImage, resizeCrop.Filter, resizeCrop.PreserveAspectRatio);
 			    }
 
 			    GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER,
@@ -344,7 +344,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 ParentForm.Focus();
                 ParentForm.BringToFront();
 
-	            if (!ConfirmBufferOverwrite())
+                if (_content.ImageType == ImageType.ImageCube)
+                {
+                    _content.ArrayIndex = _hoverFace + _cubeIndex;
+                    UpdateBufferInfoLabels();
+                }
+
+                if (!ConfirmBufferOverwrite())
 	            {
 		            return;
 	            }
@@ -355,20 +361,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 
                 image = GetImageFromFileSystem(dragFile, out file);
 
-	            Tuple<bool, ImageFilter> cropOpts = ConfirmCropResize(dragFile.EditorFile.FilePath, image);
+	            Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(dragFile.EditorFile.FilePath, image);
 
 	            if (cropOpts == null)
 	            {
 		            return;
 	            }
 
-	            if (_content.ImageType == ImageType.ImageCube)
-	            {
-		            _content.ArrayIndex = _hoverFace + _cubeIndex;
-					UpdateBufferInfoLabels();
-	            }
-
-	            _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
+	            _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
             }
             catch (Exception ex)
             {
@@ -402,6 +402,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 ParentForm.Focus();
                 ParentForm.BringToFront();
 
+                if (_content.ImageType == ImageType.ImageCube)
+                {
+                    _content.ArrayIndex = _hoverFace + _cubeIndex;
+                    UpdateBufferInfoLabels();
+                }
+
 				if (!ConfirmBufferOverwrite())
 				{
 					return;
@@ -411,20 +417,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
                 image = GetImageFromDisk(ref filePath);
 
-				Tuple<bool, ImageFilter> cropOpts = ConfirmCropResize(filePath, image);
+				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(filePath, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-				if (_content.ImageType == ImageType.ImageCube)
-				{
-					_content.ArrayIndex = _hoverFace + _cubeIndex;
-					UpdateBufferInfoLabels();
-				}
-
-                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
+                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
             }
             catch (Exception ex)
             {
@@ -744,14 +744,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				Cursor.Current = Cursors.WaitCursor;
 
-				Tuple<bool, ImageFilter> cropOpts = ConfirmCropResize(fileName, image);
+				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(fileName, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-				_content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
+                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
 			}
 			catch (Exception ex)
 			{
@@ -796,14 +796,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				Cursor.Current = Cursors.WaitCursor;
 
-				Tuple<bool, ImageFilter> cropOpts = ConfirmCropResize(file.FilePath, image);
+				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(file.FilePath, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-				_content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2);
+                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
 
 			}
 			catch (Exception ex)

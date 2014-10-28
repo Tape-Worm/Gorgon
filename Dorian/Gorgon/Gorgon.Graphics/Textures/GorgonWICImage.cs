@@ -106,6 +106,8 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
+using System.Windows.Forms;
 using GorgonLibrary.Graphics.Properties;
 using WIC = SharpDX.WIC;
 using DX = SharpDX;
@@ -848,8 +850,6 @@ namespace GorgonLibrary.Graphics
 
             try
             {
-				// TODO: Add in something to allow for shift in color context (sRGB).
-				// TODO: Check http://msdn.microsoft.com/en-us/library/windows/desktop/ee690202(v=vs.85).aspx for more detail.
                 if (destFormat != Guid.Empty)
                 {
 	                if (sourceData.PixelFormat != destFormat)
@@ -881,46 +881,61 @@ namespace GorgonLibrary.Graphics
 	                }
                 }
 
-                if (!destRect.IsEmpty)
+                if (destRect.IsEmpty)
                 {
-					Guid pixelFormat = source.PixelFormat;
-
-                    if (!clip)
-                    {
-                        scaler = new WIC.BitmapScaler(Factory);
-                        scaler.Initialize(source, destRect.Width, destRect.Height, (WIC.BitmapInterpolationMode)scaleFilter);
-                        source = scaler;
-                    }
-                    else
-                    {
-						destRect.Width = destRect.Width.Min(source.Size.Width);
-						destRect.Height = destRect.Height.Min(source.Size.Height);
-
-						if ((destRect.Width < source.Size.Width) || (destRect.Height < source.Size.Height))
-						{
-							clipper = new WIC.BitmapClipper(Factory);
-							clipper.Initialize(source, new DX.Rectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
-							source = clipper;
-						}
-                    }
-
-					// We have a change of format (probably due to the filter when scaling)... so we need to convert.
-					if (source.PixelFormat != pixelFormat)
-					{
-						converter = new WIC.FormatConverter(Factory);
-
-						if (!converter.CanConvert(source.PixelFormat, pixelFormat))
-						{
-                            throw new GorgonException(GorgonResult.FormatNotSupported,
-                                string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, pixelFormat));
-                        }
-
-						converter.Initialize(source, pixelFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
-						source = converter;
-					}
+                    source.CopyPixels(rowPitch, destData, slicePitch);
+                    return;
                 }
 
-				source.CopyPixels(rowPitch, destData, slicePitch);
+                Guid pixelFormat = source.PixelFormat;
+
+                if (!clip)
+                {
+                    scaler = new WIC.BitmapScaler(Factory);
+                    scaler.Initialize(source,
+                                        destRect.Width,
+                                        destRect.Height,
+                                        (WIC.BitmapInterpolationMode)scaleFilter);
+                    source = scaler;
+                }
+                else
+                {
+                    destRect.Width = destRect.Width.Min(source.Size.Width);
+                    destRect.Height = destRect.Height.Min(source.Size.Height);
+
+                    if ((destRect.Width < source.Size.Width)
+                        || (destRect.Height < source.Size.Height))
+                    {
+                        clipper = new WIC.BitmapClipper(Factory);
+                        clipper.Initialize(source,
+                                            new DX.Rectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
+                        source = clipper;
+                        destRect.X = 0;
+                        destRect.Y = 0;
+                    }
+                }
+
+                // We have a change of format (probably due to the filter when scaling)... so we need to convert.
+                if (source.PixelFormat != pixelFormat)
+                {
+                    converter = new WIC.FormatConverter(Factory);
+
+                    if (!converter.CanConvert(source.PixelFormat, pixelFormat))
+                    {
+                        throw new GorgonException(GorgonResult.FormatNotSupported,
+                                                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, pixelFormat));
+                    }
+
+                    converter.Initialize(source,
+                                            pixelFormat,
+                                            WIC.BitmapDitherType.None,
+                                            null,
+                                            0,
+                                            WIC.BitmapPaletteType.Custom);
+                    source = converter;
+                }
+
+                source.CopyPixels(rowPitch, destData, slicePitch);
             }
             finally
             {
