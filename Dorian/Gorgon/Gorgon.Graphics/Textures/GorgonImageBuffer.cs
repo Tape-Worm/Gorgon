@@ -25,19 +25,12 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
-using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {
@@ -137,13 +130,22 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to copy the image buffer data from this buffer into another.
 		/// </summary>
-		/// <remarks>The destination <paramref name="buffer"/> must be the same format as the source buffer.  If it is not, then an exception will be thrown.</remarks>
 		/// <param name="buffer">The buffer to copy into.</param>
-		/// <param name="offsetX">Horizontal offset in the destination buffer.</param>
-		/// <param name="offsetY">Vertical offset in the destination buffer.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> is not the same format as this buffer.</exception>
-	    public unsafe void CopyTo(GorgonImageBuffer buffer, int offsetX = 0, int offsetY = 0)
+		/// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
+		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
+		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the source region width or height is less than 1.</exception>
+		/// <remarks>
+		/// This method will copy the contents of this buffer into another buffer and will provide clipping to handle cases where the buffer or <paramref name="sourceRegion" /> is mismatched with the
+		/// destination size.
+		/// <para>Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter.  If NULL (Nothing in VB.Net) is passed to this parameter, then the
+		/// entire buffer will be copied to the destination.</para><para>An offset into the destination buffer may also be specified to relocate the data copied from this buffer into the destination.  Clipping will be applied if the offset pushes the
+		/// source data outside of the boundaries of the destination buffer.</para><para>The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.</para>
+		/// <para>The <paramref name="buffer"/> parameter must not be the same as the this buffer.  An exception will be thrown if an attempt to copy this buffer into itself is made.</para>
+		/// </remarks>
+	    public unsafe void CopyTo(GorgonImageBuffer buffer, Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 	    {
 			if ((buffer == null)
 			    || (buffer.Data == null)
@@ -152,62 +154,85 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("buffer");	
 			}
 
+			if ((buffer == this)
+				|| (buffer.Data.UnsafePointer == Data.UnsafePointer))
+			{
+				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_CANT_BE_SAME, "buffer");
+			}
+
 			if (buffer.Format != Format)
 			{
-				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_MISMATCH);
+				throw new ArgumentException(Resources.GORGFX_IMAGE_MUST_BE_SAME_FORMAT, "buffer");
 			}
 
-			if (offsetX < 0)
+			// If not, then we must ensure that we copy the data properly.
+			Rectangle srcRegion = sourceRegion != null ? sourceRegion.Value : new Rectangle(0, 0, Width, Height);
+
+			if ((srcRegion.Width <= 0)
+			    || (srcRegion.Height <= 0))
 			{
-				offsetX = 0;
+				throw new ArgumentOutOfRangeException("sourceRegion");
 			}
 
-			if (offsetY < 0)
+			var dstRegion = new Rectangle(destX < 0 ? 0 : destX, destY < 0 ? 0 : destY, buffer.Width, buffer.Height);
+
+			// Adjust in case we're trying to move off the source.
+			if (destX < 0)
 			{
-				offsetY = 0;
+				srcRegion.X -= destX;
+				srcRegion.Width += destX;
 			}
 
-		    if ((offsetX == 0)
-		        && (offsetY == 0)
-				&& (buffer.Width == Width)
-				&& (buffer.Height == Height))
+			if (destY < 0)
+			{
+				srcRegion.Y -= destY;
+				srcRegion.Height += destY;
+			}
+
+			// Ensure that the regions actually fit within their respective buffers.
+			srcRegion = new Rectangle(srcRegion.X.Max(0), srcRegion.Y.Max(0), srcRegion.Width.Min(Width), srcRegion.Height.Min(Height));
+			dstRegion = Rectangle.FromLTRB(dstRegion.X, dstRegion.Y, dstRegion.Right.Min(buffer.Width), dstRegion.Bottom.Min(buffer.Height));
+
+			// If the source/dest region is empty, then we have nothing to copy.
+			if ((srcRegion.IsEmpty)
+				|| (dstRegion.IsEmpty))
+			{
+				return;
+			}
+
+			// If the buffers are identical in dimensions and have no offset, then just do a straight copy.
+		    if (srcRegion == dstRegion)
 		    {
 		        DirectAccess.MemoryCopy(buffer.Data.UnsafePointer, Data.UnsafePointer, (int)Data.Length);
 		        return;
 		    }
 
-			var destBufferRect = new Rectangle(0, 0, buffer.Width, buffer.Height);
-			var destRectangle = Rectangle.Intersect(new Rectangle(offsetX, offsetY, buffer.Width, buffer.Height),
-			                                        new Rectangle(offsetX, offsetY, Width, Height));
+			// Find out how many bytes each pixel occupies.
+			int dataSize = PitchInformation.RowPitch / Width;
 
-			if (!destBufferRect.Contains(destRectangle))
+			int srcLineSize = dataSize * srcRegion.Width;	// Number of source bytes/scanline.
+			var srcData = ((byte*)Data.UnsafePointer) + (srcRegion.Y * PitchInformation.RowPitch) + (srcRegion.X * dataSize);
+
+			int dstLineSize = dataSize * dstRegion.Width;	// Number of dest bytes/scanline.
+			var dstData = ((byte*)buffer.Data.UnsafePointer) + (dstRegion.Y * buffer.PitchInformation.RowPitch) + (dstRegion.X * dataSize);
+
+			// Get the smallest line size.
+			int minLineSize = dstLineSize.Min(srcLineSize);
+			int minHeight = dstRegion.Height.Min(srcRegion.Height) - 1;
+
+			// Finally, copy our data.
+			for (int i = 0; i <= minHeight; ++i)
 			{
-				destRectangle = Rectangle.Intersect(destRectangle, destBufferRect);
+				DirectAccess.MemoryCopy(dstData, srcData, minLineSize);
+
+				if (i == minHeight)
+				{
+					break;
+				}
+
+				srcData += PitchInformation.RowPitch;
+				dstData += buffer.PitchInformation.RowPitch;
 			}
-
-            // Do nothing if we've moved outside of the range.
-		    if (destRectangle.IsEmpty)
-		    {
-		        return;
-		    }
-
-            // Copy using a "slow" method to ensure that we don't exceed the bounds.
-			int width = destRectangle.Width.Min(destBufferRect.Width);
-			int height = destRectangle.Height.Min(destBufferRect.Height);
-            int dataSize = (buffer.PitchInformation.RowPitch / buffer.Width);
-            int pitch = dataSize * width;
-			int offset = dataSize * destRectangle.X;
-            var sourceBuffer = (byte*)Data.UnsafePointer;
-			var destBuffer = ((byte*)buffer.Data.UnsafePointer) + (destRectangle.Y * buffer.PitchInformation.RowPitch) + offset;
-
-			for (int i = 0; i < height; i++)
-		    {
-		        DirectAccess.MemoryCopy(destBuffer, sourceBuffer, pitch);
-
-                // Move to the next scanline.
-		        sourceBuffer += PitchInformation.RowPitch;
-		        destBuffer += pitch + offset;
-		    }
 	    }
 
         /// <summary>

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.IO;
 
@@ -99,6 +100,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         }
 
 		/// <summary>
+		/// Property to set or return whether to preserve the aspect ratio of the source image.
+		/// </summary>
+		[ApplicationSetting("ImageAlign", typeof(ContentAlignment), "CropResize")]
+		public ContentAlignment ImageAlign
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the image filtering to use when generating mip-maps.
 		/// </summary>
 		[ApplicationSetting("MipFilter", typeof(ImageFilter), "MipMaps")]
@@ -121,6 +132,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        ResizeImageFilter = ImageFilter.Point;
 			MipFilter = ImageFilter.Fant;
             PreserveAspectRatio = true;
+			ImageAlign = ContentAlignment.MiddleCenter;
         }
         #endregion
     }

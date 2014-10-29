@@ -20,6 +20,11 @@
 
 	        if (disposing)
 	        {
+		        if (_keyboard != null)
+		        {
+			        _keyboard.Dispose();
+		        }
+
 		        if (_backgroundTexture != null)
 		        {
 			        _backgroundTexture.Dispose();
@@ -35,6 +40,7 @@
 			        _texture.Dispose();
 		        }
 
+		        _keyboard = null;
 		        _backgroundTexture = null;
 		        _texture = null;
 	        }
@@ -411,6 +417,7 @@
 			this.Name = "GorgonImageContentPanel";
 			this.Size = new System.Drawing.Size(806, 636);
 			this.Text = "Image";
+			this.Load += new System.EventHandler(this.GorgonImageContentPanel_Load);
 			this.PanelDisplay.ResumeLayout(false);
 			this.stripPanelImageEditor.BottomToolStripPanel.ResumeLayout(false);
 			this.stripPanelImageEditor.BottomToolStripPanel.PerformLayout();

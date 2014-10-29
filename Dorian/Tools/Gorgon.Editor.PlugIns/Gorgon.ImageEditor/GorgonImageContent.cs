@@ -1674,10 +1674,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
 	        CanChangeBCImages = File.Exists(Gorgon.ApplicationDirectory + "texconv.exe");
 
-	        _contentPanel = new GorgonImageContentPanel
-	                        {
-		                        Content = this
-	                        };
+	        _contentPanel = new GorgonImageContentPanel(this, GetRawInput());
 
 	        _swap = Graphics.Output.CreateSwapChain("TextureDisplay",
 	                                                new GorgonSwapChainSettings
@@ -1960,6 +1957,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			return false;
 		}
 
+		private Random _rnd = new Random();
+
 		/// <summary>
 		/// Function to convert the image to a format that's compatible with the image buffer currently selected.
 		/// </summary>
@@ -1967,7 +1966,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="crop">TRUE to crop the image instead of resize, FALSE to resize.</param>
 		/// <param name="filter">The filter to apply when resizing.</param>
 		/// <param name="preserveAspect">TRUE to preserve the aspect ratio of the source image, FALSE to ignore it.</param>
-		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter, bool preserveAspect)
+		/// <param name="imageAlign">Image alignment.</param>
+		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter, bool preserveAspect, ContentAlignment imageAlign)
 		{
 			try
 			{
@@ -1989,42 +1989,68 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				var offset = Point.Empty;
 
 				// If the buffer is not the same size as the image we've loaded, then resize the image.
-				if ((Buffer.Width != image.Settings.Width)
+				if (((Buffer.Width != image.Settings.Width)
 				    || (Buffer.Height != image.Settings.Height))
+					&& (!crop))
 				{
 				    var newSize = new Vector2(Buffer.Width, Buffer.Height);
-				    
 
 				    if (preserveAspect)
 				    {
-				        unsafe
-				        {
-                            // Clear the buffer so we don't get garbage left over.
-				            DirectAccess.ZeroMemory(Buffer.Data.UnsafePointer, (int)Buffer.Data.Length);
-				        }
-
-				        float aspect = (float)image.Settings.Height / image.Settings.Width;
-
 				        if (image.Settings.Width > image.Settings.Height)
 				        {
-				            newSize.Y *= aspect;
-				            offset.X = 0;
-				            offset.Y = (int)(Buffer.Height / 2.0f - newSize.Y / 2.0f);
+				            newSize.Y *= (float)image.Settings.Height / image.Settings.Width;
 				        }
                         else
 				        {
-				            newSize.X *= aspect;
-                            offset.X = (int)(Buffer.Width / 2.0f - newSize.X / 2.0f);
-                            offset.Y = 0;
+							newSize.X *= (float)image.Settings.Width / image.Settings.Height;
                         }
 				    }
 
-				    image.Resize((int)newSize.X, (int)newSize.Y, crop, filter);
+					image.Resize((int)newSize.X, (int)newSize.Y, false, filter);
+				}
+
+				switch (imageAlign)
+				{
+					case ContentAlignment.TopCenter:
+						offset.X = (int)(Buffer.Width / 2.0f - image.Buffers[0].Width / 2.0f);
+						break;
+					case ContentAlignment.TopRight:
+						offset.X = Buffer.Width - image.Buffers[0].Width;
+						break;
+					case ContentAlignment.MiddleLeft:
+						offset.Y = (int)(Buffer.Height / 2.0f - image.Buffers[0].Height / 2.0f);
+						break;
+					case ContentAlignment.MiddleRight:
+						offset.X = Buffer.Width - image.Buffers[0].Width;
+						offset.Y = (int)(Buffer.Height / 2.0f - image.Buffers[0].Height / 2.0f);
+						break;
+					case ContentAlignment.BottomLeft:
+						offset.Y = Buffer.Height - image.Buffers[0].Height;
+						break;
+					case ContentAlignment.BottomCenter:
+						offset.X = (int)(Buffer.Width / 2.0f - image.Buffers[0].Width / 2.0f);
+						offset.Y = Buffer.Height - image.Buffers[0].Height;
+						break;
+					case ContentAlignment.BottomRight:
+						offset.X = Buffer.Width - image.Buffers[0].Width;
+						offset.Y = Buffer.Height - image.Buffers[0].Height;
+						break;
+					case ContentAlignment.MiddleCenter:
+						offset.X = (int)(Buffer.Width / 2.0f - image.Buffers[0].Width / 2.0f);
+						offset.Y = (int)(Buffer.Height / 2.0f - image.Buffers[0].Height / 2.0f);
+						break;
+				}
+
+				unsafe
+				{
+					// Clear the buffer so we don't get garbage left over.
+					DirectAccess.ZeroMemory(Buffer.Data.UnsafePointer, (int)Buffer.Data.Length);
 				}
 
 				// Copy the data into the buffer.
-				image.Buffers[0].CopyTo(Buffer, offset.X, offset.Y);
-
+				image.Buffers[0].CopyTo(Buffer, null, offset.X, offset.Y);
+				
 				NotifyPropertyChanged("ImageImport", null);
 			}
 			finally
