@@ -41,7 +41,6 @@ namespace GorgonLibrary.Editor
 	public partial class ContentPanel : UserControl
 	{
 		#region Variables.
-        private ContentObject _content;
 		private bool _captionVisible = true;
 		#endregion
 
@@ -114,23 +113,8 @@ namespace GorgonLibrary.Editor
 		[Browsable(false)]
 		public ContentObject Content
 		{
-            get
-            {
-                return _content;
-            }
-            set
-            {
-                _content = value;
-
-	            if (_content != null)
-	            {
-		            RefreshContent();
-	            }
-	            else
-	            {
-		            UpdateCaption();
-	            }
-            }
+            get;
+			private set;
 		}
 
 	    /// <summary>
@@ -337,13 +321,13 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		internal void UpdateCaption()
 		{
-			if (_content == null)
+			if (Content == null)
 			{
 				labelCaption.Text = string.Format("{0} - {1}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED);
 				return;
 			}
 
-			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, _content.HasChanges ? "*" : string.Empty);
+			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Content.Name, Content.HasChanges ? "*" : string.Empty);
 		}
 
 		/// <summary>
@@ -377,7 +361,7 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentNullException("content");
 			}
 
-			_content = content;
+			Content = content;
 			UpdateCaption();
 		    RawInput = input;
 		}

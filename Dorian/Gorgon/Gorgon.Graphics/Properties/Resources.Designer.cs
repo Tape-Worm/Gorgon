@@ -596,11 +596,11 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer being copied into is not the same format as the source buffer..
+        ///   Looks up a localized string similar to Cannot copy a buffer into itself..
         /// </summary>
-        internal static string GORGFX_IMAGE_BUFFER_MISMATCH {
+        internal static string GORGFX_IMAGE_BUFFER_CANT_BE_SAME {
             get {
-                return ResourceManager.GetString("GORGFX_IMAGE_BUFFER_MISMATCH", resourceCulture);
+                return ResourceManager.GetString("GORGFX_IMAGE_BUFFER_CANT_BE_SAME", resourceCulture);
             }
         }
         

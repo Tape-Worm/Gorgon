@@ -63,6 +63,86 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap arrow_down_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_down_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_left_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_ne_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_ne_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_nw_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_nw_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_right_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_right_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_se_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_se_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_sw_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_sw_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_up_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_up_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap back_16x16png1 {
             get {
                 object obj = ResourceManager.GetObject("back_16x16png1", resourceCulture);
@@ -104,6 +184,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string CATEGORY_TEXTURE {
             get {
                 return ResourceManager.GetString("CATEGORY_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap center_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -178,6 +268,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_DLG_CAPTION_RESIZE_CROP {
             get {
                 return ResourceManager.GetString("GORIMG_DLG_CAPTION_RESIZE_CROP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep/resize the image.
+        /// </summary>
+        internal static string GORIMG_DLG_CAPTION_RESIZE_KEEP {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CAPTION_RESIZE_KEEP", resourceCulture);
             }
         }
         
@@ -461,6 +560,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Anchor.
+        /// </summary>
+        internal static string GORIMG_TEXT_ANCHOR {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_ANCHOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Array index: {0}/{1}.
         /// </summary>
         internal static string GORIMG_TEXT_ARRAY_INDEX {
@@ -533,7 +641,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Filter.
+        ///   Looks up a localized string similar to Image filter.
         /// </summary>
         internal static string GORIMG_TEXT_FILTER {
             get {
@@ -659,6 +767,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image dimensions do not match the buffer dimensions.  Please select keep to preserve the image size, or resize to stretch/squish the image to the buffer dimensions..
+        /// </summary>
+        internal static string GORIMG_TEXT_KEEP_RESIZE_TEXT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_KEEP_RESIZE_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mip-map level: {0}/{1} ({2}x{3}).
         /// </summary>
         internal static string GORIMG_TEXT_MIP_LEVEL {
@@ -691,6 +808,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_NEXT_MIP {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_NEXT_MIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keep the image size..
+        /// </summary>
+        internal static string GORIMG_TEXT_NO_CHANGE_SIZE {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_NO_CHANGE_SIZE", resourceCulture);
             }
         }
         

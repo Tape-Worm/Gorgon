@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Input;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
@@ -50,7 +51,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	{
 		#region Variables.
 		// Image content.
-        private GorgonImageContent _content;
+        private readonly GorgonImageContent _content;
 		// Texture to display.
 	    private GorgonTexture _texture;
 		// Background texture.
@@ -75,10 +76,90 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private int _hoverFace = -1;
 		// The index of the current cube we're on.
 	    private int _cubeIndex;
+		// Keyboard interface.
+	    private GorgonKeyboard _keyboard;
         #endregion
 
         #region Methods.
 		/// <summary>
+		/// Handles the Load event of the GorgonImageContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void GorgonImageContentPanel_Load(object sender, EventArgs e)
+		{
+			try
+			{
+				_keyboard = RawInput.CreateKeyboard(panelTextureDisplay);
+				_keyboard.Enabled = true;
+				_keyboard.KeyDown += KeyboardOnKeyDown;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+				_content.CloseContent();
+			}
+		}
+
+		/// <summary>
+		/// Keyboards the on key down.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="keyboardEventArgs">The <see cref="KeyboardEventArgs"/> instance containing the event data.</param>
+	    private void KeyboardOnKeyDown(object sender, KeyboardEventArgs keyboardEventArgs)
+	    {
+			if ((_content == null)
+			    || (_content.Image == null))
+			{
+				return;
+			}
+
+			switch (keyboardEventArgs.Key)
+			{
+				case KeyboardKeys.Left:
+					buttonPrevMipLevel.PerformClick();
+					break;
+				case KeyboardKeys.Right:
+					buttonNextMipLevel.PerformClick();
+					break;
+				case KeyboardKeys.PageUp:
+					if ((keyboardEventArgs.Shift)
+						&& (_content.ImageType == ImageType.ImageCube))
+					{
+						Point cursorPos = panelTextureDisplay.PointToClient(Cursor.Position);
+						panelTextureDisplay_MouseWheel(this, new MouseEventArgs(MouseButtons.None, 0, cursorPos.X, cursorPos.Y, -1));
+						return;
+					}
+
+					if (_content.ImageType == ImageType.Image3D)
+					{
+						buttonPrevDepthSlice.PerformClick();
+						return;
+					}
+
+					buttonPrevArrayIndex.PerformClick();
+					break;
+				case KeyboardKeys.PageDown:
+					if ((keyboardEventArgs.Shift)
+						&& (_content.ImageType == ImageType.ImageCube))
+					{
+						Point cursorPos = panelTextureDisplay.PointToClient(Cursor.Position);
+						panelTextureDisplay_MouseWheel(this, new MouseEventArgs(MouseButtons.None, 0, cursorPos.X, cursorPos.Y, 1));
+						return;
+					}
+
+					if (_content.ImageType == ImageType.Image3D)
+					{
+						buttonNextDepthSlice.PerformClick();
+						return;
+					}
+
+					buttonNextArrayIndex.PerformClick();
+					break;
+			}
+	    }
+
+	    /// <summary>
 		/// Panels the texture display on mouse wheel.
 		/// </summary>
 		/// <param name="sender">The sender.</param>
@@ -306,19 +387,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="path">Path to the image to crop/resize.</param>
 		/// <param name="image">Image data to crop/resize</param>
 		/// <returns>The selected operation and filter.</returns>
-	    private Tuple<bool, ImageFilter, bool> ConfirmCropResize(string path, GorgonImageData image)
+	    private Tuple<bool, ImageFilter, bool, ContentAlignment> ConfirmCropResize(string path, GorgonImageData image)
 	    {
 		    if ((_content.Buffer.Width == image.Settings.Width)
 				&& (_content.Buffer.Height == image.Settings.Height))
 		    {
-				return new Tuple<bool, ImageFilter, bool>(true, ImageFilter.Point, true);
+				return new Tuple<bool, ImageFilter, bool, ContentAlignment>(true, ImageFilter.Point, true, ContentAlignment.MiddleCenter);
 		    }
 
 			using (var resizeCrop = new FormResizeCrop(path, new Size(image.Settings.Width, image.Settings.Height), new Size(_content.Buffer.Width, _content.Buffer.Height)))
 		    {
 			    if (resizeCrop.ShowDialog(ParentForm) != DialogResult.Cancel)
 			    {
-				    return new Tuple<bool, ImageFilter, bool>(resizeCrop.CropImage, resizeCrop.Filter, resizeCrop.PreserveAspectRatio);
+				    return new Tuple<bool, ImageFilter, bool, ContentAlignment>(resizeCrop.CropImage, resizeCrop.Filter, resizeCrop.PreserveAspectRatio, resizeCrop.ImageAnchor);
 			    }
 
 			    GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER,
@@ -361,14 +442,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 
                 image = GetImageFromFileSystem(dragFile, out file);
 
-	            Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(dragFile.EditorFile.FilePath, image);
+	            Tuple<bool, ImageFilter, bool, ContentAlignment> cropOpts = ConfirmCropResize(dragFile.EditorFile.FilePath, image);
 
 	            if (cropOpts == null)
 	            {
 		            return;
 	            }
 
-	            _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
+	            _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3, cropOpts.Item4);
             }
             catch (Exception ex)
             {
@@ -417,14 +498,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
                 image = GetImageFromDisk(ref filePath);
 
-				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(filePath, image);
+				Tuple<bool, ImageFilter, bool, ContentAlignment> cropOpts = ConfirmCropResize(filePath, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
+				_content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3, cropOpts.Item4);
             }
             catch (Exception ex)
             {
@@ -744,14 +825,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				Cursor.Current = Cursors.WaitCursor;
 
-				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(fileName, image);
+				Tuple<bool, ImageFilter, bool, ContentAlignment> cropOpts = ConfirmCropResize(fileName, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
+				_content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3, cropOpts.Item4);
 			}
 			catch (Exception ex)
 			{
@@ -796,14 +877,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 				Cursor.Current = Cursors.WaitCursor;
 
-				Tuple<bool, ImageFilter, bool> cropOpts = ConfirmCropResize(file.FilePath, image);
+				Tuple<bool, ImageFilter, bool, ContentAlignment> cropOpts = ConfirmCropResize(file.FilePath, image);
 
 				if (cropOpts == null)
 				{
 					return;
 				}
 
-                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3);
+                _content.ConvertImageToBuffer(image, cropOpts.Item1, cropOpts.Item2, cropOpts.Item3, cropOpts.Item4);
 
 			}
 			catch (Exception ex)
@@ -1231,8 +1312,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			base.RefreshContent();
 
-			_content = Content as GorgonImageContent;
-
 			if (_content == null)
 			{
 				throw new InvalidCastException(string.Format(Resources.GORIMG_ERR_CONTENT_NOT_IMAGE, Content.Name));
@@ -1401,11 +1480,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#endregion
 
         #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonImageContentPanel"/> class.
-        /// </summary>
-        public GorgonImageContentPanel()
-        {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonImageContentPanel" /> class.
+		/// </summary>
+		/// <param name="content">The content that created this panel.</param>
+		/// <param name="input">The input interface.</param>
+        public GorgonImageContentPanel(GorgonImageContent content, GorgonInputFactory input)
+			: base(content, input)
+		{
+			_content = content;
+
             InitializeComponent();
 
 			panelTextureDisplay.MouseWheel += panelTextureDisplay_MouseWheel;

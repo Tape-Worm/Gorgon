@@ -162,8 +162,92 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		}
 		#endregion
 
+		#region Variables.
+		// Flag to indicate that we are not cropping the image.
+		private readonly bool _noCrop;
+		#endregion
+
 		#region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to return the anchor for the image.
+		/// </summary>
+		public ContentAlignment ImageAnchor
+		{
+			get
+			{
+				if (radioTopLeft.Checked)
+				{
+					return ContentAlignment.TopLeft;
+				}
+
+				if (radioTopCenter.Checked)
+				{
+					return ContentAlignment.TopCenter;
+				}
+
+				if (radioTopRight.Checked)
+				{
+					return ContentAlignment.TopRight;
+				}
+
+				if (radioMiddleLeft.Checked)
+				{
+					return ContentAlignment.MiddleLeft;
+				}
+
+				if (radioMiddleRight.Checked)
+				{
+					return ContentAlignment.MiddleRight;
+				}
+
+				if (radioBottomLeft.Checked)
+				{
+					return ContentAlignment.BottomLeft;
+				}
+
+				if (radioBottomCenter.Checked)
+				{
+					return ContentAlignment.BottomCenter;
+				}
+
+				return radioBottomRight.Checked ? ContentAlignment.BottomRight : ContentAlignment.MiddleCenter;
+			}
+			private set
+			{
+				switch (value)
+				{
+					case ContentAlignment.TopLeft:
+						radioTopLeft.Checked = true;
+						break;
+					case ContentAlignment.TopCenter:
+						radioTopCenter.Checked = true;
+						break;
+					case ContentAlignment.TopRight:
+						radioTopRight.Checked = true;
+						break;
+					case ContentAlignment.MiddleLeft:
+						radioMiddleLeft.Checked = true;
+						break;
+					case ContentAlignment.MiddleRight:
+						radioMiddleRight.Checked = true;
+						break;
+					case ContentAlignment.BottomLeft:
+						radioBottomLeft.Checked = true;
+						break;
+					case ContentAlignment.BottomCenter:
+						radioBottomCenter.Checked = true;
+						break;
+					case ContentAlignment.BottomRight:
+						radioBottomRight.Checked = true;
+						break;
+					default:
+						radioCenter.Checked = true;
+						break;
+				}
+			}
+		}
+
+		/// <summary>
         /// Property to return whether to preserve the aspect ratio for the image.
         /// </summary>
 	    public bool PreserveAspectRatio
@@ -208,6 +292,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             GorgonImageEditorPlugIn.Settings.ResizeImageFilter = Filter;
             GorgonImageEditorPlugIn.Settings.PreserveAspectRatio = checkPreserveAspect.Checked;
             GorgonImageEditorPlugIn.Settings.CropDefault = radioCrop.Checked;
+	        GorgonImageEditorPlugIn.Settings.ImageAlign = ImageAnchor;
         }
 
 		/// <summary>
@@ -233,12 +318,22 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 		private void LocalizeControls()
 		{
+			if (!_noCrop)
+			{
+				Text = Resources.GORIMG_DLG_CAPTION_RESIZE_CROP;
+				labelDesc.Text = Resources.GORIMG_TEXT_CROP_RESIZE_TEXT;
+			}
+			else
+			{
+				Text = Resources.GORIMG_DLG_CAPTION_RESIZE_KEEP;
+				labelDesc.Text = Resources.GORIMG_TEXT_KEEP_RESIZE_TEXT;
+			}
+
 			buttonOK.Text = Resources.GORIMG_ACC_TEXT_OK;
 			buttonCancel.Text = Resources.GORIMG_ACC_TEXT_CANCEL;
-			Text = Resources.GORIMG_DLG_CAPTION_RESIZE_CROP;
 
-			labelDesc.Text = Resources.GORIMG_TEXT_CROP_RESIZE_TEXT;
-			labelFilter.Text = Resources.GORIMG_TEXT_FILTER;
+			labelFilter.Text = string.Format("{0}:", Resources.GORIMG_TEXT_FILTER);
+			labelAnchor.Text = string.Format("{0}:", Resources.GORIMG_TEXT_ANCHOR);
 
 		    checkPreserveAspect.Text = Resources.GORIMG_TEXT_PRESERVE_ASPECT;
 			
@@ -262,6 +357,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			radioResize.Checked = !GorgonImageEditorPlugIn.Settings.CropDefault;
 			comboFilter.SelectedItem = new FilterComboItem(GorgonImageEditorPlugIn.Settings.ResizeImageFilter);
 		    checkPreserveAspect.Checked = GorgonImageEditorPlugIn.Settings.PreserveAspectRatio;
+			ImageAnchor = GorgonImageEditorPlugIn.Settings.ImageAlign;
 
 			ValidateControls();
 		}
@@ -277,10 +373,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		public FormResizeCrop(string filePath, Size sourceSize, Size destSize)
 			: this()
 		{
+			_noCrop = ((destSize.Width > sourceSize.Width)
+			           && (destSize.Height > sourceSize.Height));
 			labelFilePath.Text = string.Format(Resources.GORIMG_TEXT_IMAGE_FILE_PATH, filePath);
 			labelSourceDimensions.Text = string.Format(Resources.GORIMG_TEXT_SRC_DIMENSIONS, sourceSize.Width, sourceSize.Height);
 			labelDestDimensions.Text = string.Format(Resources.GORIMG_TEXT_DEST_DIMENSIONS, destSize.Width, destSize.Height);
-			radioCrop.Text = string.Format(Resources.GORIMG_TEXT_CROP_TO, destSize.Width, destSize.Height);
+			radioCrop.Text = !_noCrop ? string.Format(Resources.GORIMG_TEXT_CROP_TO, destSize.Width, destSize.Height) : Resources.GORIMG_TEXT_NO_CHANGE_SIZE;
+
 			radioResize.Text = string.Format(Resources.GORIMG_TEXT_RESIZE_TO, destSize.Width, destSize.Height);
 		}
 
