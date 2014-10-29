@@ -32,7 +32,6 @@
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.panel2 = new System.Windows.Forms.Panel();
 			this.panel3 = new System.Windows.Forms.Panel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.labelDesc = new System.Windows.Forms.Label();
@@ -56,7 +55,6 @@
 			this.radioTopCenter = new System.Windows.Forms.RadioButton();
 			this.radioTopLeft = new System.Windows.Forms.RadioButton();
 			this.panel1.SuspendLayout();
-			this.panel2.SuspendLayout();
 			this.panel3.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.panelAnchor.SuspendLayout();
@@ -108,34 +106,30 @@
 			this.panel1.Controls.Add(this.buttonOK);
 			this.panel1.Controls.Add(this.buttonCancel);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(1, 252);
+			this.panel1.Location = new System.Drawing.Point(1, 262);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(448, 38);
 			this.panel1.TabIndex = 16;
 			// 
-			// panel2
-			// 
-			this.panel2.Controls.Add(this.panel3);
-			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panel2.Location = new System.Drawing.Point(1, 25);
-			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(448, 227);
-			this.panel2.TabIndex = 17;
-			// 
 			// panel3
 			// 
+			this.panel3.AutoSize = true;
 			this.panel3.Controls.Add(this.tableLayoutPanel1);
-			this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panel3.Location = new System.Drawing.Point(0, 0);
+			this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel3.Location = new System.Drawing.Point(1, 25);
 			this.panel3.Name = "panel3";
-			this.panel3.Size = new System.Drawing.Size(448, 227);
+			this.panel3.Size = new System.Drawing.Size(448, 237);
 			this.panel3.TabIndex = 18;
 			// 
 			// tableLayoutPanel1
 			// 
+			this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.tableLayoutPanel1.AutoSize = true;
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 224F));
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 185F));
 			this.tableLayoutPanel1.Controls.Add(this.labelDesc, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this.radioCrop, 0, 4);
 			this.tableLayoutPanel1.Controls.Add(this.labelFilePath, 0, 1);
@@ -147,7 +141,6 @@
 			this.tableLayoutPanel1.Controls.Add(this.checkPreserveAspect, 0, 8);
 			this.tableLayoutPanel1.Controls.Add(this.labelAnchor, 1, 4);
 			this.tableLayoutPanel1.Controls.Add(this.panelAnchor, 1, 5);
-			this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 9;
@@ -160,7 +153,7 @@
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(448, 227);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(448, 234);
 			this.tableLayoutPanel1.TabIndex = 0;
 			// 
 			// labelDesc
@@ -183,7 +176,7 @@
 			this.radioCrop.ForeColor = System.Drawing.Color.White;
 			this.radioCrop.Location = new System.Drawing.Point(3, 106);
 			this.radioCrop.Name = "radioCrop";
-			this.radioCrop.Size = new System.Drawing.Size(218, 19);
+			this.radioCrop.Size = new System.Drawing.Size(257, 19);
 			this.radioCrop.TabIndex = 4;
 			this.radioCrop.TabStop = true;
 			this.radioCrop.Text = "crop not localized";
@@ -230,7 +223,7 @@
 			this.radioResize.ForeColor = System.Drawing.Color.White;
 			this.radioResize.Location = new System.Drawing.Point(3, 131);
 			this.radioResize.Name = "radioResize";
-			this.radioResize.Size = new System.Drawing.Size(218, 19);
+			this.radioResize.Size = new System.Drawing.Size(257, 19);
 			this.radioResize.TabIndex = 5;
 			this.radioResize.TabStop = true;
 			this.radioResize.Text = "resize not localized";
@@ -262,24 +255,26 @@
 			// 
 			// checkPreserveAspect
 			// 
-			this.checkPreserveAspect.AutoSize = true;
+			this.checkPreserveAspect.CheckAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.checkPreserveAspect.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.checkPreserveAspect.Enabled = false;
 			this.checkPreserveAspect.Location = new System.Drawing.Point(24, 200);
 			this.checkPreserveAspect.Margin = new System.Windows.Forms.Padding(24, 3, 3, 3);
 			this.checkPreserveAspect.Name = "checkPreserveAspect";
-			this.checkPreserveAspect.Size = new System.Drawing.Size(159, 19);
+			this.checkPreserveAspect.Size = new System.Drawing.Size(236, 31);
 			this.checkPreserveAspect.TabIndex = 8;
 			this.checkPreserveAspect.Text = "Not localized aspect ratio";
+			this.checkPreserveAspect.TextAlign = System.Drawing.ContentAlignment.TopLeft;
 			this.checkPreserveAspect.UseVisualStyleBackColor = true;
 			// 
 			// labelAnchor
 			// 
 			this.labelAnchor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelAnchor.ForeColor = System.Drawing.Color.White;
-			this.labelAnchor.Location = new System.Drawing.Point(227, 106);
+			this.labelAnchor.Location = new System.Drawing.Point(266, 106);
 			this.labelAnchor.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
 			this.labelAnchor.Name = "labelAnchor";
-			this.labelAnchor.Size = new System.Drawing.Size(218, 22);
+			this.labelAnchor.Size = new System.Drawing.Size(179, 22);
 			this.labelAnchor.TabIndex = 9;
 			this.labelAnchor.Text = "not localized anchor";
 			this.labelAnchor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -296,10 +291,10 @@
 			this.panelAnchor.Controls.Add(this.radioTopCenter);
 			this.panelAnchor.Controls.Add(this.radioTopLeft);
 			this.panelAnchor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelAnchor.Location = new System.Drawing.Point(227, 131);
+			this.panelAnchor.Location = new System.Drawing.Point(266, 131);
 			this.panelAnchor.Name = "panelAnchor";
 			this.tableLayoutPanel1.SetRowSpan(this.panelAnchor, 4);
-			this.panelAnchor.Size = new System.Drawing.Size(218, 100);
+			this.panelAnchor.Size = new System.Drawing.Size(179, 100);
 			this.panelAnchor.TabIndex = 10;
 			// 
 			// radioBottomRight
@@ -312,7 +307,7 @@
 			this.radioBottomRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioBottomRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_se_16x16;
-			this.radioBottomRight.Location = new System.Drawing.Point(126, 67);
+			this.radioBottomRight.Location = new System.Drawing.Point(110, 67);
 			this.radioBottomRight.Name = "radioBottomRight";
 			this.radioBottomRight.Size = new System.Drawing.Size(29, 26);
 			this.radioBottomRight.TabIndex = 8;
@@ -328,7 +323,7 @@
 			this.radioBottomCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioBottomCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_down_16x16;
-			this.radioBottomCenter.Location = new System.Drawing.Point(91, 67);
+			this.radioBottomCenter.Location = new System.Drawing.Point(75, 67);
 			this.radioBottomCenter.Name = "radioBottomCenter";
 			this.radioBottomCenter.Size = new System.Drawing.Size(29, 26);
 			this.radioBottomCenter.TabIndex = 7;
@@ -344,7 +339,7 @@
 			this.radioBottomLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioBottomLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_sw_16x16;
-			this.radioBottomLeft.Location = new System.Drawing.Point(56, 67);
+			this.radioBottomLeft.Location = new System.Drawing.Point(40, 67);
 			this.radioBottomLeft.Name = "radioBottomLeft";
 			this.radioBottomLeft.Size = new System.Drawing.Size(29, 26);
 			this.radioBottomLeft.TabIndex = 6;
@@ -360,7 +355,7 @@
 			this.radioMiddleRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioMiddleRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_right_16x16;
-			this.radioMiddleRight.Location = new System.Drawing.Point(126, 35);
+			this.radioMiddleRight.Location = new System.Drawing.Point(110, 35);
 			this.radioMiddleRight.Name = "radioMiddleRight";
 			this.radioMiddleRight.Size = new System.Drawing.Size(29, 26);
 			this.radioMiddleRight.TabIndex = 5;
@@ -377,7 +372,7 @@
 			this.radioCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.center_16x16;
-			this.radioCenter.Location = new System.Drawing.Point(91, 35);
+			this.radioCenter.Location = new System.Drawing.Point(75, 35);
 			this.radioCenter.Name = "radioCenter";
 			this.radioCenter.Size = new System.Drawing.Size(29, 26);
 			this.radioCenter.TabIndex = 4;
@@ -394,7 +389,7 @@
 			this.radioMiddleLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioMiddleLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_left_16x16;
-			this.radioMiddleLeft.Location = new System.Drawing.Point(56, 35);
+			this.radioMiddleLeft.Location = new System.Drawing.Point(40, 35);
 			this.radioMiddleLeft.Name = "radioMiddleLeft";
 			this.radioMiddleLeft.Size = new System.Drawing.Size(29, 26);
 			this.radioMiddleLeft.TabIndex = 3;
@@ -410,7 +405,7 @@
 			this.radioTopRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioTopRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_ne_16x16;
-			this.radioTopRight.Location = new System.Drawing.Point(126, 3);
+			this.radioTopRight.Location = new System.Drawing.Point(110, 3);
 			this.radioTopRight.Name = "radioTopRight";
 			this.radioTopRight.Size = new System.Drawing.Size(29, 26);
 			this.radioTopRight.TabIndex = 2;
@@ -426,7 +421,7 @@
 			this.radioTopCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioTopCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_up_16x16;
-			this.radioTopCenter.Location = new System.Drawing.Point(91, 3);
+			this.radioTopCenter.Location = new System.Drawing.Point(75, 3);
 			this.radioTopCenter.Name = "radioTopCenter";
 			this.radioTopCenter.Size = new System.Drawing.Size(29, 26);
 			this.radioTopCenter.TabIndex = 1;
@@ -442,7 +437,7 @@
 			this.radioTopLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.radioTopLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_nw_16x16;
-			this.radioTopLeft.Location = new System.Drawing.Point(56, 3);
+			this.radioTopLeft.Location = new System.Drawing.Point(40, 3);
 			this.radioTopLeft.Name = "radioTopLeft";
 			this.radioTopLeft.Size = new System.Drawing.Size(29, 26);
 			this.radioTopLeft.TabIndex = 0;
@@ -457,14 +452,15 @@
 			this.Border = true;
 			this.BorderColor = System.Drawing.Color.SteelBlue;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(450, 291);
-			this.Controls.Add(this.panel2);
+			this.ClientSize = new System.Drawing.Size(450, 301);
+			this.Controls.Add(this.panel3);
 			this.Controls.Add(this.panel1);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.InactiveBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.MaximizeBox = false;
+			this.MaximumSize = new System.Drawing.Size(500, 500);
 			this.MinimizeBox = false;
 			this.Name = "FormResizeCrop";
 			this.Padding = new System.Windows.Forms.Padding(1);
@@ -473,14 +469,15 @@
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Not localized";
 			this.Controls.SetChildIndex(this.panel1, 0);
-			this.Controls.SetChildIndex(this.panel2, 0);
+			this.Controls.SetChildIndex(this.panel3, 0);
 			this.panel1.ResumeLayout(false);
-			this.panel2.ResumeLayout(false);
 			this.panel3.ResumeLayout(false);
+			this.panel3.PerformLayout();
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
 			this.panelAnchor.ResumeLayout(false);
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -489,7 +486,6 @@
 		private System.Windows.Forms.Button buttonCancel;
 		private System.Windows.Forms.Button buttonOK;
 		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.Panel panel3;
 		private System.Windows.Forms.RadioButton radioCrop;
 		private System.Windows.Forms.Label labelDesc;

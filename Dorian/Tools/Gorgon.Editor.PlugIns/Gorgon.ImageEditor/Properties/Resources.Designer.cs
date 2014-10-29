@@ -578,7 +578,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions..
+        ///   Looks up a localized string similar to The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions. .
         /// </summary>
         internal static string GORIMG_TEXT_CROP_RESIZE_TEXT {
             get {

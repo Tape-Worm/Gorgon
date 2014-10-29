@@ -354,7 +354,7 @@ R16B16G16A16 (floating point)</value>
 Do you wish to continue?</value>
   </data>
   <data name="GORIMG_TEXT_CROP_RESIZE_TEXT" xml:space="preserve">
-    <value>The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions.</value>
+    <value>The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions. </value>
   </data>
   <data name="GORIMG_TEXT_FACE" xml:space="preserve">
     <value>Face: {0} ({1})</value>
