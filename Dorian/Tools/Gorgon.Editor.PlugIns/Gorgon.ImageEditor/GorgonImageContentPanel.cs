@@ -29,6 +29,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -81,7 +82,117 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to set up scrolling.
+        /// </summary>
+        private void SetUpScrolling()
+        {
+            Size panelSize = panelTextureArea.ClientSize;
+
+            // Turn off the resizing event so we don't get recursive calls.
+            panelTextureArea.Resize -= panelTextureDisplay_Resize;
+            scrollHorz.Scroll -= OnScroll;
+            scrollVert.Scroll -= OnScroll;
+
+            try
+            {
+                // Only use scrolling with regular textures and not cube maps.
+                if ((_content == null)
+                    || (_content.ImageType == ImageType.ImageCube)
+                    || (!buttonActualSize.Checked))
+                {
+                    panelHorzScroll.Visible = panelVertScroll.Visible = false;
+                    panelTextureDisplay.ClientSize = panelTextureArea.ClientSize;
+                    return;
+                }
+
+                if (_content.Width > panelTextureDisplay.ClientSize.Width)
+                {
+                    panelHorzScroll.Visible = true;
+                    panelSize.Height = panelSize.Height - panelHorzScroll.ClientSize.Height;
+                }
+                else
+                {
+                    scrollHorz.Value = 0;
+                    panelHorzScroll.Visible = false;
+                }
+
+                if (_content.Height > panelTextureDisplay.ClientSize.Height)
+                {
+                    panelVertScroll.Visible = true;
+                    panelSize.Width = panelSize.Width - panelVertScroll.ClientSize.Width;
+
+                }
+                else
+                {
+                    scrollVert.Value = 0;
+                    panelVertScroll.Visible = false;
+                }
+
+                if (panelHorzScroll.Visible)
+                {
+                    scrollHorz.Maximum = ((_content.Width - panelSize.Width) + (scrollHorz.LargeChange)).Max(0) - 1;
+                    scrollHorz.Scroll += OnScroll;
+                }
+
+                if (panelVertScroll.Visible)
+                {
+                    scrollVert.Maximum = ((_content.Height - panelSize.Height) + (scrollVert.LargeChange)).Max(0) - 1;
+                    scrollVert.Scroll += OnScroll;
+                }
+
+                panelTextureDisplay.ClientSize = panelSize;
+            }
+            finally
+            {
+                // Re-enable resizing.
+                panelTextureArea.Resize += panelTextureDisplay_Resize;
+            }
+        }
+
+        /// <summary>
+        /// Function called when a scrollbar is moved.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+        private void OnScroll(object sender, ScrollEventArgs e)
+        {
+            var scroller = (ScrollBar)sender;
+
+            if (scroller == scrollVert)
+            {
+                scrollVert.Value = e.NewValue;
+            }
+
+            if (scroller == scrollHorz)
+            {
+                scrollHorz.Value = e.NewValue;
+            }
+
+            _content.Draw();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the buttonActualSize control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonActualSize_Click(object sender, EventArgs e)
+        {
+            if (buttonActualSize.Checked)
+            {
+                buttonActualSize.Text = Resources.GORIMG_TEXT_ACTUAL_SIZE;
+            }
+            else
+            {
+                buttonActualSize.Text = Resources.GORIMG_TEXT_TO_WINDOW;
+            }
+
+            SetUpScrolling();
+            ValidateControls();
+        }
+
+        /// <summary>
 		/// Handles the Load event of the GorgonImageContentPanel control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -93,6 +204,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_keyboard = RawInput.CreateKeyboard(panelTextureDisplay);
 				_keyboard.Enabled = true;
 				_keyboard.KeyDown += KeyboardOnKeyDown;
+
+                buttonActualSize.Checked = GorgonImageEditorPlugIn.Settings.StartWithActualSize;
 			}
 			catch (Exception ex)
 			{
@@ -328,7 +441,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_Resize(object sender, EventArgs e)
 		{
-			GetCubeFaceLocations();
+		    if (_content.ImageType == ImageType.ImageCube)
+		    {
+		        GetCubeFaceLocations();
+		        return;
+		    }
+
+            SetUpScrolling();
 		}
 
 		/// <summary>
@@ -1096,6 +1215,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 	        buttonGenerateMips.Enabled = _content.Codec != null && _content.Codec.SupportsMipMaps && _content.MipCount > 1;
 
+            buttonActualSize.Enabled = _content.ImageType != ImageType.ImageCube;
+
 	        sepArray.Visible = labelArrayIndex.Visible || labelDepthSlice.Visible;
         }
 
@@ -1201,20 +1322,25 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             var imageSize = new Vector2(_content.Width, _content.Height);
             var location = new Vector2(panelTextureDisplay.ClientSize.Width / 2.0f,
                                        panelTextureDisplay.ClientSize.Height / 2.0f);
-            var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
-            if (scale.Y > scale.X)
+            if (!buttonActualSize.Checked)
             {
-                scale.Y = scale.X;
-            }
-            else
-            {
-                scale.X = scale.Y;
-            }
+                var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
-            Vector2.Modulate(ref imageSize, ref scale, out imageSize);
-            location.X = location.X - imageSize.X / 2.0f;
-            location.Y = location.Y - imageSize.Y / 2.0f;
+                if (scale.Y > scale.X)
+                {
+                    scale.Y = scale.X;
+                }
+                else
+                {
+                    scale.X = scale.Y;
+                }
+
+                Vector2.Modulate(ref imageSize, ref scale, out imageSize);
+            }
+            
+            location.X = (location.X - imageSize.X / 2.0f).Max(0) - scrollHorz.Value;
+            location.Y = (location.Y - imageSize.Y / 2.0f).Max(0) - scrollVert.Value;
 
             return new RectangleF(location, imageSize);
         }
@@ -1268,6 +1394,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			buttonNextArrayIndex.Text = Resources.GORIMG_TEXT_NEXT_ARRAY;
 			buttonImport.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE;
 			buttonGenerateMips.Text = Resources.GORIMG_TEXT_GENERATE_MIPS;
+		    buttonActualSize.Text = GorgonImageEditorPlugIn.Settings.StartWithActualSize
+		                                ? Resources.GORIMG_TEXT_ACTUAL_SIZE
+		                                : Resources.GORIMG_TEXT_TO_WINDOW;
 
 			itemImportFileDisk.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK;
 			itemImportFileSystem.Text = Resources.GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR;
@@ -1284,6 +1413,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				case "Width":
 				case "Height":
+                    CreateTexture();
+                    SetUpScrolling();
+			        break;
 				case "Depth":
 				case "ImageFormat":
 				case "ImageType":
@@ -1322,6 +1454,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				CreateTexture();
 		    }
 
+            SetUpScrolling();
 			ValidateControls();
 		}
 

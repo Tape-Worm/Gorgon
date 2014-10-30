@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.IO;
@@ -118,6 +119,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    get;
 		    set;
 	    }
+
+        /// <summary>
+        /// Property to set or return the image filtering to use when changing the width/height the image.
+        /// </summary>
+        [ApplicationSetting("ImageWidthHeightFilter", typeof(ImageFilter), "ResizeFilter")]
+        public ImageFilter ImageWidthHeightFilter
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to initially display the image at its actual size.
+        /// </summary>
+        [ApplicationSetting("StartWithActualSize", typeof(bool), "UISettings")]
+        public bool StartWithActualSize
+        {
+            get;
+            set;
+        }
 		#endregion
 
         #region Constructor/Destructor.
@@ -130,9 +151,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             CustomCodecs = new List<string>();
 	        CropDefault = true;
 	        ResizeImageFilter = ImageFilter.Point;
+            ImageWidthHeightFilter = ImageFilter.Fant;
 			MipFilter = ImageFilter.Fant;
             PreserveAspectRatio = true;
 			ImageAlign = ContentAlignment.MiddleCenter;
+            StartWithActualSize = true;
         }
         #endregion
     }
