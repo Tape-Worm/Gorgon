@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO.Compression;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -136,7 +137,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the source region width or height is less than 1.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
 		/// <remarks>
 		/// This method will copy the contents of this buffer into another buffer and will provide clipping to handle cases where the buffer or <paramref name="sourceRegion" /> is mismatched with the
 		/// destination size.
@@ -144,9 +145,13 @@ namespace GorgonLibrary.Graphics
 		/// entire buffer will be copied to the destination.</para><para>An offset into the destination buffer may also be specified to relocate the data copied from this buffer into the destination.  Clipping will be applied if the offset pushes the
 		/// source data outside of the boundaries of the destination buffer.</para><para>The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.</para>
 		/// <para>The <paramref name="buffer"/> parameter must not be the same as the this buffer.  An exception will be thrown if an attempt to copy this buffer into itself is made.</para>
+		/// <para>If the source region does not fit within the bounds of this buffer, then an exception will be thrown.</para>
 		/// </remarks>
 	    public unsafe void CopyTo(GorgonImageBuffer buffer, Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 	    {
+            var sourceBufferDims = new Rectangle(0, 0, Width, Height);
+            Rectangle srcRegion = sourceRegion != null ? sourceRegion.Value : sourceBufferDims;
+
 			if ((buffer == null)
 			    || (buffer.Data == null)
 			    || (buffer.Data.Length == 0))
@@ -165,37 +170,42 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_IMAGE_MUST_BE_SAME_FORMAT, "buffer");
 			}
 
-			// If not, then we must ensure that we copy the data properly.
-			Rectangle srcRegion = sourceRegion != null ? sourceRegion.Value : new Rectangle(0, 0, Width, Height);
+            if (!sourceBufferDims.Contains(srcRegion))
+            {
+                throw new ArgumentOutOfRangeException("sourceRegion");
+            }
 
-			if ((srcRegion.Width <= 0)
-			    || (srcRegion.Height <= 0))
-			{
-				throw new ArgumentOutOfRangeException("sourceRegion");
-			}
+            // If we try to place this image outside of the target buffer, then do nothing.
+		    if ((destX >= buffer.Width)
+                || (destY >= buffer.Height))
+		    {
+		        return;
+		    }
 
-			var dstRegion = new Rectangle(destX < 0 ? 0 : destX, destY < 0 ? 0 : destY, buffer.Width, buffer.Height);
-
-			// Adjust in case we're trying to move off the source.
+			// Adjust in case we're trying to move off the target.
 			if (destX < 0)
 			{
 				srcRegion.X -= destX;
 				srcRegion.Width += destX;
+			    destX = 0;
 			}
 
 			if (destY < 0)
 			{
 				srcRegion.Y -= destY;
 				srcRegion.Height += destY;
+			    destY = 0;
 			}
 
 			// Ensure that the regions actually fit within their respective buffers.
-			srcRegion = new Rectangle(srcRegion.X.Max(0), srcRegion.Y.Max(0), srcRegion.Width.Min(Width), srcRegion.Height.Min(Height));
-			dstRegion = Rectangle.FromLTRB(dstRegion.X, dstRegion.Y, dstRegion.Right.Min(buffer.Width), dstRegion.Bottom.Min(buffer.Height));
+			srcRegion = Rectangle.FromLTRB(srcRegion.X.Max(0), srcRegion.Y.Max(0), srcRegion.Right.Min(Width), srcRegion.Bottom.Min(Height));
+			Rectangle dstRegion = Rectangle.FromLTRB(destX, destY, (destX + buffer.Width).Min(buffer.Width), (destY + buffer.Height).Min(buffer.Height));
 
 			// If the source/dest region is empty, then we have nothing to copy.
 			if ((srcRegion.IsEmpty)
-				|| (dstRegion.IsEmpty))
+				|| (dstRegion.IsEmpty)
+                || (dstRegion.Right < 0)
+                || (dstRegion.Bottom < 0))
 			{
 				return;
 			}
@@ -218,17 +228,12 @@ namespace GorgonLibrary.Graphics
 
 			// Get the smallest line size.
 			int minLineSize = dstLineSize.Min(srcLineSize);
-			int minHeight = dstRegion.Height.Min(srcRegion.Height) - 1;
+			int minHeight = dstRegion.Height.Min(srcRegion.Height);
 
 			// Finally, copy our data.
-			for (int i = 0; i <= minHeight; ++i)
+			for (int i = 0; i < minHeight; ++i)
 			{
 				DirectAccess.MemoryCopy(dstData, srcData, minLineSize);
-
-				if (i == minHeight)
-				{
-					break;
-				}
 
 				srcData += PitchInformation.RowPitch;
 				dstData += buffer.PitchInformation.RowPitch;
