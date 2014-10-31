@@ -29,7 +29,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.Versioning;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -50,6 +49,35 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     partial class GorgonImageContentPanel 
 		: ContentPanel
 	{
+		#region Enumerations.
+		/// <summary>
+		/// Current animation state.
+		/// </summary>
+	    private enum AnimationState
+	    {
+			/// <summary>
+			/// No animation (idle).
+			/// </summary>
+		    None = 0,
+			/// <summary>
+			/// Next array index.
+			/// </summary>
+			ArrayNext = 1,
+			/// <summary>
+			/// Prev array index.
+			/// </summary>
+			ArrayPrev = 2,
+			/// <summary>
+			/// Next depth slice.
+			/// </summary>
+			DepthNext = 3,
+			/// <summary>
+			/// Previous depth slice.
+			/// </summary>
+			DepthPrev = 4
+	    }
+		#endregion
+
 		#region Variables.
 		// Image content.
         private readonly GorgonImageContent _content;
@@ -79,6 +107,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private int _cubeIndex;
 		// Keyboard interface.
 	    private GorgonKeyboard _keyboard;
+		// The sprite to display the texture.
+	    private GorgonSprite _textureSprite;
+		// Current animation state.
+	    private AnimationState _currentAnimState;
+		// The display bounds for the texture.
+	    private Rectangle _textureBounds;
+		// Animation start time.
+	    private float _animStartTime;
         #endregion
 
         #region Methods.
@@ -179,14 +215,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void buttonActualSize_Click(object sender, EventArgs e)
         {
-            if (buttonActualSize.Checked)
-            {
-                buttonActualSize.Text = Resources.GORIMG_TEXT_ACTUAL_SIZE;
-            }
-            else
-            {
-                buttonActualSize.Text = Resources.GORIMG_TEXT_TO_WINDOW;
-            }
+            buttonActualSize.Text = buttonActualSize.Checked ? Resources.GORIMG_TEXT_ACTUAL_SIZE : Resources.GORIMG_TEXT_TO_WINDOW;
 
             SetUpScrolling();
             ValidateControls();
@@ -206,6 +235,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				_keyboard.KeyDown += KeyboardOnKeyDown;
 
                 buttonActualSize.Checked = GorgonImageEditorPlugIn.Settings.StartWithActualSize;
+
+				ActiveControl = panelTextureDisplay;
 			}
 			catch (Exception ex)
 			{
@@ -222,7 +253,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    private void KeyboardOnKeyDown(object sender, KeyboardEventArgs keyboardEventArgs)
 	    {
 			if ((_content == null)
-			    || (_content.Image == null))
+			    || (_content.Image == null)
+				|| (ActiveControl != panelTextureDisplay))
 			{
 				return;
 			}
@@ -279,11 +311,40 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="mouseEventArgs">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_MouseWheel(object sender, MouseEventArgs mouseEventArgs)
 		{
+			ActiveControl = panelTextureDisplay;
+
 			if ((_content == null)
-				|| (_content.ImageType != ImageType.ImageCube))
+				|| (((_content.ImageType != ImageType.Image3D) && (_content.ArrayCount < 2))
+				|| ((_content.ImageType == ImageType.Image3D) && (_content.Depth < 2))))
 			{
 				return;
 			}
+
+		    if (_content.ImageType != ImageType.ImageCube)
+		    {
+			    if (mouseEventArgs.Delta < 0)
+			    {
+				    if (_content.ImageType == ImageType.Image3D)
+				    {
+					    buttonPrevDepthSlice.PerformClick();
+					    return;
+				    }
+
+				    buttonPrevArrayIndex.PerformClick();
+			    }
+			    else
+			    {
+				    if (_content.ImageType == ImageType.Image3D)
+				    {
+					    buttonNextDepthSlice.PerformClick();
+					    return;
+				    }
+
+				    buttonNextArrayIndex.PerformClick();
+			    }
+
+			    return;
+		    }
 
 			if (_content.ArrayCount <= 6)
 			{
@@ -327,7 +388,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_MouseDown(object sender, MouseEventArgs e)
 		{
-			panelTextureDisplay.Focus();
+			ActiveControl = panelTextureDisplay;
 
 			if ((_content == null)
 			    || (_content.ImageType != ImageType.ImageCube)
@@ -446,6 +507,10 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		        GetCubeFaceLocations();
 		        return;
 		    }
+
+			// Reset any animation.
+			_animStartTime = 0;
+			_currentAnimState = AnimationState.None;
 
             SetUpScrolling();
 		}
@@ -706,6 +771,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			try
 			{
+				ActiveControl = panelTextureDisplay;
+
 				_hoverFace = CubeFaceHitTest(panelTextureDisplay.PointToClient(new Point(e.X, e.Y)));
 
                 e.Effect = DragDropEffects.None;
@@ -1106,6 +1173,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.DepthSlice--;
 
+			_animStartTime = 0;
+			_currentAnimState = AnimationState.DepthPrev;
+
 			UpdateBufferInfoLabels();
 
 			ValidateControls();
@@ -1119,6 +1189,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		private void buttonNextDepthSlice_Click(object sender, EventArgs e)
 		{
 			_content.DepthSlice++;
+
+			_animStartTime = 0;
+			_currentAnimState = AnimationState.DepthNext;
 
 			UpdateBufferInfoLabels();
 
@@ -1151,6 +1224,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
 			}
+			else
+			{
+				_animStartTime = 0;
+				_currentAnimState = AnimationState.ArrayNext;
+			}
 
 			UpdateBufferInfoLabels();
 			ValidateControls();
@@ -1168,6 +1246,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			if (_content.ImageType == ImageType.ImageCube)
 			{
 				_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+			}
+			else
+			{
+				_animStartTime = 0;
+
+				_currentAnimState = AnimationState.ArrayPrev;
 			}
 
 			UpdateBufferInfoLabels();
@@ -1215,7 +1299,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 	        buttonGenerateMips.Enabled = _content.Codec != null && _content.Codec.SupportsMipMaps && _content.MipCount > 1;
 
-            buttonActualSize.Enabled = _content.ImageType != ImageType.ImageCube;
+            buttonActualSize.Visible = _content.ImageType != ImageType.ImageCube;
 
 	        sepArray.Visible = labelArrayIndex.Visible || labelDepthSlice.Visible;
         }
@@ -1260,7 +1344,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// Function to create a new texture for display.
 		/// </summary>
 	    private void CreateTexture()
-	    {
+		{
+			// Reset any animation.
+			_animStartTime = 0;
+			_currentAnimState = AnimationState.None;
+
 			if (_texture != null)
 			{
 				_texture.Dispose();
@@ -1316,16 +1404,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Function to scale the image to the window.
         /// </summary>
         /// <returns>A new rectangle containing the size and location of the scaled image.</returns>
-        private RectangleF ScaleImage()
+        private void ScaleImage()
         {
             Vector2 windowSize = panelTextureDisplay.ClientSize;
-            var imageSize = new Vector2(_content.Width, _content.Height);
+            var size = new Vector2(_content.Width, _content.Height);
             var location = new Vector2(panelTextureDisplay.ClientSize.Width / 2.0f,
                                        panelTextureDisplay.ClientSize.Height / 2.0f);
 
             if (!buttonActualSize.Checked)
             {
-                var scale = new Vector2(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
+				var scale = new Vector2(windowSize.X / size.X, windowSize.Y / size.Y);
 
                 if (scale.Y > scale.X)
                 {
@@ -1336,13 +1424,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                     scale.X = scale.Y;
                 }
 
-                Vector2.Modulate(ref imageSize, ref scale, out imageSize);
+				Vector2.Modulate(ref size, ref scale, out size);
             }
-            
-            location.X = (location.X - imageSize.X / 2.0f).Max(0) - scrollHorz.Value;
-            location.Y = (location.Y - imageSize.Y / 2.0f).Max(0) - scrollVert.Value;
 
-            return new RectangleF(location, imageSize);
+			location.X = (location.X - size.X / 2.0f).Max(0) - scrollHorz.Value;
+			location.Y = (location.Y - size.Y / 2.0f).Max(0) - scrollVert.Value;
+
+			_textureBounds = new Rectangle((Point)location, (Size)size);
         }
 
         /// <summary>
@@ -1557,6 +1645,124 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    }
 
 		/// <summary>
+		/// Function to draw the texture at the specified position.
+		/// </summary>
+		/// <param name="bounds">The bounds for the texture.</param>
+		/// <param name="opacity">Current opacity for the texture.</param>
+	    private void DrawTexture(Rectangle? bounds = null, float opacity = 1.0f)
+		{
+			if (bounds == null)
+			{
+				ScaleImage();
+				bounds = _textureBounds;
+			}
+
+			_content.Renderer.PixelShader.Current = _content.PixelShader;
+
+			// Send some data to render to the GPU.  We'll set the texture -after- this so that we can trick the 2D renderer into using
+			// a 1D/3D texture.  This works because the blit does not occur until after we have a state change or we force rendering with "Render".
+			var texture2D = _texture as GorgonTexture2D;
+
+			_textureSprite.Texture = texture2D ?? _backgroundTexture;
+			_textureSprite.Position = bounds.Value.Location;
+			_textureSprite.ScaledSize = bounds.Value.Size;
+			_textureSprite.Opacity = opacity;
+
+			_textureSprite.Draw();
+
+			_content.Renderer.PixelShader.Resources[0] = _currentView;
+
+			// This triggers a render and resets our pixel shader back to the current.
+			_content.Renderer.PixelShader.Current = null;
+	    }
+
+		/// <summary>
+		/// Function to draw the animation for moving to the next depth slice.
+		/// </summary>
+		/// <param name="next">TRUE to move to the next slice, FALSE to move to the previous slice.</param>
+		private void DrawPrevNextSliceAnimation(bool next)
+		{
+			int currentSlice = _content.DepthSlice;
+			int prevSlice = next ? _content.DepthSlice - 1 : _content.DepthSlice + 1;
+
+			if (_animStartTime.EqualsEpsilon(0))
+			{
+				ScaleImage();
+				_animStartTime = GorgonTiming.SecondsSinceStart;
+			}
+
+			float distance = _textureBounds.Height * 1.5f;
+			float time = ((GorgonTiming.SecondsSinceStart - _animStartTime) * 4.0f).Min(1);
+			float posY = next ? _textureBounds.Top + (distance * time) : _textureBounds.Top + (distance * (1.0f - time));
+			float scale = next ? 1.0f - (0.40f * (1.0f - time)) : 1.0f - (0.40f * time);
+
+			float animOpacity = time.Min(1).Max(0);
+			float animOpacity2 = 0.5f + (0.5f * time);
+
+			_content.DepthSlice = next ? currentSlice : prevSlice;
+
+			// Draw the next depth slice.
+			var newSize = new Size((int)(_textureBounds.Width * scale), (int)(_textureBounds.Height * scale));
+			var newPos = new Point((int)(panelTextureDisplay.ClientSize.Width / 2.0f - newSize.Width / 2.0f),
+			                       (int)(panelTextureDisplay.ClientSize.Height / 2.0f - newSize.Height / 2.0f));
+			DrawTexture(new Rectangle(newPos, newSize), next ? animOpacity2 : 1.0f - animOpacity2);
+
+			_content.DepthSlice = next ? prevSlice : currentSlice;
+
+			DrawTexture(new Rectangle(_textureBounds.X, (int)posY, _textureBounds.Width, _textureBounds.Height), next ? 1.0f - animOpacity : animOpacity);
+
+			_content.DepthSlice = currentSlice;
+
+			if (time < 1.0f)
+			{
+				return;
+			}
+
+			_currentAnimState = AnimationState.None;
+		}
+
+		/// <summary>
+		/// Function to draw the animation for moving to the next array index.
+		/// </summary>
+		/// <param name="next">TRUE to move to the next index, FALSE to move to the previous index.</param>
+	    private void DrawPrevNextArrayAnimation(bool next)
+		{
+			int currentIndex = _content.ArrayIndex;
+			int prevIndex = next ? _content.ArrayIndex - 1 : _content.ArrayIndex + 1;
+
+			if (_animStartTime.EqualsEpsilon(0))
+			{
+				ScaleImage();
+				_animStartTime = GorgonTiming.SecondsSinceStart;
+			}
+
+			float distance = _textureBounds.Width * 1.5f;
+			float time = ((GorgonTiming.SecondsSinceStart - _animStartTime) * 4.0f).Min(1);
+			float posX = next ? _textureBounds.Left - (distance * time) : _textureBounds.Left - (distance * (1.0f - time));
+			
+			float animOpacity = time.Min(1).Max(0);
+
+			_content.ArrayIndex = next ? currentIndex : prevIndex;
+
+			// Draw the next array index.
+			DrawTexture(null, next ? animOpacity : 1.0f - animOpacity);	
+
+			_content.ArrayIndex = next ? prevIndex : currentIndex;
+
+			DrawTexture(new Rectangle((int)posX, _textureBounds.Y, _textureBounds.Width, _textureBounds.Height), next ? 1.0f - animOpacity : animOpacity);
+
+			_content.ArrayIndex = currentIndex;
+
+
+			if (time < 1.0f)
+			{
+				return;
+			}
+
+			_currentAnimState = AnimationState.None;
+		}
+
+		/// <summary>
 		/// Function to draw the texture.
 		/// </summary>
 	    public void Draw()
@@ -1568,18 +1774,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-		    _content.Renderer.PixelShader.Current = _content.PixelShader;
+			switch (_currentAnimState)
+			{
+				case AnimationState.ArrayNext:
+					DrawPrevNextArrayAnimation(true);
+					return;
+				case AnimationState.ArrayPrev:
+					DrawPrevNextArrayAnimation(false);
+					return;
+				case AnimationState.DepthNext:
+					DrawPrevNextSliceAnimation(true);
+					return;
+				case AnimationState.DepthPrev:
+					DrawPrevNextSliceAnimation(false);
+					return;
+			}
 
-			// Send some data to render to the GPU.  We'll set the texture -after- this so that we can trick the 2D renderer into using
-			// a 1D/3D texture.  This works because the blit does not occur until after we have a state change or we force rendering with "Render".
-			var texture2D = _texture as GorgonTexture2D;
-            
-			_content.Renderer.Drawing.Blit(texture2D ?? _backgroundTexture, ScaleImage());
-
-		    _content.Renderer.PixelShader.Resources[0] = _currentView;
-
-            // This triggers a render and resets our pixel shader back to the current.
-			_content.Renderer.PixelShader.Current = null;
+			// Draw the texture normally.
+			DrawTexture();
 	    }
 
 		/// <summary>
@@ -1609,6 +1821,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			});
 			_selectorSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
 			_selectorSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+
+			_textureSprite = _content.Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1, 1), GorgonColor.Transparent);
+			_textureSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
 		}
 		#endregion
 
