@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.IO;
@@ -139,6 +138,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             get;
             set;
         }
+
+        /// <summary>
+        /// Property to set or return whether to use animations in the interface.
+        /// </summary>
+        [ApplicationSetting("UseAnimations", typeof(bool), "UISettings")]
+        public bool UseAnimations
+        {
+            get;
+            set;
+        }
 		#endregion
 
         #region Constructor/Destructor.
@@ -156,6 +165,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             PreserveAspectRatio = true;
 			ImageAlign = ContentAlignment.MiddleCenter;
             StartWithActualSize = true;
+            UseAnimations = true;
         }
         #endregion
     }

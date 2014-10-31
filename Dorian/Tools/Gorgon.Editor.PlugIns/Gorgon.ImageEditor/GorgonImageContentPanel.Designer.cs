@@ -1,4 +1,6 @@
-﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn
+﻿using GorgonLibrary.Graphics;
+
+namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     partial class GorgonImageContentPanel
     {
@@ -20,6 +22,8 @@
 
 	        if (disposing)
 	        {
+                DestroyCubeAnimTarget();
+
 		        if (_keyboard != null)
 		        {
 			        _keyboard.Dispose();
