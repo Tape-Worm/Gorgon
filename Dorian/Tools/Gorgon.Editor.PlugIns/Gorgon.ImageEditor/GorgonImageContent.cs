@@ -1957,8 +1957,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			return false;
 		}
 
-		private Random _rnd = new Random();
-
 		/// <summary>
 		/// Function to convert the image to a format that's compatible with the image buffer currently selected.
 		/// </summary>

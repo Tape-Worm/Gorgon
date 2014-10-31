@@ -7,9 +7,6 @@ Texture1DArray _gorgonTexture1DArray : register(t0);
 Texture2DArray _gorgonTexture2DArray : register(t0);
 Texture3D _gorgonTexture3D : register(t0);
 TextureCube _gorgonTextureCube : register(t0);
-#ifdef SM41
-TextureCubeArray _gorgonTextureCubeArray : register(t0);
-#endif
 
 // The texture parameters
 cbuffer GorgonTextureParams : register(b1)
@@ -27,6 +24,8 @@ float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture1D.SampleLevel(_gorgonSampler, vertex.uv.x, mipLevel);
 
+	color.a = color.a * vertex.color.a;
+
 	REJECT_ALPHA(color.a);
 		
 	return color;
@@ -36,6 +35,8 @@ float4 Gorgon1DTextureView(GorgonSpriteVertex vertex) : SV_Target
 float4 Gorgon1DTextureArrayView(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture1DArray.SampleLevel(_gorgonSampler, float2(vertex.uv.x, arrayIndex), mipLevel);
+
+	color.a = color.a * vertex.color.a;
 
 	REJECT_ALPHA(color.a);
 		
@@ -47,6 +48,8 @@ float4 Gorgon2DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.SampleLevel(_gorgonSampler, vertex.uv, mipLevel);
 
+	color.a = color.a * vertex.color.a;
+
 	REJECT_ALPHA(color.a);
 		
 	return color;
@@ -57,39 +60,20 @@ float4 Gorgon2DTextureArrayView(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture2DArray.SampleLevel(_gorgonSampler, float3(vertex.uv, arrayIndex), mipLevel);
 
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-
-// Pixel shader to view a 2D texture cube.
-float4 Gorgon2DTextureCubeView(GorgonSpriteVertex vertex) : SV_Target
-{
-	float4 color = _gorgonTextureCube.SampleLevel(_gorgonSampler, float3(vertex.uv, arrayIndex), mipLevel);
+	color.a = color.a * vertex.color.a;
 
 	REJECT_ALPHA(color.a);
 		
 	return color;
 }
-
-#ifdef SM41
-// Pixel shader to view a 2D texture cube array.
-float4 Gorgon2DTextureCubeArrayView(GorgonSpriteVertex vertex) : SV_Target
-{
-	int cubeIndex = (arrayIndex / 6);
-	float4 color = _gorgonTextureCubeArray.SampleLevel(_gorgonSampler, float4(vertex.uv, arrayIndex, cubeIndex), mipLevel);
-
-	REJECT_ALPHA(color.a);
-		
-	return color;
-}
-#endif
 
 // Pixel shader to view a 3D texture.
 float4 Gorgon3DTextureView(GorgonSpriteVertex vertex) : SV_Target
 {
 	float3 coords = float3(vertex.uv.x, vertex.uv.y, depthSlice);
 	float4 color = _gorgonTexture3D.SampleLevel(_gorgonSampler, coords, mipLevel);
+
+	color.a = color.a * vertex.color.a;
 
 	REJECT_ALPHA(color.a);
 		
