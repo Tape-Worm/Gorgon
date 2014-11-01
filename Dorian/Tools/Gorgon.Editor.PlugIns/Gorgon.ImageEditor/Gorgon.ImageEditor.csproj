@@ -57,6 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\PanelImagePreferences.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PanelImagePreferences.Designer.cs">
+      <DependentUpon>PanelImagePreferences.cs</DependentUpon>
+    </Compile>
     <Compile Include="Design\CodecTypeConverter.cs" />
     <Compile Include="Design\CompressionTypeConverter.cs" />
     <Compile Include="Design\ImageTypeTypeConverter.cs" />
@@ -137,6 +143,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\PanelImagePreferences.resx">
+      <DependentUpon>PanelImagePreferences.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormResizeCrop.resx">
       <DependentUpon>FormResizeCrop.cs</DependentUpon>
     </EmbeddedResource>

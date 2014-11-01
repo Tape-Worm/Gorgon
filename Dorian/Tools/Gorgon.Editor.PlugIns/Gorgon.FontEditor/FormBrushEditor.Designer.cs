@@ -1,6 +1,4 @@
-﻿using System.Drawing.Drawing2D;
-using System.Security.AccessControl;
-using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
+﻿using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {

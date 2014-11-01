@@ -118,7 +118,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		// The sprite to display the texture.
 	    private GorgonSprite _textureSprite;
 		// Current animation state.
-	    private AnimationState _currentAnimState;
+	    private AnimationState _currentAnimationState;
 		// The display bounds for the texture.
 	    private Rectangle _textureBounds;
 		// Animation start time.
@@ -127,7 +127,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonRenderTarget2D[] _nextPrevCube;
         #endregion
 
-        #region Methods.
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the current animation state.
+		/// </summary>
+	    private AnimationState CurrentAnimationState
+	    {
+		    get
+		    {
+			    return _currentAnimationState;
+		    }
+		    set
+		    {
+			    stripImageEditor.Enabled = value == AnimationState.None;
+			    stripTexture.Enabled = value == AnimationState.None;
+			    _currentAnimationState = value;
+		    }
+	    }
+		#endregion
+
+		#region Methods.
         /// <summary>
         /// Function to set up scrolling.
         /// </summary>
@@ -356,36 +375,40 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			    return;
 		    }
 
-			if (_content.ArrayCount <= 6)
+			if ((_content.ArrayCount <= 6) || (CurrentAnimationState != AnimationState.None))
 			{
 				return;
 			}
 
+		    int oldCubeIndex = _cubeIndex;
+		    int newCubeIndex = 0;
 			int selectedFace = _content.ArrayIndex - _cubeIndex;
 
 			if (mouseEventArgs.Delta < 0)
 			{
-				_cubeIndex -= 6;
+				newCubeIndex = oldCubeIndex - 6;
 
-				if (_cubeIndex < 0)
+				if (newCubeIndex < 0)
 				{
-					_cubeIndex = 0;
+					newCubeIndex = 0;
 				}
 			}
 
+			// Move to next cube array.
 			if (mouseEventArgs.Delta > 0)
 			{
 				int maxCubeIndices = _content.ArrayCount - 6;
 
-				_cubeIndex += 6;
+				newCubeIndex = oldCubeIndex + 6;
 
-				if (_cubeIndex >= maxCubeIndices)
+				if (newCubeIndex >= maxCubeIndices)
 				{
-					_cubeIndex = maxCubeIndices;
+					newCubeIndex = maxCubeIndices;
 				}
 			}
-			
-			_content.ArrayIndex = _cubeIndex + selectedFace;
+
+			_content.ArrayIndex = newCubeIndex + selectedFace;
+			SetCubeArray(newCubeIndex, oldCubeIndex);
 
 			ValidateControls();
 			UpdateBufferInfoLabels();
@@ -537,6 +560,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                                                                                     Height = panelTextureDisplay.ClientSize.Height,
                                                                                     Format = BufferFormat.R8G8B8A8_UIntNormal
                                                                                 });
+			_nextPrevCube[0].Clear(GorgonColor.Transparent);
             _nextPrevCube[1] = ContentObject.Graphics.Output.CreateRenderTarget("CubeAnim2",
                                                                                 new GorgonRenderTarget2DSettings
                                                                                 {
@@ -544,6 +568,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                                                                                     Height = panelTextureDisplay.ClientSize.Height,
                                                                                     Format = BufferFormat.R8G8B8A8_UIntNormal
                                                                                 });
+			_nextPrevCube[1].Clear(GorgonColor.Transparent);
         }
 
 		/// <summary>
@@ -562,7 +587,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			// Reset any animation.
 			_animStartTime = 0;
-			_currentAnimState = AnimationState.None;
+			CurrentAnimationState = AnimationState.None;
 
             SetUpScrolling();
 		}
@@ -797,7 +822,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
 		private void panelTextureDisplay_DragOver(object sender, DragEventArgs e)
 		{
-			if (_content == null)
+			if ((_content == null) || (CurrentAnimationState != AnimationState.None))
 			{
 				e.Effect = DragDropEffects.None;
 				return;
@@ -1226,7 +1251,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			_content.DepthSlice--;
 
 			_animStartTime = 0;
-			_currentAnimState = AnimationState.DepthPrev;
+			CurrentAnimationState = AnimationState.DepthPrev;
 
 			UpdateBufferInfoLabels();
 
@@ -1243,7 +1268,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			_content.DepthSlice++;
 
 			_animStartTime = 0;
-			_currentAnimState = AnimationState.DepthNext;
+			CurrentAnimationState = AnimationState.DepthNext;
 
 			UpdateBufferInfoLabels();
 
@@ -1267,25 +1292,29 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Function to set up the current cube array.
         /// </summary>
         /// <param name="cubeIndex">Index of the cube array.</param>
+        /// <param name="prevNextCubeIndex">The previous or next cube array index.</param>
         private void SetCubeArray(int cubeIndex, int prevNextCubeIndex)
         {
             if ((cubeIndex == prevNextCubeIndex)
                 || (!GorgonImageEditorPlugIn.Settings.UseAnimations))
             {
-                _cubeIndex = cubeIndex;
-                return;
+		        _cubeIndex = cubeIndex;
+	            return;
             }
 
-            if (prevNextCubeIndex < cubeIndex)
-            {
-                // Set up the cube animation.
-                _cubeIndex = prevNextCubeIndex;
-                DrawCubeTexture(_nextPrevCube[0]);
-                _cubeIndex = cubeIndex;
-                DrawCubeTexture(_nextPrevCube[1]);
+			// Move to the next/previous cube array.
+			_nextPrevCube[0].Clear(GorgonColor.Transparent);
+			_nextPrevCube[1].Clear(GorgonColor.Transparent);
 
-                _currentAnimState = AnimationState.CubeNext;
-            }
+			_cubeIndex = cubeIndex > prevNextCubeIndex ? cubeIndex : prevNextCubeIndex;
+			DrawCubeTexture(_nextPrevCube[0]);
+			_cubeIndex = cubeIndex > prevNextCubeIndex ? prevNextCubeIndex : cubeIndex;
+			DrawCubeTexture(_nextPrevCube[1]);
+
+	        _cubeIndex = cubeIndex;
+
+			_animStartTime = 0;
+			CurrentAnimationState = cubeIndex > prevNextCubeIndex ? AnimationState.CubeNext : AnimationState.CubePrev;
         }
 
 		/// <summary>
@@ -1297,25 +1326,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			_content.ArrayIndex++;
 
-            _animStartTime = 0;
-
 			if (_content.ImageType == ImageType.ImageCube)
 			{
                 int prevCubeIndex = ((int)((_content.ArrayIndex - 1) / 6.0f).FastFloor()) * 6;
-                int nextCubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+                int cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
                 
-                // Only animate when there's been a change in the cube array.
-			    if ((GorgonImageEditorPlugIn.Settings.UseAnimations) && (prevCubeIndex != nextCubeIndex))
-			    {
-			    }
-			    else
-			    {
-			        _cubeIndex = nextCubeIndex;
-			    }
+				SetCubeArray(cubeIndex, prevCubeIndex);
 			}
 			else
 			{
-				_currentAnimState = AnimationState.ArrayNext;
+				_animStartTime = 0;
+				CurrentAnimationState = AnimationState.ArrayNext;
 			}
 
 			UpdateBufferInfoLabels();
@@ -1333,13 +1354,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 			if (_content.ImageType == ImageType.ImageCube)
 			{
-				_cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+				int nextCubeIndex = ((int)((_content.ArrayIndex + 1) / 6.0f).FastFloor()) * 6;
+				int cubeIndex = ((int)(_content.ArrayIndex / 6.0f).FastFloor()) * 6;
+
+				SetCubeArray(cubeIndex, nextCubeIndex);
 			}
 			else
 			{
 				_animStartTime = 0;
 
-				_currentAnimState = AnimationState.ArrayPrev;
+				CurrentAnimationState = AnimationState.ArrayPrev;
 			}
 
 			UpdateBufferInfoLabels();
@@ -1435,7 +1459,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		{
 			// Reset any animation.
 			_animStartTime = 0;
-			_currentAnimState = AnimationState.None;
+			CurrentAnimationState = AnimationState.None;
 
 			if (_texture != null)
 			{
@@ -1684,6 +1708,13 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             _content.Renderer.Target = target;
 
+			// Set up blending on the target so that the image is drawn properly.
+	        if (target != null)
+	        {
+				_text.Blending.SourceAlphaBlend = _content.Renderer.Drawing.Blending.SourceAlphaBlend = BlendType.One;
+				_text.Blending.DestinationAlphaBlend = _content.Renderer.Drawing.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+	        }
+
             for (int i = 0; i < _cubeFaceLocations.Length; ++i)
             {
                 _content.Renderer.PixelShader.Current = _content.PixelShader;
@@ -1695,35 +1726,39 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 // Reset our pixel shader.
                 _content.Renderer.PixelShader.Current = null;
 
-                // Hilight the selected cube face.
-                if ((i + _cubeIndex) == _content.ArrayIndex)
-                {
-                    _selectorSprite.Position = _cubeFaceLocations[i].Location;
-                    _selectorSprite.Size = _cubeFaceLocations[i].Size;
-                    _selectorSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
-                    _selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
-                                                                  _selectScroll.Y,
-                                                                  _cubeFaceLocations[i].Width / _pattern.Settings.Width,
-                                                                  _cubeFaceLocations[i].Height / _pattern.Settings.Height);
-                    _selectorSprite.Draw();
-                }
+                // Hilight the selected cube face when we're not animating.
+	            if (target == null)
+	            {
+		            if ((i + _cubeIndex) == _content.ArrayIndex)
+		            {
+			            _selectorSprite.Position = _cubeFaceLocations[i].Location;
+			            _selectorSprite.Size = _cubeFaceLocations[i].Size;
+			            _selectorSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
+			            _selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
+			                                                           _selectScroll.Y,
+			                                                           _cubeFaceLocations[i].Width / _pattern.Settings.Width,
+			                                                           _cubeFaceLocations[i].Height / _pattern.Settings.Height);
+			            _selectorSprite.Draw();
+		            }
 
-                if (_hoverFace == i)
-                {
-                    _selectorSprite.Position = _cubeFaceLocations[i].Location;
-                    _selectorSprite.Size = _cubeFaceLocations[i].Size;
-                    _selectorSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
-                    _selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
-                                                                  _selectScroll.Y,
-                                                                  _cubeFaceLocations[i].Width / _pattern.Settings.Width,
-                                                                  _cubeFaceLocations[i].Height / _pattern.Settings.Height);
-                    _selectorSprite.Draw();
-                }
+		            if (_hoverFace == i)
+		            {
+			            _selectorSprite.Position = _cubeFaceLocations[i].Location;
+			            _selectorSprite.Size = _cubeFaceLocations[i].Size;
+			            _selectorSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
+			            _selectorSprite.TextureRegion = new RectangleF(_selectScroll.X,
+			                                                           _selectScroll.Y,
+			                                                           _cubeFaceLocations[i].Width / _pattern.Settings.Width,
+			                                                           _cubeFaceLocations[i].Height / _pattern.Settings.Height);
+			            _selectorSprite.Draw();
+		            }
+	            }
 
-                // Draw a border around each.
+	            // Draw a border around each.
                 _content.Renderer.Drawing.FilledRectangle(new RectangleF(_cubeFaceLocations[i].Location, new SizeF(_cubeFaceLocations[i].Width, _text.Size.Y + 4)), Color.FromArgb(128, Color.Black));
                 _content.Renderer.Drawing.DrawRectangle(_cubeFaceLocations[i], Color.Black);
 
+				// Draw cube name.
                 _text.Text = string.Format(Resources.GORIMG_TEXT_FACE, i + 1, _cubeFaceNames[i]);
                 _text.Position = new Vector2((int)(_cubeFaceLocations[i].X + (_cubeFaceLocations[i].Width / 2.0f) - _text.Size.X / 2.0f), _cubeFaceLocations[i].Y + 2);
                 _text.Draw();
@@ -1733,6 +1768,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             {
                 return;
             }
+
+			_text.Blending.SourceAlphaBlend = _content.Renderer.Drawing.Blending.SourceAlphaBlend = BlendType.One;
+			_text.Blending.DestinationAlphaBlend = _content.Renderer.Drawing.Blending.DestinationAlphaBlend = BlendType.Zero;
 
             _content.Renderer.Target = null;
         }
@@ -1746,25 +1784,25 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             if (_animStartTime.EqualsEpsilon(0))
             {
                 _animStartTime = GorgonTiming.SecondsSinceStart;
-            }
+			}
 
             float distance = _nextPrevCube[0].Settings.Width;
             float time = ((GorgonTiming.SecondsSinceStart - _animStartTime) * 4.0f).Min(1);
-            float posX = next ? (distance * time) : _nextPrevCube[0].Settings.Width + (distance * (1.0f - time));
+	        float posX = (distance * time);
 
-            float animOpacity = time.Min(1).Max(0);
+	        float animOpacity = time.Min(1).Max(0);
 
             // Draw the next depth slice.
             _textureSprite.Texture = _nextPrevCube[0];
-            _textureSprite.Position = new Vector2(_nextPrevCube[0].Settings.Width - posX, 0);
+            _textureSprite.Position = new Vector2(next ? _nextPrevCube[0].Settings.Width - posX : posX, 0);
             _textureSprite.Size = new Vector2(_nextPrevCube[0].Settings.Width,_nextPrevCube[0].Settings.Height);
-            _textureSprite.Opacity = animOpacity;
+			_textureSprite.Opacity = next ? animOpacity : 1.0f - animOpacity;
             _textureSprite.Draw();
 
             _textureSprite.Texture = _nextPrevCube[1];
-            _textureSprite.Position = new Vector2(-posX, 0);
+            _textureSprite.Position = new Vector2(next ? -posX : posX - _nextPrevCube[1].Settings.Width, 0);
             _textureSprite.Size = new Vector2(_nextPrevCube[1].Settings.Width, _nextPrevCube[1].Settings.Height);
-            _textureSprite.Opacity = 1.0f - animOpacity;
+            _textureSprite.Opacity = next ? 1.0f - animOpacity : animOpacity;
             _textureSprite.Draw();
 
             if (time < 1.0f)
@@ -1774,7 +1812,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             // Set to the current array index.
             _content.ArrayIndex = _content.ArrayIndex;
-            _currentAnimState = AnimationState.None;
+            CurrentAnimationState = AnimationState.None;
         }
 
 		/// <summary>
@@ -1791,7 +1829,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (GorgonImageEditorPlugIn.Settings.UseAnimations)
 		    {
-		        switch (_currentAnimState)
+		        switch (CurrentAnimationState)
 		        {
 		            case AnimationState.CubeNext:
                         DrawPrevNextCubeAnimation(true);
@@ -1803,7 +1841,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    }
 		    else
 		    {
-                _currentAnimState = AnimationState.None;
+                CurrentAnimationState = AnimationState.None;
 		    }
 
 		    DrawCubeTexture();
@@ -1883,7 +1921,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-			_currentAnimState = AnimationState.None;
+			CurrentAnimationState = AnimationState.None;
 		}
 
 		/// <summary>
@@ -1924,8 +1962,34 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return;
 			}
 
-			_currentAnimState = AnimationState.None;
+			CurrentAnimationState = AnimationState.None;
 		}
+
+		/// <summary>
+		/// Function called when the settings for the editor or content plug-in have changed.
+		/// </summary>
+		/// <remarks>
+		/// Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This
+		/// only applies to plug-ins that implement <see cref="GorgonLibrary.Editor.IPlugInSettingsUI" />.
+		/// </remarks>
+	    protected override void OnEditorSettingsChanged()
+	    {
+			if (_content == null)
+			{
+				return;
+			}
+
+			// Turn off any executing animation.
+			CurrentAnimationState = AnimationState.None;
+
+			DestroyCubeAnimTarget();
+
+			if ((_content.ImageType == ImageType.ImageCube)
+				&& (GorgonImageEditorPlugIn.Settings.UseAnimations))
+			{
+				SetupCubeView();
+			}
+	    }
 
 		/// <summary>
 		/// Function to draw the texture.
@@ -1941,7 +2005,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		    if (GorgonImageEditorPlugIn.Settings.UseAnimations)
 		    {
-		        switch (_currentAnimState)
+		        switch (CurrentAnimationState)
 		        {
 		            case AnimationState.ArrayNext:
 		                DrawPrevNextArrayAnimation(true);
@@ -1959,7 +2023,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		    }
 		    else
 		    {
-		        _currentAnimState = AnimationState.None;
+		        CurrentAnimationState = AnimationState.None;
 		    }
 
 		    // Draw the texture normally.
@@ -1994,7 +2058,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			_selectorSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
 			_selectorSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 
-			_textureSprite = _content.Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1, 1), GorgonColor.Transparent);
+			_textureSprite = _content.Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1, 1), GorgonColor.White);
 			_textureSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
 		}
 		#endregion

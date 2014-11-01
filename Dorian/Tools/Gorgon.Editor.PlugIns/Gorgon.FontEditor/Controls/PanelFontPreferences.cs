@@ -30,7 +30,6 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Math;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn

@@ -508,4 +508,13 @@ Would you like to continue?</value>
   <data name="GORIMG_TEXT_TO_WINDOW" xml:space="preserve">
     <value>Zoomed to window</value>
   </data>
+  <data name="GORIMG_TEXT_IMAGE_EDITOR_SETTINGS" xml:space="preserve">
+    <value>Image editor settings</value>
+  </data>
+  <data name="GORIMG_TEXT_SHOW_ACTUALSIZE_ON_LOAD" xml:space="preserve">
+    <value>Show the image at its actual size on initial load?</value>
+  </data>
+  <data name="GORIMG_TEXT_SHOW_ANIMATIONS" xml:space="preserve">
+    <value>Show transition animations?</value>
+  </data>
 </root>

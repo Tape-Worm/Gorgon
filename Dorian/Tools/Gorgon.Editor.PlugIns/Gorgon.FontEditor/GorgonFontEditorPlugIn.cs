@@ -29,10 +29,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
