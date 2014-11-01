@@ -164,7 +164,6 @@ namespace GorgonLibrary.Editor
                 if (panelPlugInPrefs.Controls.Count > 0)
                 {
                     panelPlugInPrefs.Controls.RemoveAt(0);
-                    return;
                 }
 
                 if (listPlugIns.SelectedIndex == -1)

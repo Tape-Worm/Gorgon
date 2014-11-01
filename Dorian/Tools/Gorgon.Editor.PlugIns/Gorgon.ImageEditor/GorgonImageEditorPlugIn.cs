@@ -30,6 +30,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Editor.ImageEditorPlugIn.Controls;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.IO;
 
@@ -39,7 +40,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     /// Image editor plug-in interface.
     /// </summary>
     public class GorgonImageEditorPlugIn
-        : ContentPlugIn, IImageEditorPlugIn
+		: ContentPlugIn, IImageEditorPlugIn, IPlugInSettingsUI
 	{
 		#region Variables.
 		private bool _disposed;                                                             // Flag to indicate whether the object was disposed.
@@ -230,7 +231,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentObject OnCreateContentObject(ContentSettings settings)
         {
-            return new GorgonImageContent((GorgonImageContentSettings)settings);
+            return new GorgonImageContent(this, (GorgonImageContentSettings)settings);
         }
 
 		/// <summary>
@@ -331,7 +332,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 throw new ArgumentNullException("imageDataStream");
             }
 
-			IImageEditorContent content = new GorgonImageContent(new GorgonImageContentSettings
+			IImageEditorContent content = new GorgonImageContent(this,
+			                                                     new GorgonImageContentSettings
 			                                                     {
 				                                                     Name = Path.GetFileName(editorFile.FilePath),
 				                                                     EditorFile = editorFile
@@ -351,6 +353,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				return Resources.GORIMG_CONTENT_TYPE;
 			}
+		}
+		#endregion
+
+		#region IPlugInSettingsUI Members
+		/// <summary>
+		/// Function to return the UI object for the settings.
+		/// </summary>
+		/// <returns>
+		/// The UI object for the settings.
+		/// </returns>
+		public PreferencePanel GetSettingsUI()
+		{
+			return new PanelImagePreferences();	
 		}
 		#endregion
 	}

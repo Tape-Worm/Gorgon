@@ -2266,9 +2266,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Initializes a new instance of the <see cref="GorgonImageContent"/> class.
         /// </summary>
         /// <param name="settings">Settings for the image content.</param>
-        public GorgonImageContent(GorgonImageContentSettings settings)
+        /// <param name="plugIn">The plug-in that created this content.</param>
+        public GorgonImageContent(GorgonImageEditorPlugIn plugIn, GorgonImageContentSettings settings)
             : base(settings)
         {
+	        PlugIn = plugIn;
 	        EditorFile = settings.EditorFile;
             HasThumbnail = true;
 

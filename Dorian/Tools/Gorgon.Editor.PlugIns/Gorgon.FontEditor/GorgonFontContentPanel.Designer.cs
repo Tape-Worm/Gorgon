@@ -1,6 +1,4 @@
-﻿using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
-
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     partial class GorgonFontContentPanel
     {
