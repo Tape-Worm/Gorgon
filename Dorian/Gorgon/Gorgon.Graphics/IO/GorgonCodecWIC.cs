@@ -165,12 +165,6 @@ namespace GorgonLibrary.IO
 																BufferFormat.B8G8R8A8_UIntNormal,
 																BufferFormat.B8G8R8X8_UIntNormal
 	                                                        };
-
-		// Supported image types.
-		private readonly ImageType[] _supportedTypes =
-		{
-			ImageType.Image2D
-		};
 		#endregion
 
 		#region Properties
@@ -277,17 +271,6 @@ namespace GorgonLibrary.IO
 	    }
 
         /// <summary>
-        /// Property to return whether the image codec supports cub maps.
-        /// </summary>
-	    public override bool SupportsCubeMaps
-	    {
-	        get
-	        {
-	            return false;
-	        }
-	    }
-
-        /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
         public override IEnumerable<BufferFormat> SupportedFormats
@@ -297,18 +280,6 @@ namespace GorgonLibrary.IO
                 return _supportedFormats;
             }
         }
-
-		/// <summary>
-		/// Property to return the type of images the codec will support.
-		/// </summary>
-		public override IEnumerable<ImageType> SupportsImageType
-		{
-			get
-			{
-				return _supportedTypes;
-			}
-		}
-
 		#endregion
 
 		#region Methods.
