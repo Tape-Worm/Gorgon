@@ -27,10 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 
@@ -66,15 +63,15 @@ namespace GorgonLibrary.Graphics.Example
             /// <summary>
             /// The magic number that identifies the image data as our desired format.
             /// </summary>
-            public long MagicValueData;
+			public long MagicValueData;
             /// <summary>
             /// The width of the image.
             /// </summary>
-            public int Width;
+			public int Width;
             /// <summary>
             /// The height of the image.
             /// </summary>
-            public int Height;
+			public int Height;
         }
         #endregion
 
@@ -84,7 +81,7 @@ namespace GorgonLibrary.Graphics.Example
 
         // Formats supported by the image.
         // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
-        private BufferFormat[] _supportFormats =
+        private readonly BufferFormat[] _supportedFormats =
         {
             BufferFormat.R8G8B8A8_UIntNormal
         };
@@ -120,7 +117,7 @@ namespace GorgonLibrary.Graphics.Example
         {
             get
             {
-                return _supportFormats;
+                return _supportedFormats;
             }
         }
 
@@ -178,7 +175,7 @@ namespace GorgonLibrary.Graphics.Example
         /// </summary>
         /// <param name="stream">Stream containing the image data.</param>
         /// <returns>An image settings object containing information about the image.</returns>
-        private IImageSettings ReadMetaData(Stream stream)
+		private static IImageSettings ReadMetaData(Stream stream)
         {
             if (!stream.CanRead)
             {
@@ -215,6 +212,7 @@ namespace GorgonLibrary.Graphics.Example
 
             settings.Width = header.Width;
             settings.Height = header.Height;
+	        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
 
             return settings;
         }
@@ -230,7 +228,75 @@ namespace GorgonLibrary.Graphics.Example
         /// </returns>
         protected override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
         {
-                
+			// Read the image meta data so we'll know how large the data should be.
+	        IImageSettings settings = ReadMetaData(stream);
+
+			// Calculate the expected size of the image.
+	        int dataSize = settings.Width * settings.Height;
+
+	        if ((size - UselessHeader.SizeInBytes) != dataSize)
+	        {
+		        throw new ArgumentException("The data in the stream is not the same size as the proposed image size.");
+	        }
+
+			// We'll be getting into unsafe territory here for performance reasons.
+			// If you're not comfortable with pointers, the stream object provides other ways of retrieving 
+			// the data and copying it.
+	        unsafe
+	        {
+		        // Create our resulting image buffer.
+		        var result = new GorgonImageData(settings);
+
+				// Get pointers to our data buffers.
+		        var imagePtr = (byte*)result.UnsafePointer;
+		        var srcPtr = (byte*)stream.UnsafePointer;
+		        int pixelShift = 0;
+
+				// Our alpha component value.  We must use the alpha component across the other components 
+				// because it will be set to 0 otherwise.  This will cause parts of the image to disappear if 
+				// we don't propagate the alpha until we reach the next alpha pixel component.
+				var alphaComponentValue = (uint)(*(srcPtr + 3) << 24);
+
+		        // Write each scanline.
+		        for (int y = 0; y < settings.Height; ++y)
+		        {
+			        var destPtr = (uint*)imagePtr;
+
+					// Decode the pixels in the scan line for our resulting image.
+			        for (int x = 0; x < settings.Width; ++x)
+			        {
+						// Write the color by shifting the byte in the source data to the appropriate byte position.
+				        var color = (uint)(*(srcPtr++) << pixelShift);
+
+				        *(destPtr++) = color | alphaComponentValue;
+
+						// Determine how many bits to shift based on horizontal positioning.
+						// We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+						// determined by dividing the row pitch by the image width.
+						pixelShift += 8;
+
+						// Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+						// by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
+						// per pixel in the destination.
+				        if (pixelShift <= 24)
+				        {
+					        continue;
+				        }
+
+				        pixelShift = 0;
+				        alphaComponentValue = (uint)(*(srcPtr + 3) << 24);
+			        }
+
+					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
+					// Some images put padding in for alignment reasons which can throw off the data offsets.
+			        imagePtr += result.Buffers[0].PitchInformation.RowPitch;
+		        }
+
+				// Move to the end of the stream.
+		        stream.Position += dataSize;
+
+				return result;
+	        }
         }
 
         /// <summary>
@@ -240,7 +306,87 @@ namespace GorgonLibrary.Graphics.Example
         /// <param name="stream">Stream that will contain the data.</param>
         protected override void SaveToStream(GorgonImageData imageData, Stream stream)
         {
-            
+	        if (imageData.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
+	        {
+				throw new ArgumentException(@"The image format must be R8G8B8A8_UIntNormal", "imageData");    
+	        }
+
+			// First, we'll need to set up our header metadata.
+	        var header = new UselessHeader
+	                     {
+		                     MagicValueData = MagicValue,
+		                     Width = imageData.Settings.Width,
+		                     Height = imageData.Settings.Height
+	                     };
+
+			// Write the metadata to the stream.
+	        using (var writer = new GorgonBinaryWriter(stream, true))
+	        {
+		        writer.WriteValue(header);
+
+				// Now, we need to encode the image data as 1 byte for every other color component per pixel. 
+				// In essence, we'll be writing one channel as a byte and moving to the next pixel. 
+		        unsafe
+		        {
+					// We're in unsafe land now.  Again, if you're uncomfortable with pointers, the GorgonDataStream object 
+					// provides safe methods to read image data.
+
+					// Get the pointer to our image buffer.
+			        var imagePtr = (byte*)imageData.UnsafePointer;
+					// Set up our pixel bit shifter.
+					int pixelShift = 0;
+					// Allocate a buffer to store our scanline before dumping to the file.
+			        var scanLineBuffer = new byte[imageData.Settings.Width];
+
+					// For each scan line in the image we'll encode the data as described above.
+			        for (int y = 0; y < imageData.Settings.Height; ++y)
+			        {
+						// Read 4 bytes at a time.
+				        var colorPtr = (uint*)imagePtr;
+
+						// Reset to the beginning of the scanline buffer.
+				        fixed (byte* scanLinePtr = scanLineBuffer)
+				        {
+							// Need to alias the pointer because the result value in the fixed 
+							// block can't be changed.
+					        byte* scanLine = scanLinePtr;
+
+							// Loop through the scan line until we're at its end.
+					        for (int x = 0; x < imageData.Settings.Width; ++x)
+					        {
+						        // Get the color component for the pixel.
+						        // We're assuming our image data is 4 bytes/pixel.
+						        // Normally you'd increment by the proper amount.
+						        var color = (byte)((*(colorPtr++) >> pixelShift) & 0xff);
+
+						        // Write it to the scanline.
+						        *(scanLine++) = color;
+
+						        // Determine how many bits to shift based on horizontal positioning.
+						        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+						        // determined by dividing the row pitch by the image width.
+						        pixelShift += 8;
+
+						        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+						        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
+						        // per pixel in the destination.
+						        if (pixelShift > 24)
+						        {
+							        pixelShift = 0;
+						        }
+					        }
+				        }
+
+				        // Ensure that we move to the next line by the row pitch and not the amount of pixels.
+						// Some images put padding in for alignment reasons which can throw off the data offsets.
+						// Also, the width is not suitable as a pixel is often more than 1 byte.
+						imagePtr += imageData.Buffers[0].PitchInformation.RowPitch;
+
+						// Send the scanline to the file.
+						writer.Write(scanLineBuffer);
+			        }
+		        }
+	        }
         }
 
         /// <summary>
@@ -293,7 +439,7 @@ namespace GorgonLibrary.Graphics.Example
             try
             {
                 // Using the GorgonBinaryReader, we can pull in the data we need.
-                reader = new GorgonBinaryReader(stream, true))
+	            reader = new GorgonBinaryReader(stream, true);
                 
                 // Retrieve our magic number.
                 var header = reader.ReadValue<UselessHeader>();
@@ -365,5 +511,21 @@ namespace GorgonLibrary.Graphics.Example
             }
         }
         #endregion
-    }
+
+		#region Constructor
+		/// <summary>
+		/// Initializes a new instance of the <see cref="UselessImageCodec"/> class.
+		/// </summary>
+	    public UselessImageCodec()
+		{
+			// Tell the codec which image file name extensions are commonly used to 
+			// identify the image data type.  This is use by applications to determine 
+			// which codec to use when loading an image.
+			CodecCommonExtensions = new[]
+			                        {
+										"Useless"
+			                        };
+		}
+		#endregion
+	}
 }

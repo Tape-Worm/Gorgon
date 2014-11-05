@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
@@ -49,10 +50,8 @@ namespace CodecPlugIn
         private Gorgon2D _2D;
         // Image to display, loaded from our plug-in.
         private GorgonTexture2D _image;
-        #endregion
-
-        #region Properties.
-
+		// Our custom codec loaded from the plug-in.
+	    private GorgonImageCodec _customCodec;
         #endregion
 
         #region Methods.
@@ -100,6 +99,87 @@ namespace CodecPlugIn
             _2D.Drawing.Blit(_image, new RectangleF((Point)position, (Size)newSize), new RectangleF(0, 0, 1, 1));
         }
 
+		/// <summary>
+		/// Function to load our useless image codec plug-in.
+		/// </summary>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
+	    private bool LoadCodec()
+		{
+			// Load our plug-in.
+			string plugInPath = Gorgon.ApplicationDirectory + "UselessImageCodec.dll";
+
+			if (!File.Exists(plugInPath))
+			{
+				return false;
+			}
+
+			if (!Gorgon.PlugIns.IsPlugInAssembly(plugInPath))
+			{
+				return false;
+			}
+
+			Gorgon.PlugIns.LoadPlugInAssembly(plugInPath);
+
+			// Get the plug-in object.
+			var plugIn = Gorgon.PlugIns["GorgonLibrary.Graphics.Example.UselessImageCodecPlugIn"] as GorgonCodecPlugIn;
+
+			if (plugIn == null)
+			{
+				return false;
+			}
+
+			// Create the codec.
+			_customCodec = plugIn.CreateCodec();
+
+			return _customCodec != null;
+		}
+
+		/// <summary>
+		/// Function to convert the image to use our custom codec.
+		/// </summary>
+		private void ConvertImage()
+		{
+			// The path to our image file for our custom codec.
+			string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "Useless");
+			// The new texture holding image data read by the custom codec.
+			GorgonTexture2D newTexture = null;
+
+			try
+			{
+				// Save the current texture using our useless new custom codec.
+				_image.Save(tempPath, _customCodec);
+
+				newTexture = _graphics.Textures.FromFile<GorgonTexture2D>("UselessTexture", tempPath, _customCodec);
+
+				// Free the old texture and assign to the new one.
+				_image.Dispose();
+				_image = newTexture;
+			}
+			catch
+			{
+				// Clean up the new texture should we have an exception (this shouldn't happen, better safe than sorry).
+				if (newTexture != null)
+				{
+					newTexture.Dispose();
+				}
+
+				throw;
+			}
+			finally
+			{
+				try
+				{
+					File.Delete(tempPath);
+				}
+				// ReSharper disable once EmptyGeneralCatchClause
+				catch
+				{
+					// Intentionally left blank.
+					// If we can't clean up the temp file, then it's no big deal right now.
+				}
+			}
+	    }
+
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
         /// </summary>
@@ -123,10 +203,22 @@ namespace CodecPlugIn
                 Location = new Point(currentMonitor.WorkingArea.Left + (currentMonitor.WorkingArea.Width / 2 - Width / 2),
                                      currentMonitor.WorkingArea.Top + (currentMonitor.WorkingArea.Height / 2 - Height / 2));
 
-                // Load our texture.
+                // Load our base texture.
                 _image = _graphics.Textures.FromMemory<GorgonTexture2D>("SourceTexture",
                                                                         Resources.SourceTexture,
                                                                         new GorgonCodecDDS());
+
+
+				// Load the custom codec.
+	            if (!LoadCodec())
+	            {
+					GorgonDialogs.ErrorBox(this, "Unable to load the useless image codec plug-in.");
+					Gorgon.Quit();
+		            return;
+	            }
+
+				// Convert the image to our custom codec.
+				ConvertImage();
 
                 // Set up our idle time processing.
                 Gorgon.ApplicationIdleLoopMethod = () =>
