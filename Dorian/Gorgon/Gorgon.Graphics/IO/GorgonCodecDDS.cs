@@ -701,7 +701,6 @@ namespace GorgonLibrary.IO
 
         private readonly BufferFormat[] _formats;                       // Buffer formats.
         private readonly IEnumerable<BufferFormat> _supportedFormats;   // List of formats supported by the DDS codec.
-	    private readonly IEnumerable<ImageType> _supportedTypes;		// List of supported image types.
 		private int _actualDepth;						                // Actual depth value.
 		private int _actualArrayCount;					                // Actual array count.
 		#endregion
@@ -776,17 +775,6 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Property to return the type of images the codec will support.
-		/// </summary>
-		public override IEnumerable<ImageType> SupportsImageType
-		{
-			get
-			{
-				return _supportedTypes;
-			}
-		}
-
         /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
@@ -824,17 +812,6 @@ namespace GorgonLibrary.IO
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
         public override bool SupportsDepth
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// Property to return whether the image codec supports cub maps.
-        /// </summary>
-        public override bool SupportsCubeMaps
         {
             get
             {
@@ -2007,10 +1984,6 @@ namespace GorgonLibrary.IO
 		                        let info = GorgonBufferFormatInfo.GetInfo(format)
 		                        where format != BufferFormat.Unknown && !info.IsTypeless
 		                        select format;
-
-			_supportedTypes = from imageType in (ImageType[])Enum.GetValues(typeof(ImageType))
-			                  where imageType != ImageType.Unknown
-			                  select imageType;
 
             LegacyConversionFlags = DDSFlags.None;
 			Palette = new GorgonColor[256];

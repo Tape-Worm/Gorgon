@@ -319,26 +319,9 @@ namespace GorgonLibrary.IO
 			BufferFormat.B8G8R8A8_UIntNormal,
 			BufferFormat.B8G8R8X8_UIntNormal,
         };
-
-		// Supported image type list.
-	    private readonly ImageType[] _supportedTypes =
-	    {
-			ImageType.Image2D
-	    };
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the type of images the codec will support.
-		/// </summary>
-	    public override IEnumerable<ImageType> SupportsImageType
-	    {
-		    get
-		    {
-			    return _supportedTypes;
-		    }
-	    }
-
 	    /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
@@ -425,17 +408,6 @@ namespace GorgonLibrary.IO
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
         public override bool SupportsDepth
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Property to return whether the image codec supports cub maps.
-        /// </summary>
-        public override bool SupportsCubeMaps
         {
             get
             {

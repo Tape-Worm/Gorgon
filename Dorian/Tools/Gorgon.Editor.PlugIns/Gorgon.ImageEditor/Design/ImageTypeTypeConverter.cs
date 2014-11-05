@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
@@ -154,13 +155,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
-
-	        var imageTypes = from imageType in content.Codec.SupportsImageType
-	                         where imageType != ImageType.Image1D
-	                         select imageType;
-            
-            return new StandardValuesCollection(imageTypes.ToArray());
+            return new StandardValuesCollection(new []
+                                                {
+                                                    ImageType.Image2D,
+                                                    ImageType.ImageCube,
+                                                    ImageType.Image3D
+                                                });
         }
         #endregion
     }

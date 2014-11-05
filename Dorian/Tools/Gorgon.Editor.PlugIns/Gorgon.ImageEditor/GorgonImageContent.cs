@@ -1106,7 +1106,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                             || _imageSettings.ImageType == ImageType.Image2D
                             || _imageSettings.ImageType == ImageType.ImageCube);
 
-            DisableProperty("ImageType", Codec.SupportsImageType.Count() < 2);
+            DisableProperty("ImageType", !Codec.SupportsDepth && !Codec.SupportsArray);
 
 	        DisableProperty("Codec", GorgonImageEditorPlugIn.CodecDropDownList.Count(CodecSupportsImage) <= 1);
         }
@@ -1795,13 +1795,29 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			bool hasArray = (ArrayCount > 1 && codec.SupportsArray) || ArrayCount == 1;
 			bool hasDepth = (Depth > 1 && codec.SupportsDepth) || Depth == 1;
 			bool hasMips = (MipCount > 1 && codec.SupportsMipMaps) || MipCount == 1;
-			bool hasImageType = codec.SupportsImageType.Any(imgType => imgType == ImageType);
+		    bool hasImageType;
 			bool hasFormat = codec.SupportedFormats.Any(format => format == ImageFormat);
 			bool hasBC = (codec.SupportsBlockCompression && BlockCompression != BufferFormat.Unknown) ||
 						 BlockCompression == BufferFormat.Unknown;
 
+		    switch (ImageType)
+		    {
+                case ImageType.Image1D:
+                case ImageType.Image2D:
+		            hasImageType = true;
+		            break;
+		        case ImageType.Image3D:
+		            hasImageType = Codec.SupportsDepth;
+		            break;
+                case ImageType.ImageCube:
+		            hasImageType = Codec.SupportsArray;
+		            break;
+                default:
+		            hasImageType = false;
+		            break;
+		    }
+
 			return hasBC && hasArray & hasDepth && hasMips && hasImageType && hasFormat;
-		    
 	    }
 
 		/// <summary>
