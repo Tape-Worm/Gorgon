@@ -31,12 +31,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Useless image codec plug-in [DEBUG VERSION]")]
+[assembly: AssemblyTitle("TV image codec plug-in [DEBUG VERSION]")]
 [assembly: AssemblyDescription("An example to show how to create an image codec so the user can load/save their own image formats. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Useless image codec plug-in")]
+[assembly: AssemblyTitle("TV image codec plug-in")]
 [assembly: AssemblyDescription("An example to show how to create an image codec so the user can load/save their own image formats.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
