@@ -34,15 +34,15 @@ using GorgonLibrary.Native;
 namespace GorgonLibrary.Graphics.Example
 {
     /// <summary>
-    /// Our useless image codec.
+    /// Our TV image codec.
     /// </summary>
     /// <remarks>
-    /// This codec will encode and decode image data as 1 channel/pixel.
+    /// This codec will encode and decode image data as 1 channel/pixel to make the image look similar to the line patterns on a CRT tv screen.
     /// <para>
     /// To create a codec, we must inherit the GorgonImageCodec object and implement functionality to load and save image data to and from a stream.
     /// </para>
     /// </remarks>
-    class UselessImageCodec
+    class TvImageCodec
         : GorgonImageCodec
     {
         #region Value Types.
@@ -53,12 +53,12 @@ namespace GorgonLibrary.Graphics.Example
         /// This is used to contain any metadata about the image such as its width, height, etc...
         /// </remarks>
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        private struct UselessHeader
+        private struct TvHeader
         {
             /// <summary>
             /// Returns the size of this type, in bytes.
             /// </summary>
-            public static readonly int SizeInBytes = DirectAccess.SizeOf<UselessHeader>();
+            public static readonly int SizeInBytes = DirectAccess.SizeOf<TvHeader>();
 
             /// <summary>
             /// The magic number that identifies the image data as our desired format.
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Graphics.Example
 
         #region Variables.
         // The magic number to identify the file.
-        private const long MagicValue = 0x7553654C65537331;
+        private const long MagicValue = 0x3074724356543020;
 
         // Formats supported by the image.
         // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
@@ -95,7 +95,7 @@ namespace GorgonLibrary.Graphics.Example
         {
             get
             {
-                return "Useless image";
+                return "TV image";
             }
         }
 
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Graphics.Example
         {
             get
             {
-                return "Useless";
+                return "TV";
             }
         }
 
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
-        /// <remarks>This useless format doesn't support volume textures.</remarks>
+        /// <remarks>This tv format doesn't support volume textures.</remarks>
         public override bool SupportsDepth
         {
             get
@@ -136,7 +136,7 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
-        /// <remarks>This useless format doesn't support texture arrays.</remarks>
+        /// <remarks>This tv format doesn't support texture arrays.</remarks>
         public override bool SupportsArray
         {
             get
@@ -148,7 +148,7 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
-        /// <remarks>This useless format doesn't support mip mapping.</remarks>
+        /// <remarks>This tv format doesn't support mip mapping.</remarks>
         public override bool SupportsMipMaps
         {
             get
@@ -182,25 +182,25 @@ namespace GorgonLibrary.Graphics.Example
                 throw new ArgumentException(@"Stream is write only.", "stream");
             }
 
-            if (stream.Position + UselessHeader.SizeInBytes >= stream.Length)
+            if (stream.Position + TvHeader.SizeInBytes >= stream.Length)
             {
                 throw new EndOfStreamException();
             }
 
-            // We only support 2D images with this useless format.
+            // We only support 2D images with the tv format.
             var settings = new GorgonTexture2DSettings();
-            UselessHeader header;
+            TvHeader header;
 
             // Load the header for the image.
             using(var reader = new GorgonBinaryReader(stream, true))
             {
-                header = reader.ReadValue<UselessHeader>();
+                header = reader.ReadValue<TvHeader>();
             }
 
             // Ensure we've got the correct data.
             if (header.MagicValueData != MagicValue)
             {
-                throw new ArgumentException(@"The image data is not a useless image.", "stream");
+                throw new ArgumentException(@"The image data is not a tv image.", "stream");
             }
 
             // Ensure the width/height are valid.
@@ -232,9 +232,9 @@ namespace GorgonLibrary.Graphics.Example
 	        IImageSettings settings = ReadMetaData(stream);
 
 			// Calculate the expected size of the image.
-	        int dataSize = settings.Width * settings.Height;
+	        int dataSize = settings.Width * settings.Height * 2;
 
-	        if ((size - UselessHeader.SizeInBytes) != dataSize)
+	        if ((size - TvHeader.SizeInBytes) != dataSize)
 	        {
 		        throw new ArgumentException("The data in the stream is not the same size as the proposed image size.");
 	        }
@@ -249,13 +249,7 @@ namespace GorgonLibrary.Graphics.Example
 
 				// Get pointers to our data buffers.
 		        var imagePtr = (byte*)result.UnsafePointer;
-		        var srcPtr = (byte*)stream.UnsafePointer;
-		        int pixelShift = 0;
-
-				// Our alpha component value.  We must use the alpha component across the other components 
-				// because it will be set to 0 otherwise.  This will cause parts of the image to disappear if 
-				// we don't propagate the alpha until we reach the next alpha pixel component.
-				var alphaComponentValue = (uint)(*(srcPtr + 3) << 24);
+		        var srcPtr = (ushort*)stream.UnsafePointer;
 
 		        // Write each scanline.
 		        for (int y = 0; y < settings.Height; ++y)
@@ -265,26 +259,22 @@ namespace GorgonLibrary.Graphics.Example
 					// Decode the pixels in the scan line for our resulting image.
 			        for (int x = 0; x < settings.Width; ++x)
 			        {
+                        // Get our current pixel.
+			            ushort pixel = *(srcPtr++);
+
+                        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+                        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
+                        // per pixel in the destination.
+
+                        // We determine how many bits to shift the pixel based on horizontal positioning.
+                        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+                        // determined by dividing the row pitch by the image width.
+
 						// Write the color by shifting the byte in the source data to the appropriate byte position.
-				        var color = (uint)(*(srcPtr++) << pixelShift);
+				        var color = (uint)(((pixel >> 8) & 0xff) << (8 * (x % 3)));
+			            var alpha = (uint)((pixel & 0xff) << 24);
 
-				        *(destPtr++) = color | alphaComponentValue;
-
-						// Determine how many bits to shift based on horizontal positioning.
-						// We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-						// determined by dividing the row pitch by the image width.
-						pixelShift += 8;
-
-						// Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-						// by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
-						// per pixel in the destination.
-				        if (pixelShift <= 24)
-				        {
-					        continue;
-				        }
-
-				        pixelShift = 0;
-				        alphaComponentValue = (uint)(*(srcPtr + 3) << 24);
+				        *(destPtr++) = color | alpha;
 			        }
 
 					// Ensure that we move to the next line by the row pitch and not the amount of pixels.
@@ -312,7 +302,7 @@ namespace GorgonLibrary.Graphics.Example
 	        }
 
 			// First, we'll need to set up our header metadata.
-	        var header = new UselessHeader
+	        var header = new TvHeader
 	                     {
 		                     MagicValueData = MagicValue,
 		                     Width = imageData.Settings.Width,
@@ -333,10 +323,8 @@ namespace GorgonLibrary.Graphics.Example
 
 					// Get the pointer to our image buffer.
 			        var imagePtr = (byte*)imageData.UnsafePointer;
-					// Set up our pixel bit shifter.
-					int pixelShift = 0;
 					// Allocate a buffer to store our scanline before dumping to the file.
-			        var scanLineBuffer = new byte[imageData.Settings.Width];
+			        var scanLineBuffer = new byte[imageData.Settings.Width * 2];
 
 					// For each scan line in the image we'll encode the data as described above.
 			        for (int y = 0; y < imageData.Settings.Height; ++y)
@@ -349,31 +337,33 @@ namespace GorgonLibrary.Graphics.Example
 				        {
 							// Need to alias the pointer because the result value in the fixed 
 							// block can't be changed.
-					        byte* scanLine = scanLinePtr;
+					        var scanLine = (ushort *)scanLinePtr;
 
 							// Loop through the scan line until we're at its end.
 					        for (int x = 0; x < imageData.Settings.Width; ++x)
 					        {
-						        // Get the color component for the pixel.
-						        // We're assuming our image data is 4 bytes/pixel.
-						        // Normally you'd increment by the proper amount.
-						        var color = (byte)((*(colorPtr++) >> pixelShift) & 0xff);
+                                // We're assuming our image data is 4 bytes/pixel, but in real world scenarios this is dependent upon 
+                                // the format of the data.
+					            var pixel = *(colorPtr++);
+
+                                // Get the alpha channel for this pixel.
+                                var alpha = (byte)((pixel >> 24) & 0xff);
+
+                                // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
+                                // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
+                                // per pixel in the destination.
+
+                                // We determine how many bits to shift the pixel based on horizontal positioning.
+                                // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
+                                // determined by dividing the row pitch by the image width.
+                                
+                                // Get the color component for the pixel.
+						        var color = (byte)((pixel >> (8 * (x % 3))) & 0xff);
 
 						        // Write it to the scanline.
-						        *(scanLine++) = color;
-
-						        // Determine how many bits to shift based on horizontal positioning.
-						        // We assume that the image is based on 4 bytes/pixel.  In most cases this value should be 
-						        // determined by dividing the row pitch by the image width.
-						        pixelShift += 8;
-
-						        // Since we encode 1 byte per color component for each pixel, we need to bump up the bit shift
-						        // by 8 bits.  Once we get above 24 bits we'll start over since we're only working with 4 bytes 
-						        // per pixel in the destination.
-						        if (pixelShift > 24)
-						        {
-							        pixelShift = 0;
-						        }
+                                // We're encoding a pixel as a single color component with its alpha channel
+                                // value into an unsigned 16 bit number.
+						        *(scanLine++) = (ushort)((color << 8) | alpha);
 					        }
 				        }
 
@@ -426,7 +416,7 @@ namespace GorgonLibrary.Graphics.Example
                 throw new IOException("Stream cannot perform seek operations.");
             }
 
-            if (stream.Position + UselessHeader.SizeInBytes >= stream.Length)
+            if (stream.Position + TvHeader.SizeInBytes >= stream.Length)
             {
                 throw new EndOfStreamException();
             }
@@ -442,7 +432,7 @@ namespace GorgonLibrary.Graphics.Example
 	            reader = new GorgonBinaryReader(stream, true);
                 
                 // Retrieve our magic number.
-                var header = reader.ReadValue<UselessHeader>();
+                var header = reader.ReadValue<TvHeader>();
 
                 // Ensure that the image size is valid and that the magic numbers match up.
                 return header.Width > 0 && header.Height > 0 && header.MagicValueData == MagicValue;
@@ -490,7 +480,7 @@ namespace GorgonLibrary.Graphics.Example
                 throw new IOException("Stream cannot perform seek operations.");
             }
 
-            if (stream.Position + UselessHeader.SizeInBytes >= stream.Length)
+            if (stream.Position + TvHeader.SizeInBytes >= stream.Length)
             {
                 throw new EndOfStreamException();
             }
@@ -514,16 +504,16 @@ namespace GorgonLibrary.Graphics.Example
 
 		#region Constructor
 		/// <summary>
-		/// Initializes a new instance of the <see cref="UselessImageCodec"/> class.
+		/// Initializes a new instance of the <see cref="TvImageCodec"/> class.
 		/// </summary>
-	    public UselessImageCodec()
+	    public TvImageCodec()
 		{
 			// Tell the codec which image file name extensions are commonly used to 
 			// identify the image data type.  This is use by applications to determine 
 			// which codec to use when loading an image.
 			CodecCommonExtensions = new[]
 			                        {
-										"Useless"
+										"tv"
 			                        };
 		}
 		#endregion

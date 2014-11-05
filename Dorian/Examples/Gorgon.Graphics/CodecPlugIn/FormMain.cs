@@ -106,7 +106,7 @@ namespace CodecPlugIn
 	    private bool LoadCodec()
 		{
 			// Load our plug-in.
-			string plugInPath = Gorgon.ApplicationDirectory + "UselessImageCodec.dll";
+			string plugInPath = Gorgon.ApplicationDirectory + "TVImageCodec.dll";
 
 			if (!File.Exists(plugInPath))
 			{
@@ -121,7 +121,7 @@ namespace CodecPlugIn
 			Gorgon.PlugIns.LoadPlugInAssembly(plugInPath);
 
 			// Get the plug-in object.
-			var plugIn = Gorgon.PlugIns["GorgonLibrary.Graphics.Example.UselessImageCodecPlugIn"] as GorgonCodecPlugIn;
+			var plugIn = Gorgon.PlugIns["GorgonLibrary.Graphics.Example.TvImageCodecPlugIn"] as GorgonCodecPlugIn;
 
 			if (plugIn == null)
 			{

@@ -29,12 +29,12 @@ using GorgonLibrary.IO;
 namespace GorgonLibrary.Graphics.Example
 {
     /// <summary>
-    /// Our entry point into the useless image codec.
+    /// Our entry point into the TV image codec.
     /// </summary>
     /// <remarks>
-    /// This plug-in will encode/decode images as 1 pixel per channel.  So, really, it is quite useless.
+    /// This plug-in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat.
     /// </remarks>
-    public class UselessImageCodecPlugIn
+    public class TvImageCodecPlugIn
         : GorgonCodecPlugIn
     {
         #region Methods.
@@ -46,16 +46,16 @@ namespace GorgonLibrary.Graphics.Example
         /// </returns>
         public override GorgonImageCodec CreateCodec()
         {
-            return new UselessImageCodec();
+            return new TvImageCodec();
         }
         #endregion
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="UselessImageCodecPlugIn"/> class.
+        /// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
         /// </summary>
-        public UselessImageCodecPlugIn()
-            : base("A useless image codec, used for example only.")
+        public TvImageCodecPlugIn()
+            : base("A TV image codec, used for example only.")
         {
         }
         #endregion

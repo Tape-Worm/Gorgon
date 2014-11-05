@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
-    <AssemblyName>UselessImageCodec</AssemblyName>
+    <AssemblyName>TVImageCodec</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,9 +40,9 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UselessImageCodec.cs" />
-    <Compile Include="UselessImageCodecPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TvImageCodec.cs" />
+    <Compile Include="TvImageCodecPlugIn.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
@@ -56,8 +56,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)\UselessImageCodec.dll" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"
-copy "$(TargetDir)\UselessImageCodec.pdb" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)\TVImageCodec.dll" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"
+copy "$(TargetDir)\TVImageCodec.pdb" "$(ProjectDir)..\CodecPlugIn\bin\$(ConfigurationName)\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
