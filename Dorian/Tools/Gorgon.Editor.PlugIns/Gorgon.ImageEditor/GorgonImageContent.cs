@@ -247,6 +247,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         private GorgonPixelShader _2DShader;                                    // 2D pixel shader.
         private GorgonPixelShader _2DArrayShader;                               // 2D array pixel shader.
         private GorgonPixelShader _3DShader;                                    // 3D pixel shader.
+	    private GorgonImageEditorPlugIn _plugIn;								// Image editor plug-in.
         #endregion
 
         #region Properties.
@@ -1108,7 +1109,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             DisableProperty("ImageType", !Codec.SupportsDepth && !Codec.SupportsArray);
 
-	        DisableProperty("Codec", GorgonImageEditorPlugIn.CodecDropDownList.Count(CodecSupportsImage) <= 1);
+	        DisableProperty("Codec", _plugIn.CodecDropDownList.Count(CodecSupportsImage) <= 1);
         }
 
 		/// <summary>
@@ -1528,7 +1529,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <param name="file">The editor file to evaluate.</param>
 		/// <param name="stream">The stream to read.</param>
 		/// <returns>The codec for the stream.</returns>
-	    private static GorgonImageCodec GetCodecForStream(EditorFile file, Stream stream)
+	    private GorgonImageCodec GetCodecForStream(EditorFile file, Stream stream)
 		{
 			GorgonImageCodec codec;
 
@@ -1538,7 +1539,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			if (file.Attributes.TryGetValue("Codec", out codecTypeName))
 			{
 				// Find a codec with the appropriate type name.
-				codec = GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(item => string.Equals(item.GetType().FullName, codecTypeName, StringComparison.OrdinalIgnoreCase));
+				codec = _plugIn.CodecDropDownList.FirstOrDefault(item => string.Equals(item.GetType().FullName, codecTypeName, StringComparison.OrdinalIgnoreCase));
 
 				if ((codec != null) && (codec.IsReadable(stream)))
 				{
@@ -1549,7 +1550,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			// We didn't have codec information in the meta data, fall back to the file extension.
 			string fileExtension = Path.GetExtension(file.FilePath);
 
-			if ((!GorgonImageEditorPlugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
+			if ((!_plugIn.Codecs.TryGetValue(new GorgonFileExtension(fileExtension), out codec))
 				|| (!codec.IsReadable(stream)))
 			{
 				return null;
@@ -1601,6 +1602,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	    {
 			// Get the appropriate image codec.
 		    _originalCodec = _codec = GetCodecForStream(EditorFile, stream);
+
+		    if (_codec == null)
+		    {
+			    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_ERR_CODEC_NONE_FOUND, EditorFile.Filename));
+		    }
 
 			// If we're not actuallying "editing" the image, but using this interface to load an image, 
 			// then just leave so we can keep the image data lightweight.
@@ -2286,7 +2292,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public GorgonImageContent(GorgonImageEditorPlugIn plugIn, GorgonImageContentSettings settings)
             : base(settings)
         {
-	        PlugIn = plugIn;
+			PlugIn = _plugIn = plugIn;
+
 	        EditorFile = settings.EditorFile;
             HasThumbnail = true;
 

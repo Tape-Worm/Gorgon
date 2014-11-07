@@ -41,6 +41,14 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the currently open content.
+		/// </summary>
+	    protected internal ContentObject Content
+	    {
+		    get;
+		    internal set;
+	    }
 
         /// <summary>
         /// Property to set or return the text caption for this panel.

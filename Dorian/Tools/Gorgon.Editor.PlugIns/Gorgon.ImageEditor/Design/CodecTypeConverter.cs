@@ -122,10 +122,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
             string formatString = value.ToString();
+			var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
 	        GorgonImageCodec codec =
-		        GorgonImageEditorPlugIn.CodecDropDownList.FirstOrDefault(
-		                                                                 item =>
-		                                                                 string.Equals(item.Codec + " - " + item.CodecDescription, formatString, StringComparison.OrdinalIgnoreCase));
+		        ((GorgonImageEditorPlugIn)content.PlugIn).CodecDropDownList.FirstOrDefault(item =>
+		                                                                                   string.Equals(item.Codec + " - " + item.CodecDescription,
+		                                                                                                 formatString,
+		                                                                                                 StringComparison.OrdinalIgnoreCase));
 
 	        if (codec == null)
 	        {
@@ -171,7 +173,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			var content = (GorgonImageContent)((ContentTypeDescriptor)context.Instance).Content;
 
 	        return new StandardValuesCollection(
-		        GorgonImageEditorPlugIn
+		        ((GorgonImageEditorPlugIn)content.PlugIn)
 			        .CodecDropDownList
 			        .Where(content.CodecSupportsImage)
 			        .ToArray());

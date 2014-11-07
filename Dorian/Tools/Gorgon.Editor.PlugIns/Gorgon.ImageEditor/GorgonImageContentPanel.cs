@@ -87,6 +87,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#endregion
 
 		#region Variables.
+		// The plug-in for the content.
+	    private GorgonImageEditorPlugIn _plugIn;
 		// Image content.
         private readonly GorgonImageContent _content;
 		// Texture to display.
@@ -890,7 +892,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
                 // We can only support one file at a time for now.  And the file must be a known image file type.
 			    if ((files.Length != 1)
-                    || (!GorgonImageEditorPlugIn.Codecs.ContainsKey(new GorgonFileExtension(Path.GetExtension(files[0])))))
+                    || (!_plugIn.Codecs.ContainsKey(new GorgonFileExtension(Path.GetExtension(files[0])))))
 			    {
 			        return;
 			    }
@@ -911,9 +913,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// Function to retrieve a list of extensions from the codecs available.
 		/// </summary>
 		/// <returns>A string containing the list of extensions available for all codecs.</returns>
-		private static string GetExtensionsForOpenFileDialog()
+		private string GetExtensionsForOpenFileDialog()
 		{
-			var extensions = GorgonImageEditorPlugIn.Codecs.GroupBy(item => item.Key.Description);
+			var extensions = _plugIn.Codecs.GroupBy(item => item.Key.Description);
 			var result = new StringBuilder();
 			var imageDescriptions = new StringBuilder();
 			var allImageExtensions = new StringBuilder();
@@ -2073,6 +2075,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			: base(content, input)
 		{
 			_content = content;
+			_plugIn = _content.PlugIn as GorgonImageEditorPlugIn;
 
             InitializeComponent();
 

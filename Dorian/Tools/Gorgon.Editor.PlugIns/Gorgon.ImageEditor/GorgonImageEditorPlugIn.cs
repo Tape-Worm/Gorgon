@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             private set;
         }
 
-	    internal static GorgonImageCodec[] CodecDropDownList
+	    internal GorgonImageCodec[] CodecDropDownList
 	    {
 		    get
 		    {
@@ -75,7 +75,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return a list of codecs that can be used to read image file formats.
         /// </summary>
-        internal static Dictionary<GorgonFileExtension, GorgonImageCodec> Codecs
+        internal Dictionary<GorgonFileExtension, GorgonImageCodec> Codecs
         {
             get
             {
@@ -120,6 +120,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             // Get all the plug-ins that support image codecs.
             IEnumerable<GorgonCodecPlugIn> codecPlugIns = from plugIn in Gorgon.PlugIns
                                                           let codecPlugIn = plugIn as GorgonCodecPlugIn
+														  where codecPlugIn != null
                                                           select codecPlugIn;
 
             // Enumerate our codecs.
@@ -145,7 +146,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Function to create the list of codecs
         /// </summary>
-        private static void GetCodecs()
+        internal void GetCodecs()
         {
             _codecs = new Dictionary<GorgonFileExtension, GorgonImageCodec>();
 
@@ -181,6 +182,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             }
 
 			_codecDropDown = _codecs.Values.Distinct().ToArray();
+
+			FileExtensions.Clear();
+
+			// Update the list of available extensions (because they're not static) when we create our content for display.
+			foreach (var codec in _codecs.Where(codec => !FileExtensions.Contains(codec.Key)))
+			{
+				FileExtensions.Add(codec.Key);
+			}
         }
 
         /// <summary>
@@ -231,6 +240,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentObject OnCreateContentObject(ContentSettings settings)
         {
+			// Retrieve our codecs.
+			GetCodecs();
+
             return new GorgonImageContent(this, (GorgonImageContentSettings)settings);
         }
 
@@ -302,12 +314,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
             Settings = new GorgonImageProperties();
 			Settings.Load();
-
-            // Update the list of available extensions (because they're not static) when we create our content for display.
-            foreach (var codec in Codecs.Where(codec => !FileExtensions.Contains(codec.Key)))
-            {
-                FileExtensions.Add(codec.Key);
-            }
         }
         #endregion
 
@@ -331,6 +337,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             {
                 throw new ArgumentNullException("imageDataStream");
             }
+
+			GetCodecs();
 
 			IImageEditorContent content = new GorgonImageContent(this,
 			                                                     new GorgonImageContentSettings

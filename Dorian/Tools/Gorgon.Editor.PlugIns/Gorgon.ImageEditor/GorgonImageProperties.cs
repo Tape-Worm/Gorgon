@@ -70,6 +70,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return the path to the last codec plug-in selected.
+		/// </summary>
+		[ApplicationSetting("LastCodecPath", typeof(string), "Paths")]
+	    public string LastCodecPath
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to set or return whether cropping or resizing is the default value.
 		/// </summary>
 		[ApplicationSetting("CropDefault", typeof(bool), "CropResize")]

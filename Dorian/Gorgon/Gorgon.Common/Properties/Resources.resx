@@ -802,7 +802,7 @@ Code: 0x{2}</value>
     <value>Design</value>
   </data>
   <data name="PROP_CATEGORY_WINDOWSTYLE" xml:space="preserve">
-    <value>Window style</value>
+    <value>Window Style</value>
   </data>
   <data name="PROP_ICON_DESC" xml:space="preserve">
     <value>Sets the icon for the window.</value>
