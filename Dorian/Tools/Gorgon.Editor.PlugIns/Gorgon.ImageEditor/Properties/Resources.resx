@@ -570,4 +570,13 @@ Do you wish to continue?</value>
   <data name="GORIMG_TEXT_CANNOT_EDIT" xml:space="preserve">
     <value>Cannot add or remove codecs while an image is open in the editor.  </value>
   </data>
+  <data name="GORIMG_TEXT_FILTER_MIPS" xml:space="preserve">
+    <value>Filtering for mip-map generation</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_RESIZE" xml:space="preserve">
+    <value>Filtering for image resizing</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_FILTERING" xml:space="preserve">
+    <value>Image filtering</value>
+  </data>
 </root>

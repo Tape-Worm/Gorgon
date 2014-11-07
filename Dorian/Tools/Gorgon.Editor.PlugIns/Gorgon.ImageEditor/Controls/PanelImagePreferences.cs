@@ -26,18 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
@@ -95,6 +89,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 		#region Variables.
 		// A list of external codecs.
 		private List<CodecDescriptor> _codecs = new List<CodecDescriptor>();
+        // Filter type list.
+	    private Dictionary<ImageFilter, string> _filterTypes = new Dictionary<ImageFilter, string>
+	                                                           {
+	                                                               {
+	                                                                   ImageFilter.Point,
+	                                                                   Resources.GORIMG_TEXT_FILTER_POINT
+	                                                               },
+	                                                               {
+	                                                                   ImageFilter.Linear,
+	                                                                   Resources.GORIMG_TEXT_FILTER_LINEAR
+	                                                               },
+	                                                               {
+	                                                                   ImageFilter.Cubic,
+	                                                                   Resources.GORIMG_TEXT_FILTER_CUBIC
+	                                                               },
+	                                                               {
+	                                                                   ImageFilter.Fant,
+	                                                                   Resources.GORIMG_TEXT_FILTER_FANT
+	                                                               },
+	                                                           };
 		#endregion
 
 		#region Properties.
@@ -386,7 +400,19 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 			dialogOpen.Title = Resources.GORIMG_DLG_LOAD_CODEC;
 			labelImageCodecs.Text = Resources.GORIMG_TEXT_IMAGE_CODEC_PLUGINS;
 			labelCannotEdit.Text = Resources.GORIMG_TEXT_CANNOT_EDIT;
-		}
+		    labelScalingFilters.Text = Resources.GORIMG_TEXT_IMAGE_FILTERING;
+		    labelScaleFilter.Text = Resources.GORIMG_TEXT_FILTER_RESIZE;
+		    labelMipMapFilter.Text = Resources.GORIMG_TEXT_FILTER_MIPS;
+
+		    comboMipMapFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_POINT);
+            comboMipMapFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_LINEAR);
+            comboMipMapFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_CUBIC);
+            comboMipMapFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_FANT);
+            comboResizeFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_POINT);
+            comboResizeFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_LINEAR);
+            comboResizeFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_CUBIC);
+            comboResizeFilter.Items.Add(Resources.GORIMG_TEXT_FILTER_FANT);
+        }
 
 		/// <summary>
 		/// Function to commit any settings.
@@ -396,6 +422,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 			GorgonImageEditorPlugIn.Settings.UseAnimations = checkShowAnimations.Checked;
 			GorgonImageEditorPlugIn.Settings.StartWithActualSize = checkShowActualSize.Checked;
 			GorgonImageEditorPlugIn.Settings.CustomCodecs.Clear();
+
+		    GorgonImageEditorPlugIn.Settings.MipFilter =
+		        _filterTypes.First(item =>
+		                           string.Equals(item.Value, comboMipMapFilter.Text, StringComparison.CurrentCultureIgnoreCase))
+		                    .Key;
+
+		    GorgonImageEditorPlugIn.Settings.ResizeImageFilter =
+		        _filterTypes.First(item => string.Equals(item.Value, comboResizeFilter.Text, StringComparison.CurrentCulture))
+		                    .Key;
 
 			foreach (CodecDescriptor codec in _codecs)
 			{
@@ -413,6 +448,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 			checkShowAnimations.Checked = GorgonImageEditorPlugIn.Settings.UseAnimations;
 			checkShowActualSize.Checked = GorgonImageEditorPlugIn.Settings.StartWithActualSize;
 
+		    comboMipMapFilter.Text = _filterTypes[GorgonImageEditorPlugIn.Settings.MipFilter];
+		    comboResizeFilter.Text = _filterTypes[GorgonImageEditorPlugIn.Settings.ResizeImageFilter];
+            
 			// Get the list of already loaded image codecs.
 			_codecs = (from plugIn in Gorgon.PlugIns
 			           let codec = plugIn as GorgonCodecPlugIn

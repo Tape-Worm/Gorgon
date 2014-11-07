@@ -122,7 +122,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the image filtering to use when generating mip-maps.
 		/// </summary>
-		[ApplicationSetting("MipFilter", typeof(ImageFilter), "MipMaps")]
+		[ApplicationSetting("MipFilter", typeof(ImageFilter), "ImageFiltering")]
 	    public ImageFilter MipFilter
 	    {
 		    get;
@@ -132,8 +132,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the image filtering to use when changing the width/height the image.
         /// </summary>
-        [ApplicationSetting("ImageWidthHeightFilter", typeof(ImageFilter), "ResizeFilter")]
-        public ImageFilter ImageWidthHeightFilter
+        [ApplicationSetting("ImageWidthHeightFilter", typeof(ImageFilter), "ImageFiltering")]
+        public ImageFilter ScaleFilter
         {
             get;
             set;
@@ -170,7 +170,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             CustomCodecs = new List<string>();
 	        CropDefault = true;
 	        ResizeImageFilter = ImageFilter.Point;
-            ImageWidthHeightFilter = ImageFilter.Fant;
+            ScaleFilter = ImageFilter.Fant;
 			MipFilter = ImageFilter.Fant;
             PreserveAspectRatio = true;
 			ImageAlign = ContentAlignment.MiddleCenter;
