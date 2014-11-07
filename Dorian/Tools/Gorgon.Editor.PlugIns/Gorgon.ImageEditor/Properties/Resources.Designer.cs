@@ -218,6 +218,24 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Add image codec.
+        /// </summary>
+        internal static string GORIMG_ACC_ADD_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_ACC_ADD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Remove image codec.
+        /// </summary>
+        internal static string GORIMG_ACC_REMOVE_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_ACC_REMOVE_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Cancel.
         /// </summary>
         internal static string GORIMG_ACC_TEXT_CANCEL {
@@ -281,6 +299,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dynamic link library.
+        /// </summary>
+        internal static string GORIMG_DLG_CODEC_FILTER {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_CODEC_FILTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
         ///
         ///Are you sure you wish to do this?.
@@ -303,6 +330,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a codec plug-in DLL.
+        /// </summary>
+        internal static string GORIMG_DLG_LOAD_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_LOAD_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer at mip level {0} and array index {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
         ///
         ///Would you like to continue?.
@@ -321,6 +357,26 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_DLG_OVERWRITE_DEPTH_BUFFER {
             get {
                 return ResourceManager.GetString("GORIMG_DLG_OVERWRITE_DEPTH_BUFFER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to remove the &apos;{0}&apos; codec?.
+        /// </summary>
+        internal static string GORIMG_DLG_REMOVE_CODEC {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_REMOVE_CODEC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removing the &apos;{0}&apos; codec will remove all codecs from the plug-in DLL &apos;{1}&apos;.
+        ///
+        ///Are you sure you wish to remove the codecs?.
+        /// </summary>
+        internal static string GORIMG_DLG_REMOVE_CODECS {
+            get {
+                return ResourceManager.GetString("GORIMG_DLG_REMOVE_CODECS", resourceCulture);
             }
         }
         
@@ -370,6 +426,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image codec plug-in file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GORIMG_ERR_CODEC_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_CODEC_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a valid image codec plug-in..
         /// </summary>
         internal static string GORIMG_ERR_CODEC_LOAD_NOT_A_PLUGIN {
@@ -403,6 +468,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_ERR_DECOMPRESSING {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_DECOMPRESSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a valid .NET assembly..
+        /// </summary>
+        internal static string GORIMG_ERR_DLL_NOT_ASSEMBLY {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_DLL_NOT_ASSEMBLY", resourceCulture);
             }
         }
         
@@ -475,6 +549,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_ERR_MIP_COUNT_INVALID {
             get {
                 return ResourceManager.GetString("GORIMG_ERR_MIP_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There were no codec plug-ins found in &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORIMG_ERR_NO_CODEC_PLUGINS {
+            get {
+                return ResourceManager.GetString("GORIMG_ERR_NO_CODEC_PLUGINS", resourceCulture);
             }
         }
         
@@ -583,6 +666,42 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_ARRAY_INDEX {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_ARRAY_INDEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add or remove codecs while an image is open in the editor.  .
+        /// </summary>
+        internal static string GORIMG_TEXT_CANNOT_EDIT {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CANNOT_EDIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description.
+        /// </summary>
+        internal static string GORIMG_TEXT_CODEC_DESC {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CODEC_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string GORIMG_TEXT_CODEC_NAME {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CODEC_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path.
+        /// </summary>
+        internal static string GORIMG_TEXT_CODEC_PATH {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_CODEC_PATH", resourceCulture);
             }
         }
         
@@ -700,6 +819,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string GORIMG_TEXT_GENERATE_MIPS {
             get {
                 return ResourceManager.GetString("GORIMG_TEXT_GENERATE_MIPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Image codec plug-ins.
+        /// </summary>
+        internal static string GORIMG_TEXT_IMAGE_CODEC_PLUGINS {
+            get {
+                return ResourceManager.GetString("GORIMG_TEXT_IMAGE_CODEC_PLUGINS", resourceCulture);
             }
         }
         
@@ -967,6 +1095,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image_add_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("image_add_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to // Shaders for image viewing.
         ///#GorgonInclude &quot;Gorgon2DShaders&quot;
         ///
@@ -1017,6 +1155,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap import_image_filesystem_16x16 {
             get {
                 object obj = ResourceManager.GetObject("import_image_filesystem_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap info_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("info_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1228,6 +1376,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         internal static string PROP_WIDTH_NAME {
             get {
                 return ResourceManager.GetString("PROP_WIDTH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_image_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("remove_image_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

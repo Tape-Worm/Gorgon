@@ -1005,7 +1005,7 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Window style.
+        ///   Looks up a localized string similar to Window Style.
         /// </summary>
         internal static string PROP_CATEGORY_WINDOWSTYLE {
             get {

@@ -147,7 +147,7 @@ namespace GorgonLibrary.Editor
                               {
                                   new EditorPreferencePanel(),
                                   new PanelPlugIns(), 
-                                  new PanelPlugInPreferences()
+                                  new PanelPlugInPreferences(ContentManagement.Current)
                               };
                 
                 PopulateTabValues();

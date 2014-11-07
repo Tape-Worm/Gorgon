@@ -67,6 +67,12 @@
     <Compile Include="Design\CompressionTypeConverter.cs" />
     <Compile Include="Design\ImageTypeTypeConverter.cs" />
     <Compile Include="Design\BufferFormatTypeConverter.cs" />
+    <Compile Include="FormCodecs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCodecs.Designer.cs">
+      <DependentUpon>FormCodecs.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormResizeCrop.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +99,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\info_16x16.png" />
+    <None Include="Resources\image_add_16x16.png" />
+    <None Include="Resources\remove_image_16x16.png" />
     <None Include="Resources\zoom_16x16.png" />
     <None Include="Resources\import_image_filesystem_16x16.png" />
     <None Include="Resources\import_disk_16x16.png" />
@@ -145,6 +154,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Controls\PanelImagePreferences.resx">
       <DependentUpon>PanelImagePreferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormCodecs.resx">
+      <DependentUpon>FormCodecs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormResizeCrop.resx">
       <DependentUpon>FormResizeCrop.cs</DependentUpon>

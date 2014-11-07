@@ -191,6 +191,7 @@ namespace GorgonLibrary.Editor
                 panel.BackColor = DarkFormsRenderer.DarkBackground;
                 panel.ForeColor = DarkFormsRenderer.ForeColor;
                 panel.Dock = DockStyle.Fill;
+	            panel.Content = Content;
                 panelPlugInPrefs.Controls.Add(panel);
 
                 panel.InitializeSettings();
@@ -279,6 +280,16 @@ namespace GorgonLibrary.Editor
         {
             InitializeComponent();
         }
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="PanelPlugInPreferences"/> class.
+		/// </summary>
+		/// <param name="content">The currently open content.</param>
+	    public PanelPlugInPreferences(ContentObject content)
+			: this()
+	    {
+		    Content = content;
+	    }
         #endregion
     }
 }
