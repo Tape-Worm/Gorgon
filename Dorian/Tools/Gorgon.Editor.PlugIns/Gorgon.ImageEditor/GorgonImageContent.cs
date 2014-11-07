@@ -823,7 +823,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				if ((convertWidth != newSettings.Width)
 				    || (convertHeight != newSettings.Height))
 				{
-					newImage.Resize(convertWidth, convertHeight, false, GorgonImageEditorPlugIn.Settings.ImageWidthHeightFilter);
+					newImage.Resize(convertWidth, convertHeight, false, GorgonImageEditorPlugIn.Settings.ScaleFilter);
 				}
 
 				if (Image != _original)
