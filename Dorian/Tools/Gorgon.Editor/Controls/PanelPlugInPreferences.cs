@@ -26,12 +26,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
@@ -107,7 +102,7 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
         /// Function to localize the controls on the panel.
         /// </summary>
         protected internal override void LocalizeControls()

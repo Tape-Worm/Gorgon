@@ -133,7 +133,7 @@ namespace GorgonLibrary.Editor
             {
                 if (!exclude)
                 {
-                    IncludeItem(file);
+                    ContentManagement.IncludeItem(file);
                 }
                 else
                 {
@@ -250,41 +250,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to include a file in the editor.
-		/// </summary>
-		/// <param name="file">File entry to include.</param>
-		/// <returns>An editor file object linking the file to the the system.</returns>
-		private static EditorFile IncludeItem(GorgonFileSystemFileEntry file)
-		{
-			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
-
-			string plugInType = string.Empty;
-
-			if (plugIn != null)
-			{
-				plugInType = plugIn.GetType().FullName;
-			}
-
-
-			var fileItem = new EditorFile(file.FullPath)
-			{
-				PlugInType = plugInType
-			};
-
-			if (plugIn != null)
-			{
-				using (Stream fileStream = file.OpenStream(false))
-				{
-					plugIn.GetEditorFileAttributes(fileStream, fileItem.Attributes);
-				}
-			}
-
-			EditorMetaDataFile.Files[fileItem.FilePath] = fileItem;
-
-			return fileItem;
-		}
-
-		/// <summary>
 		/// Handles the Click event of the popupItemInclude control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -298,7 +263,7 @@ namespace GorgonLibrary.Editor
 				var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
 				GorgonFileSystemFileEntry file = fileNode.File;
 
-				IncludeItem(file);
+				ContentManagement.IncludeItem(file);
 
 				FileManagement.FileChanged = true;
 
@@ -394,8 +359,8 @@ namespace GorgonLibrary.Editor
 
             try
             {
-                prefs = new FormPreferences();
-                prefs.ShowDialog(this);
+	            prefs = new FormPreferences();
+	            prefs.ShowDialog(this);
             }
             catch (Exception ex)
             {
@@ -407,6 +372,8 @@ namespace GorgonLibrary.Editor
                 {
                     prefs.Dispose();
                 }
+
+				ValidateControls();
             }        
         }
 
@@ -1113,7 +1080,7 @@ namespace GorgonLibrary.Editor
 
 					Cursor.Current = Cursors.WaitCursor;
 
-					editorFile = IncludeItem(fileNode.File);
+					editorFile = ContentManagement.IncludeItem(fileNode.File);
 
 					EditorMetaDataFile.Save();
 				}
@@ -3527,7 +3494,7 @@ namespace GorgonLibrary.Editor
 			ScratchArea.ExceptionAction = FileCopyException;
             ScratchArea.ImportExportFileConflictFunction = ImportConfirmFileOverwrite;
             ScratchArea.ImportExportFileCompleteAction = FileImportExportCompleted;
-			ScratchArea.FileImported = file => IncludeItem(file);
+			ScratchArea.FileImported = file => ContentManagement.IncludeItem(file);
 		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_DLG_OVERWRITE_FILE,
 		                                                                                                        fileType,
 		                                                                                                        fileName));
