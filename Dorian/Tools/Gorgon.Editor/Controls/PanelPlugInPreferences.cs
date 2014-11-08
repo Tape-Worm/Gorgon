@@ -97,10 +97,6 @@ namespace GorgonLibrary.Editor
         private Dictionary<EditorPlugIn, PreferencePanel> _settingPanels = new Dictionary<EditorPlugIn, PreferencePanel>();
         #endregion
 
-        #region Properties.
-
-        #endregion
-
         #region Methods.
 		/// <summary>
         /// Function to localize the controls on the panel.
@@ -187,6 +183,7 @@ namespace GorgonLibrary.Editor
                 panel.ForeColor = DarkFormsRenderer.ForeColor;
                 panel.Dock = DockStyle.Fill;
 	            panel.Content = Content;
+	            panel.PlugIn = item.PlugIn;
                 panelPlugInPrefs.Controls.Add(panel);
 
                 panel.InitializeSettings();

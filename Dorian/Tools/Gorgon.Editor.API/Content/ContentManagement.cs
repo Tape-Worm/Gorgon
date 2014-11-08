@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
@@ -42,7 +43,6 @@ namespace GorgonLibrary.Editor
     static class ContentManagement
     {
         #region Variables.
-        private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
 	    private static ContentObject _currentContentObject;
 	    private static Type _defaultContentType;
         #endregion
@@ -415,9 +415,9 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <returns>A list of content file name extensions.</returns>
         public static IEnumerable<GorgonFileExtension> GetContentExtensions()
-        {
-            return _contentFiles.Keys;
-        }
+		{
+			return PlugIns.ContentPlugIns.Where(item => item.Value.FileExtensions.Count > 0).SelectMany(item => item.Value.FileExtensions);
+		}
 
 		/// <summary>
 		/// Function to return a related plug-in for the given editor file.
@@ -451,16 +451,10 @@ namespace GorgonLibrary.Editor
 		        return null;
 	        }
 
-            if (fileExtension.IndexOf('.') > 0)
-            {
-                fileExtension = Path.GetExtension(fileExtension);
-            }
-
-	        ContentPlugIn plugIn;
-
-	        _contentFiles.TryGetValue(new GorgonFileExtension(fileExtension, null), out plugIn);
-
-	        return plugIn;
+	        return (from plugInItem in PlugIns.ContentPlugIns
+	                where plugInItem.Value.FileExtensions.Count > 0
+	                      && plugInItem.Value.FileExtensions.Contains(new GorgonFileExtension(fileExtension))
+	                select plugInItem.Value).FirstOrDefault();
         }
 
 		/// <summary>
@@ -721,37 +715,6 @@ namespace GorgonLibrary.Editor
 
 			ContentSaved();
 	    }
-
-	    /// <summary>
-        /// Function used to initialize the file types for the content types.
-        /// </summary>
-        public static void InitializeContentFileTypes()
-        {
-            // Get content extensions.
-            foreach (var contentPlugIn in PlugIns.ContentPlugIns)
-            {
-                if (contentPlugIn.Value.FileExtensions.Count == 0)
-                {
-                    continue;
-                }
-
-                // Associate the content file type with the plug-in.
-                foreach (var extension in contentPlugIn.Value.FileExtensions)
-                {
-                    _contentFiles[extension] = contentPlugIn.Value;
-                }
-            }
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes the <see cref="ContentManagement"/> class.
-        /// </summary>
-        static ContentManagement()
-        {
-            _contentFiles = new Dictionary<GorgonFileExtension, ContentPlugIn>();
-        }
         #endregion
     }
 }

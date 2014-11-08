@@ -42,6 +42,15 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the plug-in associated with the preferences.
+		/// </summary>
+	    protected internal EditorPlugIn PlugIn
+	    {
+		    get;
+		    internal set;
+	    }
+
+		/// <summary>
 		/// Property to return the currently open content.
 		/// </summary>
 	    protected internal ContentObject Content

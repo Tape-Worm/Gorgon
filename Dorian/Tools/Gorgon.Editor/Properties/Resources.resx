@@ -325,7 +325,9 @@ Changing this value will require a restart of the application.</value>
     <value>The editor file '{0}' has unsaved changes.  Would you like to save these changes?</value>
   </data>
   <data name="GOREDIT_DLG_OPEN_ERROR" xml:space="preserve">
-    <value>There was an error opening '{0}'.</value>
+    <value>There was an error opening '{0}'.
+
+{1}</value>
   </data>
   <data name="GOREDIT_TEXT_LOAD_LAST_FILE" xml:space="preserve">
     <value>Load last opened file on editor start up</value>
