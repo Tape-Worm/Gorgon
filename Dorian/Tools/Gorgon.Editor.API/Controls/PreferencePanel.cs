@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor
 
         #endregion
 
-        #region Properties.
+		#region Properties.
 		/// <summary>
 		/// Property to return the currently open content.
 		/// </summary>

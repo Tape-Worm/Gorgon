@@ -46,12 +46,8 @@ namespace GorgonLibrary.Editor
         private IList<PreferencePanel> _prefPanels;               // A list of our loaded preference panels.
         #endregion
 
-        #region Properties.
-
-        #endregion
-
         #region Methods.
-        /// <summary>
+		/// <summary>
         /// Function to populate the values for tabs.
         /// </summary>
         private void PopulateTabValues()
@@ -158,7 +154,7 @@ namespace GorgonLibrary.Editor
                 Close();
             }            
         }
-        #endregion
+	    #endregion
 
         #region Constructor/Destructor.
         /// <summary>

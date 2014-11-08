@@ -358,6 +358,41 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Function to include a file in the editor.
+		/// </summary>
+		/// <param name="file">File entry to include.</param>
+		/// <returns>An editor file object linking the file to the the system.</returns>
+		public static EditorFile IncludeItem(GorgonFileSystemFileEntry file)
+		{
+			ContentPlugIn plugIn = GetContentPlugInForFile(file.Extension);
+
+			string plugInType = string.Empty;
+
+			if (plugIn != null)
+			{
+				plugInType = plugIn.GetType().FullName;
+			}
+
+
+			var fileItem = new EditorFile(file.FullPath)
+			{
+				PlugInType = plugInType
+			};
+
+			if (plugIn != null)
+			{
+				using (Stream fileStream = file.OpenStream(false))
+				{
+					plugIn.GetEditorFileAttributes(fileStream, fileItem.Attributes);
+				}
+			}
+
+			EditorMetaDataFile.Files[fileItem.FilePath] = fileItem;
+
+			return fileItem;
+		}
+
+		/// <summary>
 		/// Function to tell the content that the editor settings have changed.
 		/// </summary>
 	    public static void EditorSettingsUpdated()
