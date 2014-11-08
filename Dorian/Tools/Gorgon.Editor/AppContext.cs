@@ -279,7 +279,6 @@ namespace GorgonLibrary.Editor
 				InitializeInput();
 				
                 FileManagement.InitializeFileTypes();
-                ContentManagement.InitializeContentFileTypes();
 
                 // Load the last opened file.
                 if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))

@@ -269,6 +269,8 @@ namespace GorgonLibrary.Editor
 
 				EditorMetaDataFile.Save();
 
+				fileNode.UpdateFile(file);
+
 				treeFiles.Refresh();
 			}
 			catch (Exception ex)
@@ -314,6 +316,7 @@ namespace GorgonLibrary.Editor
 				}
 				else
 				{
+					fileNode.UpdateFile(fileNode.File);
 					treeFiles.Refresh();
 				}
 			}
@@ -1112,7 +1115,7 @@ namespace GorgonLibrary.Editor
 			catch (Exception ex)
 			{
 				ContentManagement.LoadDefaultContentPane();
-                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, fileNode.File.Name), null, ex);
+                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, fileNode.File.Name, ex.Message), null, ex);
 			}
 			finally
 			{

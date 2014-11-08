@@ -437,6 +437,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 				GorgonImageEditorPlugIn.Settings.CustomCodecs.Add(codec.CodecPath);
 			}
 
+			var imagePlugIn = (GorgonImageEditorPlugIn)PlugIn;
+
+			// Refresh the codec list.
+			imagePlugIn.GetCodecs();
+
 			GorgonImageEditorPlugIn.Settings.Save();
 		}
 

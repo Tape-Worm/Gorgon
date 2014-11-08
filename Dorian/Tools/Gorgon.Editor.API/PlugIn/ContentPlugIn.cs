@@ -30,7 +30,6 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor

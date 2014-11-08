@@ -314,6 +314,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
             Settings = new GorgonImageProperties();
 			Settings.Load();
+
+			GetCodecs();
         }
         #endregion
 

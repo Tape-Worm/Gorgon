@@ -141,7 +141,8 @@ namespace GorgonLibrary.Editor
 
 			PlugIn = ContentManagement.GetContentPlugInForFile(_editorFile) ?? ContentManagement.GetContentPlugInForFile(File.Extension);
 
-			if (PlugIn != null)
+			if ((PlugIn != null)
+				&& (_editorFile != null))
 			{
 				ExpandedImage = CollapsedImage = PlugIn.GetContentIcon();
 			}
