@@ -168,7 +168,11 @@ namespace GorgonLibrary.Editor
                 if (!_settingPanels.TryGetValue(item.PlugIn, out panel))
                 {
                     panel = item.SettingsUI.GetSettingsUI();
-                    _settingPanels[item.PlugIn] = panel;
+	                
+					if (panel != null)
+	                {
+		                _settingPanels[item.PlugIn] = panel;
+	                }
                 }
 
                 if (panel == null)

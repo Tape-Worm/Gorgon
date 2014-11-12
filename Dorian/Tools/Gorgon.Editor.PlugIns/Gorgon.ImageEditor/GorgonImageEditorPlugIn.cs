@@ -43,7 +43,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		: ContentPlugIn, IImageEditorPlugIn, IPlugInSettingsUI
 	{
 		#region Variables.
-		private bool _disposed;                                                             // Flag to indicate whether the object was disposed.
         private static Dictionary<GorgonFileExtension, GorgonImageCodec> _codecs;           // Codecs for the image editor.
 	    private static GorgonImageCodec[] _codecDropDown;									// List of codecs for the drop down list.
         private static readonly List<string> _codecPlugInErrors = new List<string>();       // List of errors that may occur when loading a codec plug-in.
@@ -245,24 +244,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
             return new GorgonImageContent(this, (GorgonImageContentSettings)settings);
         }
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-				}
-
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
-		}
 
         /// <summary>
         /// Funciton to create settings for a content object.
