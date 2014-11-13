@@ -56,9 +56,33 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private GorgonSwapChain _swap;
 		// Background pattern texture.
 		private GorgonTexture2D _background;
+		// The original sprite from the file system.
+		private GorgonSprite _originalSprite;
+		// The anchor point for the sprite.
+		private Point _spriteAnchor;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the working copy of the sprite.
+		/// </summary>
+		[Browsable(false)]
+		public GorgonSprite Sprite
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the texture bound to the sprite.
+		/// </summary>
+		[Browsable(false)]
+		public GorgonTexture2D SpriteTexture
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return whether this content has properties that can be manipulated in the properties tab.
 		/// </summary>
@@ -108,6 +132,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 		#region Methods.
 		/// <summary>
+		/// Function to find the deferred texture in the file system.
+		/// </summary>
+		private void GetDeferredTexture()
+		{
+			// TODO: Popup the dialog to select and load the texture.
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -117,6 +149,11 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			{
 				if (disposing)
 				{
+					if (SpriteTexture != null)
+					{
+						SpriteTexture.Dispose();
+					}
+
 					if (_background != null)
 					{
 						_background.Dispose();
@@ -134,6 +171,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				}
 			}
 
+			SpriteTexture = null;
 			_background = null;
 			Renderer = null;
 			_swap = null;
@@ -156,7 +194,31 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// <param name="stream">Stream containing the content data.</param>
 		protected override void OnRead(System.IO.Stream stream)
 		{
-			
+			// Load the sprite.
+			Sprite = Renderer.Renderables.FromStream<GorgonSprite>(Name, stream);
+
+			// This sprite is detached from its texture, so let's attempt to load the texture.
+			if ((Sprite.Texture == null)
+			    && (!string.IsNullOrWhiteSpace(Sprite.DeferredTextureName)))
+			{
+				GetDeferredTexture();
+			}
+			else
+			{
+				SpriteTexture = Sprite.Texture;
+			}
+
+			// Convert the anchor to integer values and store separately.
+			// We turn off anchoring for our display sprite so that we can edit the anchor
+			// without doing all kinds of weird stuff to display the sprite correctly.
+			_spriteAnchor = (Point)Sprite.Anchor;
+
+			// Disable the sprite anchor.
+			Sprite.Anchor = Vector2.Zero;
+			Sprite.Scale = new Vector2(1);
+			Sprite.Position = Vector2.Zero;
+
+			_originalSprite = Sprite;
 		}
 
 		/// <summary>
