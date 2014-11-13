@@ -33,6 +33,7 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Input;
+using SlimMath;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 {
@@ -50,7 +51,6 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		#endregion
 
 		#region Properties.
-
 		#endregion
 
 		#region Methods.
@@ -60,6 +60,28 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORSPR_CONTENT_TYPE;
+		}
+
+		/// <summary>
+		/// Function to draw the current sprite.
+		/// </summary>
+		private void DrawSprite()
+		{
+			var halfSprite = (Point)(new Vector2(_content.Sprite.Size.X / 2.0f, _content.Sprite.Size.Y / 2.0f));
+			var halfScreen = (Point)(new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f));
+			var spritePosition = new Vector2(halfScreen.X - halfSprite.X, halfScreen.Y - halfSprite.Y);
+
+			_content.Sprite.Position = spritePosition;
+			
+			_content.Sprite.Draw();
+		}
+
+		/// <summary>
+		/// Function to draw the
+		/// </summary>
+		public void Draw()
+		{
+			DrawSprite();
 		}
 
 		/// <summary>
