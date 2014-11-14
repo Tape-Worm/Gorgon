@@ -421,7 +421,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 		{
 			GorgonImageEditorPlugIn.Settings.UseAnimations = checkShowAnimations.Checked;
 			GorgonImageEditorPlugIn.Settings.StartWithActualSize = checkShowActualSize.Checked;
-			GorgonImageEditorPlugIn.Settings.CustomCodecs.Clear();
 
 		    GorgonImageEditorPlugIn.Settings.MipFilter =
 		        _filterTypes.First(item =>
@@ -432,15 +431,21 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 		        _filterTypes.First(item => string.Equals(item.Value, comboResizeFilter.Text, StringComparison.CurrentCulture))
 		                    .Key;
 
-			foreach (CodecDescriptor codec in _codecs)
-			{
-				GorgonImageEditorPlugIn.Settings.CustomCodecs.Add(codec.CodecPath);
-			}
+            // If we have an image open, then do not save the codec information.
+		    if (!(Content is GorgonImageContent))
+		    {
+		        GorgonImageEditorPlugIn.Settings.CustomCodecs.Clear();
+		        foreach (CodecDescriptor codec in _codecs)
+		        {
+		            GorgonImageEditorPlugIn.Settings.CustomCodecs.Add(codec.CodecPath);
+		        }
 
-			var imagePlugIn = (GorgonImageEditorPlugIn)PlugIn;
+                var imagePlugIn = (GorgonImageEditorPlugIn)PlugIn;
 
-			// Refresh the codec list.
-			imagePlugIn.GetCodecs();
+                // Refresh the codec list.
+                imagePlugIn.GetCodecs();
+		    }
+
 
 			GorgonImageEditorPlugIn.Settings.Save();
 		}
