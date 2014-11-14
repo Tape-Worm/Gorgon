@@ -25,6 +25,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   * An extensive bitmap font creation interface (within the graphics module) that supports kerning.
   * A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  It provides sprites, drawing primitives (rectangles, lines, ellipses, etc...), drawing of text with the aforementioned fonts, etc...
   * An animation module that allows the creation of flexible animations for various types of objects.
+  * A flexible content editor to allow for the creation of sprites, fonts, etc...  The editor can be extended via plug-ins to edit anything you might want and save as whatever format suits your needs. In fact, all default editing functionality is provided by plug-ins and be turned on or off as needed by moving the plug-in DLL in or out of the plug-ins directory.
 
 What's required?
 ----------------
