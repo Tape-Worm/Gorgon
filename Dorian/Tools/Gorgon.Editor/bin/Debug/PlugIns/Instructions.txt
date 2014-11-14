@@ -1,5 +1,0 @@
-Place any plug-ins (and their local dependencies) for the editor into this directory. 
-
-The editor will scan this directory and load any plug-ins it finds.
-
-Any localized resource satellite assemblies for the plug-ins must be copied into this directory as well or else the localization will not be applied.

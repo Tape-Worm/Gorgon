@@ -1,7 +1,0 @@
-Balldemo:
-	ATI 6870 - 1500-1550 FPS
-	Intel HD 4000 - 128-138 FPS
-
-Boinger:
-	ATI 6870 - 4880-4905 FPS
-	Intel HD 4000 - 660-670 FPS
