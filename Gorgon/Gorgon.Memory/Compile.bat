@@ -1,0 +1,1 @@
+ilasm /DLL /PDB /OPTIMIZE /FOLD /RESOURCE=Gorgon.MemoryAccess.res Gorgon.MemoryAccess.il /OUTPUT=Gorgon.MemoryAccess.dll

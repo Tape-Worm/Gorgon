@@ -1,0 +1,125 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7EE86743-18E9-4667-9BCB-989D5C926922}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GorgonLibrary.Animation</RootNamespace>
+    <AssemblyName>Gorgon.Animation</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Gorgon.Animation.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SlimMath">
+      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AnimatedPropertyAttribute.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GorgonAnimatedProperty.cs" />
+    <Compile Include="GorgonAnimation.cs" />
+    <Compile Include="GorgonAnimationController.cs" />
+    <Compile Include="GorgonAnimationKeyFrameCollection.cs" />
+    <Compile Include="GorgonAnimationTrack.cs" />
+    <Compile Include="GorgonAnimationTrackCollection.cs" />
+    <Compile Include="IKeyFrame.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Types\GorgonTrackTexture2D.cs" />
+    <Compile Include="Types\GorgonKeyTexture2D.cs" />
+    <Compile Include="Types\GorgonKeyByte.cs" />
+    <Compile Include="Types\GorgonKeyGorgonColor.cs" />
+    <Compile Include="Types\GorgonKeyInt16.cs" />
+    <Compile Include="Types\GorgonKeyInt32.cs" />
+    <Compile Include="Types\GorgonKeyInt64.cs" />
+    <Compile Include="Types\GorgonKeySByte.cs" />
+    <Compile Include="Types\GorgonKeySingle.cs" />
+    <Compile Include="Types\GorgonKeyUInt16.cs" />
+    <Compile Include="Types\GorgonKeyUInt32.cs" />
+    <Compile Include="Types\GorgonKeyUInt64.cs" />
+    <Compile Include="Types\GorgonKeyVector2.cs" />
+    <Compile Include="Types\GorgonKeyVector3.cs" />
+    <Compile Include="Types\GorgonKeyVector4.cs" />
+    <Compile Include="Types\GorgonTrackByte.cs" />
+    <Compile Include="Types\GorgonTrackGorgonColor.cs" />
+    <Compile Include="Types\GorgonTrackInt16.cs" />
+    <Compile Include="Types\GorgonTrackInt32.cs" />
+    <Compile Include="Types\GorgonTrackInt64.cs" />
+    <Compile Include="Types\GorgonTrackSByte.cs" />
+    <Compile Include="Types\GorgonTrackSingle.cs" />
+    <Compile Include="Types\GorgonTrackUInt16.cs" />
+    <Compile Include="Types\GorgonTrackUInt32.cs" />
+    <Compile Include="Types\GorgonTrackUInt64.cs" />
+    <Compile Include="Types\GorgonTrackVector2.cs" />
+    <Compile Include="Types\GorgonTrackVector3.cs" />
+    <Compile Include="Types\GorgonTrackVector4.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gorgon.Common\Gorgon.Common.csproj">
+      <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
+      <Name>Gorgon.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Gorgon.Graphics\Gorgon.Graphics.csproj">
+      <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
+      <Name>Gorgon.Graphics</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

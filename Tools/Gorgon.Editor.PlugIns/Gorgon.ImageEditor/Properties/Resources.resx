@@ -1,0 +1,582 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GORIMG_ERR_DECOMPRESSING" xml:space="preserve">
+    <value>There was an error decompressing the file.
+See the details pane for more information.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_CODEC_PATH" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="GORIMG_DESC" xml:space="preserve">
+    <value>Gorgon Image Editor</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_MIP" xml:space="preserve">
+    <value>Go to the previous mip-map level.</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The image must be at least 1x1 pixels and have 1 depth or 1 array slice.</value>
+  </data>
+  <data name="GORIMG_ERR_CONTENT_NOT_IMAGE" xml:space="preserve">
+    <value>The content '{0}' is not an image.</value>
+  </data>
+  <data name="GORIMG_ERR_PATH_NOT_VALID" xml:space="preserve">
+    <value>The path '{0}' is not valid.</value>
+  </data>
+  <data name="PROP_HEIGHT_NAME" xml:space="preserve">
+    <value>Image height</value>
+  </data>
+  <data name="ImageViewShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ImageViewShaders.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GORIMG_CONTENT_TYPE" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="GORIMG_ERR_TEXTURE_MIP_POW_2" xml:space="preserve">
+    <value>A volume texture requires its dimensions be a power of 2 when there is more than 1 mip-map.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_ARRAY" xml:space="preserve">
+    <value>Go to the previous array index.</value>
+  </data>
+  <data name="GORIMG_ERR_MIP_COUNT_INVALID" xml:space="preserve">
+    <value>The number of mip-map levels must be between 1 and {0}.</value>
+  </data>
+  <data name="GORIMG_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+    <value>The parameter must not be empty.</value>
+  </data>
+  <data name="back_16x16png1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\back_16x16png1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_CANNOT_LOAD_IMAGE_BUFFER" xml:space="preserve">
+    <value>Cannot load the image.  It has a size of {0}x{1} and the size of the currently selected mip/array/depth buffer is {2}x{3}.</value>
+  </data>
+  <data name="GORIMG_TEXT_SRC_DIMENSIONS" xml:space="preserve">
+    <value>Image file dimensions: {0}x{1}</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_FANT" xml:space="preserve">
+    <value>Fant</value>
+  </data>
+  <data name="GORIMG_TEXT_REVERT" xml:space="preserve">
+    <value>Revert back to the original image settings.</value>
+  </data>
+  <data name="PROP_CODEC_NAME" xml:space="preserve">
+    <value>File codec</value>
+  </data>
+  <data name="GORIMG_ERR_CANNOT_COMPRESS" xml:space="preserve">
+    <value>There was an error compressing the image.</value>
+  </data>
+  <data name="GORIMG_DLG_OVERWRITE_ARRAY_BUFFER" xml:space="preserve">
+    <value>The buffer at mip level {0} and array index {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+
+Would you like to continue?</value>
+  </data>
+  <data name="GORIMG_DLG_CONFIRM_REVERT" xml:space="preserve">
+    <value>Reverting the image will reset the image back to its original state.  All changes made to this image will be lost.
+
+Are you sure you wish to do this?</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_2D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0}x{1} pixels.</value>
+  </data>
+  <data name="remove_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\remove_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_CROP_TO" xml:space="preserve">
+    <value>Crop to {0}x{1}</value>
+  </data>
+  <data name="arrow_sw_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_sw_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_ACCESS_DENIED" xml:space="preserve">
+    <value>Access to '{0}' is denied.</value>
+  </data>
+  <data name="GORIMG_TEXT_MIP_LEVEL" xml:space="preserve">
+    <value>Mip-map level: {0}/{1} ({2}x{3})</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_1D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0} pixels wide.</value>
+  </data>
+  <data name="GORIMG_TEXT_INVALID_CODEC" xml:space="preserve">
+    <value>(Invalid codec)</value>
+  </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE" xml:space="preserve">
+    <value>Import image</value>
+  </data>
+  <data name="arrow_up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_IMAGEFORMAT_NAME" xml:space="preserve">
+    <value>Image format</value>
+  </data>
+  <data name="image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_DLG_CAPTION_RESIZE_CROP" xml:space="preserve">
+    <value>Crop/resize the image</value>
+  </data>
+  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_EDIT_EXTERNAL_APPNAME" xml:space="preserve">
+    <value>Edit this file in {0}.</value>
+  </data>
+  <data name="GORIMG_TEXT_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="GORIMG_DLG_REMOVE_CODECS" xml:space="preserve">
+    <value>Removing the '{0}' codec will remove all codecs from the plug-in DLL '{1}'.
+
+Are you sure you wish to remove the codecs?</value>
+  </data>
+  <data name="PROP_BLOCKCOMP_NAME" xml:space="preserve">
+    <value>Block compression</value>
+  </data>
+  <data name="PROP_ARRAYCOUNT_DESC" xml:space="preserve">
+    <value>Sets the number of array slices for this texture.</value>
+  </data>
+  <data name="GORIMG_ERR_UNKNOWN" xml:space="preserve">
+    <value>Unknown error.</value>
+  </data>
+  <data name="GORIMG_ERR_CODEC_NONE_FOUND" xml:space="preserve">
+    <value>No valid image codecs were found for the file '{0}'.</value>
+  </data>
+  <data name="GORIMG_TEXT_EDIT_EXTERNAL" xml:space="preserve">
+    <value>Edit this file in an external image editor application.</value>
+  </data>
+  <data name="arrow_nw_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_nw_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="forward_16x161" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\forward_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_DEPTH_NAME" xml:space="preserve">
+    <value>Image depth</value>
+  </data>
+  <data name="GORIMG_TEXT_ANCHOR" xml:space="preserve">
+    <value>Anchor</value>
+  </data>
+  <data name="CATEGORY_DATA" xml:space="preserve">
+    <value>Image data</value>
+  </data>
+  <data name="gen_mips_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\gen_mips_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_CODEC_LOAD_NOT_A_PLUGIN" xml:space="preserve">
+    <value>The file '{0}' is not a valid image codec plug-in.</value>
+  </data>
+  <data name="GORIMG_TEXT_SAVE" xml:space="preserve">
+    <value>Save the changes to this image.</value>
+  </data>
+  <data name="import_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\import_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_3D" xml:space="preserve">
+    <value>Image size: {0}x{1}x{2}  Format: {3}</value>
+  </data>
+  <data name="import_disk_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\import_disk_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_FACE" xml:space="preserve">
+    <value>Face: {0} ({1})</value>
+  </data>
+  <data name="GORIMG_ERR_TEXTURE_FORMAT_CANNOT_MIP" xml:space="preserve">
+    <value>The format [{0}] is not valid when the mip count is greater than 1.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_DISK" xml:space="preserve">
+    <value>Import image from disk</value>
+  </data>
+  <data name="PROP_IMAGEFORMAT_DESC" xml:space="preserve">
+    <value>Sets the arrangement of the pixel components within the image data.  For codecs that support compression, block compression (BCn) formats will be available as well.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_CODEC_PLUGINS" xml:space="preserve">
+    <value>Image codec plug-ins</value>
+  </data>
+  <data name="PROP_BLOCKCOMP_DESC" xml:space="preserve">
+    <value>Sets the type of block compression to apply to the image when it is saved.
+
+The block compression can only be changed with the image width and height is a multiple of 4, and one of the following formats:  
+R8G8B8A8/sRGB (int/uint) 
+B8G8R8A8/sRGB (int/uint) 
+R8G8B8X8/sRGB (int/uint)
+R8 (int/uint)
+R8G8 (int/uint)
+R16B16G16A16 (floating point)</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_EDITOR_SETTINGS" xml:space="preserve">
+    <value>Image editor settings</value>
+  </data>
+  <data name="GORIMG_ERR_INVALID_FORMAT" xml:space="preserve">
+    <value>The format '{0}' is not valid for {1} images.</value>
+  </data>
+  <data name="GORIMG_ERR_UNRECOGNIZED_IMAGE_TYPE" xml:space="preserve">
+    <value>The image type '{0}' is unknown.</value>
+  </data>
+  <data name="GORIMG_ERR_UNKNOWN_IMAGE_TYPE" xml:space="preserve">
+    <value>The image type '{0}' is unknown.</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_POINT" xml:space="preserve">
+    <value>Point</value>
+  </data>
+  <data name="GORIMG_ERR_UNRECOGNIZED_IMAGE_FORMAT" xml:space="preserve">
+    <value>The image format '{0}' is unknown.</value>
+  </data>
+  <data name="PROP_ARRAYCOUNT_NAME" xml:space="preserve">
+    <value>Array count</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_3D_SIZE_TOO_LARGE" xml:space="preserve">
+    <value>The image must be less than or equal to {0}x{1}x{2} pixels.</value>
+  </data>
+  <data name="GORIMG_DLG_CAPTION_RESIZE_KEEP" xml:space="preserve">
+    <value>Keep/resize the image</value>
+  </data>
+  <data name="PROP_IMAGETYPE_NAME" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="GORIMG_TEXT_RESIZE_TO" xml:space="preserve">
+    <value>Resize to {0}x{1}</value>
+  </data>
+  <data name="CATEGORY_TEXTURE" xml:space="preserve">
+    <value>Texture settings</value>
+  </data>
+  <data name="GORIMG_TEXT_KEEP_RESIZE_TEXT" xml:space="preserve">
+    <value>The image dimensions do not match the buffer dimensions.  Please select keep to preserve the image size, or resize to stretch/squish the image to the buffer dimensions.</value>
+  </data>
+  <data name="PROP_WIDTH_NAME" xml:space="preserve">
+    <value>Image width</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_MIP" xml:space="preserve">
+    <value>Go to the next mip-map level.</value>
+  </data>
+  <data name="PROP_IMAGETYPE_DESC" xml:space="preserve">
+    <value>Sets the type of image data, can be one of 1D, 2D, Cube Mapped, or 3D for codecs that support various image types.</value>
+  </data>
+  <data name="GORIMG_ERR_ARRAY_COUNT_INVALID" xml:space="preserve">
+    <value>The number of array indices must be between 1 and {0}.</value>
+  </data>
+  <data name="GORIMG_TEXT_ARRAY_INDEX" xml:space="preserve">
+    <value>Array index: {0}/{1}</value>
+  </data>
+  <data name="GORIMG_TEXT_ACTUAL_SIZE" xml:space="preserve">
+    <value>Actual size</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_DEPTH" xml:space="preserve">
+    <value>Go to the next depth slice.</value>
+  </data>
+  <data name="GORIMG_TEXT_PREV_DEPTH" xml:space="preserve">
+    <value>Go to the previous depth slice.</value>
+  </data>
+  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_SHOW_ANIMATIONS" xml:space="preserve">
+    <value>Show transition animations?</value>
+  </data>
+  <data name="GORIMG_TEXT_PRESERVE_ASPECT" xml:space="preserve">
+    <value>Preserve the aspect ratio of the image.</value>
+  </data>
+  <data name="GORIMG_ERR_DLL_NOT_ASSEMBLY" xml:space="preserve">
+    <value>The file '{0}' is not a valid .NET assembly.</value>
+  </data>
+  <data name="GORIMG_ERR_NO_CODEC_PLUGINS" xml:space="preserve">
+    <value>There were no codec plug-ins found in '{0}'.</value>
+  </data>
+  <data name="image_add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_WIDTH_DESC" xml:space="preserve">
+    <value>Sets the horizontal sizing of the image, in pixels.</value>
+  </data>
+  <data name="GORIMG_DLG_CODEC_FILTER" xml:space="preserve">
+    <value>Dynamic link library</value>
+  </data>
+  <data name="GORIMG_TEXT_CROP_RESIZE_TEXT" xml:space="preserve">
+    <value>The image dimensions do not match the buffer dimensions.  Please select crop to clip the image to the buffer dimensions, or resize to stretch/squish the image to the buffer dimensions. </value>
+  </data>
+  <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_CODEC_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The image codec plug-in file '{0}' was not found.</value>
+  </data>
+  <data name="PROP_MIPCOUNT_NAME" xml:space="preserve">
+    <value>Mip-map count</value>
+  </data>
+  <data name="GORIMG_TEXT_DEPTH_SLICE" xml:space="preserve">
+    <value>Depth slice: {0}/{1}</value>
+  </data>
+  <data name="GORIMG_TEXT_GENERATE_MIPS" xml:space="preserve">
+    <value>Generate mip-map levels</value>
+  </data>
+  <data name="GORIMG_DLG_LOAD_CODEC" xml:space="preserve">
+    <value>Select a codec plug-in DLL</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_LINEAR" xml:space="preserve">
+    <value>Linear</value>
+  </data>
+  <data name="GORIMG_DLG_CAPTION_IMPORT_IMAGE" xml:space="preserve">
+    <value>Select an image to import</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_CUBIC" xml:space="preserve">
+    <value>Cubic</value>
+  </data>
+  <data name="GORIMG_TEXT_SHOW_ACTUALSIZE_ON_LOAD" xml:space="preserve">
+    <value>Show the image at its actual size on initial load?</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_1D" xml:space="preserve">
+    <value>Image size: {0} pixels wide  Format: {1}</value>
+  </data>
+  <data name="arrow_down_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_down_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_DLG_OVERWRITE_DEPTH_BUFFER" xml:space="preserve">
+    <value>The buffer at mip level {0} and depth slice {1} already has data in it.  Importing an image will overwrite the contents of this buffer.  
+
+Would you like to continue?</value>
+  </data>
+  <data name="pencil_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\pencil_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_CODEC_DESC" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="arrow_right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_CODEC_CANNOT_READ" xml:space="preserve">
+    <value>The file '{0}' could not be read by the '{1}' codec.</value>
+  </data>
+  <data name="GORIMG_ERR_IMAGE_SIZE_NOT_MULTIPLE_OF_4" xml:space="preserve">
+    <value>Block compressed images require a size that is a multiple of 4.</value>
+  </data>
+  <data name="PROP_HEIGHT_DESC" xml:space="preserve">
+    <value>Sets the vertical sizing of the image, in pixels.</value>
+  </data>
+  <data name="PROP_CODEC_DESC" xml:space="preserve">
+    <value>Sets the file format when writing the image.</value>
+  </data>
+  <data name="GORIMG_TEXT_NEXT_ARRAY" xml:space="preserve">
+    <value>Go to the next array index.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_INFO_2D" xml:space="preserve">
+    <value>Image size: {0}x{1}  Format: {2}</value>
+  </data>
+  <data name="image_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="revert_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\revert_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_IMPORT_IMAGE_FROM_EDITOR" xml:space="preserve">
+    <value>Import image from editor file</value>
+  </data>
+  <data name="GORIMG_ACC_ADD_CODEC" xml:space="preserve">
+    <value>&amp;Add image codec</value>
+  </data>
+  <data name="invalid_image_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\invalid_image_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="import_image_filesystem_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\import_image_filesystem_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_ALL_IMAGE_TYPES" xml:space="preserve">
+    <value>All image types</value>
+  </data>
+  <data name="GORIMG_ACC_REMOVE_CODEC" xml:space="preserve">
+    <value>&amp;Remove image codec</value>
+  </data>
+  <data name="GORIMG_TEXT_DEST_DIMENSIONS" xml:space="preserve">
+    <value>Buffer dimensions: {0}x{1}</value>
+  </data>
+  <data name="center_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\center_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_CODEC_NAME" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="arrow_se_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_se_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CATEGORY_DIMENSIONS" xml:space="preserve">
+    <value>Image dimensions</value>
+  </data>
+  <data name="GORIMG_ACC_TEXT_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+    <comment>Cancel button text.</comment>
+  </data>
+  <data name="GORIMG_DLG_GENERATE_MIPS" xml:space="preserve">
+    <value>This will generate mip map levels using the first image.  Any subsequent images will be replaced with their respective mip-map levels.
+
+Do you wish to continue?</value>
+  </data>
+  <data name="arrow_left_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_left_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_DEPTH_DESC" xml:space="preserve">
+    <value>Sets the number of depth slices for a volume (3D) image.</value>
+  </data>
+  <data name="GORIMG_TEXT_NO_CHANGE_SIZE" xml:space="preserve">
+    <value>Keep the image size.</value>
+  </data>
+  <data name="arrow_ne_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_ne_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER" xml:space="preserve">
+    <value>Image filter</value>
+  </data>
+  <data name="GORIMG_DLG_REMOVE_CODEC" xml:space="preserve">
+    <value>Are you sure you wish to remove the '{0}' codec?</value>
+  </data>
+  <data name="PROP_MIPCOUNT_DESC" xml:space="preserve">
+    <value>Sets the number of mip-map levels for this texture.</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_FILE_PATH" xml:space="preserve">
+    <value>Image file: {0}</value>
+  </data>
+  <data name="GORIMG_TEXT_TO_WINDOW" xml:space="preserve">
+    <value>Zoomed to window</value>
+  </data>
+  <data name="GORIMG_ACC_TEXT_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="info_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\info_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_TEXT_CANNOT_EDIT" xml:space="preserve">
+    <value>Cannot add or remove codecs while an image is open in the editor.  </value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_MIPS" xml:space="preserve">
+    <value>Filtering for mip-map generation</value>
+  </data>
+  <data name="GORIMG_TEXT_FILTER_RESIZE" xml:space="preserve">
+    <value>Filtering for image resizing</value>
+  </data>
+  <data name="GORIMG_TEXT_IMAGE_FILTERING" xml:space="preserve">
+    <value>Image filtering</value>
+  </data>
+</root>
