@@ -1,62 +1,52 @@
 What is Gorgon?
 ===============
 
-A 2D graphics library for .NET and SlimDX.  Also, it’s proof that I can’t do 3D.
+A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
 
-What’s the licensing? What did you do to my soul?
+What’s the licensing? 
 -------------------------------------------------
 
-Versions 1.1.x and up of Gorgon are licensed under the MIT license.
-Your soul is a lie.
+Gorgon is licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 How far along are you?  Is it done yet?  How about now?
 -------------------------------------------------------
 
-Gorgon is complete, released and in version 1.1.x.
-
-_Version 2.0 is currently being developed which will support Direct 3D 11._
+Gorgon 2.0 is currently in active development.  At this point there is no definite release date.
 
 What can it do?
 ---------------
 
-Oh sweet jeebus, what can’t it do?  It can slice, dice, puree, and even solve pi to 3,899,122,129,991,211,100 decimal places.  It rules.  Really, it does.  It’s better than Half Life 2 because I say it is.
+Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:
+  * Common utility functionality (Gorgon.Common).
+  * Plug-in support.
+  * A virtual file system that can mount a directory as a file system root, or using various plug-ins, can mount a packed file (e.g. a zip file) as a virtual file system root.  This module is based on the popular [PhysFS library](http://icculus.org/physfs/).
+  * A flexible input library to handle joysticks (gamepads), keyboard and mouse input.  Using plug-ins the input system can utilize Xbox360 controllers, standard joysticks, raw input from the keyboard and mouse and even via raw HID data.  It even includes a plug-in that wraps up windows forms input events.  The input library can use events or polling to retrieve data from the various input sources.
+  * A "low-level" graphics API similar to Direct 3D 11.  It improves on Direct 3D by handling some of the more mundane tasks for initializing objects in Direct 3D and provides more extensive error handling for invalid input.  This module supports all the bells and whistles that come with Direct 3D 11 such as device feature levels to allow running on older (Direct 3D 10 or better) hardware, pixel, vertex, geometry, hull, domain and compute shader support, etc...
+  * An extensive bitmap font creation interface (within the graphics module) that supports kerning.
+  * A 2D renderer that sits on top of the graphics module to make developing 2D games/applications much easier.  It provides sprites, drawing primitives (rectangles, lines, ellipses, etc...), drawing of text with the aforementioned fonts, etc...
+  * An animation module that allows the creation of flexible animations for various types of objects.
 
-That said, it:
-  * Supports pixel/vertex shaders.
-  * Supports stencil buffers.
-  * Supports png, jpg, bmp, etc.. image formats.
-  * Runs pretty swift.  Can dump well over 10,000 sprites to the screen and still get >=30 FPS.
-  * Supports render targets.
-  * Supports drawing to various surfaces (i.e. lines, points, circles, ellipses, etc…).
-  * Supports virtual file systems for packed files and folder mounting.
-  * Has a plug-in architecture, so you can extend it indefinitely.
-  * Has a nifty keen animation system.
-  * Fonts!  Bitmap fonts.  Flexible bitmap fonts even.
-  * Has support for raw input from input devices.  Even has rudimentary joystick support.
-  * Can render into any type of windows control, e.g. a panel, form, textbox (yes, textbox.  No, I don’t know why you’d want that).
-  * I’m sure there’s more, but I’m too lazy to look it up.
+What's required?
+----------------
 
-Yeah, it’s pretty metal.
-
-What do I need to make all my dreams come true?
------------------------------------------------
-
-Your dreams mean nothing, and are ultimately futile.  Anyway, you’ll require the following:
-  * [.NET 3.5 SP1](http://www.microsoft.com/downloads/en/details.aspx?FamilyID=ab99342f-5d1a-413d-8319-81da479ab0d7)
-  * Windows XP or later.
-  * [Microsoft DirectX 9](http://www.microsoft.com/downloads/en/details.aspx?FamilyId=2DA43D38-DB71-4C1B-BC6A-9B6652CD92A3&displaylang=en) (installed by the SlimDX installer which is installed by Gorgon)
+  * [.NET 4.5](http://www.microsoft.com/en-ca/download/details.aspx?id=30653)
+  * Windows Vista SP2, Windows 7, Windows 8, Windows 8.1 or later.
+  * Microsoft DirectX 11
 
 To compile the library
 ----------------------
 
-  * [Visual C# 2010](http://msdn.microsoft.com/en-gb/vstudio/) to compile the library. If you're tight on funds and don't have a kidney to sell so you can put a down payment on Visual Studio, you can always opt for the [FREE Express editions](http://www.microsoft.com/express/).  This is only to compile the library, to use the library Visual Studio 2008 will work as well.
+  * [Visual C# 2012](http://msdn.microsoft.com/en-gb/vstudio/) or later. 
 
 To use the library
 ------------------
 
-  * You may use any .NET 3.5 enabled language to write an application with Gorgon.
+  * You may use any .NET 4.5 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
 
-The master branch contains the current release version of Gorgon.  The 2.x branch contains version 2.0 of Gorgon which supports Direct 3D 11.  **This version is still in development and should not be used in a production environment as breaking changes can and will happen.**
+The master branch contains the current release version of Gorgon 1.1.  
+
+The 2.x branch contains version 2.0 of Gorgon which supports Direct 3D 11. 
+**Please note:** *This version is still in development and should not be used in a production environment as breaking changes can and will happen.*
