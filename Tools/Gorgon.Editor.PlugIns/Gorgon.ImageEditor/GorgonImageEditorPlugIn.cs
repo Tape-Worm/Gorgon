@@ -45,7 +45,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#region Variables.
         private static Dictionary<GorgonFileExtension, GorgonImageCodec> _codecs;           // Codecs for the image editor.
 	    private static GorgonImageCodec[] _codecDropDown;									// List of codecs for the drop down list.
-        private static readonly List<string> _codecPlugInErrors = new List<string>();       // List of errors that may occur when loading a codec plug-in.
 		#endregion
 
 		#region Properties.
@@ -100,16 +99,22 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return;
             }
 
+	        if (!File.Exists(assemblyPath))
+	        {
+				EditorLogging.Print("The codec plug-in '{0}' was not found.", assemblyPath);
+		        return;
+	        }
+
             // Check to see if the assembly is an image codec plug-in.
             if (!Gorgon.PlugIns.IsPlugInAssembly(assemblyPath))
             {
-                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_NOT_A_PLUGIN, assemblyPath));
+				EditorLogging.Print("The codec plug-in '{0}' is not a valid .NET assembly.", assemblyPath);
                 return;
             }
 
             if (Gorgon.PlugIns.EnumeratePlugIns(assemblyPath).Count == 0)
             {
-                _codecPlugInErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_NONE_FOUND, assemblyPath));
+				EditorLogging.Print("The codec plug-in '{0}' does not contain any image codecs.", assemblyPath);
                 return;
             }
 
@@ -199,35 +204,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>        
         protected override string ValidatePlugIn()
         {
-            if (_codecPlugInErrors.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            var codecProblems = new StringBuilder(1024);
-
-            // Build a list of codec problems.
-            // The image editor will be disabled until these issues are resolved.
-            for (int i = 0; i < _codecPlugInErrors.Count; ++i)
-            {
-                string errorLine = _codecPlugInErrors[i];
-
-                if (_codecPlugInErrors.Count > 1)
-                {
-                    if (codecProblems.Length > 0)
-                    {
-                        codecProblems.Append("\n");
-                    }
-
-                    codecProblems.AppendFormat("{0}. {1}", i + 1, errorLine);
-                }
-                else
-                {
-                    codecProblems.Append(errorLine);
-                }
-            }
-
-            return codecProblems.ToString();
+            return string.Empty;
         }
 
         /// <summary>
