@@ -1576,7 +1576,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (string.IsNullOrWhiteSpace(ScratchPath))
 			{
-				throw new ApplicationException(APIResources.GOREDIT_ERR_NO_APP_SETTINGS);
+				return false;
 			}
 
 			try

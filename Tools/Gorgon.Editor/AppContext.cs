@@ -192,11 +192,17 @@ namespace GorgonLibrary.Editor
                 }
 
                 _splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_PREV_FILE);
+
+	            if (!File.Exists(Program.Settings.LastEditorFile))
+	            {
+		            return;
+	            }
+
                 FileManagement.Open(Program.Settings.LastEditorFile);
             }
             catch (Exception ex)
             {
-                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, Program.Settings.LastEditorFile), null, ex);
+                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, Program.Settings.LastEditorFile, ex.Message), null, ex);
                 Program.Settings.LastEditorFile = string.Empty;
             }
 	    }
