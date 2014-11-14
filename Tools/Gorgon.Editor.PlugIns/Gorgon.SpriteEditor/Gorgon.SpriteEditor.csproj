@@ -54,7 +54,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WinFormsColor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c8418a0c0b5a8145, processorArchitecture=MSIL" />
+    <Reference Include="WinFormsColor">
+      <HintPath>..\..\..\Dependencies\WinFormsColor\WinFormsColor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\PanelSpriteEditor.cs">
