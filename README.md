@@ -51,3 +51,16 @@ The master branch contains the current release version of Gorgon 1.1.
 
 The 2.x branch contains version 2.0 of Gorgon which supports Direct 3D 11.  
 **Please note:** *This version is still in development and should not be used in a production environment as breaking changes can and will happen.*
+
+Acknowledgements
+================
+
+Gorgon uses icons from the Oxygen and Onebit 4 icon sets.
+
+Oxygen icons may be obtained from: 
+(https://github.com/pasnox/oxygen-icons-png)
+(http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html)
+
+Onebit 4 icons may be obtained from: 
+(http://www.icojam.com/blog/?p=231)
+(http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html)
