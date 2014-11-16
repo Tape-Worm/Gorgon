@@ -58,9 +58,9 @@ Acknowledgements
 Gorgon uses icons from the Oxygen and Onebit 4 icon sets.
 
 Oxygen icons may be obtained from:  
-(https://github.com/pasnox/oxygen-icons-png)
-(http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html)
+https://github.com/pasnox/oxygen-icons-png  
+http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html  
 
 Onebit 4 icons may be obtained from:  
-(http://www.icojam.com/blog/?p=231)
-(http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html)
+http://www.icojam.com/blog/?p=231  
+http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html
