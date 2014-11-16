@@ -135,6 +135,12 @@
   <data name="GORSPR_TEXT_CREATE_NEW_SPRITE" xml:space="preserve">
     <value>Create new sprite...</value>
   </data>
+  <data name="GORSPR_TEXT_LOAD_SPR_TEXTURE" xml:space="preserve">
+    <value>The sprite texture was not found, please locate it here</value>
+  </data>
+  <data name="GORSPR_WARN_NO_TEXTURE" xml:space="preserve">
+    <value>The sprite '{0}' is linked to a texture with the name '{1}'.  This texture was not found and cannot be loaded.  The sprite may not appear correct during editing.</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

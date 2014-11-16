@@ -115,6 +115,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The sprite texture was not found, please locate it here.
+        /// </summary>
+        internal static string GORSPR_TEXT_LOAD_SPR_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_LOAD_SPR_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The sprite &apos;{0}&apos; is linked to a texture with the name &apos;{1}&apos;.  This texture was not found and cannot be loaded.  The sprite may not appear correct during editing..
+        /// </summary>
+        internal static string GORSPR_WARN_NO_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_WARN_NO_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Pattern {

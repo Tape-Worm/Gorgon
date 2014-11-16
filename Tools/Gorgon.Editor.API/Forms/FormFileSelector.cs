@@ -848,9 +848,6 @@ namespace GorgonLibrary.Editor
 
 			treeDirectories.SelectedNode = _selectedDirectory;
 			AddPath(_selectedDirectory);
-
-			// Clear the selected file if selecting a new directory.
-			comboFile.Text = string.Empty;
 		}
 
 		/// <summary>
@@ -896,6 +893,11 @@ namespace GorgonLibrary.Editor
 					.OfType<DialogFileEntry>()
 					.Select(fileEntry => !panelSearchLabel.Visible ? fileEntry.File.Filename : fileEntry.File.FilePath)
 					.ToArray();
+
+				if (currentFiles.Length == 0)
+				{
+					return;
+				}
 
 				var fileText = new StringBuilder(512);
 
@@ -1167,9 +1169,6 @@ namespace GorgonLibrary.Editor
 				{
 					AddPath(_selectedDirectory);
 				}
-
-				// Clear the selected file if selecting a new directory.
-				comboFile.Text = string.Empty;
 			}
 			catch (Exception ex)
 			{
