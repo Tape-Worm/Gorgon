@@ -160,7 +160,7 @@
     </Compile>
     <Compile Include="Settings\EditorPlugInSettings.cs" />
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
-    <Compile Include="PlugIn\IImageEditorContent.cs" />
+    <Compile Include="Content\IImageEditorContent.cs" />
     <Compile Include="PlugIn\IImageEditorPlugIn.cs" />
     <Compile Include="Settings\IPlugInSettings.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />

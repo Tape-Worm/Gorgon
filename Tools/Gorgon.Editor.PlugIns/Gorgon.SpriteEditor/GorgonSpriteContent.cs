@@ -31,10 +31,12 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Controls;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn
@@ -136,7 +138,46 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </summary>
 		private void GetDeferredTexture()
 		{
-			// TODO: Popup the dialog to select and load the texture.
+			// If we don't have an image editor, we'll not be able to load the texture regardless.
+			if (ImageEditor == null)
+			{
+				GorgonDialogs.WarningBox(_panel.ParentForm, Resources.GORSPR_WARN_NO_TEXTURE);
+				return;
+			}
+			
+			EditorFileDialog dialog = null;
+
+			try
+			{
+				dialog = new EditorFileDialog
+				         {
+							 Text = Resources.GORSPR_TEXT_LOAD_SPR_TEXTURE,
+							 Filename = Sprite.DeferredTextureName
+				         };
+
+				// Get image files.
+				dialog.FileTypes.Add(ImageEditor.ContentType);
+				dialog.FileView = FileViews.Large;
+
+				// Attempt to read the file.
+				if (dialog.ShowDialog(_panel.ParentForm) == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				// TODO: Load the image.
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(_panel.ParentForm, ex);
+			}
+			finally
+			{
+				if (dialog != null)
+				{
+					dialog.Dispose();
+				}
+			}
 		}
 
 		/// <summary>
