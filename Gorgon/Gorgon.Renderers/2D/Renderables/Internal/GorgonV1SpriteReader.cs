@@ -183,6 +183,8 @@ namespace GorgonLibrary.Renderers
 		{
 		    Version version;
 
+			sprite.IsV1Sprite = true;
+
 			reader.BaseStream.Position = 0;
 
 			string headerVersion = reader.ReadString();
@@ -263,26 +265,15 @@ namespace GorgonLibrary.Renderers
 			// Get the size of the sprite.
 			sprite.Size = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
-			// Since older versions of the sprite object used pixel space for their texture coordinates, we have to try
-			// and transform these coordinates into texel space.  This is a problem if we have a deferred texture since
-			// we have no basis to do the transformation.  So, if there's no texture bound at this time, then skip the 
-			// transformation.
+			// Older versions of the sprite object used pixel space for their texture coordinates.  We will have to 
+			// fix up these coordinates into texture space once we have a texture loaded.  At this point, there's no guarantee 
+			// that the texture was loaded safely, so we'll have to defer it until later.
 			// Also, older versions used the size the determine the area on the texture to cover.  So use the size to
 			// get the texture bounds.
 			var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
-		    if (sprite.Texture != null)
-			{
-				sprite.TextureOffset = sprite.Texture.ToTexel(textureOffset);
-				sprite.TextureSize = sprite.Texture.ToTexel(sprite.Size);
-			}
-			else
-			{
-				// Cover the entire texture.  It's better than showing nothing
-				// at all.
-				sprite.TextureOffset = Vector2.Zero;
-				sprite.TextureSize = new Vector2(1);
-			}
+			sprite.TextureOffset = textureOffset;
+			sprite.TextureSize = sprite.Size;
 
 			// Read the anchor.
 			sprite.Anchor = new Vector2(reader.ReadSingle(), reader.ReadSingle());

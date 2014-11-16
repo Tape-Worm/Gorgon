@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private bool _disposed;
 		// Menu item to create a new sprite.
 		private ToolStripMenuItem _createItem;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the settings for the sprite editor plug-in.
+		/// </summary>
+		internal static GorgonSpritePlugInSettings Settings
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -89,7 +101,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </summary>
 		/// <param name="stream">Stream to the file.</param>
 		/// <param name="attributes">Attributes to populate.</param>
-		public override void GetEditorFileAttributes(System.IO.Stream stream, IDictionary<string, string> attributes)
+		public override void GetEditorFileAttributes(Stream stream, IDictionary<string, string> attributes)
 		{
 			attributes["Type"] = Resources.GORSPR_CONTENT_TYPE;	
 		}
@@ -134,8 +146,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </returns>
 		protected override string ValidatePlugIn()
 		{
-			return string.Empty;
+			return !HasImageEditor() ? Resources.GORSPR_ERR_NEED_IMAGE_EDITOR : string.Empty;
 		}
+
 		#endregion
 
 		#region Constructor/Destructor.
@@ -145,6 +158,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		public GorgonSpriteEditorPlugIn()
 			: base(Resources.GORSPR_DESC)
 		{
+			Settings = new GorgonSpritePlugInSettings();
+			Settings.Load();
+
 			FileExtensions.Add(new GorgonFileExtension("gorSprite", string.Format("{0} (*.gorSprite)", Resources.GORSPR_CONTENT_EXTENSION_DESC)));
 		}
 		#endregion

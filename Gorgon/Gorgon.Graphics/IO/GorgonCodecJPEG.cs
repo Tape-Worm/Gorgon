@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Properties;
 using SharpDX.WIC;
@@ -53,7 +54,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to return the data formats for the image.
 		/// </summary>
-		public override System.Collections.Generic.IEnumerable<Graphics.BufferFormat> SupportedFormats
+		public override IEnumerable<BufferFormat> SupportedFormats
 		{
 			get
 			{

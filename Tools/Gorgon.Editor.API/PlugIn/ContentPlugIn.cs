@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -115,6 +116,49 @@ namespace GorgonLibrary.Editor
 			             };
 
 		    return result;
+		}
+
+		/// <summary>
+		/// Function to determine if an image editor plug-in is loaded.
+		/// </summary>
+		/// <returns>TRUE if loaded, FALSE if not.</returns>
+		public bool HasImageEditor()
+		{
+			// Use the first image editor if we haven't selected one.
+			if (string.IsNullOrWhiteSpace(PlugIns.DefaultImageEditorPlugIn))
+			{
+				return PlugIns.ContentPlugIns.Any(item => item.Value is IImageEditorPlugIn);
+			}
+
+			// Find the plug-in in the list.
+			ContentPlugIn plugIn;
+
+			PlugIns.ContentPlugIns.TryGetValue(PlugIns.DefaultImageEditorPlugIn, out plugIn);
+
+			if (plugIn is IImageEditorPlugIn)
+			{
+				return true;
+			}
+
+			return PlugIns.ContentPlugIns.Any(item => item.Value is IImageEditorPlugIn);
+		}
+
+		/// <summary>
+		/// Function to determine if a specific plug-in has been loaded already.
+		/// </summary>
+		/// <param name="plugInName">Name of the plug-in to look up.</param>
+		/// <returns>TRUE if the plug-in is loaded, FALSE if not.</returns>
+		public bool HasPlugIn(string plugInName)
+		{
+			if (string.IsNullOrWhiteSpace(plugInName))
+			{
+				return false;
+			}
+
+			// Check the plug-in lists to see if the plug-in is loaded.
+			return PlugIns.ContentPlugIns.Any(item => string.Equals(item.Value.Name, plugInName))
+			       || PlugIns.ReaderPlugIns.Any(item => string.Equals(item.Value.Name, plugInName))
+			       || PlugIns.WriterPlugIns.Any(item => string.Equals(item.Value.Name, plugInName));
 		}
 
 		/// <summary>

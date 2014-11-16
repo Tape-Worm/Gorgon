@@ -49,15 +49,6 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the default image editor plug-in setting.
-		/// </summary>
-	    public static string DefaultImageEditorPlugIn
-	    {
-		    get;
-		    set;
-	    }
-
-		/// <summary>
 		/// Property to set or return the application graphics interface.
 		/// </summary>
 	    public static GorgonGraphics Graphics
@@ -187,7 +178,8 @@ namespace GorgonLibrary.Editor
 		    get;
 		    private set;
 	    }
-        #endregion
+
+	    #endregion
 
         #region Methods.
 		/// <summary>
@@ -320,6 +312,16 @@ namespace GorgonLibrary.Editor
 			content.OnRenameContent = RenameCurrentContent;
 			content.OnPropertyDisabled = DisableContentProperty;
 			content.OnChanged = ContentPropertyChanged;
+			content.OnReload = contentItem =>
+			                   {
+				                   if ((Current == null)
+				                       || (contentItem != Current))
+				                   {
+					                   return;
+				                   }
+								   
+								   Load(editorFile, ContentFile, plugIn, true);
+			                   };
 			content.OnCommit = contentItem =>
 			                   {
 				                   if ((Current == null)
@@ -338,12 +340,12 @@ namespace GorgonLibrary.Editor
 				content.SetDefaults();
 			}
 
-			content.GetRegisteredImageEditor(DefaultImageEditorPlugIn);
+			content.GetRegisteredImageEditor(PlugIns.DefaultImageEditorPlugIn);
 
 			if ((content.ImageEditor != null)
-				&& (string.IsNullOrWhiteSpace(DefaultImageEditorPlugIn)))
+				&& (string.IsNullOrWhiteSpace(PlugIns.DefaultImageEditorPlugIn)))
 			{
-				DefaultImageEditorPlugIn = content.ImageEditor.Name;
+				PlugIns.DefaultImageEditorPlugIn = content.ImageEditor.Name;
 			}
 
 			content.EditorFile = editorFile;
@@ -491,6 +493,7 @@ namespace GorgonLibrary.Editor
 				Current.OnPropertyDisabled = null;
 				Current.OnCommit = null;
 				Current.OnChanged = null;
+				Current.OnReload = null;
 			}
 
 			Current = null;
@@ -627,25 +630,35 @@ namespace GorgonLibrary.Editor
 		/// <param name="editorFile">The editor file data.</param>
 		/// <param name="file">The file system file that contains the content data.</param>
 		/// <param name="plugIn">The plug-in used to open the file.</param>
-	    public static void Load(EditorFile editorFile, GorgonFileSystemFileEntry file, ContentPlugIn plugIn)
-	    {
+		/// <param name="reload">TRUE to just reload the file, FALSE to do a complete load of the content.</param>
+	    public static void Load(EditorFile editorFile, GorgonFileSystemFileEntry file, ContentPlugIn plugIn, bool reload = false)
+		{
+			ContentObject content;
+
 		    if (file == null)
 		    {
 		        throw new ArgumentNullException("file");
 		    }
-			
-		    ContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
 
-		    if (settings != null)
-		    {
-                // Assign the name from the file.
-                settings.Name = file.Name;
-		        settings.CreateContent = false;
-		    }
+			if (!reload)
+			{
+				ContentSettings settings = plugIn.GetContentSettings(); // Get default settings.
 
-			ContentObject content = CreateContentObjectInstance(plugIn, settings, editorFile, false);
+				if (settings != null)
+				{
+					// Assign the name from the file.
+					settings.Name = file.Name;
+					settings.CreateContent = false;
+				}
 
-            Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
+				content = CreateContentObjectInstance(plugIn, settings, editorFile, false);
+
+				Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
+			}
+			else
+			{
+				content = Current;
+			}
 
 			// Load the content dependencies if any exist.
 			// Check for dependencies.
@@ -671,9 +684,12 @@ namespace GorgonLibrary.Editor
 				}
 			}
 
-            LoadContentPane(content);
+			if (!reload)
+			{
+				LoadContentPane(content);
+			}
 
-            // Load in the content data.
+			// Load in the content data.
 		    using(Stream stream = file.OpenStream(false))
 		    {
 		        content.Read(stream);

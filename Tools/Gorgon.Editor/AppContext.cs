@@ -266,7 +266,7 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				ContentManagement.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
+				PlugIns.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
 
 				_splash = new FormSplash();
 				MainForm = new FormMain();

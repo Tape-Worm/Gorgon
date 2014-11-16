@@ -1398,7 +1398,7 @@ namespace GorgonLibrary.Editor
 			// If we have this open in the editor, then use that so we get unsaved changes as well.
 			if ((ContentManagement.ContentFile == file.PhysicalFile) && (ContentManagement.Current != null))
 			{
-				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
+				return ContentManagement.Current.HasThumbnail ? (Image)ContentManagement.Current.GetThumbNailImage().Clone() : null;
 			}
 
 			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.File);

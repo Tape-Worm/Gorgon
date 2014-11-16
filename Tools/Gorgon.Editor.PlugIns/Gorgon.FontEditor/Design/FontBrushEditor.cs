@@ -97,7 +97,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		        if (document.Brush.BrushType == GlyphBrushType.Texture)
 		        {
-			        Dependency dependency = document.EditorFile.DependsOn.SingleOrDefault(item => string.Equals(item.Type, GorgonFontContent.TextureBrushTextureType));
+			        Dependency dependency = document.Dependencies.SingleOrDefault(item => string.Equals(item.Type, GorgonFontContent.TextureBrushTextureType));
 
 			        if (dependency != null)
 			        {

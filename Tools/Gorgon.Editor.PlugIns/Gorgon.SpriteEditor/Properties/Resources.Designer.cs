@@ -61,6 +61,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        internal static string CATEGORY_APPEARANCE {
+            get {
+                return ResourceManager.GetString("CATEGORY_APPEARANCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Sprite File.
         /// </summary>
         internal static string GORSPR_CONTENT_EXTENSION_DESC {
@@ -88,6 +97,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a new texture for this sprite.
+        /// </summary>
+        internal static string GORSPR_DLG_SELECT_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_DLG_SELECT_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only 2D textures can be used with sprites..
+        /// </summary>
+        internal static string GORSPR_ERR_2D_TEXTURE_ONLY {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_2D_TEXTURE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The content &apos;{0}&apos; is not a Gorgon sprite..
         /// </summary>
         internal static string GORSPR_ERR_CONTENT_NOT_SPRITE {
@@ -97,11 +124,38 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No image editor plug-in was found.  The sprite editor requires an image editor to function..
+        /// </summary>
+        internal static string GORSPR_ERR_NEED_IMAGE_EDITOR {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_NEED_IMAGE_EDITOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORSPR_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GORSPR_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The dependency type &apos;{0}&apos; is unknown..
+        /// </summary>
+        internal static string GORSPR_ERR_UNKNOWN_DEPENDENCY {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_UNKNOWN_DEPENDENCY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (No texture).
+        /// </summary>
+        internal static string GORSPR_PROP_NO_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_PROP_NO_TEXTURE", resourceCulture);
             }
         }
         
@@ -135,10 +189,48 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap image_missing_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("image_missing_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap open_image_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("open_image_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Pattern {
             get {
                 object obj = ResourceManager.GetObject("Pattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Assigns a texture for the sprite to use..
+        /// </summary>
+        internal static string PROP_TEXTURE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture.
+        /// </summary>
+        internal static string PROP_TEXTURE_NAME {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_NAME", resourceCulture);
             }
         }
         

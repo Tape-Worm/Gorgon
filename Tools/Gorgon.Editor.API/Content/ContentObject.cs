@@ -101,6 +101,15 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Property to set or return the action to use when reloading this content.
+		/// </summary>
+	    internal Action<ContentObject> OnReload
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to set or return the action to use when the content changes.
 		/// </summary>
 	    internal Action OnChanged
@@ -487,13 +496,13 @@ namespace GorgonLibrary.Editor
 				{
 					return;
 				}
-				
-				ImageEditor = (IImageEditorPlugIn)plugIn;
 			}
-
-			if (!PlugIns.ContentPlugIns.TryGetValue(defaultEditor, out plugIn))
+			else
 			{
-				return;
+				if (!PlugIns.ContentPlugIns.TryGetValue(defaultEditor, out plugIn))
+				{
+					return;
+				}
 			}
 
 			ImageEditor = plugIn as IImageEditorPlugIn;
@@ -712,6 +721,23 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Function to reload this content from its associated file on the file system.
+		/// </summary>
+	    public void Reload()
+	    {
+			if ((!HasChanges)
+			    || (OnReload == null))
+			{
+				return;
+			}
+
+			OnReload(this);
+
+			HasChanges = false;
+			NotifyPropertyChanged("Reload", null);
+	    }
+
+		/// <summary>
 		/// Function to commit this content back to the file system.
 		/// </summary>
 	    public void Commit()
@@ -737,7 +763,7 @@ namespace GorgonLibrary.Editor
             {
                 return;
             }
-
+			
             NotifyPropertyChanged("Revert", null);
         }
 	    #endregion
