@@ -65,9 +65,12 @@
     <Compile Include="Controls\PanelSpriteEditor.Designer.cs">
       <DependentUpon>PanelSpriteEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Design\TextureEditor.cs" />
+    <Compile Include="Design\TextureTypeConverter.cs" />
     <Compile Include="GorgonSpriteContent.cs" />
     <Compile Include="GorgonSpriteContentSettings.cs" />
     <Compile Include="GorgonSpriteEditorPlugIn.cs" />
+    <Compile Include="GorgonSpritePlugInSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -103,6 +106,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\open_image_16x16.png" />
+    <None Include="Resources\image_missing_16x16.png" />
     <None Include="Resources\Pattern.bmp" />
     <None Include="Resources\sprite_128x128.png" />
     <None Include="Resources\sprite_16x16.png" />

@@ -1545,7 +1545,7 @@ namespace GorgonLibrary.Editor
                     Program.Settings.LastEditorFile = FileManagement.FilePath;
                 }
 
-				Program.Settings.DefaultImageEditor = ContentManagement.DefaultImageEditorPlugIn;
+				Program.Settings.DefaultImageEditor = PlugIns.DefaultImageEditorPlugIn;
 
 				Program.Settings.Save();
 			}

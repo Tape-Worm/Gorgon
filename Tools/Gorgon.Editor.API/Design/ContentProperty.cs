@@ -316,7 +316,14 @@ namespace GorgonLibrary.Editor
 		/// <returns>The value for the property.</returns>
 		public T GetValue<T>()
 		{
-			return (T)_descriptor.GetValue(_owner);
+			object value = _descriptor.GetValue(_owner);
+
+			if (value == null)
+			{
+				return default(T);
+			}
+
+			return (T)value;
 		}
 
 		/// <summary>

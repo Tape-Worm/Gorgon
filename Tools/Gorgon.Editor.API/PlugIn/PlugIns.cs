@@ -50,7 +50,17 @@ namespace GorgonLibrary.Editor
 		#endregion
 
         #region Properties.
-        /// <summary>
+
+		/// <summary>
+		/// Property to set or return the default image editor plug-in setting.
+		/// </summary>
+		public static string DefaultImageEditorPlugIn
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
         /// Property to set or return the graphics interface used by the editor.
         /// </summary>
 	    public static GorgonGraphics Graphics
@@ -155,7 +165,7 @@ namespace GorgonLibrary.Editor
         /// <returns>TRUE if the plug-in has been disabled, FALSE if not.</returns>
 	    public static bool IsDisabled(GorgonPlugIn plugIn)
         {
-            return _disabled.Contains(new DisabledPlugIn(plugIn, string.Empty));
+            return _disabled.Contains(new DisabledPlugIn(plugIn, String.Empty));
         }
 
         /// <summary>
@@ -165,10 +175,10 @@ namespace GorgonLibrary.Editor
         /// <returns>A string containing the reason that a plug-in was disabled.</returns>
 	    public static string GetDisabledReason(GorgonPlugIn plugIn)
         {
-            var disabled = new DisabledPlugIn(plugIn, string.Empty);
+            var disabled = new DisabledPlugIn(plugIn, String.Empty);
             int index = _disabled.IndexOf(disabled);
 
-            return index > -1 ? _disabled[index].Reason : string.Empty;
+            return index > -1 ? _disabled[index].Reason : String.Empty;
         }
 
 		/// <summary>
@@ -195,7 +205,7 @@ namespace GorgonLibrary.Editor
 			// Process each plug-in.
 			foreach (var plugIn in plugIns)
 			{
-				if (UserDisabledPlugIns.Any(item => string.Equals(item, plugIn.Name, StringComparison.OrdinalIgnoreCase)))
+				if (UserDisabledPlugIns.Any(item => String.Equals(item, plugIn.Name, StringComparison.OrdinalIgnoreCase)))
 				{
 					EditorLogging.Print("Found plug-in: \"{0}\".  But it is disabled by the user.", plugIn.Description);
 
@@ -220,7 +230,7 @@ namespace GorgonLibrary.Editor
 
 				var validationData = editorPlugIn.ValidatePlugIn();
 
-				if (!string.IsNullOrWhiteSpace(validationData))
+				if (!String.IsNullOrWhiteSpace(validationData))
 				{
 					EditorLogging.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:",
 					                      editorPlugIn.PlugInType,
@@ -280,5 +290,5 @@ namespace GorgonLibrary.Editor
 			_disabled = new List<DisabledPlugIn>();
 		}
 		#endregion
-	}
+    }
 }

@@ -57,6 +57,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             private set;
         }
 
+		/// <summary>
+		/// Property to return the list of codecs to show in the codec drop down.
+		/// </summary>
 	    internal GorgonImageCodec[] CodecDropDownList
 	    {
 		    get

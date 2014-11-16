@@ -1945,22 +1945,6 @@ namespace GorgonLibrary.Graphics
             Dispose(false);
         }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonImageData"/> class.
-		/// </summary>
-		/// <param name="sourceData">The source data to copy.</param>
-	    private GorgonImageData(GorgonImageData sourceData)
-		{
-			Settings = sourceData.Settings.Clone();
-			SanitizeSettings();
-			SizeInBytes = (int)sourceData._imageData.Length;
-
-			unsafe
-			{
-				Initialize(sourceData.UnsafePointer, true);
-			}
-		}
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImageData" /> class.
         /// </summary>

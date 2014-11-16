@@ -26,6 +26,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.Animation;
@@ -121,6 +122,15 @@ namespace GorgonLibrary.Renderers
 			{
 				return PrimitiveType.TriangleList;
 			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether this sprite is loaded from a version 1.x Gorgon sprite file.
+		/// </summary>
+		internal bool IsV1Sprite
+		{
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -708,6 +718,14 @@ namespace GorgonLibrary.Renderers
 			Texture = (from texture in Gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 							where (texture != null) && (string.Equals(texture.Name, _textureName, StringComparison.OrdinalIgnoreCase))
 							select texture).FirstOrDefault();
+
+			if ((IsV1Sprite) && (Texture != null))
+			{
+				// Convert the texture region to texel space.
+				TextureRegion = new RectangleF(Texture.ToTexel(TextureOffset), Texture.ToTexel(TextureSize));
+				IsV1Sprite = false;
+			}
+
 			NeedsTextureUpdate = true;
 		}
 		#endregion

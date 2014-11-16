@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
   <data name="GORSPR_CONTENT_EXTENSION_DESC" xml:space="preserve">
     <value>Gorgon Sprite File</value>
   </data>
@@ -145,10 +148,37 @@
   <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PROP_TEXTURE_DESC" xml:space="preserve">
+    <value>Assigns a texture for the sprite to use.</value>
+  </data>
+  <data name="PROP_TEXTURE_NAME" xml:space="preserve">
+    <value>Texture</value>
+  </data>
   <data name="sprite_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="sprite_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORSPR_PROP_NO_TEXTURE" xml:space="preserve">
+    <value>(No texture)</value>
+  </data>
+  <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORSPR_DLG_SELECT_TEXTURE" xml:space="preserve">
+    <value>Select a new texture for this sprite</value>
+  </data>
+  <data name="GORSPR_ERR_2D_TEXTURE_ONLY" xml:space="preserve">
+    <value>Only 2D textures can be used with sprites.</value>
+  </data>
+  <data name="GORSPR_ERR_NEED_IMAGE_EDITOR" xml:space="preserve">
+    <value>No image editor plug-in was found.  The sprite editor requires an image editor to function.</value>
+  </data>
+  <data name="GORSPR_ERR_UNKNOWN_DEPENDENCY" xml:space="preserve">
+    <value>The dependency type '{0}' is unknown.</value>
+  </data>
+  <data name="open_image_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\open_image_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
