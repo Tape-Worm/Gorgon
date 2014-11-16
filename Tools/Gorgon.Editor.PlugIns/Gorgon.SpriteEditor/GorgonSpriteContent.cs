@@ -35,6 +35,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
+using GorgonLibrary.Editor.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Controls;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
@@ -86,6 +87,86 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return the size of the sprite.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_SIZE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_SIZE_NAME"),
+		TypeConverter(typeof(SizeConverter)),
+		DefaultValue(typeof(Size), "0, 0")]
+		public Size Size
+		{
+			get
+			{
+				if (Sprite == null)
+				{
+					return Size.Empty;
+				}
+
+				return (Size)Sprite.Size;
+			}
+			set
+			{
+				if ((Sprite == null)
+				    || (Sprite.Size == value))
+				{
+					return;
+				}
+
+				Sprite.Size = value;
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the sprite offset into the bound texture.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDescription(typeof(Resources), "PROP_TEXTURE_REGION_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_REGION_NAME"),
+		TypeConverter(typeof(RectangleConverter)),
+		DefaultValue(typeof(Rectangle), "0, 0, 0, 0")]
+		public Rectangle TextureRegion
+		{
+			get
+			{
+				if (Sprite == null)
+				{
+					return Rectangle.Empty;
+				}
+
+				RectangleF pixelRect = Sprite.TextureRegion;
+
+				if (Sprite.Texture != null)
+				{
+					pixelRect = Sprite.Texture.ToPixel(Sprite.TextureRegion);
+				}
+
+				return 	Rectangle.Truncate(pixelRect);
+			}
+			set
+			{
+				if ((Sprite == null)
+					|| (Sprite.Texture == null))
+				{
+					return;
+				}
+
+				RectangleF texelRect = Sprite.Texture.ToTexel(value);
+
+				if (texelRect == Sprite.TextureRegion)
+				{
+					return;
+				}
+
+				Sprite.TextureRegion = texelRect;
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
 		/// Property to return the texture bound to the sprite.
 		/// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
@@ -125,6 +206,35 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 				Sprite.Texture = value;
 				Sprite.GetDeferredTexture();
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color for the sprite.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_COLOR_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_COLOR_NAME"),
+		TypeConverter(typeof(RGBATypeConverter)),
+		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
+		DefaultValue(0xFFFFFFFF)]
+		public Color Color
+		{
+			get
+			{
+				return Sprite == null ? Color.White : Sprite.Color.ToColor();
+			}
+			set
+			{
+				if ((Sprite == null)
+				    || (Sprite.Color.ToColor() == value))
+				{
+					return;
+				}
+
+				Sprite.Color = value;
 
 				NotifyPropertyChanged();
 			}
@@ -179,6 +289,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 		#region Methods.
 		/// <summary>
+		/// Function to validate the properties on the property grid for this sprite.
+		/// </summary>
+		private void ValidateSpriteProperties()
+		{
+			DisableProperty("TextureRegion", Sprite.Texture == null);
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -225,7 +343,12 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// <param name="stream">Stream that will receive the data.</param>
 		protected override void OnPersist(Stream stream)
 		{
+			// Re-assign the anchor so it'll get persisted.
+			Sprite.Anchor = _spriteAnchor;
+
 			Sprite.Save(stream);
+
+			ValidateSpriteProperties();
 		}
 
 		/// <summary>
@@ -249,6 +372,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			Sprite.Anchor = Vector2.Zero;
 			Sprite.Scale = new Vector2(1);
 			Sprite.Position = Vector2.Zero;
+
+			ValidateSpriteProperties();
 		}
 
 		/// <summary>
@@ -266,6 +391,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 			Dependencies.Clear();
 			Reload();
+
+			ValidateSpriteProperties();
 
 			return true;
 		}

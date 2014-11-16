@@ -37,10 +37,6 @@ namespace GorgonLibrary.Editor.Design
 	public class RGBATypeConverter
 		: ColorConverter
 	{
-		#region Properties.
-
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Converts the given object to the converter's native type.

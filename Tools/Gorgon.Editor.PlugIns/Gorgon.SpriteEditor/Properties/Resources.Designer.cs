@@ -70,6 +70,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Design.
+        /// </summary>
+        internal static string CATEGORY_DESIGN {
+            get {
+                return ResourceManager.GetString("CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Sprite File.
         /// </summary>
         internal static string GORSPR_CONTENT_EXTENSION_DESC {
@@ -93,6 +102,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string GORSPR_DESC {
             get {
                 return ResourceManager.GetString("GORSPR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reverting the image will reset the sprite back to its original state.  All changes made to this sprite will be lost.
+        ///
+        ///Are you sure you wish to do this?.
+        /// </summary>
+        internal static string GORSPR_DLG_REVERT_CONFIRM {
+            get {
+                return ResourceManager.GetString("GORSPR_DLG_REVERT_CONFIRM", resourceCulture);
             }
         }
         
@@ -178,6 +198,42 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Revert back to the original sprite settings..
+        /// </summary>
+        internal static string GORSPR_TEXT_REVERT {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_REVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save the changes to this sprite..
+        /// </summary>
+        internal static string GORSPR_TEXT_SAVE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_SAVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To window.
+        /// </summary>
+        internal static string GORSPR_TEXT_TO_WINDOW {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_TO_WINDOW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom.
+        /// </summary>
+        internal static string GORSPR_TEXT_ZOOM {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_ZOOM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The sprite &apos;{0}&apos; is linked to a texture with the name &apos;{1}&apos;.  This texture was not found and cannot be loaded.  The sprite may not appear correct during editing..
         /// </summary>
         internal static string GORSPR_WARN_NO_TEXTURE {
@@ -217,6 +273,42 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Applies a color tint and/or opacity value to the sprite..
+        /// </summary>
+        internal static string PROP_SPRITE_COLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_COLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color.
+        /// </summary>
+        internal static string PROP_SPRITE_COLOR_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_COLOR_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The width and height of the sprite..
+        /// </summary>
+        internal static string PROP_SPRITE_SIZE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_SIZE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string PROP_SPRITE_SIZE_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_SIZE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assigns a texture for the sprite to use..
         /// </summary>
         internal static string PROP_TEXTURE_DESC {
@@ -231,6 +323,44 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string PROP_TEXTURE_NAME {
             get {
                 return ResourceManager.GetString("PROP_TEXTURE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The region within the texture to use for the sprite..
+        /// </summary>
+        internal static string PROP_TEXTURE_REGION_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_REGION_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture region.
+        /// </summary>
+        internal static string PROP_TEXTURE_REGION_NAME {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_REGION_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap revert_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("revert_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap save_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("save_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

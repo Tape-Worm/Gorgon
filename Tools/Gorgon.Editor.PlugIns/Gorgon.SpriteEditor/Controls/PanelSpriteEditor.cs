@@ -33,6 +33,7 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Input;
+using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
@@ -55,11 +56,77 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 		#region Methods.
 		/// <summary>
+		/// Function to validate the controls on the panel.
+		/// </summary>
+		private void ValidateControls()
+		{
+			buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonSave control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonSave_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				_content.Commit();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonRevert control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonRevert_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORSPR_DLG_REVERT_CONFIRM) == ConfirmationResult.No)
+				{
+					return;
+				}
+
+				_content.Revert();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
 		/// Function to perform localization on the control text properties.
 		/// </summary>
 		protected override void LocalizeControls()
 		{
 			Text = Resources.GORSPR_CONTENT_TYPE;
+
+			buttonSave.Text = Resources.GORSPR_TEXT_SAVE;
+			buttonRevert.Text = Resources.GORSPR_TEXT_REVERT;
+
+			labelZoom.Text = Resources.GORSPR_TEXT_ZOOM;
 		}
 
 		/// <summary>
@@ -74,6 +141,18 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			_content.Sprite.Position = spritePosition;
 			
 			_content.Sprite.Draw();
+		}
+
+		/// <summary>
+		/// Function called when a property is changed on the related content.
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="value">New value assigned to the property.</param>
+		protected override void OnContentPropertyChanged(string propertyName, object value)
+		{
+			base.OnContentPropertyChanged(propertyName, value);
+
+			ValidateControls();
 		}
 
 		/// <summary>
@@ -95,6 +174,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			{
 				throw new InvalidCastException(string.Format(Resources.GORSPR_ERR_CONTENT_NOT_SPRITE, Content.Name));
 			}
+
+			ValidateControls();
 		}
 		#endregion
 
