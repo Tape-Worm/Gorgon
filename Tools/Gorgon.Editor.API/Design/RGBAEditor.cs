@@ -31,6 +31,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor.Design
 {
