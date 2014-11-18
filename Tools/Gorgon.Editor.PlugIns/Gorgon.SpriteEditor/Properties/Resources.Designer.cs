@@ -61,6 +61,86 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_down_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_down_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_left_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_left_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_ne_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_ne_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_nw_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_nw_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_right_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_right_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_se_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_se_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_sw_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_sw_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap arrow_up_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("arrow_up_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Appearance.
         /// </summary>
         internal static string CATEGORY_APPEARANCE {
@@ -75,6 +155,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string CATEGORY_DESIGN {
             get {
                 return ResourceManager.GetString("CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap center_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("center_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -269,6 +359,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
             get {
                 object obj = ResourceManager.GetObject("Pattern", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset from the absolute upper-left (0,0) coordinate of the sprite.  This serves as an axis of rotation and an anchor for scaling/positioning..
+        /// </summary>
+        internal static string PROP_SPRITE_ANCHOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_ANCHOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anchor.
+        /// </summary>
+        internal static string PROP_SPRITE_ANCHOR_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_ANCHOR_NAME", resourceCulture);
             }
         }
         

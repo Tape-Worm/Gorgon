@@ -167,6 +167,33 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return anchor for the sprite.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_ANCHOR_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_ANCHOR_NAME"),
+		TypeConverter(typeof(PointConverter)), 
+		Editor(typeof(AnchorTypeEditor), typeof(UITypeEditor))]
+		public Point Anchor
+		{
+			get
+			{
+				return _spriteAnchor;
+			}
+			set
+			{
+				if (_spriteAnchor == value)
+				{
+					return;
+				}
+				
+				_spriteAnchor = value;
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
 		/// Property to return the texture bound to the sprite.
 		/// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
