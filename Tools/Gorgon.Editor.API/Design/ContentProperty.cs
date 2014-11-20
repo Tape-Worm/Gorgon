@@ -27,7 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
@@ -38,10 +41,11 @@ namespace GorgonLibrary.Editor
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private readonly ContentObject _owner;
+		private readonly object _owner;
 		private readonly PropertyDescriptor _descriptor;
 		private string _editorBase = string.Empty;
 		private object _defaultValue;
+		private readonly ContentProperty _parentProperty;
 		#endregion
 
 		#region Properties.
@@ -110,7 +114,7 @@ namespace GorgonLibrary.Editor
 		public string Editor
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -310,6 +314,25 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to set the type editor for this property.
+		/// </summary>
+		/// <param name="editorType">Type of the editor to set.</param>
+		/// <param name="editorBaseType">[Optional] Base type of the editor.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="editorBaseType"/> will default the base type to UITypeEditor.</remarks>
+		public void SetTypeEditor(Type editorType, Type editorBaseType = null)
+		{
+			if (editorType == null)
+			{
+				Editor = string.Empty;
+				_editorBase = string.Empty;
+				return;
+			}
+
+			Editor = editorType.AssemblyQualifiedName;
+			_editorBase = editorBaseType == null ? typeof(UITypeEditor).AssemblyQualifiedName : editorBaseType.AssemblyQualifiedName;
+		}
+
+		/// <summary>
 		/// Function to retrieve a value from an object instance for this property.
 		/// </summary>
 		/// <typeparam name="T">Type of value.</typeparam>
@@ -332,12 +355,48 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">Value to set.</param>
 		public void SetValue(object value)
 		{
+			ContentProperty topProperty = _parentProperty;
+
 			if (IsReadOnly)
 			{
 				return;
 			}
 
-			_descriptor.SetValue(_owner, value);
+			if (topProperty != null)
+			{
+				// Go to the top of the property chain.
+				while (topProperty._parentProperty != null)
+				{
+					topProperty = topProperty._parentProperty;
+				}
+			}
+
+			// This is a little hack to convert a System.Drawing.Color to a GorgonColor.
+			if ((_descriptor.PropertyType == typeof(GorgonColor))
+			    && (value is Color))
+			{
+				_descriptor.SetValue(_owner, new GorgonColor((Color)value));
+
+			}
+			else
+			{
+				_descriptor.SetValue(_owner, value);
+			}
+
+			if ((_parentProperty == null) || (topProperty == null) || (topProperty._owner == null))
+			{
+				return;
+			}
+
+			var content = topProperty._owner as ContentObject;
+
+			if (content == null)
+			{
+				return;
+			}
+
+			// Notify that the sub property has changed.
+			content.NotifyPropertyChanged(_descriptor.Name, _owner);
 		}
 		#endregion
 
@@ -346,12 +405,14 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="ContentProperty"/> class.
 		/// </summary>
 		/// <param name="descriptor">The property descriptor.</param>
-		/// <param name="owner">Content that owns this property.</param>
-		internal ContentProperty(PropertyDescriptor descriptor, ContentObject owner)
+		/// <param name="owner">Object that owns this property.</param>
+		/// <param name="parentProperty">[Optional] The property that owns this property.</param>
+		public ContentProperty(PropertyDescriptor descriptor, object owner, ContentProperty parentProperty = null)
 			: base(descriptor.Name)
 		{
 			_owner = owner;
 			_descriptor = descriptor;
+			_parentProperty = parentProperty;
 			Editor = string.Empty;
 			Category = string.Empty;
 			Description = string.Empty;

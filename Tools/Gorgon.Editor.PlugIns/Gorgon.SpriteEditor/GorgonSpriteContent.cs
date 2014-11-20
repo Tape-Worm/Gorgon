@@ -73,6 +73,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private GorgonTexture2D _background;
 		// The anchor point for the sprite.
 		private Point _spriteAnchor;
+		// The current blending mode.
+		private BlendingMode _blendMode = BlendingMode.Modulate;
 		#endregion
 
 		#region Properties.
@@ -84,6 +86,54 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		{
 			get;
 			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return a preset blending mode.
+		/// </summary>
+		[RefreshProperties(RefreshProperties.All),
+		DefaultValue(typeof(BlendingMode), "Modulate")]
+		public BlendingMode BlendPreset
+		{
+			get
+			{
+				return _blendMode;
+			}
+			set
+			{
+				if (_blendMode == value)
+				{
+					return;
+				}
+
+				_blendMode = Sprite.BlendingMode = value;
+				
+				NotifyPropertyChanged();
+				System.ComponentModel.TypeDescriptor.Refresh(Sprite.Blending);
+				ValidateSpriteProperties();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the blending state(s) for the sprite.
+		/// </summary>
+		[TypeConverter(typeof(BlendingTypeConverter))]
+		public GorgonRenderable.BlendState Blending
+		{
+			get
+			{
+				return Sprite == null ? null : Sprite.Blending;
+			}
+			set
+			{
+				if ((Sprite == null)
+					|| (Sprite.Blending == value))
+				{
+					return;
+				}
+
+				Sprite.Blending = value;
+			}
 		}
 
 		/// <summary>
@@ -200,7 +250,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		LocalDescription(typeof(Resources), "PROP_TEXTURE_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_NAME"),
 		TypeConverter(typeof(TextureTypeConverter)),
-		Editor(typeof(TextureEditor), typeof(UITypeEditor))]
+		Editor(typeof(TextureTypeEditor), typeof(UITypeEditor))]
 		public GorgonTexture2D Texture
 		{
 			get
@@ -321,6 +371,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private void ValidateSpriteProperties()
 		{
 			DisableProperty("TextureRegion", Sprite.Texture == null);
+			DisableProperty("Blending", BlendPreset != BlendingMode.Custom);
 		}
 
 		/// <summary>
@@ -394,6 +445,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			// We turn off anchoring for our display sprite so that we can edit the anchor
 			// without doing all kinds of weird stuff to display the sprite correctly.
 			_spriteAnchor = (Point)Sprite.Anchor;
+			_blendMode = Sprite.BlendingMode;
 
 			// Disable the sprite anchor.
 			Sprite.Anchor = Vector2.Zero;

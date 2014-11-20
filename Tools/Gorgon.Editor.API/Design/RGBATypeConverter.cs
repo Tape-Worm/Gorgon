@@ -28,6 +28,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using System.Windows.Forms.PropertyGridInternal;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor.Design
 {
@@ -54,6 +56,13 @@ namespace GorgonLibrary.Editor.Design
 		///   </PermissionSet>
 		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
+			if ((context.PropertyDescriptor == null)
+			    || (context.PropertyDescriptor.PropertyType != typeof(Color))
+			    || (context.PropertyDescriptor.PropertyType != typeof(GorgonColor)))
+			{
+				return base.ConvertFrom(context, culture, value);
+			}
+
 			// If we have a numeric encoded value, then just convert that.
 			if ((value is Int32) || (value is UInt32) || (value is Int64) || (value is UInt64))
 			{
@@ -106,7 +115,7 @@ namespace GorgonLibrary.Editor.Design
 		///   </PermissionSet>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if ((!(value is Color)) || 
+			if (((!(value is Color)) && (!(value is GorgonColor))) ||
 				((destinationType != typeof(string)) 
 					&& (destinationType != typeof(Int32)) 
 					&& (destinationType != typeof(UInt32)) 
@@ -115,7 +124,16 @@ namespace GorgonLibrary.Editor.Design
 				return base.ConvertTo(context, culture, value, destinationType);
 			}
 
-			var color = (Color)value;
+			Color color;
+
+			if (value is GorgonColor)
+			{
+				color = (GorgonColor)value;
+			}
+			else
+			{
+				color = (Color)value;
+			}
 
 			if ((destinationType == typeof(Int32)) || (destinationType == typeof(UInt32)) || (destinationType == typeof(Int64)) ||
 			    (destinationType == typeof(UInt64)))

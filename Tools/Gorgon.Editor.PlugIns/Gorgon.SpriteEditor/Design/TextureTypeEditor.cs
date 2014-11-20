@@ -39,7 +39,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 	/// <summary>
 	/// Design time editor interface for grabbing a texture.
 	/// </summary>
-	class TextureEditor
+	class TextureTypeEditor
 		: UITypeEditor
 	{
 		#region Variables.

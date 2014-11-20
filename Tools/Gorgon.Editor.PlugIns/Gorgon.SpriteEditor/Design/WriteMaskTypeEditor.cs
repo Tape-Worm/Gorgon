@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,41 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, May 15, 2012 2:56:08 PM
+// Created: Thursday, November 20, 2014 12:40:48 AM
 // 
 #endregion
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Design;
+using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
-	/// Editor for RGBA colors.
+	/// Type editor for write mask options.
 	/// </summary>
-	public class RGBAEditor
+	class WriteMaskTypeEditor
 		: UITypeEditor
 	{
-		#region Properties.
-		/// <summary>
-		/// Gets a value indicating whether drop-down editors should be resizable by the user.
-		/// </summary>
-		/// <returns>true if drop-down editors are resizable; otherwise, false. </returns>
-		public override bool IsDropDownResizable
-		{
-			get
-			{
-				return false;
-			}
-		}
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Edits the specified object's value using the editor style indicated by the <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle"/> method.
@@ -67,56 +51,34 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			Debug.Assert(value != null, "Value is NULL.");
-
 			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			ControlColorPicker colorPicker = null;
+			WriteMaskEditor maskEditor = null;
+
+		    if (value == null)
+		    {
+		        value = ColorWriteMaskFlags.All;
+		    }
 
 			try
 			{
-				Color color = value is GorgonColor ? (Color)(GorgonColor)value : (Color)value;
-				colorPicker = new ControlColorPicker
-				              {
-					              EditorService = editorSerivce,
-					              CurrentColor = color
-				              };
-				editorSerivce.DropDownControl(colorPicker);
+			    maskEditor = new WriteMaskEditor((ColorWriteMaskFlags)value)
+			                 {
+			                     Service = editorSerivce,
+			                     BackColor = DarkFormsRenderer.DarkBackground,
+			                     ForeColor = DarkFormsRenderer.ForeColor,
+			                     BorderStyle = BorderStyle.None
+			                 };
 
-				return colorPicker.CurrentColor;
+			    editorSerivce.DropDownControl(maskEditor);
+
+				return maskEditor.WriteMask != (ColorWriteMaskFlags)value ? maskEditor.WriteMask : value;
 			}
 			finally
 			{
-				if (colorPicker != null)
-					colorPicker.Dispose();
-			}
-		}
-
-		/// <summary>
-		/// Indicates whether the specified context supports painting a representation of an object's value within the specified context.
-		/// </summary>
-		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext"/> that can be used to gain additional context information.</param>
-		/// <returns>
-		/// true if <see cref="M:System.Drawing.Design.UITypeEditor.PaintValue(System.Object,System.Drawing.Graphics,System.Drawing.Rectangle)"/> is implemented; otherwise, false.
-		/// </returns>
-		public override bool GetPaintValueSupported(ITypeDescriptorContext context)
-		{
-			return true;
-		}
-
-		/// <summary>
-		/// Paints a representation of the value of an object using the specified <see cref="T:System.Drawing.Design.PaintValueEventArgs"/>.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Drawing.Design.PaintValueEventArgs"/> that indicates what to paint and where to paint it.</param>
-		public override void PaintValue(PaintValueEventArgs e)
-		{
-			base.PaintValue(e);
-
-			Color color = e.Value is GorgonColor ? (Color)(GorgonColor)e.Value : (Color)e.Value;
-
-			e.Graphics.DrawImage(APIResources.PropertyChecker, e.Bounds);
-			using(Brush brush = new SolidBrush(color))
-			{
-				e.Graphics.FillRectangle(brush, e.Bounds);
+			    if (maskEditor != null)
+			    {
+			        maskEditor.Dispose();
+			    }
 			}
 		}
 

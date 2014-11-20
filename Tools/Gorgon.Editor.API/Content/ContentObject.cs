@@ -118,15 +118,6 @@ namespace GorgonLibrary.Editor
 		    set;
 	    }
 
-        /// <summary>
-        /// Property to return the type descriptor for this content.
-        /// </summary>
-        internal ContentTypeDescriptor TypeDescriptor
-        {
-            get;
-            private set;
-        }
-
 	    /// <summary>
 	    /// Property to return the control used to edit/display content.
 	    /// </summary>
@@ -136,7 +127,17 @@ namespace GorgonLibrary.Editor
 		    private set;
 	    }
 
-        /// <summary>
+		/// <summary>
+		/// Property to return the type descriptor for this content.
+		/// </summary>
+		[Browsable(false)]
+		public ContentTypeDescriptor TypeDescriptor
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
         /// Property to return whether this content has changed or not.
         /// </summary>
         [Browsable(false)]
@@ -435,7 +436,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="property">Name of the property.</param>
 		/// <param name="value">New value for the property.</param>
-	    protected void NotifyPropertyChanged(string property, object value)
+	    protected internal void NotifyPropertyChanged(string property, object value)
 	    {
 			// If we have a content UI, then tell it of the change to the property.
 			if (ContentControl == null)
