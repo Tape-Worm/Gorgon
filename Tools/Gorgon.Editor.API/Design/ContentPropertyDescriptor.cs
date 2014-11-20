@@ -32,7 +32,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Content property descriptor.
 	/// </summary>
-	class ContentPropertyDescriptor
+	public class ContentPropertyDescriptor
 		: PropertyDescriptor
 	{
 		#region Variables.

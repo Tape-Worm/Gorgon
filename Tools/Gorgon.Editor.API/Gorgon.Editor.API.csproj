@@ -67,6 +67,8 @@
     <Compile Include="Controls\DragData.cs" />
     <Compile Include="Controls\DragDirectory.cs" />
     <Compile Include="Controls\DragFile.cs" />
+    <Compile Include="Design\AlphaBlendTypeTypeConverter.cs" />
+    <Compile Include="Design\BlendTypeTypeConverter.cs" />
     <Compile Include="Forms\AlphaChannelDialog.cs">
       <SubType>Form</SubType>
     </Compile>

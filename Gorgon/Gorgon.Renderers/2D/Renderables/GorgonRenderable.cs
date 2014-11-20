@@ -165,6 +165,10 @@ namespace GorgonLibrary.Renderers
 			#region Variables.
 			private BlendType _sourceAlphaBlend = BlendType.One;												// Source alpha blend.
 			private BlendType _destAlphaBlend = BlendType.Zero;													// Destination alpha blend.
+			private BlendOperation _alphaOperation = BlendOperation.Add;										// Alpha operation.
+			private BlendOperation _blendOperation = BlendOperation.Add;										// Blending operation.
+			private BlendType _sourceBlend = BlendType.SourceAlpha;												// Source blending.
+			private BlendType _destinationBlend = BlendType.InverseSourceAlpha;									// Destination blending.
 			#endregion
 
 			#region Properties.
@@ -182,8 +186,19 @@ namespace GorgonLibrary.Renderers
 			/// </summary>
 			public BlendOperation AlphaOperation
 			{
-				get;
-				set;
+				get
+				{
+					return _alphaOperation;
+				}
+				set
+				{
+					if (value == BlendOperation.Unknown)
+					{
+						return;
+					}
+
+					_alphaOperation = value;
+				}
 			}
 
 			/// <summary>
@@ -191,8 +206,19 @@ namespace GorgonLibrary.Renderers
 			/// </summary>
 			public BlendOperation BlendOperation
 			{
-				get;
-				set;
+				get
+				{
+					return _blendOperation;
+				}
+				set
+				{
+					if (value == BlendOperation.Unknown)
+					{
+						return;
+					}
+
+					_blendOperation = value;
+				}
 			}
 
 			/// <summary>
@@ -206,18 +232,18 @@ namespace GorgonLibrary.Renderers
 				}
 				set
 				{
-#if DEBUG
-				switch (value)
-				{
-					case BlendType.DestinationColor:
-					case BlendType.InverseDestinationColor:
-					case BlendType.InverseSecondarySourceColor:
-					case BlendType.InverseSourceColor:
-					case BlendType.SecondarySourceColor:
-					case BlendType.SourceColor:
-						throw new NotSupportedException(Resources.GOR2D_CANNOT_USER_COLOR_WITH_ALPHA_OP);
-				}
-#endif
+					switch (value)
+					{
+						case BlendType.DestinationColor:
+						case BlendType.InverseDestinationColor:
+						case BlendType.InverseSecondarySourceColor:
+						case BlendType.InverseSourceColor:
+						case BlendType.SecondarySourceColor:
+						case BlendType.SourceColor:
+						case BlendType.Unknown:
+							return;
+					}
+
 					_sourceAlphaBlend = value;
 				}
 			}
@@ -233,18 +259,19 @@ namespace GorgonLibrary.Renderers
 				}
 				set
 				{
-#if DEBUG
-				switch (value)
-				{
-					case BlendType.DestinationColor:
-					case BlendType.InverseDestinationColor:
-					case BlendType.InverseSecondarySourceColor:
-					case BlendType.InverseSourceColor:
-					case BlendType.SecondarySourceColor:
-					case BlendType.SourceColor:
-						throw new NotSupportedException(Resources.GOR2D_CANNOT_USER_COLOR_WITH_ALPHA_OP);
-				}
-#endif
+
+					switch (value)
+					{
+						case BlendType.DestinationColor:
+						case BlendType.InverseDestinationColor:
+						case BlendType.InverseSecondarySourceColor:
+						case BlendType.InverseSourceColor:
+						case BlendType.SecondarySourceColor:
+						case BlendType.SourceColor:
+						case BlendType.Unknown:
+							return;
+					}
+
 					_destAlphaBlend = value;
 				}
 			}
@@ -264,8 +291,19 @@ namespace GorgonLibrary.Renderers
 			/// </summary>
 			public BlendType SourceBlend
 			{
-				get;
-				set;
+				get
+				{
+					return _sourceBlend;
+				}
+				set
+				{
+					if (value == BlendType.Unknown)
+					{
+						return;
+					}
+
+					_sourceBlend = value;
+				}
 			}
 
 			/// <summary>
@@ -273,9 +311,21 @@ namespace GorgonLibrary.Renderers
 			/// </summary>
 			public BlendType DestinationBlend
 			{
-				get;
-				set;
+				get
+				{
+					return _destinationBlend;
+				}
+				set
+				{
+					if (value == BlendType.Unknown)
+					{
+						return;
+					}
+
+					_destinationBlend = value;
+				}
 			}
+
 			#endregion
 
 			#region Constructor.
