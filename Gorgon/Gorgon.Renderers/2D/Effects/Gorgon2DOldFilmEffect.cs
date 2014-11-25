@@ -530,7 +530,7 @@ namespace GorgonLibrary.Renderers
 				DepthAddressing = TextureAddressing.Clamp,
 				MipLODBias = 0.0f,
 				MaxAnisotropy = 1,
-				ComparisonFunction = ComparisonOperators.Never,
+				ComparisonFunction = ComparisonOperator.Never,
 				BorderColor = Color.White,
 				MinLOD = -3.402823466e+38f,
 				MaxLOD = 3.402823466e+38f

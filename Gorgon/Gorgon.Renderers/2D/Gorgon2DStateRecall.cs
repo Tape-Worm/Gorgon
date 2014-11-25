@@ -162,7 +162,7 @@ namespace GorgonLibrary.Renderers
             _samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
             _resource = _graphics.Shaders.PixelShader.Resources[0];
             _depthStencilState = _graphics.Output.DepthStencilState.States;
-            _depthStencilReference = _graphics.Output.DepthStencilState.DepthStencilReference;
+            _depthStencilReference = _graphics.Output.DepthStencilState.StencilReference;
             _rasterStates.IsScissorTestingEnabled = false;
             _depthStencil = _graphics.Output.DepthStencilView;
             _viewports = _graphics.Rasterizer.GetViewports();
@@ -222,7 +222,7 @@ namespace GorgonLibrary.Renderers
             _graphics.Output.BlendingState.BlendFactor = _blendFactor;
             _graphics.Output.BlendingState.States = _blendStates;
             _graphics.Output.DepthStencilState.States = _depthStencilState;
-            _graphics.Output.DepthStencilState.DepthStencilReference = _depthStencilReference;
+            _graphics.Output.DepthStencilState.StencilReference = _depthStencilReference;
             _graphics.Rasterizer.States = _rasterStates;
             _graphics.Shaders.PixelShader.Resources[0] = _resource;
             _graphics.Shaders.PixelShader.TextureSamplers[0] = _samplerState;
@@ -324,7 +324,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.DepthStencilReference) == StateChange.DepthStencilReference)
 			{
-                _depthStencilReference = _graphics.Output.DepthStencilState.DepthStencilReference = depthStencil.DepthStencilReference;
+                _depthStencilReference = _graphics.Output.DepthStencilState.StencilReference = depthStencil.StencilReference;
 			}
 
 			if ((state & StateChange.DepthStencil) != StateChange.DepthStencil)
@@ -441,7 +441,7 @@ namespace GorgonLibrary.Renderers
 				result |= StateChange.AlphaTest;
 			}
 			
-			if (depthStencil.DepthStencilReference != _depthStencilReference)
+			if (depthStencil.StencilReference != _depthStencilReference)
 			{
 				result |= StateChange.DepthStencilReference;
 			}

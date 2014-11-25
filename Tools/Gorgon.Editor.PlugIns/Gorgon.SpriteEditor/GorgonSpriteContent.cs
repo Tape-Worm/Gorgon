@@ -92,7 +92,10 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// Property to set or return a preset blending mode.
 		/// </summary>
 		[RefreshProperties(RefreshProperties.All),
-		DefaultValue(typeof(BlendingMode), "Modulate")]
+		DefaultValue(typeof(BlendingMode), "Modulate"),
+		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_BLEND_PRESET_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_BLEND_PRESET_DESC")]
 		public BlendingMode BlendPreset
 		{
 			get
@@ -115,24 +118,47 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to return the depth states for the sprite.
+		/// </summary>
+		[TypeConverter(typeof(DepthTypeConverter)),
+		LocalCategory(typeof(Resources), "CATEGORY_BEHAVIOR"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_DEPTH_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_DEPTH_DESC")]
+		public GorgonRenderable.DepthStencilStates Depth
+		{
+			get
+			{
+				return Sprite == null ? null : Sprite.DepthStencil;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the stencil states for the sprite.
+		/// </summary>
+		[TypeConverter(typeof(StencilTypeConverter)),
+		LocalCategory(typeof(Resources), "CATEGORY_BEHAVIOR"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_STENCIL_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_STENCIL_DESC")]
+		public GorgonRenderable.DepthStencilStates Stencil
+		{
+			get
+			{
+				return Sprite == null ? null : Sprite.DepthStencil;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the blending state(s) for the sprite.
 		/// </summary>
-		[TypeConverter(typeof(BlendingTypeConverter))]
+		[TypeConverter(typeof(BlendingTypeConverter)),
+		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_BLENDING_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_BLENDING_DESC")]
 		public GorgonRenderable.BlendState Blending
 		{
 			get
 			{
 				return Sprite == null ? null : Sprite.Blending;
-			}
-			set
-			{
-				if ((Sprite == null)
-					|| (Sprite.Blending == value))
-				{
-					return;
-				}
-
-				Sprite.Blending = value;
 			}
 		}
 
@@ -172,7 +198,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to set or return the sprite offset into the bound texture.
 		/// </summary>
-		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
 		LocalDescription(typeof(Resources), "PROP_TEXTURE_REGION_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_REGION_NAME"),
 		TypeConverter(typeof(RectangleConverter)),
@@ -246,7 +272,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to return the texture bound to the sprite.
 		/// </summary>
-		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
 		LocalDescription(typeof(Resources), "PROP_TEXTURE_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_NAME"),
 		TypeConverter(typeof(TextureTypeConverter)),

@@ -35,11 +35,16 @@ namespace GorgonLibrary.Editor
 	public class ContentPropertyDescriptor
 		: PropertyDescriptor
 	{
-		#region Variables.
-		private readonly ContentProperty _property;			// Property that is bound to the descriptor.
-		#endregion
-
 		#region Properties.
+		/// <summary>
+		/// Property to return the property associated with this descriptor.
+		/// </summary>
+		public ContentProperty ContentProperty
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// When overridden in a derived class, gets the type of the component this property is bound to.
 		/// </summary>
@@ -72,7 +77,7 @@ namespace GorgonLibrary.Editor
 		{
 			get 
 			{
-				return _property.PropertyType;
+				return ContentProperty.PropertyType;
 			}
 		}		
 		#endregion
@@ -87,10 +92,10 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override bool CanResetValue(object component)
 		{
-			if ((!_property.HasDefaultValue) || (_property.IsReadOnly))
+			if ((!ContentProperty.HasDefaultValue) || (ContentProperty.IsReadOnly))
 				return false;
 
-			return !Equals(GetValue(component), _property.DefaultValue);
+			return !Equals(GetValue(component), ContentProperty.DefaultValue);
 		}
 
 		/// <summary>
@@ -101,7 +106,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (CanResetValue(component))
 			{
-				SetValue(component, _property.DefaultValue);
+				SetValue(component, ContentProperty.DefaultValue);
 			}
 		}
 
@@ -114,10 +119,10 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override bool ShouldSerializeValue(object component)
 		{
-			if (!_property.HasDefaultValue)
+			if (!ContentProperty.HasDefaultValue)
 				return false;
 
-			return !Equals(GetValue(component), _property.DefaultValue);
+			return !Equals(GetValue(component), ContentProperty.DefaultValue);
 		}
 
 		/// <summary>
@@ -127,10 +132,10 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">The new value.</param>
 		public override void SetValue(object component, object value)
 		{
-			if (_property.IsReadOnly)
+			if (ContentProperty.IsReadOnly)
 				return;
 
-			_property.SetValue(value);
+			ContentProperty.SetValue(value);
 		}
 
 		/// <summary>
@@ -142,7 +147,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override object GetValue(object component)
 		{
-			return _property.GetValue<object>();
+			return ContentProperty.GetValue<object>();
 		}
 		#endregion
 
@@ -154,7 +159,7 @@ namespace GorgonLibrary.Editor
 		public ContentPropertyDescriptor(ContentProperty property)
 			: base(property.Name, property.RetrieveAttributes())
 		{
-			_property = property;
+			ContentProperty = property;
 		}
 		#endregion
 	}

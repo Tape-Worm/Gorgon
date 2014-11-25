@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 				DepthAddressing = TextureAddressing.Clamp,
 				MipLODBias = 0.0f,
 				MaxAnisotropy = 1,
-				ComparisonFunction = ComparisonOperators.Never,
+				ComparisonFunction = ComparisonOperator.Never,
 				BorderColor = Color.White,
 				MinLOD = -3.402823466e+38f,
 				MaxLOD = 3.402823466e+38f
@@ -166,7 +166,7 @@ namespace GorgonLibrary.Graphics
             DepthAddressing = TextureAddressing.Clamp,
             MipLODBias = 0.0f,
             MaxAnisotropy = 1,
-            ComparisonFunction = ComparisonOperators.Never,
+            ComparisonFunction = ComparisonOperator.Never,
             BorderColor = Color.White,
             MinLOD = -3.402823466e+38f,
             MaxLOD = 3.402823466e+38f
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to compare sampled data against existing data.
 		/// </summary>
-		public ComparisonOperators ComparisonFunction;
+		public ComparisonOperator ComparisonFunction;
 		/// <summary>
 		/// Color used when the horizontal, vertical or depth addressing are set to border.
 		/// </summary>

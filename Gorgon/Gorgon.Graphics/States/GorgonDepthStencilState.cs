@@ -82,7 +82,7 @@ namespace GorgonLibrary.Graphics
 		/// The comparison operator for the stencil testing.
 		/// </summary>
 		/// <remarks>The default value is Always.</remarks>
-		public ComparisonOperators ComparisonOperator;
+		public ComparisonOperator ComparisonOperator;
 
 		/// <summary>
 		/// The operation to perform when the test fails.
@@ -225,17 +225,17 @@ namespace GorgonLibrary.Graphics
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
-			DepthComparison = ComparisonOperators.Less,
+			DepthComparison = ComparisonOperator.Less,
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
@@ -252,17 +252,17 @@ namespace GorgonLibrary.Graphics
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
-			DepthComparison = ComparisonOperators.Less,
+			DepthComparison = ComparisonOperator.Less,
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
@@ -279,17 +279,17 @@ namespace GorgonLibrary.Graphics
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
-			DepthComparison = ComparisonOperators.Less,
+			DepthComparison = ComparisonOperator.Less,
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
-				ComparisonOperator = ComparisonOperators.Always,
+				ComparisonOperator = ComparisonOperator.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
@@ -328,7 +328,7 @@ namespace GorgonLibrary.Graphics
 		/// Comparison operator for the depth buffer test.
 		/// </summary>
 		/// <remarks>The default value is Less</remarks>
-		public ComparisonOperators DepthComparison;
+		public ComparisonOperator DepthComparison;
 
 		/// <summary>
 		/// The mask used to read from the stencil buffer.
@@ -470,12 +470,12 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the depth stencil reference value.
+		/// Property to set or return the stencil reference value.
 		/// </summary>
 		/// <remarks>This is the value used when the stencil state is set to Replace.
 		/// <para>The default value is 0.</para>
 		/// </remarks>
-		public int DepthStencilReference
+		public int StencilReference
 		{
 			get
 			{

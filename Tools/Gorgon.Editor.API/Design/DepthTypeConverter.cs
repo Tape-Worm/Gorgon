@@ -29,17 +29,29 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using GorgonLibrary.Editor.Design;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace GorgonLibrary.Editor.Design
 {
 	/// <summary>
-	/// Type converter for the sprite blending parameters.
+	/// Type converter for the renderable depth buffer parameters.
 	/// </summary>
-	class BlendingTypeConverter
+	public class DepthTypeConverter
 		: TypeConverter
 	{
+		#region Variables.
+		// List of stencil-only properties.
+		private readonly HashSet<string> _stencilProps = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+		                                                 {
+			                                                 "FrontFace",
+			                                                 "BackFace",
+			                                                 "StencilReadMask",
+			                                                 "StencilWriteMask",
+			                                                 "StencilReference"
+		                                                 };
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Returns whether this converter can convert the object to the specified type, using the specified context.
@@ -106,68 +118,40 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
 			var typeDesc = (ContentTypeDescriptor)context.Instance;
-			var content = (GorgonSpriteContent)typeDesc.Content;
+			var content = typeDesc.Content;
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(value, attributes);
 			var properties = new List<ContentPropertyDescriptor>();
 
 			// Build the property descriptors for the blending type.	
-			foreach (PropertyDescriptor descriptor in result)
+			foreach (PropertyDescriptor descriptor in result.Cast<PropertyDescriptor>().Where(item => !_stencilProps.Contains(item.Name)))
 			{
-				var contentProp = new ContentProperty(descriptor, value, content.TypeDescriptor["Blending"])
+				var contentProp = new ContentProperty(descriptor, value, content.TypeDescriptor["Depth"])
 				                  {
 					                  HasDefaultValue = true,
 									  RefreshProperties = RefreshProperties.All,
-									  IsReadOnly = typeDesc["Blending"].IsReadOnly
+									  IsReadOnly = false
 				                  };
 
-				// Modify the type converters/editors for the appropriate properties.
-				if (string.Equals(descriptor.Name, "WriteMask", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "IsDepthWriteEnabled", StringComparison.OrdinalIgnoreCase))
 				{
-					// TODO: Need an editor for this guy.
-					contentProp.SetTypeEditor(typeof(WriteMaskTypeEditor));
-					contentProp.DefaultValue = ColorWriteMaskFlags.All;
+					contentProp.DefaultValue = true;
+					contentProp.DisplayName = APIResources.PROP_DEPTH_WRITE_NAME;
+					contentProp.Description = APIResources.PROP_DEPTH_WRITE_DESC;
 				}
 
-				if ((string.Equals(descriptor.Name, "AlphaOperation", StringComparison.OrdinalIgnoreCase))
-					|| (string.Equals(descriptor.Name, "BlendOperation", StringComparison.OrdinalIgnoreCase)))
+				if (string.Equals(descriptor.Name, "DepthBias", StringComparison.OrdinalIgnoreCase))
 				{
-					// TODO: Need a type converter for this type.
-					contentProp.DefaultValue = BlendOperation.Add;
+					contentProp.DefaultValue = 0;
+					contentProp.DisplayName = APIResources.PROP_DEPTH_BIAS_NAME;
+					contentProp.Description = APIResources.PROP_DEPTH_BIAS_DESC;
 				}
 
-				if (string.Equals(descriptor.Name, "SourceAlphaBlend", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "DepthComparison", StringComparison.OrdinalIgnoreCase))
 				{
-					// TODO: Need a type converter for this type.
-					contentProp.Converter = typeof(AlphaBlendTypeTypeConverter).AssemblyQualifiedName;
-					contentProp.DefaultValue = BlendType.One;
-				}
-
-				if (string.Equals(descriptor.Name, "DestinationAlphaBlend", StringComparison.OrdinalIgnoreCase))
-				{
-					// TODO: Need a type converter for this type.
-					contentProp.Converter = typeof(AlphaBlendTypeTypeConverter).AssemblyQualifiedName;
-					contentProp.DefaultValue = BlendType.Zero;
-				}
-
-				if (string.Equals(descriptor.Name, "SourceBlend", StringComparison.OrdinalIgnoreCase))
-				{
-					// TODO: Need a type converter for this type.
-					contentProp.Converter = typeof(BlendTypeTypeConverter).AssemblyQualifiedName;
-					contentProp.DefaultValue = BlendType.SourceAlpha;
-				}
-
-				if (string.Equals(descriptor.Name, "DestinationBlend", StringComparison.OrdinalIgnoreCase))
-				{
-					// TODO: Need a type converter for this type.
-					contentProp.Converter = typeof(BlendTypeTypeConverter).AssemblyQualifiedName;
-					contentProp.DefaultValue = BlendType.InverseSourceAlpha;
-				}
-				
-				if (string.Equals(descriptor.Name, "BlendFactor", StringComparison.OrdinalIgnoreCase))
-				{
-					contentProp.Converter = typeof(RGBATypeConverter).AssemblyQualifiedName;
-					contentProp.SetTypeEditor(typeof(RGBAEditor));
-					contentProp.DefaultValue = GorgonColor.Transparent;
+					contentProp.Converter = typeof(ComparisonOperator).AssemblyQualifiedName;
+					contentProp.DefaultValue = ComparisonOperator.Less;
+					contentProp.DisplayName = APIResources.PROP_DEPTH_COMPARE_OP_NAME;
+					contentProp.Description = APIResources.PROP_DEPTH_COMPARE_OP_DESC;
 				}
 
 				properties.Add(new ContentPropertyDescriptor(contentProp));

@@ -71,26 +71,26 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="compareFunc">Comparison function to convert.</param>
 		/// <returns>The comparsion operator.</returns>
-		private static ComparisonOperators ConvertCompare(int compareFunc)
+		private static ComparisonOperator ConvertCompare(int compareFunc)
 		{
 			switch (compareFunc)
 			{
 				case 0:
-					return ComparisonOperators.Less;
+					return ComparisonOperator.Less;
 				case 1:
-					return ComparisonOperators.Greater;
+					return ComparisonOperator.Greater;
 				case 2:
-					return ComparisonOperators.Equal;
+					return ComparisonOperator.Equal;
 				case 3:
-					return ComparisonOperators.Always;
+					return ComparisonOperator.Always;
 				case 4:
-					return ComparisonOperators.Never;
+					return ComparisonOperator.Never;
 				case 6:
-					return ComparisonOperators.GreaterEqual;
+					return ComparisonOperator.GreaterEqual;
 				case 7:
-					return ComparisonOperators.NotEqual;
+					return ComparisonOperator.NotEqual;
 				default:
-					return ComparisonOperators.LessEqual;
+					return ComparisonOperator.LessEqual;
 			}
 		}
 
@@ -369,7 +369,7 @@ namespace GorgonLibrary.Renderers
 			}
 			if (!InheritStencilReference)
 			{
-				sprite.DepthStencil.DepthStencilReference = reader.ReadInt32();
+				sprite.DepthStencil.StencilReference = reader.ReadInt32();
 			}
 			if (!InheritStencilZFailOperation)
 			{

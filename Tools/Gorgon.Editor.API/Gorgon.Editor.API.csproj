@@ -64,11 +64,25 @@
     <Compile Include="Content\ContentObject.cs" />
     <Compile Include="Content\ContentSettings.cs" />
     <Compile Include="Content\Magnifier.cs" />
+    <Compile Include="Controls\Design\WriteMaskEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\DragData.cs" />
     <Compile Include="Controls\DragDirectory.cs" />
     <Compile Include="Controls\DragFile.cs" />
     <Compile Include="Design\AlphaBlendTypeTypeConverter.cs" />
+    <Compile Include="Design\BlendingTypeConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Design\ComparisonTypeConverter.cs" />
+    <Compile Include="Design\DepthTypeConverter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Design\StencilStateTypeConverter.cs" />
+    <Compile Include="Design\StencilTypeConverter.cs" />
+    <Compile Include="Design\BlendOperationTypeConverter.cs" />
     <Compile Include="Design\BlendTypeTypeConverter.cs" />
+    <Compile Include="Design\WriteMaskTypeEditor.cs" />
     <Compile Include="Forms\AlphaChannelDialog.cs">
       <SubType>Form</SubType>
     </Compile>

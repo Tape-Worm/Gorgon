@@ -31,12 +31,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace GorgonLibrary.Editor.Design
 {
 	/// <summary>
 	/// List box for write masking flags.
 	/// </summary>
-	class WriteMaskEditor
+	public class WriteMaskEditor
 		: CheckedListBox
 	{
 		#region Variables.

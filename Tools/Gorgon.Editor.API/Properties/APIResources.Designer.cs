@@ -917,6 +917,150 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the color used to modulate with the render target and/or pixel shader..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_FACTOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_FACTOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blend factor.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_FACTOR_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_FACTOR_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blending operation to define how to combine the source and destination alpha operations..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_OP_ALPHA_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_OP_ALPHA_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alpha operation.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_OP_ALPHA_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_OP_ALPHA_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blending operation to define how to combine the source and destination operations..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_OP_COLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_OP_COLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blend operation.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_OP_COLOR_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_OP_COLOR_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blend type to define the operation performed on the alpha channel from the render target..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_ALPHA_DEST_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_ALPHA_DEST_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alpha dest blend type.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_ALPHA_DEST_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_ALPHA_DEST_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blend type to define the operation performed on the alpha channel from the pixel shader..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_ALPHA_SRC_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_ALPHA_SRC_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alpha source blend type.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_ALPHA_SRC_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_ALPHA_SRC_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blend type to define the operation performed on the RGB color values from the render target..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_COLOR_DEST_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_COLOR_DEST_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color dest blend type.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_COLOR_DEST_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_COLOR_DEST_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the blend type to define the operation performed on the RGB color values from the pixel shader..
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_COLOR_SRC_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_COLOR_SRC_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color source blend type.
+        /// </summary>
+        internal static string PROP_BLEND_BLEND_TYPE_COLOR_SRC_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_BLEND_TYPE_COLOR_SRC_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the color channels to mask out when rendering..
+        /// </summary>
+        internal static string PROP_BLEND_WRITEMASK_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_WRITEMASK_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write mask.
+        /// </summary>
+        internal static string PROP_BLEND_WRITEMASK_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BLEND_WRITEMASK_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Appearance.
         /// </summary>
         internal static string PROP_CATEGORY_APPEARANCE {
@@ -967,6 +1111,60 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string PROP_DEFAULTEXTENSION_DESC {
             get {
                 return ResourceManager.GetString("PROP_DEFAULTEXTENSION_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the depth value added to a pixel.  This allows objects that share the same depth position to appear in front of, or behind, another object and avoid z-fighting..
+        /// </summary>
+        internal static string PROP_DEPTH_BIAS_DESC {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_BIAS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bias.
+        /// </summary>
+        internal static string PROP_DEPTH_BIAS_NAME {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_BIAS_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the operator used when comparing depth data with existing depth buffer data..
+        /// </summary>
+        internal static string PROP_DEPTH_COMPARE_OP_DESC {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_COMPARE_OP_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comparison operator.
+        /// </summary>
+        internal static string PROP_DEPTH_COMPARE_OP_NAME {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_COMPARE_OP_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets a flag to indicate that this renderable will write to the depth buffer when rendered.  Set to false to skip writing to the depth buffer..
+        /// </summary>
+        internal static string PROP_DEPTH_WRITE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_WRITE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write enabled.
+        /// </summary>
+        internal static string PROP_DEPTH_WRITE_NAME {
+            get {
+                return ResourceManager.GetString("PROP_DEPTH_WRITE_NAME", resourceCulture);
             }
         }
         

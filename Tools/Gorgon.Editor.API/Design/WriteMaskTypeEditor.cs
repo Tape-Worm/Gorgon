@@ -31,12 +31,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace GorgonLibrary.Editor.Design
 {
 	/// <summary>
 	/// Type editor for write mask options.
 	/// </summary>
-	class WriteMaskTypeEditor
+	public class WriteMaskTypeEditor
 		: UITypeEditor
 	{
 		#region Methods.
