@@ -228,8 +228,8 @@ Are you sure you wish to do this?</value>
   <data name="GORSPR_TEXT_REVERT" xml:space="preserve">
     <value>Revert back to the original sprite settings.</value>
   </data>
-  <data name="CATEGORY_APPEARANCE" xml:space="preserve">
-    <value>Appearance</value>
+  <data name="CATEGORY_TEXTURE" xml:space="preserve">
+    <value>Texture</value>
   </data>
   <data name="CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
@@ -257,5 +257,35 @@ Are you sure you wish to do this?</value>
   </data>
   <data name="PROP_SPRITE_ANCHOR_NAME" xml:space="preserve">
     <value>Anchor</value>
+  </data>
+  <data name="CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="PROP_SPRITE_BLENDING_DESC" xml:space="preserve">
+    <value>Allows for the fine tuning of blending operations between the sprite and the render target.  This property is only enabled when the blend preset is set to Custom.</value>
+  </data>
+  <data name="PROP_SPRITE_BLENDING_NAME" xml:space="preserve">
+    <value>Blending</value>
+  </data>
+  <data name="PROP_SPRITE_BLEND_PRESET_DESC" xml:space="preserve">
+    <value>Sets pre-defined blending states for a sprite.</value>
+  </data>
+  <data name="PROP_SPRITE_BLEND_PRESET_NAME" xml:space="preserve">
+    <value>Blending preset</value>
+  </data>
+  <data name="PROP_SPRITE_DEPTH_DESC" xml:space="preserve">
+    <value>Allows the setting of the depth properties for the sprite to define how it will interact with a depth buffer. These settings only work when a depth buffer is active.</value>
+  </data>
+  <data name="PROP_SPRITE_DEPTH_NAME" xml:space="preserve">
+    <value>Depth settings</value>
+  </data>
+  <data name="PROP_SPRITE_STENCIL_DESC" xml:space="preserve">
+    <value>Allows the setting of the stencil properties for the sprite to define how it will interact with a stencil buffer.  These settings only work when a stencil buffer is active.</value>
+  </data>
+  <data name="PROP_SPRITE_STENCIL_NAME" xml:space="preserve">
+    <value>Stencil settings</value>
   </data>
 </root>

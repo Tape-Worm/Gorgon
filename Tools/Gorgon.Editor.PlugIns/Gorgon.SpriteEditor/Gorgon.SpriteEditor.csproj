@@ -60,9 +60,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\WriteMaskEditor.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Controls\PanelSpriteEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -76,8 +73,6 @@
       <DependentUpon>SpriteAnchorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Design\AnchorTypeEditor.cs" />
-    <Compile Include="Design\BlendingTypeConverter.cs" />
-    <Compile Include="Design\WriteMaskTypeEditor.cs" />
     <Compile Include="Design\TextureTypeEditor.cs" />
     <Compile Include="Design\TextureTypeConverter.cs" />
     <Compile Include="GorgonSpriteContent.cs" />

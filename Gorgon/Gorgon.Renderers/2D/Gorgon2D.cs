@@ -646,7 +646,7 @@ namespace GorgonLibrary.Renderers
 			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
-			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
+			Graphics.Output.DepthStencilState.StencilReference = 0;
             Graphics.Output.SetRenderTarget(_defaultTarget.Target, _defaultTarget.DepthStencil);
 
 		    _currentTarget = _defaultTarget;

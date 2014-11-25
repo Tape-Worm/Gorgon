@@ -461,4 +461,70 @@ The following characters are not allowed:
   <data name="GOREDIT_ERR_NO_FILES_SELECTED" xml:space="preserve">
     <value>No files were selected.</value>
   </data>
+  <data name="PROP_BLEND_WRITEMASK_DESC" xml:space="preserve">
+    <value>Sets the color channels to mask out when rendering.</value>
+  </data>
+  <data name="PROP_BLEND_WRITEMASK_NAME" xml:space="preserve">
+    <value>Write mask</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_FACTOR_DESC" xml:space="preserve">
+    <value>Sets the color used to modulate with the render target and/or pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_FACTOR_NAME" xml:space="preserve">
+    <value>Blend factor</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_ALPHA_DESC" xml:space="preserve">
+    <value>Sets the blending operation to define how to combine the source and destination alpha operations.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_ALPHA_NAME" xml:space="preserve">
+    <value>Alpha operation</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_COLOR_DESC" xml:space="preserve">
+    <value>Sets the blending operation to define how to combine the source and destination operations.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_COLOR_NAME" xml:space="preserve">
+    <value>Blend operation</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_DEST_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the alpha channel from the render target.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_DEST_NAME" xml:space="preserve">
+    <value>Alpha dest blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_SRC_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the alpha channel from the pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_SRC_NAME" xml:space="preserve">
+    <value>Alpha source blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_DEST_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the RGB color values from the render target.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_DEST_NAME" xml:space="preserve">
+    <value>Color dest blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_SRC_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the RGB color values from the pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_SRC_NAME" xml:space="preserve">
+    <value>Color source blend type</value>
+  </data>
+  <data name="PROP_DEPTH_BIAS_DESC" xml:space="preserve">
+    <value>Sets the depth value added to a pixel.  This allows objects that share the same depth position to appear in front of, or behind, another object and avoid z-fighting.</value>
+  </data>
+  <data name="PROP_DEPTH_BIAS_NAME" xml:space="preserve">
+    <value>Bias</value>
+  </data>
+  <data name="PROP_DEPTH_COMPARE_OP_DESC" xml:space="preserve">
+    <value>Sets the operator used when comparing depth data with existing depth buffer data.</value>
+  </data>
+  <data name="PROP_DEPTH_COMPARE_OP_NAME" xml:space="preserve">
+    <value>Comparison operator</value>
+  </data>
+  <data name="PROP_DEPTH_WRITE_DESC" xml:space="preserve">
+    <value>Sets a flag to indicate that this renderable will write to the depth buffer when rendered.  Set to false to skip writing to the depth buffer.</value>
+  </data>
+  <data name="PROP_DEPTH_WRITE_NAME" xml:space="preserve">
+    <value>Write enabled</value>
+  </data>
 </root>

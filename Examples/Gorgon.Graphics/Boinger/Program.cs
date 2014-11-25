@@ -478,7 +478,7 @@ namespace GorgonLibrary.Graphics.Example
 			// problematic....
 			_depth = new GorgonDepthStencilStates
 			    {
-				    DepthComparison = ComparisonOperators.LessEqual,
+				    DepthComparison = ComparisonOperator.LessEqual,
 				    IsDepthEnabled = true,
 				    IsDepthWriteEnabled = true,
 				    IsStencilEnabled = false

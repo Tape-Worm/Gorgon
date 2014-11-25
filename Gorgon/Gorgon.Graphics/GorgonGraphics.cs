@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Operators used for comparison operations.
 	/// </summary>
-	public enum ComparisonOperators
+	public enum ComparisonOperator
 	{
 		/// <summary>
 		/// Unknown.

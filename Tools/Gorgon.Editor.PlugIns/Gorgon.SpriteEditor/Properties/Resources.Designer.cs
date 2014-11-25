@@ -150,11 +150,29 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Behavior.
+        /// </summary>
+        internal static string CATEGORY_BEHAVIOR {
+            get {
+                return ResourceManager.GetString("CATEGORY_BEHAVIOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Design.
         /// </summary>
         internal static string CATEGORY_DESIGN {
             get {
                 return ResourceManager.GetString("CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture.
+        /// </summary>
+        internal static string CATEGORY_TEXTURE {
+            get {
+                return ResourceManager.GetString("CATEGORY_TEXTURE", resourceCulture);
             }
         }
         
@@ -381,6 +399,42 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets pre-defined blending states for a sprite..
+        /// </summary>
+        internal static string PROP_SPRITE_BLEND_PRESET_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_BLEND_PRESET_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blending preset.
+        /// </summary>
+        internal static string PROP_SPRITE_BLEND_PRESET_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_BLEND_PRESET_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows for the fine tuning of blending operations between the sprite and the render target.  This property is only enabled when the blend preset is set to Custom..
+        /// </summary>
+        internal static string PROP_SPRITE_BLENDING_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_BLENDING_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blending.
+        /// </summary>
+        internal static string PROP_SPRITE_BLENDING_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_BLENDING_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Applies a color tint and/or opacity value to the sprite..
         /// </summary>
         internal static string PROP_SPRITE_COLOR_DESC {
@@ -399,6 +453,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Allows the setting of the depth properties for the sprite to define how it will interact with a depth buffer. These settings only work when a depth buffer is active..
+        /// </summary>
+        internal static string PROP_SPRITE_DEPTH_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_DEPTH_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Depth settings.
+        /// </summary>
+        internal static string PROP_SPRITE_DEPTH_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_DEPTH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The width and height of the sprite..
         /// </summary>
         internal static string PROP_SPRITE_SIZE_DESC {
@@ -413,6 +485,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string PROP_SPRITE_SIZE_NAME {
             get {
                 return ResourceManager.GetString("PROP_SPRITE_SIZE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows the setting of the stencil properties for the sprite to define how it will interact with a stencil buffer.  These settings only work when a stencil buffer is active..
+        /// </summary>
+        internal static string PROP_SPRITE_STENCIL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_STENCIL_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stencil settings.
+        /// </summary>
+        internal static string PROP_SPRITE_STENCIL_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_STENCIL_NAME", resourceCulture);
             }
         }
         

@@ -247,7 +247,7 @@ namespace GorgonLibrary.Graphics
 			{
 #if DEBUG
 				// Perform validation of the state type.
-				if (stateType.ComparisonFunction == ComparisonOperators.Unknown)
+				if (stateType.ComparisonFunction == ComparisonOperator.Unknown)
 				{
 					throw new GorgonException(GorgonResult.CannotBind,
 					                          string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,

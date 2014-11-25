@@ -359,7 +359,7 @@ namespace GorgonLibrary.Renderers
 				/// <summary>
 				/// Property to set or return the comparison operator.
 				/// </summary>
-				public ComparisonOperators ComparisonOperator
+				public ComparisonOperator ComparisonOperator
 				{
 					get;
 					set;
@@ -399,7 +399,7 @@ namespace GorgonLibrary.Renderers
 				/// </summary>
 				internal StencilState()
 				{
-					ComparisonOperator = ComparisonOperators.Always;
+					ComparisonOperator = ComparisonOperator.Always;
 					PassOperation = FailOperation = DepthFailOperation = StencilOperations.Keep;
 				}
 				#endregion
@@ -456,7 +456,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Property to set or return the depth comparison function to use.
 			/// </summary>
-			public ComparisonOperators DepthComparison
+			public ComparisonOperator DepthComparison
 			{
 				get;
 				set;
@@ -476,9 +476,9 @@ namespace GorgonLibrary.Renderers
 			}
 
 			/// <summary>
-			/// Property to set or return the depth/stencil reference value for this renderable.
+			/// Property to set or return the stencil reference value for this renderable.
 			/// </summary>
-			public int DepthStencilReference
+			public int StencilReference
 			{
 				get;
 				set;
@@ -492,8 +492,8 @@ namespace GorgonLibrary.Renderers
 			public DepthStencilStates()
 			{
 				IsDepthWriteEnabled = true;
-				DepthStencilReference = 0;
-				DepthComparison = ComparisonOperators.Less;
+				StencilReference = 0;
+				DepthComparison = ComparisonOperator.Less;
 				DepthBias = 0;
 				StencilReadMask = 0xFF;
 				StencilWriteMask = 0xFF;

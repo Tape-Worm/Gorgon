@@ -506,7 +506,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			var depth = new GorgonDepthStencilStates
 			            {
-				            DepthComparison = ComparisonOperators.LessEqual,
+				            DepthComparison = ComparisonOperator.LessEqual,
 				            IsDepthEnabled = true,
 				            IsDepthWriteEnabled = true
 			            };
@@ -591,7 +591,7 @@ namespace GorgonLibrary.Graphics.Example
 																   HorizontalAddressing = TextureAddressing.Wrap,
 																   VerticalAddressing = TextureAddressing.Wrap,
 																   DepthAddressing = TextureAddressing.Wrap,
-																   ComparisonFunction = ComparisonOperators.Always
+																   ComparisonFunction = ComparisonOperator.Always
 			                                                   };
 			_graphics.Shaders.PixelShader.TextureSamplers[2] = new GorgonTextureSamplerStates
 			                                                   {
@@ -599,7 +599,7 @@ namespace GorgonLibrary.Graphics.Example
 				                                                   HorizontalAddressing = TextureAddressing.Wrap,
 				                                                   VerticalAddressing = TextureAddressing.Wrap,
 				                                                   DepthAddressing = TextureAddressing.Wrap,
-				                                                   ComparisonFunction = ComparisonOperators.Always
+				                                                   ComparisonFunction = ComparisonOperator.Always
 			                                                   };
 
 			_graphics.Shaders.PixelShader.TextureSamplers[1] = new GorgonTextureSamplerStates
@@ -608,7 +608,7 @@ namespace GorgonLibrary.Graphics.Example
 				                                                   HorizontalAddressing = TextureAddressing.Wrap,
 				                                                   VerticalAddressing = TextureAddressing.Wrap,
 				                                                   DepthAddressing = TextureAddressing.Wrap,
-				                                                   ComparisonFunction = ComparisonOperators.Always
+				                                                   ComparisonFunction = ComparisonOperator.Always
 			                                                   };
 
 			_material = new Material
