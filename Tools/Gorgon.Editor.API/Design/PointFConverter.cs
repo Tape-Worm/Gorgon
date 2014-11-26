@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
+using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor.Design
 {
@@ -78,35 +79,53 @@ namespace GorgonLibrary.Editor.Design
 		{
 			var text = value as string;		// Value to convert.
 
-			if ((text != null) && (text.Trim().Length != 0))
+			if ((text == null) || (text.Trim().Length == 0))
 			{
-				TypeConverter converter = TypeDescriptor.GetConverter(typeof(float));		// Get the floating point type converter.
-				var point = new PointF(0, 0);											// New point.
-
-				// Clip off spaces.
-				text = text.Trim();
-
-				// Get the culture.
-				if (culture == null)
-					culture = CultureInfo.CurrentCulture;
-
-				// Get the separator for the value.
-				char ch = culture.TextInfo.ListSeparator[0];
-
-				// Get the individual values.
-				string[] xy = text.Split(new char[] { ch });				
-				
-				if (xy.Length != 2)
-					throw new ArgumentException("Unable to convert the value into a point format.  Number of values is incorrect.");
-
-				// Convert to floating point values.
-				point.X = (float)converter.ConvertFromString(context, culture, xy[0]);
-				point.Y = (float)converter.ConvertFromString(context, culture, xy[1]);
-
-				return point;
+				return base.ConvertFrom(context, culture, value);
 			}
 
-			return base.ConvertFrom(context, culture, value);
+			TypeConverter converter = TypeDescriptor.GetConverter(typeof(float));		// Get the floating point type converter.
+			var point = new PointF(0, 0);												// New point.
+
+			// Clip off spaces.
+			text = text.Trim();
+
+			// Get the culture.
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+			// ReSharper disable HeuristicUnreachableCode
+			if (culture == null)
+			{
+				culture = CultureInfo.CurrentCulture;
+			}
+			// ReSharper restore HeuristicUnreachableCode
+
+			// Get the separator for the value.
+			char ch = culture.TextInfo.ListSeparator[0];
+
+			// Get the individual values.
+			string[] xy = text.Split(new[] { ch });
+
+			if ((xy.Length != 2)
+				|| (string.IsNullOrWhiteSpace(xy[0]))
+				|| (string.IsNullOrWhiteSpace(xy[1])))
+			{
+				throw new InvalidCastException(APIResources.GOREDIT_ERR_CANNOT_CONVERT_POINTF);
+			}
+
+			// Convert to floating point values.
+			object x = converter.ConvertFromString(context, culture, xy[0]);
+			object y = converter.ConvertFromString(context, culture, xy[1]);
+
+			if ((x == null)
+			    || (y == null))
+			{
+				throw new InvalidCastException(APIResources.GOREDIT_ERR_CANNOT_CONVERT_POINTF);
+			}
+
+			point.X = (float)x;
+			point.Y = (float)y;
+
+			return point;
 		}
 
 		/// <summary>
@@ -123,14 +142,14 @@ namespace GorgonLibrary.Editor.Design
 		/// <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if (destinationType == typeof(string))
+			if (destinationType != typeof(string))
 			{
-				var ptValue = (PointF)value;		// Point value.
-
-				return ptValue.X + ", " + ptValue.Y;
+				return base.ConvertTo(context, culture, value, destinationType);
 			}
 
-			return base.ConvertTo(context, culture, value, destinationType);
+			var ptValue = (PointF)value;		// Point value.
+
+			return ptValue.X.ToString(culture) + culture.TextInfo.ListSeparator[0] + " " + ptValue.Y.ToString(culture);
 		}
 
 		/// <summary>
@@ -154,7 +173,7 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
-			return TypeDescriptor.GetProperties(typeof(PointF), attributes).Sort(new string[] {"X", "Y"});
+			return TypeDescriptor.GetProperties(typeof(PointF), attributes).Sort(new[] {"X", "Y"});
 		}
 		#endregion
 	}

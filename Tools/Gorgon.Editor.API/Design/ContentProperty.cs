@@ -398,6 +398,16 @@ namespace GorgonLibrary.Editor
 			// Notify that the sub property has changed.
 			content.NotifyPropertyChanged(_descriptor.Name, _owner);
 		}
+
+		/// <summary>
+		/// Function to retrieve the instance of the property being accessed by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of object.</typeparam>
+		/// <returns>The instance tied to this object.</returns>
+		public T GetPropertyInstance<T>()
+		{
+			return (T)_owner;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

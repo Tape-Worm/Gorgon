@@ -288,4 +288,19 @@ Are you sure you wish to do this?</value>
   <data name="PROP_SPRITE_STENCIL_NAME" xml:space="preserve">
     <value>Stencil settings</value>
   </data>
+  <data name="PROP_SPRITE_ALPHATEST_DESC" xml:space="preserve">
+    <value>Sets the range of alpha values to reject when rendering the sprite.</value>
+  </data>
+  <data name="PROP_SPRITE_MAXALPHA_NAME" xml:space="preserve">
+    <value>Alpha test maximum</value>
+  </data>
+  <data name="PROP_SPRITE_MINALPHA_NAME" xml:space="preserve">
+    <value>Alpha test minimum</value>
+  </data>
+  <data name="PROP_TEXTURE_SAMPLER_DESC" xml:space="preserve">
+    <value>Allows the setting of texture sampling values to define how the texture will behave when it is enlarged, shrunk, and wrapped.</value>
+  </data>
+  <data name="PROP_TEXTURE_SAMPLER_NAME" xml:space="preserve">
+    <value>Texture sampler</value>
+  </data>
 </root>

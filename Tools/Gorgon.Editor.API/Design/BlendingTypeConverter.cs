@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.Design
 {
@@ -51,7 +52,7 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string);
 		}
 
 		/// <summary>

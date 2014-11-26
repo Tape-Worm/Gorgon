@@ -71,6 +71,10 @@
     <Compile Include="Controls\DragDirectory.cs" />
     <Compile Include="Controls\DragFile.cs" />
     <Compile Include="Design\AlphaBlendTypeTypeConverter.cs" />
+    <Compile Include="Design\TextureAddressingTypeConverter.cs" />
+    <Compile Include="Design\TextureFilterTypeConverter.cs" />
+    <Compile Include="Design\TextureSamplerTypeConverter.cs" />
+    <Compile Include="Design\StencilOperationsTypeConverter.cs" />
     <Compile Include="Design\BlendingTypeConverter.cs">
       <SubType>Code</SubType>
     </Compile>

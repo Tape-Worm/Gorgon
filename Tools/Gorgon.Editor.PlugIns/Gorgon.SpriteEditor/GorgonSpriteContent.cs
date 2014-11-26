@@ -41,6 +41,7 @@ using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
@@ -89,6 +90,74 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		}
 
 		/// <summary>
+		/// Property to set or return the minimum value for alpha testing.
+		/// </summary>
+		[DefaultValue(0),
+		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_MINALPHA_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_ALPHATEST_DESC")]
+		public byte MinAlphaTest
+		{
+			get
+			{
+				return Sprite == null ? (byte)0 : (byte)(Sprite.AlphaTestValues.Minimum * 255);
+			}
+			set
+			{
+				float realValue = value / 255.0f;
+
+				if ((Sprite.AlphaTestValues.Maximum.EqualsEpsilon(realValue))
+					|| (Sprite == null))
+				{
+					return;
+				}
+
+				if (realValue > Sprite.AlphaTestValues.Maximum)
+				{
+					realValue = Sprite.AlphaTestValues.Maximum;
+				}
+
+				Sprite.AlphaTestValues = new GorgonRangeF(realValue, Sprite.AlphaTestValues.Maximum);
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the minimum value for alpha testing.
+		/// </summary>
+		[DefaultValue(0),
+		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_MAXALPHA_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_ALPHATEST_DESC")]
+		public byte MaxAlphaTest
+		{
+			get
+			{
+				return Sprite == null ? (byte)0 : (byte)(Sprite.AlphaTestValues.Maximum * 255);
+			}
+			set
+			{
+				float realValue = value / 255.0f;
+
+				if ((Sprite.AlphaTestValues.Maximum.EqualsEpsilon(realValue))
+					|| (Sprite == null))
+				{
+					return;
+				}
+
+				if (realValue < Sprite.AlphaTestValues.Minimum)
+				{
+					realValue = Sprite.AlphaTestValues.Minimum;
+				}
+
+				Sprite.AlphaTestValues = new GorgonRangeF(Sprite.AlphaTestValues.Minimum, realValue);
+
+				NotifyPropertyChanged();
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return a preset blending mode.
 		/// </summary>
 		[RefreshProperties(RefreshProperties.All),
@@ -114,6 +183,22 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				NotifyPropertyChanged();
 				System.ComponentModel.TypeDescriptor.Refresh(Sprite.Blending);
 				ValidateSpriteProperties();
+			}
+		}
+
+		/// <summary>
+		/// Property to return the texture sampling states for the sprite.
+		/// </summary>
+		[
+		LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
+		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_SAMPLER_NAME"),
+		LocalDescription(typeof(Resources), "PROP_TEXTURE_SAMPLER_DESC"),
+		TypeConverter(typeof(TextureSamplerTypeConverter))]
+		public GorgonRenderable.TextureSamplerState TextureSampler
+		{
+			get
+			{
+				return Sprite == null ? null : Sprite.TextureSampler;
 			}
 		}
 
@@ -397,7 +482,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private void ValidateSpriteProperties()
 		{
 			DisableProperty("TextureRegion", Sprite.Texture == null);
-			DisableProperty("Blending", BlendPreset != BlendingMode.Custom);
+			DisableProperty("Blending", _blendMode != BlendingMode.Custom);
+			DisableProperty("TextureSampler", Texture == null);
 		}
 
 		/// <summary>

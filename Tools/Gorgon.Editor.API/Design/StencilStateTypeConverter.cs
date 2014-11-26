@@ -122,6 +122,38 @@ namespace GorgonLibrary.Editor.Design
 									  IsReadOnly = false
 				                  };
 
+				if (string.Equals(descriptor.Name, "ComparisonOperator", StringComparison.OrdinalIgnoreCase))
+				{
+					contentProp.Converter = typeof(ComparisonTypeConverter).AssemblyQualifiedName;
+					contentProp.DefaultValue = ComparisonOperator.Always;
+					contentProp.DisplayName = APIResources.PROP_STENCIL_OP_COMPARE_NAME;
+					contentProp.Description = APIResources.PROP_STENCIL_OP_COMPARE_DESC;
+				}
+
+				if (string.Equals(descriptor.Name, "PassOperation", StringComparison.OrdinalIgnoreCase))
+				{
+					contentProp.Converter = typeof(StencilOperationsTypeConverter).AssemblyQualifiedName;
+					contentProp.DefaultValue = StencilOperation.Keep;
+					contentProp.DisplayName = APIResources.PROP_STENCIL_OP_PASS_NAME;
+					contentProp.Description = APIResources.PROP_STENCIL_OP_PASS_DESC;
+				}
+
+				if (string.Equals(descriptor.Name, "FailOperation", StringComparison.OrdinalIgnoreCase))
+				{
+					contentProp.Converter = typeof(StencilOperationsTypeConverter).AssemblyQualifiedName;
+					contentProp.DefaultValue = StencilOperation.Keep;
+					contentProp.DisplayName = APIResources.PROP_STENCIL_OP_FAIL_NAME;
+					contentProp.Description = APIResources.PROP_STENCIL_OP_FAIL_DESC;
+				}
+
+				if (string.Equals(descriptor.Name, "DepthFailOperation", StringComparison.OrdinalIgnoreCase))
+				{
+					contentProp.Converter = typeof(StencilOperationsTypeConverter).AssemblyQualifiedName;
+					contentProp.DefaultValue = StencilOperation.Keep;
+					contentProp.DisplayName = APIResources.PROP_STENCIL_OP_DEPTH_FAIL_NAME;
+					contentProp.Description = APIResources.PROP_STENCIL_OP_DEPTH_FAIL_DESC;
+				}
+
 				properties.Add(new ContentPropertyDescriptor(contentProp));
 			}
 
