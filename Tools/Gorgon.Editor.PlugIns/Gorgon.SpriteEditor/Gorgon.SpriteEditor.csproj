@@ -73,6 +73,7 @@
       <DependentUpon>SpriteAnchorEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Design\AnchorTypeEditor.cs" />
+    <Compile Include="Design\SpriteVerticesTypeConverter.cs" />
     <Compile Include="Design\TextureTypeEditor.cs" />
     <Compile Include="Design\TextureTypeConverter.cs" />
     <Compile Include="GorgonSpriteContent.cs" />
@@ -85,6 +86,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SpriteVertex.cs" />
+    <Compile Include="SpriteVertices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">

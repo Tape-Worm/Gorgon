@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor.Design
@@ -126,6 +127,8 @@ namespace GorgonLibrary.Editor.Design
 				{
 					contentProp.DefaultValue = TextureFilter.Point;
 					contentProp.Converter = typeof(TextureFilterTypeConverter).AssemblyQualifiedName;
+				    contentProp.DisplayName = APIResources.PROP_SAMPLE_FILTER_NAME;
+				    contentProp.Description = APIResources.PROP_SAMPLE_FILTER_DESC;
 				}
 
 				if (string.Equals(descriptor.Name, "HorizontalWrapping", StringComparison.OrdinalIgnoreCase))
@@ -133,6 +136,8 @@ namespace GorgonLibrary.Editor.Design
 					contentProp.RefreshProperties = RefreshProperties.All;
 					contentProp.DefaultValue = TextureAddressing.Clamp;
 					contentProp.Converter = typeof(TextureAddressingTypeConverter).AssemblyQualifiedName;
+				    contentProp.DisplayName = APIResources.PROP_SAMPLE_HORZADDR_NAME;
+				    contentProp.Description = APIResources.PROP_SAMPLE_HORZADDR_DESC;
 				}
 
 				if (string.Equals(descriptor.Name, "VerticalWrapping", StringComparison.OrdinalIgnoreCase))
@@ -140,14 +145,18 @@ namespace GorgonLibrary.Editor.Design
 					contentProp.RefreshProperties = RefreshProperties.All;
 					contentProp.DefaultValue = TextureAddressing.Clamp;
 					contentProp.Converter = typeof(TextureAddressingTypeConverter).AssemblyQualifiedName;
-				}
+                    contentProp.DisplayName = APIResources.PROP_SAMPLE_VERTADDR_NAME;
+                    contentProp.Description = APIResources.PROP_SAMPLE_VERTADDR_DESC;
+                }
 
 				if (string.Equals(descriptor.Name, "BorderColor", StringComparison.OrdinalIgnoreCase))
 				{
 					contentProp.DefaultValue = GorgonColor.Transparent;
 					contentProp.Converter = typeof(RGBATypeConverter).AssemblyQualifiedName;
 					contentProp.SetTypeEditor(typeof(RGBAEditor), typeof(UITypeEditor));
-				}
+                    contentProp.DisplayName = APIResources.PROP_SAMPLE_BORDER_NAME;
+                    contentProp.Description = APIResources.PROP_SAMPLE_BORDER_DESC;
+                }
 
 				properties.Add(new ContentPropertyDescriptor(contentProp));
 			}

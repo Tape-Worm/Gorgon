@@ -38,18 +38,6 @@ namespace GorgonLibrary.Editor.Design
 	public class TextureFilterTypeConverter
 		: EnumConverter
 	{
-		#region Variables.
-		// Excluded filtering types.
-		private readonly HashSet<TextureFilter> _excludedFilters = new HashSet<TextureFilter>
-		                                                           {
-			                                                           TextureFilter.CompareAnisotropic,
-			                                                           TextureFilter.CompareLinear,
-			                                                           TextureFilter.ComparePoint,
-			                                                           TextureFilter.Comparison,
-																	   TextureFilter.Text1Bit
-		                                                           };
-		#endregion
-
 		#region Methods.
 		/// <summary>
 		/// Gets a collection of standard values for the data type this validator is designed for.
@@ -60,9 +48,14 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
-			return
-				new StandardValuesCollection(
-					((TextureFilter[])Enum.GetValues(typeof(TextureFilter))).Where(item => !_excludedFilters.Contains(item)).ToArray());
+		    return
+		        new StandardValuesCollection(new TextureFilter[]
+		                                     {
+		                                         TextureFilter.None,
+		                                         TextureFilter.Point,
+		                                         TextureFilter.Linear,
+		                                         TextureFilter.Anisotropic
+		                                     });
 		}
 		#endregion
 

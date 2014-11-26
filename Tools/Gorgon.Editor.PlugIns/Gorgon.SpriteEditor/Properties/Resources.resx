@@ -303,4 +303,16 @@ Are you sure you wish to do this?</value>
   <data name="PROP_TEXTURE_SAMPLER_NAME" xml:space="preserve">
     <value>Texture sampler</value>
   </data>
+  <data name="PROP_SPRITE_FLIPHORZ_DESC" xml:space="preserve">
+    <value>Sets whether the sprite should be flipped horizontally or not.</value>
+  </data>
+  <data name="PROP_SPRITE_FLIPHORZ_NAME" xml:space="preserve">
+    <value>Horizontal flip</value>
+  </data>
+  <data name="PROP_SPRITE_FLIPVERT_DESC" xml:space="preserve">
+    <value>Sets whether the sprite should be flipped vertically or not.</value>
+  </data>
+  <data name="PROP_SPRITE_FLIPVERT_NAME" xml:space="preserve">
+    <value>Vertical flip</value>
+  </data>
 </root>

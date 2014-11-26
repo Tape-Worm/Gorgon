@@ -82,6 +82,71 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			private set;
 		}
 
+        /// <summary>
+        /// Property to return the vertices for the sprite.
+        /// </summary>
+        [TypeConverter(typeof(SpriteVerticesTypeConverter)),
+        LocalCategory(typeof(Resources), "CATEGORY_DESIGN")]
+	    public SpriteVertices Vertices
+	    {
+	        get;
+            private set;
+	    }
+
+        /// <summary>
+        /// Property to set or return whether the sprite is flipped horizontally or not.
+        /// </summary>
+        [DefaultValue(false),
+        LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+        LocalDisplayName(typeof(Resources), "PROP_SPRITE_FLIPHORZ_NAME"),
+        LocalDescription(typeof(Resources), "PROP_SPRITE_FLIPHORZ_DESC")]
+	    public bool FlipHorizontal
+	    {
+	        get
+	        {
+	            return Sprite != null && Sprite.HorizontalFlip;
+	        }
+            set
+            {
+                if ((Sprite == null)
+                    || (Sprite.HorizontalFlip == value))
+                {
+                    return;
+                }
+
+                Sprite.HorizontalFlip = value;
+
+                NotifyPropertyChanged();
+            }
+	    }
+
+        /// <summary>
+        /// Property to set or return whether the sprite is flipped vertically or not.
+        /// </summary>
+        [DefaultValue(false),
+        LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+        LocalDisplayName(typeof(Resources), "PROP_SPRITE_FLIPVERT_NAME"),
+        LocalDescription(typeof(Resources), "PROP_SPRITE_FLIPVERT_DESC")]
+	    public bool FlipVertical
+	    {
+	        get
+	        {
+	            return Sprite != null && Sprite.VerticalFlip;
+	        }
+            set
+            {
+                if ((Sprite == null)
+                    || (Sprite.VerticalFlip == value))
+                {
+                    return;
+                }
+
+                Sprite.VerticalFlip = value;
+
+                NotifyPropertyChanged();
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return the minimum value for alpha testing.
 		/// </summary>
@@ -557,6 +622,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			Sprite.Scale = new Vector2(1);
 			Sprite.Position = Vector2.Zero;
 
+            Vertices = new SpriteVertices(this);
+
 			ValidateSpriteProperties();
 		}
 
@@ -678,6 +745,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		{
 			return (Image)Resources.sprite_128x128.Clone();
 		}
+
+        /// <summary>
+        /// Function called when a vertex for the sprite is updated.
+        /// </summary>
+        /// <param name="vertex">Vertex that was updated.</param>
+	    public void OnVertexUpdated(SpriteVertex vertex)
+	    {
+	        NotifyPropertyChanged("Vertex", vertex);
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
