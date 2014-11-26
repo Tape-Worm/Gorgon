@@ -527,4 +527,61 @@ The following characters are not allowed:
   <data name="PROP_DEPTH_WRITE_NAME" xml:space="preserve">
     <value>Write enabled</value>
   </data>
+  <data name="GOREDIT_ERR_CANNOT_CONVERT_POINTF" xml:space="preserve">
+    <value>A PointF value requires two values.</value>
+  </data>
+  <data name="PROP_STENCIL_BACK_DESC" xml:space="preserve">
+    <value>Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing away from the camera.</value>
+  </data>
+  <data name="PROP_STENCIL_BACK_NAME" xml:space="preserve">
+    <value>Back face</value>
+  </data>
+  <data name="PROP_STENCIL_FRONT_DESC" xml:space="preserve">
+    <value>Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing at the camera.</value>
+  </data>
+  <data name="PROP_STENCIL_FRONT_NAME" xml:space="preserve">
+    <value>Front face</value>
+  </data>
+  <data name="PROP_STENCIL_OP_COMPARE_DESC" xml:space="preserve">
+    <value>Sets the operator used when comparing stencil data against existing stencil data.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_COMPARE_NAME" xml:space="preserve">
+    <value>Comparison operator</value>
+  </data>
+  <data name="PROP_STENCIL_OP_DEPTH_FAIL_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil testing passes and depth testing fails.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_DEPTH_FAIL_NAME" xml:space="preserve">
+    <value>Depth fail operation</value>
+  </data>
+  <data name="PROP_STENCIL_OP_FAIL_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil testing fails.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_FAIL_NAME" xml:space="preserve">
+    <value>Fail operation</value>
+  </data>
+  <data name="PROP_STENCIL_OP_PASS_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil and depth testing passes.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_PASS_NAME" xml:space="preserve">
+    <value>Pass operation</value>
+  </data>
+  <data name="PROP_STENCIL_READ_MASK_DESC" xml:space="preserve">
+    <value>Sets the value used to mask when reading a portion of the stencil buffer.</value>
+  </data>
+  <data name="PROP_STENCIL_READ_MASK_NAME" xml:space="preserve">
+    <value>Read mask</value>
+  </data>
+  <data name="PROP_STENCIL_REFERENCE_DESC" xml:space="preserve">
+    <value>Sets the value to perform against when doing a depth/stencil test.</value>
+  </data>
+  <data name="PROP_STENCIL_REFERENCE_NAME" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="PROP_STENCIL_WRITE_MASK_DESC" xml:space="preserve">
+    <value>Sets the value used to mask when writing a portion of the stencil buffer.</value>
+  </data>
+  <data name="PROP_STENCIL_WRITE_MASK_NAME" xml:space="preserve">
+    <value>Write mask</value>
+  </data>
 </root>

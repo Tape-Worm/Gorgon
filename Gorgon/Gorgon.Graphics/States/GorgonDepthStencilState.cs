@@ -31,7 +31,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Operations applied to stencil buffers.
 	/// </summary>
-	public enum StencilOperations
+	public enum StencilOperation
 	{
 		/// <summary>
 		/// Unknown.
@@ -88,19 +88,19 @@ namespace GorgonLibrary.Graphics
 		/// The operation to perform when the test fails.
 		/// </summary>
 		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations FailOperation;
+		public StencilOperation FailOperation;
 
 		/// <summary>
 		/// The operation to perform when the depth test fails.
 		/// </summary>
 		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations DepthFailOperation;
+		public StencilOperation DepthFailOperation;
 
 		/// <summary>
 		/// The operation to perform when the test succeeds.
 		/// </summary>
 		/// <remarks>The default value is Keep.</remarks>
-		public StencilOperations PassOperation;
+		public StencilOperation PassOperation;
 		#endregion
 
 		#region Methods.
@@ -229,16 +229,16 @@ namespace GorgonLibrary.Graphics
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			}
 		};
 
@@ -256,16 +256,16 @@ namespace GorgonLibrary.Graphics
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			}
 		};
 
@@ -283,16 +283,16 @@ namespace GorgonLibrary.Graphics
 			StencilFrontFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			},
 			StencilBackFace = new GorgonDepthStencilOperations
 				{
 				ComparisonOperator = ComparisonOperator.Always,
-				DepthFailOperation = StencilOperations.Keep,
-				FailOperation = StencilOperations.Keep,
-				PassOperation = StencilOperations.Keep
+				DepthFailOperation = StencilOperation.Keep,
+				FailOperation = StencilOperation.Keep,
+				PassOperation = StencilOperation.Keep
 			}
 		};
 

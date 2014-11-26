@@ -20,33 +20,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, November 19, 2014 10:57:28 PM
+// Created: Tuesday, November 25, 2014 9:54:39 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.Design
 {
 	/// <summary>
-	/// Type converter for the renderable stencil parameters.
+	/// Type converter for renderable texture sampling parameters.
 	/// </summary>
-	public class StencilTypeConverter
+	public class TextureSamplerTypeConverter
 		: TypeConverter
 	{
 		#region Variables.
-		// List of stencil-only properties.
-		private readonly HashSet<string> _depthProps = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-		                                               {
-			                                               "DepthBias",
-			                                               "IsDepthWriteEnabled",
-			                                               "DepthComparison"
-		                                               };
 		#endregion
 
 		#region Methods.
@@ -60,7 +57,7 @@ namespace GorgonLibrary.Editor.Design
 		/// </returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string);
 		}
 
 		/// <summary>
@@ -115,60 +112,49 @@ namespace GorgonLibrary.Editor.Design
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
 			var typeDesc = (ContentTypeDescriptor)context.Instance;
-			var content = typeDesc.Content;
 			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(value, attributes);
 			var properties = new List<ContentPropertyDescriptor>();
 
 			// Build the property descriptors for the blending type.	
-			foreach (PropertyDescriptor descriptor in result.Cast<PropertyDescriptor>().Where(item => !_depthProps.Contains(item.Name)))
+			foreach (PropertyDescriptor descriptor in result)
 			{
-				var contentProp = new ContentProperty(descriptor, value, content.TypeDescriptor["Stencil"])
+				var contentProp = new ContentProperty(descriptor, value, typeDesc["TextureSampler"])
 				                  {
 					                  HasDefaultValue = true,
 									  RefreshProperties = RefreshProperties.All,
-									  IsReadOnly = false
+									  IsReadOnly = typeDesc["TextureSampler"].IsReadOnly
 				                  };
 
-				if (string.Equals(descriptor.Name, "FrontFace", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "TextureFilter", StringComparison.OrdinalIgnoreCase))
 				{
-					contentProp.IsReadOnly = true;
-					contentProp.Converter = typeof(StencilStateTypeConverter).AssemblyQualifiedName;
-					contentProp.DisplayName = APIResources.PROP_STENCIL_FRONT_NAME;
-					contentProp.Description = APIResources.PROP_STENCIL_FRONT_DESC;
+					contentProp.DefaultValue = TextureFilter.Point;
+					contentProp.Converter = typeof(TextureFilterTypeConverter).AssemblyQualifiedName;
 				}
 
-				if (string.Equals(descriptor.Name, "BackFace", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "HorizontalWrapping", StringComparison.OrdinalIgnoreCase))
 				{
-					contentProp.IsReadOnly = true;
-					contentProp.Converter = typeof(StencilStateTypeConverter).AssemblyQualifiedName;
-					contentProp.DisplayName = APIResources.PROP_STENCIL_BACK_NAME;
-					contentProp.Description = APIResources.PROP_STENCIL_BACK_DESC;
+					contentProp.RefreshProperties = RefreshProperties.All;
+					contentProp.DefaultValue = TextureAddressing.Clamp;
+					contentProp.Converter = typeof(TextureAddressingTypeConverter).AssemblyQualifiedName;
 				}
 
-				if (string.Equals(descriptor.Name, "StencilReference", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "VerticalWrapping", StringComparison.OrdinalIgnoreCase))
 				{
-					contentProp.DisplayName = APIResources.PROP_STENCIL_REFERENCE_NAME;
-					contentProp.Description = APIResources.PROP_STENCIL_REFERENCE_DESC;
-					contentProp.DefaultValue = 0;
+					contentProp.RefreshProperties = RefreshProperties.All;
+					contentProp.DefaultValue = TextureAddressing.Clamp;
+					contentProp.Converter = typeof(TextureAddressingTypeConverter).AssemblyQualifiedName;
 				}
 
-				if (string.Equals(descriptor.Name, "StencilReadMask", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(descriptor.Name, "BorderColor", StringComparison.OrdinalIgnoreCase))
 				{
-					contentProp.DisplayName = APIResources.PROP_STENCIL_READ_MASK_NAME;
-					contentProp.Description = APIResources.PROP_STENCIL_READ_MASK_DESC;
-					contentProp.DefaultValue = 255;
-				}
-
-				if (string.Equals(descriptor.Name, "StencilWriteMask", StringComparison.OrdinalIgnoreCase))
-				{
-					contentProp.DisplayName = APIResources.PROP_STENCIL_WRITE_MASK_NAME;
-					contentProp.Description = APIResources.PROP_STENCIL_WRITE_MASK_DESC;
-					contentProp.DefaultValue = 255;
+					contentProp.DefaultValue = GorgonColor.Transparent;
+					contentProp.Converter = typeof(RGBATypeConverter).AssemblyQualifiedName;
+					contentProp.SetTypeEditor(typeof(RGBAEditor), typeof(UITypeEditor));
 				}
 
 				properties.Add(new ContentPropertyDescriptor(contentProp));
 			}
-
+			
 			return new PropertyDescriptorCollection(properties.Cast<PropertyDescriptor>().OrderBy(item => item.DisplayName ?? item.Name).ToArray());
 		}
 		#endregion

@@ -253,6 +253,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A PointF value requires two values..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_CONVERT_POINTF {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CONVERT_POINTF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A dependency file, &apos;{0}&apos; is missing and must exist to load the content..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE {
@@ -1210,6 +1219,168 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string PROP_STARTDIRECTORY_DESC {
             get {
                 return ResourceManager.GetString("PROP_STARTDIRECTORY_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing away from the camera..
+        /// </summary>
+        internal static string PROP_STENCIL_BACK_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_BACK_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back face.
+        /// </summary>
+        internal static string PROP_STENCIL_BACK_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_BACK_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing at the camera..
+        /// </summary>
+        internal static string PROP_STENCIL_FRONT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_FRONT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Front face.
+        /// </summary>
+        internal static string PROP_STENCIL_FRONT_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_FRONT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the operator used when comparing stencil data against existing stencil data..
+        /// </summary>
+        internal static string PROP_STENCIL_OP_COMPARE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_COMPARE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comparison operator.
+        /// </summary>
+        internal static string PROP_STENCIL_OP_COMPARE_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_COMPARE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the operation to perform when stencil testing passes and depth testing fails..
+        /// </summary>
+        internal static string PROP_STENCIL_OP_DEPTH_FAIL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_DEPTH_FAIL_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Depth fail operation.
+        /// </summary>
+        internal static string PROP_STENCIL_OP_DEPTH_FAIL_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_DEPTH_FAIL_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the operation to perform when stencil testing fails..
+        /// </summary>
+        internal static string PROP_STENCIL_OP_FAIL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_FAIL_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fail operation.
+        /// </summary>
+        internal static string PROP_STENCIL_OP_FAIL_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_FAIL_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the operation to perform when stencil and depth testing passes..
+        /// </summary>
+        internal static string PROP_STENCIL_OP_PASS_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_PASS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass operation.
+        /// </summary>
+        internal static string PROP_STENCIL_OP_PASS_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_OP_PASS_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the value used to mask when reading a portion of the stencil buffer..
+        /// </summary>
+        internal static string PROP_STENCIL_READ_MASK_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_READ_MASK_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Read mask.
+        /// </summary>
+        internal static string PROP_STENCIL_READ_MASK_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_READ_MASK_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the value to perform against when doing a depth/stencil test..
+        /// </summary>
+        internal static string PROP_STENCIL_REFERENCE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_REFERENCE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference.
+        /// </summary>
+        internal static string PROP_STENCIL_REFERENCE_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_REFERENCE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the value used to mask when writing a portion of the stencil buffer..
+        /// </summary>
+        internal static string PROP_STENCIL_WRITE_MASK_DESC {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_WRITE_MASK_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Write mask.
+        /// </summary>
+        internal static string PROP_STENCIL_WRITE_MASK_NAME {
+            get {
+                return ResourceManager.GetString("PROP_STENCIL_WRITE_MASK_NAME", resourceCulture);
             }
         }
         

@@ -43,26 +43,26 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="stencilOp">Stencil operation to convert.</param>
 		/// <returns>Stencil operation.</returns>
-		private static StencilOperations ConvertStencilOp(int stencilOp)
+		private static StencilOperation ConvertStencilOp(int stencilOp)
 		{
 			switch (stencilOp)
 			{
 				case 0:
-					return StencilOperations.Zero;
+					return StencilOperation.Zero;
 				case 1:
-					return StencilOperations.Decrement;
+					return StencilOperation.Decrement;
 				case 2:
-					return StencilOperations.Increment;
+					return StencilOperation.Increment;
 				case 3:
-					return StencilOperations.Invert;
+					return StencilOperation.Invert;
 				case 4:
-					return StencilOperations.DecrementClamp;
+					return StencilOperation.DecrementClamp;
 				case 5:
-					return StencilOperations.IncrementClamp;
+					return StencilOperation.IncrementClamp;
 				case 7:
-					return StencilOperations.Replace;
+					return StencilOperation.Replace;
 				default:
-					return StencilOperations.Keep;
+					return StencilOperation.Keep;
 			}
 		}
 

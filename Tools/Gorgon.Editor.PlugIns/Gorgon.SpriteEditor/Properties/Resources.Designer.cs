@@ -381,6 +381,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets the range of alpha values to reject when rendering the sprite..
+        /// </summary>
+        internal static string PROP_SPRITE_ALPHATEST_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_ALPHATEST_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset from the absolute upper-left (0,0) coordinate of the sprite.  This serves as an axis of rotation and an anchor for scaling/positioning..
         /// </summary>
         internal static string PROP_SPRITE_ANCHOR_DESC {
@@ -471,6 +480,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alpha test maximum.
+        /// </summary>
+        internal static string PROP_SPRITE_MAXALPHA_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_MAXALPHA_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alpha test minimum.
+        /// </summary>
+        internal static string PROP_SPRITE_MINALPHA_NAME {
+            get {
+                return ResourceManager.GetString("PROP_SPRITE_MINALPHA_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The width and height of the sprite..
         /// </summary>
         internal static string PROP_SPRITE_SIZE_DESC {
@@ -539,6 +566,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string PROP_TEXTURE_REGION_NAME {
             get {
                 return ResourceManager.GetString("PROP_TEXTURE_REGION_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Allows the setting of texture sampling values to define how the texture will behave when it is enlarged, shrunk, and wrapped..
+        /// </summary>
+        internal static string PROP_TEXTURE_SAMPLER_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_SAMPLER_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture sampler.
+        /// </summary>
+        internal static string PROP_TEXTURE_SAMPLER_NAME {
+            get {
+                return ResourceManager.GetString("PROP_TEXTURE_SAMPLER_NAME", resourceCulture);
             }
         }
         

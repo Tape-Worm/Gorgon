@@ -368,7 +368,7 @@ namespace GorgonLibrary.Renderers
 				/// <summary>
 				/// Property to set or return the operation to perform if the depth test fails.
 				/// </summary>
-				public StencilOperations DepthFailOperation
+				public StencilOperation DepthFailOperation
 				{
 					get;
 					set;
@@ -377,7 +377,7 @@ namespace GorgonLibrary.Renderers
 				/// <summary>
 				/// Property to set or return the operation to perform if the stencil test fails.
 				/// </summary>
-				public StencilOperations FailOperation
+				public StencilOperation FailOperation
 				{
 					get;
 					set;
@@ -386,7 +386,7 @@ namespace GorgonLibrary.Renderers
 				/// <summary>
 				/// Property to set or return the operation to perform if the stencil test passes.
 				/// </summary>
-				public StencilOperations PassOperation
+				public StencilOperation PassOperation
 				{
 					get;
 					set;
@@ -400,7 +400,7 @@ namespace GorgonLibrary.Renderers
 				internal StencilState()
 				{
 					ComparisonOperator = ComparisonOperator.Always;
-					PassOperation = FailOperation = DepthFailOperation = StencilOperations.Keep;
+					PassOperation = FailOperation = DepthFailOperation = StencilOperation.Keep;
 				}
 				#endregion
 			}
