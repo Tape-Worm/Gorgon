@@ -1,6 +1,4 @@
-﻿using GorgonLibrary.Graphics;
-
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {
     partial class GorgonImageContentPanel
     {

@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Properties;
 

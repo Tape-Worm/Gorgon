@@ -24,12 +24,10 @@
 // 
 #endregion
 
-using System;
 using System.Drawing;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers

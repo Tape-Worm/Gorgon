@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using SlimMath;
 using Color = System.Drawing.Color;
 
 namespace GorgonLibrary.Graphics

@@ -31,7 +31,6 @@ using System.Globalization;
 using System.Linq;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.Design
 {
