@@ -584,4 +584,28 @@ The following characters are not allowed:
   <data name="PROP_STENCIL_WRITE_MASK_NAME" xml:space="preserve">
     <value>Write mask</value>
   </data>
+  <data name="PROP_SAMPLE_BORDER_DESC" xml:space="preserve">
+    <value>Sets the color of the border when the horizontal or vertical wrapping is set to Border.</value>
+  </data>
+  <data name="PROP_SAMPLE_BORDER_NAME" xml:space="preserve">
+    <value>Border color</value>
+  </data>
+  <data name="PROP_SAMPLE_FILTER_DESC" xml:space="preserve">
+    <value>Sets the type of filtering to apply when textures are enlarged or shrunken.</value>
+  </data>
+  <data name="PROP_SAMPLE_FILTER_NAME" xml:space="preserve">
+    <value>Filtering</value>
+  </data>
+  <data name="PROP_SAMPLE_HORZADDR_DESC" xml:space="preserve">
+    <value>Sets the method to use when handling a texture coordinate outside of the physical texture range.</value>
+  </data>
+  <data name="PROP_SAMPLE_HORZADDR_NAME" xml:space="preserve">
+    <value>Horizontal addressing</value>
+  </data>
+  <data name="PROP_SAMPLE_VERTADDR_DESC" xml:space="preserve">
+    <value>Sets the method to use when handling a texture coordinate outside of the physical texture range.</value>
+  </data>
+  <data name="PROP_SAMPLE_VERTADDR_NAME" xml:space="preserve">
+    <value>Vertical addressing</value>
+  </data>
 </root>
