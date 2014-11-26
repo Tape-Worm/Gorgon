@@ -38,7 +38,6 @@ using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
-using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {

@@ -25,25 +25,18 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Controls;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn

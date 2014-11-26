@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 

@@ -27,13 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
-using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.Design
 {

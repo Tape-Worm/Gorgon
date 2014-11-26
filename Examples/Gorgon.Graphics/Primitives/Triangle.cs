@@ -24,16 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Data.Odbc;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GorgonLibrary.Math;
 using SlimMath;
-using Matrix = SlimMath.Matrix;
 
 namespace GorgonLibrary.Graphics.Example
 {
