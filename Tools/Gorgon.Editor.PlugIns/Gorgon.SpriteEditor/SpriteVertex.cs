@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </summary>
 		[TypeConverter(typeof(RGBATypeConverter)),
 		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
-		DefaultValue(typeof(Color), "#FFFFFFFF")]
+		DefaultValue(typeof(Color), "255,255,255,255")]
 	    public Color Color
 	    {
 		    get

@@ -378,7 +378,6 @@ namespace GorgonLibrary.Editor
 			    && (value is Color))
 			{
 				_descriptor.SetValue(_owner, new GorgonColor((Color)value));
-
 			}
 			else
 			{
