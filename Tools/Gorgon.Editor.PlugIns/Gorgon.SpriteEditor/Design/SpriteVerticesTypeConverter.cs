@@ -105,7 +105,25 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
         /// </returns>
         public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
         {
-            return base.GetProperties(context, value, attributes);
-        }
+			var typeDesc = (ContentTypeDescriptor)context.Instance;
+			var content = typeDesc.Content;
+			PropertyDescriptorCollection result = TypeDescriptor.GetProperties(value, attributes);
+			var properties = new List<ContentPropertyDescriptor>();
+
+			// Build the property descriptors for the blending type.	
+			foreach (PropertyDescriptor descriptor in result)
+			{
+				var contentProp = new ContentProperty(descriptor, value, content.TypeDescriptor["Vertices"])
+				{
+					HasDefaultValue = true,
+					RefreshProperties = RefreshProperties.All,
+					IsReadOnly = false
+				};
+
+				properties.Add(new ContentPropertyDescriptor(contentProp));
+			}
+
+			return new PropertyDescriptorCollection(properties.Cast<PropertyDescriptor>().OrderBy(item => item.DisplayName ?? item.Name).ToArray());
+		}
     }
 }
