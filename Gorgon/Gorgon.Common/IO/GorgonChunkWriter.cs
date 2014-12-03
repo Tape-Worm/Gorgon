@@ -402,7 +402,7 @@ namespace GorgonLibrary.IO
                     int blockSize = size > TempBufferSize ? TempBufferSize : size;
 
                     // Read our array into our temporary byte buffer.
-                    DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
+                    DirectAccess.WriteArray(tempBufferPointer, value, offset, blockSize);
 
                     offset += blockSize;
                     size -= size;

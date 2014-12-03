@@ -28,9 +28,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Editor.Design;
+using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 using SlimMath;
 
@@ -39,6 +43,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
     /// <summary>
     /// Vertex information for a sprite.
     /// </summary>
+    [TypeConverter(typeof(SpriteVertexTypeConverter))]
     class SpriteVertex
     {
         #region Variables.
@@ -49,11 +54,38 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to set or return the color for the vertex.
+		/// </summary>
+		[TypeConverter(typeof(RGBATypeConverter)),
+		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
+		DefaultValue(typeof(Color), "#FFFFFFFF")]
+	    public Color Color
+	    {
+		    get
+		    {
+			    return _sprite.Sprite.GetCornerColor(_corner);
+		    }
+		    set
+		    {
+			    Color currentColor = _sprite.Sprite.GetCornerColor(_corner);
+
+			    if (currentColor == value)
+			    {
+				    return;
+			    }
+
+				_sprite.Sprite.SetCornerColor(_corner, value);
+
+				_sprite.OnVertexUpdated(this);
+		    }
+	    }
+
         /// <summary>
-        /// Property to set or return the position of the sprite vertex.
+        /// Property to set or return the offset of the sprite vertex.
         /// </summary>
-        [TypeConverter(typeof(PointConverter))]
-        public Point Position
+        [TypeConverter(typeof(PointConverter)), DefaultValue(typeof(Point), "0, 0")]
+        public Point Offset
         {
             get
             {
