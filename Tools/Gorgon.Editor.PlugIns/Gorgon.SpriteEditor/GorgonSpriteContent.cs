@@ -465,7 +465,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		LocalDisplayName(typeof(Resources), "PROP_SPRITE_COLOR_NAME"),
 		TypeConverter(typeof(RGBATypeConverter)),
 		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
-		DefaultValue(0xFFFFFFFF)]
+		DefaultValue(typeof(Color), "#FFFFFFFF")]
 		public Color Color
 		{
 			get
