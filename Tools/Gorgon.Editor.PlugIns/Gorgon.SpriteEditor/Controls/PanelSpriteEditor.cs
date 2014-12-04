@@ -28,7 +28,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
@@ -130,13 +132,34 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		private void DrawSprite()
 		{
-			var halfSprite = (Point)(new Vector2(_content.Sprite.Size.X / 2.0f, _content.Sprite.Size.Y / 2.0f));
+			_content.Sprite.Scale = new Vector2(4);
+			var halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
 			var halfScreen = (Point)(new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f));
 			var spritePosition = new Vector2(halfScreen.X - halfSprite.X, halfScreen.Y - halfSprite.Y);
 
+			var imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
+			var imagePosition = new Vector2(spritePosition.X - _content.TextureRegion.X * imageScale.X, spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
+
+			var spriteRect = new RectangleF(spritePosition, _content.Sprite.ScaledSize);
+
+			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
+			_content.TextureSprite.Position = (Point)imagePosition;
+			_content.TextureSprite.SmoothingMode = SmoothingMode.Smooth;
 			_content.Sprite.Position = spritePosition;
 			
+			_content.TextureSprite.Draw();
+
+			// Clear the area behind the sprite so we don't get the texture blending with itself.
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.None;
+			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+			_content.Renderer.Drawing.Blit(_content.BackgroundTexture, spriteRect, _content.BackgroundTexture.ToTexel(spriteRect));
+
 			_content.Sprite.Draw();
+
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+			_content.Renderer.Drawing.DrawRectangle(spriteRect, new GorgonColor(0, 0, 1.0f, 0.5f));
+			_content.Sprite.Scale = new Vector2(1);
 		}
 
 		/// <summary>

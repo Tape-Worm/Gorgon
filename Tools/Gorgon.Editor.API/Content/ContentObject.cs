@@ -571,8 +571,7 @@ namespace GorgonLibrary.Editor
 
             HasChanges = false;
 
-            // Update the properties.
-            SetDefaults();
+			SetDefaults();
 
             // Update the panel
 			if (ContentControl != null)

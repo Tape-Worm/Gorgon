@@ -63,20 +63,40 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private PanelSpriteEditor _panel;
 		// The swap chain to display graphics data in the panel.
 		private GorgonSwapChain _swap;
-		// Background pattern texture.
-		private GorgonTexture2D _background;
 		// The anchor point for the sprite.
 		private Point _spriteAnchor;
 		// The current blending mode.
 		private BlendingMode _blendMode = BlendingMode.Modulate;
+		// The texture rectangle, in pixel space.
+		private Rectangle _textureRect;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the background pattern texture.
+		/// </summary>
+		[Browsable(false)]
+		public GorgonTexture2D BackgroundTexture
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the working copy of the sprite.
 		/// </summary>
 		[Browsable(false)]
 		public GorgonSprite Sprite
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the sprite used to display the texture.
+		/// </summary>
+		[Browsable(false)]
+		public GorgonSprite TextureSprite
 		{
 			get;
 			private set;
@@ -350,22 +370,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		{
 			get
 			{
-				if (Sprite == null)
-				{
-					return Rectangle.Empty;
-				}
-
-				RectangleF pixelRect = Sprite.TextureRegion;
-
-				if (Sprite.Texture != null)
-				{
-					pixelRect = Sprite.Texture.ToPixel(Sprite.TextureRegion);
-				}
-
-				return 	Rectangle.Truncate(pixelRect);
+				return _textureRect;
 			}
 			set
 			{
+				if (_textureRect == value)
+				{
+					return;
+				}
+
+				_textureRect = value;
+
 				if ((Sprite == null)
 					|| (Sprite.Texture == null))
 				{
@@ -373,11 +388,6 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				}
 
 				RectangleF texelRect = Sprite.Texture.ToTexel(value);
-
-				if (texelRect == Sprite.TextureRegion)
-				{
-					return;
-				}
 
 				Sprite.TextureRegion = texelRect;
 
@@ -453,6 +463,21 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				Sprite.Texture = value;
 				Sprite.GetDeferredTexture();
 
+				// Update the texture region on the sprite so that the pixel coordinates stay the same
+				// relative to the new texture size.
+				if (Sprite.Texture != null)
+				{
+					Sprite.TextureRegion = Sprite.Texture.ToTexel(_textureRect);
+					TextureSprite.Texture = Sprite.Texture;
+					TextureSprite.Size = Sprite.Texture.Settings.Size;
+					TextureSprite.Color = new GorgonColor(1, 1, 1, 0.35f);
+				}
+				else
+				{
+					TextureSprite.Texture = null;
+					TextureSprite.Color = GorgonColor.Transparent;
+				}
+
 				NotifyPropertyChanged();
 			}
 		}
@@ -470,7 +495,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		{
 			get
 			{
-				return Sprite == null ? Color.White : Sprite.Color.ToColor();
+				return (Sprite == null || Sprite.Color == GorgonColor.White) ? Color.White : Sprite.Color.ToColor();
 			}
 			set
 			{
@@ -559,9 +584,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 					// Clear any external dependencies.
 					EditorFile = null;
 
-					if (_background != null)
+					if (BackgroundTexture != null)
 					{
-						_background.Dispose();
+						BackgroundTexture.Dispose();
 					}
 
 					if (_swap != null)
@@ -578,7 +603,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 			_disposed = true;
 			Texture = null;
-			_background = null;
+			BackgroundTexture = null;
 			Renderer = null;
 			_swap = null;
 
@@ -622,7 +647,19 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			Sprite.Scale = new Vector2(1);
 			Sprite.Position = Vector2.Zero;
 
-            Vertices = new SpriteVertices(this);
+			TextureSprite = Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1), GorgonColor.Transparent);
+			TextureSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
+
+			if (Sprite.Texture != null)
+			{
+				TextureSprite.Texture = Sprite.Texture;
+				TextureSprite.Size = Sprite.Texture.Settings.Size;
+				TextureSprite.Color = new GorgonColor(1, 1, 1, 0.35f);
+			}
+
+			_textureRect = Rectangle.Truncate(Sprite.Texture != null ? Sprite.Texture.ToPixel(Sprite.TextureRegion) : Sprite.TextureRegion);
+
+			Vertices = new SpriteVertices(this);
 
 			ValidateSpriteProperties();
 		}
@@ -710,7 +747,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 			Renderer = Graphics.Output.Create2DRenderer(_swap);
 
-			_background = Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
+			BackgroundTexture = Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
 
 			return _panel;
 		}
@@ -725,7 +762,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
 			Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 
-			Renderer.Drawing.Blit(_background, _panel.ClientRectangle, _background.ToTexel(_panel.ClientRectangle));
+			Renderer.Drawing.Blit(BackgroundTexture, _panel.ClientRectangle, BackgroundTexture.ToTexel(_panel.ClientRectangle));
 
 			_panel.Draw();
 

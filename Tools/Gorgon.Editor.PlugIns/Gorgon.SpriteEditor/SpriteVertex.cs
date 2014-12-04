@@ -64,7 +64,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 	    {
 		    get
 		    {
-			    return _sprite.Sprite.GetCornerColor(_corner);
+			    GorgonColor result = _sprite.Sprite.GetCornerColor(_corner);
+
+			    if (result == GorgonColor.White)
+			    {
+					// This is a stupid hack to get around the DefaultValue using the Color type converter
+					// which decides that a hex value of FFFFFFFF is White, while doing a ToArgb on a Color
+					// is not even though the two values are the same...
+				    return Color.White;
+			    }
+
+			    return result;
 		    }
 		    set
 		    {
