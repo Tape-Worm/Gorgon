@@ -106,7 +106,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// Property to return the vertices for the sprite.
         /// </summary>
         [TypeConverter(typeof(SpriteVerticesTypeConverter)),
-        LocalCategory(typeof(Resources), "CATEGORY_DESIGN")]
+        LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_VERTICES_NAME"),
+		LocalDescription(typeof(Resources), "PROP_SPRITE_VERTICES_DESC")]
 	    public SpriteVertices Vertices
 	    {
 	        get;
