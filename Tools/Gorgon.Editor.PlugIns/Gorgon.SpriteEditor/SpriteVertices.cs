@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Design;
+using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn
@@ -42,6 +44,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to return the upper left corner of the sprite rectangle.
         /// </summary>
+		[LocalDisplayName(typeof(Resources), "PROP_SPRITE_UL_VERTEX_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_UL_VERTEX_DESC")]
         public SpriteVertex UpperLeft
         {
             get;
@@ -51,6 +54,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to return the upper right corner of the sprite rectangle.
         /// </summary>
+		[LocalDisplayName(typeof(Resources), "PROP_SPRITE_UR_VERTEX_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_UR_VERTEX_DESC")]
         public SpriteVertex UpperRight
         {
             get;
@@ -60,6 +64,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to return the lower left corner of the sprite rectangle.
         /// </summary>
+		[LocalDisplayName(typeof(Resources), "PROP_SPRITE_LL_VERTEX_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_LL_VERTEX_DESC")]
         public SpriteVertex LowerLeft
         {
             get;
@@ -69,6 +74,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to return the lower right corner of the sprite rectangle.
         /// </summary>
+		[LocalDisplayName(typeof(Resources), "PROP_SPRITE_LR_VERTEX_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_LR_VERTEX_DESC")]
         public SpriteVertex LowerRight
         {
             get;

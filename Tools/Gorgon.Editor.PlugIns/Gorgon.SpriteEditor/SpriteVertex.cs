@@ -32,8 +32,10 @@ using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Design;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
+using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 using SlimMath;
@@ -59,7 +61,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </summary>
 		[TypeConverter(typeof(RGBATypeConverter)),
 		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
-		DefaultValue(typeof(Color), "255,255,255,255")]
+		DefaultValue(typeof(Color), "255,255,255,255"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_VERTEX_COLOR_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_VERTEX_COLOR_DESC")]
 	    public Color Color
 	    {
 		    get
@@ -94,7 +97,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to set or return the offset of the sprite vertex.
         /// </summary>
-        [TypeConverter(typeof(PointConverter)), DefaultValue(typeof(Point), "0, 0")]
+        [TypeConverter(typeof(PointConverter)), 
+		DefaultValue(typeof(Point), "0, 0"),
+		LocalDisplayName(typeof(Resources), "PROP_SPRITE_VERTEX_OFFSET_NAME"), LocalDescription(typeof(Resources), "PROP_SPRITE_VERTEX_OFFSET_DESC")]
         public Point Offset
         {
             get

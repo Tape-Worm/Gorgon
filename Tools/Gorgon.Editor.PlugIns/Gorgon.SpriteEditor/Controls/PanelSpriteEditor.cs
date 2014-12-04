@@ -26,6 +26,8 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -47,6 +49,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private GorgonSpriteContent _content;
 		// The plug-in that created the content.
 		private GorgonSpriteEditorPlugIn _plugIn;
+		// The amount of zoom on the display.
+		private float _zoom = 1.0f;
 		#endregion
 
 		#region Properties.
@@ -115,6 +119,60 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		}
 
 		/// <summary>
+		/// Handles the Click event of the zoomItem control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void zoomItem_Click(object sender, EventArgs e)
+		{
+			var selectedItem = (ToolStripMenuItem)sender;
+
+			try
+			{
+				var items = dropDownZoom.DropDownItems.Cast<ToolStripItem>().Where(item => item is ToolStripMenuItem);
+
+				// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+				foreach (ToolStripMenuItem control in items)
+				{
+					if (control != sender)
+					{
+						control.Checked = false;
+					}
+				}
+
+				_zoom = float.Parse(selectedItem.Tag.ToString(),
+				                    NumberStyles.Float,
+				                    NumberFormatInfo.InvariantInfo);
+
+				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORSPR_TEXT_ZOOM, selectedItem.Text);
+
+				if (menuItemToWindow.Checked)
+				{
+					//CalculateZoomToWindow();
+				}
+
+				/*switch (_content.CurrentState)
+				{
+					case DrawState.DrawFontTextures:
+						// Do nothing for this mode.
+						break;
+					default:
+						UpdateGlyphEditor();
+						_nextState = DrawState.FromGlyphEdit;
+						break;
+				}*/
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
 		/// Function to perform localization on the control text properties.
 		/// </summary>
 		protected override void LocalizeControls()
@@ -124,7 +182,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			buttonSave.Text = Resources.GORSPR_TEXT_SAVE;
 			buttonRevert.Text = Resources.GORSPR_TEXT_REVERT;
 
-			labelZoom.Text = Resources.GORSPR_TEXT_ZOOM;
+			menuItemToWindow.Text = Resources.GORSPR_TEXT_TO_WINDOW;
+			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem200.Text = 2.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem100.Text = 1.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem75.Text = 0.75.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+
+			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORSPR_TEXT_ZOOM, menuItem100.Text);
 		}
 
 		/// <summary>
@@ -132,7 +200,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		private void DrawSprite()
 		{
-			_content.Sprite.Scale = new Vector2(4);
+			_content.Sprite.Scale = new Vector2(_zoom);
+
 			var halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
 			var halfScreen = (Point)(new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f));
 			var spritePosition = new Vector2(halfScreen.X - halfSprite.X, halfScreen.Y - halfSprite.Y);
@@ -159,6 +228,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			_content.Renderer.Drawing.DrawRectangle(spriteRect, new GorgonColor(0, 0, 1.0f, 0.5f));
+
 			_content.Sprite.Scale = new Vector2(1);
 		}
 
