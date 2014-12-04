@@ -1668,7 +1668,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			GetExecutable();
 	
             ValidateImageProperties();
-        }
+	    }
 
         /// <summary>
         /// Function called when the content is being initialized.
