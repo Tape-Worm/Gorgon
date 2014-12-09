@@ -462,7 +462,7 @@ The following characters are not allowed:
     <value>No files were selected.</value>
   </data>
   <data name="PROP_BLEND_WRITEMASK_DESC" xml:space="preserve">
-    <value>Sets the color channels to mask out when rendering.</value>
+    <value>Sets the color components on a render target that will receive data during a blending operation.</value>
   </data>
   <data name="PROP_BLEND_WRITEMASK_NAME" xml:space="preserve">
     <value>Write mask</value>

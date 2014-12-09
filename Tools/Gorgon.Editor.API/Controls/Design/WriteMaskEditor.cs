@@ -68,7 +68,9 @@ namespace GorgonLibrary.Editor.Design
 				    return ColorWriteMaskFlags.None;
 			    }
 
-				return CheckedItems.Count == 4 ? ColorWriteMaskFlags.All : CheckedItems.Cast<ColorWriteMaskFlags>().Aggregate(result, (current, item) => current | item);
+				return CheckedItems.Count == 4
+					       ? ColorWriteMaskFlags.All
+					       : CheckedItems.Cast<ColorWriteMaskFlags>().Aggregate(result, (current, item) => current | item);
 			}
 		}
 		#endregion
@@ -126,16 +128,17 @@ namespace GorgonLibrary.Editor.Design
 		public WriteMaskEditor(ColorWriteMaskFlags writeMask)
 			: this()
 		{
-			var fontStyles =
+			var maskBits =
 				((ColorWriteMaskFlags[])Enum.GetValues(typeof(ColorWriteMaskFlags))).Where(item => item != ColorWriteMaskFlags.All && item != ColorWriteMaskFlags.None)
 				                                                                    .ToArray();
 
 			Items.Clear();
 
-			foreach (ColorWriteMaskFlags flag in fontStyles)
+			foreach (ColorWriteMaskFlags flag in maskBits)
 			{
 			    Items.Add(flag, (writeMask & flag) == flag);
 			}
+
 
 		    CheckOnClick = true;
 		}
