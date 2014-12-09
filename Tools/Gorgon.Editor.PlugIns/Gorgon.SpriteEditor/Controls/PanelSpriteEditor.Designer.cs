@@ -76,6 +76,7 @@
 			this.panelSprite.Name = "panelSprite";
 			this.panelSprite.Size = new System.Drawing.Size(789, 539);
 			this.panelSprite.TabIndex = 0;
+			this.panelSprite.Resize += new System.EventHandler(this.panelSprite_Resize);
 			// 
 			// containerSprite
 			// 
@@ -135,7 +136,7 @@
 			// 
 			this.menuItem1600.CheckOnClick = true;
 			this.menuItem1600.Name = "menuItem1600";
-			this.menuItem1600.Size = new System.Drawing.Size(152, 22);
+			this.menuItem1600.Size = new System.Drawing.Size(130, 22);
 			this.menuItem1600.Tag = "16";
 			this.menuItem1600.Text = "1600%";
 			this.menuItem1600.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -145,7 +146,7 @@
 			// 
 			this.menuItem800.CheckOnClick = true;
 			this.menuItem800.Name = "menuItem800";
-			this.menuItem800.Size = new System.Drawing.Size(152, 22);
+			this.menuItem800.Size = new System.Drawing.Size(130, 22);
 			this.menuItem800.Tag = "8";
 			this.menuItem800.Text = "800%";
 			this.menuItem800.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -155,7 +156,7 @@
 			// 
 			this.menuItem400.CheckOnClick = true;
 			this.menuItem400.Name = "menuItem400";
-			this.menuItem400.Size = new System.Drawing.Size(152, 22);
+			this.menuItem400.Size = new System.Drawing.Size(130, 22);
 			this.menuItem400.Tag = "4";
 			this.menuItem400.Text = "400%";
 			this.menuItem400.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -165,7 +166,7 @@
 			// 
 			this.menuItem200.CheckOnClick = true;
 			this.menuItem200.Name = "menuItem200";
-			this.menuItem200.Size = new System.Drawing.Size(152, 22);
+			this.menuItem200.Size = new System.Drawing.Size(130, 22);
 			this.menuItem200.Tag = "2";
 			this.menuItem200.Text = "200%";
 			this.menuItem200.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -177,7 +178,7 @@
 			this.menuItem100.CheckOnClick = true;
 			this.menuItem100.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.menuItem100.Name = "menuItem100";
-			this.menuItem100.Size = new System.Drawing.Size(152, 22);
+			this.menuItem100.Size = new System.Drawing.Size(130, 22);
 			this.menuItem100.Tag = "1";
 			this.menuItem100.Text = "100%";
 			this.menuItem100.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
@@ -187,7 +188,7 @@
 			// 
 			this.menuItem75.CheckOnClick = true;
 			this.menuItem75.Name = "menuItem75";
-			this.menuItem75.Size = new System.Drawing.Size(152, 22);
+			this.menuItem75.Size = new System.Drawing.Size(130, 22);
 			this.menuItem75.Tag = "0.75";
 			this.menuItem75.Text = "75%";
 			this.menuItem75.Click += new System.EventHandler(this.zoomItem_Click);
@@ -196,7 +197,7 @@
 			// 
 			this.menuItem50.CheckOnClick = true;
 			this.menuItem50.Name = "menuItem50";
-			this.menuItem50.Size = new System.Drawing.Size(152, 22);
+			this.menuItem50.Size = new System.Drawing.Size(130, 22);
 			this.menuItem50.Tag = "0.5";
 			this.menuItem50.Text = "50%";
 			this.menuItem50.Click += new System.EventHandler(this.zoomItem_Click);
@@ -205,7 +206,7 @@
 			// 
 			this.menuItem25.CheckOnClick = true;
 			this.menuItem25.Name = "menuItem25";
-			this.menuItem25.Size = new System.Drawing.Size(152, 22);
+			this.menuItem25.Size = new System.Drawing.Size(130, 22);
 			this.menuItem25.Tag = "0.25";
 			this.menuItem25.Text = "25%";
 			this.menuItem25.Click += new System.EventHandler(this.zoomItem_Click);
@@ -213,13 +214,13 @@
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(127, 6);
 			// 
 			// menuItemToWindow
 			// 
 			this.menuItemToWindow.CheckOnClick = true;
 			this.menuItemToWindow.Name = "menuItemToWindow";
-			this.menuItemToWindow.Size = new System.Drawing.Size(152, 22);
+			this.menuItemToWindow.Size = new System.Drawing.Size(130, 22);
 			this.menuItemToWindow.Tag = "-1";
 			this.menuItemToWindow.Text = "to window";
 			this.menuItemToWindow.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;

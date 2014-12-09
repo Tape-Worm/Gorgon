@@ -88,7 +88,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 
 		#region Variables.
 		// The plug-in for the content.
-	    private GorgonImageEditorPlugIn _plugIn;
+	    private readonly GorgonImageEditorPlugIn _plugIn;
 		// Image content.
         private readonly GorgonImageContent _content;
 		// Texture to display.

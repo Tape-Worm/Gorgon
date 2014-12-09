@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -32,12 +33,28 @@ using System.Windows.Forms;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 {
+	/// <summary>
+	/// Mode for the sprite editor.
+	/// </summary>
+	public enum SpriteEditorMode
+	{
+		/// <summary>
+		/// In view mode.
+		/// </summary>
+		View = 0,
+		/// <summary>
+		/// In edit mode.
+		/// </summary>
+		Edit = 1
+	}
+
 	/// <summary>
 	/// Main UI for sprite editing.
 	/// </summary>
@@ -54,9 +71,137 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the sprite editor mode.
+		/// </summary>
+		public SpriteEditorMode SpriteEditorMode
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Resize event of the panelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelSprite_Resize(object sender, EventArgs e)
+		{
+			if (menuItemToWindow.Checked)
+			{
+				CalculateToWindow();
+			}
+			else
+			{
+				SetUpScrolling();
+			}
+		}
+
+		/// <summary>
+		/// Function to set up scrolling.
+		/// </summary>
+		private void SetUpScrolling()
+		{
+			Size panelSize = panelOuter.ClientSize;
+
+			// Turn off the resizing event so we don't get recursive calls.
+			panelSprite.Resize -= panelSprite_Resize;
+			scrollHorizontal.Scroll -= OnScroll;
+			scrollVertical.Scroll -= OnScroll;
+
+			try
+			{
+				// Only use scrolling with regular textures and not cube maps.
+				if ((_content == null)
+					|| (_content.Sprite == null)
+					|| ((_content.Texture == null) && (SpriteEditorMode == SpriteEditorMode.Edit)))
+				{
+					panelHScroll.Visible = panelVScroll.Visible = false;
+					panelSprite.ClientSize = panelSprite.ClientSize;
+					return;
+				}
+
+				Size spriteSize;
+
+				switch (SpriteEditorMode)
+				{
+					case SpriteEditorMode.Edit:
+						Debug.Assert(_content.Texture != null, "Texture should not be NULL");
+
+						spriteSize = _content.Texture.Settings.Size;
+						break;
+					default:
+						spriteSize = (Size)(_content.Sprite.Size * _zoom);
+						break;
+				}
+
+				if (spriteSize.Width > panelSprite.ClientSize.Width)
+				{
+					panelHScroll.Visible = true;
+					panelSize.Height = panelSize.Height - panelHScroll.ClientSize.Height;
+				}
+				else
+				{
+					scrollHorizontal.Value = 0;
+					panelHScroll.Visible = false;
+				}
+
+				if (spriteSize.Height > panelSprite.ClientSize.Height)
+				{
+					panelVScroll.Visible = true;
+					panelSize.Width = panelSize.Width - panelVScroll.ClientSize.Width;
+				}
+				else
+				{
+					scrollVertical.Value = 0;
+					panelVScroll.Visible = false;
+				}
+
+				if (panelHScroll.Visible)
+				{
+					scrollHorizontal.Maximum = ((spriteSize.Width - panelSize.Width) + (scrollHorizontal.LargeChange)).Max(0) - 1;
+					scrollHorizontal.Scroll += OnScroll;
+				}
+
+				if (panelVScroll.Visible)
+				{
+					scrollVertical.Maximum = ((spriteSize.Height - panelSize.Height) + (scrollVertical.LargeChange)).Max(0) - 1;
+					scrollVertical.Scroll += OnScroll;
+				}
+
+				panelSprite.ClientSize = panelSize;
+			}
+			finally
+			{
+				// Re-enable resizing.
+				panelSprite.Resize += panelSprite_Resize;
+			}
+		}
+
+		/// <summary>
+		/// Function called when a scrollbar is moved.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
+		private void OnScroll(object sender, ScrollEventArgs e)
+		{
+			var scroller = (ScrollBar)sender;
+
+			if (scroller == scrollVertical)
+			{
+				scrollVertical.Value = e.NewValue;
+			}
+
+			if (scroller == scrollHorizontal)
+			{
+				scrollHorizontal.Value = e.NewValue;
+			}
+
+			_content.Draw();
+		}
+
 		/// <summary>
 		/// Function to validate the controls on the panel.
 		/// </summary>
@@ -148,19 +293,23 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 				if (menuItemToWindow.Checked)
 				{
-					//CalculateZoomToWindow();
+					CalculateToWindow();
+				}
+				else
+				{
+					SetUpScrolling();
+
+					if (scrollHorizontal.Visible)
+					{
+						scrollHorizontal.Value = scrollHorizontal.Maximum / 2;
+					}
+
+					if (scrollVertical.Visible)
+					{
+						scrollVertical.Value = scrollVertical.Maximum / 2;
+					}
 				}
 
-				/*switch (_content.CurrentState)
-				{
-					case DrawState.DrawFontTextures:
-						// Do nothing for this mode.
-						break;
-					default:
-						UpdateGlyphEditor();
-						_nextState = DrawState.FromGlyphEdit;
-						break;
-				}*/
 			}
 			catch (Exception ex)
 			{
@@ -196,6 +345,18 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		}
 
 		/// <summary>
+		/// Function to calculate the zoom required to scale the sprite to the window.
+		/// </summary>
+		private void CalculateToWindow()
+		{
+			var windowScale = new Vector2(panelSprite.ClientSize.Width / _content.Sprite.Size.X, panelSprite.ClientSize.Height / _content.Sprite.Size.Y);
+
+			_zoom = windowScale.Y < windowScale.X ? windowScale.Y : windowScale.X;
+
+			SetUpScrolling();
+		}
+
+		/// <summary>
 		/// Function to draw the current sprite.
 		/// </summary>
 		private void DrawSprite()
@@ -203,9 +364,19 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			_content.Sprite.Scale = new Vector2(_zoom);
 
 			var halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
-			var halfScreen = (Point)(new Vector2(ClientSize.Width / 2.0f, ClientSize.Height / 2.0f));
-			var spritePosition = new Vector2(halfScreen.X - halfSprite.X, halfScreen.Y - halfSprite.Y);
+			var halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
 
+			if (_content.Sprite.ScaledSize.Y > panelSprite.ClientSize.Height)
+			{
+				halfSprite.Y = halfScreen.Y = 0;
+			}
+
+			if (_content.Sprite.ScaledSize.X > panelSprite.ClientSize.Width)
+			{
+				halfSprite.X = halfScreen.X = 0;
+			}
+
+			var spritePosition = new Vector2(halfScreen.X - halfSprite.X - scrollHorizontal.Value, halfScreen.Y - halfSprite.Y - scrollVertical.Value);
 			var imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
 			var imagePosition = new Vector2(spritePosition.X - _content.TextureRegion.X * imageScale.X, spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
 
@@ -241,6 +412,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			base.OnContentPropertyChanged(propertyName, value);
 
+			SetUpScrolling();
 			ValidateControls();
 		}
 
@@ -264,6 +436,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				throw new InvalidCastException(string.Format(Resources.GORSPR_ERR_CONTENT_NOT_SPRITE, Content.Name));
 			}
 
+			SetUpScrolling();
 			ValidateControls();
 		}
 		#endregion

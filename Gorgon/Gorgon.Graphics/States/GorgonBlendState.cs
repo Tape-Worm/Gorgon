@@ -141,35 +141,35 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// Flags to identify a specific channel(s) to perform the blending operations on.
+	/// Flags to identify a specific color component(s) in a render target that are writable during blending operations.
 	/// </summary>
 	[Flags]
 	public enum ColorWriteMaskFlags
 	{
 		/// <summary>
-		/// No value.
+		/// This value is invalid.
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Use the red channel.
+		/// Allow data to be written to the red color component.
 		/// </summary>
 		Red = 1,
 		/// <summary>
-		/// Use the green channel.
+		/// Allow data to be written to the green color component.
 		/// </summary>
 		Green = 2,
 		/// <summary>
-		/// Use the blue channel.
+		/// Allow data to be written to the blue color component.
 		/// </summary>
 		Blue = 4,
 		/// <summary>
-		/// Use the alpha channel.
+		/// Allow data to be written to the alpha component.
 		/// </summary>
 		Alpha = 8,
 		/// <summary>
-		/// Use all channels.
+		/// Allow data to be written to all color components and the alpha component.
 		/// </summary>
-		All = 15,
+		All = Red | Green | Blue | Alpha
 	}
 
 	#region Value Types.
@@ -328,7 +328,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// The channels to use when blending.
 		/// </summary>
-		/// <remarks>The default value is All.</remarks>
+		/// <remarks>The default value is Enabled.</remarks>
 		public ColorWriteMaskFlags WriteMask;
         #endregion
 
