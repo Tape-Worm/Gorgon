@@ -63,6 +63,26 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap anchor_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("anchor_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap anchor_24x24 {
+            get {
+                object obj = ResourceManager.GetObject("anchor_24x24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap arrow_down_16x16 {
             get {
                 object obj = ResourceManager.GetObject("arrow_down_16x16", resourceCulture);
@@ -298,6 +318,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Clip the sprite from the texture..
+        /// </summary>
+        internal static string GORSPR_TEXT_CLIP_SPRITE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_CLIP_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Create new sprite....
         /// </summary>
         internal static string GORSPR_TEXT_CREATE_NEW_SPRITE {
@@ -376,6 +405,26 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap open_image_16x16 {
             get {
                 object obj = ResourceManager.GetObject("open_image_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pan_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("pan_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pan_21x16 {
+            get {
+                object obj = ResourceManager.GetObject("pan_21x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

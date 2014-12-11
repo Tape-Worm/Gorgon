@@ -118,6 +118,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\pan_21x16.png" />
+    <None Include="Resources\pan_16x16.png" />
+    <None Include="Resources\anchor_24x24.png" />
+    <None Include="Resources\anchor_16x16.png" />
     <None Include="Resources\zoom_16x16.png" />
     <None Include="Resources\find_16x16.png" />
     <None Include="Resources\center_16x16.png" />

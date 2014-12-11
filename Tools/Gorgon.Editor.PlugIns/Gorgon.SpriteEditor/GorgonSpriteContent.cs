@@ -738,7 +738,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </returns>
 		protected override ContentPanel OnInitialize()
 		{
-			_panel = new PanelSpriteEditor(this, GetRawInput());
+			_panel = new PanelSpriteEditor(this, null);// TODO: Put back in: GetRawInput()
 
 			_swap = Graphics.Output.CreateSwapChain("SpriteEditorSwap",
 			                                        new GorgonSwapChainSettings
