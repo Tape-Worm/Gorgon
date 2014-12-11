@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Input;
@@ -61,13 +62,101 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 	partial class PanelSpriteEditor 
 		: ContentPanel
 	{
+		#region Classes.
+		/// <summary>
+		/// Data used for animating the anchor color.
+		/// </summary>
+		private class AnchorColorAnim
+		{
+			#region Variables.
+			// Flag to indicate whether the animation has started or not.
+			private bool _isStarted;
+			// The last recorded time.
+			private float _lastTime;
+			// Last used color.
+			private Vector3 _lastColor = new Vector3(1);
+			// Next color.
+			private Vector3 _nextColor;
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the color for the animation.
+			/// </summary>
+			public GorgonColor Color
+			{
+				get;
+				private set;
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to animate the anchor color.
+			/// </summary>
+			public void Animate()
+			{
+				if (!_isStarted)
+				{
+					_lastTime = GorgonTiming.SecondsSinceStart;
+					_isStarted = true;
+					return;
+				}
+
+				float time = (GorgonTiming.SecondsSinceStart - _lastTime) * 4.0f;
+				Vector3 result;
+				Vector3.Lerp(ref _lastColor, ref _nextColor, time, out result);
+
+				Color = new GorgonColor(result);
+
+				if (time <= 1)
+				{
+					return;
+				}
+
+				_lastTime = GorgonTiming.SecondsSinceStart;
+				_lastColor = _nextColor;
+				_nextColor = new Vector3(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="AnchorColorAnim"/> class.
+			/// </summary>
+			public AnchorColorAnim()
+			{
+				_nextColor = new Vector3(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
+			}
+			#endregion
+		}
+		#endregion
+
 		#region Variables.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;
 		// The sprite being edited.
-		private GorgonSpriteContent _content;
+		private readonly GorgonSpriteContent _content;
 		// The plug-in that created the content.
 		private GorgonSpriteEditorPlugIn _plugIn;
 		// The amount of zoom on the display.
 		private float _zoom = 1.0f;
+		// The image used for the anchor sprite.
+		private GorgonTexture2D _anchorImage;
+		// The sprite used to represent the anchor.
+		private GorgonSprite _anchorSprite;
+		// The animation data for the anchor.
+		private AnchorColorAnim _anchorAnim;
+		// The sprite position on screen.
+		private Vector2 _spritePosition;
+		// The half size of the sprite.
+		private Point _halfSprite;
+		// The half size of the screen.
+		private Point _halfScreen;
+		// Clipper interface for editing the sprite.
+		private Clipper _clipper;
+		// Window used to zoom in on the clipping area.
+		private ZoomWindow _zoomWindow;
 		#endregion
 
 		#region Properties.
@@ -83,6 +172,47 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonClip control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonClip_Click(object sender, EventArgs e)
+		{
+			if (SpriteEditorMode == SpriteEditorMode.Edit)
+			{
+				SpriteEditorMode = SpriteEditorMode.View;
+				ValidateControls();
+				return;
+			}
+
+			_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
+			_clipper.TextureSize = _content.Texture.Settings.Size;
+
+			_zoomWindow = new ZoomWindow(_content.Renderer, _content.Texture)
+			              {
+				              Clipper = _clipper,
+							  BackgroundTexture = _content.BackgroundTexture,
+							  Position = _content.Texture.ToPixel(_content.Sprite.TextureOffset),
+							  ZoomAmount = 3.0f,
+							  ZoomWindowSize = new Vector2(256, 256)
+			              };
+
+			SpriteEditorMode = SpriteEditorMode.Edit;
+			ValidateControls();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonCenter control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonCenter_Click(object sender, EventArgs e)
+		{
+			scrollHorizontal.Value = 0;
+			scrollVertical.Value = 0;
+		}
+
+		/// <summary>
 		/// Handles the Resize event of the panelSprite control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -93,10 +223,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			{
 				CalculateToWindow();
 			}
-			else
-			{
-				SetUpScrolling();
-			}
+			SetUpScrolling();
 		}
 
 		/// <summary>
@@ -113,63 +240,29 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 			try
 			{
-				// Only use scrolling with regular textures and not cube maps.
 				if ((_content == null)
 					|| (_content.Sprite == null)
-					|| ((_content.Texture == null) && (SpriteEditorMode == SpriteEditorMode.Edit)))
+					|| (_content.Texture == null))
 				{
 					panelHScroll.Visible = panelVScroll.Visible = false;
 					panelSprite.ClientSize = panelSprite.ClientSize;
 					return;
 				}
 
-				Size spriteSize;
+				scrollHorizontal.LargeChange = 50;
+				scrollVertical.LargeChange = 50;
 
-				switch (SpriteEditorMode)
-				{
-					case SpriteEditorMode.Edit:
-						Debug.Assert(_content.Texture != null, "Texture should not be NULL");
+				var size = new Size(ContentObject.Graphics.Textures.MaxWidth / 2 - scrollHorizontal.LargeChange, ContentObject.Graphics.Textures.MaxHeight / 2 - scrollVertical.LargeChange);
+				scrollHorizontal.Minimum = -size.Width;
+				scrollVertical.Minimum = -size.Height;
+				scrollHorizontal.Maximum = size.Width;
+				scrollVertical.Maximum = size.Height;
 
-						spriteSize = _content.Texture.Settings.Size;
-						break;
-					default:
-						spriteSize = (Size)(_content.Sprite.Size * _zoom);
-						break;
-				}
+				panelHScroll.Visible = true;
+				panelVScroll.Visible = true;
 
-				if (spriteSize.Width > panelSprite.ClientSize.Width)
-				{
-					panelHScroll.Visible = true;
-					panelSize.Height = panelSize.Height - panelHScroll.ClientSize.Height;
-				}
-				else
-				{
-					scrollHorizontal.Value = 0;
-					panelHScroll.Visible = false;
-				}
-
-				if (spriteSize.Height > panelSprite.ClientSize.Height)
-				{
-					panelVScroll.Visible = true;
-					panelSize.Width = panelSize.Width - panelVScroll.ClientSize.Width;
-				}
-				else
-				{
-					scrollVertical.Value = 0;
-					panelVScroll.Visible = false;
-				}
-
-				if (panelHScroll.Visible)
-				{
-					scrollHorizontal.Maximum = ((spriteSize.Width - panelSize.Width) + (scrollHorizontal.LargeChange)).Max(0) - 1;
-					scrollHorizontal.Scroll += OnScroll;
-				}
-
-				if (panelVScroll.Visible)
-				{
-					scrollVertical.Maximum = ((spriteSize.Height - panelSize.Height) + (scrollVertical.LargeChange)).Max(0) - 1;
-					scrollVertical.Scroll += OnScroll;
-				}
+				panelSize.Width = panelSize.Width - panelVScroll.ClientSize.Width;
+				panelSize.Height = panelSize.Height - panelHScroll.ClientSize.Height;
 
 				panelSprite.ClientSize = panelSize;
 			}
@@ -177,6 +270,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			{
 				// Re-enable resizing.
 				panelSprite.Resize += panelSprite_Resize;
+				scrollHorizontal.Scroll += OnScroll;
+				scrollVertical.Scroll += OnScroll;
 			}
 		}
 
@@ -187,18 +282,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <param name="e">The <see cref="ScrollEventArgs"/> instance containing the event data.</param>
 		private void OnScroll(object sender, ScrollEventArgs e)
 		{
-			var scroller = (ScrollBar)sender;
-
-			if (scroller == scrollVertical)
+			if (e.ScrollOrientation == ScrollOrientation.VerticalScroll)
 			{
 				scrollVertical.Value = e.NewValue;
 			}
 
-			if (scroller == scrollHorizontal)
+			if (e.ScrollOrientation == ScrollOrientation.HorizontalScroll)
 			{
 				scrollHorizontal.Value = e.NewValue;
 			}
-
 			_content.Draw();
 		}
 
@@ -208,6 +300,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private void ValidateControls()
 		{
 			buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
+			buttonClip.Enabled = _content != null && _content.Texture != null;
+			dropDownZoom.Enabled = SpriteEditorMode == SpriteEditorMode.View;
 		}
 
 		/// <summary>
@@ -295,21 +389,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				{
 					CalculateToWindow();
 				}
-				else
-				{
-					SetUpScrolling();
 
-					if (scrollHorizontal.Visible)
-					{
-						scrollHorizontal.Value = scrollHorizontal.Maximum / 2;
-					}
-
-					if (scrollVertical.Visible)
-					{
-						scrollVertical.Value = scrollVertical.Maximum / 2;
-					}
-				}
-
+				SetUpScrolling();
 			}
 			catch (Exception ex)
 			{
@@ -330,6 +411,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 			buttonSave.Text = Resources.GORSPR_TEXT_SAVE;
 			buttonRevert.Text = Resources.GORSPR_TEXT_REVERT;
+
+			buttonClip.Text = Resources.GORSPR_TEXT_CLIP_SPRITE;
 
 			menuItemToWindow.Text = Resources.GORSPR_TEXT_TO_WINDOW;
 			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
@@ -352,8 +435,66 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			var windowScale = new Vector2(panelSprite.ClientSize.Width / _content.Sprite.Size.X, panelSprite.ClientSize.Height / _content.Sprite.Size.Y);
 
 			_zoom = windowScale.Y < windowScale.X ? windowScale.Y : windowScale.X;
+		}
 
-			SetUpScrolling();
+		/// <summary>
+		/// Function to calculate the sprite position.
+		/// </summary>
+		private void CalculateSpritePosition()
+		{
+			_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
+			_halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
+
+			_spritePosition = new Vector2(_halfScreen.X - _halfSprite.X - (scrollHorizontal.Value * _zoom), _halfScreen.Y - _halfSprite.Y - (scrollVertical.Value * _zoom));
+		}
+
+		/// <summary>
+		/// Function to draw the sprite texture.
+		/// </summary>
+		private void DrawSpriteTexture()
+		{
+			Vector2 spriteSize;
+			Vector2 imageScale;
+			Vector2 imagePosition;
+
+			switch (SpriteEditorMode)
+			{
+				case SpriteEditorMode.Edit:
+					spriteSize = _content.Sprite.Size;
+					_content.TextureSprite.Opacity = 1.0f;
+					break;
+				default:
+					spriteSize = new Vector2(_content.Sprite.Size.X * _zoom, _content.Sprite.Size.Y * _zoom);
+					_content.TextureSprite.Opacity = 0.35f;
+					break;
+			}
+
+			imageScale = new Vector2(spriteSize.X / _content.TextureRegion.Width, spriteSize.Y / _content.TextureRegion.Height);
+			imagePosition = new Vector2(_spritePosition.X - _content.TextureRegion.X * imageScale.X, _spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
+			
+			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
+			_content.TextureSprite.Position = (Point)imagePosition;
+			_content.TextureSprite.SmoothingMode = SmoothingMode.Smooth;
+
+			_content.TextureSprite.Draw();
+		}
+
+		/// <summary>
+		/// Function to draw the sprite editor functionality.
+		/// </summary>
+		private void DrawSpriteEdit()
+		{
+			_content.Sprite.Scale = new Vector2(1);			
+
+			CalculateSpritePosition();
+
+			DrawSpriteTexture();
+
+			// Offset the clipping rectangle so that it appears in the correct place on the screen.
+			_clipper.Offset = _spritePosition - _content.TextureRegion.Location;
+			_clipper.Draw();
+
+			_zoomWindow.Draw();
 		}
 
 		/// <summary>
@@ -361,33 +502,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		private void DrawSprite()
 		{
+			_anchorAnim.Animate();
+
 			_content.Sprite.Scale = new Vector2(_zoom);
 
-			var halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
-			var halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
+			CalculateSpritePosition();
 
-			if (_content.Sprite.ScaledSize.Y > panelSprite.ClientSize.Height)
-			{
-				halfSprite.Y = halfScreen.Y = 0;
-			}
+			DrawSpriteTexture();
 
-			if (_content.Sprite.ScaledSize.X > panelSprite.ClientSize.Width)
-			{
-				halfSprite.X = halfScreen.X = 0;
-			}
+			var spriteRect = new RectangleF(_spritePosition, _content.Sprite.ScaledSize);
 
-			var spritePosition = new Vector2(halfScreen.X - halfSprite.X - scrollHorizontal.Value, halfScreen.Y - halfSprite.Y - scrollVertical.Value);
-			var imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
-			var imagePosition = new Vector2(spritePosition.X - _content.TextureRegion.X * imageScale.X, spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
-
-			var spriteRect = new RectangleF(spritePosition, _content.Sprite.ScaledSize);
-
-			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
-			_content.TextureSprite.Position = (Point)imagePosition;
-			_content.TextureSprite.SmoothingMode = SmoothingMode.Smooth;
-			_content.Sprite.Position = spritePosition;
-			
-			_content.TextureSprite.Draw();
+			_content.Sprite.Position = _spritePosition;
 
 			// Clear the area behind the sprite so we don't get the texture blending with itself.
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.None;
@@ -401,6 +526,20 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			_content.Renderer.Drawing.DrawRectangle(spriteRect, new GorgonColor(0, 0, 1.0f, 0.5f));
 
 			_content.Sprite.Scale = new Vector2(1);
+
+			float anchorZoom = _zoom.Max(0.75f).Min(1.5f);
+			_anchorSprite.Scale = new Vector2(anchorZoom);
+			_anchorSprite.Color = _anchorAnim.Color;
+
+			var anchorTrans = new Vector2((_content.Anchor.X * _zoom), _content.Anchor.Y * _zoom);
+
+			Vector2.Add(ref _spritePosition, ref anchorTrans, out anchorTrans);
+			
+			_anchorSprite.Position = anchorTrans;
+			_anchorSprite.Draw();
+
+			_content.Renderer.Drawing.DrawLine(new Vector2(0, _halfScreen.Y), new Vector2(panelSprite.ClientSize.Width, _halfScreen.Y), Color.DeepPink);
+			_content.Renderer.Drawing.DrawLine(new Vector2(_halfScreen.X, 0), new Vector2(_halfScreen.X, panelSprite.ClientSize.Height), Color.DeepPink);
 		}
 
 		/// <summary>
@@ -421,7 +560,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		public void Draw()
 		{
-			DrawSprite();
+			switch (SpriteEditorMode)
+			{
+				case SpriteEditorMode.Edit:
+					DrawSpriteEdit();
+					break;
+				default:
+					DrawSprite();
+					break;
+			}
 		}
 
 		/// <summary>
@@ -437,6 +584,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			}
 
 			SetUpScrolling();
+
+			if (_anchorImage == null)
+			{
+				_anchorImage = ContentObject.Graphics.Textures.CreateTexture<GorgonTexture2D>("AnchorTexture", Resources.anchor_24x24);
+				_anchorSprite = _content.Renderer.Renderables.CreateSprite("AnchorSprite", _anchorImage.Settings.Size, _anchorImage);
+				_anchorSprite.Anchor = new Vector2(_anchorSprite.Size.X / 2.0f, _anchorSprite.Size.Y / 2.0f);
+				_anchorSprite.SmoothingMode = SmoothingMode.Smooth;
+				_anchorAnim = new AnchorColorAnim();
+
+				scrollHorizontal.Value = 0;
+				scrollVertical.Value = 0;
+
+				_clipper = new Clipper(_content.Renderer, panelSprite)
+				           {
+					           SelectorPattern = _content.BackgroundTexture
+				           };
+			}
+
 			ValidateControls();
 		}
 		#endregion

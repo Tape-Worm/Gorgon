@@ -624,7 +624,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="color">The 3D vector to convert to a color.</param>
 		public GorgonColor(Vector3 color)
-			: this(1.0f, color.X, color.Y, color.Z)
+			: this(color.X, color.Y, color.Z, 1.0f)
 		{
 		}
 

@@ -17,6 +17,18 @@
 			{
 				components.Dispose();
 			}
+
+			if ((!_disposed) && (disposing))
+			{
+				if (_anchorImage != null)
+				{
+					_anchorImage.Dispose();
+					_anchorImage = null;
+				}
+			}
+
+			_disposed = true;
+
 			base.Dispose(disposing);
 		}
 
@@ -46,11 +58,13 @@
 			this.panelHScroll = new System.Windows.Forms.Panel();
 			this.scrollHorizontal = new System.Windows.Forms.HScrollBar();
 			this.panelVScroll = new System.Windows.Forms.Panel();
+			this.buttonCenter = new System.Windows.Forms.Button();
 			this.scrollVertical = new System.Windows.Forms.VScrollBar();
 			this.stripSprite = new System.Windows.Forms.ToolStrip();
 			this.buttonSave = new System.Windows.Forms.ToolStripButton();
 			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonClip = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.containerSprite.BottomToolStripPanel.SuspendLayout();
 			this.containerSprite.ContentPanel.SuspendLayout();
@@ -74,7 +88,7 @@
 			this.panelSprite.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelSprite.Location = new System.Drawing.Point(0, 0);
 			this.panelSprite.Name = "panelSprite";
-			this.panelSprite.Size = new System.Drawing.Size(789, 539);
+			this.panelSprite.Size = new System.Drawing.Size(785, 539);
 			this.panelSprite.TabIndex = 0;
 			this.panelSprite.Resize += new System.EventHandler(this.panelSprite_Resize);
 			// 
@@ -245,7 +259,7 @@
 			this.panelHScroll.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelHScroll.Location = new System.Drawing.Point(0, 539);
 			this.panelHScroll.Name = "panelHScroll";
-			this.panelHScroll.Size = new System.Drawing.Size(789, 17);
+			this.panelHScroll.Size = new System.Drawing.Size(785, 17);
 			this.panelHScroll.TabIndex = 1;
 			this.panelHScroll.Visible = false;
 			// 
@@ -263,13 +277,31 @@
 			// 
 			this.panelVScroll.AutoSize = true;
 			this.panelVScroll.BackColor = System.Drawing.SystemColors.Control;
+			this.panelVScroll.Controls.Add(this.buttonCenter);
 			this.panelVScroll.Controls.Add(this.scrollVertical);
 			this.panelVScroll.Dock = System.Windows.Forms.DockStyle.Right;
-			this.panelVScroll.Location = new System.Drawing.Point(789, 0);
+			this.panelVScroll.Location = new System.Drawing.Point(785, 0);
 			this.panelVScroll.Name = "panelVScroll";
-			this.panelVScroll.Size = new System.Drawing.Size(17, 556);
+			this.panelVScroll.Size = new System.Drawing.Size(21, 556);
 			this.panelVScroll.TabIndex = 0;
 			this.panelVScroll.Visible = false;
+			// 
+			// buttonCenter
+			// 
+			this.buttonCenter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCenter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.buttonCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCenter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.pan_21x16;
+			this.buttonCenter.Location = new System.Drawing.Point(0, 540);
+			this.buttonCenter.Margin = new System.Windows.Forms.Padding(0);
+			this.buttonCenter.Name = "buttonCenter";
+			this.buttonCenter.Size = new System.Drawing.Size(21, 16);
+			this.buttonCenter.TabIndex = 1;
+			this.buttonCenter.TabStop = false;
+			this.buttonCenter.UseVisualStyleBackColor = false;
+			this.buttonCenter.Click += new System.EventHandler(this.buttonCenter_Click);
 			// 
 			// scrollVertical
 			// 
@@ -288,7 +320,8 @@
 			this.stripSprite.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonSave,
             this.buttonRevert,
-            this.toolStripSeparator1});
+            this.toolStripSeparator1,
+            this.buttonClip});
 			this.stripSprite.Location = new System.Drawing.Point(0, 0);
 			this.stripSprite.Name = "stripSprite";
 			this.stripSprite.Size = new System.Drawing.Size(806, 25);
@@ -319,6 +352,17 @@
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonClip
+			// 
+			this.buttonClip.CheckOnClick = true;
+			this.buttonClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonClip.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.sprite_16x16;
+			this.buttonClip.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonClip.Name = "buttonClip";
+			this.buttonClip.Size = new System.Drawing.Size(23, 22);
+			this.buttonClip.Text = "not localized clip";
+			this.buttonClip.Click += new System.EventHandler(this.buttonClip_Click);
 			// 
 			// PanelSpriteEditor
 			// 
@@ -371,6 +415,8 @@
 		private System.Windows.Forms.ToolStripMenuItem menuItem25;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
+		private System.Windows.Forms.Button buttonCenter;
+		private System.Windows.Forms.ToolStripButton buttonClip;
 
 	}
 }
