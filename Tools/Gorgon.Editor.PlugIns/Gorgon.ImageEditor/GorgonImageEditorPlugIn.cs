@@ -231,7 +231,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <returns>
         /// The settings interface for the content.
         /// </returns>
-        public override ContentSettings GetContentSettings()
+        protected override ContentSettings OnGetContentSettings()
         {
             return new GorgonImageContentSettings();
         }

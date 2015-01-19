@@ -53,7 +53,11 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <summary>
 		/// In edit mode.
 		/// </summary>
-		Edit = 1
+		Edit = 1,
+		/// <summary>
+		/// The anchor is being dragged into a new position.
+		/// </summary>
+		AnchorDrag = 2
 	}
 
 	/// <summary>
@@ -159,6 +163,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private ZoomWindow _zoomWindow;
 		// Font used for the zoom window.
 		private GorgonFont _zoomFont;
+		// Delta between the cursor and the anchor icon when dragging.
+		private Point _dragDelta;
 		#endregion
 
 		#region Properties.
@@ -399,12 +405,23 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				return;
 			}
 
-			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			switch (SpriteEditorMode)
 			{
-				return;
-			}
+				case SpriteEditorMode.Edit:
+					_clipper.OnMouseDown(e);
+					break;
+				case SpriteEditorMode.View:
+					var anchorRect = new Rectangle((Point)(_anchorSprite.Position - _anchorSprite.Anchor),
+												   (Size)_anchorSprite.Size);
 
-			_clipper.OnMouseDown(e);
+					if (anchorRect.Contains(e.Location))
+					{
+						SpriteEditorMode = SpriteEditorMode.AnchorDrag;
+						_dragDelta = new Point(e.X - anchorRect.X - (int)_anchorSprite.Anchor.X, e.Y - anchorRect.Y - (int)_anchorSprite.Anchor.Y);
+						panelSprite.Cursor = Cursors.Hand;
+					}
+					break;
+			}
 		}
 
 		/// <summary>
@@ -421,21 +438,27 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				return;
 			}
 
-			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			switch (SpriteEditorMode)
 			{
-				return;
-			}
+				case SpriteEditorMode.AnchorDrag:
+					SpriteEditorMode = SpriteEditorMode.View;
+					_dragDelta = Point.Empty;
+					panelSprite.Cursor = Cursors.Default;
+					_content.RefreshProperty("Anchor");
+					break;
+				case SpriteEditorMode.Edit:
+					if (!_clipper.OnMouseUp(e))
+					{
+						return;
+					}
 
-			if (!_clipper.OnMouseUp(e))
-			{
-				return;
+					var newRegion = Rectangle.Round(_clipper.ClipRegion);
+					_content.Size = newRegion.Size;
+					_content.TextureRegion = newRegion;
+					_clipper.TextureSize = _content.Texture.Settings.Size;
+					_clipper.Scale = new Vector2(1);
+					break;
 			}
-
-			var newRegion = Rectangle.Round(_clipper.ClipRegion);
-			_content.Size = newRegion.Size;
-			_content.TextureRegion = newRegion;
-			_clipper.TextureSize = _content.Texture.Settings.Size;
-			_clipper.Scale = new Vector2(1);
 		}
 
 		/// <summary>
@@ -478,16 +501,34 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
 		private void panelSprite_MouseMove(object sender, MouseEventArgs e)
 		{
-			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			labelMouseInfo.Text = string.Format(Resources.GORSPR_TEXT_MOUSE_INFO,
+			                                    e.X,
+			                                    e.Y,
+			                                    _content.TextureRegion.X,
+			                                    _content.TextureRegion.Y,
+			                                    _content.TextureRegion.Right,
+			                                    _content.TextureRegion.Bottom,
+			                                    _content.TextureRegion.Width,
+			                                    _content.TextureRegion.Height,
+												_content.Anchor.X,
+												_content.Anchor.Y);
+
+			switch (SpriteEditorMode)
 			{
-				return;
+				case SpriteEditorMode.View:
+					var anchorRect = new Rectangle((Point)(_anchorSprite.Position - _anchorSprite.Anchor),
+												   (Size)_anchorSprite.Size);
+
+					panelSprite.Cursor = anchorRect.Contains(e.Location) ? Cursors.Hand : Cursors.Default;
+					break;
+				case SpriteEditorMode.Edit:
+					_clipper.OnMouseMove(e);
+					UpdateZoomWindow(e.Location);
+					break;
+				case SpriteEditorMode.AnchorDrag:
+					_content.Anchor = new Point(e.X - (int)_spritePosition.X - _dragDelta.X, e.Y - (int)_spritePosition.Y - _dragDelta.Y);
+					break;
 			}
-
-			_clipper.OnMouseMove(e);
-			
-			// TODO: Should update info... probably on the status bar or something?
-
-			UpdateZoomWindow(e.Location);
 		}
 
 		/// <summary>
@@ -535,6 +576,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			if (SpriteEditorMode == SpriteEditorMode.Edit)
 			{
+				panelSprite.Cursor = Cursors.Default;
 				panelZoomControls.Visible = false;
 				SpriteEditorMode = SpriteEditorMode.View;
 				buttonCenter_Click(this, e);
@@ -555,12 +597,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				// Reset the texture region to match the size of the sprite.
 				_content.TextureRegion = new Rectangle(_content.TextureRegion.Location, _content.Size);
 			}
-
+			
+			_content.TextureSprite.Scale = new Vector2(1);
 			panelZoomControls.Visible = true;
 			_clipper.NoBounds = true;
 			_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
 			_clipper.TextureSize = _content.Texture.Settings.Size;
-			_clipper.Offset = _spritePosition - _content.TextureRegion.Location;
+			_clipper.Offset = new Vector2(_halfScreen.X - _content.Size.Width / 2.0f - _content.TextureRegion.X, _halfScreen.Y - _content.Size.Height / 2.0f - _content.TextureRegion.Y);
+			_halfSprite = new Point(_content.Size.Width / 2, _content.Size.Height / 2);
 			
 			CreateZoomWindow();
 			
@@ -587,7 +631,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			if (SpriteEditorMode == SpriteEditorMode.Edit)
 			{
-				_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
+				_halfSprite = new Point(_content.Size.Width / 2, _content.Size.Height / 2);
 				scrollHorizontal.Value = _content.TextureRegion.X;
 				scrollVertical.Value = _content.TextureRegion.Y;
 			}
@@ -830,6 +874,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			labelZoomSize.Text = Resources.GORSPR_TEXT_ZOOM_WINDOW_SIZE;
 			checkZoomSnap.Text = Resources.GORSPR_TEXT_SNAP_ZOOM;
 
+			labelMouseInfo.Text = string.Format(Resources.GORSPR_TEXT_MOUSE_INFO, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
 			numericZoomAmount.Value = (decimal)GorgonSpriteEditorPlugIn.Settings.ZoomWindowScaleFactor;
 			numericZoomWindowSize.Value = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize;
 			checkZoomSnap.Checked = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSnap;
@@ -858,8 +904,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				return;
 			}
 
-			var imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
-			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
+			Vector2 imageScale = _content.TextureSprite.Size;
 
 			switch (SpriteEditorMode)
 			{
@@ -869,6 +914,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 					break;
 				default:
 					_content.Sprite.Scale = new Vector2(_zoom);
+
+					imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
+					
 					_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
 
 					_spritePosition = new Vector2(_halfScreen.X - _halfSprite.X - (scrollHorizontal.Value * _zoom),
@@ -877,9 +925,12 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 					_content.TextureSprite.Position =
 						(Point)new Vector2(_spritePosition.X - _content.TextureRegion.X * imageScale.X, _spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
 
-					_clipper.Offset = _content.TextureSprite.Position;
+					imageScale = Vector2.Modulate(imageScale, _content.TextureSprite.Size);
+
 					break;
 			}
+
+			_content.TextureSprite.ScaledSize = (Point)imageScale;
 		}
 
 		/// <summary>
@@ -923,6 +974,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
 			_zoomWindow.Draw();
+
+			if (panelSprite.Focused)
+			{
+				return;
+			}
+
+			// If the window does not have focus, then draw an overlay.
+			_content.Renderer.Drawing.FilledRectangle(panelSprite.ClientRectangle, new GorgonColor(panelSprite.BackColor, 0.5f));
 		}
 
 		/// <summary>
@@ -961,9 +1020,6 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			
 			_anchorSprite.Position = anchorTrans;
 			_anchorSprite.Draw();
-
-			_content.Renderer.Drawing.DrawLine(new Vector2(0, _halfScreen.Y), new Vector2(panelSprite.ClientSize.Width, _halfScreen.Y), Color.DeepPink);
-			_content.Renderer.Drawing.DrawLine(new Vector2(_halfScreen.X, 0), new Vector2(_halfScreen.X, panelSprite.ClientSize.Height), Color.DeepPink);
 		}
 
 		/// <summary>
@@ -1017,6 +1073,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			
 			SetUpScrolling();
 			ValidateControls();
+		}
+
+		/// <summary>
+		/// Function to begin editing after content is created.
+		/// </summary>
+		public void StartEditMode()
+		{
+			buttonClip.PerformClick();
 		}
 
 		/// <summary>

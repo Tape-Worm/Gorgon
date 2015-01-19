@@ -340,7 +340,7 @@ namespace GorgonLibrary.Editor
 				content.SetDefaults();
 			}
 
-			content.GetRegisteredImageEditor(PlugIns.DefaultImageEditorPlugIn);
+			content.ImageEditor = plugIn.GetRegisteredImageEditor();
 
 			if ((content.ImageEditor != null)
 				&& (string.IsNullOrWhiteSpace(PlugIns.DefaultImageEditorPlugIn)))
@@ -696,6 +696,8 @@ namespace GorgonLibrary.Editor
 		    }
 
 			ContentFile = file;
+
+			content.OnContentReady();
 	    }
 
 		/// <summary>

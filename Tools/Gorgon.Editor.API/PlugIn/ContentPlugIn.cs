@@ -78,6 +78,12 @@ namespace GorgonLibrary.Editor
 		protected abstract ContentObject OnCreateContentObject(ContentSettings settings);
 
 		/// <summary>
+		/// Function to return the content settings object.
+		/// </summary>
+		/// <returns>The content settings.</returns>
+		protected abstract ContentSettings OnGetContentSettings();
+
+		/// <summary>
 		/// Function to create a content object interface.
 		/// </summary>
 		/// <param name="settings">The initial settings for the content.</param>
@@ -94,11 +100,18 @@ namespace GorgonLibrary.Editor
 		/// <param name="attributes">Attributes to populate.</param>
 		public abstract void GetEditorFileAttributes(Stream stream, IDictionary<string, string> attributes);
 
-        /// <summary>
-        /// Function to retrieve the settings for the content.
-        /// </summary>
-        /// <returns>The settings for the content.</returns>
-	    public abstract ContentSettings GetContentSettings();
+		/// <summary>
+		/// Function to retrieve the settings for the content.
+		/// </summary>
+		/// <returns>The settings for the content.</returns>
+		public ContentSettings GetContentSettings()
+		{
+			var result = OnGetContentSettings();
+			
+			result.PlugIn = this;
+
+			return result;
+		}
 
 		/// <summary>
 		/// Function to create a tool strip menu item.
@@ -119,28 +132,42 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to find and return the registered image editor plug-in.
+		/// </summary>
+		/// <returns>The image editor plug-in, if found.  FALSE if not.</returns>
+		public IImageEditorPlugIn GetRegisteredImageEditor()
+		{
+			ContentPlugIn plugIn;
+
+			// Use the first image editor if we haven't selected one.
+			if (string.IsNullOrWhiteSpace(PlugIns.DefaultImageEditorPlugIn))
+			{
+				// Find the first image editor plug-in.
+				plugIn = PlugIns.ContentPlugIns.FirstOrDefault(item => item.Value is IImageEditorPlugIn).Value;
+
+				if (plugIn == null)
+				{
+					return null;
+				}
+			}
+			else
+			{
+				if (!PlugIns.ContentPlugIns.TryGetValue(PlugIns.DefaultImageEditorPlugIn, out plugIn))
+				{
+					return null;
+				}
+			}
+
+			return plugIn as IImageEditorPlugIn;
+		}
+
+		/// <summary>
 		/// Function to determine if an image editor plug-in is loaded.
 		/// </summary>
 		/// <returns>TRUE if loaded, FALSE if not.</returns>
 		public bool HasImageEditor()
 		{
-			// Use the first image editor if we haven't selected one.
-			if (string.IsNullOrWhiteSpace(PlugIns.DefaultImageEditorPlugIn))
-			{
-				return PlugIns.ContentPlugIns.Any(item => item.Value is IImageEditorPlugIn);
-			}
-
-			// Find the plug-in in the list.
-			ContentPlugIn plugIn;
-
-			PlugIns.ContentPlugIns.TryGetValue(PlugIns.DefaultImageEditorPlugIn, out plugIn);
-
-			if (plugIn is IImageEditorPlugIn)
-			{
-				return true;
-			}
-
-			return PlugIns.ContentPlugIns.Any(item => item.Value is IImageEditorPlugIn);
+			return GetRegisteredImageEditor() != null;
 		}
 
 		/// <summary>

@@ -161,6 +161,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap cancel_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Appearance.
         /// </summary>
         internal static string CATEGORY_APPEARANCE {
@@ -213,6 +223,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
             get {
                 object obj = ResourceManager.GetObject("find_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Cancel.
+        /// </summary>
+        internal static string GORSPR_ACC_CANCEL {
+            get {
+                return ResourceManager.GetString("GORSPR_ACC_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;OK.
+        /// </summary>
+        internal static string GORSPR_ACC_OK {
+            get {
+                return ResourceManager.GetString("GORSPR_ACC_OK", resourceCulture);
             }
         }
         
@@ -347,11 +375,65 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        internal static string GORSPR_TEXT_HELP {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_HELP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The sprite texture was not found, please locate it here.
         /// </summary>
         internal static string GORSPR_TEXT_LOAD_SPR_TEXTURE {
             get {
                 return ResourceManager.GetString("GORSPR_TEXT_LOAD_SPR_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mouse position: {0}x{1}  Texture region: {2}x{3}-{4}x{5} ({6}x{7})  Anchor: {8}x{9}.
+        /// </summary>
+        internal static string GORSPR_TEXT_MOUSE_INFO {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_MOUSE_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New sprite.
+        /// </summary>
+        internal static string GORSPR_TEXT_NEW_SPRITE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_NEW_SPRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name:.
+        /// </summary>
+        internal static string GORSPR_TEXT_NEW_SPRITE_NAME {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_NEW_SPRITE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture:.
+        /// </summary>
+        internal static string GORSPR_TEXT_NEW_SPRITE_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_NEW_SPRITE_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selects a texture to bind to the sprite..
+        /// </summary>
+        internal static string GORSPR_TEXT_NEW_SPRITE_TIP_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_NEW_SPRITE_TIP_TEXTURE", resourceCulture);
             }
         }
         
@@ -433,6 +515,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap image_missing_16x16 {
             get {
                 object obj = ResourceManager.GetObject("image_missing_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ok_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("ok_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

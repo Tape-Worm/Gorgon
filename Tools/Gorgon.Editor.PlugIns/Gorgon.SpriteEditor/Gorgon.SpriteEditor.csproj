@@ -77,6 +77,12 @@
     <Compile Include="Design\SpriteVerticesTypeConverter.cs" />
     <Compile Include="Design\TextureTypeEditor.cs" />
     <Compile Include="Design\TextureTypeConverter.cs" />
+    <Compile Include="Forms\FormNewSprite.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormNewSprite.Designer.cs">
+      <DependentUpon>FormNewSprite.cs</DependentUpon>
+    </Compile>
     <Compile Include="GorgonSpriteContent.cs" />
     <Compile Include="GorgonSpriteContentSettings.cs" />
     <Compile Include="GorgonSpriteEditorPlugIn.cs" />
@@ -118,6 +124,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\pan_21x16.png" />
     <None Include="Resources\pan_16x16.png" />
     <None Include="Resources\anchor_24x24.png" />
@@ -148,14 +156,15 @@
     <EmbeddedResource Include="Controls\SpriteAnchorEditor.resx">
       <DependentUpon>SpriteAnchorEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormNewSprite.resx">
+      <DependentUpon>FormNewSprite.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns"</PostBuildEvent>
