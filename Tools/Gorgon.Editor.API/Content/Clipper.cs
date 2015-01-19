@@ -121,6 +121,17 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to set or return whether bounds checking should be applied when clipping.
+		/// </summary>
+		/// <remarks>When this is set to TRUE, the clipped with limit the selection rectangle to the size of the texture (and its <see cref="Offset"/>).  Otherwise, 
+		/// it will allow for unconstrained clipping.</remarks>
+		public bool NoBounds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the default cursor for the clipper.
 		/// </summary>
 		public Cursor DefaultCursor
@@ -233,7 +244,6 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the scaling amount used for the texture.
 		/// </summary>
-		/// <remarks>Set to NULL to disable scaling.</remarks>
 		public Vector2 Scale
 		{
 			get
@@ -333,6 +343,19 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Function to constrain the selection rectangle.
+		/// </summary>
+		private void Constrain()
+		{
+			if (NoBounds)
+			{
+				return;
+			}
+
+			_selectorRegion = RectangleF.Intersect(_selectorRegion, _textureDisplayRegion);
+		}
+
+		/// <summary>
 		/// Function to update the clipping selection area node regions.
 		/// </summary>
 		private void UpdateNodeRegions()
@@ -402,7 +425,7 @@ namespace GorgonLibrary.Editor
 			                                 _clipRegion.Value.Height * _scale.Y);
 
 			// Limit to the size of the texture area.
-			_selectorRegion = RectangleF.Intersect(_selectorRegion, _textureDisplayRegion);
+			Constrain();
 
 			UpdateNodeRegions();
 		}
@@ -478,6 +501,12 @@ namespace GorgonLibrary.Editor
 		{
 			_selectorRegion.X = cursorPosition.X + _dragOffset.X;
 			_selectorRegion.Y = cursorPosition.Y + _dragOffset.Y;
+
+			if (NoBounds)
+			{
+				UpdateNodeRegions();
+				return;
+			}
 
 			if (_selectorRegion.X < _textureDisplayRegion.X)
 			{
@@ -609,7 +638,7 @@ namespace GorgonLibrary.Editor
 					break;
 			}
 
-			_selectorRegion = RectangleF.Intersect(_textureDisplayRegion, _selectorRegion);
+			Constrain();
 
 			UpdateNodeRegions();
 		}
@@ -667,7 +696,7 @@ namespace GorgonLibrary.Editor
 
 			if (DragMode == ClipSelectionDragMode.Resize)
 			{
-				_selectorRegion = RectangleF.Intersect(_textureDisplayRegion, _selectorRegion);
+				Constrain();
 				UpdateNodeRegions();
 			}
 
@@ -703,7 +732,7 @@ namespace GorgonLibrary.Editor
 
 			if ((e.Button != MouseButtons.Left)
 			    || (DragMode != ClipSelectionDragMode.None)
-			    || ((!_textureDisplayRegion.Contains(e.Location))
+			    || (((!_textureDisplayRegion.Contains(e.Location)) && (!NoBounds))
 			        && (_selectedDragNode == -1)))
 			{
 				return false;

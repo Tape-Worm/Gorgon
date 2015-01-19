@@ -1,4 +1,6 @@
-﻿namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
+﻿using GorgonLibrary.UI;
+
+namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 {
 	partial class PanelSpriteEditor
 	{
@@ -20,6 +22,14 @@
 
 			if ((!_disposed) && (disposing))
 			{
+				panelSprite.MouseWheel -= PanelSprite_MouseWheel;
+
+				if (_zoomFont != null)
+				{
+					_zoomFont.Dispose();
+					_zoomFont = null;
+				}
+
 				if (_anchorImage != null)
 				{
 					_anchorImage.Dispose();
@@ -40,7 +50,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panelSprite = new System.Windows.Forms.Panel();
+			this.panelSprite = new GorgonLibrary.UI.GorgonSelectablePanel();
 			this.containerSprite = new System.Windows.Forms.ToolStripContainer();
 			this.stripUIOptions = new System.Windows.Forms.ToolStrip();
 			this.dropDownZoom = new System.Windows.Forms.ToolStripDropDownButton();
@@ -60,6 +70,13 @@
 			this.panelVScroll = new System.Windows.Forms.Panel();
 			this.buttonCenter = new System.Windows.Forms.Button();
 			this.scrollVertical = new System.Windows.Forms.VScrollBar();
+			this.panelZoomControls = new System.Windows.Forms.Panel();
+			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.labelZoomAmount = new System.Windows.Forms.Label();
+			this.numericZoomAmount = new System.Windows.Forms.NumericUpDown();
+			this.labelZoomSize = new System.Windows.Forms.Label();
+			this.numericZoomWindowSize = new System.Windows.Forms.NumericUpDown();
+			this.checkZoomSnap = new System.Windows.Forms.CheckBox();
 			this.stripSprite = new System.Windows.Forms.ToolStrip();
 			this.buttonSave = new System.Windows.Forms.ToolStripButton();
 			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
@@ -74,6 +91,10 @@
 			this.panelOuter.SuspendLayout();
 			this.panelHScroll.SuspendLayout();
 			this.panelVScroll.SuspendLayout();
+			this.panelZoomControls.SuspendLayout();
+			this.flowLayoutPanel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomAmount)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomWindowSize)).BeginInit();
 			this.stripSprite.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -88,8 +109,12 @@
 			this.panelSprite.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelSprite.Location = new System.Drawing.Point(0, 0);
 			this.panelSprite.Name = "panelSprite";
-			this.panelSprite.Size = new System.Drawing.Size(785, 539);
+			this.panelSprite.Size = new System.Drawing.Size(785, 510);
 			this.panelSprite.TabIndex = 0;
+			this.panelSprite.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelSprite_MouseDown);
+			this.panelSprite.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelSprite_MouseMove);
+			this.panelSprite.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelSprite_MouseUp);
+			this.panelSprite.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.panelSprite_PreviewKeyDown);
 			this.panelSprite.Resize += new System.EventHandler(this.panelSprite_Resize);
 			// 
 			// containerSprite
@@ -102,6 +127,7 @@
 			// containerSprite.ContentPanel
 			// 
 			this.containerSprite.ContentPanel.Controls.Add(this.panelOuter);
+			this.containerSprite.ContentPanel.Controls.Add(this.panelZoomControls);
 			this.containerSprite.ContentPanel.Size = new System.Drawing.Size(806, 556);
 			this.containerSprite.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerSprite.Location = new System.Drawing.Point(0, 0);
@@ -248,7 +274,7 @@
 			this.panelOuter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelOuter.Location = new System.Drawing.Point(0, 0);
 			this.panelOuter.Name = "panelOuter";
-			this.panelOuter.Size = new System.Drawing.Size(806, 556);
+			this.panelOuter.Size = new System.Drawing.Size(806, 527);
 			this.panelOuter.TabIndex = 1;
 			// 
 			// panelHScroll
@@ -257,7 +283,7 @@
 			this.panelHScroll.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.panelHScroll.Controls.Add(this.scrollHorizontal);
 			this.panelHScroll.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelHScroll.Location = new System.Drawing.Point(0, 539);
+			this.panelHScroll.Location = new System.Drawing.Point(0, 510);
 			this.panelHScroll.Name = "panelHScroll";
 			this.panelHScroll.Size = new System.Drawing.Size(785, 17);
 			this.panelHScroll.TabIndex = 1;
@@ -272,6 +298,7 @@
 			this.scrollHorizontal.Name = "scrollHorizontal";
 			this.scrollHorizontal.Size = new System.Drawing.Size(789, 17);
 			this.scrollHorizontal.TabIndex = 0;
+			this.scrollHorizontal.TabStop = true;
 			// 
 			// panelVScroll
 			// 
@@ -282,7 +309,7 @@
 			this.panelVScroll.Dock = System.Windows.Forms.DockStyle.Right;
 			this.panelVScroll.Location = new System.Drawing.Point(785, 0);
 			this.panelVScroll.Name = "panelVScroll";
-			this.panelVScroll.Size = new System.Drawing.Size(21, 556);
+			this.panelVScroll.Size = new System.Drawing.Size(21, 527);
 			this.panelVScroll.TabIndex = 0;
 			this.panelVScroll.Visible = false;
 			// 
@@ -294,7 +321,7 @@
 			this.buttonCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCenter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.pan_21x16;
-			this.buttonCenter.Location = new System.Drawing.Point(0, 540);
+			this.buttonCenter.Location = new System.Drawing.Point(0, 511);
 			this.buttonCenter.Margin = new System.Windows.Forms.Padding(0);
 			this.buttonCenter.Name = "buttonCenter";
 			this.buttonCenter.Size = new System.Drawing.Size(21, 16);
@@ -310,8 +337,131 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.scrollVertical.Location = new System.Drawing.Point(0, 0);
 			this.scrollVertical.Name = "scrollVertical";
-			this.scrollVertical.Size = new System.Drawing.Size(17, 539);
+			this.scrollVertical.Size = new System.Drawing.Size(17, 510);
 			this.scrollVertical.TabIndex = 0;
+			this.scrollVertical.TabStop = true;
+			// 
+			// panelZoomControls
+			// 
+			this.panelZoomControls.AutoSize = true;
+			this.panelZoomControls.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelZoomControls.Controls.Add(this.flowLayoutPanel1);
+			this.panelZoomControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelZoomControls.Location = new System.Drawing.Point(0, 527);
+			this.panelZoomControls.Name = "panelZoomControls";
+			this.panelZoomControls.Size = new System.Drawing.Size(806, 29);
+			this.panelZoomControls.TabIndex = 0;
+			this.panelZoomControls.Visible = false;
+			// 
+			// flowLayoutPanel1
+			// 
+			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.flowLayoutPanel1.AutoSize = true;
+			this.flowLayoutPanel1.Controls.Add(this.labelZoomAmount);
+			this.flowLayoutPanel1.Controls.Add(this.numericZoomAmount);
+			this.flowLayoutPanel1.Controls.Add(this.labelZoomSize);
+			this.flowLayoutPanel1.Controls.Add(this.numericZoomWindowSize);
+			this.flowLayoutPanel1.Controls.Add(this.checkZoomSnap);
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(806, 29);
+			this.flowLayoutPanel1.TabIndex = 5;
+			// 
+			// labelZoomAmount
+			// 
+			this.labelZoomAmount.AutoSize = true;
+			this.labelZoomAmount.Location = new System.Drawing.Point(3, 7);
+			this.labelZoomAmount.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+			this.labelZoomAmount.Name = "labelZoomAmount";
+			this.labelZoomAmount.Size = new System.Drawing.Size(163, 15);
+			this.labelZoomAmount.TabIndex = 7;
+			this.labelZoomAmount.Text = "zoom amount (not localized):";
+			// 
+			// numericZoomAmount
+			// 
+			this.numericZoomAmount.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.numericZoomAmount.DecimalPlaces = 1;
+			this.numericZoomAmount.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+			this.numericZoomAmount.Location = new System.Drawing.Point(172, 3);
+			this.numericZoomAmount.Maximum = new decimal(new int[] {
+            32,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.Name = "numericZoomAmount";
+			this.numericZoomAmount.Size = new System.Drawing.Size(84, 23);
+			this.numericZoomAmount.TabIndex = 8;
+			this.numericZoomAmount.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericZoomAmount.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			this.numericZoomAmount.ValueChanged += new System.EventHandler(this.numericZoomAmount_ValueChanged);
+			// 
+			// labelZoomSize
+			// 
+			this.labelZoomSize.AutoSize = true;
+			this.labelZoomSize.Location = new System.Drawing.Point(262, 7);
+			this.labelZoomSize.Margin = new System.Windows.Forms.Padding(3, 7, 3, 0);
+			this.labelZoomSize.Name = "labelZoomSize";
+			this.labelZoomSize.Size = new System.Drawing.Size(185, 15);
+			this.labelZoomSize.TabIndex = 5;
+			this.labelZoomSize.Text = "zoom window size (not localized):";
+			// 
+			// numericZoomWindowSize
+			// 
+			this.numericZoomWindowSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.numericZoomWindowSize.Increment = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Location = new System.Drawing.Point(453, 3);
+			this.numericZoomWindowSize.Maximum = new decimal(new int[] {
+            384,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Minimum = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.Name = "numericZoomWindowSize";
+			this.numericZoomWindowSize.Size = new System.Drawing.Size(95, 23);
+			this.numericZoomWindowSize.TabIndex = 6;
+			this.numericZoomWindowSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericZoomWindowSize.Value = new decimal(new int[] {
+            128,
+            0,
+            0,
+            0});
+			this.numericZoomWindowSize.ValueChanged += new System.EventHandler(this.numericZoomWindowSize_ValueChanged);
+			// 
+			// checkZoomSnap
+			// 
+			this.checkZoomSnap.AutoSize = true;
+			this.checkZoomSnap.Location = new System.Drawing.Point(554, 7);
+			this.checkZoomSnap.Margin = new System.Windows.Forms.Padding(3, 7, 3, 3);
+			this.checkZoomSnap.Name = "checkZoomSnap";
+			this.checkZoomSnap.Size = new System.Drawing.Size(185, 19);
+			this.checkZoomSnap.TabIndex = 9;
+			this.checkZoomSnap.Text = "snap zoom window to corners";
+			this.checkZoomSnap.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.checkZoomSnap.UseVisualStyleBackColor = true;
+			this.checkZoomSnap.Click += new System.EventHandler(this.checkZoomSnap_Click);
 			// 
 			// stripSprite
 			// 
@@ -374,6 +524,7 @@
 			this.containerSprite.BottomToolStripPanel.ResumeLayout(false);
 			this.containerSprite.BottomToolStripPanel.PerformLayout();
 			this.containerSprite.ContentPanel.ResumeLayout(false);
+			this.containerSprite.ContentPanel.PerformLayout();
 			this.containerSprite.TopToolStripPanel.ResumeLayout(false);
 			this.containerSprite.TopToolStripPanel.PerformLayout();
 			this.containerSprite.ResumeLayout(false);
@@ -384,6 +535,12 @@
 			this.panelOuter.PerformLayout();
 			this.panelHScroll.ResumeLayout(false);
 			this.panelVScroll.ResumeLayout(false);
+			this.panelZoomControls.ResumeLayout(false);
+			this.panelZoomControls.PerformLayout();
+			this.flowLayoutPanel1.ResumeLayout(false);
+			this.flowLayoutPanel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomAmount)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericZoomWindowSize)).EndInit();
 			this.stripSprite.ResumeLayout(false);
 			this.stripSprite.PerformLayout();
 			this.ResumeLayout(false);
@@ -392,7 +549,7 @@
 
 		#endregion
 
-		internal System.Windows.Forms.Panel panelSprite;
+		internal GorgonSelectablePanel panelSprite;
 		private System.Windows.Forms.ToolStripContainer containerSprite;
 		private System.Windows.Forms.ToolStrip stripSprite;
 		private System.Windows.Forms.ToolStripButton buttonSave;
@@ -417,6 +574,13 @@
 		private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
 		private System.Windows.Forms.Button buttonCenter;
 		private System.Windows.Forms.ToolStripButton buttonClip;
+		private System.Windows.Forms.Panel panelZoomControls;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+		private System.Windows.Forms.Label labelZoomAmount;
+		private System.Windows.Forms.NumericUpDown numericZoomAmount;
+		private System.Windows.Forms.Label labelZoomSize;
+		private System.Windows.Forms.NumericUpDown numericZoomWindowSize;
+		private System.Windows.Forms.CheckBox checkZoomSnap;
 
 	}
 }

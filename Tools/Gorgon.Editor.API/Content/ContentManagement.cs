@@ -216,10 +216,10 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Function to disable a property for the content.
+		/// Function to refresh a property for the content.
 		/// </summary>
-		/// <param name="content">Content that is disabling the property.</param>
-	    private static void DisableContentProperty(ContentObject content)
+		/// <param name="content">Content that owns the property being refreshed.</param>
+	    private static void ContentPropertyRefreshed(ContentObject content)
 	    {
 
 			if ((ContentPropertyStateChanged == null)
@@ -310,7 +310,7 @@ namespace GorgonLibrary.Editor
 
 			content.OnCloseCurrent = CloseCurrentContent;
 			content.OnRenameContent = RenameCurrentContent;
-			content.OnPropertyDisabled = DisableContentProperty;
+			content.OnPropertyRefreshed = ContentPropertyRefreshed;
 			content.OnChanged = ContentPropertyChanged;
 			content.OnReload = contentItem =>
 			                   {
@@ -490,7 +490,7 @@ namespace GorgonLibrary.Editor
 			{
 				Current.OnCloseCurrent = null;
 				Current.OnRenameContent = null;
-				Current.OnPropertyDisabled = null;
+				Current.OnPropertyRefreshed = null;
 				Current.OnCommit = null;
 				Current.OnChanged = null;
 				Current.OnReload = null;

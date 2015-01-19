@@ -83,9 +83,9 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
-		/// Property to set or return the action to use when disabling properties on the property panel.
+		/// Property to set or return the action to use when refreshing properties on the property panel.
 		/// </summary>
-	    internal Action<ContentObject> OnPropertyDisabled
+	    internal Action<ContentObject> OnPropertyRefreshed
 	    {
 		    get;
 		    set;
@@ -630,6 +630,39 @@ namespace GorgonLibrary.Editor
             return TypeDescriptor.Contains(propertyName);
         }
 
+		/// <summary>
+		/// Function to refresh a property in the property grid.
+		/// </summary>
+		/// <param name="propertyName">Name of the property to refresh.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
+		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="propertyName"/> does not exist as a property for this content.</exception>
+		public void RefreshProperty(string propertyName)
+	    {
+			if (propertyName == null)
+			{
+				throw new ArgumentNullException("propertyName");
+			}
+
+			if (string.IsNullOrWhiteSpace("propertyName"))
+			{
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
+			}
+
+			if (!TypeDescriptor.Contains(propertyName))
+			{
+				throw new KeyNotFoundException(string.Format(APIResources.GOREDIT_ERR_PROPERTY_NOT_FOUND, propertyName));
+			}
+
+			if ((!HasProperties)
+				|| (OnPropertyRefreshed == null))
+			{
+				return;
+			}
+
+			OnPropertyRefreshed(this);
+	    }
+
         /// <summary>
         /// Function to set a property as disabled.
         /// </summary>
@@ -662,12 +695,7 @@ namespace GorgonLibrary.Editor
 
             TypeDescriptor[propertyName].IsReadOnly = disabled;
 
-	        if (OnPropertyDisabled == null)
-	        {
-		        return;
-	        }
-
-	        OnPropertyDisabled(this);
+			RefreshProperty(propertyName);
         }
 
 		/// <summary>

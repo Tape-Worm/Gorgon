@@ -93,9 +93,16 @@ namespace GorgonLibrary.Input.Raw
 			RegistryKey deviceKey = null;
 			RegistryKey classKey = null;
 
+			// If we're running under a terminal server session, then throw an exception.
+			// At this point, Gorgon's raw input does not run very well under RDP (especially the mouse), so we'll disable it.
+			if (SystemInformation.TerminalServerSession)
+			{
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORINP_RAW_NOT_UNDER_RDP);
+			}
+
 		    if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
 		    {
-		        throw new Win32Exception();
+				throw new Win32Exception(Resources.GORINP_RAW_CANNOT_READ_DATA);
 		    }
 
 			// Do nothing if we have no data.
@@ -104,15 +111,13 @@ namespace GorgonLibrary.Input.Raw
 				return;
 			}
 
-			// Multiply by two because dataSize with a command of "DeviceName" will return the number of characters required,
-			// not bytes.
             char *data = stackalloc char[dataSize];
 
 		    try
 		    {
 		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
 		        {
-		            throw new Win32Exception();
+					throw new Win32Exception(Resources.GORINP_RAW_CANNOT_READ_DATA);
 		        }
 
 				// The strings that come back from native land will end with a NULL terminator, so crop that off.
@@ -120,7 +125,7 @@ namespace GorgonLibrary.Input.Raw
 
 		        if (regPath.Length == 0)
 		        {
-		            throw new Win32Exception();
+					throw new Win32Exception(Resources.GORINP_RAW_CANNOT_READ_DATA);
 		        }
 
 		        string[] regValue = regPath.Split('#');

@@ -45,6 +45,36 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
             get;
             set;
         }
+
+		/// <summary>
+		/// Property to set or return the size of the zoom window when editing glyphs.
+		/// </summary>
+		[ApplicationSetting("ZoomWindowSize", 256, typeof(int), "SpriteEditor")]
+		public int ZoomWindowSize
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the scaling factor for the zoom window.
+		/// </summary>
+		[ApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "SpriteEditor")]
+		public float ZoomWindowScaleFactor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to snap the zoom window to the corners of the editor window, or to follow the cursor.
+		/// </summary>
+		[ApplicationSetting("ZoomWindowSnap", false, typeof(bool), "SpriteEditor")]
+		public bool ZoomWindowSnap
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -54,6 +84,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		public GorgonSpritePlugInSettings()
 			: base("SpriteEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
+			
 		}
 		#endregion
 	}
