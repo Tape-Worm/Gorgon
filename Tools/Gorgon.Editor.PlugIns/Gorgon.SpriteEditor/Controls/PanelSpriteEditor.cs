@@ -157,6 +157,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private Clipper _clipper;
 		// Window used to zoom in on the clipping area.
 		private ZoomWindow _zoomWindow;
+		// Font used for the zoom window.
+		private GorgonFont _zoomFont;
 		#endregion
 
 		#region Properties.
@@ -172,6 +174,359 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 		#region Methods.
 		/// <summary>
+		/// Handles the ValueChanged event of the numericZoomAmount control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericZoomAmount_ValueChanged(object sender, EventArgs e)
+		{
+			GorgonSpriteEditorPlugIn.Settings.ZoomWindowScaleFactor = (float)numericZoomAmount.Value;
+
+			if (_zoomWindow != null)
+			{
+				_zoomWindow.ZoomAmount = GorgonSpriteEditorPlugIn.Settings.ZoomWindowScaleFactor;
+			}
+
+			UpdateZoomWindow(panelSprite.PointToClient(Cursor.Position));
+		}
+
+		/// <summary>
+		/// Handles the ValueChanged event of the numericZoomWindowSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericZoomWindowSize_ValueChanged(object sender, EventArgs e)
+		{
+			GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize = (int)numericZoomWindowSize.Value;
+
+			if (_zoomWindow != null)
+			{
+				_zoomWindow.ZoomWindowSize = new Vector2(GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize);
+			}
+
+			UpdateZoomWindow(panelSprite.PointToClient(Cursor.Position));
+		}
+
+		/// <summary>
+		/// Handles the Click event of the checkZoomSnap control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void checkZoomSnap_Click(object sender, EventArgs e)
+		{
+			GorgonSpriteEditorPlugIn.Settings.ZoomWindowSnap = checkZoomSnap.Checked;
+			UpdateZoomWindow(panelSprite.PointToClient(Cursor.Position));
+		}
+
+		/// <summary>
+		/// Function to update the position of the zoom window.
+		/// </summary>
+		/// <param name="position">The position of the mouse cursor.</param>
+		private void UpdateZoomWindow(Vector2 position)
+		{
+			if ((_clipper == null) || (_zoomWindow == null))
+			{
+				return;
+			}
+
+			Vector2 spritePosition = _clipper.Offset;
+	        Vector2 zoomPosition;
+			Vector2 texturePos;
+
+			Vector2.Subtract(ref position, ref spritePosition, out texturePos);
+			
+            _zoomWindow.Position = texturePos;
+
+	        if (!GorgonSpriteEditorPlugIn.Settings.ZoomWindowSnap)
+	        {
+		        zoomPosition = new Vector2(position.X + 4,
+		                                   position.Y + 4);
+
+		        if ((zoomPosition.X + _zoomWindow.ZoomWindowSize.X) > panelSprite.ClientSize.Width - 4)
+		        {
+			        zoomPosition.X = position.X - _zoomWindow.ZoomWindowSize.X - 4;
+		        }
+
+		        if ((zoomPosition.Y + _zoomWindow.ZoomWindowSize.Y) > panelSprite.ClientSize.Height - 4)
+		        {
+			        zoomPosition.Y = position.Y - _zoomWindow.ZoomWindowSize.Y - 4;
+		        }
+	        }
+	        else
+	        {
+		        Vector2 mousePosition = panelSprite.PointToClient(Cursor.Position);
+		        zoomPosition = new Vector2(panelSprite.ClientSize.Width - _zoomWindow.ZoomWindowSize.X, 0);
+
+		        if ((mousePosition.Y < _zoomWindow.ZoomWindowSize.Y) &&
+		            (mousePosition.X > panelSprite.ClientSize.Width * 0.5f))
+		        {
+			        zoomPosition.Y = panelSprite.ClientSize.Height - _zoomWindow.ZoomWindowSize.Y;
+		        }
+
+		        if ((mousePosition.X >= zoomPosition.X) && (mousePosition.Y > panelSprite.ClientSize.Height * 0.5f))
+		        {
+			        zoomPosition.X = 0;
+		        }
+	        }
+
+	        _zoomWindow.ZoomWindowLocation = zoomPosition;
+        }
+
+		/// <summary>
+		/// Function to offset the cursor in edit mode by a specified amount.
+		/// </summary>
+		/// <param name="offset">Amount to move the cursor.</param>
+		private void MoveEditCursor(Point offset)
+		{
+			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			{
+				return;
+			}
+
+			if (ActiveControl != panelSprite)
+			{
+				panelSprite.Focus();
+			}
+
+			Point mousePosition = panelSprite.PointToClient(Cursor.Position);
+
+			mousePosition.X += offset.X;
+			mousePosition.Y += offset.Y;
+
+			panelSprite_MouseMove(this, new MouseEventArgs(MouseButtons.Left, 1, mousePosition.X, mousePosition.Y, 0));
+
+			Cursor.Position = panelSprite.PointToScreen(mousePosition);
+		}
+
+		/// <summary>
+		/// Handles the PreviewKeyDown event of the panelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+		private void panelSprite_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			var offset = Point.Empty;
+			int offsetAmount = 1;
+			
+			if (e.Shift)
+			{
+				offsetAmount = 100;
+			}
+			else if (e.Control)
+			{
+				offsetAmount = 10;
+			}
+			
+			switch (e.KeyCode)
+			{
+				case Keys.NumPad8:
+				case Keys.Up:
+					offset.Y = -offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad2:
+				case Keys.Down:
+					offset.Y = offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad4:
+				case Keys.Left:
+					offset.X = -offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad6:
+				case Keys.Right:
+					offset.X = offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad1:
+					offset.X = -offsetAmount;
+					offset.Y = offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad3:
+					offset.X = offsetAmount;
+					offset.Y = offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad7:
+					offset.X = -offsetAmount;
+					offset.Y = -offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.NumPad9:
+					offset.X = offsetAmount;
+					offset.Y = -offsetAmount;
+					MoveEditCursor(offset);
+					break;
+				case Keys.Space:
+					if (SpriteEditorMode != SpriteEditorMode.Edit)
+					{
+						return;
+					}
+
+					if (ActiveControl != panelSprite)
+					{
+						panelSprite.Focus();
+					}
+
+					Point mousePosition = panelSprite.PointToClient(Cursor.Position);
+					var args = new MouseEventArgs(MouseButtons.Left, 1, mousePosition.X, mousePosition.Y, 0);
+
+					if (_clipper.DragMode == ClipSelectionDragMode.None)
+					{
+						panelSprite_MouseDown(this, args);
+					}
+					else
+					{
+						panelSprite_MouseUp(this, args);
+					}
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the panelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelSprite_MouseDown(object sender, MouseEventArgs e)
+		{
+			// If we don't have focus, don't ruin our sprite trying to get it back.
+			if (!panelSprite.Focused)
+			{
+				panelSprite.Focus();
+				return;
+			}
+
+			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			{
+				return;
+			}
+
+			_clipper.OnMouseDown(e);
+		}
+
+		/// <summary>
+		/// Handles the MouseUp event of the panelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelSprite_MouseUp(object sender, MouseEventArgs e)
+		{
+			// If we don't have focus, don't ruin our sprite trying to get it back.
+			if (!panelSprite.Focused)
+			{
+				panelSprite.Focus();
+				return;
+			}
+
+			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			{
+				return;
+			}
+
+			if (!_clipper.OnMouseUp(e))
+			{
+				return;
+			}
+
+			var newRegion = Rectangle.Round(_clipper.ClipRegion);
+			_content.Size = newRegion.Size;
+			_content.TextureRegion = newRegion;
+			_clipper.TextureSize = _content.Texture.Settings.Size;
+			_clipper.Scale = new Vector2(1);
+		}
+
+		/// <summary>
+		/// Handles the MouseWheel event of the PanelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void PanelSprite_MouseWheel(object sender, MouseEventArgs e)
+		{
+			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			{
+				return;
+			}
+
+			if (ActiveControl != panelSprite)
+			{
+				panelSprite.Focus();
+			}
+
+			if (e.Delta < 0)
+			{
+				if ((numericZoomAmount.Value - 0.5M) >= numericZoomAmount.Minimum)
+				{
+					numericZoomAmount.Value -= 0.5M;
+				}
+			}
+			else
+			{
+				if (numericZoomAmount.Value + 0.5M <= numericZoomAmount.Maximum)
+				{
+					numericZoomAmount.Value += 0.5M;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Handles the MouseMove event of the panelSprite control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
+		private void panelSprite_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (SpriteEditorMode != SpriteEditorMode.Edit)
+			{
+				return;
+			}
+
+			_clipper.OnMouseMove(e);
+			
+			// TODO: Should update info... probably on the status bar or something?
+
+			UpdateZoomWindow(e.Location);
+		}
+
+		/// <summary>
+		/// Function to create a zoom window.
+		/// </summary>
+		private void CreateZoomWindow()
+		{
+			if (_content.Texture == null)
+			{
+				return;
+			}
+
+			_zoomWindow = new ZoomWindow(_content.Renderer, _content.Texture)
+			{
+				Clipper = _clipper,
+				BackgroundTexture = _content.BackgroundTexture,
+				Position = _content.Texture.ToPixel(_content.Sprite.TextureOffset),
+				ZoomAmount = GorgonSpriteEditorPlugIn.Settings.ZoomWindowScaleFactor,
+				ZoomWindowSize = new Vector2(GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize)
+			};
+
+			if (_zoomFont == null)
+			{
+				_zoomFont = ContentObject.Graphics.Fonts.CreateFont("MagnifierCaptionFont",
+															   new GorgonFontSettings
+															   {
+																   AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+																   Characters = _zoomWindow.ZoomWindowText + ":.01234567890x ",
+																   FontFamilyName = "Segoe UI",
+																   FontHeightMode = FontHeightMode.Points,
+																   Size = 10.0f,
+																   TextureSize = new Size(64, 64)
+															   });
+			}
+
+			_zoomWindow.ZoomWindowFont = _zoomFont;
+		}
+
+		/// <summary>
 		/// Handles the Click event of the buttonClip control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -180,25 +535,47 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			if (SpriteEditorMode == SpriteEditorMode.Edit)
 			{
+				panelZoomControls.Visible = false;
 				SpriteEditorMode = SpriteEditorMode.View;
+				buttonCenter_Click(this, e);
 				ValidateControls();
 				return;
 			}
 
+			// If the texture rectangle and the sprite size are not equal, then inform the user that we
+			// may need to make a destructive change to their sprite.
+			if ((_content.Size.Width != _content.TextureRegion.Width)
+			    || (_content.Size.Height != _content.TextureRegion.Height))
+			{
+				if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORSPR_DLG_CONFIRM_SPREDIT) == ConfirmationResult.No)
+				{
+					return;
+				}
+
+				// Reset the texture region to match the size of the sprite.
+				_content.TextureRegion = new Rectangle(_content.TextureRegion.Location, _content.Size);
+			}
+
+			panelZoomControls.Visible = true;
+			_clipper.NoBounds = true;
 			_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
 			_clipper.TextureSize = _content.Texture.Settings.Size;
-
-			_zoomWindow = new ZoomWindow(_content.Renderer, _content.Texture)
-			              {
-				              Clipper = _clipper,
-							  BackgroundTexture = _content.BackgroundTexture,
-							  Position = _content.Texture.ToPixel(_content.Sprite.TextureOffset),
-							  ZoomAmount = 3.0f,
-							  ZoomWindowSize = new Vector2(256, 256)
-			              };
-
+			_clipper.Offset = _spritePosition - _content.TextureRegion.Location;
+			
+			CreateZoomWindow();
+			
 			SpriteEditorMode = SpriteEditorMode.Edit;
+
+			scrollHorizontal.Value = _content.TextureRegion.X;
+			scrollVertical.Value = _content.TextureRegion.Y;
+
+			CalculateSpritePosition();
+
 			ValidateControls();
+			UpdateZoomWindow(Cursor.Position);
+
+			// Force focus on the panel.
+			panelSprite.Focus();
 		}
 
 		/// <summary>
@@ -208,8 +585,19 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonCenter_Click(object sender, EventArgs e)
 		{
-			scrollHorizontal.Value = 0;
-			scrollVertical.Value = 0;
+			if (SpriteEditorMode == SpriteEditorMode.Edit)
+			{
+				_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
+				scrollHorizontal.Value = _content.TextureRegion.X;
+				scrollVertical.Value = _content.TextureRegion.Y;
+			}
+			else
+			{
+				scrollHorizontal.Value = 0;
+				scrollVertical.Value = 0;
+			}
+
+			CalculateSpritePosition();
 		}
 
 		/// <summary>
@@ -223,7 +611,12 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			{
 				CalculateToWindow();
 			}
+
 			SetUpScrolling();
+
+			_halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
+
+			CalculateSpritePosition();
 		}
 
 		/// <summary>
@@ -291,7 +684,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			{
 				scrollHorizontal.Value = e.NewValue;
 			}
+
+			CalculateSpritePosition();
+
 			_content.Draw();
+
+			if (SpriteEditorMode == SpriteEditorMode.Edit)
+			{
+				UpdateZoomWindow(panelSprite.PointToClient(Cursor.Position));
+			}
 		}
 
 		/// <summary>
@@ -371,12 +772,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				var items = dropDownZoom.DropDownItems.Cast<ToolStripItem>().Where(item => item is ToolStripMenuItem);
 
 				// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-				foreach (ToolStripMenuItem control in items)
+				foreach (var control in items.Cast<ToolStripMenuItem>().Where(control => control != sender))
 				{
-					if (control != sender)
-					{
-						control.Checked = false;
-					}
+					control.Checked = false;
 				}
 
 				_zoom = float.Parse(selectedItem.Tag.ToString(),
@@ -391,6 +789,10 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				}
 
 				SetUpScrolling();
+
+				_content.Sprite.Scale = new Vector2(_zoom);
+				
+				CalculateSpritePosition();
 			}
 			catch (Exception ex)
 			{
@@ -424,6 +826,14 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 
+			labelZoomAmount.Text = Resources.GORSPR_TEXT_ZOOM_AMOUNT;
+			labelZoomSize.Text = Resources.GORSPR_TEXT_ZOOM_WINDOW_SIZE;
+			checkZoomSnap.Text = Resources.GORSPR_TEXT_SNAP_ZOOM;
+
+			numericZoomAmount.Value = (decimal)GorgonSpriteEditorPlugIn.Settings.ZoomWindowScaleFactor;
+			numericZoomWindowSize.Value = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize;
+			checkZoomSnap.Checked = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSnap;
+
 			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORSPR_TEXT_ZOOM, menuItem100.Text);
 		}
 
@@ -438,14 +848,38 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Function to calculate the sprite position.
+		/// Function to calculate the sprite position in view mode.
 		/// </summary>
 		private void CalculateSpritePosition()
 		{
-			_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
-			_halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
+			if ((_content == null)
+				|| (_content.Sprite == null))
+			{
+				return;
+			}
 
-			_spritePosition = new Vector2(_halfScreen.X - _halfSprite.X - (scrollHorizontal.Value * _zoom), _halfScreen.Y - _halfSprite.Y - (scrollVertical.Value * _zoom));
+			var imageScale = new Vector2(_content.Sprite.ScaledSize.X / _content.TextureRegion.Width, _content.Sprite.ScaledSize.Y / _content.TextureRegion.Height);
+			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
+
+			switch (SpriteEditorMode)
+			{
+				case SpriteEditorMode.Edit:
+					_content.TextureSprite.Position = new Vector2(_halfScreen.X - _halfSprite.X - scrollHorizontal.Value, _halfScreen.Y - _halfSprite.Y - scrollVertical.Value);
+					_clipper.Offset = _content.TextureSprite.Position;
+					break;
+				default:
+					_content.Sprite.Scale = new Vector2(_zoom);
+					_halfSprite = (Point)(new Vector2(_content.Sprite.ScaledSize.X / 2.0f, _content.Sprite.ScaledSize.Y / 2.0f));
+
+					_spritePosition = new Vector2(_halfScreen.X - _halfSprite.X - (scrollHorizontal.Value * _zoom),
+					                              _halfScreen.Y - _halfSprite.Y - (scrollVertical.Value * _zoom));
+
+					_content.TextureSprite.Position =
+						(Point)new Vector2(_spritePosition.X - _content.TextureRegion.X * imageScale.X, _spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
+
+					_clipper.Offset = _content.TextureSprite.Position;
+					break;
+			}
 		}
 
 		/// <summary>
@@ -453,29 +887,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		private void DrawSpriteTexture()
 		{
-			Vector2 spriteSize;
-			Vector2 imageScale;
-			Vector2 imagePosition;
-
 			switch (SpriteEditorMode)
 			{
 				case SpriteEditorMode.Edit:
-					spriteSize = _content.Sprite.Size;
 					_content.TextureSprite.Opacity = 1.0f;
 					break;
 				default:
-					spriteSize = new Vector2(_content.Sprite.Size.X * _zoom, _content.Sprite.Size.Y * _zoom);
 					_content.TextureSprite.Opacity = 0.35f;
 					break;
 			}
 
-			imageScale = new Vector2(spriteSize.X / _content.TextureRegion.Width, spriteSize.Y / _content.TextureRegion.Height);
-			imagePosition = new Vector2(_spritePosition.X - _content.TextureRegion.X * imageScale.X, _spritePosition.Y - _content.TextureRegion.Y * imageScale.Y);
-			
-			_content.TextureSprite.ScaledSize = (Point)Vector2.Modulate(imageScale, _content.TextureSprite.Size);
-			_content.TextureSprite.Position = (Point)imagePosition;
 			_content.TextureSprite.SmoothingMode = SmoothingMode.Smooth;
-
 			_content.TextureSprite.Draw();
 		}
 
@@ -486,13 +908,19 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			_content.Sprite.Scale = new Vector2(1);			
 
-			CalculateSpritePosition();
-
 			DrawSpriteTexture();
 
 			// Offset the clipping rectangle so that it appears in the correct place on the screen.
-			_clipper.Offset = _spritePosition - _content.TextureRegion.Location;
 			_clipper.Draw();
+
+			Vector2 mousePosition = panelSprite.PointToClient(Cursor.Position);
+				 
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Inverted;
+
+			_content.Renderer.Drawing.DrawLine(new Vector2(mousePosition.X, 0), new Vector2(mousePosition.X, panelSprite.ClientSize.Height), Color.White);
+			_content.Renderer.Drawing.DrawLine(new Vector2(0, mousePosition.Y), new Vector2(panelSprite.ClientSize.Width, mousePosition.Y), Color.White);
+
+			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
 			_zoomWindow.Draw();
 		}
@@ -503,10 +931,6 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private void DrawSprite()
 		{
 			_anchorAnim.Animate();
-
-			_content.Sprite.Scale = new Vector2(_zoom);
-
-			CalculateSpritePosition();
 
 			DrawSpriteTexture();
 
@@ -525,7 +949,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 			_content.Renderer.Drawing.DrawRectangle(spriteRect, new GorgonColor(0, 0, 1.0f, 0.5f));
 
-			_content.Sprite.Scale = new Vector2(1);
+			//_content.Sprite.Scale = new Vector2(1);
 
 			float anchorZoom = _zoom.Max(0.75f).Min(1.5f);
 			_anchorSprite.Scale = new Vector2(anchorZoom);
@@ -551,6 +975,46 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			base.OnContentPropertyChanged(propertyName, value);
 
+			switch (propertyName.ToLowerInvariant())
+			{
+				case "texture":
+					if (SpriteEditorMode != SpriteEditorMode.Edit)
+					{
+						break;
+					}
+
+					CreateZoomWindow();
+
+					if (_content.Texture != null)
+					{
+						_clipper.TextureSize = _content.Texture.Settings.Size;
+					}
+					break;
+				case "size":
+					CalculateSpritePosition();
+
+					if (SpriteEditorMode == SpriteEditorMode.Edit)
+					{
+						_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
+						_content.TextureRegion = Rectangle.Round(_clipper.ClipRegion);
+						_clipper.Scale = new Vector2(1);
+						_clipper.TextureSize = _content.Texture.Settings.Size;
+					}
+					break;
+				case "textureregion":
+					CalculateSpritePosition();
+
+					if (SpriteEditorMode == SpriteEditorMode.Edit)
+					{
+						_content.Size = _content.TextureRegion.Size;
+						_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.TextureRegion.Size);
+						_clipper.Scale = new Vector2(1);
+						_clipper.TextureSize = _content.Texture.Settings.Size;
+					}
+
+					break;
+			}
+			
 			SetUpScrolling();
 			ValidateControls();
 		}
@@ -598,8 +1062,13 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 				_clipper = new Clipper(_content.Renderer, panelSprite)
 				           {
-					           SelectorPattern = _content.BackgroundTexture
+					           SelectorPattern = _content.BackgroundTexture,
+							   DefaultCursor = Cursors.Cross
 				           };
+
+				_halfScreen = (Point)(new Vector2(panelSprite.ClientSize.Width / 2.0f, panelSprite.ClientSize.Height / 2.0f));
+
+				CalculateSpritePosition();
 			}
 
 			ValidateControls();
@@ -610,14 +1079,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PanelSpriteEditor"/> class.
 		/// </summary>
-		public PanelSpriteEditor(GorgonSpriteContent spriteContent, GorgonInputFactory input)
-			: base(spriteContent, input)
+		public PanelSpriteEditor(GorgonSpriteContent spriteContent)
+			: base(spriteContent)
 		{
 			_content = spriteContent;
 			_plugIn = (GorgonSpriteEditorPlugIn)_content.PlugIn;
 
 			InitializeComponent();
+
+			panelSprite.MouseWheel += PanelSprite_MouseWheel;
 		}
+
 		#endregion
 	}
 }

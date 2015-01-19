@@ -643,6 +643,44 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
+		/// Function to clean up the renderer objects.
+		/// </summary>
+		private void CleanUpRenderer()
+		{
+			if (_renderer == null)
+			{
+				return;
+			}
+
+			if (_lastState != null)
+			{
+				_renderer.End2D(_lastState);
+				_lastState = null;
+			}
+
+			if (_texture != null)
+			{
+				_texture.Dispose();
+				_texture = null;
+			}
+
+			if (_defaultTexture != null)
+			{
+				_defaultTexture.Dispose();
+				_defaultTexture = null;
+			}
+
+			if (_swapChain != null)
+			{
+				_swapChain.Dispose();
+				_swapChain = null;
+			}
+
+			_clipper = null;
+			_graphics = null;
+		}
+
+		/// <summary>
 		/// Function to set up the renderer.
 		/// </summary>
 		/// <param name="renderer">Renderer to use.</param>
@@ -657,34 +695,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			{
 				Gorgon.ApplicationIdleLoopMethod = null;
 
-				if ((_renderer != null) && (_renderer != renderer))
+				if (_renderer != renderer)
 				{
-					if (_lastState != null)
-					{
-						_renderer.End2D(_lastState);
-						_lastState = null;
-					}
-
-					if (_texture != null)
-					{
-						_texture.Dispose();
-						_texture = null;
-					}
-
-					if (_defaultTexture != null)
-					{
-						_defaultTexture.Dispose();
-						_defaultTexture = null;
-					}
-
-					if (_swapChain != null)
-					{
-						_swapChain.Dispose();
-						_swapChain = null;
-					}
-
-					_clipper = null;
-					_graphics = null;
+					CleanUpRenderer();
 				}
 
 				if (renderer == null)

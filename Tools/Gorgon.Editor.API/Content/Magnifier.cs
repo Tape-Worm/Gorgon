@@ -265,7 +265,7 @@ namespace GorgonLibrary.Editor
 		    _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, _windowSize.X - 2, _captionHeight - 2), GorgonColor.White);
 			_renderer.Drawing.DrawString(ZoomWindowFont ?? _renderer.Graphics.Fonts.DefaultFont,
 										 string.Format("{0}: {1:0.0}x", ZoomWindowText, _zoom),
-			                             ZoomWindowLocation,
+			                             (Point)ZoomWindowLocation,
 			                             GorgonColor.Black);
 
 		    _sprite.TextureOffset = _texture.ToTexel(texturePosition);

@@ -355,6 +355,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				}
 
 				Sprite.Size = value;
+				RefreshProperty("Size");
 
 				NotifyPropertyChanged();
 			}
@@ -366,6 +367,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		[LocalCategory(typeof(Resources), "CATEGORY_TEXTURE"),
 		LocalDescription(typeof(Resources), "PROP_TEXTURE_REGION_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_REGION_NAME"),
+		RefreshProperties(RefreshProperties.All),
 		TypeConverter(typeof(RectangleConverter)),
 		DefaultValue(typeof(Rectangle), "0, 0, 0, 0")]
 		public Rectangle TextureRegion
@@ -382,6 +384,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				}
 
 				_textureRect = value;
+				RefreshProperty("TextureRegion");
 
 				if ((Sprite == null)
 					|| (Sprite.Texture == null))
@@ -738,7 +741,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </returns>
 		protected override ContentPanel OnInitialize()
 		{
-			_panel = new PanelSpriteEditor(this, null);// TODO: Put back in: GetRawInput()
+			_panel = new PanelSpriteEditor(this);
 
 			_swap = Graphics.Output.CreateSwapChain("SpriteEditorSwap",
 			                                        new GorgonSwapChainSettings

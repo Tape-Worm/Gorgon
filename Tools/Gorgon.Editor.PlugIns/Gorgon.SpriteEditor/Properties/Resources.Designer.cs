@@ -244,6 +244,17 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture dimensions and the sprite size are mismatched.  Editing this sprite will force the texture dimensions and sprite size to synchronize.  This may produce an undesirable result.
+        ///
+        ///Do you wish to continue?.
+        /// </summary>
+        internal static string GORSPR_DLG_CONFIRM_SPREDIT {
+            get {
+                return ResourceManager.GetString("GORSPR_DLG_CONFIRM_SPREDIT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reverting the image will reset the sprite back to its original state.  All changes made to this sprite will be lost.
         ///
         ///Are you sure you wish to do this?.
@@ -363,6 +374,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Snap zoom window to corners.
+        /// </summary>
+        internal static string GORSPR_TEXT_SNAP_ZOOM {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_SNAP_ZOOM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to To window.
         /// </summary>
         internal static string GORSPR_TEXT_TO_WINDOW {
@@ -377,6 +397,24 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string GORSPR_TEXT_ZOOM {
             get {
                 return ResourceManager.GetString("GORSPR_TEXT_ZOOM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom amount:.
+        /// </summary>
+        internal static string GORSPR_TEXT_ZOOM_AMOUNT {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_ZOOM_AMOUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom window size:.
+        /// </summary>
+        internal static string GORSPR_TEXT_ZOOM_WINDOW_SIZE {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_ZOOM_WINDOW_SIZE", resourceCulture);
             }
         }
         
