@@ -69,6 +69,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		private BlendingMode _blendMode = BlendingMode.Modulate;
 		// The texture rectangle, in pixel space.
 		private Rectangle _textureRect;
+		// The settings for the sprite.
+		private GorgonSpriteContentSettings _settings;
 		#endregion
 
 		#region Properties.
@@ -407,6 +409,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		LocalDescription(typeof(Resources), "PROP_SPRITE_ANCHOR_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_SPRITE_ANCHOR_NAME"),
 		TypeConverter(typeof(PointConverter)), 
+		DefaultValue(typeof(Point), "0, 0"),
 		Editor(typeof(AnchorTypeEditor), typeof(UITypeEditor))]
 		public Point Anchor
 		{
@@ -575,6 +578,39 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		}
 
 		/// <summary>
+		/// Function to initialize the sprite object.
+		/// </summary>
+		private void InitSprite()
+		{
+			// Convert the anchor to integer values and store separately.
+			// We turn off anchoring for our display sprite so that we can edit the anchor
+			// without doing all kinds of weird stuff to display the sprite correctly.
+			_spriteAnchor = (Point)Sprite.Anchor;
+			_blendMode = Sprite.BlendingMode;
+
+			// Disable the sprite anchor.
+			Sprite.Anchor = Vector2.Zero;
+			Sprite.Scale = new Vector2(1);
+			Sprite.Position = Vector2.Zero;
+
+			TextureSprite = Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1), GorgonColor.Transparent);
+			TextureSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
+
+			if (Sprite.Texture != null)
+			{
+				TextureSprite.Texture = Sprite.Texture;
+				TextureSprite.Size = Sprite.Texture.Settings.Size;
+				TextureSprite.Color = new GorgonColor(1, 1, 1, 0.35f);
+			}
+
+			_textureRect = Rectangle.Truncate(Sprite.Texture != null ? Sprite.Texture.ToPixel(Sprite.TextureRegion) : Sprite.TextureRegion);
+
+			Vertices = new SpriteVertices(this);
+
+			ValidateSpriteProperties();
+		}
+
+		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -626,7 +662,25 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 			Sprite.Save(stream);
 
+			Sprite.Anchor = Vector2.Zero;
+
 			ValidateSpriteProperties();
+		}
+
+		/// <summary>
+		/// Function called when the content is fully loaded and ready for editing.
+		/// </summary>
+		public override void OnContentReady()
+		{
+			if ((_settings == null)
+				|| (!_settings.CreateContent))
+			{
+				return;
+			}
+
+			// Since this is the last step in the creation of a new content object, auto-flip
+			// into edit mode.
+			_panel.StartEditMode();
 		}
 
 		/// <summary>
@@ -641,32 +695,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			// If the texture is deferred, attempt to load.
 			Sprite.GetDeferredTexture();
 
-			// Convert the anchor to integer values and store separately.
-			// We turn off anchoring for our display sprite so that we can edit the anchor
-			// without doing all kinds of weird stuff to display the sprite correctly.
-			_spriteAnchor = (Point)Sprite.Anchor;
-			_blendMode = Sprite.BlendingMode;
-
-			// Disable the sprite anchor.
-			Sprite.Anchor = Vector2.Zero;
-			Sprite.Scale = new Vector2(1);
-			Sprite.Position = Vector2.Zero;
-
-			TextureSprite = Renderer.Renderables.CreateSprite("TextureSprite", new Vector2(1), GorgonColor.Transparent);
-			TextureSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
-
-			if (Sprite.Texture != null)
-			{
-				TextureSprite.Texture = Sprite.Texture;
-				TextureSprite.Size = Sprite.Texture.Settings.Size;
-				TextureSprite.Color = new GorgonColor(1, 1, 1, 0.35f);
-			}
-
-			_textureRect = Rectangle.Truncate(Sprite.Texture != null ? Sprite.Texture.ToPixel(Sprite.TextureRegion) : Sprite.TextureRegion);
-
-			Vertices = new SpriteVertices(this);
-
-			ValidateSpriteProperties();
+			InitSprite();
 		}
 
 		/// <summary>
@@ -754,6 +783,20 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 
 			BackgroundTexture = Graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundTexture", Resources.Pattern);
 
+			if ((_settings == null) || (!_settings.CreateContent))
+			{
+				return _panel;
+			}
+
+			Sprite = Renderer.Renderables.CreateSprite(Name, _settings.Settings);
+			var dependency = new Dependency(_settings.TextureDependency.EditorFile, TextureDependencyType);
+
+			// Build the texture dependency.
+			Dependencies.Add(dependency);
+			Dependencies.CacheDependencyObject(dependency.EditorFile, dependency.Type, Sprite.Texture);
+
+			InitSprite();
+
 			return _panel;
 		}
 
@@ -807,6 +850,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		public GorgonSpriteContent(GorgonSpriteEditorPlugIn plugIn, GorgonSpriteContentSettings settings)
 			: base(settings)
 		{
+			_settings = settings;
 			PlugIn = _plugIn = plugIn;
 			HasThumbnail = true;
 		}

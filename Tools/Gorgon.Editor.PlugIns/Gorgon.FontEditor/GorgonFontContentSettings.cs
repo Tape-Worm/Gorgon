@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentSettings
     {
         #region Variables.
-        private Size _maxTextureSize;               // Maximum texture size.
+        private readonly Size _maxTextureSize;               // Maximum texture size.
         #endregion
 
         #region Properties.

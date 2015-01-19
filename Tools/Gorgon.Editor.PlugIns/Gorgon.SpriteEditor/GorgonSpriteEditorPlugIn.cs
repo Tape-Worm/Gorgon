@@ -108,7 +108,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// <returns>
 		/// The settings for the content.
 		/// </returns>
-		public override ContentSettings GetContentSettings()
+		protected override ContentSettings OnGetContentSettings()
 		{
 			return new GorgonSpriteContentSettings();
 		}

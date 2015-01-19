@@ -206,7 +206,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <returns>
         /// The settings interface for the content.
         /// </returns>
-        public override ContentSettings GetContentSettings()
+        protected override ContentSettings OnGetContentSettings()
         {
             return new GorgonFontContentSettings(new Size(ContentObject.Graphics.Textures.MaxWidth, ContentObject.Graphics.Textures.MaxHeight));
         }

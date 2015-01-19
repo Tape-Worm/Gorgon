@@ -195,7 +195,7 @@ namespace GorgonLibrary.Editor
 	    public IImageEditorPlugIn ImageEditor
 	    {
 		    get;
-		    private set;
+		    internal set;
 	    }
 
 		/// <summary>
@@ -479,36 +479,6 @@ namespace GorgonLibrary.Editor
             return false;
         }
 
-		/// <summary>
-		/// Function to retrieve the registered image editor for the system.
-		/// </summary>
-		/// <param name="defaultEditor">The name of the default image editor.</param>
-		internal void GetRegisteredImageEditor(string defaultEditor)
-		{
-			ContentPlugIn plugIn;
-
-			// Use the first image editor if we haven't selected one.
-			if (string.IsNullOrWhiteSpace(defaultEditor))
-			{
-				// Find the first image editor plug-in.
-				plugIn = PlugIns.ContentPlugIns.FirstOrDefault(item => item.Value is IImageEditorPlugIn).Value;
-
-				if (plugIn == null)
-				{
-					return;
-				}
-			}
-			else
-			{
-				if (!PlugIns.ContentPlugIns.TryGetValue(defaultEditor, out plugIn))
-				{
-					return;
-				}
-			}
-
-			ImageEditor = plugIn as IImageEditorPlugIn;
-		}
-
         /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>
@@ -733,6 +703,13 @@ namespace GorgonLibrary.Editor
 			ContentControl = OnInitialize();
 			return ContentControl;
 		}
+
+		/// <summary>
+		/// Function called when the content is fully loaded and ready for editing.
+		/// </summary>
+	    public virtual void OnContentReady()
+	    {
+	    }
 
 		/// <summary>
 		/// Function to close the content object.

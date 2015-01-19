@@ -42,6 +42,15 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the plug-in that created the settings object.
+		/// </summary>
+	    public ContentPlugIn PlugIn
+	    {
+		    get;
+		    internal set;
+	    }
+
         /// <summary>
         /// Property to return whether the content should be created.
         /// </summary>

@@ -24,6 +24,14 @@
 // 
 #endregion
 
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+using GorgonLibrary.IO;
+using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
+using SlimMath;
+
 namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
@@ -37,7 +45,23 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the settings for the sprite.
+		/// </summary>
+		public GorgonSpriteSettings Settings
+		{
+			get;
+			private set;
+		}
 
+		/// <summary>
+		/// Property to return the texture dependency for this sprite.
+		/// </summary>
+		public Dependency TextureDependency
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -49,12 +73,62 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 		/// </returns>
 		public override bool PerformSetup()
 		{
-			return true;
+			FormNewSprite newSprite = null;
+			
+			try
+			{
+				newSprite = new FormNewSprite
+				            {
+					            ImageEditor = PlugIn.GetRegisteredImageEditor()
+				            };
+
+				if (newSprite.ShowDialog() != DialogResult.OK)
+				{
+					if (newSprite.Texture != null)
+					{
+						newSprite.Texture.Dispose();
+					}
+
+					return false;
+				}
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				Name = newSprite.SpriteName.FormatFileName();
+
+				Settings.Texture = newSprite.Texture;
+				Settings.TextureRegion = newSprite.Texture.ToTexel(new RectangleF(0, 0, 1, 1));
+				Settings.Size = new Vector2(1);
+				Settings.Color = Color.White;
+				
+				TextureDependency = newSprite.Dependency;
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+				return false;
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				if (newSprite != null)
+				{
+					newSprite.Dispose();
+				}
+			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonSpriteContentSettings"/> class.
+		/// </summary>
+		public GorgonSpriteContentSettings()
+		{
+			Settings = new GorgonSpriteSettings();
+		}
 		#endregion
 	}
 }

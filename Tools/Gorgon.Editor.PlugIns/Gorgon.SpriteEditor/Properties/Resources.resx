@@ -145,11 +145,16 @@
   <data name="PROP_SPRITE_VERTEX_OFFSET_DESC" xml:space="preserve">
     <value>Sets the relative offset of the sprite vertex (corner) from its current position within the sprite rectangle.</value>
   </data>
+  <data name="PROP_SPRITE_VERTEX_COLOR_DESC" xml:space="preserve">
+    <value>Sets the color for the sprite vertex (corner).</value>
+  </data>
   <data name="PROP_SPRITE_UL_VERTEX_DESC" xml:space="preserve">
     <value>Offset and color for the upper left vertex (corner) of the sprite.</value>
   </data>
-  <data name="PROP_SPRITE_ALPHATEST_DESC" xml:space="preserve">
-    <value>Sets the range of alpha values to reject when rendering the sprite.</value>
+  <data name="GORSPR_DLG_CONFIRM_SPREDIT" xml:space="preserve">
+    <value>The texture dimensions and the sprite size are mismatched.  Editing this sprite will force the texture dimensions and sprite size to synchronize.  This may produce an undesirable result.
+
+Do you wish to continue?</value>
   </data>
   <data name="GORSPR_WARN_NO_TEXTURE" xml:space="preserve">
     <value>The sprite '{0}' is linked to a texture with the name '{1}'.  This texture was not found and cannot be loaded.  The sprite may not appear correct during editing.</value>
@@ -196,6 +201,9 @@
   <data name="GORSPR_ERR_NEED_IMAGE_EDITOR" xml:space="preserve">
     <value>No image editor plug-in was found.  The sprite editor requires an image editor to function.</value>
   </data>
+  <data name="GORSPR_TEXT_SAVE" xml:space="preserve">
+    <value>Save the changes to this sprite.</value>
+  </data>
   <data name="PROP_SPRITE_UL_VERTEX_NAME" xml:space="preserve">
     <value>Upper left</value>
   </data>
@@ -213,9 +221,6 @@
   </data>
   <data name="CATEGORY_TEXTURE" xml:space="preserve">
     <value>Texture</value>
-  </data>
-  <data name="PROP_SPRITE_MINALPHA_NAME" xml:space="preserve">
-    <value>Alpha test minimum</value>
   </data>
   <data name="PROP_SPRITE_BLEND_PRESET_NAME" xml:space="preserve">
     <value>Blending preset</value>
@@ -259,9 +264,6 @@
   <data name="pan_21x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pan_21x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="arrow_right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="PROP_SPRITE_MAXALPHA_NAME" xml:space="preserve">
     <value>Alpha test maximum</value>
   </data>
@@ -270,6 +272,9 @@
   </data>
   <data name="GORSPR_CONTENT_EXTENSION_DESC" xml:space="preserve">
     <value>Gorgon Sprite File</value>
+  </data>
+  <data name="GORSPR_TEXT_MOUSE_INFO" xml:space="preserve">
+    <value>Mouse position: {0}x{1}  Texture region: {2}x{3}-{4}x{5} ({6}x{7})  Anchor: {8}x{9}</value>
   </data>
   <data name="PROP_SPRITE_SIZE_NAME" xml:space="preserve">
     <value>Size</value>
@@ -306,8 +311,8 @@ Are you sure you wish to do this?</value>
   <data name="PROP_SPRITE_DEPTH_DESC" xml:space="preserve">
     <value>Allows the setting of the depth properties for the sprite to define how it will interact with a depth buffer. These settings only work when a depth buffer is active.</value>
   </data>
-  <data name="GORSPR_TEXT_SAVE" xml:space="preserve">
-    <value>Save the changes to this sprite.</value>
+  <data name="PROP_SPRITE_MINALPHA_NAME" xml:space="preserve">
+    <value>Alpha test minimum</value>
   </data>
   <data name="GORSPR_CONTENT_TYPE" xml:space="preserve">
     <value>Sprite</value>
@@ -318,11 +323,17 @@ Are you sure you wish to do this?</value>
   <data name="PROP_TEXTURE_DESC" xml:space="preserve">
     <value>Assigns a texture for the sprite to use.</value>
   </data>
+  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ok_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="GORSPR_TEXT_LOAD_SPR_TEXTURE" xml:space="preserve">
     <value>The sprite texture was not found, please locate it here</value>
   </data>
-  <data name="PROP_SPRITE_VERTEX_COLOR_DESC" xml:space="preserve">
-    <value>Sets the color for the sprite vertex (corner).</value>
+  <data name="PROP_SPRITE_ALPHATEST_DESC" xml:space="preserve">
+    <value>Sets the range of alpha values to reject when rendering the sprite.</value>
+  </data>
+  <data name="arrow_right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
@@ -387,9 +398,28 @@ Are you sure you wish to do this?</value>
   <data name="sprite_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\sprite_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GORSPR_DLG_CONFIRM_SPREDIT" xml:space="preserve">
-    <value>The texture dimensions and the sprite size are mismatched.  Editing this sprite will force the texture dimensions and sprite size to synchronize.  This may produce an undesirable result.
-
-Do you wish to continue?</value>
+  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORSPR_ACC_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="GORSPR_ACC_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GORSPR_TEXT_HELP" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="GORSPR_TEXT_NEW_SPRITE" xml:space="preserve">
+    <value>New sprite</value>
+  </data>
+  <data name="GORSPR_TEXT_NEW_SPRITE_NAME" xml:space="preserve">
+    <value>Name:</value>
+  </data>
+  <data name="GORSPR_TEXT_NEW_SPRITE_TEXTURE" xml:space="preserve">
+    <value>Texture:</value>
+  </data>
+  <data name="GORSPR_TEXT_NEW_SPRITE_TIP_TEXTURE" xml:space="preserve">
+    <value>Selects a texture to bind to the sprite.</value>
   </data>
 </root>

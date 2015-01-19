@@ -87,6 +87,7 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		private static int _syncCounter;										// Synchronization counter for multiple threads.
 		private RootNodeDirectory _rootNode;									// Our root node for the tree.
+		private bool _clipboardData;											// Flag to indicate that there's clipboard data.
 		#endregion
 
 		#region Properties.
@@ -852,9 +853,7 @@ namespace GorgonLibrary.Editor
 			Debug.Assert(_rootNode != null, "Root node is NULL!");
 
 			_rootNode.Redraw();
-
-	        IDataObject clipboardData = Clipboard.GetDataObject();
-
+			
             itemOpen.Enabled = PlugIns.ReaderPlugIns.Count > 0;
             itemSaveAs.Enabled = (PlugIns.WriterPlugIns.Count > 0);
             itemSave.Enabled = !string.IsNullOrWhiteSpace(FileManagement.FilePath)
@@ -922,7 +921,7 @@ namespace GorgonLibrary.Editor
 		        popupItemCreateFolder.Visible = true;
 		        itemDelete.Enabled = popupItemDelete.Enabled = (!dependencies) && (tabDocumentManager.SelectedTab == pageItems);
 		        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DELETE_FOLDER);
-		        popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
+		        popupItemPaste.Enabled = itemPaste.Enabled = _clipboardData;
 
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
@@ -969,7 +968,7 @@ namespace GorgonLibrary.Editor
 			buttonEditContent.Enabled =
 				popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(editorFile) && !dependencies;
 			popupItemAddContent.Visible = false;
-			popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
+			popupItemPaste.Enabled = itemPaste.Enabled = _clipboardData;
 	        popupItemCopy.Enabled = itemCopy.Enabled = true;
 			
 			popupItemExclude.Text = string.Format(Resources.GOREDIT_TEXT_EXCLUDE_FILE, file.Name);
@@ -1407,6 +1406,7 @@ namespace GorgonLibrary.Editor
 				                                      ((sender == itemCut) || (sender == popupItemCut)));
 
 				Clipboard.SetDataObject(cutCopyObject);
+				_clipboardData = true;
 			}
 			finally
 			{
@@ -1867,6 +1867,8 @@ namespace GorgonLibrary.Editor
                 directoryNode.Nodes.Add(newNode);
                 treeFiles.SelectedNode = newNode;
 
+				content.OnContentReady();
+
 				FileManagement.FileChanged = true;
 			}
 			catch (Exception ex)
@@ -1986,6 +1988,7 @@ namespace GorgonLibrary.Editor
 				    && (string.Equals(cutCopyObject.FullPath, node.FullPath, StringComparison.OrdinalIgnoreCase)))
 				{
 					Clipboard.Clear();
+					_clipboardData = false;
 				}
 			}
 
@@ -2961,6 +2964,7 @@ namespace GorgonLibrary.Editor
 					&& (!isCopy))
 				{
 					Clipboard.Clear();
+					_clipboardData = false;
 				}
 
 			    Cursor.Current = prevCursor;
@@ -3459,9 +3463,16 @@ namespace GorgonLibrary.Editor
 			};
 			ContentManagement.ContentInitializedAction = control =>
 			                                             {
-															control.Dock = DockStyle.Fill;
-															control.Parent = splitPanel1;
-				                                            control.ContentClosed += OnContentClose;
+				                                             try
+				                                             {
+																 control.Dock = DockStyle.Fill;
+																 control.Parent = splitPanel1;
+																 control.ContentClosed += OnContentClose;
+				                                             }
+				                                             catch (Exception ex)
+				                                             {
+					                                             GorgonDialogs.ErrorBox(null, ex);
+				                                             }
 			                                             };
 			ContentManagement.OnGetDependency = pathToDependency => ScratchArea.ScratchFiles.GetFile(pathToDependency);
 			ContentManagement.DependencyNotFound = (sourceFile, dependencyList) =>
