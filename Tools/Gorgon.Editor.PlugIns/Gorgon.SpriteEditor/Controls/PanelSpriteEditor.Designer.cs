@@ -64,6 +64,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			this.menuItem25 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemToWindow = new System.Windows.Forms.ToolStripMenuItem();
+			this.labelMouseInfo = new System.Windows.Forms.ToolStripLabel();
 			this.panelOuter = new System.Windows.Forms.Panel();
 			this.panelHScroll = new System.Windows.Forms.Panel();
 			this.scrollHorizontal = new System.Windows.Forms.HScrollBar();
@@ -82,7 +83,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			this.buttonRevert = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonClip = new System.Windows.Forms.ToolStripButton();
-			this.labelMouseInfo = new System.Windows.Forms.ToolStripLabel();
+			this.buttonAutoClip = new System.Windows.Forms.ToolStripButton();
 			this.PanelDisplay.SuspendLayout();
 			this.containerSprite.BottomToolStripPanel.SuspendLayout();
 			this.containerSprite.ContentPanel.SuspendLayout();
@@ -267,6 +268,12 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			this.menuItemToWindow.Text = "to window";
 			this.menuItemToWindow.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
 			this.menuItemToWindow.Click += new System.EventHandler(this.zoomItem_Click);
+			// 
+			// labelMouseInfo
+			// 
+			this.labelMouseInfo.Name = "labelMouseInfo";
+			this.labelMouseInfo.Size = new System.Drawing.Size(65, 22);
+			this.labelMouseInfo.Text = "mouse pos";
 			// 
 			// panelOuter
 			// 
@@ -473,7 +480,8 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
             this.buttonSave,
             this.buttonRevert,
             this.toolStripSeparator1,
-            this.buttonClip});
+            this.buttonClip,
+            this.buttonAutoClip});
 			this.stripSprite.Location = new System.Drawing.Point(0, 0);
 			this.stripSprite.Name = "stripSprite";
 			this.stripSprite.Size = new System.Drawing.Size(806, 25);
@@ -516,11 +524,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			this.buttonClip.Text = "not localized clip";
 			this.buttonClip.Click += new System.EventHandler(this.buttonClip_Click);
 			// 
-			// labelMouseInfo
+			// buttonAutoClip
 			// 
-			this.labelMouseInfo.Name = "labelMouseInfo";
-			this.labelMouseInfo.Size = new System.Drawing.Size(65, 22);
-			this.labelMouseInfo.Text = "mouse pos";
+			this.buttonAutoClip.CheckOnClick = true;
+			this.buttonAutoClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonAutoClip.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.auto_clip_16x16;
+			this.buttonAutoClip.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonAutoClip.Name = "buttonAutoClip";
+			this.buttonAutoClip.Size = new System.Drawing.Size(23, 22);
+			this.buttonAutoClip.Text = "auto clip not localized";
+			this.buttonAutoClip.Click += new System.EventHandler(this.buttonAutoClip_Click);
 			// 
 			// PanelSpriteEditor
 			// 
@@ -590,6 +603,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private System.Windows.Forms.NumericUpDown numericZoomWindowSize;
 		private System.Windows.Forms.CheckBox checkZoomSnap;
 		private System.Windows.Forms.ToolStripLabel labelMouseInfo;
+		private System.Windows.Forms.ToolStripButton buttonAutoClip;
 
 	}
 }

@@ -163,6 +163,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap auto_clip_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("auto_clip_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
@@ -312,6 +322,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Auto clipping requires the sprite to be bound to a texture with a R8G8B8A8 or B8G8R8A8 texture format..
+        /// </summary>
+        internal static string GORSPR_ERR_CANNOT_AUTO_CLIP {
+            get {
+                return ResourceManager.GetString("GORSPR_ERR_CANNOT_AUTO_CLIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The content &apos;{0}&apos; is not a Gorgon sprite..
         /// </summary>
         internal static string GORSPR_ERR_CONTENT_NOT_SPRITE {
@@ -353,6 +372,15 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
         internal static string GORSPR_PROP_NO_TEXTURE {
             get {
                 return ResourceManager.GetString("GORSPR_PROP_NO_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Automatically clip sprite from image.
+        /// </summary>
+        internal static string GORSPR_TEXT_AUTO_CLIP {
+            get {
+                return ResourceManager.GetString("GORSPR_TEXT_AUTO_CLIP", resourceCulture);
             }
         }
         

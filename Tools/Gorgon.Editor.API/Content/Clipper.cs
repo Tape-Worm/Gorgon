@@ -132,6 +132,15 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to set or return whether to hide the nodes when drawing the selection rectangle.
+		/// </summary>
+		public bool HideNodes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the default cursor for the clipper.
 		/// </summary>
 		public Cursor DefaultCursor
@@ -481,6 +490,11 @@ namespace GorgonLibrary.Editor
 		private void HitTestNodes(Point cursorPosition)
 		{
 			_selectedDragNode = -1;
+
+			if (HideNodes)
+			{
+				return;
+			}
 
 			for (int i = 0; i < _dragAreas.Length; ++i)
 			{
@@ -856,6 +870,11 @@ namespace GorgonLibrary.Editor
 			SelectionSprite.Draw();
 
 			// Draw our nodes.
+			if (HideNodes)
+			{
+				return;
+			}
+
 			_renderer.Drawing.FilledRectangle(_dragAreas[DragNW], _selectedDragNode == DragNW ? DragNodeHoverColor : DragNodeColor);
 			_renderer.Drawing.FilledRectangle(_dragAreas[DragNE], _selectedDragNode == DragNE ? DragNodeHoverColor : DragNodeColor);
 			_renderer.Drawing.FilledRectangle(_dragAreas[DragSW], _selectedDragNode == DragSW ? DragNodeHoverColor : DragNodeColor);

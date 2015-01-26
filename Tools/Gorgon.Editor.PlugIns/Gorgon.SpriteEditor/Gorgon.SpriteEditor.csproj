@@ -60,6 +60,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoClipper.cs" />
     <Compile Include="Controls\PanelSpriteEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -124,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\auto_clip_16x16.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\pan_21x16.png" />
