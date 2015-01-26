@@ -57,7 +57,11 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <summary>
 		/// The anchor is being dragged into a new position.
 		/// </summary>
-		AnchorDrag = 2
+		AnchorDrag = 2,
+		/// <summary>
+		/// Automatically clip sprite.
+		/// </summary>
+		AutoClip = 3
 	}
 
 	/// <summary>
@@ -405,22 +409,53 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				return;
 			}
 
-			switch (SpriteEditorMode)
+			try
 			{
-				case SpriteEditorMode.Edit:
-					_clipper.OnMouseDown(e);
-					break;
-				case SpriteEditorMode.View:
-					var anchorRect = new Rectangle((Point)(_anchorSprite.Position - _anchorSprite.Anchor),
-												   (Size)_anchorSprite.Size);
+				switch (SpriteEditorMode)
+				{
+					case SpriteEditorMode.AutoClip:
+						Cursor.Current = Cursors.WaitCursor;
 
-					if (anchorRect.Contains(e.Location))
-					{
-						SpriteEditorMode = SpriteEditorMode.AnchorDrag;
-						_dragDelta = new Point(e.X - anchorRect.X - (int)_anchorSprite.Anchor.X, e.Y - anchorRect.Y - (int)_anchorSprite.Anchor.Y);
-						panelSprite.Cursor = Cursors.Hand;
-					}
-					break;
+						var autoClipper = new AutoClipper((Point)new Vector2(e.X - _content.TextureSprite.Position.X, e.Y - _content.TextureSprite.Position.Y));
+
+						Rectangle clipRect = autoClipper.Clip(_content.Texture);
+
+						// If we didn't get a clip area, then just leave.
+						if (clipRect.IsEmpty)
+						{
+							return;
+						}
+
+						// Set the clipper position.
+						_clipper.ClipRegion = clipRect;
+						_content.Size = clipRect.Size;
+						_content.TextureRegion = clipRect;
+						break;
+					case SpriteEditorMode.Edit:
+						_clipper.OnMouseDown(e);
+						break;
+					case SpriteEditorMode.View:
+						var anchorOffset = (Point)Vector2.Modulate(_anchorSprite.Anchor, _anchorSprite.Scale);
+						var anchorRect = new Rectangle((Point)(_anchorSprite.Position - anchorOffset),
+						                               (Size)_anchorSprite.ScaledSize);
+
+						if (anchorRect.Contains(e.Location))
+						{
+							SpriteEditorMode = SpriteEditorMode.AnchorDrag;
+							_dragDelta = new Point(e.X - anchorRect.X - anchorOffset.X, e.Y - anchorRect.Y - anchorOffset.Y);
+
+							panelSprite.Cursor = Cursors.Hand;
+						}
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
 			}
 		}
 
@@ -438,26 +473,37 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 				return;
 			}
 
-			switch (SpriteEditorMode)
+			try
 			{
-				case SpriteEditorMode.AnchorDrag:
-					SpriteEditorMode = SpriteEditorMode.View;
-					_dragDelta = Point.Empty;
-					panelSprite.Cursor = Cursors.Default;
-					_content.RefreshProperty("Anchor");
-					break;
-				case SpriteEditorMode.Edit:
-					if (!_clipper.OnMouseUp(e))
-					{
-						return;
-					}
+				switch (SpriteEditorMode)
+				{
+					case SpriteEditorMode.AnchorDrag:
+						SpriteEditorMode = SpriteEditorMode.View;
+						_dragDelta = Point.Empty;
+						panelSprite.Cursor = Cursors.Default;
+						_content.RefreshProperty("Anchor");
+						break;
+					case SpriteEditorMode.Edit:
+						if (!_clipper.OnMouseUp(e))
+						{
+							return;
+						}
 
-					var newRegion = Rectangle.Round(_clipper.ClipRegion);
-					_content.Size = newRegion.Size;
-					_content.TextureRegion = newRegion;
-					_clipper.TextureSize = _content.Texture.Settings.Size;
-					_clipper.Scale = new Vector2(1);
-					break;
+						var newRegion = Rectangle.Round(_clipper.ClipRegion);
+						_content.Size = newRegion.Size;
+						_content.TextureRegion = newRegion;
+						_clipper.TextureSize = _content.Texture.Settings.Size;
+						_clipper.Scale = new Vector2(1);
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
 			}
 		}
 
@@ -501,9 +547,11 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// <param name="e">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
 		private void panelSprite_MouseMove(object sender, MouseEventArgs e)
 		{
+			var textureOffset = (Point)new Vector2((e.X - _content.TextureSprite.Position.X) / _zoom, (e.Y - _content.TextureSprite.Position.Y) / _zoom);
+
 			labelMouseInfo.Text = string.Format(Resources.GORSPR_TEXT_MOUSE_INFO,
-			                                    e.X,
-			                                    e.Y,
+			                                    textureOffset.X,
+			                                    textureOffset.Y,
 			                                    _content.TextureRegion.X,
 			                                    _content.TextureRegion.Y,
 			                                    _content.TextureRegion.Right,
@@ -516,8 +564,9 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			switch (SpriteEditorMode)
 			{
 				case SpriteEditorMode.View:
-					var anchorRect = new Rectangle((Point)(_anchorSprite.Position - _anchorSprite.Anchor),
-												   (Size)_anchorSprite.Size);
+					var anchorRect = new Rectangle((Point)(_anchorSprite.Position - Vector2.Modulate(_anchorSprite.Anchor, _anchorSprite.Scale)),
+												   (Size)_anchorSprite.ScaledSize);
+
 
 					panelSprite.Cursor = anchorRect.Contains(e.Location) ? Cursors.Hand : Cursors.Default;
 					break;
@@ -526,7 +575,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 					UpdateZoomWindow(e.Location);
 					break;
 				case SpriteEditorMode.AnchorDrag:
-					_content.Anchor = new Point(e.X - (int)_spritePosition.X - _dragDelta.X, e.Y - (int)_spritePosition.Y - _dragDelta.Y);
+					_content.Anchor = (Point)new Vector2((e.X - _spritePosition.X - _dragDelta.X) / _zoom, (e.Y - _spritePosition.Y - _dragDelta.Y) / _zoom);
 					break;
 			}
 		}
@@ -568,58 +617,118 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		}
 
 		/// <summary>
+		/// Handles the Click event of the buttonAutoClip control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonAutoClip_Click(object sender, EventArgs e)
+		{
+			try
+			{
+
+				if (SpriteEditorMode == SpriteEditorMode.AutoClip)
+				{
+					panelSprite.Cursor = Cursors.Default;
+					SpriteEditorMode = SpriteEditorMode.View;
+					buttonCenter_Click(this, e);
+					return;
+				}
+
+				_content.TextureSprite.Scale = new Vector2(1);
+				_clipper.NoBounds = true;
+				_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
+				_clipper.TextureSize = _content.Texture.Settings.Size;
+				_clipper.Offset = new Vector2(_halfScreen.X - _content.Size.Width / 2.0f - _content.TextureRegion.X,
+											  _halfScreen.Y - _content.Size.Height / 2.0f - _content.TextureRegion.Y);
+				_clipper.HideNodes = true;
+				_halfSprite = new Point(_content.Size.Width / 2, _content.Size.Height / 2);
+
+
+				SpriteEditorMode = SpriteEditorMode.AutoClip;
+
+				scrollHorizontal.Value = _content.TextureRegion.X;
+				scrollVertical.Value = _content.TextureRegion.Y;
+
+				CalculateSpritePosition();
+
+				panelSprite.Cursor = Cursors.Cross;
+				panelSprite.Focus();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the buttonClip control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonClip_Click(object sender, EventArgs e)
 		{
-			if (SpriteEditorMode == SpriteEditorMode.Edit)
+			try
 			{
-				panelSprite.Cursor = Cursors.Default;
-				panelZoomControls.Visible = false;
-				SpriteEditorMode = SpriteEditorMode.View;
-				buttonCenter_Click(this, e);
-				ValidateControls();
-				return;
-			}
-
-			// If the texture rectangle and the sprite size are not equal, then inform the user that we
-			// may need to make a destructive change to their sprite.
-			if ((_content.Size.Width != _content.TextureRegion.Width)
-			    || (_content.Size.Height != _content.TextureRegion.Height))
-			{
-				if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORSPR_DLG_CONFIRM_SPREDIT) == ConfirmationResult.No)
+				if (SpriteEditorMode == SpriteEditorMode.Edit)
 				{
+					_zoomWindow = null;
+					panelSprite.Cursor = Cursors.Default;
+					panelZoomControls.Visible = false;
+					SpriteEditorMode = SpriteEditorMode.View;
+					buttonCenter_Click(this, e);
 					return;
 				}
 
-				// Reset the texture region to match the size of the sprite.
-				_content.TextureRegion = new Rectangle(_content.TextureRegion.Location, _content.Size);
+				// If the texture rectangle and the sprite size are not equal, then inform the user that we
+				// may need to make a destructive change to their sprite.
+				if ((_content.Size.Width != _content.TextureRegion.Width)
+				    || (_content.Size.Height != _content.TextureRegion.Height))
+				{
+					if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORSPR_DLG_CONFIRM_SPREDIT) == ConfirmationResult.No)
+					{
+						return;
+					}
+
+					// Reset the texture region to match the size of the sprite.
+					_content.TextureRegion = new Rectangle(_content.TextureRegion.Location, _content.Size);
+				}
+
+				_content.TextureSprite.Scale = new Vector2(1);
+				panelZoomControls.Visible = true;
+				_clipper.NoBounds = true;
+				_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
+				_clipper.TextureSize = _content.Texture.Settings.Size;
+				_clipper.Offset = new Vector2(_halfScreen.X - _content.Size.Width / 2.0f - _content.TextureRegion.X,
+				                              _halfScreen.Y - _content.Size.Height / 2.0f - _content.TextureRegion.Y);
+				_clipper.HideNodes = false;
+				_halfSprite = new Point(_content.Size.Width / 2, _content.Size.Height / 2);
+
+				CreateZoomWindow();
+
+				SpriteEditorMode = SpriteEditorMode.Edit;
+
+				scrollHorizontal.Value = _content.TextureRegion.X;
+				scrollVertical.Value = _content.TextureRegion.Y;
+
+				CalculateSpritePosition();
+
+				UpdateZoomWindow(Cursor.Position);
+
+				// Force focus on the panel.
+				panelSprite.Focus();
 			}
-			
-			_content.TextureSprite.Scale = new Vector2(1);
-			panelZoomControls.Visible = true;
-			_clipper.NoBounds = true;
-			_clipper.ClipRegion = new RectangleF(_content.TextureRegion.Location, _content.Size);
-			_clipper.TextureSize = _content.Texture.Settings.Size;
-			_clipper.Offset = new Vector2(_halfScreen.X - _content.Size.Width / 2.0f - _content.TextureRegion.X, _halfScreen.Y - _content.Size.Height / 2.0f - _content.TextureRegion.Y);
-			_halfSprite = new Point(_content.Size.Width / 2, _content.Size.Height / 2);
-			
-			CreateZoomWindow();
-			
-			SpriteEditorMode = SpriteEditorMode.Edit;
-
-			scrollHorizontal.Value = _content.TextureRegion.X;
-			scrollVertical.Value = _content.TextureRegion.Y;
-
-			CalculateSpritePosition();
-
-			ValidateControls();
-			UpdateZoomWindow(Cursor.Position);
-
-			// Force focus on the panel.
-			panelSprite.Focus();
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
 		}
 
 		/// <summary>
@@ -745,8 +854,16 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		private void ValidateControls()
 		{
 			buttonSave.Enabled = buttonRevert.Enabled = _content.HasChanges;
-			buttonClip.Enabled = _content != null && _content.Texture != null;
-			dropDownZoom.Enabled = SpriteEditorMode == SpriteEditorMode.View;
+			buttonClip.Enabled = _content != null && _content.Texture != null && SpriteEditorMode != SpriteEditorMode.AutoClip;
+			// This functionality only works 32 bit images with an alpha component.
+			buttonAutoClip.Enabled = _content != null && _content.Texture != null && SpriteEditorMode != SpriteEditorMode.Edit
+			                         && (_content.Texture.FormatInformation.Format == BufferFormat.B8G8R8A8_UIntNormal
+			                             || _content.Texture.FormatInformation.Format == BufferFormat.B8G8R8A8_UIntNormal_sRGB
+			                             || _content.Texture.FormatInformation.Format == BufferFormat.R8G8B8A8_Int
+			                             || _content.Texture.FormatInformation.Format == BufferFormat.R8G8B8A8_IntNormal
+			                             || _content.Texture.FormatInformation.Format == BufferFormat.R8G8B8A8_UIntNormal
+			                             || _content.Texture.FormatInformation.Format == BufferFormat.R8G8B8A8_UIntNormal_sRGB);
+			dropDownZoom.Enabled = SpriteEditorMode == SpriteEditorMode.View || SpriteEditorMode == SpriteEditorMode.AnchorDrag;
 		}
 
 		/// <summary>
@@ -859,6 +976,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			buttonRevert.Text = Resources.GORSPR_TEXT_REVERT;
 
 			buttonClip.Text = Resources.GORSPR_TEXT_CLIP_SPRITE;
+			buttonAutoClip.Text = Resources.GORSPR_TEXT_AUTO_CLIP;
 
 			menuItemToWindow.Text = Resources.GORSPR_TEXT_TO_WINDOW;
 			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
@@ -908,6 +1026,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 			switch (SpriteEditorMode)
 			{
+				case SpriteEditorMode.AutoClip:
 				case SpriteEditorMode.Edit:
 					_content.TextureSprite.Position = new Vector2(_halfScreen.X - _halfSprite.X - scrollHorizontal.Value, _halfScreen.Y - _halfSprite.Y - scrollVertical.Value);
 					_clipper.Offset = _content.TextureSprite.Position;
@@ -940,6 +1059,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			switch (SpriteEditorMode)
 			{
+				case SpriteEditorMode.AutoClip:
 				case SpriteEditorMode.Edit:
 					_content.TextureSprite.Opacity = 1.0f;
 					break;
@@ -973,7 +1093,10 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 
 			_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			_zoomWindow.Draw();
+			if (_zoomWindow != null)
+			{
+				_zoomWindow.Draw();
+			}
 
 			if (panelSprite.Focused)
 			{
@@ -1090,6 +1213,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		{
 			switch (SpriteEditorMode)
 			{
+				case SpriteEditorMode.AutoClip:
 				case SpriteEditorMode.Edit:
 					DrawSpriteEdit();
 					break;

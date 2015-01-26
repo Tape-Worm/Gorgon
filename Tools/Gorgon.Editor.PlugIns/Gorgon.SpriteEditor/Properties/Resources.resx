@@ -130,8 +130,14 @@
   <data name="revert_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\revert_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="GORSPR_TEXT_ZOOM_AMOUNT" xml:space="preserve">
     <value>Zoom amount:</value>
+  </data>
+  <data name="GORSPR_TEXT_HELP" xml:space="preserve">
+    <value>Help</value>
   </data>
   <data name="zoom_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\zoom_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -145,9 +151,6 @@
   <data name="PROP_SPRITE_VERTEX_OFFSET_DESC" xml:space="preserve">
     <value>Sets the relative offset of the sprite vertex (corner) from its current position within the sprite rectangle.</value>
   </data>
-  <data name="PROP_SPRITE_VERTEX_COLOR_DESC" xml:space="preserve">
-    <value>Sets the color for the sprite vertex (corner).</value>
-  </data>
   <data name="PROP_SPRITE_UL_VERTEX_DESC" xml:space="preserve">
     <value>Offset and color for the upper left vertex (corner) of the sprite.</value>
   </data>
@@ -159,11 +162,17 @@ Do you wish to continue?</value>
   <data name="GORSPR_WARN_NO_TEXTURE" xml:space="preserve">
     <value>The sprite '{0}' is linked to a texture with the name '{1}'.  This texture was not found and cannot be loaded.  The sprite may not appear correct during editing.</value>
   </data>
+  <data name="GORSPR_TEXT_NEW_SPRITE_NAME" xml:space="preserve">
+    <value>Name:</value>
+  </data>
   <data name="pan_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pan_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_TEXT_CREATE_NEW_SPRITE" xml:space="preserve">
     <value>Create new sprite...</value>
+  </data>
+  <data name="PROP_TEXTURE_SAMPLER_DESC" xml:space="preserve">
+    <value>Allows the setting of texture sampling values to define how the texture will behave when it is enlarged, shrunk, and wrapped.</value>
   </data>
   <data name="GORSPR_DESC" xml:space="preserve">
     <value>Gorgon Sprite Editor</value>
@@ -177,11 +186,14 @@ Do you wish to continue?</value>
   <data name="Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Pattern.bmp;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_TEXTURE_SAMPLER_DESC" xml:space="preserve">
-    <value>Allows the setting of texture sampling values to define how the texture will behave when it is enlarged, shrunk, and wrapped.</value>
+  <data name="PROP_SPRITE_FLIPVERT_NAME" xml:space="preserve">
+    <value>Vertical flip</value>
   </data>
   <data name="PROP_SPRITE_ANCHOR_DESC" xml:space="preserve">
     <value>The offset from the absolute upper-left (0,0) coordinate of the sprite.  This serves as an axis of rotation and an anchor for scaling/positioning.</value>
+  </data>
+  <data name="sprite_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\sprite_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_PROP_NO_TEXTURE" xml:space="preserve">
     <value>(No texture)</value>
@@ -191,6 +203,9 @@ Do you wish to continue?</value>
   </data>
   <data name="PROP_SPRITE_LL_VERTEX_DESC" xml:space="preserve">
     <value>Offset and color for the lower left vertex (corner) of the sprite.</value>
+  </data>
+  <data name="PROP_SPRITE_DEPTH_NAME" xml:space="preserve">
+    <value>Depth settings</value>
   </data>
   <data name="arrow_sw_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrow_sw_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -204,14 +219,17 @@ Do you wish to continue?</value>
   <data name="GORSPR_TEXT_SAVE" xml:space="preserve">
     <value>Save the changes to this sprite.</value>
   </data>
+  <data name="PROP_SPRITE_BLEND_PRESET_DESC" xml:space="preserve">
+    <value>Sets pre-defined blending states for a sprite.</value>
+  </data>
   <data name="PROP_SPRITE_UL_VERTEX_NAME" xml:space="preserve">
     <value>Upper left</value>
   </data>
   <data name="GORSPR_ERR_UNKNOWN_DEPENDENCY" xml:space="preserve">
     <value>The dependency type '{0}' is unknown.</value>
   </data>
-  <data name="CATEGORY_BEHAVIOR" xml:space="preserve">
-    <value>Behavior</value>
+  <data name="arrow_down_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_down_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_SPRITE_UR_VERTEX_NAME" xml:space="preserve">
     <value>Upper right</value>
@@ -228,14 +246,8 @@ Do you wish to continue?</value>
   <data name="GORSPR_TEXT_CLIP_SPRITE" xml:space="preserve">
     <value>Clip the sprite from the texture.</value>
   </data>
-  <data name="PROP_SPRITE_VERTICES_NAME" xml:space="preserve">
-    <value>Vertices</value>
-  </data>
   <data name="PROP_SPRITE_BLENDING_DESC" xml:space="preserve">
     <value>Allows for the fine tuning of blending operations between the sprite and the render target.  This property is only enabled when the blend preset is set to Custom.</value>
-  </data>
-  <data name="PROP_SPRITE_VERTICES_DESC" xml:space="preserve">
-    <value>Allows adjustments of the sprite vertices (corners) relative offsets and colors.</value>
   </data>
   <data name="GORSPR_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
@@ -252,17 +264,26 @@ Do you wish to continue?</value>
   <data name="PROP_TEXTURE_NAME" xml:space="preserve">
     <value>Texture</value>
   </data>
+  <data name="GORSPR_ACC_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
   <data name="GORSPR_ERR_2D_TEXTURE_ONLY" xml:space="preserve">
     <value>Only 2D textures can be used with sprites.</value>
   </data>
-  <data name="PROP_SPRITE_FLIPVERT_NAME" xml:space="preserve">
-    <value>Vertical flip</value>
+  <data name="GORSPR_TEXT_NEW_SPRITE_TIP_TEXTURE" xml:space="preserve">
+    <value>Selects a texture to bind to the sprite.</value>
   </data>
   <data name="arrow_se_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrow_se_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="arrow_up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="pan_21x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\pan_21x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="arrow_right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_SPRITE_MAXALPHA_NAME" xml:space="preserve">
     <value>Alpha test maximum</value>
@@ -276,8 +297,8 @@ Do you wish to continue?</value>
   <data name="GORSPR_TEXT_MOUSE_INFO" xml:space="preserve">
     <value>Mouse position: {0}x{1}  Texture region: {2}x{3}-{4}x{5} ({6}x{7})  Anchor: {8}x{9}</value>
   </data>
-  <data name="PROP_SPRITE_SIZE_NAME" xml:space="preserve">
-    <value>Size</value>
+  <data name="GORSPR_TEXT_NEW_SPRITE" xml:space="preserve">
+    <value>New sprite</value>
   </data>
   <data name="CATEGORY_APPEARANCE" xml:space="preserve">
     <value>Appearance</value>
@@ -301,9 +322,6 @@ Do you wish to continue?</value>
     <value>Reverting the image will reset the sprite back to its original state.  All changes made to this sprite will be lost.
 
 Are you sure you wish to do this?</value>
-  </data>
-  <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_SPRITE_UR_VERTEX_DESC" xml:space="preserve">
     <value>Offset and color for the upper right vertex (corner) of the sprite.</value>
@@ -332,20 +350,17 @@ Are you sure you wish to do this?</value>
   <data name="PROP_SPRITE_ALPHATEST_DESC" xml:space="preserve">
     <value>Sets the range of alpha values to reject when rendering the sprite.</value>
   </data>
-  <data name="arrow_right_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_right_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="PROP_SPRITE_VERTEX_COLOR_DESC" xml:space="preserve">
+    <value>Sets the color for the sprite vertex (corner).</value>
   </data>
   <data name="CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
   </data>
-  <data name="GORSPR_TEXT_SNAP_ZOOM" xml:space="preserve">
-    <value>Snap zoom window to corners</value>
-  </data>
   <data name="PROP_SPRITE_FLIPHORZ_DESC" xml:space="preserve">
     <value>Sets whether the sprite should be flipped horizontally or not.</value>
   </data>
-  <data name="arrow_down_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_down_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GORSPR_TEXT_SNAP_ZOOM" xml:space="preserve">
+    <value>Snap zoom window to corners</value>
   </data>
   <data name="GORSPR_TEXT_ZOOM_WINDOW_SIZE" xml:space="preserve">
     <value>Zoom window size:</value>
@@ -356,11 +371,14 @@ Are you sure you wish to do this?</value>
   <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_missing_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PROP_SPRITE_COLOR_NAME" xml:space="preserve">
+    <value>Color</value>
+  </data>
   <data name="PROP_TEXTURE_SAMPLER_NAME" xml:space="preserve">
     <value>Texture sampler</value>
   </data>
-  <data name="PROP_SPRITE_BLEND_PRESET_DESC" xml:space="preserve">
-    <value>Sets pre-defined blending states for a sprite.</value>
+  <data name="save_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\save_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_SPRITE_SIZE_DESC" xml:space="preserve">
     <value>The width and height of the sprite.</value>
@@ -377,11 +395,11 @@ Are you sure you wish to do this?</value>
   <data name="PROP_SPRITE_LR_VERTEX_NAME" xml:space="preserve">
     <value>Lower right</value>
   </data>
-  <data name="PROP_SPRITE_COLOR_NAME" xml:space="preserve">
-    <value>Color</value>
+  <data name="PROP_SPRITE_VERTICES_NAME" xml:space="preserve">
+    <value>Vertices</value>
   </data>
-  <data name="arrow_up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="PROP_SPRITE_VERTICES_DESC" xml:space="preserve">
+    <value>Allows adjustments of the sprite vertices (corners) relative offsets and colors.</value>
   </data>
   <data name="PROP_SPRITE_STENCIL_DESC" xml:space="preserve">
     <value>Allows the setting of the stencil properties for the sprite to define how it will interact with a stencil buffer.  These settings only work when a stencil buffer is active.</value>
@@ -389,37 +407,28 @@ Are you sure you wish to do this?</value>
   <data name="arrow_nw_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\arrow_nw_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="PROP_SPRITE_DEPTH_NAME" xml:space="preserve">
-    <value>Depth settings</value>
+  <data name="PROP_SPRITE_SIZE_NAME" xml:space="preserve">
+    <value>Size</value>
   </data>
   <data name="PROP_SPRITE_STENCIL_NAME" xml:space="preserve">
     <value>Stencil settings</value>
   </data>
-  <data name="sprite_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\sprite_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GORSPR_ACC_CANCEL" xml:space="preserve">
-    <value>&amp;Cancel</value>
-  </data>
   <data name="GORSPR_ACC_OK" xml:space="preserve">
     <value>&amp;OK</value>
-  </data>
-  <data name="GORSPR_TEXT_HELP" xml:space="preserve">
-    <value>Help</value>
-  </data>
-  <data name="GORSPR_TEXT_NEW_SPRITE" xml:space="preserve">
-    <value>New sprite</value>
-  </data>
-  <data name="GORSPR_TEXT_NEW_SPRITE_NAME" xml:space="preserve">
-    <value>Name:</value>
   </data>
   <data name="GORSPR_TEXT_NEW_SPRITE_TEXTURE" xml:space="preserve">
     <value>Texture:</value>
   </data>
-  <data name="GORSPR_TEXT_NEW_SPRITE_TIP_TEXTURE" xml:space="preserve">
-    <value>Selects a texture to bind to the sprite.</value>
+  <data name="CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="auto_clip_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\auto_clip_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORSPR_TEXT_AUTO_CLIP" xml:space="preserve">
+    <value>Automatically clip sprite from image</value>
+  </data>
+  <data name="GORSPR_ERR_CANNOT_AUTO_CLIP" xml:space="preserve">
+    <value>Auto clipping requires the sprite to be bound to a texture with a R8G8B8A8 or B8G8R8A8 texture format.</value>
   </data>
 </root>
