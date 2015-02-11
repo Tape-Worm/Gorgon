@@ -1,0 +1,611 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="back_16x16png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\back_16x16png1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\cancel_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Check_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Check_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\choose_view_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Expando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Expando1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\find_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="folder_open_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\folder_open_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="forward_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\forward_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ACC_TEXT_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="GOREDIT_ACC_TEXT_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GOREDIT_DLG_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
+    <value>File: {0}
+Error: {1}
+</value>
+  </data>
+  <data name="GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL" xml:space="preserve">
+    <value>Could not load the thumbnail for the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_DLG_IMPORT_CONFIRM" xml:space="preserve">
+    <value>{0} files and {1} directories will be imported.  Are you sure you wish to do this?</value>
+  </data>
+  <data name="GOREDIT_DLG_IMPORT_NO_DATA" xml:space="preserve">
+    <value>There were no files/directories found that could be imported.</value>
+  </data>
+  <data name="GOREDIT_DLG_NO_FILE_IN_PATH" xml:space="preserve">
+    <value>There is no file in the path '{0}'.</value>
+  </data>
+  <data name="GOREDIT_DLG_NO_SUCH_DIRECTORY" xml:space="preserve">
+    <value>There is no directory named '{0}'.</value>
+  </data>
+  <data name="GOREDIT_DLG_NO_SUCH_FILE" xml:space="preserve">
+    <value>There is no file named '{0}{1}'.</value>
+  </data>
+  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
+    <value>Select a new temporary scratch path.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_FIND_DEPENDENCY_FILE" xml:space="preserve">
+    <value>A dependency file, '{0}' is missing and must exist to load the content.</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_LOAD_DEPENDENCY" xml:space="preserve">
+    <value>There was an error loading dependency '{0}'.  The content requires this dependency and cannot be loaded without it.\nError: {1}</value>
+  </data>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_NOT_CONTENT" xml:space="preserve">
+    <value>The default content type '{0}' is not a content object.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEFAULT_TYPE_UNKNOWN" xml:space="preserve">
+    <value>The default content type is not known.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_CORRUPT" xml:space="preserve">
+    <value>Unable to read the dependency. It has been corrupted.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_EXISTS" xml:space="preserve">
+    <value>The {0} dependency '{1}' already exists in this collection.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_PROP_CORRUPT" xml:space="preserve">
+    <value>Unable to read the dependency property.  It has been corrupted.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_PROP_DOES_NOT_EXIST" xml:space="preserve">
+    <value>The dependency property '{0}' does not exist in this collection.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_PROP_EXISTS" xml:space="preserve">
+    <value>There is already a dependency property with the name of '{0}' in this collection.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_PROP_NO_NAME" xml:space="preserve">
+    <value>The dependency property needs a name.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_ALREADY_EXISTS" xml:space="preserve">
+    <value>The {0} '{1}' already exists.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_DIRECTORY_IS_CHILD" xml:space="preserve">
+    <value>Cannot copy '{0}' because the destination is a sub folder of this folder.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_PATH_INVALID_CHARS" xml:space="preserve">
+    <value>The name contains invalid characters.
+The following characters are not allowed:
+{0}</value>
+  </data>
+  <data name="GOREDIT_ERR_METADATA_CORRUPT" xml:space="preserve">
+    <value>The meta data for the file is corrupted.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_APP_SETTINGS" xml:space="preserve">
+    <value>The application settings were not loaded.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_READ_PROVIDERS" xml:space="preserve">
+    <value>The editor does not know how to read the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_WRITER_PLUGIN" xml:space="preserve">
+    <value>Cannot write the file '{0}'.  There is no plug-in available to write the file with.</value>
+  </data>
+  <data name="GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+    <value>The parameter must not be empty.</value>
+  </data>
+  <data name="GOREDIT_ERR_PROPERTY_NOT_FOUND" xml:space="preserve">
+    <value>The property '{0}' does not exist for this content.</value>
+  </data>
+  <data name="GOREDIT_ERR_STREAM_EOS" xml:space="preserve">
+    <value>Cannot read beyond the end of the stream.</value>
+  </data>
+  <data name="GOREDIT_ERR_STREAM_READ_ONLY" xml:space="preserve">
+    <value>The stream is read only.</value>
+  </data>
+  <data name="GOREDIT_ERR_STREAM_WRITE_ONLY" xml:space="preserve">
+    <value>The stream is write only.</value>
+  </data>
+  <data name="GOREDIT_TEXT_BACK" xml:space="preserve">
+    <value>Go back</value>
+  </data>
+  <data name="GOREDIT_TEXT_BROKEN_LINK" xml:space="preserve">
+    <value>(Broken link)</value>
+  </data>
+  <data name="GOREDIT_TEXT_CHANGEVIEW" xml:space="preserve">
+    <value>Change file views.</value>
+  </data>
+  <data name="GOREDIT_TEXT_COPYING" xml:space="preserve">
+    <value>Copying</value>
+  </data>
+  <data name="GOREDIT_TEXT_CREATING" xml:space="preserve">
+    <value>Creating '{0}'</value>
+  </data>
+  <data name="GOREDIT_TEXT_DATE" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="GOREDIT_TEXT_DEPENDENCY_PROP" xml:space="preserve">
+    <value>Dependency property '{0}': '{1}'</value>
+  </data>
+  <data name="GOREDIT_TEXT_DETAIL_VIEW" xml:space="preserve">
+    <value>Detail view</value>
+  </data>
+  <data name="GOREDIT_TEXT_DIRECTORY" xml:space="preserve">
+    <value>directory</value>
+  </data>
+  <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
+    <value>Disabled by user.</value>
+  </data>
+  <data name="GOREDIT_TEXT_EXPORTING" xml:space="preserve">
+    <value>Exporting</value>
+  </data>
+  <data name="GOREDIT_TEXT_FILE" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="GOREDIT_TEXT_FILES" xml:space="preserve">
+    <value>files</value>
+  </data>
+  <data name="GOREDIT_TEXT_GET_FILE_INFO" xml:space="preserve">
+    <value>Getting file information...</value>
+  </data>
+  <data name="GOREDIT_TEXT_GO_FORWARD" xml:space="preserve">
+    <value>Go forward</value>
+  </data>
+  <data name="GOREDIT_TEXT_GO_UP_TO_PARENT" xml:space="preserve">
+    <value>Go up to the parent of this directory.</value>
+  </data>
+  <data name="GOREDIT_TEXT_HELP" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="GOREDIT_TEXT_IMPORTING" xml:space="preserve">
+    <value>Importing</value>
+  </data>
+  <data name="GOREDIT_TEXT_MOVING" xml:space="preserve">
+    <value>Moving files</value>
+  </data>
+  <data name="GOREDIT_TEXT_NAME" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GOREDIT_TEXT_PREFERENCES" xml:space="preserve">
+    <value>Preferences</value>
+  </data>
+  <data name="GOREDIT_TEXT_SAVING" xml:space="preserve">
+    <value>Saving</value>
+  </data>
+  <data name="GOREDIT_TEXT_SCANNING" xml:space="preserve">
+    <value>Scanning</value>
+  </data>
+  <data name="GOREDIT_TEXT_SEARCH" xml:space="preserve">
+    <value>Search...</value>
+  </data>
+  <data name="GOREDIT_TEXT_SEARCH_NO_FILES" xml:space="preserve">
+    <value>No files were found for the search '{0}'</value>
+  </data>
+  <data name="GOREDIT_TEXT_SEARCH_RESULTS" xml:space="preserve">
+    <value>Files returned from the search (hit ESC to go back)</value>
+  </data>
+  <data name="GOREDIT_TEXT_SELECT_FILE" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
+  <data name="GOREDIT_TEXT_SIZE" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="GOREDIT_TEXT_THUMBNAIL_VIEW" xml:space="preserve">
+    <value>Thumbnail view</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN_FILE" xml:space="preserve">
+    <value>Unknown file</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
+    <value>Unknown plug-in type.</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_128x1281.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="image_missing_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\linked_file_8x81.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ok_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ok_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\project_node_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PropertyChecker" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PropertyChecker1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tree_collapse_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\tree_expand_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\unknown_document_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\up_16x161.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_ALPHA" xml:space="preserve">
+    <value>Alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_ALPHA" xml:space="preserve">
+    <value>New alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_NEW_NAME" xml:space="preserve">
+    <value>New name</value>
+  </data>
+  <data name="GOREDIT_TEXT_OLD_ALPHA" xml:space="preserve">
+    <value>Old alpha</value>
+  </data>
+  <data name="GOREDIT_TEXT_PICK_ALPHA" xml:space="preserve">
+    <value>Pick an alpha value</value>
+  </data>
+  <data name="GOREDIT_TEXT_VALUE" xml:space="preserve">
+    <value>Value</value>
+  </data>
+  <data name="GOREDIT_TEXT_ZOOM" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="PROP_CUETEXT_DESC" xml:space="preserve">
+    <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
+  </data>
+  <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
+    <value>Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes.</value>
+  </data>
+  <data name="PROP_FILENAME_DESC" xml:space="preserve">
+    <value>Sets the default selected filename or the last selected file name.</value>
+  </data>
+  <data name="PROP_FILEVIEW_DESC" xml:space="preserve">
+    <value>The view used for the file dialog.</value>
+  </data>
+  <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
+    <value>Controls whether multiple files can be selected or not.</value>
+  </data>
+  <data name="PROP_NAME_DESC" xml:space="preserve">
+    <value>Provides a name for the content.  The name should conform to a standard file name.</value>
+  </data>
+  <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
+    <value>The initial directory for the file dialog.</value>
+  </data>
+  <data name="PROP_TEXT_CAPTION_VISIBLE_DESC" xml:space="preserve">
+    <value>Shows or hides the caption for the content panel.</value>
+  </data>
+  <data name="PROP_TEXT_CONTENT_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text for the caption on the content panel control.</value>
+  </data>
+  <data name="PROP_TEXT_DESC" xml:space="preserve">
+    <value>Sets the text value to assign to the caption of the window.</value>
+  </data>
+  <data name="PROP_TEXT_PREF_PANEL_DESC" xml:space="preserve">
+    <value>Sets the text to display on the tab for the preference panel.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_MUST_HAVE_NAME" xml:space="preserve">
+    <value>The file must have a name.</value>
+  </data>
+  <data name="GOREDIT_ERR_EDITFILE_CORRUPT" xml:space="preserve">
+    <value>The file '{0}' meta data is corrupt and cannot be read.</value>
+  </data>
+  <data name="GOREDIT_ERR_DEPENDENCY_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' depends on the file '{1}', which was not found.</value>
+  </data>
+  <data name="GOREDIT_TEXT_ALL_FILES" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="PROP_ALLOW_ALL_FILES_DESC" xml:space="preserve">
+    <value>Sets whether or not to allow the dialog to show all files in the filter list.</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_FILES_SELECTED" xml:space="preserve">
+    <value>No files were selected.</value>
+  </data>
+  <data name="PROP_BLEND_WRITEMASK_DESC" xml:space="preserve">
+    <value>Sets the color components on a render target that will receive data during a blending operation.</value>
+  </data>
+  <data name="PROP_BLEND_WRITEMASK_NAME" xml:space="preserve">
+    <value>Write mask</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_FACTOR_DESC" xml:space="preserve">
+    <value>Sets the color used to modulate with the render target and/or pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_FACTOR_NAME" xml:space="preserve">
+    <value>Blend factor</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_ALPHA_DESC" xml:space="preserve">
+    <value>Sets the blending operation to define how to combine the source and destination alpha operations.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_ALPHA_NAME" xml:space="preserve">
+    <value>Alpha operation</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_COLOR_DESC" xml:space="preserve">
+    <value>Sets the blending operation to define how to combine the source and destination operations.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_OP_COLOR_NAME" xml:space="preserve">
+    <value>Blend operation</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_DEST_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the alpha channel from the render target.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_DEST_NAME" xml:space="preserve">
+    <value>Alpha dest blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_SRC_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the alpha channel from the pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_ALPHA_SRC_NAME" xml:space="preserve">
+    <value>Alpha source blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_DEST_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the RGB color values from the render target.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_DEST_NAME" xml:space="preserve">
+    <value>Color dest blend type</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_SRC_DESC" xml:space="preserve">
+    <value>Sets the blend type to define the operation performed on the RGB color values from the pixel shader.</value>
+  </data>
+  <data name="PROP_BLEND_BLEND_TYPE_COLOR_SRC_NAME" xml:space="preserve">
+    <value>Color source blend type</value>
+  </data>
+  <data name="PROP_DEPTH_BIAS_DESC" xml:space="preserve">
+    <value>Sets the depth value added to a pixel.  This allows objects that share the same depth position to appear in front of, or behind, another object and avoid z-fighting.</value>
+  </data>
+  <data name="PROP_DEPTH_BIAS_NAME" xml:space="preserve">
+    <value>Bias</value>
+  </data>
+  <data name="PROP_DEPTH_COMPARE_OP_DESC" xml:space="preserve">
+    <value>Sets the operator used when comparing depth data with existing depth buffer data.</value>
+  </data>
+  <data name="PROP_DEPTH_COMPARE_OP_NAME" xml:space="preserve">
+    <value>Comparison operator</value>
+  </data>
+  <data name="PROP_DEPTH_WRITE_DESC" xml:space="preserve">
+    <value>Sets a flag to indicate that this renderable will write to the depth buffer when rendered.  Set to false to skip writing to the depth buffer.</value>
+  </data>
+  <data name="PROP_DEPTH_WRITE_NAME" xml:space="preserve">
+    <value>Write enabled</value>
+  </data>
+  <data name="GOREDIT_ERR_CANNOT_CONVERT_POINTF" xml:space="preserve">
+    <value>A PointF value requires two values.</value>
+  </data>
+  <data name="PROP_STENCIL_BACK_DESC" xml:space="preserve">
+    <value>Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing away from the camera.</value>
+  </data>
+  <data name="PROP_STENCIL_BACK_NAME" xml:space="preserve">
+    <value>Back face</value>
+  </data>
+  <data name="PROP_STENCIL_FRONT_DESC" xml:space="preserve">
+    <value>Values defining how to use the results of the depth test and stencil test for pixels where the surface normal of the face is pointing at the camera.</value>
+  </data>
+  <data name="PROP_STENCIL_FRONT_NAME" xml:space="preserve">
+    <value>Front face</value>
+  </data>
+  <data name="PROP_STENCIL_OP_COMPARE_DESC" xml:space="preserve">
+    <value>Sets the operator used when comparing stencil data against existing stencil data.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_COMPARE_NAME" xml:space="preserve">
+    <value>Comparison operator</value>
+  </data>
+  <data name="PROP_STENCIL_OP_DEPTH_FAIL_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil testing passes and depth testing fails.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_DEPTH_FAIL_NAME" xml:space="preserve">
+    <value>Depth fail operation</value>
+  </data>
+  <data name="PROP_STENCIL_OP_FAIL_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil testing fails.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_FAIL_NAME" xml:space="preserve">
+    <value>Fail operation</value>
+  </data>
+  <data name="PROP_STENCIL_OP_PASS_DESC" xml:space="preserve">
+    <value>Sets the operation to perform when stencil and depth testing passes.</value>
+  </data>
+  <data name="PROP_STENCIL_OP_PASS_NAME" xml:space="preserve">
+    <value>Pass operation</value>
+  </data>
+  <data name="PROP_STENCIL_READ_MASK_DESC" xml:space="preserve">
+    <value>Sets the value used to mask when reading a portion of the stencil buffer.</value>
+  </data>
+  <data name="PROP_STENCIL_READ_MASK_NAME" xml:space="preserve">
+    <value>Read mask</value>
+  </data>
+  <data name="PROP_STENCIL_REFERENCE_DESC" xml:space="preserve">
+    <value>Sets the value to perform against when doing a depth/stencil test.</value>
+  </data>
+  <data name="PROP_STENCIL_REFERENCE_NAME" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="PROP_STENCIL_WRITE_MASK_DESC" xml:space="preserve">
+    <value>Sets the value used to mask when writing a portion of the stencil buffer.</value>
+  </data>
+  <data name="PROP_STENCIL_WRITE_MASK_NAME" xml:space="preserve">
+    <value>Write mask</value>
+  </data>
+  <data name="PROP_SAMPLE_BORDER_DESC" xml:space="preserve">
+    <value>Sets the color of the border when the horizontal or vertical wrapping is set to Border.</value>
+  </data>
+  <data name="PROP_SAMPLE_BORDER_NAME" xml:space="preserve">
+    <value>Border color</value>
+  </data>
+  <data name="PROP_SAMPLE_FILTER_DESC" xml:space="preserve">
+    <value>Sets the type of filtering to apply when textures are enlarged or shrunken.</value>
+  </data>
+  <data name="PROP_SAMPLE_FILTER_NAME" xml:space="preserve">
+    <value>Filtering</value>
+  </data>
+  <data name="PROP_SAMPLE_HORZADDR_DESC" xml:space="preserve">
+    <value>Sets the method to use when handling a texture coordinate outside of the physical texture range.</value>
+  </data>
+  <data name="PROP_SAMPLE_HORZADDR_NAME" xml:space="preserve">
+    <value>Horizontal addressing</value>
+  </data>
+  <data name="PROP_SAMPLE_VERTADDR_DESC" xml:space="preserve">
+    <value>Sets the method to use when handling a texture coordinate outside of the physical texture range.</value>
+  </data>
+  <data name="PROP_SAMPLE_VERTADDR_NAME" xml:space="preserve">
+    <value>Vertical addressing</value>
+  </data>
+</root>
