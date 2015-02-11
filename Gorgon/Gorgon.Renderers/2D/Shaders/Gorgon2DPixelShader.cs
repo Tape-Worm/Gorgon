@@ -70,7 +70,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default diffuse pixel shader with alpha testing.
 		/// </summary>
-		public GorgonPixelShader DefaultPixelShaderDiffuse
+		internal GorgonPixelShader DefaultPixelShaderDiffuse
 		{
 			get;
 			private set;
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default textured pixel shader with alpha testing.
 		/// </summary>
-		public GorgonPixelShader DefaultPixelShaderTextured
+		internal GorgonPixelShader DefaultPixelShaderTextured
 		{
 			get;
 			private set;

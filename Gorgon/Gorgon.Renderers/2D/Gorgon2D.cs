@@ -65,19 +65,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		[InputElement(2, "TEXCOORD")]
 		public Vector2 UV;
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DVertex"/> struct.
+		/// Angle of rotation (in radians).
 		/// </summary>
-		/// <param name="position">The position.</param>
-		/// <param name="color">The color.</param>
-		/// <param name="uv">The texture coordinate.</param>
-		public Gorgon2DVertex(Vector4 position, Vector4 color, Vector2 uv)
-		{
-			Position = position;
-			Color = color;
-			UV = uv;
-		}
+		[InputElement(3, "ANGLE")]
+		public float Angle;
 	}
 
 	/// <summary>
@@ -576,7 +568,7 @@ namespace GorgonLibrary.Renderers
 				ClipRegion = clipRegion;
 			}
 
-			Graphics.Rasterizer.SetViewport(_viewPort == null ? _currentTarget.Viewport : _viewPort.Value);
+			Graphics.Rasterizer.SetViewport(_viewPort ?? _currentTarget.Viewport);
 
 			if (_currentTarget.SwapChain == null)
 			{
@@ -1062,6 +1054,55 @@ namespace GorgonLibrary.Renderers
 			{
 				_currentTarget.SwapChain.Flip(interval);
 			}
+		}
+
+		/// <summary>
+		/// Function to set up multiple rendertargets for MRT output from a shader.
+		/// </summary>
+		/// <param name="targets">An array of render targets to assign.</param>
+		/// <param name="depthStencil">[Optional] A depth/stencil buffer to assign with the targets.</param>
+		/// <remarks>
+		/// Use this method to set up MRT (Multiple Render Targets) rendering for a shader.  This allows for efficient multiple pass rendering from the shader 
+		/// by allowing the shader to output to each render target simultaneously instead of having to set up a new pass for each target output.
+		/// <para>
+		/// Ensure that all the render targets in the array are the same width/height, and format.  The array count and mip count must also match.  If they do 
+		/// not, an exception will be thrown.  The width, height, array count, and mip count for the depth/stencil buffer must match the render targets being set.
+		/// </para>
+		/// <para>
+		/// Setting only a single target in the <paramref name="targets"/> parameter is equivalent to setting the <see cref="Target"/> property.  Also, note that 
+		/// setting the target property will unbind the rest of the targets if multiple render targets have been previously bound.
+		/// </para>
+		/// <para>
+		/// The maximum number of render targets that can be bound simultaneously is defined by the <see cref="P:GorgonOutputMerger.MaxRenderTargetViewSlots"/> 
+		/// property. If the number of <paramref name="targets"/> passed to this method exceeds this value, then an exception will be thrown.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="targets"/> parameter is set to NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="targets"/> parameter is empty.</exception>
+		public void SetMultipleRenderTargets(GorgonRenderTargetView[] targets, GorgonDepthStencilView depthStencil = null)
+		{
+#if DEBUG
+			if (targets == null)
+			{
+				throw new ArgumentNullException("targets");
+			}
+
+			if (targets.Length == 0)
+			{
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "targets");	
+			}
+#endif
+			// Bind the first target as our primary target so that clipping states and other 
+			// settings are updated.
+			Target = targets[0];
+
+			if (targets.Length == 1)
+			{
+				return;
+			}
+
+			// Bind the rest of the targets.
+			Graphics.Output.SetRenderTargets(targets, depthStencil);
 		}
 		#endregion
 
