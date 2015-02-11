@@ -477,12 +477,9 @@ namespace GorgonLibrary.Graphics
                 _D3DUnorderedViews[0] = view.D3DView;
 
                 // Ensure this view is not bound to another part of the pipeline.
-                if (view != null)
-                {
-                    _graphics.Shaders.UnbindResource(view.Resource);
-                }
+	            _graphics.Shaders.UnbindResource(view.Resource);
 
-                return true;
+	            return true;
             }
 
             // Copy views.
