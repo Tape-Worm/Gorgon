@@ -137,7 +137,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			{
 				case BufferFormat.B8G8R8A8_UIntNormal:
 				case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
-					encodedValue = (uint)((UseAlpha ? (uint)(MaskColor.A << 24) : 0xff000000) | (MaskColor.R << 16) | (MaskColor.G << 8) | (MaskColor.B));
+					encodedValue = ((UseAlpha ? ((uint)MaskColor.A << 24) : 0xff000000) | ((uint)MaskColor.R << 16) | ((uint)MaskColor.G << 8) | (MaskColor.B));
 					pixelValue = *((uint*)pixelPtr);
 
 					if (!UseAlpha)
@@ -150,7 +150,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 				case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
 				case BufferFormat.R8G8B8A8_IntNormal:
 				case BufferFormat.R8G8B8A8_Int:
-					encodedValue = (uint)((UseAlpha ? (uint)(MaskColor.A << 24) : 0xff000000) | (MaskColor.B << 16) | (MaskColor.G << 8) | (MaskColor.R));
+					encodedValue = ((UseAlpha ? ((uint)MaskColor.A << 24) : 0xff000000) | ((uint)MaskColor.B << 16) | ((uint)MaskColor.G << 8) | (MaskColor.R));
 					pixelValue = *((uint*)pixelPtr);
 
 					if (!UseAlpha)

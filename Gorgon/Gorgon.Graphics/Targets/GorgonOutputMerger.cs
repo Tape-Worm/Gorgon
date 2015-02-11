@@ -1201,16 +1201,6 @@ namespace GorgonLibrary.Graphics
             }
 
 
-            // Don't rebind the same target/depth/stencil.
-            if ((!uavsChanged) && (_targetViews != null) && (_targetViews.Length > 0) && (_targetViews[0] == view) && (depthStencilView == _depthView))
-            {
-                return;
-            }
-
-#if DEBUG
-            ValidateRenderTargetBinding(view, 0);
-#endif
-
 			if (view == null)
 			{
 				_D3DViews = null;
@@ -1218,6 +1208,12 @@ namespace GorgonLibrary.Graphics
 				SetTargets(depthView);
 				return;
 			}
+			
+            // Don't rebind the same target/depth/stencil.
+            if ((!uavsChanged) && (_targetViews != null) && (_targetViews.Length > 0) && (_targetViews[0] == view) && (depthStencilView == _depthView))
+            {
+                return;
+            }
 
 			if ((_targetViews == null) || (_targetViews.Length != 1))
 			{
@@ -1236,12 +1232,16 @@ namespace GorgonLibrary.Graphics
 				_D3DViews[0] = view.D3DView;
 			}
 
-#if DEBUG
-            // Validate the depth/stencil buffer here because we need to have the current render target set before
-            // evaluation.
-            ValidateDepthBufferBinding(depthStencilView);
-#endif
 			_depthView = depthStencilView; 
+
+#if DEBUG
+            ValidateRenderTargetBinding(view, 0);
+
+			// Validate the depth/stencil buffer here because we need to have the current render target set before
+			// evaluation.
+			ValidateDepthBufferBinding(depthStencilView);
+#endif
+			
             SetTargets(depthView);
 		}
 
@@ -1364,14 +1364,14 @@ namespace GorgonLibrary.Graphics
                 ValidateRenderTargetBinding(view, i);
 #endif
 
+				_targetViews[i] = view;
+
 				if (view != null)
 				{
-				    _targetViews[i] = view;
 					_D3DViews[i] = view.D3DView;
 				}
 				else
 				{
-				    _targetViews[i] = null;
 					_D3DViews[i] = null;
 				}
 

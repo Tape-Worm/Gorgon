@@ -84,7 +84,7 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private readonly Vector2[] _offsets = new Vector2[4];					// A list of vertex offsets.
+		private readonly Vector2[] _offsets;									// A list of vertex offsets.
 		private Vector4 _corners = new Vector4(0);								// Corners for the sprite.
 		private string _textureName = string.Empty;								// Name of the texture for the sprite.
 		private bool _horizontalFlip;											// Flag to indicate that the sprite is flipped horizontally.
@@ -245,6 +245,8 @@ namespace GorgonLibrary.Renderers
 
 				Vertices[3].Position.X = (corners.Z * cosVal - corners.W * sinVal) + Position.X + _offsets[3].X;
 				Vertices[3].Position.Y = (corners.Z * sinVal + corners.W * cosVal) + Position.Y + _offsets[3].Y;
+
+				Vertices[0].Angle = Vertices[1].Angle = Vertices[2].Angle = Vertices[3].Angle = angle;
 			}
 			else
 			{
@@ -256,6 +258,7 @@ namespace GorgonLibrary.Renderers
 				Vertices[2].Position.Y = corners.W + Position.Y + _offsets[2].Y;
 				Vertices[3].Position.X = corners.Z + Position.X + _offsets[3].X;
 				Vertices[3].Position.Y = corners.W + Position.Y + _offsets[3].Y;
+				Vertices[0].Angle = Vertices[1].Angle = Vertices[2].Angle = Vertices[3].Angle = 0;
 			}
 
 			// Apply depth to the sprite.
