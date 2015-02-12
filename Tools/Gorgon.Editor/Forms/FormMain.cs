@@ -26,7 +26,7 @@
 
 using System.Windows.Forms;
 
-namespace Gorgon.Editor
+namespace GorgonLibrary.Editor
 {
 	public partial class FormMain : Form
 	{

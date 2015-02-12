@@ -1910,7 +1910,7 @@ namespace GorgonLibrary.Editor
 #endif
 					finally
 					{
-						GorgonException.Log = Gorgon.Log;
+						GorgonException.Logs = Gorgon.Log;
 					}
 				}
 

@@ -455,7 +455,7 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				GorgonException.LogException(ex);
+				GorgonException.Catch(ex);
 				throw;
 			}
 			finally
@@ -504,7 +504,7 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				GorgonException.LogException(ex);
+				GorgonException.Catch(ex);
 				throw;
 			}
 			finally
@@ -546,7 +546,7 @@ namespace GorgonLibrary
 			}
 			catch (Exception ex)
 			{
-				GorgonException.LogException(ex);
+				GorgonException.Catch(ex);
 				throw;
 			}
 			finally
@@ -680,7 +680,7 @@ namespace GorgonLibrary
 #endif
 			}
 
-			GorgonException.Log = Log;
+			GorgonException.Logs.Add(Log);
 			Log.Print("Initializing...", LoggingLevel.All);
 			Log.Print("Architecture: {0}", LoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
 			Log.Print("Processor count: {0}", LoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);

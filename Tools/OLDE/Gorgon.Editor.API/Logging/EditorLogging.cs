@@ -58,16 +58,16 @@ namespace GorgonLibrary.Editor
                 return ex;
             }
 
-            GorgonLogFile oldLogger = GorgonException.Log;
+            GorgonLogFile oldLogger = GorgonException.Logs;
 
             try
             {
-                GorgonException.Log = _logFile;
+                GorgonException.Logs = _logFile;
                 return GorgonException.Catch(ex, handler);
             }
             finally
             {
-                GorgonException.Log = oldLogger;
+                GorgonException.Logs = oldLogger;
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Gorgon.Editor
+namespace GorgonLibrary.Editor
 {
 	partial class FormMain
 	{
@@ -30,9 +30,15 @@ namespace Gorgon.Editor
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+			this.SuspendLayout();
+			// 
+			// FormMain
+			// 
+			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Text = "Form1";
+			this.Name = "FormMain";
+			this.ResumeLayout(false);
 		}
 
 		#endregion
