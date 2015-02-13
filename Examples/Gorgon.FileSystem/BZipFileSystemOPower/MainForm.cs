@@ -140,8 +140,9 @@ namespace GorgonLibrary.Examples
             // Show our rendering statistics.
             if (_showStats)
             {
-                _2D.Drawing.FilledRectangle(new RectangleF(0, 0, width, 36.0f), Color.FromArgb(192, Color.Black));
-                _2D.Drawing.DrawLine(new Vector2(0, 36), new Vector2(width, 36), Color.White);
+	            RectangleF rectPosition = new RectangleF(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
+                _2D.Drawing.FilledRectangle(rectPosition, Color.FromArgb(192, Color.Black));
+	            _2D.Drawing.DrawLine(new Vector2(rectPosition.X, rectPosition.Bottom), new Vector2(rectPosition.Width, rectPosition.Bottom), Color.White);
                 _2D.Drawing.DrawString(_helpFont, string.Format("FPS: {0}\nFrame Delta: {1}ms.", GorgonTiming.FPS.ToString("0.0"), (GorgonTiming.Delta * 1000).ToString("0.0##")), Vector2.Zero, Color.White);
             }
 
@@ -200,7 +201,7 @@ namespace GorgonLibrary.Examples
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
 
 			// Get the sprite image.            
-			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("/Images/0_HardVacuum.png", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
             // Get the sprites.
             // The sprites in the file system are from version 1.0 of Gorgon.
@@ -258,6 +259,11 @@ namespace GorgonLibrary.Examples
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+
+	        if (e.KeyCode == Keys.Escape)
+	        {
+		        Gorgon.Quit();
+	        }
 
             if (e.KeyCode == Keys.F1)
             {

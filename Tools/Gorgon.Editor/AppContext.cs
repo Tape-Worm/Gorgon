@@ -312,7 +312,11 @@ namespace GorgonLibrary.Editor
 					Thread.Sleep(1);
 				}
 
+				Gorgon.Run(this);
+				return;
+
 				FadeSplashScreen(false, 250.0f);
+
 
 				// Get rid of the splash screen.
 				_splash.Dispose();

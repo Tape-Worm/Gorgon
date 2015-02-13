@@ -182,6 +182,7 @@ namespace GorgonLibrary.Renderers
 		public static void LoadSprite(GorgonSprite sprite, GorgonBinaryReader reader)
 		{
 		    Version version;
+			string imageName = string.Empty;
 
 			sprite.IsV1Sprite = true;
 
@@ -216,7 +217,8 @@ namespace GorgonLibrary.Renderers
 			if (reader.ReadBoolean())
 			{
 				bool isRenderTarget = reader.ReadBoolean();
-				string imageName = reader.ReadString();
+
+				imageName = reader.ReadString();
 
 				// We won't be supporting reading render targets from sprites in this version.
 				if (isRenderTarget)
@@ -227,11 +229,6 @@ namespace GorgonLibrary.Renderers
 					reader.ReadInt32();
 					reader.ReadBoolean();
 					reader.ReadBoolean();
-				}
-				else
-				{
-					// Bind the texture if it's already loaded, otherwise defer it.
-					sprite.DeferredTextureName = imageName;
 				}
 			}
 
@@ -405,6 +402,14 @@ namespace GorgonLibrary.Renderers
 			// Get flipped flags.
 			sprite.HorizontalFlip = reader.ReadBoolean();
 			sprite.VerticalFlip = reader.ReadBoolean();
+
+			// Bind the texture (if we have one bound to this sprite) if it's already loaded, otherwise defer it.
+			if (string.IsNullOrEmpty(imageName))
+			{
+				return;
+			}
+
+			sprite.DeferredTextureName = imageName;
 		}
 		#endregion
 	}

@@ -476,9 +476,9 @@ namespace GorgonLibrary.Graphics.Example
 				AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 				FontStyle = FontStyle.Bold,
 				FontFamilyName = "Arial",
-				FontHeightMode = FontHeightMode.Points,
+				FontHeightMode = FontHeightMode.Pixels,
 				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",				
-				Size = 9.0f,
+				Size = 12.5f,
 				OutlineColor1 = GorgonColor.Black,
 				OutlineSize = 1
 			});

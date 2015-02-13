@@ -30,21 +30,28 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSplash));
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.labelVersion = new System.Windows.Forms.Label();
 			this.labelVersionNumber = new System.Windows.Forms.Label();
-			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this.labelInfo = new System.Windows.Forms.Label();
-			this.panel1.SuspendLayout();
+			this.panel2 = new System.Windows.Forms.Panel();
 			this.flowLayoutPanel1.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel1
 			// 
 			this.panel1.BackgroundImage = global::GorgonLibrary.Editor.Properties.Resources.Gorgon_2_x_Logo_Full;
-			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panel1.Controls.Add(this.flowLayoutPanel1);
 			resources.ApplyResources(this.panel1, "panel1");
 			this.panel1.Name = "panel1";
+			// 
+			// flowLayoutPanel1
+			// 
+			resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
+			this.flowLayoutPanel1.Controls.Add(this.labelVersion);
+			this.flowLayoutPanel1.Controls.Add(this.labelVersionNumber);
+			this.flowLayoutPanel1.Controls.Add(this.labelInfo);
+			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			// 
 			// labelVersion
 			// 
@@ -57,18 +64,18 @@
 			resources.ApplyResources(this.labelVersionNumber, "labelVersionNumber");
 			this.labelVersionNumber.Name = "labelVersionNumber";
 			// 
-			// flowLayoutPanel1
-			// 
-			this.flowLayoutPanel1.Controls.Add(this.labelVersion);
-			this.flowLayoutPanel1.Controls.Add(this.labelVersionNumber);
-			this.flowLayoutPanel1.Controls.Add(this.labelInfo);
-			resources.ApplyResources(this.flowLayoutPanel1, "flowLayoutPanel1");
-			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			// 
 			// labelInfo
 			// 
 			resources.ApplyResources(this.labelInfo, "labelInfo");
 			this.labelInfo.Name = "labelInfo";
+			// 
+			// panel2
+			// 
+			this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel2.Controls.Add(this.panel1);
+			this.panel2.Controls.Add(this.flowLayoutPanel1);
+			resources.ApplyResources(this.panel2, "panel2");
+			this.panel2.Name = "panel2";
 			// 
 			// FormSplash
 			// 
@@ -76,7 +83,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.White;
 			this.ControlBox = false;
-			this.Controls.Add(this.panel1);
+			this.Controls.Add(this.panel2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -84,9 +91,9 @@
 			this.Opacity = 0.02D;
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.panel1.ResumeLayout(false);
 			this.flowLayoutPanel1.ResumeLayout(false);
 			this.flowLayoutPanel1.PerformLayout();
+			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -98,6 +105,7 @@
 		private System.Windows.Forms.Label labelVersionNumber;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.Label labelInfo;
+		private System.Windows.Forms.Panel panel2;
 
 	}
 }
