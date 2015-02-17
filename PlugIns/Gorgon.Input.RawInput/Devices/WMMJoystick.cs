@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Runtime.InteropServices;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
@@ -86,7 +87,11 @@ namespace GorgonLibrary.Input.Raw
 				JOYCAPS caps = default(JOYCAPS);									// Joystick capabilities.
 			    var capsFlags = JoystickCapabilityFlags.None;						// Extra capability flags.
 
-				int error = Win32API.joyGetDevCaps(joystickID, ref caps, DirectAccess.SizeOf<JOYCAPS>());
+				// NOTE: We have to use Marshal.SizeOf here because DirectAccess.SizeOf does -not- check data marshalling attributes
+				//       when determining the size of a structure (this is a performance decision).  So, for structures that have 
+				//       marshalled strings and/or fixed size arrays that need marshalling attributes (like MarshalAsAttribte), then 
+				//		 we -must- use Marshal.SizeOf, otherwise we should use DirectAccess.SizeOf.
+				int error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
 
 				// If the joystick is disconnected then leave.
 			    if (error == 0xA7)

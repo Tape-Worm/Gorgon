@@ -461,12 +461,13 @@ namespace GorgonLibrary.Input.Raw
 
 			var result = new List<GorgonMultimediaDeviceInfo>();
 			int deviceCount = Win32API.joyGetNumDevs();
+			int capsSize = Marshal.SizeOf(typeof(JOYCAPS));
 
 			Gorgon.Log.Print("Enumerating joysticks...", LoggingLevel.Intermediate);
 
 			for (int i = 0; i < deviceCount; i++)
 			{
-			    int error = Win32API.joyGetDevCaps(i, ref capabilities, Marshal.SizeOf(typeof(JOYCAPS)));							// Error code.
+			    int error = Win32API.joyGetDevCaps(i, ref capabilities, capsSize);							// Error code.
 
 			    // If the joystick has no registry key, then skip it.
 			    if ((string.IsNullOrEmpty(capabilities.RegistryKey)) || (string.IsNullOrEmpty(capabilities.Name)))
