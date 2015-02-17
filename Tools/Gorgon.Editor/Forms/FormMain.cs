@@ -24,15 +24,65 @@
 // 
 #endregion
 
+using System;
 using System.Windows.Forms;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
-	public partial class FormMain : Form
+	/// <summary>
+	/// Primary application window.
+	/// </summary>
+	public partial class FormMain 
+		: FlatForm
 	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
+
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to apply the theme to the primary window.
+		/// </summary>
+		private void SetupTheme()
+		{
+			// Set up our forms renderer.
+			if (!(ToolStripManager.Renderer is GorgonEditorRenderer))
+			{
+				ToolStripManager.Renderer = new GorgonEditorRenderer();
+			}
+
+			this.BackColor = GorgonEditorRenderer.WindowBackground;
+			this.ForeColor = GorgonEditorRenderer.WindowCaptionForeColor;
+			this.BorderColor = GorgonEditorRenderer.WindowActiveBorderColor;
+			this.InactiveBorderColor = GorgonEditorRenderer.WindowInactiveBorderColor;
+			this.WindowIconHilightColor = GorgonEditorRenderer.WindowIconHilightColor;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			SetupTheme();
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FormMain"/> class.
+		/// </summary>
 		public FormMain()
 		{
 			InitializeComponent();
 		}
+		#endregion
 	}
 }

@@ -64,7 +64,16 @@ namespace GorgonLibrary.Examples
 				                Text = example.Text
 			                };
 
-			testPanel.Top = (example.Index * (testPanel.Height - 1)) - 1;
+			// Get last height.
+			if (parent.Controls.Count > 0)
+			{
+				testPanel.Top = parent.Controls[parent.Controls.Count - 1].Bottom - 1;
+			}
+			else
+			{
+				testPanel.Top = -1;//(example.Index * (testPanel.Height - 1)) - 1;	
+			}
+			
 
 			parent.Controls.Add(testPanel);
 		}

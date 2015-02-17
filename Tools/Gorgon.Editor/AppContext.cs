@@ -286,8 +286,7 @@ namespace GorgonLibrary.Editor
 				// Fade in our splash screen.
 				FadeSplashScreen(true, 500.0f);
 
-				/*EditorLogging.Open();
-
+				/*
                 InitializeGraphics();
                 InitializePlugIns();
                 InitializeScratchArea();
@@ -312,11 +311,7 @@ namespace GorgonLibrary.Editor
 					Thread.Sleep(1);
 				}
 
-				Gorgon.Run(this);
-				return;
-
 				FadeSplashScreen(false, 250.0f);
-
 
 				// Get rid of the splash screen.
 				_splash.Dispose();

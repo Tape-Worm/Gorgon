@@ -127,13 +127,15 @@
     <value>Failed to bind the pointing device.</value>
   </data>
   <data name="GORINP_RAW_CANNOT_GET_JOYSTICK_CAPS" xml:space="preserve">
-    <value>Cannot read capabilities from joystick ID [{0}].\nError code: 0x{1}</value>
+    <value>Cannot read capabilities from joystick ID [{0}].
+Error code: 0x{1}</value>
   </data>
   <data name="GORINP_RAW_CANNOT_READ_DATA" xml:space="preserve">
     <value>Error reading raw input data.</value>
   </data>
   <data name="GORINP_RAW_CANNOT_READ_JOYSTICK_DATA" xml:space="preserve">
-    <value>Cannot read data from joystick ID [{0}].\nError code: 0x{1}</value>
+    <value>Cannot read data from joystick ID [{0}].
+Error code: 0x{1}</value>
   </data>
   <data name="GORINP_RAW_CANNOT_UNBIND_HID" xml:space="preserve">
     <value>Failed to unbind the HID.</value>

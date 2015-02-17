@@ -31,9 +31,11 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GorgonLibrary.Native;
 using GorgonLibrary.Design;
+using GorgonLibrary.Math;
 using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI
@@ -109,9 +111,12 @@ namespace GorgonLibrary.UI
 		private bool _border;
 		private Color _borderColor = Color.FromKnownColor(KnownColor.ActiveBorder);
 		private Color _inactiveBorderColor = Color.FromKnownColor(KnownColor.InactiveBorder);
+		private Color _iconHilightColor = Color.FromKnownColor(KnownColor.HighlightText);
 		private FormWindowState _windowState = FormWindowState.Normal;
 		private FormWindowState _prevMinState = FormWindowState.Normal;
 		private Rectangle _restoreRect;
+		[AccessedThroughProperty("ContentArea")]
+		private Panel _panelContent;
 		#endregion
 
 		#region Properties.
@@ -150,6 +155,36 @@ namespace GorgonLibrary.UI
 						Cursor.Current = Cursors.Default;
 						break;						
 				}
+			}
+		}
+
+		/// <summary>
+		/// Property to return the content area.
+		/// </summary>
+		[Browsable(false)]
+		public Panel ContentArea
+		{
+			get
+			{
+				return _panelContent;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color to use when one of the window icons (minimize, maximize, restore, close) is hilighted.
+		/// </summary>
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_WINICONHILIGHT_DESC"),
+		RefreshProperties(RefreshProperties.All)]
+		public Color WindowIconHilightColor
+		{
+			get
+			{
+				return _iconHilightColor;
+			}
+			set
+			{
+				_iconHilightColor = value;
+				Refresh();
 			}
 		}
 
@@ -478,6 +513,50 @@ namespace GorgonLibrary.UI
 
 		#region Methods.
 		/// <summary>
+		/// Handles the MouseDown event of the panelWinIcons control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelWinIcons_MouseDown(object sender, MouseEventArgs e)
+		{
+			e = TransformMouseArgs(panelWinIcons, e);
+			OnMouseDown(e);
+		}
+
+		/// <summary>
+		/// Handles the MouseMove event of the panelWinIcons control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void panelWinIcons_MouseMove(object sender, MouseEventArgs e)
+		{
+			e = TransformMouseArgs(panelWinIcons, e);
+			OnMouseMove(e);
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the _panelContent control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void _panelContent_MouseDown(object sender, MouseEventArgs e)
+		{
+			e = TransformMouseArgs(_panelContent, e);
+			OnMouseDown(e);
+		}
+
+		/// <summary>
+		/// Handles the MouseMove event of the _panelContent control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void _panelContent_MouseMove(object sender, MouseEventArgs e)
+		{
+			e = TransformMouseArgs(_panelContent, e);
+			OnMouseMove(e);
+		}
+
+		/// <summary>
 		/// Handles the DoubleClick event of the panelCaptionArea control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -595,7 +674,7 @@ namespace GorgonLibrary.UI
 
             if (label != null)
             {
-                label.ForeColor = Color.FromKnownColor(KnownColor.HighlightText);
+                label.ForeColor = _iconHilightColor;
             }
         }
 
@@ -648,12 +727,25 @@ namespace GorgonLibrary.UI
         }
 
 		/// <summary>
+		/// Function to transform mouse event arguments into the client space of the form.
+		/// </summary>
+		/// <param name="control">Control with the local mouse coorindates.</param>
+		/// <param name="e">Event arguments to transform.</param>
+		/// <returns>The transformed event arguments.</returns>
+		private MouseEventArgs TransformMouseArgs(Control control, MouseEventArgs e)
+		{
+			Point newCoordinates = PointToClient(control.PointToScreen(e.Location));
+			return new MouseEventArgs(e.Button, e.Clicks, newCoordinates.X, newCoordinates.Y, e.Delta);
+		}
+
+		/// <summary>
         /// Handles the MouseDown event of the labelCaption control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void labelCaption_MouseDown(object sender, MouseEventArgs e)
-        {
+		{
+			e = TransformMouseArgs(labelCaption, e);
             OnMouseDown(e);
         }
 
@@ -664,8 +756,32 @@ namespace GorgonLibrary.UI
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
         private void labelCaption_MouseMove(object sender, MouseEventArgs e)
         {
+			e = TransformMouseArgs(labelCaption, e);
             OnMouseMove(e);
         }
+
+		/// <summary>
+		/// Function to perform layout of the window controls.
+		/// </summary>
+		private void LayoutWindowControls()
+		{
+			if (!ShowWindowCaption)
+			{
+				return;
+			}
+
+			int maxSizeForContainer = panelWinIcons.Height.Max(_iconImage != null ? _iconImage.Height : 0).Max(labelCaption.Height);
+
+			panelCaptionArea.Height = maxSizeForContainer;
+
+			int iconsVertOffset = (maxSizeForContainer / 2) - (panelWinIcons.Height / 2);
+			int iconOffset = (maxSizeForContainer / 2) - (pictureIcon.Height / 2);
+			int captionOffset = (maxSizeForContainer / 2) - (labelCaption.Height / 2);
+
+			panelWinIcons.Top = iconsVertOffset;
+			pictureIcon.Top = iconOffset;
+			labelCaption.Top = captionOffset;
+		}
         
         /// <summary>
 		/// Function to validate all the window controls.
@@ -724,6 +840,8 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = true;
 					break;
 			}
+
+	        LayoutWindowControls();
 		}
 
 	    /// <summary>
@@ -989,7 +1107,7 @@ namespace GorgonLibrary.UI
 			{
 				return;
 			}
-
+			
 			_iconImage = new Bitmap(24, 24, PixelFormat.Format32bppArgb);
 			using (Graphics g = Graphics.FromImage(_iconImage))
 			{

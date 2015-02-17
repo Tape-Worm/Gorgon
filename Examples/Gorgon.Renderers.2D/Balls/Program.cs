@@ -309,7 +309,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw the draw call counter.
 			_fpsText.Length = 0;
 			_fpsText.AppendFormat(Resources.DrawCallsLine, GorgonRenderStatistics.DrawCallCount);
-			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 48.0f), Color.White);
+			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, (_ballFont.FontHeight * 3) + 2), Color.White);
 		}
 
 		/// <summary>
@@ -455,11 +455,24 @@ namespace GorgonLibrary.Graphics.Example
 			// Assign event handlers.
 			_form.KeyDown += _form_KeyDown;
 
+			// Create our font.
+			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings
+			{
+				AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+				FontStyle = FontStyle.Bold,
+				FontFamilyName = "Arial",
+				FontHeightMode = FontHeightMode.Points,
+				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
+				Size = 9.0f,
+				OutlineColor1 = GorgonColor.Black,
+				OutlineSize = 1
+			});
+
 			// Create statistics render target.
 			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTarget2DSettings
 			{
-				Width = 160,
-				Height = 66,
+				Width = (int)_2D.Drawing.MeasureString(_ballFont, string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount), false, _form.ClientSize).X,
+				Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
 				Format = BufferFormat.R8G8B8A8_UIntNormal
 			});
 
@@ -469,19 +482,6 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _statsTarget.Settings.Width - 1, _statsTarget.Settings.Height - 1),
 				new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
 			_2D.Target = null;
-
-			// Create our font.
-			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings 
-            {
-				AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-				FontStyle = FontStyle.Bold,
-				FontFamilyName = "Arial",
-				FontHeightMode = FontHeightMode.Pixels,
-				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",				
-				Size = 12.5f,
-				OutlineColor1 = GorgonColor.Black,
-				OutlineSize = 1
-			});
 
 			// Statistics text buffer.
 			_fpsText = new StringBuilder(64);
@@ -494,7 +494,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Create a static text block.  This will perform MUCH better than drawing the text 
 			// every frame with DrawString.
 			_helpTextSprite = _2D.Renderables.CreateText("Help Text", _ballFont, _helpText.ToString(), Color.Yellow);
-			_helpTextSprite.Position = new Vector2(3, 72);
+			_helpTextSprite.Position = new Vector2(3, _statsTarget.Settings.Height + 8.0f);
 			_helpTextSprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 		}
 

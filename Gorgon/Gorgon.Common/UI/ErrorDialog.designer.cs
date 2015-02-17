@@ -95,6 +95,7 @@ namespace GorgonLibrary.UI
 			// checkDetail
 			// 
 			this.checkDetail.Appearance = System.Windows.Forms.Appearance.Button;
+			this.checkDetail.AutoSize = true;
 			this.checkDetail.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.checkDetail.FlatAppearance.BorderSize = 2;
 			this.checkDetail.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
@@ -104,10 +105,11 @@ namespace GorgonLibrary.UI
 			this.checkDetail.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.checkDetail.Location = new System.Drawing.Point(12, 78);
 			this.checkDetail.Name = "checkDetail";
-			this.checkDetail.Size = new System.Drawing.Size(70, 30);
+			this.checkDetail.Size = new System.Drawing.Size(81, 30);
 			this.checkDetail.TabIndex = 1;
-			this.checkDetail.Text = Properties.Resources.GOR_DLG_DETAILS;
+			this.checkDetail.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_DETAILS;
 			this.checkDetail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkDetail.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
 			// 
 			// ErrorDialog
@@ -120,7 +122,7 @@ namespace GorgonLibrary.UI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ErrorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = Properties.Resources.GOR_DLG_CAPTION_ERROR;
+			this.Text = @"Error";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.errorDetails, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);

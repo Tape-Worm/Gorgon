@@ -62,18 +62,21 @@ namespace GorgonLibrary.UI
 			// 
 			// buttonOK
 			// 
+			this.buttonOK.AutoSize = true;
+			this.buttonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.Image = ((System.Drawing.Image)(resources.GetObject("buttonOK.Image")));
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(182, 92);
+			this.buttonOK.Location = new System.Drawing.Point(167, 92);
 			this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
 			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(50, 30);
+			this.buttonOK.Size = new System.Drawing.Size(55, 30);
 			this.buttonOK.TabIndex = 10;
-			this.buttonOK.Text = Properties.Resources.GOR_DLG_OK;
+			this.buttonOK.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_OK;
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonOK.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			// 
 			// pictureDialog
 			// 
@@ -101,9 +104,9 @@ namespace GorgonLibrary.UI
 			this.MinimumSize = new System.Drawing.Size(249, 158);
 			this.Name = "BaseDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "";
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
         }
 

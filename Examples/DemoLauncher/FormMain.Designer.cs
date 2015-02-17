@@ -56,7 +56,14 @@ namespace GorgonLibrary.Examples
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
 			this.tabCategories = new KRBTabControl.KRBTabControl();
+			this.ContentArea.SuspendLayout();
 			this.SuspendLayout();
+			// 
+			// ContentArea
+			// 
+			this.ContentArea.Controls.Add(this.tabCategories);
+			this.ContentArea.Location = new System.Drawing.Point(6, 31);
+			this.ContentArea.Size = new System.Drawing.Size(1268, 763);
 			// 
 			// tabCategories
 			// 
@@ -70,7 +77,7 @@ namespace GorgonLibrary.Examples
 			this.tabCategories.IsDrawHeader = false;
 			this.tabCategories.IsUserInteraction = false;
 			this.tabCategories.ItemSize = new System.Drawing.Size(0, 26);
-			this.tabCategories.Location = new System.Drawing.Point(6, 36);
+			this.tabCategories.Location = new System.Drawing.Point(0, 0);
 			this.tabCategories.Name = "tabCategories";
 			this.tabCategories.Size = new System.Drawing.Size(1268, 758);
 			this.tabCategories.TabGradient.ColorEnd = System.Drawing.Color.White;
@@ -81,18 +88,15 @@ namespace GorgonLibrary.Examples
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.Border = true;
-			this.BorderColor = System.Drawing.SystemColors.ActiveBorder;
 			this.ClientSize = new System.Drawing.Size(1280, 800);
-			this.Controls.Add(this.tabCategories);
 			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.InactiveBorderColor = System.Drawing.SystemColors.InactiveBorder;
 			this.Margin = new System.Windows.Forms.Padding(5, 8, 5, 8);
 			this.Name = "FormMain";
 			this.Padding = new System.Windows.Forms.Padding(6);
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Gorgon - Examples";
-			this.Controls.SetChildIndex(this.tabCategories, 0);
+			this.ContentArea.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}

@@ -61,6 +61,26 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Check_Disabled1 {
+            get {
+                object obj = ResourceManager.GetObject("Check_Disabled1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Check_Enabled1 {
+            get {
+                object obj = ResourceManager.GetObject("Check_Enabled1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing....
         /// </summary>
         internal static string GOREDIT_TEXT_INITIALIZING {

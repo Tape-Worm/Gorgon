@@ -837,4 +837,7 @@ Code: 0x{2}</value>
   <data name="PROP_INACTIVE_BORDERCOLOR_DESC" xml:space="preserve">
     <value>Sets the color of the border on the form when Border is set to true and the window is in an inactive state.</value>
   </data>
+  <data name="PROP_WINICONHILIGHT_DESC" xml:space="preserve">
+    <value>Sets the color to use when a window icon (Minimize, Maximize, Restore or Close) is high lighted.</value>
+  </data>
 </root>

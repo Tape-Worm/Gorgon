@@ -7,14 +7,23 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.Zip", "..\PlugIns\Gorgon.FileSystem.Zip\Gorgon.FileSystem.Zip.csproj", "{B61F6907-0DDB-4293-AA8C-E8620DAEE795}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587} = {F46A76A0-F66E-48B4-AD4B-AE490B2EE587}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics", "Gorgon.Graphics\Gorgon.Graphics.csproj", "{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Gorgon.Input\Gorgon.Input.csproj", "{780B5B61-77BB-4456-AF77-E6681E7E48BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem.GorPack", "..\PlugIns\Gorgon.FileSystem.GorPack\Gorgon.FileSystem.GorPack.csproj", "{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587} = {F46A76A0-F66E-48B4-AD4B-AE490B2EE587}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.Raw", "..\PlugIns\Gorgon.Input.RawInput\Gorgon.Input.Raw.csproj", "{604519C3-8CC6-41BE-8949-4BDDEACAD9FC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587} = {F46A76A0-F66E-48B4-AD4B-AE490B2EE587}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.WinForms", "..\PlugIns\Gorgon.Input.WinForms\Gorgon.Input.WinForms.csproj", "{BE449FB9-9001-4954-B856-B466F90D55E3}"
 EndProject
@@ -133,6 +142,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Editor", "Gorgon.Editor", "{095E1088-8F2F-4D52-9FA4-E5DE469FC039}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor", "..\Tools\Gorgon.Editor\Gorgon.Editor.csproj", "{F46A76A0-F66E-48B4-AD4B-AE490B2EE587}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CD9AFF05-CCD1-48D9-9BE8-824681C07EF3}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

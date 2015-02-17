@@ -30,6 +30,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Examples.Properties;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Examples
 {
@@ -72,11 +73,33 @@ namespace GorgonLibrary.Examples
 				pictureIcon.Image = value.Icon;
 				labelCaption.Text = value.Name;
 				labelText.Text = value.Text;
+
+				Height = (labelText.Height + labelCaption.Height).Max(pictureIcon.Height);
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the ParentChanged event of the ExamplePanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ExamplePanel_ParentChanged(object sender, EventArgs e)
+		{
+			Parent.Resize += (o, args) =>
+			{
+				if (((ScrollableControl)Parent).VerticalScroll.Visible)
+				{
+					Width = Parent.ClientSize.Width + 1;
+				}
+				else
+				{
+					Width = Parent.ClientSize.Width + 2;
+				}
+			};
+		}
+
 		/// <summary>
 		/// Handles the MouseDown event of the pictureIcon control.
 		/// </summary>
@@ -161,8 +184,9 @@ namespace GorgonLibrary.Examples
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-
+			
 			labelText.MaximumSize = new Size(panelText.ClientSize.Width, 0);
+			Height = (labelText.Height + labelCaption.Height).Max(pictureIcon.Height);
 		}
 
 		/// <summary>
