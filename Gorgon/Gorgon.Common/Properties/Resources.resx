@@ -834,6 +834,12 @@ Code: 0x{2}</value>
   <data name="PROP_TABSTOP_DESC" xml:space="preserve">
     <value>Sets whether this control will be considered when navigating using the (Ctrl+)TAB key.</value>
   </data>
+  <data name="Check_Disabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="PROP_INACTIVE_BORDERCOLOR_DESC" xml:space="preserve">
     <value>Sets the color of the border on the form when Border is set to true and the window is in an inactive state.</value>
   </data>

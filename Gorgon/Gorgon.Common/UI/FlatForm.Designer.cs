@@ -44,7 +44,6 @@
 			this.labelMinimize = new System.Windows.Forms.Label();
 			this.labelCaption = new System.Windows.Forms.Label();
 			this.panelCaptionArea = new System.Windows.Forms.Panel();
-			this.panelWinIcons = new System.Windows.Forms.FlowLayoutPanel();
 			this.pictureIcon = new System.Windows.Forms.PictureBox();
 			this.popupSysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemRestore = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,20 +55,22 @@
 			this.itemClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this._panelContent = new System.Windows.Forms.Panel();
+			this.panelWinIcons = new System.Windows.Forms.TableLayoutPanel();
 			this.panelCaptionArea.SuspendLayout();
-			this.panelWinIcons.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
 			this.popupSysMenu.SuspendLayout();
+			this.panelWinIcons.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// labelClose
 			// 
-			this.labelClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelClose.AutoSize = true;
+			this.labelClose.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelClose.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelClose.Location = new System.Drawing.Point(65, 0);
+			this.labelClose.Location = new System.Drawing.Point(70, 0);
+			this.labelClose.Margin = new System.Windows.Forms.Padding(0);
 			this.labelClose.Name = "labelClose";
-			this.labelClose.Size = new System.Drawing.Size(25, 17);
+			this.labelClose.Size = new System.Drawing.Size(35, 24);
 			this.labelClose.TabIndex = 2;
 			this.labelClose.Text = "r";
 			this.labelClose.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -81,47 +82,51 @@
 			// 
 			// labelMaxRestore
 			// 
-			this.labelMaxRestore.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelMaxRestore.AutoSize = true;
+			this.labelMaxRestore.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelMaxRestore.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelMaxRestore.Location = new System.Drawing.Point(34, 0);
+			this.labelMaxRestore.Location = new System.Drawing.Point(35, 0);
+			this.labelMaxRestore.Margin = new System.Windows.Forms.Padding(0);
 			this.labelMaxRestore.Name = "labelMaxRestore";
-			this.labelMaxRestore.Size = new System.Drawing.Size(25, 17);
+			this.labelMaxRestore.Size = new System.Drawing.Size(35, 24);
 			this.labelMaxRestore.TabIndex = 1;
 			this.labelMaxRestore.Text = "2";
 			this.labelMaxRestore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip.SetToolTip(this.labelMaxRestore, global::GorgonLibrary.Properties.Resources.GOR_ZUNE_MAXIMIZE_TIP);
 			this.labelMaxRestore.Click += new System.EventHandler(this.labelMaxRestore_Click);
-			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
-			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
-			this.labelMaxRestore.MouseHover += new System.EventHandler(this.labelClose_MouseEnter);
+			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
+			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
+			this.labelMaxRestore.MouseHover += new System.EventHandler(this.labelMinimize_MouseEnter);
 			// 
 			// labelMinimize
 			// 
-			this.labelMinimize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelMinimize.AutoSize = true;
+			this.labelMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelMinimize.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelMinimize.Location = new System.Drawing.Point(3, 0);
+			this.labelMinimize.Location = new System.Drawing.Point(0, 0);
+			this.labelMinimize.Margin = new System.Windows.Forms.Padding(0);
 			this.labelMinimize.Name = "labelMinimize";
-			this.labelMinimize.Size = new System.Drawing.Size(25, 17);
+			this.labelMinimize.Size = new System.Drawing.Size(35, 24);
 			this.labelMinimize.TabIndex = 0;
 			this.labelMinimize.Text = "0";
 			this.labelMinimize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.toolTip.SetToolTip(this.labelMinimize, global::GorgonLibrary.Properties.Resources.GOR_ZUNE_MINIMIZE_ZIP);
 			this.labelMinimize.Click += new System.EventHandler(this.labelMinimize_Click);
-			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
-			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
-			this.labelMinimize.MouseHover += new System.EventHandler(this.labelClose_MouseEnter);
+			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
+			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
+			this.labelMinimize.MouseHover += new System.EventHandler(this.labelMinimize_MouseEnter);
 			// 
 			// labelCaption
 			// 
-			this.labelCaption.AutoSize = true;
-			this.labelCaption.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelCaption.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelCaption.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.labelCaption.Location = new System.Drawing.Point(24, 0);
 			this.labelCaption.Name = "labelCaption";
-			this.labelCaption.Size = new System.Drawing.Size(0, 25);
+			this.labelCaption.Size = new System.Drawing.Size(358, 24);
 			this.labelCaption.TabIndex = 3;
+			this.labelCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.labelCaption.FontChanged += new System.EventHandler(this.labelCaption_TextChanged);
+			this.labelCaption.TextChanged += new System.EventHandler(this.labelCaption_TextChanged);
 			this.labelCaption.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.labelCaption.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.labelCaption.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
@@ -129,8 +134,8 @@
 			// panelCaptionArea
 			// 
 			this.panelCaptionArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panelCaptionArea.Controls.Add(this.panelWinIcons);
 			this.panelCaptionArea.Controls.Add(this.labelCaption);
+			this.panelCaptionArea.Controls.Add(this.panelWinIcons);
 			this.panelCaptionArea.Controls.Add(this.pictureIcon);
 			this.panelCaptionArea.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelCaptionArea.Location = new System.Drawing.Point(0, 0);
@@ -141,23 +146,6 @@
 			this.panelCaptionArea.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.panelCaptionArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.panelCaptionArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
-			// 
-			// panelWinIcons
-			// 
-			this.panelWinIcons.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.panelWinIcons.AutoSize = true;
-			this.panelWinIcons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panelWinIcons.Controls.Add(this.labelMinimize);
-			this.panelWinIcons.Controls.Add(this.labelMaxRestore);
-			this.panelWinIcons.Controls.Add(this.labelClose);
-			this.panelWinIcons.Location = new System.Drawing.Point(394, 0);
-			this.panelWinIcons.Margin = new System.Windows.Forms.Padding(0);
-			this.panelWinIcons.Name = "panelWinIcons";
-			this.panelWinIcons.Size = new System.Drawing.Size(93, 17);
-			this.panelWinIcons.TabIndex = 5;
-			this.panelWinIcons.WrapContents = false;
-			this.panelWinIcons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseDown);
-			this.panelWinIcons.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseMove);
 			// 
 			// pictureIcon
 			// 
@@ -255,6 +243,28 @@
 			this._panelContent.MouseDown += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseDown);
 			this._panelContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseMove);
 			// 
+			// panelWinIcons
+			// 
+			this.panelWinIcons.AutoSize = true;
+			this.panelWinIcons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelWinIcons.ColumnCount = 3;
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.Controls.Add(this.labelClose, 2, 0);
+			this.panelWinIcons.Controls.Add(this.labelMaxRestore, 1, 0);
+			this.panelWinIcons.Controls.Add(this.labelMinimize, 0, 0);
+			this.panelWinIcons.Dock = System.Windows.Forms.DockStyle.Right;
+			this.panelWinIcons.Location = new System.Drawing.Point(382, 0);
+			this.panelWinIcons.Margin = new System.Windows.Forms.Padding(0);
+			this.panelWinIcons.Name = "panelWinIcons";
+			this.panelWinIcons.RowCount = 1;
+			this.panelWinIcons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.panelWinIcons.Size = new System.Drawing.Size(105, 24);
+			this.panelWinIcons.TabIndex = 6;
+			this.panelWinIcons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseDown);
+			this.panelWinIcons.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseMove);
+			// 
 			// FlatForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
@@ -277,10 +287,10 @@
 			this.Resize += new System.EventHandler(this.ZuneForm_Resize);
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
-			this.panelWinIcons.ResumeLayout(false);
-			this.panelWinIcons.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
 			this.popupSysMenu.ResumeLayout(false);
+			this.panelWinIcons.ResumeLayout(false);
+			this.panelWinIcons.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -302,6 +312,6 @@
 		private System.Windows.Forms.ToolStripMenuItem itemClose;
 		private System.Windows.Forms.ContextMenuStrip popupSysMenu;
 		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.FlowLayoutPanel panelWinIcons;
+		private System.Windows.Forms.TableLayoutPanel panelWinIcons;
 	}
 }

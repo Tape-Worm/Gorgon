@@ -50,17 +50,17 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void SetupTheme()
 		{
-			// Set up our forms renderer.
+			/*// Set up our forms renderer.
 			if (!(ToolStripManager.Renderer is GorgonEditorRenderer))
 			{
 				ToolStripManager.Renderer = new GorgonEditorRenderer();
-			}
+			}*/
 
-			this.BackColor = GorgonEditorRenderer.WindowBackground;
+			/*this.BackColor = GorgonEditorRenderer.WindowBackground;
 			this.ForeColor = GorgonEditorRenderer.WindowCaptionForeColor;
 			this.BorderColor = GorgonEditorRenderer.WindowActiveBorderColor;
 			this.InactiveBorderColor = GorgonEditorRenderer.WindowInactiveBorderColor;
-			this.WindowIconHilightColor = GorgonEditorRenderer.WindowIconHilightColor;
+			this.WindowIconHilightColor = GorgonEditorRenderer.WindowIconHilightColor;*/
 		}
 
 		/// <summary>

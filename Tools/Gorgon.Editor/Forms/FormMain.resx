@@ -132,7 +132,7 @@
     <value>0, 0</value>
   </data>
   <data name="panelContentHost.Size" type="System.Drawing.Size, System.Drawing">
-    <value>964, 639</value>
+    <value>964, 632</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="panelContentHost.TabIndex" type="System.Int32, mscorlib">
@@ -169,7 +169,7 @@
     <value>0, 0</value>
   </data>
   <data name="panelExplorer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>306, 639</value>
+    <value>306, 632</value>
   </data>
   <data name="panelExplorer.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -199,7 +199,7 @@
     <value>1</value>
   </data>
   <data name="splitMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1274, 639</value>
+    <value>1274, 632</value>
   </data>
   <data name="splitMain.SplitterDistance" type="System.Int32, mscorlib">
     <value>964</value>
@@ -253,7 +253,7 @@
     <value>Bottom</value>
   </data>
   <data name="panelFooter.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 667</value>
+    <value>0, 660</value>
   </data>
   <data name="panelFooter.Size" type="System.Drawing.Size, System.Drawing">
     <value>1274, 22</value>
@@ -340,10 +340,10 @@
     <value>2</value>
   </data>
   <data name="ContentArea.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 28</value>
+    <value>3, 35</value>
   </data>
   <data name="ContentArea.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1274, 689</value>
+    <value>1274, 682</value>
   </data>
   <data name="&gt;&gt;ContentArea.Name" xml:space="preserve">
     <value>ContentArea</value>
@@ -2481,6 +2481,6 @@
     <value>FormMain</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5524.3736, Culture=neutral, PublicKeyToken=null</value>
+    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5527.1694, Culture=neutral, PublicKeyToken=null</value>
   </data>
 </root>

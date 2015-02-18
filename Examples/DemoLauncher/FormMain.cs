@@ -134,7 +134,7 @@ namespace GorgonLibrary.Examples
 		{
 			base.OnLostFocus(e);
 
-			BorderColor = BackColor;
+			//BorderColor = BackColor;
 		}
 
 		/// <summary>
@@ -145,7 +145,7 @@ namespace GorgonLibrary.Examples
 		{
 			base.OnGotFocus(e);
 
-			BorderColor = Color.Gray;
+			//BorderColor = Color.Gray;
 		}
 
 		/// <summary>

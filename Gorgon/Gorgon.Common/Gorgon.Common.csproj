@@ -210,6 +210,7 @@
     <Compile Include="UI\FlatForm.Designer.cs">
       <DependentUpon>FlatForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\FlatFormTheme.cs" />
     <Compile Include="UI\WarningDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -259,6 +260,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Check_Enabled1.png" />
+    <None Include="Resources\Check_Disabled1.png" />
     <EmbeddedResource Include="Resources\GorgonSelectablePanel.bmp" />
     <None Include="Resources\Close.png" />
     <None Include="Resources\Maximize.png" />

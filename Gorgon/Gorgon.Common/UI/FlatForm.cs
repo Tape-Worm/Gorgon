@@ -109,12 +109,11 @@ namespace GorgonLibrary.UI
 		private bool _showWindowCaption = true;
 		private int _borderWidth = 1;
 		private bool _border;
-		private Color _borderColor = Color.FromKnownColor(KnownColor.ActiveBorder);
-		private Color _inactiveBorderColor = Color.FromKnownColor(KnownColor.InactiveBorder);
-		private Color _iconHilightColor = Color.FromKnownColor(KnownColor.HighlightText);
 		private FormWindowState _windowState = FormWindowState.Normal;
 		private FormWindowState _prevMinState = FormWindowState.Normal;
 		private Rectangle _restoreRect;
+		private FlatFormTheme _theme = new FlatFormTheme();
+		private int _captionHeight;
 		[AccessedThroughProperty("ContentArea")]
 		private Panel _panelContent;
 		#endregion
@@ -159,6 +158,45 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// </summary>
+		/// <PermissionSet>
+		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		/// </PermissionSet>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public new Color BackColor
+		{
+			get
+			{
+				return _theme.WindowBackground;
+			}
+			set
+			{
+				_theme.WindowBackground = value;
+				Refresh();
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the foreground color of the control.
+		/// </summary>
+		/// <PermissionSet>
+		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		/// </PermissionSet>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public new Color ForeColor
+		{
+			get
+			{
+				return _theme.ForeColor;
+			}
+			set
+			{
+				_theme.ForeColor = value;
+				Refresh();
+			}
+		}
+
+		/// <summary>
 		/// Property to return the content area.
 		/// </summary>
 		[Browsable(false)]
@@ -171,55 +209,29 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Property to set or return the color to use when one of the window icons (minimize, maximize, restore, close) is hilighted.
+		/// Property to set or return the current theme for the window.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_WINICONHILIGHT_DESC"),
-		RefreshProperties(RefreshProperties.All)]
-		public Color WindowIconHilightColor
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), RefreshProperties(RefreshProperties.All)]
+		public FlatFormTheme Theme
 		{
 			get
 			{
-				return _iconHilightColor;
+				return _theme;
 			}
 			set
 			{
-				_iconHilightColor = value;
-				Refresh();
-			}
-		}
+				if (value == null)
+				{
+					value = new FlatFormTheme();
+				}
 
-		/// <summary>
-		/// Property to set or return the color of the border.
-		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_BORDERCOLOR_DESC"), 
-		RefreshProperties(RefreshProperties.All)]
-		public Color BorderColor
-		{
-			get
-			{
-				return _borderColor;
-			}
-			set
-			{
-				_borderColor = value;
-				Refresh();
-			}
-		}
+				_theme = value;
 
-		/// <summary>
-		/// Property to set or return the color of the border when the window is inactive.
-		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_INACTIVE_BORDERCOLOR_DESC"),
-		RefreshProperties(RefreshProperties.All)]
-		public Color InactiveBorderColor
-		{
-			get
-			{
-				return _inactiveBorderColor;
-			}
-			set
-			{
-				_inactiveBorderColor = value;
+				ToolStripManager.RenderMode = ToolStripManagerRenderMode.Custom;
+				ToolStripManager.Renderer = _theme;
+
+				ApplyTheme();
+				
 				Refresh();
 			}
 		}
@@ -513,6 +525,25 @@ namespace GorgonLibrary.UI
 
 		#region Methods.
 		/// <summary>
+		/// Handles the TextChanged event of the labelCaption control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelCaption_TextChanged(object sender, EventArgs e)
+		{
+			if ((IsDisposed)
+			    || (!IsHandleCreated))
+			{
+				return;
+			}
+
+			using (Graphics g = CreateGraphics())
+			{
+				_captionHeight = TextRenderer.MeasureText(g, labelCaption.Text, Font).Height + 8;
+			}
+		}
+
+		/// <summary>
 		/// Handles the MouseDown event of the panelWinIcons control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -672,10 +703,13 @@ namespace GorgonLibrary.UI
         {
             var label = sender as Label;
 
-            if (label != null)
-            {
-                label.ForeColor = _iconHilightColor;
-            }
+			if (label == null)
+			{
+				return;
+			}
+
+			label.ForeColor = _theme.WindowCloseIconForeColorHilight;
+			label.BackColor = _theme.WindowCloseIconBackColorHilight;
         }
 
         /// <summary>
@@ -687,11 +721,50 @@ namespace GorgonLibrary.UI
         {
             var label = sender as Label;
 
-            if (label != null)
-            {
-				label.ForeColor = (ActiveForm == this) ? ForeColor : Color.FromKnownColor(KnownColor.DimGray);
-            }
+	        if (label == null)
+	        {
+		        return;
+	        }
+
+	        label.ForeColor = (ActiveForm == this) ? _theme.WindowCloseIconForeColor : _theme.ForeColorInactive;
+	        label.BackColor = _theme.WindowBackground;
         }
+
+		/// <summary>
+		/// Handles the MouseEnter event of the labelMinimize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelMinimize_MouseEnter(object sender, EventArgs e)
+		{
+			var label = sender as Label;
+
+			if (label == null)
+			{
+				return;
+			}
+
+			label.ForeColor = _theme.WindowSizeIconsForeColorHilight;
+			label.BackColor = _theme.WindowSizeIconsBackColorHilight;
+		}
+
+		/// <summary>
+		/// Handles the MouseLeave event of the labelMinimize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelMinimize_MouseLeave(object sender, EventArgs e)
+		{
+			var label = sender as Label;
+
+			if (label == null)
+			{
+				return;
+			}
+
+			label.ForeColor = (ActiveForm == this) ? _theme.WindowSizeIconsForeColor : _theme.ForeColorInactive;
+			label.BackColor = _theme.WindowBackground;
+		}
 
         /// <summary>
         /// Handles the MouseDown event of the labelClose control.
@@ -765,22 +838,21 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void LayoutWindowControls()
 		{
-			if (!ShowWindowCaption)
+			if ((!ShowWindowCaption)
+				|| (!IsHandleCreated))
 			{
 				return;
 			}
 
-			int maxSizeForContainer = panelWinIcons.Height.Max(_iconImage != null ? _iconImage.Height : 0).Max(labelCaption.Height);
+			int maxSizeForContainer = (panelWinIcons.Height.Max(_iconImage != null ? _iconImage.Height + 8 : 8).Max(_captionHeight));
 
 			panelCaptionArea.Height = maxSizeForContainer;
 
 			int iconsVertOffset = (maxSizeForContainer / 2) - (panelWinIcons.Height / 2);
 			int iconOffset = (maxSizeForContainer / 2) - (pictureIcon.Height / 2);
-			int captionOffset = (maxSizeForContainer / 2) - (labelCaption.Height / 2);
 
 			panelWinIcons.Top = iconsVertOffset;
 			pictureIcon.Top = iconOffset;
-			labelCaption.Top = captionOffset;
 		}
         
         /// <summary>
@@ -932,10 +1004,10 @@ namespace GorgonLibrary.UI
 				_windowState = _prevMinState;	
 			}
 
-			panelCaptionArea.ForeColor = ForeColor;
-			labelMinimize.ForeColor = ForeColor;
-			labelMaxRestore.ForeColor = ForeColor;
-			labelClose.ForeColor = ForeColor;
+			panelCaptionArea.ForeColor = _theme.ForeColor;
+			labelMinimize.ForeColor = _theme.ForeColor;
+			labelMaxRestore.ForeColor = _theme.ForeColor;
+			labelClose.ForeColor = _theme.ForeColor;
 
 			using (var graphics = CreateGraphics())
 			{
@@ -950,10 +1022,10 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Deactivate(object sender, EventArgs e)
 		{
-			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
-			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
-			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
-			labelClose.ForeColor = Color.FromKnownColor(KnownColor.InactiveCaptionText);
+			panelCaptionArea.ForeColor = _theme.ForeColorInactive;
+			labelMinimize.ForeColor = _theme.ForeColorInactive;
+			labelMaxRestore.ForeColor = _theme.ForeColorInactive;
+			labelClose.ForeColor = _theme.ForeColorInactive;
 			using (var graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
@@ -1088,7 +1160,19 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Load(object sender, EventArgs e)
 		{
-			ValidateWindowControls();
+			try
+			{
+				ToolStripManager.Renderer = _theme;
+
+				labelCaption_TextChanged(this, EventArgs.Empty);
+				ValidateWindowControls();
+				ApplyTheme();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+				Close();
+			}
 		}
 
 		/// <summary>
@@ -1173,9 +1257,9 @@ namespace GorgonLibrary.UI
 				return;
 			}
 
-			using (var pen = new Pen(ActiveForm == this ? BorderColor : InactiveBorderColor, _borderWidth))
+			using (var pen = new Pen(ActiveForm == this ? _theme.WindowBorderActive : _theme.WindowBorderInactive, _borderWidth))
 			{
-				graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
+				graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - _borderWidth, Height - _borderWidth));
 			}
 		}
 
@@ -1203,6 +1287,13 @@ namespace GorgonLibrary.UI
 			}
 
 			ValidateWindowControls();
+		}
+
+		/// <summary>
+		/// Function called to allow sub-classed windows to apply the theme to controls that are not necessarily themeable.
+		/// </summary>
+		protected virtual void ApplyTheme()
+		{
 		}
 		#endregion
 
