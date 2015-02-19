@@ -44,6 +44,7 @@
 			this.labelMinimize = new System.Windows.Forms.Label();
 			this.labelCaption = new System.Windows.Forms.Label();
 			this.panelCaptionArea = new System.Windows.Forms.Panel();
+			this.panelWinIcons = new System.Windows.Forms.TableLayoutPanel();
 			this.pictureIcon = new System.Windows.Forms.PictureBox();
 			this.popupSysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemRestore = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,11 +56,10 @@
 			this.itemClose = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this._panelContent = new System.Windows.Forms.Panel();
-			this.panelWinIcons = new System.Windows.Forms.TableLayoutPanel();
 			this.panelCaptionArea.SuspendLayout();
+			this.panelWinIcons.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
 			this.popupSysMenu.SuspendLayout();
-			this.panelWinIcons.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// labelClose
@@ -146,6 +146,28 @@
 			this.panelCaptionArea.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.panelCaptionArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.panelCaptionArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
+			// 
+			// panelWinIcons
+			// 
+			this.panelWinIcons.AutoSize = true;
+			this.panelWinIcons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.panelWinIcons.ColumnCount = 3;
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			this.panelWinIcons.Controls.Add(this.labelClose, 2, 0);
+			this.panelWinIcons.Controls.Add(this.labelMaxRestore, 1, 0);
+			this.panelWinIcons.Controls.Add(this.labelMinimize, 0, 0);
+			this.panelWinIcons.Dock = System.Windows.Forms.DockStyle.Right;
+			this.panelWinIcons.Location = new System.Drawing.Point(382, 0);
+			this.panelWinIcons.Margin = new System.Windows.Forms.Padding(0);
+			this.panelWinIcons.Name = "panelWinIcons";
+			this.panelWinIcons.RowCount = 1;
+			this.panelWinIcons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.panelWinIcons.Size = new System.Drawing.Size(105, 24);
+			this.panelWinIcons.TabIndex = 6;
+			this.panelWinIcons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseDown);
+			this.panelWinIcons.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseMove);
 			// 
 			// pictureIcon
 			// 
@@ -243,28 +265,6 @@
 			this._panelContent.MouseDown += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseDown);
 			this._panelContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseMove);
 			// 
-			// panelWinIcons
-			// 
-			this.panelWinIcons.AutoSize = true;
-			this.panelWinIcons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panelWinIcons.ColumnCount = 3;
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-			this.panelWinIcons.Controls.Add(this.labelClose, 2, 0);
-			this.panelWinIcons.Controls.Add(this.labelMaxRestore, 1, 0);
-			this.panelWinIcons.Controls.Add(this.labelMinimize, 0, 0);
-			this.panelWinIcons.Dock = System.Windows.Forms.DockStyle.Right;
-			this.panelWinIcons.Location = new System.Drawing.Point(382, 0);
-			this.panelWinIcons.Margin = new System.Windows.Forms.Padding(0);
-			this.panelWinIcons.Name = "panelWinIcons";
-			this.panelWinIcons.RowCount = 1;
-			this.panelWinIcons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.panelWinIcons.Size = new System.Drawing.Size(105, 24);
-			this.panelWinIcons.TabIndex = 6;
-			this.panelWinIcons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseDown);
-			this.panelWinIcons.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseMove);
-			// 
 			// FlatForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
@@ -280,6 +280,7 @@
 			this.Activated += new System.EventHandler(this.ZuneForm_Activated);
 			this.Deactivate += new System.EventHandler(this.ZuneForm_Deactivate);
 			this.Load += new System.EventHandler(this.ZuneForm_Load);
+			this.EnabledChanged += new System.EventHandler(this.FlatForm_EnabledChanged);
 			this.PaddingChanged += new System.EventHandler(this.ZuneForm_PaddingChanged);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ZuneForm_Paint);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseDown);
@@ -287,10 +288,10 @@
 			this.Resize += new System.EventHandler(this.ZuneForm_Resize);
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
-			this.popupSysMenu.ResumeLayout(false);
 			this.panelWinIcons.ResumeLayout(false);
 			this.panelWinIcons.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
+			this.popupSysMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}

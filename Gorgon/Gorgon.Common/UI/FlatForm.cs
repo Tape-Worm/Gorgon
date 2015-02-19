@@ -37,6 +37,7 @@ using GorgonLibrary.Native;
 using GorgonLibrary.Design;
 using GorgonLibrary.Math;
 using GorgonLibrary.Properties;
+using GorgonLibrary.UI.Design;
 
 namespace GorgonLibrary.UI
 {
@@ -211,7 +212,11 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the current theme for the window.
 		/// </summary>
-		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), RefreshProperties(RefreshProperties.All)]
+		[Browsable(true), 
+		LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), 
+		TypeConverter(typeof(FlatFormThemeConverter)),
+		DesignerSerializationVisibility(DesignerSerializationVisibility.Content),
+		RefreshProperties(RefreshProperties.All)]
 		public FlatFormTheme Theme
 		{
 			get
@@ -225,14 +230,20 @@ namespace GorgonLibrary.UI
 					value = new FlatFormTheme();
 				}
 
+				if (_theme != null)
+				{
+					_theme.PropertyChanged -= Theme_PropertyChangedEvent;
+				}
+
 				_theme = value;
 
 				ToolStripManager.RenderMode = ToolStripManagerRenderMode.Custom;
 				ToolStripManager.Renderer = _theme;
 
-				ApplyTheme();
-				
-				Refresh();
+				// Fire the event to signal that the theme has changed.
+				Theme_PropertyChangedEvent(this, EventArgs.Empty);
+
+				_theme.PropertyChanged += Theme_PropertyChangedEvent;
 			}
 		}
 
@@ -524,6 +535,16 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to set up the caption theme colors.
+		/// </summary>
+		private void SetCaptionTheme()
+		{
+			labelCaption.ForeColor = _theme.ForeColor;
+			labelMinimize.ForeColor = _theme.WindowSizeIconsForeColor;
+
+		}
+
 		/// <summary>
 		/// Handles the TextChanged event of the labelCaption control.
 		/// </summary>
@@ -1004,10 +1025,7 @@ namespace GorgonLibrary.UI
 				_windowState = _prevMinState;	
 			}
 
-			panelCaptionArea.ForeColor = _theme.ForeColor;
-			labelMinimize.ForeColor = _theme.ForeColor;
-			labelMaxRestore.ForeColor = _theme.ForeColor;
-			labelClose.ForeColor = _theme.ForeColor;
+			Theme_PropertyChangedEvent(this, EventArgs.Empty);
 
 			using (var graphics = CreateGraphics())
 			{
@@ -1022,10 +1040,8 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Deactivate(object sender, EventArgs e)
 		{
-			panelCaptionArea.ForeColor = _theme.ForeColorInactive;
-			labelMinimize.ForeColor = _theme.ForeColorInactive;
-			labelMaxRestore.ForeColor = _theme.ForeColorInactive;
-			labelClose.ForeColor = _theme.ForeColorInactive;
+			Theme_PropertyChangedEvent(this, EventArgs.Empty);
+
 			using (var graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
@@ -1163,10 +1179,15 @@ namespace GorgonLibrary.UI
 			try
 			{
 				ToolStripManager.Renderer = _theme;
-
+				
 				labelCaption_TextChanged(this, EventArgs.Empty);
 				ValidateWindowControls();
+
+				Theme_PropertyChangedEvent(this, EventArgs.Empty);
+
 				ApplyTheme();
+
+				_theme.PropertyChanged += Theme_PropertyChangedEvent;
 			}
 			catch (Exception ex)
 			{
@@ -1199,6 +1220,16 @@ namespace GorgonLibrary.UI
 			}
 
 			pictureIcon.Image = _iconImage;
+		}
+
+		/// <summary>
+		/// Handles the EnabledChanged event of the FlatForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void FlatForm_EnabledChanged(object sender, EventArgs e)
+		{
+			Theme_PropertyChangedEvent(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -1252,14 +1283,15 @@ namespace GorgonLibrary.UI
 		/// <param name="graphics">Graphics interface to use.</param>
 		private void DrawBorder(Graphics graphics)
 		{
-			if ((WindowState != FormWindowState.Normal) || (!Border))
+			if ((WindowState != FormWindowState.Normal) || (!Border) || (_borderWidth <= 0))
 			{
 				return;
 			}
 
 			using (var pen = new Pen(ActiveForm == this ? _theme.WindowBorderActive : _theme.WindowBorderInactive, _borderWidth))
 			{
-				graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - _borderWidth, Height - _borderWidth));
+				Rectangle position = new Rectangle(_borderWidth - 1, _borderWidth - 1, (ClientSize.Width - 1) - _borderWidth, (ClientSize.Height - 1) - _borderWidth);
+				graphics.DrawRectangle(pen, position);
 			}
 		}
 
@@ -1287,6 +1319,70 @@ namespace GorgonLibrary.UI
 			}
 
 			ValidateWindowControls();
+		}
+
+		/// <summary>
+		/// Handles the PropertyChangedEvent event of the Theme control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="eventArgs">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void Theme_PropertyChangedEvent(object sender, EventArgs eventArgs)
+		{
+			_panelContent.BackColor = _theme.ContentPanelBackground;
+			labelCaption.BackColor = _theme.WindowBackground;
+			labelMinimize.BackColor = _theme.WindowBackground;
+			labelMaxRestore.BackColor = _theme.WindowBackground;
+			labelClose.BackColor = _theme.WindowBackground;
+			base.BackColor = _theme.WindowBackground;
+			pictureIcon.BackColor = _theme.WindowBackground;
+
+			// If this window is not enabled, then we need to set to disabled.
+			if (!Enabled)
+			{
+				labelCaption.ForeColor = _theme.DisabledColor;
+				labelMinimize.ForeColor = _theme.DisabledColor;
+				labelMaxRestore.ForeColor = _theme.DisabledColor;
+				labelClose.ForeColor = _theme.DisabledColor;
+				_panelContent.ForeColor = _theme.DisabledColor;
+
+				ApplyTheme();
+
+				Invalidate(true);
+				return;
+			}
+
+			if ((ActiveForm != this) && (!DesignMode))
+			{
+				labelCaption.ForeColor = _theme.ForeColorInactive;
+				labelMinimize.ForeColor = _theme.ForeColorInactive;
+				labelMaxRestore.ForeColor = _theme.ForeColorInactive;
+				labelClose.ForeColor = _theme.ForeColorInactive;
+				_panelContent.ForeColor = _theme.ForeColorInactive;
+				
+				ApplyTheme();
+
+				Invalidate(true);
+				return;
+			}
+
+			_panelContent.ForeColor = _theme.ForeColor;
+			labelCaption.ForeColor = _theme.ForeColor;
+			labelMinimize.ForeColor = _theme.WindowSizeIconsForeColor;
+			labelMaxRestore.ForeColor = _theme.WindowSizeIconsForeColor;
+			labelClose.ForeColor = _theme.WindowCloseIconForeColor;
+
+			ApplyTheme();
+
+			Invalidate(true);
+		}
+
+		/// <summary>
+		/// Function to inform the designer that the theme property needs to be serialized.
+		/// </summary>
+		/// <returns>TRUE.</returns>
+		private bool ShouldSerializeTheme()
+		{
+			return true;
 		}
 
 		/// <summary>

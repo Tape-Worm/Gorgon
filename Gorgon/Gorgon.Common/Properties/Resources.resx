@@ -843,7 +843,70 @@ Code: 0x{2}</value>
   <data name="PROP_INACTIVE_BORDERCOLOR_DESC" xml:space="preserve">
     <value>Sets the color of the border on the form when Border is set to true and the window is in an inactive state.</value>
   </data>
-  <data name="PROP_WINICONHILIGHT_DESC" xml:space="preserve">
-    <value>Sets the color to use when a window icon (Minimize, Maximize, Restore or Close) is high lighted.</value>
+  <data name="PROP_THEME_WINICONHILIGHT_DESC" xml:space="preserve">
+    <value>Sets the color to use when a window icon (Minimize, Maximize and Restore) is high lighted.</value>
+  </data>
+  <data name="GOR_FLAT_THEME_TEXT" xml:space="preserve">
+    <value>(Theme)</value>
+  </data>
+  <data name="PROP_THEME_FORECOLOR_DESC" xml:space="preserve">
+    <value>The foreground color for general items in the window.</value>
+  </data>
+  <data name="PROP_THEME_DISABLECOLOR_DESC" xml:space="preserve">
+    <value>The color used for disabled items in the window.</value>
+  </data>
+  <data name="PROP_THEME_FORECOLOR_INACTIVE_DESC" xml:space="preserve">
+    <value>The color used on items in the window when the window is not active.</value>
+  </data>
+  <data name="PROP_THEME_HILIGHTBACKCOLOR_DESC" xml:space="preserve">
+    <value>The background color used when hilighting menu items.</value>
+  </data>
+  <data name="PROP_THEME_HILIGHTFORECOLOR_DESC" xml:space="preserve">
+    <value>The foreground color used when hilighting menu items.</value>
+  </data>
+  <data name="PROP_THEME_CHECKDISABLED_IMAGE" xml:space="preserve">
+    <value>The image to use when showing a disabled check mark on a tool strip button.</value>
+  </data>
+  <data name="PROP_THEME_CHECKENABLED_IMAGE" xml:space="preserve">
+    <value>The image to use when showing a check mark on a tool strip button.</value>
+  </data>
+  <data name="PROP_THEME_CONTENTBACKCOLOR_DESC" xml:space="preserve">
+    <value>The background color for the content panel on the window.</value>
+  </data>
+  <data name="PROP_THEME_DROPDOWNBORDERCOLOR_DESC" xml:space="preserve">
+    <value>The color applied to the border of a drop down menu.</value>
+  </data>
+  <data name="PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC" xml:space="preserve">
+    <value>The color behind a checkmark on a menu item when the item is selected.</value>
+  </data>
+  <data name="PROP_THEME_MENUCHECKBACKCOLOR_DESC" xml:space="preserve">
+    <value>The color behind a checkmark on a menu item.</value>
+  </data>
+  <data name="PROP_THEME_TOOLSTRIPARROWCOLOR_DESC" xml:space="preserve">
+    <value>The color for an arrow on the tool strip.</value>
+  </data>
+  <data name="PROP_THEME_TOOLSTRIPBACKCOLOR_DESC" xml:space="preserve">
+    <value>The background color for a tool strip.</value>
+  </data>
+  <data name="PROP_THEME_WINBACKCOLOR_DESC" xml:space="preserve">
+    <value>The main background color for a window.</value>
+  </data>
+  <data name="PROP_THEME_WINBORDERACTIVE_DESC" xml:space="preserve">
+    <value>The color of a window border when the window is active.</value>
+  </data>
+  <data name="PROP_THEME_WINBORDERINACTIVE_DESC" xml:space="preserve">
+    <value>The color of a window border when the window is inactive or disabled.</value>
+  </data>
+  <data name="PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC" xml:space="preserve">
+    <value>The background color of the close icon on the window when the mouse is over the icon.</value>
+  </data>
+  <data name="PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC" xml:space="preserve">
+    <value>The foreground color of the close icon on the window when the mouse is over the icon.</value>
+  </data>
+  <data name="PROP_THEME_WINCLOSEFORECOLOR_DESC" xml:space="preserve">
+    <value>The foreground color of the close icon on the window.</value>
+  </data>
+  <data name="PROP_THEME_WINICONBACKHILIGHT_DESC" xml:space="preserve">
+    <value>The background color of the window icons (minimize, maximize and restore) when the mouse is over the icon.</value>
   </data>
 </root>

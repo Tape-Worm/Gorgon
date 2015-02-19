@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary.Design;
 using GorgonLibrary.Properties;
+using GorgonLibrary.UI.Design;
 
 namespace GorgonLibrary.UI
 {
@@ -19,187 +23,479 @@ namespace GorgonLibrary.UI
 	/// The theme object inherits from the ToolStrip renderer class and will be applied as a visual style for toolbars and menus as well.
 	/// </para>
 	/// </remarks>
+	[TypeConverter(typeof(FlatFormThemeConverter)), Serializable]
 	public class FlatFormTheme
 		: ToolStripRenderer
 	{
 		#region Variables.
+		private Color _foreColor;
+		private Color _toolStripBackColor;
+		private Color _toolStripArrowColor;
+		private Color _checkBoxBackColorHilight;
+		private Color _checkBoxBackColor;
+		private Color _dropDownBorderColor;
+		private Color _foreColorInactive;
+		private Color _disabledColor;
+		private Color _hilightForeColor;
+		private Color _hilightBackColor;
+		private Color _windowBackground;
+		private Color _contentBackground;
+		private Color _windowBorderActive;
+		private Color _windowBorderInactive;
+		private Color _windowSizeIconsForeColor;
+		private Color _windowSizeIconsForeColorHilight;
+		private Color _windowSizeIconsBackColorHilight;
+		private Color _windowCloseIconForeColor;
+		private Color _windowCloseIconForeColorHilight;
+		private Color _windowCloseIconBackColorHilight;
+		private Image _checkEnabledImage;
+		private Image _checkDisabledImage;
+		#endregion
 
+		#region Events.
+		/// <summary>
+		/// Event triggered when a color is changed in the theme.
+		/// </summary>
+		[Browsable(false)]
+		public EventHandler PropertyChanged;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the background color for a toolstrip.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Control")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPBACKCOLOR_DESC")]
 		public Color ToolStripBackColor
 		{
-			get;
-			set;
+			get
+			{
+				return _toolStripBackColor;
+			}
+			set
+			{
+				_toolStripBackColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color used for the tool strip drop down arrow.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "WindowText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_TOOLSTRIPARROWCOLOR_DESC")]
 		public Color ToolStripArrowColor
 		{
-			get;
-			set;
+			get
+			{
+				return _toolStripArrowColor;
+			}
+			set
+			{
+				_toolStripArrowColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
-		/// Property to set or return the background color used for checked menu items when hilighted.
+		/// Property to set or return the background color used for checked tool strip buttons when hilighted.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Highlight")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC")]
 		public Color CheckBoxBackColorHilight
 		{
-			get;
-			set;
+			get
+			{
+				return _checkBoxBackColorHilight;
+			}
+			set
+			{
+				_checkBoxBackColorHilight = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
-		/// Property to set or return the background color used for checked menu items.
+		/// Property to set or return the background color used for checked tool strip buttons.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Control")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_MENUCHECKBACKCOLOR_DESC")]
 		public Color CheckBoxBackColor
 		{
-			get;
-			set;
+			get
+			{
+				return _checkBoxBackColor;
+			}
+			set
+			{
+				_checkBoxBackColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the border color for a drop down menu.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "ActiveBorder")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_DROPDOWNBORDERCOLOR_DESC")]
 		public Color DropDownBorderColor
 		{
-			get;
-			set;
+			get
+			{
+				return _dropDownBorderColor;
+			}
+			set
+			{
+				_dropDownBorderColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the foreground color for the window and menus.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "WindowText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_DESC")]
 		public Color ForeColor
 		{
-			get;
-			set;
+			get
+			{
+				return _foreColor;
+			}
+			set
+			{
+				_foreColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the foreground color when the window is inactive.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "DimGray")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_INACTIVE_DESC")]
 		public Color ForeColorInactive
 		{
-			get;
-			set;
+			get
+			{
+				return _foreColorInactive;
+			}
+			set
+			{
+				_foreColorInactive = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color to use for disabled items.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "DimGray")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_DISABLECOLOR_DESC")]
 		public Color DisabledColor
 		{
-			get;
-			set;
+			get
+			{
+				return _disabledColor;
+			}
+			set
+			{
+				_disabledColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the hilight color used for items in a menu.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "HighlightText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTFORECOLOR_DESC")]
 		public Color HilightForeColor
 		{
-			get;
-			set;
+			get
+			{
+				return _hilightForeColor;
+			}
+			set
+			{
+				_hilightForeColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the hilight background color for items in a menu.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Highlight")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_HILIGHTBACKCOLOR_DESC")]
 		public Color HilightBackColor
 		{
-			get;
-			set;
+			get
+			{
+				return _hilightBackColor;
+			}
+			set
+			{
+				_hilightBackColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color for the window background.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Control")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
 		public Color WindowBackground
 		{
-			get;
-			set;
+			get
+			{
+				return _windowBackground;
+			}
+			set
+			{
+				_windowBackground = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color for the window background.
+		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Window")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINBACKCOLOR_DESC")]
+		public Color ContentPanelBackground
+		{
+			get
+			{
+				return _contentBackground;
+			}
+			set
+			{
+				_contentBackground = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color for the window border when the window is active.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "ActiveBorder")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERACTIVE_DESC")]
 		public Color WindowBorderActive
 		{
-			get;
-			set;
+			get
+			{
+				return _windowBorderActive;
+			}
+			set
+			{
+				_windowBorderActive = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color for the window border when the window is inactive.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "InactiveBorder")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINBORDERINACTIVE_DESC")]
 		public Color WindowBorderInactive
 		{
-			get;
-			set;
+			get
+			{
+				return _windowBorderInactive;
+			}
+			set
+			{
+				_windowBorderInactive = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the standard foreground color for the window sizing decoration icons (maximize and minimize/restore).
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "WindowText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
 		public Color WindowSizeIconsForeColor
 		{
-			get;
-			set;
+			get
+			{
+				return _windowSizeIconsForeColor;
+			}
+			set
+			{
+				_windowSizeIconsForeColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the foreground color for the window sizing decoration icons (maximize and minimize/restore) when the mouse cursor is over the icon.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "HighlightText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONHILIGHT_DESC")]
 		public Color WindowSizeIconsForeColorHilight
 		{
-			get;
-			set;
+			get
+			{
+				return _windowSizeIconsForeColorHilight;
+			}
+			set
+			{
+				_windowSizeIconsForeColorHilight = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the background color for the window sizing decoration icons (maximize and minimize/restore) when the mouse cursor is over the icon.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Highlight")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINICONBACKHILIGHT_DESC")]
 		public Color WindowSizeIconsBackColorHilight
 		{
-			get;
-			set;
+			get
+			{
+				return _windowSizeIconsBackColorHilight;
+			}
+			set
+			{
+				_windowSizeIconsBackColorHilight = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the close button icon foreground color.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "WindowText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLOR_DESC")]
 		public Color WindowCloseIconForeColor
 		{
-			get;
-			set;
+			get
+			{
+				return _windowCloseIconForeColor;
+			}
+			set
+			{
+				_windowCloseIconForeColor = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the close icon foreground color when the mouse cursor is over it.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "HighlightText")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC")]
 		public Color WindowCloseIconForeColorHilight
 		{
-			get;
-			set;
+			get
+			{
+				return _windowCloseIconForeColorHilight;
+			}
+			set
+			{
+				_windowCloseIconForeColorHilight = value;
+				OnPropertyChanged();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the close icon background color when the mouse cursor is over it.
 		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Color), "Red")]
+		[LocalDescription(typeof(Resources), "PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC")]
 		public Color WindowCloseIconBackColorHilight
 		{
-			get;
-			set;
+			get
+			{
+				return _windowCloseIconBackColorHilight;
+			}
+			set
+			{
+				_windowCloseIconBackColorHilight = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the image used for menu items that use a checkmark.
+		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Image), null)]
+		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKENABLED_IMAGE")]
+		[TypeConverter(typeof(ImageConverter)), Editor(typeof(ImageEditor), typeof(UITypeEditor))]
+		public Image MenuCheckEnabledImage
+		{
+			get
+			{
+				return _checkEnabledImage;
+			}
+			set
+			{
+				_checkEnabledImage = value;
+				OnPropertyChanged();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the image used for disabled menu items that use a checkmark.
+		/// </summary>
+		[Browsable(true)]
+		[DefaultValue(typeof(Image), null)]
+		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKDISABLED_IMAGE")]
+		[TypeConverter(typeof(ImageConverter)), Editor(typeof(ImageEditor), typeof(UITypeEditor))]
+		public Image MenuCheckDisabledImage
+		{
+			get
+			{
+				return _checkDisabledImage;
+			}
+			set
+			{
+				_checkDisabledImage = value;
+				OnPropertyChanged();
+			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function called when a color property is changed.
+		/// </summary>
+		private void OnPropertyChanged()
+		{
+			if (PropertyChanged == null)
+			{
+				return;
+			}
+
+			PropertyChanged(this, EventArgs.Empty);
+		}
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderToolStripBorder"/> event.
 		/// </summary>
@@ -385,11 +681,11 @@ namespace GorgonLibrary.UI
 			var newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
 			if ((e.Item.Enabled) && (!e.Item.Selected))
 			{
-				e.Graphics.DrawImage(Resources.Check_Enabled1, newRect);
+				e.Graphics.DrawImage(_checkEnabledImage ?? Resources.Check_Enabled1, newRect);
 			}
 			else
 			{
-				e.Graphics.DrawImage(Resources.Check_Disabled1, newRect);
+				e.Graphics.DrawImage(_checkDisabledImage ?? Resources.Check_Disabled1, newRect);
 			}
 		}
 
@@ -548,10 +844,12 @@ namespace GorgonLibrary.UI
 			DisabledColor = Color.FromKnownColor(KnownColor.DimGray);
 			ForeColorInactive = DisabledColor;
 			HilightForeColor = Color.FromKnownColor(KnownColor.HighlightText);
+			HilightBackColor = Color.FromKnownColor(KnownColor.Highlight);
 			DropDownBorderColor = Color.FromKnownColor(KnownColor.ActiveBorder);
-			CheckBoxBackColor = Color.FromKnownColor(KnownColor.SteelBlue);
-			CheckBoxBackColorHilight = Color.FromKnownColor(KnownColor.CornflowerBlue);
+			CheckBoxBackColor = Color.FromKnownColor(KnownColor.Control);
+			CheckBoxBackColorHilight = Color.FromKnownColor(KnownColor.Highlight);
 			WindowBackground = Color.FromKnownColor(KnownColor.Control);
+			ContentPanelBackground = Color.FromKnownColor(KnownColor.Window);
 			WindowBorderActive = Color.FromKnownColor(KnownColor.ActiveBorder);
 			WindowBorderInactive = Color.FromKnownColor(KnownColor.InactiveBorder);
 			WindowSizeIconsForeColor = ForeColor;
@@ -559,7 +857,7 @@ namespace GorgonLibrary.UI
 			WindowSizeIconsBackColorHilight = Color.FromKnownColor(KnownColor.Highlight);
 			WindowCloseIconForeColor = WindowSizeIconsForeColor;
 			WindowCloseIconForeColorHilight = WindowSizeIconsForeColorHilight;
-			WindowCloseIconBackColorHilight = Color.DarkRed;
+			WindowCloseIconBackColorHilight = Color.Red;
 			ToolStripBackColor = WindowBackground;
 			ToolStripArrowColor = ForeColor;
 		}

@@ -364,6 +364,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Theme).
+        /// </summary>
+        internal static string GOR_FLAT_THEME_TEXT {
+            get {
+                return ResourceManager.GetString("GOR_FLAT_THEME_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Named object: {0}.
         /// </summary>
         internal static string GOR_GORGONNAMEDOBJECT_TOSTRING {
@@ -1106,20 +1115,200 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The image to use when showing a disabled check mark on a tool strip button..
+        /// </summary>
+        internal static string PROP_THEME_CHECKDISABLED_IMAGE {
+            get {
+                return ResourceManager.GetString("PROP_THEME_CHECKDISABLED_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image to use when showing a check mark on a tool strip button..
+        /// </summary>
+        internal static string PROP_THEME_CHECKENABLED_IMAGE {
+            get {
+                return ResourceManager.GetString("PROP_THEME_CHECKENABLED_IMAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The background color for the content panel on the window..
+        /// </summary>
+        internal static string PROP_THEME_CONTENTBACKCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_CONTENTBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color used for disabled items in the window..
+        /// </summary>
+        internal static string PROP_THEME_DISABLECOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_DISABLECOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color applied to the border of a drop down menu..
+        /// </summary>
+        internal static string PROP_THEME_DROPDOWNBORDERCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_DROPDOWNBORDERCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The foreground color for general items in the window..
+        /// </summary>
+        internal static string PROP_THEME_FORECOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_FORECOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color used on items in the window when the window is not active..
+        /// </summary>
+        internal static string PROP_THEME_FORECOLOR_INACTIVE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_FORECOLOR_INACTIVE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The background color used when hilighting menu items..
+        /// </summary>
+        internal static string PROP_THEME_HILIGHTBACKCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_HILIGHTBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The foreground color used when hilighting menu items..
+        /// </summary>
+        internal static string PROP_THEME_HILIGHTFORECOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_HILIGHTFORECOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color behind a checkmark on a menu item..
+        /// </summary>
+        internal static string PROP_THEME_MENUCHECKBACKCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_MENUCHECKBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color behind a checkmark on a menu item when the item is selected..
+        /// </summary>
+        internal static string PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color for an arrow on the tool strip..
+        /// </summary>
+        internal static string PROP_THEME_TOOLSTRIPARROWCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_TOOLSTRIPARROWCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The background color for a tool strip..
+        /// </summary>
+        internal static string PROP_THEME_TOOLSTRIPBACKCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_TOOLSTRIPBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The main background color for a window..
+        /// </summary>
+        internal static string PROP_THEME_WINBACKCOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINBACKCOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color of a window border when the window is active..
+        /// </summary>
+        internal static string PROP_THEME_WINBORDERACTIVE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINBORDERACTIVE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The color of a window border when the window is inactive or disabled..
+        /// </summary>
+        internal static string PROP_THEME_WINBORDERINACTIVE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINBORDERINACTIVE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The background color of the close icon on the window when the mouse is over the icon..
+        /// </summary>
+        internal static string PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINCLOSEBACKCOLORHILIGHT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The foreground color of the close icon on the window..
+        /// </summary>
+        internal static string PROP_THEME_WINCLOSEFORECOLOR_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINCLOSEFORECOLOR_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The foreground color of the close icon on the window when the mouse is over the icon..
+        /// </summary>
+        internal static string PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINCLOSEFORECOLORHILIGHT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The background color of the window icons (minimize, maximize and restore) when the mouse is over the icon..
+        /// </summary>
+        internal static string PROP_THEME_WINICONBACKHILIGHT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINICONBACKHILIGHT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the color to use when a window icon (Minimize, Maximize and Restore) is high lighted..
+        /// </summary>
+        internal static string PROP_THEME_WINICONHILIGHT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_THEME_WINICONHILIGHT_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons..
         /// </summary>
         internal static string PROP_WINDOWCAPTION_DESC {
             get {
                 return ResourceManager.GetString("PROP_WINDOWCAPTION_DESC", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Sets the color to use when a window icon (Minimize, Maximize, Restore or Close) is high lighted..
-        /// </summary>
-        internal static string PROP_WINICONHILIGHT_DESC {
-            get {
-                return ResourceManager.GetString("PROP_WINICONHILIGHT_DESC", resourceCulture);
             }
         }
         

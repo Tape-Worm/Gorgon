@@ -34,6 +34,7 @@ namespace GorgonLibrary.Editor
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelFooter = new System.Windows.Forms.Panel();
 			this.statusMain = new System.Windows.Forms.StatusStrip();
@@ -52,9 +53,11 @@ namespace GorgonLibrary.Editor
 			// 
 			// ContentArea
 			// 
+			this.ContentArea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.ContentArea.Controls.Add(this.splitMain);
 			this.ContentArea.Controls.Add(this.panelFooter);
 			this.ContentArea.Controls.Add(this.panelMenu);
+			this.ContentArea.ForeColor = System.Drawing.Color.Silver;
 			resources.ApplyResources(this.ContentArea, "ContentArea");
 			// 
 			// panelMenu
@@ -74,8 +77,18 @@ namespace GorgonLibrary.Editor
 			// 
 			// fileToolStripMenuItem
 			// 
+			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem});
 			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
+			// 
+			// newToolStripMenuItem
+			// 
+			this.newToolStripMenuItem.Checked = true;
+			this.newToolStripMenuItem.CheckOnClick = true;
+			this.newToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+			resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
 			// 
 			// editToolStripMenuItem
 			// 
@@ -124,8 +137,30 @@ namespace GorgonLibrary.Editor
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Border = true;
+			this.BorderSize = 2;
 			this.Name = "FormMain";
 			this.ResizeHandleSize = 4;
+			this.Theme.CheckBoxBackColor = System.Drawing.Color.SteelBlue;
+			this.Theme.CheckBoxBackColorHilight = System.Drawing.Color.LightSkyBlue;
+			this.Theme.ContentPanelBackground = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.Theme.DisabledColor = System.Drawing.Color.Black;
+			this.Theme.DropDownBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(88)))), ((int)(((byte)(88)))));
+			this.Theme.ForeColor = System.Drawing.Color.Silver;
+			this.Theme.ForeColorInactive = System.Drawing.Color.Black;
+			this.Theme.HilightBackColor = System.Drawing.Color.SteelBlue;
+			this.Theme.HilightForeColor = System.Drawing.Color.White;
+			this.Theme.MenuCheckDisabledImage = ((System.Drawing.Image)(resources.GetObject("resource.MenuCheckDisabledImage")));
+			this.Theme.MenuCheckEnabledImage = ((System.Drawing.Image)(resources.GetObject("resource.MenuCheckEnabledImage")));
+			this.Theme.ToolStripArrowColor = System.Drawing.Color.White;
+			this.Theme.ToolStripBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.Theme.WindowBackground = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.Theme.WindowBorderActive = System.Drawing.Color.SteelBlue;
+			this.Theme.WindowBorderInactive = System.Drawing.Color.Black;
+			this.Theme.WindowCloseIconForeColor = System.Drawing.Color.White;
+			this.Theme.WindowCloseIconForeColorHilight = System.Drawing.Color.White;
+			this.Theme.WindowSizeIconsBackColorHilight = System.Drawing.Color.SteelBlue;
+			this.Theme.WindowSizeIconsForeColor = System.Drawing.Color.White;
+			this.Theme.WindowSizeIconsForeColorHilight = System.Drawing.Color.White;
 			this.ContentArea.ResumeLayout(false);
 			this.ContentArea.PerformLayout();
 			this.panelMenu.ResumeLayout(false);
@@ -153,6 +188,7 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.Panel panelExplorer;
 		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
 
 
 	}
