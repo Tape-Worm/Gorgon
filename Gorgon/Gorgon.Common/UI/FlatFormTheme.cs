@@ -1,13 +1,45 @@
-﻿using System;
+﻿#region MIT.
+// 
+// Gorgon.
+// Copyright (C) 2015 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Friday, February 20, 2015 12:28:54 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
 using GorgonLibrary.Design;
 using GorgonLibrary.Properties;
 using GorgonLibrary.UI.Design;
@@ -25,7 +57,7 @@ namespace GorgonLibrary.UI
 	/// </remarks>
 	[TypeConverter(typeof(FlatFormThemeConverter)), Serializable]
 	public class FlatFormTheme
-		: ToolStripRenderer
+		: ToolStripRenderer, IXmlSerializable
 	{
 		#region Variables.
 		private Color _foreColor;
@@ -162,6 +194,7 @@ namespace GorgonLibrary.UI
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "WindowText")]
 		[LocalDescription(typeof(Resources), "PROP_THEME_FORECOLOR_DESC")]
+		[NotifyParentProperty(true)]
 		public Color ForeColor
 		{
 			get
@@ -447,7 +480,6 @@ namespace GorgonLibrary.UI
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
 		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKENABLED_IMAGE")]
-		[TypeConverter(typeof(ImageConverter)), Editor(typeof(ImageEditor), typeof(UITypeEditor))]
 		public Image MenuCheckEnabledImage
 		{
 			get
@@ -467,7 +499,6 @@ namespace GorgonLibrary.UI
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
 		[LocalDescription(typeof(Resources), "PROP_THEME_CHECKDISABLED_IMAGE")]
-		[TypeConverter(typeof(ImageConverter)), Editor(typeof(ImageEditor), typeof(UITypeEditor))]
 		public Image MenuCheckDisabledImage
 		{
 			get
@@ -832,6 +863,57 @@ namespace GorgonLibrary.UI
 				e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
 			}
 		}
+
+		/// <summary>
+		/// Function to load this theme from a stream containing XML data.
+		/// </summary>
+		/// <param name="stream">Stream to load from.</param>
+		/// <returns>The flatform theme deserialized from XML.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="EndOfStreamException">Thrown when the stream position cannot read beyond the stream length.</exception>
+		public static FlatFormTheme Load(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_IS_WRITEONLY, "stream");
+			}
+
+			if (stream.Position >= stream.Length)
+			{
+				throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+			}
+
+			var serializer = new XmlSerializer(typeof(FlatFormTheme));
+			return (FlatFormTheme)serializer.Deserialize(stream);
+		}
+
+		/// <summary>
+		/// Function to save this theme as XML data into a stream.
+		/// </summary>
+		/// <param name="stream">Stream to fill with the data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the stream is read-only.</exception>
+		public void Save(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_IS_READONLY, "stream");
+			}
+
+			var serializer = new XmlSerializer(typeof(FlatFormTheme));
+			serializer.Serialize(stream, this);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -860,6 +942,88 @@ namespace GorgonLibrary.UI
 			WindowCloseIconBackColorHilight = Color.Red;
 			ToolStripBackColor = WindowBackground;
 			ToolStripArrowColor = ForeColor;
+		}
+		#endregion
+
+		#region IXmlSerializable Members
+		/// <summary>
+		/// This method is reserved and should not be used. When implementing the IXmlSerializable interface, you should return null (Nothing in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute" /> to the class.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Xml.Schema.XmlSchema" /> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)" /> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)" /> method.
+		/// </returns>
+		System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema()
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Generates an object from its XML representation.
+		/// </summary>
+		/// <param name="reader">The <see cref="T:System.Xml.XmlReader" /> stream from which the object is deserialized.</param>
+		void IXmlSerializable.ReadXml(XmlReader reader)
+		{
+			if (reader.MoveToContent() != XmlNodeType.Element)
+			{
+				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
+			}
+
+			if (!string.Equals(reader.LocalName, typeof(FlatFormTheme).Name))
+			{
+				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
+			}
+
+			// Get our properties so we can set them.
+			IDictionary<string, PropertyInfo> properties = (from property in typeof(FlatFormTheme).GetProperties()
+			                                                where property.PropertyType == typeof(Color)
+			                                                      && property.GetCustomAttribute<BrowsableAttribute>() != null
+			                                                select property).ToDictionary(key => key.Name, value => value, StringComparer.OrdinalIgnoreCase);
+
+			if (!reader.Read())
+			{
+				return;
+			}
+
+			var converter = new ColorConverter();
+
+			while (reader.MoveToContent() == XmlNodeType.Element)
+			{
+				PropertyInfo property;
+
+				if (!properties.TryGetValue(reader.LocalName, out property))
+				{
+					continue;
+				}
+
+				property.SetValue(this, converter.ConvertFromInvariantString(reader.GetAttribute("Color")));
+
+				reader.Read();
+			}
+		}
+
+		/// <summary>
+		/// Converts an object into its XML representation.
+		/// </summary>
+		/// <param name="writer">The <see cref="T:System.Xml.XmlWriter" /> stream to which the object is serialized.</param>
+		void IXmlSerializable.WriteXml(XmlWriter writer)
+		{
+			var converter = new ColorConverter();
+			IEnumerable<PropertyInfo> colorProperties = from property in typeof(FlatFormTheme).GetProperties()
+			                                            where property.PropertyType == typeof(Color)
+			                                                  && property.GetCustomAttribute<BrowsableAttribute>() != null
+			                                            select property;
+
+			foreach (PropertyInfo property in colorProperties)
+			{
+				var currentColor = (Color)property.GetValue(this);
+
+				writer.WriteStartElement(property.Name);
+				// ReSharper disable PossibleNullReferenceException
+				// ReSharper disable once AssignNullToNotNullAttribute
+				writer.WriteAttributeString("Color", converter.ConvertToInvariantString(currentColor));
+				// ReSharper restore PossibleNullReferenceException
+				writer.WriteEndElement();
+			}
 		}
 		#endregion
 	}

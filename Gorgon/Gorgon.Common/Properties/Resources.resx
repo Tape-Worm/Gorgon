@@ -909,4 +909,22 @@ Code: 0x{2}</value>
   <data name="PROP_THEME_WINICONBACKHILIGHT_DESC" xml:space="preserve">
     <value>The background color of the window icons (minimize, maximize and restore) when the mouse is over the icon.</value>
   </data>
+  <data name="VERB_LOAD_THEME" xml:space="preserve">
+    <value>Load theme...</value>
+  </data>
+  <data name="VERB_SAVE_THEME" xml:space="preserve">
+    <value>Save theme...</value>
+  </data>
+  <data name="GOR_CANNOT_READ_THEME" xml:space="preserve">
+    <value>Cannot read theme xml file.</value>
+  </data>
+  <data name="GOR_DLG_LOAD_THEME" xml:space="preserve">
+    <value>Load theme</value>
+  </data>
+  <data name="GOR_DLG_SAVE_THEME" xml:space="preserve">
+    <value>Save theme as...</value>
+  </data>
+  <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
+    <value>Gorgon theme XML Files (*.xml)|*.xml</value>
+  </data>
 </root>

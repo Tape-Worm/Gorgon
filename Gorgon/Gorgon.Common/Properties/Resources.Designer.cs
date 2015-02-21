@@ -139,6 +139,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot read theme xml file..
+        /// </summary>
+        internal static string GOR_CANNOT_READ_THEME {
+            get {
+                return ResourceManager.GetString("GOR_CANNOT_READ_THEME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot write surrogate character &apos;{0}&apos; as a single character..
         /// </summary>
         internal static string GOR_CHUNK_CANNOT_WRITE_SURROGATE {
@@ -310,6 +319,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load theme.
+        /// </summary>
+        internal static string GOR_DLG_LOAD_THEME {
+            get {
+                return ResourceManager.GetString("GOR_DLG_LOAD_THEME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;No.
         /// </summary>
         internal static string GOR_DLG_NO {
@@ -324,6 +342,15 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_DLG_OK {
             get {
                 return ResourceManager.GetString("GOR_DLG_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save theme as....
+        /// </summary>
+        internal static string GOR_DLG_SAVE_THEME {
+            get {
+                return ResourceManager.GetString("GOR_DLG_SAVE_THEME", resourceCulture);
             }
         }
         
@@ -651,6 +678,15 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_STREAM_OFFSET_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GOR_STREAM_OFFSET_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon theme XML Files (*.xml)|*.xml.
+        /// </summary>
+        internal static string GOR_TEXT_XML_FILTER {
+            get {
+                return ResourceManager.GetString("GOR_TEXT_XML_FILTER", resourceCulture);
             }
         }
         
@@ -1319,6 +1355,24 @@ namespace GorgonLibrary.Properties {
             get {
                 object obj = ResourceManager.GetObject("Restore", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load theme....
+        /// </summary>
+        internal static string VERB_LOAD_THEME {
+            get {
+                return ResourceManager.GetString("VERB_LOAD_THEME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save theme....
+        /// </summary>
+        internal static string VERB_SAVE_THEME {
+            get {
+                return ResourceManager.GetString("VERB_SAVE_THEME", resourceCulture);
             }
         }
         

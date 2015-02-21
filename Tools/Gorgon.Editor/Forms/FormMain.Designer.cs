@@ -53,11 +53,11 @@ namespace GorgonLibrary.Editor
 			// 
 			// ContentArea
 			// 
-			this.ContentArea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.ContentArea.BackColor = System.Drawing.SystemColors.Window;
 			this.ContentArea.Controls.Add(this.splitMain);
 			this.ContentArea.Controls.Add(this.panelFooter);
 			this.ContentArea.Controls.Add(this.panelMenu);
-			this.ContentArea.ForeColor = System.Drawing.Color.Silver;
+			this.ContentArea.ForeColor = System.Drawing.SystemColors.WindowText;
 			resources.ApplyResources(this.ContentArea, "ContentArea");
 			// 
 			// panelMenu
@@ -140,8 +140,8 @@ namespace GorgonLibrary.Editor
 			this.BorderSize = 2;
 			this.Name = "FormMain";
 			this.ResizeHandleSize = 4;
-			this.Theme.CheckBoxBackColor = System.Drawing.Color.SteelBlue;
-			this.Theme.CheckBoxBackColorHilight = System.Drawing.Color.LightSkyBlue;
+			this.Theme.CheckBoxBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.Theme.CheckBoxBackColorHilight = System.Drawing.Color.SteelBlue;
 			this.Theme.ContentPanelBackground = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.Theme.DisabledColor = System.Drawing.Color.Black;
 			this.Theme.DropDownBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(88)))), ((int)(((byte)(88)))));
@@ -149,8 +149,8 @@ namespace GorgonLibrary.Editor
 			this.Theme.ForeColorInactive = System.Drawing.Color.Black;
 			this.Theme.HilightBackColor = System.Drawing.Color.SteelBlue;
 			this.Theme.HilightForeColor = System.Drawing.Color.White;
-			this.Theme.MenuCheckDisabledImage = ((System.Drawing.Image)(resources.GetObject("resource.MenuCheckDisabledImage")));
-			this.Theme.MenuCheckEnabledImage = ((System.Drawing.Image)(resources.GetObject("resource.MenuCheckEnabledImage")));
+			this.Theme.MenuCheckDisabledImage = global::GorgonLibrary.Editor.Properties.Resources.Check_Disabled1;
+			this.Theme.MenuCheckEnabledImage = global::GorgonLibrary.Editor.Properties.Resources.Check_Enabled1;
 			this.Theme.ToolStripArrowColor = System.Drawing.Color.White;
 			this.Theme.ToolStripBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.Theme.WindowBackground = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));

@@ -29,13 +29,16 @@
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using GorgonLibrary.Native;
 using GorgonLibrary.Design;
 using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 using GorgonLibrary.Properties;
 using GorgonLibrary.UI.Design;
 
@@ -117,6 +120,7 @@ namespace GorgonLibrary.UI
 		private int _captionHeight;
 		[AccessedThroughProperty("ContentArea")]
 		private Panel _panelContent;
+		private PropertyDescriptor _themeProperty;
 		#endregion
 
 		#region Properties.
@@ -229,7 +233,7 @@ namespace GorgonLibrary.UI
 				{
 					value = new FlatFormTheme();
 				}
-
+				
 				if (_theme != null)
 				{
 					_theme.PropertyChanged -= Theme_PropertyChangedEvent;
@@ -237,7 +241,6 @@ namespace GorgonLibrary.UI
 
 				_theme = value;
 
-				ToolStripManager.RenderMode = ToolStripManagerRenderMode.Custom;
 				ToolStripManager.Renderer = _theme;
 
 				// Fire the event to signal that the theme has changed.
@@ -536,13 +539,143 @@ namespace GorgonLibrary.UI
 
 		#region Methods.
 		/// <summary>
-		/// Function to set up the caption theme colors.
+		/// Function called when the Save Theme menu item is clicked.
 		/// </summary>
-		private void SetCaptionTheme()
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="e">Event parameters.</param>
+		private void OnSaveTheme(object sender, EventArgs e)
 		{
-			labelCaption.ForeColor = _theme.ForeColor;
-			labelMinimize.ForeColor = _theme.WindowSizeIconsForeColor;
+			SaveFileDialog dialog = null;
+			Stream stream = null;
 
+			try
+			{
+				dialog = new SaveFileDialog
+				{
+					Title = Resources.GOR_DLG_SAVE_THEME,
+					DefaultExt = "xml",
+					Filter = Resources.GOR_TEXT_XML_FILTER
+				};
+
+				if (dialog.ShowDialog(this) != DialogResult.OK)
+				{
+					return;
+				}
+
+				stream = dialog.OpenFile();
+				var currentTheme = (FlatFormTheme)_themeProperty.GetValue(this);
+
+				if (currentTheme == null)
+				{
+					return;
+				}
+
+				currentTheme.Save(stream);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				if (stream != null)
+				{
+					stream.Dispose();
+				}
+				if (dialog != null)
+				{
+					dialog.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function called when the Load Theme menu item is clicked.
+		/// </summary>
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="e">Event parameters.</param>
+		private void OnLoadTheme(object sender, EventArgs e)
+		{
+			OpenFileDialog dialog = null;
+			Stream stream = null;
+
+			try
+			{
+				dialog = new OpenFileDialog
+				{
+					Title = Resources.GOR_DLG_LOAD_THEME,
+					DefaultExt = "xml",
+					Filter = Resources.GOR_TEXT_XML_FILTER
+				};
+
+				if (dialog.ShowDialog(this) != DialogResult.OK)
+				{
+					return;
+				}
+
+				var currentTheme = (FlatFormTheme)_themeProperty.GetValue(this);
+
+				if (currentTheme == null)
+				{
+					return;
+				}
+
+				// Back up the selected images since our theme file does not contain image data.
+				Image checkEnabled = currentTheme.MenuCheckEnabledImage;
+				Image checkDisabled = currentTheme.MenuCheckDisabledImage;
+
+				stream = dialog.OpenFile();
+				var newTheme = FlatFormTheme.Load(stream);
+
+				// Restore the previous images.
+				newTheme.MenuCheckEnabledImage = checkEnabled;
+				newTheme.MenuCheckDisabledImage = checkDisabled;
+
+				_themeProperty.SetValue(this, newTheme);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				if (stream != null)
+				{
+					stream.Dispose();
+				}
+				if (dialog != null)
+				{
+					dialog.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to build the designer verbs for load/saving themes.
+		/// </summary>
+		private void BuildDesignerVerbs()
+		{
+			if ((!DesignMode)
+				|| (Site == null))
+			{
+				return;
+			}
+
+			_themeProperty = TypeDescriptor.GetProperties(typeof(FlatForm))
+			                               .Cast<PropertyDescriptor>()
+			                               .First(item => string.Equals(item.Name, "Theme", StringComparison.OrdinalIgnoreCase));
+
+			var host = (IDesignerHost)Site.GetService(typeof(IDesignerHost));
+			var menuDesigner = (IMenuCommandService)host.GetService(typeof(IMenuCommandService));
+
+			var loadVerb = new DesignerVerb(Resources.VERB_LOAD_THEME, OnLoadTheme);
+			var saveVerb = new DesignerVerb(Resources.VERB_SAVE_THEME, OnSaveTheme);
+
+			loadVerb.Properties.Add("Theme", _themeProperty);
+			saveVerb.Properties.Add("Theme", _themeProperty);
+
+			menuDesigner.AddVerb(loadVerb);
+			menuDesigner.AddVerb(saveVerb);
 		}
 
 		/// <summary>
@@ -1178,6 +1311,8 @@ namespace GorgonLibrary.UI
 		{
 			try
 			{
+				BuildDesignerVerbs();
+
 				ToolStripManager.Renderer = _theme;
 				
 				labelCaption_TextChanged(this, EventArgs.Empty);

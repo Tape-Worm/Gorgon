@@ -25,15 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI.Design
@@ -46,6 +39,18 @@ namespace GorgonLibrary.UI.Design
 	{
 		#region Methods.
 		/// <summary>
+		/// Returns whether changing a value on this object requires a call to <see cref="M:System.ComponentModel.TypeConverter.CreateInstance(System.Collections.IDictionary)" /> to create a new value, using the specified context.
+		/// </summary>
+		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
+		/// <returns>
+		/// true if changing a property on this object requires a call to <see cref="M:System.ComponentModel.TypeConverter.CreateInstance(System.Collections.IDictionary)" /> to create a new value; otherwise, false.
+		/// </returns>
+		public override bool GetCreateInstanceSupported(ITypeDescriptorContext context)
+		{
+			return false;
+		}
+
+		/// <summary>
 		/// Returns whether this converter can convert the object to the specified type, using the specified context.
 		/// </summary>
 		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
@@ -56,7 +61,6 @@ namespace GorgonLibrary.UI.Design
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
 			return destinationType == typeof(string) 
-				//|| destinationType == typeof(InstanceDescriptor)
 				|| base.CanConvertTo(context, destinationType);
 		}
 
@@ -72,24 +76,35 @@ namespace GorgonLibrary.UI.Design
 		/// </returns>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-//			if (destinationType != typeof(InstanceDescriptor))
-			{
-				return destinationType == typeof(string) ? Resources.GOR_FLAT_THEME_TEXT : base.ConvertTo(context, culture, value, destinationType);
-			}
-
-			var theme = value as FlatFormTheme;
-
-			if (theme == null)
-			{
-				return base.ConvertTo(context, culture, value, destinationType);
-			}
-
-			Type themeType = typeof(FlatFormTheme);
-			ConstructorInfo constructor = themeType.GetConstructor(new Type[0]);
-			object[] properties = themeType.GetProperties().Select(item => item.GetValue(theme)).ToArray();
-
-			return new InstanceDescriptor(constructor, properties);
+			return destinationType == typeof(string) ? Resources.GOR_FLAT_THEME_TEXT : base.ConvertTo(context, culture, value, destinationType);
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether this object supports properties using the specified context.
+		/// </summary>
+		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
+		/// <returns>
+		/// true because <see cref="M:System.ComponentModel.TypeConverter.GetProperties(System.Object)" /> should be called to find the properties of this object. This method never returns false.
+		/// </returns>
+		public override bool GetPropertiesSupported(ITypeDescriptorContext context)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Gets a collection of properties for the type of object specified by the value parameter.
+		/// </summary>
+		/// <param name="context">An <see cref="T:System.ComponentModel.ITypeDescriptorContext" /> that provides a format context.</param>
+		/// <param name="value">An <see cref="T:System.Object" /> that specifies the type of object to get the properties for.</param>
+		/// <param name="attributes">An array of type <see cref="T:System.Attribute" /> that will be used as a filter.</param>
+		/// <returns>
+		/// A <see cref="T:System.ComponentModel.PropertyDescriptorCollection" /> with the properties that are exposed for the component, or null if there are no properties.
+		/// </returns>
+		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
+		{
+			return TypeDescriptor.GetProperties(typeof(FlatFormTheme));
+		}
+
 		#endregion
 	}
 }
