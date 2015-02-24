@@ -105,7 +105,7 @@ namespace GorgonLibrary.Graphics
     {
         #region Variables.
         private readonly GorgonDisposableObjectCollection _trackedObjects;	                // Tracked objects.
-        private static bool _isDWMEnabled = true;						                    // Flag to indicate that the desktop window manager compositor is enabled.
+        private static bool _isDWMEnabled;													// Flag to indicate that the desktop window manager compositor is enabled.
         private static readonly bool _dontEnableDWM;						                // Flag to indicate that we should not enable the DWM.
         private bool _disposed;                                                             // Flag to indicate that the context was disposed.
 	    private List<GorgonRenderCommands> _commands;                                       // A list of rendering commands for deferred contexts.
@@ -568,7 +568,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  That is, passing a SM5 feature level with a SM4 card will only use a SM4 feature level.  If the user omits the feature level (in one of the constructor 
 		/// overloads), then Gorgon will use the best available feature level for the video device being used.</para>
 		/// </remarks>
-		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel)
+		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel = DeviceFeatureLevel.SM5)
 		{
         	ResetFullscreenOnFocus = true;
             ImmediateContext = this;
@@ -631,23 +631,6 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="device">Video device to use.</param>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
-		/// <para>-or-</para>
-		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
-		/// </exception>
-		/// <remarks>
-		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (Nothing in VB.Net), then the primary device will be used. 
-        /// To determine the devices on the system, check the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> class.  The primary device will be the first device in this collection. 
-		/// </remarks>
-		public GorgonGraphics(GorgonVideoDevice device)
-			: this(device, DeviceFeatureLevel.SM5)
-		{
-		}
-
-		/// <summary>
-		/// Initializes the <see cref="GorgonGraphics"/> class.
-		/// </summary>
 		/// <param name="featureLevel">The maximum feature level to support for the devices enumerated.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
@@ -671,7 +654,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
 		/// </exception>
 		public GorgonGraphics()
-			: this(null, DeviceFeatureLevel.SM5)
+			: this(null)
 		{
 		}
 

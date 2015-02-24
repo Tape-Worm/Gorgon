@@ -1,11 +1,14 @@
-﻿namespace GorgonLibrary.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace GorgonLibrary.Editor
 {
 	partial class FormSplash
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -100,12 +103,12 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Label labelVersion;
-		private System.Windows.Forms.Label labelVersionNumber;
-		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-		private System.Windows.Forms.Label labelInfo;
-		private System.Windows.Forms.Panel panel2;
+		private Panel panel1;
+		private Label labelVersion;
+		private Label labelVersionNumber;
+		private FlowLayoutPanel flowLayoutPanel1;
+		private Label labelInfo;
+		private Panel panel2;
 
 	}
 }

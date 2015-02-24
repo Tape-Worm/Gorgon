@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.UI
 {
@@ -41,7 +42,7 @@ namespace GorgonLibrary.UI
 		#region Variables.
 		private string _message = string.Empty;             // Message to be displayed.
 		private Point _textPosition = new Point(60, 2);		// Text position.
-		private Size _maxTextSize = new Size(400, 152);     // Maximum text size.
+		private Size _maxTextSize;							// Maximum text size.
 		#endregion
 
 		#region Properties
@@ -156,6 +157,10 @@ namespace GorgonLibrary.UI
 		    {
 		        return;
 		    }
+
+			Screen currentScreen = Screen.FromControl(this);
+			_maxTextSize = new Size(currentScreen.WorkingArea.Width / 4,
+			                        (int)(Font.GetHeight() * 20).Min(Screen.FromControl(this).WorkingArea.Height - (buttonOK.Height + 10)));
 
 		    // Inherit the parent icon.
 		    if (Owner != null)

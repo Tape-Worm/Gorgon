@@ -25,14 +25,15 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 using StructureMap;
-using StructureMap.Pipeline;
-using StructureMap.Graph;
 
 namespace GorgonLibrary.Editor
 {
@@ -41,6 +42,49 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	static class Program
 	{
+		// The container for our object graph.
+		private static Container _objectContainer;
+
+		/// <summary>
+		/// Function to create a graphics interface.
+		/// </summary>
+		/// <param name="splash">The splash screen interface.</param>
+		/// <returns>A new graphics interface.</returns>
+		private static GorgonGraphics CreateGraphics(ISplash splash)
+		{
+			// Initialize our graphics interface.
+			splash.InfoText = Resources.GOREDIT_TEXT_INITIALIZE_GRAPHICS;
+
+			// Find the best device in the system.
+			GorgonVideoDeviceEnumerator.Enumerate(false, false);
+
+			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_FOUND_VIDEO_DEVICES, GorgonVideoDeviceEnumerator.VideoDevices.Count);
+
+			if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
+			}
+
+			// Default to the first on the list.
+			GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
+
+			// If we have more than one device, use the best available device.
+			if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
+			{
+				bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
+							  orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
+							  select device).First();
+			}
+			
+			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, bestDevice.Name, bestDevice.SupportedFeatureLevel);
+
+			var result = new GorgonGraphics(bestDevice);
+
+			_objectContainer.Inject(result);
+
+			return result;
+		}
+
 		/// <summary>
 		/// Function to build the object graph for the application.
 		/// </summary>
@@ -49,6 +93,12 @@ namespace GorgonLibrary.Editor
 		{
 			return new Container(obj =>
 			                     {
+				                     obj.For<GorgonGraphics>()
+				                        .Use<GorgonGraphics>();
+
+				                     obj.For<Func<ISplash, GorgonGraphics>>()
+				                        .Use<Func<ISplash, GorgonGraphics>>(CreateGraphics);
+
 				                     obj.For<GorgonLogFile>()
 					                    .Use<GorgonLogFile>(() => new GorgonLogFile("Gorgon.Editor", "Tape_Worm"))
 											.OnCreation("Open log",
@@ -73,7 +123,25 @@ namespace GorgonLibrary.Editor
 												            }
 											            });
 
-				                     obj.For<FormSplash>()
+				                     obj.For<EditorSettings>()
+				                        .Use<EditorSettings>()
+											.OnCreation("Load settings",
+														settings =>
+														{
+															// Attempt to load our settings, but if it fails, then just reset the object and log the exception.
+															try
+															{
+																settings.Reset();
+																settings.Load();
+															}
+															catch(Exception ex)
+															{
+																settings.Reset();
+																GorgonException.Catch(ex);
+															}
+														});
+
+				                     obj.For<ISplash>()
 					                    .Use<FormSplash>();
 
 				                     obj.For<FormMain>()
@@ -90,7 +158,6 @@ namespace GorgonLibrary.Editor
 		[STAThread]
 		static void Main()
 		{
-			Container objectContainer = null;
 			AppContext app = null;
 
 			try
@@ -102,9 +169,9 @@ namespace GorgonLibrary.Editor
 				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
 				                                                             .FirstOrDefault(assembly => string.Equals(assembly.FullName, e.Name, StringComparison.Ordinal));
 
-				objectContainer = BuildGraph();
+				_objectContainer = BuildGraph();
 				
-				app = objectContainer.GetInstance<AppContext>();
+				app = _objectContainer.GetInstance<AppContext>();
 				app.Show();
 			}
 			catch (Exception ex)
@@ -118,9 +185,9 @@ namespace GorgonLibrary.Editor
 					app.Dispose();
 				}
 
-				if (objectContainer != null)
+				if (_objectContainer != null)
 				{
-					objectContainer.Dispose();
+					_objectContainer.Dispose();
 				}
 			}
 		}

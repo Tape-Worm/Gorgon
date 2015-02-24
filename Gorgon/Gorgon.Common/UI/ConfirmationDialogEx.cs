@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.UI
 {
@@ -68,7 +69,7 @@ namespace GorgonLibrary.UI
 		{			
 			base.OnLoad(e);
 
-			MessageHeight = 256 - checkToAll.Height;
+			MessageHeight = ((int)(Font.GetHeight() * 20).Min(Screen.FromControl(this).WorkingArea.Height - (buttonOK.Height + 10))) - checkToAll.Height;
 		}
 
 		/// <summary>

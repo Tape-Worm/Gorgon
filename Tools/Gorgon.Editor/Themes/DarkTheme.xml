@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<FlatFormTheme>
+  <ToolStripBackColor Color="68, 68, 68" />
+  <ToolStripArrowColor Color="White" />
+  <CheckBoxBackColorHilight Color="SteelBlue" />
+  <CheckBoxBackColor Color="68, 68, 68" />
+  <DropDownBorderColor Color="88, 88, 88" />
+  <ForeColor Color="Silver" />
+  <ForeColorInactive Color="0, 0, 0" />
+  <DisabledColor Color="Black" />
+  <HilightForeColor Color="White" />
+  <HilightBackColor Color="SteelBlue" />
+  <WindowBackground Color="68, 68, 68" />
+  <ContentPanelBackground Color="58, 58, 58" />
+  <WindowBorderActive Color="SteelBlue" />
+  <WindowBorderInactive Color="Black" />
+  <WindowSizeIconsForeColor Color="White" />
+  <WindowSizeIconsForeColorHilight Color="White" />
+  <WindowSizeIconsBackColorHilight Color="SteelBlue" />
+  <WindowCloseIconForeColor Color="White" />
+  <WindowCloseIconForeColorHilight Color="White" />
+  <WindowCloseIconBackColorHilight Color="Red" />
+</FlatFormTheme>

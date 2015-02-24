@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,29 +20,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, April 30, 2012 6:28:42 PM
+// Created: Monday, February 23, 2015 12:37:25 AM
 // 
 #endregion
 
+
 using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Editor [DEBUG]")]
-[assembly: AssemblyDescription("An application to create/edit various items (Sprites, Fonts, etc...) for the Gorgon components. [DEBUG]")]
+[assembly: AssemblyTitle("Gorgon Editor API [DEBUG]")]
+[assembly: AssemblyDescription("Common functionality for the editor and plug-ins. [DEBUG]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Editor")]
-[assembly: AssemblyDescription("An application to create/edit various items (Sprites, Fonts, etc...) for the Gorgon components.")]
+[assembly: AssemblyTitle("Gorgon Editor API")]
+[assembly: AssemblyDescription("Common functionality for the editor and plug-ins.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyProduct("Gorgon.Editor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -66,4 +66,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.*")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
-[assembly: NeutralResourcesLanguage("")]

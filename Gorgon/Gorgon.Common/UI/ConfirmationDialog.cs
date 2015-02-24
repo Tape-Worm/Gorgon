@@ -28,6 +28,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.UI
 {
@@ -164,8 +165,6 @@ namespace GorgonLibrary.UI
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-
-			MessageHeight = 256;
 
 			// Force focus.
 			if (_showCancel)

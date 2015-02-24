@@ -26,6 +26,8 @@
 
 using System;
 using System.Drawing;
+using System.Windows.Forms;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.UI
 {
@@ -85,7 +87,7 @@ namespace GorgonLibrary.UI
 			{
 				_lastWidth = Width;
 				Height += 202;
-				Width = 405;
+				Width = MessageWidth;
 				textWarningDetails.Visible = true;
 			}
 			else
@@ -125,7 +127,6 @@ namespace GorgonLibrary.UI
 		{
 			base.OnLoad(e);
 
-			MessageHeight = 256;
 			_lastWidth = Width;
 			buttonOK.Focus();
 			ValidateFunctions();

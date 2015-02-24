@@ -150,6 +150,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CD9AFF
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.API", "..\Tools\Gorgon.Editor.API\Gorgon.Editor.API.csproj", "{1AA24833-7C23-4BB9-BC95-81A97FF43880}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -330,6 +332,10 @@ Global
 		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AA24833-7C23-4BB9-BC95-81A97FF43880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AA24833-7C23-4BB9-BC95-81A97FF43880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AA24833-7C23-4BB9-BC95-81A97FF43880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AA24833-7C23-4BB9-BC95-81A97FF43880}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -383,5 +389,6 @@ Global
 		{F55A19C0-8F8A-4C73-BF4E-623D6BFBAD49} = {717400E1-71FF-450F-B997-1531A5E6DE6A}
 		{095E1088-8F2F-4D52-9FA4-E5DE469FC039} = {717400E1-71FF-450F-B997-1531A5E6DE6A}
 		{F46A76A0-F66E-48B4-AD4B-AE490B2EE587} = {095E1088-8F2F-4D52-9FA4-E5DE469FC039}
+		{1AA24833-7C23-4BB9-BC95-81A97FF43880} = {095E1088-8F2F-4D52-9FA4-E5DE469FC039}
 	EndGlobalSection
 EndGlobal

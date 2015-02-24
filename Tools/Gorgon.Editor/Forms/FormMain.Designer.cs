@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor
 {
@@ -53,11 +54,11 @@ namespace GorgonLibrary.Editor
 			// 
 			// ContentArea
 			// 
-			this.ContentArea.BackColor = System.Drawing.SystemColors.Window;
+			this.ContentArea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.ContentArea.Controls.Add(this.splitMain);
 			this.ContentArea.Controls.Add(this.panelFooter);
 			this.ContentArea.Controls.Add(this.panelMenu);
-			this.ContentArea.ForeColor = System.Drawing.SystemColors.WindowText;
+			this.ContentArea.ForeColor = System.Drawing.Color.Silver;
 			resources.ApplyResources(this.ContentArea, "ContentArea");
 			// 
 			// panelMenu
@@ -179,16 +180,16 @@ namespace GorgonLibrary.Editor
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelFooter;
-		private System.Windows.Forms.StatusStrip statusMain;
-		private System.Windows.Forms.Panel panelMenu;
-		private System.Windows.Forms.MenuStrip menuMain;
-		private System.Windows.Forms.SplitContainer splitMain;
-		private System.Windows.Forms.Panel panelContentHost;
-		private System.Windows.Forms.Panel panelExplorer;
-		private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+		private Panel panelFooter;
+		private StatusStrip statusMain;
+		private Panel panelMenu;
+		private MenuStrip menuMain;
+		private SplitContainer splitMain;
+		private Panel panelContentHost;
+		private Panel panelExplorer;
+		private ToolStripMenuItem fileToolStripMenuItem;
+		private ToolStripMenuItem editToolStripMenuItem;
+		private ToolStripMenuItem newToolStripMenuItem;
 
 
 	}

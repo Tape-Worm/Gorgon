@@ -25,19 +25,28 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
+using StructureMap;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Primary application window.
 	/// </summary>
-	public partial class FormMain 
+	public sealed partial class FormMain 
 		: FlatForm
 	{
 		#region Variables.
-
+		// Settings for the editor.
+		private readonly EditorSettings _settings;
+		// The log file for the application.
+		private readonly GorgonLogFile _logFile;
+		// The window text.
+		private string _windowText;
 		#endregion
 
 		#region Properties.
@@ -46,21 +55,18 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply the theme to the primary window.
+		/// Function to update the text on this window in a thread-safe manner.
 		/// </summary>
-		private void SetupTheme()
+		/// <param name="newText">New text to set.</param>
+		private void SetWindowText(string newText)
 		{
-			/*// Set up our forms renderer.
-			if (!(ToolStripManager.Renderer is GorgonEditorRenderer))
+			if (InvokeRequired)
 			{
-				ToolStripManager.Renderer = new GorgonEditorRenderer();
-			}*/
+				BeginInvoke(new Action(() => SetWindowText(newText)));
+				return;
+			}
 
-			/*this.BackColor = GorgonEditorRenderer.WindowBackground;
-			this.ForeColor = GorgonEditorRenderer.WindowCaptionForeColor;
-			this.BorderColor = GorgonEditorRenderer.WindowActiveBorderColor;
-			this.InactiveBorderColor = GorgonEditorRenderer.WindowInactiveBorderColor;
-			this.WindowIconHilightColor = GorgonEditorRenderer.WindowIconHilightColor;*/
+			Text = string.Format("{0} - {1}", _windowText, string.IsNullOrWhiteSpace(newText) ? Resources.GOREDIT_TEXT_UNTITLED : newText);
 		}
 
 		/// <summary>
@@ -71,8 +77,78 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnLoad(e);
 
-			SetupTheme();
+			try
+			{
+				// Remember the initial window text.
+				_windowText = Text;
+
+				SetWindowText(null);
+
+				if (_settings.FormState != FormWindowState.Minimized)
+				{
+					WindowState = _settings.FormState;
+				}
+
+				Location = _settings.WindowDimensions.Location;
+				Size = _settings.WindowDimensions.Size;
+
+				// If this window can't be placed on a monitor, then shift it to the primary, 
+				// otherwise it'll end up off-screen and it'll just be annoying to try and 
+				// bring it back.
+				if (!Screen.AllScreens.Any(item => item.Bounds.Contains(Location)))
+				{
+					Location = Screen.PrimaryScreen.Bounds.Location;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				Gorgon.Quit();
+			}
 		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			_logFile.Print("Closing main window '{0}'", LoggingLevel.Verbose, Text);
+
+			try
+			{
+				_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
+			}
+			catch (Exception ex)
+			{
+				e.Cancel = false;
+
+				// Log any exceptions on shut down of the main form just so we have a 
+				// record of things going wrong.
+				GorgonException.Catch(ex);
+
+#if DEBUG
+				// We won't bother showing anything here outside of DEBUG.
+				GorgonDialogs.ErrorBox(this, ex);
+#endif
+			}
+			finally
+			{
+				// Persist the settings on application shut down - regardless of what happens before.
+				// If this fails, just log it and continue on.
+				try
+				{
+					_settings.Save();
+				}
+				catch (Exception ex)
+				{
+					GorgonException.Catch(ex);
+				}
+			}
+		}
+
 		#endregion
 
 		#region Constructor/Destructor.
@@ -82,6 +158,19 @@ namespace GorgonLibrary.Editor
 		public FormMain()
 		{
 			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FormMain"/> class.
+		/// </summary>
+		/// <param name="settings">The settings.</param>
+		/// <param name="log">The log file for the application.</param>
+		[DefaultConstructor]
+		public FormMain(EditorSettings settings, GorgonLogFile log)
+			: this()
+		{
+			_logFile = log;
+			_settings = settings;
 		}
 		#endregion
 	}

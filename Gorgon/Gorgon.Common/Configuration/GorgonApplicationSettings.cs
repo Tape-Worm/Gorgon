@@ -46,7 +46,7 @@ namespace GorgonLibrary.Configuration
 	{
 		#region Variables.
 		private XDocument _xmlSettings;													            // XML document containing application settings.
-		private string _path = string.Empty;											            // Path to the XML settings.
+		private string _path;																		// Path to the XML settings.
 		private readonly IDictionary<PropertyInfo, ApplicationSettingAttribute> _properties;		// List of properties to serialize.
 		#endregion
 
@@ -272,6 +272,13 @@ namespace GorgonLibrary.Configuration
 					}
 
 					object collection = property.Key.GetValue(this, null);
+
+					if (collection == null)
+					{
+						section.Add(new XElement("Setting", new XAttribute(property.Value.SettingName, string.Empty)));
+						continue;
+					}
+
 					PropertyInfo collectionIndex = collection.GetType().GetProperty("Item");
 					PropertyInfo countProperty = collection.GetType().GetProperty("Count");
 
@@ -350,18 +357,24 @@ namespace GorgonLibrary.Configuration
 					}
 
 					object collection = property.Key.GetValue(this, null);
+
+					// If the collection isn't instanced, then move on.  We will not be creating instances.
+					if (collection == null)
+					{
+						continue;
+					}
+
 					MethodInfo addMethod = collection.GetType().GetMethod("Add");
 					MethodInfo clearMethod = collection.GetType().GetMethod("Clear");
-
+					
 					clearMethod.Invoke(collection, null);
 					
-					// ReSharper disable once ForCanBeConvertedToForeach
-					for (int i = 0; i < values.Length; i++)
+					foreach (object item in values)
 					{
 						addMethod.Invoke(collection, new[]
-						{
-							values[i]
-						});
+						                             {
+							                             item
+						                             });
 					}
 				}                
 				else

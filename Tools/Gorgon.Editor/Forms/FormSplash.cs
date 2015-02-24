@@ -28,40 +28,20 @@ using System;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using StructureMap;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Splash screen form.
 	/// </summary>
-	partial class FormSplash : Form
+	partial class FormSplash 
+		: Form, ISplash
 	{
 		#region Variables.
 		// The application version number.
 		private readonly Version _appVersion;
 		private readonly GorgonLogFile _logFile;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the text shown in the information label.
-		/// </summary>
-		public string InfoText
-		{
-			get
-			{
-				return labelInfo.Text;
-			}
-			set
-			{
-				labelInfo.Text = value;
-
-				// Print any text to the log.
-				_logFile.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
-
-				labelInfo.Refresh();
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -117,11 +97,59 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="FormSplash"/> class.
 		/// </summary>
 		/// <param name="log">The log file used to track status.</param>
+		[DefaultConstructor]
 		public FormSplash(GorgonLogFile log)
 			: this()
 		{
 			_logFile = log;
 		}
+		#endregion
+
+		#region ISplash Implementation.
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the text shown in the information label.
+		/// </summary>
+		public string InfoText
+		{
+			get
+			{
+				return labelInfo.Text;
+			}
+			set
+			{
+				labelInfo.Text = value;
+
+				// Print any text to the log.
+				_logFile.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
+
+				labelInfo.Refresh();
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to fade the splash screen in or out.
+		/// </summary>
+		/// <param name="fadeIn">TRUE to fade in, FALSE to fade out.</param>
+		/// <param name="time">Time, in milliseconds, for the fade.</param>
+		public void Fade(bool fadeIn, float time)
+		{
+			double startTime = GorgonTiming.MillisecondsSinceStart;
+			double delta = 0;
+
+			Refresh();
+
+			// Fade the splash screen in.
+			while (delta <= 1)
+			{
+				delta = (GorgonTiming.MillisecondsSinceStart - startTime) / time;
+
+				Opacity = fadeIn ? delta : 1.0f - delta;
+			}
+		}
+		#endregion
 		#endregion
 	}
 }

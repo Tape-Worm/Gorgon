@@ -25,10 +25,13 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -41,33 +44,20 @@ namespace GorgonLibrary.Editor
 	{
 		#region Variables.
 		// Main splash screen.
-		private FormSplash _splash;
+		private ISplash _splash;
 		// The application log file.
 		private GorgonLogFile _log;
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
+		// The editor settings interface.
+		private EditorSettings _settings;
+		// The graphics interface for our application.
+		private GorgonGraphics _graphics;
+		// The initialization factory.
+		private Func<GorgonGraphics> _factory;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to fade the splash screen in or out.
-		/// </summary>
-		/// <param name="fadeIn">TRUE to fade in, FALSE to fade out.</param>
-		/// <param name="time">Time, in milliseconds, for the fade.</param>
-		private void FadeSplashScreen(bool fadeIn, float time)
-		{
-			double startTime = GorgonTiming.MillisecondsSinceStart;
-			double delta = 0;
-
-			// Fade the splash screen in.
-			while (delta <= 1)
-			{
-				delta = (GorgonTiming.MillisecondsSinceStart - startTime) / time;
-
-				_splash.Opacity = fadeIn ? delta : 1.0f - delta;
-			}
-		}
-
 		/*		/// <summary>
 				/// Function to update the splash screen when a plug-in is loaded.
 				/// </summary>
@@ -82,30 +72,6 @@ namespace GorgonLibrary.Editor
 					_splash.UpdateVersion(string.Format(Resources.GOREDIT_TEXT_PLUG_IN,
 														Path.GetFileNameWithoutExtension(text)
 															.Ellipses(40, true)));
-				}
-
-				/// <summary>
-				/// Function to initialize the graphics interface.
-				/// </summary>
-				private void InitializeGraphics()
-				{
-					// Initialize our graphics interface.
-					_splash.UpdateVersion(Resources.GOREDIT_TEXT_INITIALIZE_GRAPHICS);
-
-					// Find the best device in the system.
-					GorgonVideoDeviceEnumerator.Enumerate(false, false);
-
-					GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
-
-					// If we have more than one device, use the best available device.
-					if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
-					{
-						bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
-									  orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
-									  select device).First();
-					}
-
-					ContentObject.Graphics = new GorgonGraphics(bestDevice);
 				}
 
 				/// <summary>
@@ -256,11 +222,13 @@ namespace GorgonLibrary.Editor
 				{
 					if (_log != null)
 					{
-						_log.Print("Application context shutting down.", LoggingLevel.Verbose);
+						_log.Print("Gorgon Editor shutting down.", LoggingLevel.All);
 						_log.Close();
 					}
 				}
 
+				_factory = null;
+				_graphics = null;
 				_log = null;
 				_disposed = true;
 			}
@@ -276,18 +244,19 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				_log.Print("Application context created successfully.", LoggingLevel.Verbose);
+				_log.Print("Gorgon Editor starting...", LoggingLevel.All);
 
 				//PlugIns.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
-			
+
 				_splash.Show();
-				_splash.Refresh();
 
 				// Fade in our splash screen.
-				FadeSplashScreen(true, 500.0f);
+				_splash.Fade(true, 500.0f);
 
-				/*
-                InitializeGraphics();
+				// Create our graphics interface.
+				_graphics = _factory();
+
+				/*                
                 InitializePlugIns();
                 InitializeScratchArea();
 				InitializeInput();
@@ -311,7 +280,7 @@ namespace GorgonLibrary.Editor
 					Thread.Sleep(1);
 				}
 
-				FadeSplashScreen(false, 250.0f);
+				_splash.Fade(false, 250.0f);
 
 				// Get rid of the splash screen.
 				_splash.Dispose();
@@ -354,8 +323,12 @@ namespace GorgonLibrary.Editor
 		/// <param name="log">The application log file.</param>
 		/// <param name="splashScreen">The splash screen for the application.</param>
 		/// <param name="mainForm">The instance of the main form.</param>
-		public AppContext(GorgonLogFile log, FormSplash splashScreen, FormMain mainForm)
+		/// <param name="settings">The editor settings.</param>
+		/// <param name="graphicsFactory">The factory function to create a new graphics interface.</param>
+		public AppContext(GorgonLogFile log, FormSplash splashScreen, FormMain mainForm, EditorSettings settings, Func<GorgonGraphics> graphicsFactory)
 		{
+			_factory = graphicsFactory;
+			_settings = settings;
 			_splash = splashScreen;
 			_log = log;
 			MainForm = mainForm;

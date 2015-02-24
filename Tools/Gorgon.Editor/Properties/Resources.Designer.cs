@@ -81,6 +81,78 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not create the graphics interface.  No suitable video device was found..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_CREATE_GFX {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_CREATE_GFX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use a system location or the root of the system drive for scratch data..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_USESYS_SCRATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USESYS_SCRATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not create the content file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_DRIVE_AVAILABLE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_DRIVE_AVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter must not be empty..
+        /// </summary>
+        internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Found {0} video devices....
+        /// </summary>
+        internal static string GOREDIT_TEXT_FOUND_VIDEO_DEVICES {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_FOUND_VIDEO_DEVICES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initializing graphics....
+        /// </summary>
+        internal static string GOREDIT_TEXT_INITIALIZE_GRAPHICS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_INITIALIZE_GRAPHICS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Initializing....
         /// </summary>
         internal static string GOREDIT_TEXT_INITIALIZING {
@@ -95,6 +167,24 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_STARTING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_STARTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Untitled.
+        /// </summary>
+        internal static string GOREDIT_TEXT_UNTITLED {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_UNTITLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Using video device &apos;{0}&apos;.  Feature level: {1}.
+        /// </summary>
+        internal static string GOREDIT_TEXT_USING_VIDEO_DEVICE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_USING_VIDEO_DEVICE", resourceCulture);
             }
         }
         
