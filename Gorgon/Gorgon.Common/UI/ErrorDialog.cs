@@ -39,6 +39,7 @@ namespace GorgonLibrary.UI
 		#region Variables.
 		private int _lastWidth;                 // Last used width.
 		private string _errorDetails;			// Error details.
+		private int _detailHeight;				// Height for details panel.
 		#endregion
 
 		#region Properties.
@@ -86,15 +87,15 @@ namespace GorgonLibrary.UI
 			if (checkDetail.Checked)
 			{
 				_lastWidth = Width;
-				Height += 202;
-				Width = MessageWidth;
+				Height += _detailHeight;
+				Width = MessageWidth + ((Width - ClientSize.Width) * 2);
 				errorDetails.Visible = true;
 			}
 			else
 			{
 				errorDetails.Visible = false;
 				Width = _lastWidth;
-				Height -= 202;
+				Height -= _detailHeight;
 			}
 
 			Refresh();
@@ -126,6 +127,9 @@ namespace GorgonLibrary.UI
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
+
+			_detailHeight = errorDetails.Height + 10;
+		    MessageHeight -= _detailHeight;
 
 		    _lastWidth = Width;
 			buttonOK.Focus();

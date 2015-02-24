@@ -159,10 +159,15 @@ namespace GorgonLibrary.UI
 		    }
 
 			Screen currentScreen = Screen.FromControl(this);
-			_maxTextSize = new Size(currentScreen.WorkingArea.Width / 4,
-			                        (int)(Font.GetHeight() * 20).Min(Screen.FromControl(this).WorkingArea.Height - (buttonOK.Height + 10)));
 
-		    // Inherit the parent icon.
+			if (_maxTextSize.Height <= 0)
+			{
+				_maxTextSize.Height = currentScreen.WorkingArea.Height - (buttonOK.Height + 100);
+			}
+
+			_maxTextSize.Width = _maxTextSize.Width == 0 ? currentScreen.WorkingArea.Width / 4 : _maxTextSize.Width;
+
+			// Inherit the parent icon.
 		    if (Owner != null)
 		    {
 		        Icon = Owner.Icon;

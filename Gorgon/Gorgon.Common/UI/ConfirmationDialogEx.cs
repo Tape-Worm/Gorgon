@@ -68,8 +68,8 @@ namespace GorgonLibrary.UI
 		protected override void OnLoad(EventArgs e)
 		{			
 			base.OnLoad(e);
-
-			MessageHeight = ((int)(Font.GetHeight() * 20).Min(Screen.FromControl(this).WorkingArea.Height - (buttonOK.Height + 10))) - checkToAll.Height;
+			
+			MessageHeight -= checkToAll.Height;
 		}
 
 		/// <summary>
