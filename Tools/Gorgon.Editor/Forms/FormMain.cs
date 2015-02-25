@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -37,12 +38,12 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Primary application window.
 	/// </summary>
-	public sealed partial class FormMain 
+	sealed partial class FormMain 
 		: FlatForm
 	{
 		#region Variables.
 		// Settings for the editor.
-		private readonly EditorSettings _settings;
+		private readonly IEditorSettings _settings;
 		// The log file for the application.
 		private readonly GorgonLogFile _logFile;
 		// The window text.
@@ -166,7 +167,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="settings">The settings.</param>
 		/// <param name="log">The log file for the application.</param>
 		[DefaultConstructor]
-		public FormMain(EditorSettings settings, GorgonLogFile log)
+		public FormMain(IEditorSettings settings, GorgonLogFile log)
 			: this()
 		{
 			_logFile = log;

@@ -126,6 +126,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameter count must be between 1 - 4..
+        /// </summary>
+        internal static string GOREDIT_ERR_PARAM_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PARAM_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {

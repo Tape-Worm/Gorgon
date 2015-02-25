@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor
 	/// Splash screen form.
 	/// </summary>
 	partial class FormSplash 
-		: Form, ISplash
+		: Form
 	{
 		#region Variables.
 		// The application version number.

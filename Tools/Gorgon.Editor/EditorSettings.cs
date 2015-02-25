@@ -39,8 +39,8 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Configuration settings for the editor.
 	/// </summary>
-	public sealed class EditorSettings
-		: GorgonApplicationSettings
+	sealed class EditorSettings
+		: GorgonApplicationSettings, IEditorSettings
 	{
 		#region Variables.
 		// Animation rate.

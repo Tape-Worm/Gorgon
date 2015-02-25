@@ -553,8 +553,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="device">Video device to use.</param>
-		/// <param name="featureLevel">The maximum feature level to support for the devices enumerated.</param>
+		/// <param name="device">[Optional] Video device to use.</param>
+		/// <param name="featureLevel">[Optional] The maximum feature level to support for the devices enumerated.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
 		/// <para>-or-</para>
@@ -568,7 +568,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  That is, passing a SM5 feature level with a SM4 card will only use a SM4 feature level.  If the user omits the feature level (in one of the constructor 
 		/// overloads), then Gorgon will use the best available feature level for the video device being used.</para>
 		/// </remarks>
-		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel = DeviceFeatureLevel.SM5)
+		public GorgonGraphics(GorgonVideoDevice device = null, DeviceFeatureLevel featureLevel = DeviceFeatureLevel.SM5)
 		{
         	ResetFullscreenOnFocus = true;
             ImmediateContext = this;
@@ -643,18 +643,6 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonGraphics(DeviceFeatureLevel featureLevel)
 			: this(null, featureLevel)
-		{
-		}
-
-		/// <summary>
-		/// Initializes the <see cref="GorgonGraphics"/> class.
-		/// </summary>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
-		/// <para>-or-</para>
-		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
-		/// </exception>
-		public GorgonGraphics()
-			: this(null)
 		{
 		}
 

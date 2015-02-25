@@ -46,110 +46,70 @@ namespace GorgonLibrary.Editor
 		private static Container _objectContainer;
 
 		/// <summary>
-		/// Function to create a graphics interface.
-		/// </summary>
-		/// <param name="splash">The splash screen interface.</param>
-		/// <returns>A new graphics interface.</returns>
-		private static GorgonGraphics CreateGraphics(ISplash splash)
-		{
-			// Initialize our graphics interface.
-			splash.InfoText = Resources.GOREDIT_TEXT_INITIALIZE_GRAPHICS;
-
-			// Find the best device in the system.
-			GorgonVideoDeviceEnumerator.Enumerate(false, false);
-
-			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_FOUND_VIDEO_DEVICES, GorgonVideoDeviceEnumerator.VideoDevices.Count);
-
-			if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
-			}
-
-			// Default to the first on the list.
-			GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
-
-			// If we have more than one device, use the best available device.
-			if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
-			{
-				bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
-							  orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
-							  select device).First();
-			}
-			
-			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, bestDevice.Name, bestDevice.SupportedFeatureLevel);
-
-			var result = new GorgonGraphics(bestDevice);
-
-			_objectContainer.Inject(result);
-
-			return result;
-		}
-
-		/// <summary>
 		/// Function to build the object graph for the application.
 		/// </summary>
+		/// <param name="obj">The configuration for our application.</param>
 		/// <returns>The container for our object graph.</returns>
-		private static Container BuildGraph()
+		private static void BuildGraph(ConfigurationExpression obj)
 		{
-			return new Container(obj =>
-			                     {
-				                     obj.For<GorgonGraphics>()
-				                        .Use<GorgonGraphics>();
+			obj.ForConcreteType<GorgonLogFile>()
+			   .Configure
+			   .Ctor<string>("appname").Is("Gorgon.Editor")
+			   .Ctor<string>("extraPath").Is("Tape_Worm")
+			   .OnCreation("Open log",
+			               log =>
+			               {
+				               // Set the logging level based on whatever is in our config file.
+				               Gorgon.Log.LogFilterLevel = log.LogFilterLevel = Settings.Default.LogLevel;
 
-				                     obj.For<Func<ISplash, GorgonGraphics>>()
-				                        .Use<Func<ISplash, GorgonGraphics>>(CreateGraphics);
+				               // Register this log with Gorgon's exception handler.
+				               GorgonException.Logs.Add(log);
 
-				                     obj.For<GorgonLogFile>()
-					                    .Use<GorgonLogFile>(() => new GorgonLogFile("Gorgon.Editor", "Tape_Worm"))
-											.OnCreation("Open log",
-											            log =>
-											            {
-															// Set the logging level based on whatever is in our config file.
-															Gorgon.Log.LogFilterLevel = log.LogFilterLevel = Settings.Default.LogLevel;
+				               try
+				               {
+					               log.Open();
+				               }
+				               catch
+				               {
+					               // We don't care about exceptions while opening the log file.
+					               // This can happen if two instances of the application are running, 
+					               // and while this is not supported, there's no need to worry about
+					               // whether we can use the log file or not from the 2nd app.
+				               }
+			               });
 
-															// Register this log with Gorgon's exception handler.
-															GorgonException.Logs.Add(log);
+			obj.For<IEditorSettings>()
+			   .Use<EditorSettings>()
+			   .OnCreation("Load settings",
+			               settings =>
+			               {
+				               // Attempt to load our settings, but if it fails, then just reset the object and log the exception.
+				               try
+				               {
+					               settings.Reset();
+					               settings.Load();
+				               }
+				               catch (Exception ex)
+				               {
+					               settings.Reset();
+					               GorgonException.Catch(ex);
+				               }
+			               });
 
-												            try
-												            {
-													            log.Open();
-												            }
-												            catch
-												            {
-													            // We don't care about exceptions while opening the log file.
-																// This can happen if two instances of the application are running, 
-																// and while this is not supported, there's no need to worry about
-																// whether we can use the log file or not from the 2nd app.
-												            }
-											            });
 
-				                     obj.For<EditorSettings>()
-				                        .Use<EditorSettings>()
-											.OnCreation("Load settings",
-														settings =>
-														{
-															// Attempt to load our settings, but if it fails, then just reset the object and log the exception.
-															try
-															{
-																settings.Reset();
-																settings.Load();
-															}
-															catch(Exception ex)
-															{
-																settings.Reset();
-																GorgonException.Catch(ex);
-															}
-														});
+			obj.For<IFormFactory>()
+			   .Use<FormFactory>();
 
-				                     obj.For<ISplash>()
-					                    .Use<FormSplash>();
+			obj.For<IVideoDeviceSelector>()
+			   .Use<VideoDeviceSelector>();
 
-				                     obj.For<FormMain>()
-				                        .Use<FormMain>();
+			obj.For<IGraphicsFactory>()
+			   .Use<GraphicsFactory>();
 
-				                     obj.For<AppContext>()
-					                    .Use<AppContext>();
-			                     });
+			obj.ForConcreteType<FormMain>();
+
+			obj.For<IAppContext>()
+			   .Use<AppContext>();
 		}
 
 		/// <summary>
@@ -169,7 +129,7 @@ namespace GorgonLibrary.Editor
 				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
 				                                                             .FirstOrDefault(assembly => string.Equals(assembly.FullName, e.Name, StringComparison.Ordinal));
 
-				_objectContainer = BuildGraph();
+				_objectContainer = new Container(BuildGraph);
 				
 				app = _objectContainer.GetInstance<AppContext>();
 				app.Show();

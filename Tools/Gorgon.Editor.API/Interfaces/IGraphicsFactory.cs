@@ -1,4 +1,4 @@
-﻿#region MIT.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -20,39 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, February 23, 2015 8:31:13 PM
+// Created: Tuesday, February 24, 2015 9:49:32 PM
 // 
 #endregion
 
 using System;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The interface for the splash screen.
+	/// Used to retrieve an existing graphics instance from the application, or a new one if one does not exist.
 	/// </summary>
-	public interface ISplash
+	public interface IGraphicsFactory 
 		: IDisposable
 	{
 		/// <summary>
-		/// Property to set or return the text shown in the information label.
+		/// Function to retrieve the graphics interface instance.
 		/// </summary>
-		string InfoText
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Function to fade the splash screen in or out.
-		/// </summary>
-		/// <param name="fadeIn">TRUE to fade in, FALSE to fade out.</param>
-		/// <param name="time">Time, in milliseconds, for the fade.</param>
-		void Fade(bool fadeIn, float time);
-
-		/// <summary>
-		/// Function to show the splash screen.
-		/// </summary>
-		void Show();
+		/// <returns>A new graphics interface if called for the first time, or an existing graphics interface if called again.</returns>
+		/// <exception cref="GorgonException">Thrown when a suitable video could not be found for the application.</exception>
+		GorgonGraphics GetGraphics();
 	}
 }
