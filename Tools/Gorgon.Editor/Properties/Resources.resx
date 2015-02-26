@@ -133,6 +133,11 @@
   <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
     <value>Could not create the content file '{0}'.</value>
   </data>
+  <data name="GOREDIT_ERR_ERROR_LOADING_PLUGIN" xml:space="preserve">
+    <value>There was an error loading the plug-in '{0}'.
+
+Please see the details pane for more information.</value>
+  </data>
   <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>Could not find the file '{0}'.</value>
   </data>
@@ -145,6 +150,9 @@
   <data name="GOREDIT_ERR_PARAM_COUNT_INVALID" xml:space="preserve">
     <value>The parameter count must be between 1 - 4.</value>
   </data>
+  <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
+    <value>Disabled by user.</value>
+  </data>
   <data name="GOREDIT_TEXT_FOUND_VIDEO_DEVICES" xml:space="preserve">
     <value>Found {0} video devices...</value>
   </data>
@@ -154,8 +162,17 @@
   <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
     <value>Initializing...</value>
   </data>
+  <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
+    <value>Loading plug-ins...</value>
+  </data>
+  <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
+    <value>Plug-in: {0}</value>
+  </data>
   <data name="GOREDIT_TEXT_STARTING" xml:space="preserve">
     <value>Starting... Filthy humans best recognize.</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
+    <value>Unknown plug-in type.</value>
   </data>
   <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
     <value>Untitled</value>

@@ -88,7 +88,10 @@
     <Compile Include="Interfaces\IEditorSettings.cs" />
     <Compile Include="Interfaces\IAppContext.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interfaces\IPlugInFactory.cs" />
     <Compile Include="Interfaces\IVideoDeviceSelector.cs" />
+    <Compile Include="PlugIns\DisabledPlugIn.cs" />
+    <Compile Include="PlugIns\PlugInFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VideoDeviceSelector.cs" />
@@ -145,6 +148,10 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
+      <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
+      <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>

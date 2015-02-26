@@ -55,6 +55,8 @@ namespace GorgonLibrary.Editor
 		private IGraphicsFactory _graphicsFactory;
 		// The form factory for this application.
 		private readonly IFormFactory _formFactory;
+		// The plug-in factory.
+		private readonly IPlugInFactory _plugInFactory;
 		#endregion
 
 		#region Methods.
@@ -268,6 +270,9 @@ namespace GorgonLibrary.Editor
 				// Create our graphics interface.
 				_graphicsFactory.GetGraphics();
 
+				// Retrieve our plug-ins for the application.
+				_plugInFactory.ScanAndLoadPlugIns();
+
 				/*                
                 InitializePlugIns();
                 InitializeScratchArea();
@@ -332,13 +337,15 @@ namespace GorgonLibrary.Editor
 		/// <param name="mainForm">The instance of the main form.</param>
 		/// <param name="settings">The editor settings.</param>
 		/// <param name="graphicsFactory">The factory to create a new graphics interface.</param>
-		/// <param name="formFactory">The factory to create forms for the application.</param>
-		public AppContext(GorgonLogFile log, FormMain mainForm, IEditorSettings settings, IGraphicsFactory graphicsFactory, IFormFactory formFactory)
+		/// <param name="formsFactory">The factory to create forms for the application.</param>
+		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
+		public AppContext(GorgonLogFile log, FormMain mainForm, IEditorSettings settings, IGraphicsFactory graphicsFactory, IFormFactory formsFactory, IPlugInFactory plugInFactory)
 		{
 			_graphicsFactory = graphicsFactory;
 			_settings = settings;
-			_formFactory = formFactory;
+			_formFactory = formsFactory;
 			_log = log;
+			_plugInFactory = plugInFactory;
 			MainForm = mainForm;
 		}
 		#endregion

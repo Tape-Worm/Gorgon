@@ -108,6 +108,17 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error loading the plug-in &apos;{0}&apos;.
+        ///
+        ///Please see the details pane for more information..
+        /// </summary>
+        internal static string GOREDIT_ERR_ERROR_LOADING_PLUGIN {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_ERROR_LOADING_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find the file &apos;{0}&apos;..
         /// </summary>
         internal static string GOREDIT_ERR_FILE_NOT_FOUND {
@@ -144,6 +155,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disabled by user..
+        /// </summary>
+        internal static string GOREDIT_TEXT_DISABLED_BY_USER {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_DISABLED_BY_USER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Found {0} video devices....
         /// </summary>
         internal static string GOREDIT_TEXT_FOUND_VIDEO_DEVICES {
@@ -171,11 +191,38 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading plug-ins....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOADING_PLUGINS {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plug-in: {0}.
+        /// </summary>
+        internal static string GOREDIT_TEXT_PLUG_IN {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_PLUG_IN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting... Filthy humans best recognize..
         /// </summary>
         internal static string GOREDIT_TEXT_STARTING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_STARTING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown plug-in type..
+        /// </summary>
+        internal static string GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE", resourceCulture);
             }
         }
         

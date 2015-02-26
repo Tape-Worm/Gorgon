@@ -108,6 +108,9 @@ namespace GorgonLibrary.Editor
 
 			obj.ForConcreteType<FormMain>();
 
+			obj.For<IPlugInFactory>()
+			   .Use<PlugInFactory>();
+
 			obj.For<IAppContext>()
 			   .Use<AppContext>();
 		}
