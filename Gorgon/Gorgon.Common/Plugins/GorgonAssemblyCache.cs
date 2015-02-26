@@ -56,7 +56,10 @@ namespace GorgonLibrary.PlugIns
 
 		    Gorgon.Log.Print("Assembly list is empty.  Retrieving assembly list...", LoggingLevel.Verbose);
 
-			foreach (Assembly assembly in assemblies.Where(assembly => !_assemblies.ContainsKey(assembly.FullName)))
+			// Weed out already cached assemblies and those that are involved in the creation of dynamic assemblies (throws exception).
+			foreach (Assembly assembly in assemblies.Where(assembly => !_assemblies.ContainsKey(assembly.FullName)
+				&& (!(assembly is System.Reflection.Emit.AssemblyBuilder)
+				&& (!string.Equals(assembly.GetType().FullName, "System.Reflection.Emit.InternalAssemblyBuilder", StringComparison.OrdinalIgnoreCase)))))
 			{
 			    _assemblies.Add(assembly.FullName, assembly);
 			    Gorgon.Log.Print("Added Assembly '{0}' from {1}", LoggingLevel.Verbose, assembly.FullName, assembly.EscapedCodeBase);
