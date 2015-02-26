@@ -25,13 +25,10 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 using StructureMap;
 

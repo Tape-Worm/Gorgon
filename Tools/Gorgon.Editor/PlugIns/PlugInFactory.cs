@@ -25,15 +25,10 @@
 #endregion
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Versioning;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
