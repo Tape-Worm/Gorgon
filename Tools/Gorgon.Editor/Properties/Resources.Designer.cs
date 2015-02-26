@@ -200,7 +200,7 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plug-in: {0}.
+        ///   Looks up a localized string similar to Loading plug-in file: {0}.
         /// </summary>
         internal static string GOREDIT_TEXT_PLUG_IN {
             get {

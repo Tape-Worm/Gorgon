@@ -166,7 +166,7 @@ Please see the details pane for more information.</value>
     <value>Loading plug-ins...</value>
   </data>
   <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
-    <value>Plug-in: {0}</value>
+    <value>Loading plug-in file: {0}</value>
   </data>
   <data name="GOREDIT_TEXT_STARTING" xml:space="preserve">
     <value>Starting... Filthy humans best recognize.</value>

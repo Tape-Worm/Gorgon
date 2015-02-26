@@ -121,7 +121,7 @@ namespace GorgonLibrary.Editor
 						continue;
 					}
 
-					splash.InfoText = string.Format(Resources.GOREDIT_TEXT_PLUG_IN, Path.GetFileNameWithoutExtension(assemblyFile.FullName));
+					splash.InfoText = string.Format(Resources.GOREDIT_TEXT_PLUG_IN, Path.GetFileNameWithoutExtension(assemblyFile.FullName).Ellipses(40, true));
 
 					AssemblyName name = Gorgon.PlugIns.LoadPlugInAssembly(assemblyFile.FullName);
 					IEnumerable<GorgonPlugIn> plugIns = Gorgon.PlugIns.EnumeratePlugIns(name);
