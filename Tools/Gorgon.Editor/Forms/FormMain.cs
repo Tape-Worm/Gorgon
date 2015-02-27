@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Controls;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 using StructureMap;
@@ -70,6 +71,20 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function called to allow sub-classed windows to apply the theme to controls that are not necessarily themeable.
+		/// </summary>
+		protected override void ApplyTheme()
+		{
+			tabPages.BackgroundColor = Theme.ContentPanelBackground;
+			tabPages.BorderColor = Theme.WindowBackground;
+			tabPages.TabBorderColor = Theme.WindowBackground;
+			tabPages.TabGradient.ColorEnd = Theme.WindowBackground;
+			tabPages.TabGradient.ColorStart = Theme.WindowBackground;
+			tabPages.TabGradient.TabPageSelectedTextColor = Theme.HilightBackColor;
+			tabPages.TabGradient.TabPageTextColor = Theme.ForeColor;
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -79,9 +94,6 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				// Remember the initial window text.
-				_windowText = Text;
-
 				SetWindowText(null);
 
 				if (_settings.FormState != FormWindowState.Minimized)
@@ -99,6 +111,15 @@ namespace GorgonLibrary.Editor
 				{
 					Location = Screen.PrimaryScreen.Bounds.Location;
 				}
+
+				// TODO: Get rid of this.
+				NoContentPanel panel = new NoContentPanel(Theme, null);
+				panelContentHost.Controls.Add(panel);
+				if (panel.CaptionVisible)
+				{
+					panel.Padding = new Padding(0, 5, 0, 0);
+				}
+				panel.Dock = DockStyle.Fill;
 			}
 			catch (Exception ex)
 			{
@@ -171,6 +192,7 @@ namespace GorgonLibrary.Editor
 		{
 			_logFile = log;
 			_settings = settings;
+			_windowText = Text;
 		}
 		#endregion
 	}

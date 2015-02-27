@@ -118,75 +118,138 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Check_Disabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="labelCaption.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
-  <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="labelCaption.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_CREATE_GFX" xml:space="preserve">
-    <value>Could not create the graphics interface.  No suitable video device was found.</value>
+  <data name="labelCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
-    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
+  <data name="labelCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>547, 30</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT" xml:space="preserve">
-    <value>Cannot used a disposed object.</value>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="labelCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
   </data>
-  <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
-    <value>Could not create the content file '{0}'.</value>
+  <data name="labelCaption.Text" xml:space="preserve">
+    <value>Content Caption</value>
   </data>
-  <data name="GOREDIT_ERR_ERROR_LOADING_PLUGIN" xml:space="preserve">
-    <value>There was an error loading the plug-in '{0}'.
-
-Please see the details pane for more information.</value>
+  <data name="labelCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
   </data>
-  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the file '{0}'.</value>
+  <data name="&gt;&gt;labelCaption.Name" xml:space="preserve">
+    <value>labelCaption</value>
   </data>
-  <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
-    <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
+  <data name="&gt;&gt;labelCaption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
+  <data name="&gt;&gt;labelCaption.Parent" xml:space="preserve">
+    <value>panelCaption</value>
   </data>
-  <data name="GOREDIT_ERR_PARAM_COUNT_INVALID" xml:space="preserve">
-    <value>The parameter count must be between 1 - 4.</value>
+  <data name="&gt;&gt;labelCaption.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
-    <value>Disabled by user.</value>
+  <data name="labelClose.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
   </data>
-  <data name="GOREDIT_TEXT_FOUND_VIDEO_DEVICES" xml:space="preserve">
-    <value>Found {0} video devices...</value>
+  <data name="labelClose.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Marlett, 11.25pt</value>
   </data>
-  <data name="GOREDIT_TEXT_INITIALIZE_GRAPHICS" xml:space="preserve">
-    <value>Initializing graphics...</value>
+  <data name="labelClose.Location" type="System.Drawing.Point, System.Drawing">
+    <value>547, 0</value>
   </data>
-  <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
-    <value>Initializing...</value>
+  <data name="labelClose.Size" type="System.Drawing.Size, System.Drawing">
+    <value>25, 30</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
-    <value>Loading plug-ins...</value>
+  <data name="labelClose.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
-  <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
-    <value>Loading plug-in file: {0}</value>
+  <data name="labelClose.Text" xml:space="preserve">
+    <value>r</value>
   </data>
-  <data name="GOREDIT_TEXT_STARTING" xml:space="preserve">
-    <value>Starting... Filthy humans best recognize.</value>
+  <data name="labelClose.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
   </data>
-  <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
-    <value>Unknown plug-in type.</value>
+  <data name="&gt;&gt;labelClose.Name" xml:space="preserve">
+    <value>labelClose</value>
   </data>
-  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
-    <value>Untitled</value>
+  <data name="&gt;&gt;labelClose.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GOREDIT_TEXT_USING_VIDEO_DEVICE" xml:space="preserve">
-    <value>Using video device '{0}'.  Feature level: {1}</value>
+  <data name="&gt;&gt;labelClose.Parent" xml:space="preserve">
+    <value>panelCaption</value>
   </data>
-  <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;labelClose.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
-  <data name="Gorgon_2_x_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="panelCaption.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="panelCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="panelCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>572, 30</value>
+  </data>
+  <data name="panelCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;panelCaption.Name" xml:space="preserve">
+    <value>panelCaption</value>
+  </data>
+  <data name="&gt;&gt;panelCaption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;panelCaption.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;panelCaption.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="_panelContentDisplay.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="_panelContentDisplay.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 30</value>
+  </data>
+  <data name="_panelContentDisplay.Size" type="System.Drawing.Size, System.Drawing">
+    <value>572, 425</value>
+  </data>
+  <data name="_panelContentDisplay.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;_panelContentDisplay.Name" xml:space="preserve">
+    <value>_panelContentDisplay</value>
+  </data>
+  <data name="&gt;&gt;_panelContentDisplay.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_panelContentDisplay.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;_panelContentDisplay.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>8, 20</value>
+  </data>
+  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
+  <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
+    <value>572, 455</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>ContentPanel</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.UserControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

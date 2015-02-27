@@ -59,5 +59,95 @@ namespace GorgonLibrary.Editor.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter must not be empty..
+        /// </summary>
+        internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string GOREDIT_TEXT_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Appearance.
+        /// </summary>
+        internal static string PROP_CATEGORY_APPEARANCE {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_APPEARANCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Behavior.
+        /// </summary>
+        internal static string PROP_CATEGORY_BEHAVIOR {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_BEHAVIOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Data.
+        /// </summary>
+        internal static string PROP_CATEGORY_DATA {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_DATA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Design.
+        /// </summary>
+        internal static string PROP_CATEGORY_DESIGN {
+            get {
+                return ResourceManager.GetString("PROP_CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides a name for the content.  The name should conform to a standard file name..
+        /// </summary>
+        internal static string PROP_NAME_DESC {
+            get {
+                return ResourceManager.GetString("PROP_NAME_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows or hides the caption for the content panel..
+        /// </summary>
+        internal static string PROP_TEXT_CAPTION_VISIBLE_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_CAPTION_VISIBLE_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the text for the caption on the content panel control..
+        /// </summary>
+        internal static string PROP_TEXT_CONTENT_PANEL_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_CONTENT_PANEL_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the text value to assign to the caption of the window..
+        /// </summary>
+        internal static string PROP_TEXT_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TEXT_DESC", resourceCulture);
+            }
+        }
     }
 }

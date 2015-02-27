@@ -38,8 +38,8 @@ namespace GorgonLibrary.Editor
 		: IVideoDeviceSelector
 	{
 		#region Variables.
-		// The factory used to retrieve application forms.
-		private readonly IFormFactory _factory;
+		// The proxy object holding our splash screen.
+		private readonly IProxyObject<FormSplash> _splashProxy;
 		#endregion
 
 		#region Methods.
@@ -49,7 +49,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The best video device to use for the application, or NULL if no suitable device is found.</returns>
 		public GorgonVideoDevice GetBestVideoDevice()
 		{
-			FormSplash splash = _factory.CreateForm<FormSplash>(null, false);
+			FormSplash splash = _splashProxy.Item;
 
 			// Initialize our graphics interface.
 			splash.InfoText = Resources.GOREDIT_TEXT_INITIALIZE_GRAPHICS;
@@ -83,10 +83,10 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="VideoDeviceSelector"/> class.
 		/// </summary>
-		/// <param name="factory">The form factory used by the application.</param>
-		public VideoDeviceSelector(IFormFactory factory)
+		/// <param name="splashProxy">The proxy object for our splash screen to allow status updates.</param>
+		public VideoDeviceSelector(IProxyObject<FormSplash> splashProxy)
 		{
-			_factory = factory;
+			_splashProxy = splashProxy;
 		}
 		#endregion
 	}

@@ -32,6 +32,14 @@ namespace GorgonLibrary.Editor
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+			this.toolsFiles = new System.Windows.Forms.ToolStripContainer();
+			this.stripFiles = new System.Windows.Forms.ToolStrip();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripDropDownButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,7 +50,13 @@ namespace GorgonLibrary.Editor
 			this.splitMain = new System.Windows.Forms.SplitContainer();
 			this.panelContentHost = new System.Windows.Forms.Panel();
 			this.panelExplorer = new System.Windows.Forms.Panel();
+			this.tabPages = new KRBTabControl.KRBTabControl();
+			this.pageFiles = new KRBTabControl.TabPageEx();
+			this.pageProperties = new KRBTabControl.TabPageEx();
 			this.ContentArea.SuspendLayout();
+			this.toolsFiles.TopToolStripPanel.SuspendLayout();
+			this.toolsFiles.SuspendLayout();
+			this.stripFiles.SuspendLayout();
 			this.panelMenu.SuspendLayout();
 			this.menuMain.SuspendLayout();
 			this.panelFooter.SuspendLayout();
@@ -50,6 +64,9 @@ namespace GorgonLibrary.Editor
 			this.splitMain.Panel1.SuspendLayout();
 			this.splitMain.Panel2.SuspendLayout();
 			this.splitMain.SuspendLayout();
+			this.panelExplorer.SuspendLayout();
+			this.tabPages.SuspendLayout();
+			this.pageFiles.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ContentArea
@@ -60,6 +77,68 @@ namespace GorgonLibrary.Editor
 			this.ContentArea.Controls.Add(this.panelMenu);
 			this.ContentArea.ForeColor = System.Drawing.Color.Silver;
 			resources.ApplyResources(this.ContentArea, "ContentArea");
+			// 
+			// toolsFiles
+			// 
+			// 
+			// toolsFiles.ContentPanel
+			// 
+			resources.ApplyResources(this.toolsFiles.ContentPanel, "toolsFiles.ContentPanel");
+			resources.ApplyResources(this.toolsFiles, "toolsFiles");
+			this.toolsFiles.Name = "toolsFiles";
+			// 
+			// toolsFiles.TopToolStripPanel
+			// 
+			this.toolsFiles.TopToolStripPanel.Controls.Add(this.stripFiles);
+			// 
+			// stripFiles
+			// 
+			resources.ApplyResources(this.stripFiles, "stripFiles");
+			this.stripFiles.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripFiles.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.stripFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripButton1,
+            this.toolStripSeparator1,
+            this.toolStripButton2,
+            this.toolStripButton3,
+            this.toolStripSeparator2,
+            this.toolStripButton4});
+			this.stripFiles.Name = "stripFiles";
+			this.stripFiles.Stretch = true;
+			// 
+			// toolStripButton1
+			// 
+			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
+			this.toolStripButton1.Name = "toolStripButton1";
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
+			// 
+			// toolStripButton2
+			// 
+			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toolStripButton2, "toolStripButton2");
+			this.toolStripButton2.Name = "toolStripButton2";
+			// 
+			// toolStripButton3
+			// 
+			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toolStripButton3, "toolStripButton3");
+			this.toolStripButton3.Name = "toolStripButton3";
+			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
+			// 
+			// toolStripButton4
+			// 
+			this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.toolStripButton4, "toolStripButton4");
+			this.toolStripButton4.Name = "toolStripButton4";
 			// 
 			// panelMenu
 			// 
@@ -130,8 +209,44 @@ namespace GorgonLibrary.Editor
 			// 
 			// panelExplorer
 			// 
+			this.panelExplorer.Controls.Add(this.tabPages);
 			resources.ApplyResources(this.panelExplorer, "panelExplorer");
 			this.panelExplorer.Name = "panelExplorer";
+			// 
+			// tabPages
+			// 
+			resources.ApplyResources(this.tabPages, "tabPages");
+			this.tabPages.Alignments = KRBTabControl.KRBTabControl.TabAlignments.Bottom;
+			this.tabPages.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
+			this.tabPages.BorderColor = System.Drawing.Color.Magenta;
+			this.tabPages.Controls.Add(this.pageFiles);
+			this.tabPages.Controls.Add(this.pageProperties);
+			this.tabPages.IsCaptionVisible = false;
+			this.tabPages.IsDocumentTabStyle = true;
+			this.tabPages.IsDrawHeader = false;
+			this.tabPages.IsUserInteraction = false;
+			this.tabPages.Name = "tabPages";
+			this.tabPages.SelectedIndex = 0;
+			this.tabPages.TabBorderColor = System.Drawing.Color.Green;
+			this.tabPages.TabGradient.ColorEnd = System.Drawing.Color.Magenta;
+			this.tabPages.TabGradient.ColorStart = System.Drawing.Color.Magenta;
+			this.tabPages.TabGradient.TabPageSelectedTextColor = System.Drawing.Color.Yellow;
+			this.tabPages.TabGradient.TabPageTextColor = System.Drawing.Color.Yellow;
+			this.tabPages.TabHOffset = -2;
+			this.tabPages.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
+			// 
+			// pageFiles
+			// 
+			this.pageFiles.Controls.Add(this.toolsFiles);
+			this.pageFiles.IsClosable = false;
+			resources.ApplyResources(this.pageFiles, "pageFiles");
+			this.pageFiles.Name = "pageFiles";
+			// 
+			// pageProperties
+			// 
+			resources.ApplyResources(this.pageProperties, "pageProperties");
+			this.pageProperties.Name = "pageProperties";
+			this.pageProperties.IsClosable = false;
 			// 
 			// FormMain
 			// 
@@ -164,6 +279,12 @@ namespace GorgonLibrary.Editor
 			this.Theme.WindowSizeIconsForeColorHilight = System.Drawing.Color.White;
 			this.ContentArea.ResumeLayout(false);
 			this.ContentArea.PerformLayout();
+			this.toolsFiles.TopToolStripPanel.ResumeLayout(false);
+			this.toolsFiles.TopToolStripPanel.PerformLayout();
+			this.toolsFiles.ResumeLayout(false);
+			this.toolsFiles.PerformLayout();
+			this.stripFiles.ResumeLayout(false);
+			this.stripFiles.PerformLayout();
 			this.panelMenu.ResumeLayout(false);
 			this.panelMenu.PerformLayout();
 			this.menuMain.ResumeLayout(false);
@@ -174,6 +295,9 @@ namespace GorgonLibrary.Editor
 			this.splitMain.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitMain)).EndInit();
 			this.splitMain.ResumeLayout(false);
+			this.panelExplorer.ResumeLayout(false);
+			this.tabPages.ResumeLayout(false);
+			this.pageFiles.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -190,6 +314,17 @@ namespace GorgonLibrary.Editor
 		private ToolStripMenuItem fileToolStripMenuItem;
 		private ToolStripMenuItem editToolStripMenuItem;
 		private ToolStripMenuItem newToolStripMenuItem;
+		private KRBTabControl.KRBTabControl tabPages;
+		private KRBTabControl.TabPageEx pageFiles;
+		private ToolStripContainer toolsFiles;
+		private ToolStrip stripFiles;
+		private ToolStripDropDownButton toolStripButton1;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripButton toolStripButton2;
+		private ToolStripButton toolStripButton3;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripButton toolStripButton4;
+		private KRBTabControl.TabPageEx pageProperties;
 
 
 	}

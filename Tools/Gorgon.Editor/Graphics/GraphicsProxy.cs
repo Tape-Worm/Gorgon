@@ -31,68 +31,38 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The graphics interface used to create a new instance of the graphics object and return an existing object upon subsequent calls.
+	/// The proxy used to create a new instance of the graphics object and return an existing object upon subsequent calls.
 	/// </summary>
-	sealed class GraphicsFactory
-		: IGraphicsFactory
+	sealed class GraphicsProxy
+		: IProxyObject<GorgonGraphics>
 	{
 		#region Variables.
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
 		// The application instance of the graphics interface.
 		private GorgonGraphics _graphics;
-		// Factory used to retrieve forms for the application.
-		private readonly IFormFactory _factory;
+		// The splash screen proxy object to display status.
+		private readonly IProxyObject<FormSplash> _splashProxy;
 		// The video device selector used to determine the best video device to use.
 		private readonly IVideoDeviceSelector _deviceSelector;
 		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the graphics interface instance.
-		/// </summary>
-		/// <returns>A new graphics interface if called for the first time, or an existing graphics interface if called again.</returns>
-		/// <exception cref="GorgonException">Thrown when a suitable video could not be found for the application.</exception>
-		public GorgonGraphics GetGraphics()
-		{
-			if (_graphics != null)
-			{
-				return _graphics;
-			}
-
-			FormSplash splash = _factory.CreateForm<FormSplash>(null, false);
-			GorgonVideoDevice device = _deviceSelector.GetBestVideoDevice();
-
-			if (device == null)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
-			}
-
-			// Create our graphics interface.
-			_graphics = new GorgonGraphics(device);
-
-			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, device.Name, device.SupportedFeatureLevel);
-
-			return _graphics;
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GraphicsFactory"/> class.
+		/// Initializes a new instance of the <see cref="GraphicsProxy"/> class.
 		/// </summary>
-		/// <param name="factory">The application form factory used to retrieve form instances.</param>
+		/// <param name="splashProxy">The proxy object holding our splash screen to allow us to return status to the user.</param>
 		/// <param name="deviceSelector">The video device selector to use when searching for an appropriate video device.</param>
-		public GraphicsFactory(IFormFactory factory, IVideoDeviceSelector deviceSelector)
+		public GraphicsProxy(IProxyObject<FormSplash> splashProxy, IVideoDeviceSelector deviceSelector)
 		{
-			_factory = factory;
+			_splashProxy = splashProxy;
 			_deviceSelector = deviceSelector;
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="GraphicsFactory"/> class.
+		/// Finalizes an instance of the <see cref="GraphicsProxy"/> class.
 		/// </summary>
-		~GraphicsFactory()
+		~GraphicsProxy()
 		{
 			Dispose(false);
 		}
@@ -129,6 +99,37 @@ namespace GorgonLibrary.Editor
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+		#endregion
+
+		#region IProxyObject<GorgonGraphics> Members
+		/// <summary>
+		/// Property to return the proxied item.
+		/// </summary>
+		public GorgonGraphics Item
+		{
+			get
+			{
+				if (_graphics != null)
+				{
+					return _graphics;
+				}
+
+				FormSplash splash = _splashProxy.Item;
+				GorgonVideoDevice device = _deviceSelector.GetBestVideoDevice();
+
+				if (device == null)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
+				}
+
+				// Create our graphics interface.
+				_graphics = new GorgonGraphics(device);
+
+				splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, device.Name, device.SupportedFeatureLevel);
+
+				return _graphics;
+			}
 		}
 		#endregion
 	}

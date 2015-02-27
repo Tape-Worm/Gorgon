@@ -29,6 +29,7 @@ using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -49,11 +50,11 @@ namespace GorgonLibrary.Editor
 		// The editor settings interface.
 		private readonly IEditorSettings _settings;
 		// The initialization factory.
-		private IGraphicsFactory _graphicsFactory;
-		// The form factory for this application.
-		private readonly IFormFactory _formFactory;
+		private IProxyObject<GorgonGraphics> _graphicsFactory;
+		// The splash screen proxy for this application.
+		private readonly IProxyObject<FormSplash> _splashProxy;
 		// The plug-in factory.
-		private readonly IPlugInFactory _plugInFactory;
+		private readonly IPlugInRegistry _plugInFactory;
 		#endregion
 
 		#region Methods.
@@ -224,9 +225,9 @@ namespace GorgonLibrary.Editor
 						_graphicsFactory.Dispose();
 					}
 
-					if (_formFactory != null)
+					if (_splashProxy != null)
 					{
-						_formFactory.Dispose();
+						_splashProxy.Dispose();
 					}
 
 					if (_log != null)
@@ -257,7 +258,8 @@ namespace GorgonLibrary.Editor
 				//PlugIns.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
 				
 				// Create the splash form.
-				_splash = _formFactory.CreateForm<FormSplash, GorgonLogFile>(_log, null, false);
+				//_splash = _formFactory.CreateForm<FormSplash, GorgonLogFile>(_log, null, false);
+				_splash = _splashProxy.Item;
 
 				_splash.Show();
 
@@ -265,7 +267,7 @@ namespace GorgonLibrary.Editor
 				_splash.Fade(true, 500.0f);
 
 				// Create our graphics interface.
-				_graphicsFactory.GetGraphics();
+				var graphics = _graphicsFactory.Item;
 
 				// Retrieve our plug-ins for the application.
 				_plugInFactory.ScanAndLoadPlugIns();
@@ -297,7 +299,7 @@ namespace GorgonLibrary.Editor
 				_splash.Fade(false, 250.0f);
 
 				// Get rid of the splash screen.
-				_formFactory.ReleaseForm<FormSplash>();
+				_splashProxy.Dispose();
 
 				// Bring up our application form.
 				MainForm.Show();
@@ -320,7 +322,7 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
-				_formFactory.ReleaseForm<FormSplash>();
+				_splashProxy.Dispose();
 				_splash = null;
 			}
 		}
@@ -334,13 +336,13 @@ namespace GorgonLibrary.Editor
 		/// <param name="mainForm">The instance of the main form.</param>
 		/// <param name="settings">The editor settings.</param>
 		/// <param name="graphicsFactory">The factory to create a new graphics interface.</param>
-		/// <param name="formsFactory">The factory to create forms for the application.</param>
+		/// <param name="splashProxy">The factory to create forms for the application.</param>
 		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
-		public AppContext(GorgonLogFile log, FormMain mainForm, IEditorSettings settings, IGraphicsFactory graphicsFactory, IFormFactory formsFactory, IPlugInFactory plugInFactory)
+		public AppContext(GorgonLogFile log, FormMain mainForm, IEditorSettings settings, IProxyObject<GorgonGraphics> graphicsFactory, IProxyObject<FormSplash> splashProxy, IPlugInRegistry plugInFactory)
 		{
 			_graphicsFactory = graphicsFactory;
 			_settings = settings;
-			_formFactory = formsFactory;
+			_splashProxy = splashProxy;
 			_log = log;
 			_plugInFactory = plugInFactory;
 			MainForm = mainForm;

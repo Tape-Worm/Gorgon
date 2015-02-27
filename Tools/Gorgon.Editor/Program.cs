@@ -26,9 +26,11 @@
 
 using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 using StructureMap;
 
@@ -94,19 +96,19 @@ namespace GorgonLibrary.Editor
 			               });
 
 
-			obj.For<IFormFactory>()
-			   .Use<FormFactory>();
+			obj.For<IProxyObject<FormSplash>>()
+			   .Use<ProxyObject<FormSplash>>();
 
 			obj.For<IVideoDeviceSelector>()
 			   .Use<VideoDeviceSelector>();
 
-			obj.For<IGraphicsFactory>()
-			   .Use<GraphicsFactory>();
+			obj.For<IProxyObject<GorgonGraphics>>()
+			   .Use<GraphicsProxy>();
 
 			obj.ForConcreteType<FormMain>();
 
-			obj.For<IPlugInFactory>()
-			   .Use<PlugInFactory>();
+			obj.For<IPlugInRegistry>()
+			   .Use<PlugInRegistry>();
 
 			obj.For<IAppContext>()
 			   .Use<AppContext>();

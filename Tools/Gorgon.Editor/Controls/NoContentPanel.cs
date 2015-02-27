@@ -1,4 +1,4 @@
-#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -20,26 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, February 24, 2015 9:49:32 PM
+// Created: Thursday, February 26, 2015 11:31:59 PM
 // 
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using GorgonLibrary.UI;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.Controls
 {
 	/// <summary>
-	/// Used to retrieve an existing graphics instance from the application, or a new one if one does not exist.
+	/// The default panel to show when no content is open in the editor.
 	/// </summary>
-	public interface IGraphicsFactory 
-		: IDisposable
+	public partial class NoContentPanel 
+		: ContentPanel
 	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
+
+		#endregion
+
+		#region Methods.
+
+		#endregion
+
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Function to retrieve the graphics interface instance.
+		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
 		/// </summary>
-		/// <returns>A new graphics interface if called for the first time, or an existing graphics interface if called again.</returns>
-		/// <exception cref="GorgonException">Thrown when a suitable video could not be found for the application.</exception>
-		GorgonGraphics GetGraphics();
+		public NoContentPanel()
+		{
+			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
+		/// </summary>
+		/// <param name="theme">The theme from the content parent object.</param>
+		/// <param name="content">The content.</param>
+		public NoContentPanel(FlatFormTheme theme, EditorContent content)
+			: base(theme, content)
+		{
+			InitializeComponent();
+		}
+		#endregion
 	}
 }
