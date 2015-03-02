@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 using StructureMap;
 
@@ -109,6 +110,18 @@ namespace GorgonLibrary.Editor
 
 			obj.For<IPlugInRegistry>()
 			   .Use<PlugInRegistry>();
+
+			obj.For<IProxyObject<GorgonFileSystem>>()
+			   .Use<ProxyObject<GorgonFileSystem>>();
+
+			obj.For<IScratchArea>()
+			   .Use<ScratchArea>();
+
+			obj.For<IScratchLocator>()
+			   .Use<ScratchLocator>();
+
+			obj.For<IScratchServices>()
+			   .Use<ScratchServices>();
 
 			obj.For<IAppContext>()
 			   .Use<AppContext>();

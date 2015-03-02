@@ -75,6 +75,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the path to the scratch location for temporary data.
 		/// </summary>
+		/// <remarks>This value will check and format itself appropriately for directory paths.</remarks>
 		string ScratchPath
 		{
 			get;

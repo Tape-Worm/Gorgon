@@ -124,6 +124,9 @@
   <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
+    <value>Select a new temporary scratch path.</value>
+  </data>
   <data name="GOREDIT_ERR_CANNOT_CREATE_GFX" xml:space="preserve">
     <value>Could not create the graphics interface.  No suitable video device was found.</value>
   </data>
@@ -152,6 +155,12 @@ Please see the details pane for more information.</value>
   </data>
   <data name="GOREDIT_ERR_PARAM_COUNT_INVALID" xml:space="preserve">
     <value>The parameter count must be between 1 - 4.</value>
+  </data>
+  <data name="GOREDIT_TEXT_CLEANING_STALE_SCRATCH" xml:space="preserve">
+    <value>Cleaning up stale scratch areas...</value>
+  </data>
+  <data name="GOREDIT_TEXT_CREATING_SCRATCH" xml:space="preserve">
+    <value>Creating new scratch area...</value>
   </data>
   <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
     <value>Disabled by user.</value>

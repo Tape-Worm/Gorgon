@@ -45,6 +45,8 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		// Animation rate.
 		private float _animationRate = 0.25f;
+		// Directory for the scratch file.
+		private string _scratchDirectory;
 		#endregion
 
 		#region Properties.
@@ -91,11 +93,26 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the path to the scratch location for temporary data.
 		/// </summary>
+		/// <remarks>This value will check and format itself appropriately for directory paths.</remarks>
 		[ApplicationSetting("ScratchPath", typeof(string), "Options")]
 		public string ScratchPath
 		{
-			get;
-			set;
+			get
+			{
+				return _scratchDirectory;
+			}
+			set
+			{
+				if (string.IsNullOrWhiteSpace(_scratchDirectory))
+				{
+					value = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+									 .FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+						  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+						  + ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+				}
+
+				_scratchDirectory = value.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			}
 		}
 
 		/// <summary>
@@ -324,6 +341,7 @@ namespace GorgonLibrary.Editor
 
 			RecentFiles = new List<string>();
 			DisabledPlugIns = new List<string>();
+			ScratchPath = null;
 		}
 		#endregion
 	}

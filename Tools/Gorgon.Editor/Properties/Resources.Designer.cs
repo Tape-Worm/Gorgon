@@ -81,6 +81,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a new temporary scratch path..
+        /// </summary>
+        internal static string GOREDIT_DLG_SCRATCH_PATH {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_SCRATCH_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not create the graphics interface.  No suitable video device was found..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_CREATE_GFX {
@@ -160,6 +169,24 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaning up stale scratch areas....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CLEANING_STALE_SCRATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CLEANING_STALE_SCRATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating new scratch area....
+        /// </summary>
+        internal static string GOREDIT_TEXT_CREATING_SCRATCH {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_CREATING_SCRATCH", resourceCulture);
             }
         }
         

@@ -55,9 +55,47 @@ namespace GorgonLibrary.Editor
 		private readonly IProxyObject<FormSplash> _splashProxy;
 		// The plug-in factory.
 		private readonly IPlugInRegistry _plugInFactory;
+		// Services for scratch area manipulation.
+		private readonly IScratchServices _scratchServices;
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to initialize the scratch files area.
+		/// </summary>
+		/// <returns>TRUE if the init was successful, FALSE if not.</returns>
+		private bool InitializeScratchArea()
+		{
+			_splash.InfoText = Resources.GOREDIT_TEXT_CLEANING_STALE_SCRATCH;
+
+			// Clean out previous versions of the scratch file area.
+			_scratchServices.ScratchArea.CleanUp(true);
+
+			_splash.InfoText = Resources.GOREDIT_TEXT_CREATING_SCRATCH;
+
+			if ((!string.IsNullOrWhiteSpace(_settings.ScratchPath))
+				&& (_scratchServices.ScratchArea.SetScratchDirectory(_settings.ScratchPath) == ScratchAccessibility.Accessible))
+			{
+				return true;
+			}
+
+			ScratchAccessibility result;
+
+			do
+			{
+				result = _scratchServices.ScratchLocator.ChangeLocation();
+
+				if (result == ScratchAccessibility.Canceled)
+				{
+					return false;
+				}
+			} while (result != ScratchAccessibility.Accessible);
+
+			// Update the settings config file.
+			_settings.Save();
+
+			return true;
+		}
 		/*		/// <summary>
 				/// Function to update the splash screen when a plug-in is loaded.
 				/// </summary>
@@ -88,62 +126,6 @@ namespace GorgonLibrary.Editor
 					PlugIns.LoadPlugIns(UpdateSplashPlugInText);
 				}
 
-				/// <summary>
-				/// Function to initialize the scratch files area.
-				/// </summary>
-				private void InitializeScratchArea()
-				{
-					ScratchArea.ScratchPath = Program.Settings.ScratchPath;
-
-					EditorLogging.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, ScratchArea.ScratchPath);
-
-					_splash.UpdateVersion(Resources.GOREDIT_TEXT_CREATING_SCRATCH);
-
-					// Ensure that we're not being clever and trying to mess up our system.
-					if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
-					{
-						GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_CANNOT_USESYS_SCRATCH);
-					}
-					else
-					{
-						// Destroy previous scratch area files if possible.
-						// Do not do this when we have it set to a system area, this will keep us from 
-						// destroying anything critical.
-						ScratchArea.CleanOldScratchAreas();
-					}
-
-					// Ensure we can actually access the scratch area.
-					while (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) != ScratchAccessibility.Accessible)
-					{
-						EditorLogging.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-						if (ScratchArea.SetScratchLocation() == ScratchAccessibility.Canceled)
-						{
-							// Exit the application if we cancel.
-							MainForm.Dispose();
-							Gorgon.Quit();
-							return;
-						}
-
-						EditorLogging.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-						// Update with the new scratch path.
-						Program.Settings.Save();
-					}
-
-					ScratchArea.InitializeScratch();
-
-					// Get only the providers that are not disabled.
-					var plugIns = from plugIn in Gorgon.PlugIns
-								  where plugIn is GorgonFileSystemProviderPlugIn
-								  && PlugIns.UserDisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
-								  select plugIn;
-
-					foreach (GorgonPlugIn plugIn in plugIns)
-					{
-						ScratchArea.ScratchFiles.Providers.LoadProvider(plugIn.Name);
-					}
-				}
 
 				/// <summary>
 				/// Function to load the previous file.
@@ -272,6 +254,13 @@ namespace GorgonLibrary.Editor
 				// Retrieve our plug-ins for the application.
 				_plugInFactory.ScanAndLoadPlugIns();
 
+				// Create our scratch area.
+				if (!InitializeScratchArea())
+				{
+					Gorgon.Quit();
+					return;
+				}
+
 				/*                
                 InitializePlugIns();
                 InitializeScratchArea();
@@ -305,6 +294,7 @@ namespace GorgonLibrary.Editor
 				MainForm.Show();
 
 				Gorgon.Run(this);
+
 			}
 			catch (Exception ex)
 			{
@@ -322,6 +312,9 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				// Ensure that we clean up after ourselves.
+				_scratchServices.ScratchArea.CleanUp();
+
 				_splashProxy.Dispose();
 				_splash = null;
 			}
@@ -338,13 +331,21 @@ namespace GorgonLibrary.Editor
 		/// <param name="graphicsFactory">The factory to create a new graphics interface.</param>
 		/// <param name="splashProxy">The factory to create forms for the application.</param>
 		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
-		public AppContext(GorgonLogFile log, FormMain mainForm, IEditorSettings settings, IProxyObject<GorgonGraphics> graphicsFactory, IProxyObject<FormSplash> splashProxy, IPlugInRegistry plugInFactory)
+		/// <param name="scratchServices">The services pertaining to scratch area manipulation.</param>
+		public AppContext(GorgonLogFile log, 
+			FormMain mainForm, 
+			IEditorSettings settings, 
+			IProxyObject<GorgonGraphics> graphicsFactory, 
+			IProxyObject<FormSplash> splashProxy, 
+			IPlugInRegistry plugInFactory,
+			IScratchServices scratchServices)
 		{
 			_graphicsFactory = graphicsFactory;
 			_settings = settings;
 			_splashProxy = splashProxy;
 			_log = log;
 			_plugInFactory = plugInFactory;
+			_scratchServices = scratchServices;
 			MainForm = mainForm;
 		}
 		#endregion

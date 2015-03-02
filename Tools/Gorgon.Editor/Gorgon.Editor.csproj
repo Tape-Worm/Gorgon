@@ -80,6 +80,9 @@
     <Compile Include="Controls\NoContentPanel.Designer.cs">
       <DependentUpon>NoContentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interfaces\IScratchLocator.cs" />
+    <Compile Include="Interfaces\IScratchServices.cs" />
+    <Compile Include="IO\ScratchLocator.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,7 +101,10 @@
     <Compile Include="Interfaces\IAppContext.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Interfaces\IPlugInRegistry.cs" />
+    <Compile Include="Interfaces\IScratchArea.cs" />
     <Compile Include="Interfaces\IVideoDeviceSelector.cs" />
+    <Compile Include="IO\ScratchArea.cs" />
+    <Compile Include="IO\ScratchServices.cs" />
     <Compile Include="PlugIns\DisabledPlugIn.cs" />
     <Compile Include="PlugIns\PlugInRegistry.cs" />
     <Compile Include="Program.cs" />
