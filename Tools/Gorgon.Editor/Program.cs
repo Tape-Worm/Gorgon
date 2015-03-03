@@ -106,6 +106,18 @@ namespace GorgonLibrary.Editor
 			obj.For<IProxyObject<GorgonGraphics>>()
 			   .Use<GraphicsProxy>();
 
+			obj.For<IContent>()
+			   .Use<NoContent>();
+
+			obj.For<IEditorContentRenderer>()
+			   .Use<NoContentRenderer>();
+
+			obj.For<IContentPanel>()
+			   .Use<NoContentPanel>();
+
+			obj.For<IEditorContentManager>()
+			   .Use<EditorContentManager>();
+
 			obj.ForConcreteType<FormMain>();
 
 			obj.For<IPlugInRegistry>()

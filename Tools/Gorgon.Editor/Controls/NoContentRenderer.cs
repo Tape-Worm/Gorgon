@@ -20,60 +20,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, February 26, 2015 11:31:59 PM
+// Created: Tuesday, March 3, 2015 1:09:52 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using GorgonLibrary.UI;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The default panel to show when no content is open in the editor.
+	/// Renderer used to display the no content default panel.
 	/// </summary>
-	public partial class NoContentPanel 
-		: ContentPanel
+	class NoContentRenderer
+		: EditorContentRenderer2D
 	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
-		#endregion
-
-		#region Methods.
-
-		#endregion
-
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
+		/// Function to clean up any resources provided to the renderer.
 		/// </summary>
-		public NoContentPanel()
+		protected override void OnCleanUpResources()
 		{
-			InitializeComponent();
+			
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel" /> class.
+		/// Function to create any resources that may be required by the renderer.
 		/// </summary>
-		/// <param name="content">The content associated with the content object.</param>
-		/// <param name="renderer">The renderer to use to display the content.</param>
-		public NoContentPanel(IContent content, IEditorContentRenderer renderer)
-			: base(content, renderer)
+		protected override void OnCreateResources()
 		{
-			InitializeComponent();
+			
 		}
-		#endregion
+
+		/// <summary>
+		/// Function to perform the actual rendering of graphics to the control surface.
+		/// </summary>
+		public override void Draw()
+		{
+			
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NoContentRenderer"/> class.
+		/// </summary>
+		/// <param name="graphicsProxy">The graphics proxy.</param>
+		/// <param name="defaultContent">The default content.</param>
+		public NoContentRenderer(IProxyObject<GorgonGraphics> graphicsProxy, IContent defaultContent)
+			: base(graphicsProxy, defaultContent)
+		{
+			ClearColor = Color.Pink;
+		}
 	}
 }

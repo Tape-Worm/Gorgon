@@ -61,6 +61,24 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The content UI must be a control in order for the renderer to use it..
+        /// </summary>
+        internal static string GOREDIT_ERR_CONTENT_UI_NOT_A_CONTROL {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CONTENT_UI_NOT_A_CONTROL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No graphics interface..
+        /// </summary>
+        internal static string GOREDIT_ERR_NO_GFX_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_NO_GFX_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY {

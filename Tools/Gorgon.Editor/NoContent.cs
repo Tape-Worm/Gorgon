@@ -20,59 +20,56 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, February 26, 2015 11:31:59 PM
+// Created: Monday, March 2, 2015 7:56:44 PM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The default panel to show when no content is open in the editor.
+	/// Default content to display when no content is active.
 	/// </summary>
-	public partial class NoContentPanel 
-		: ContentPanel
+	class NoContent
+		: EditorContent
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
-
-		#endregion
-
-		#region Methods.
-
-		#endregion
-
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
+		/// Property to return whether this content has properties that can be manipulated in the properties tab.
 		/// </summary>
-		public NoContentPanel()
+		public override bool HasProperties
 		{
-			InitializeComponent();
+			get
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel" /> class.
+		/// Property to return the type of content.
 		/// </summary>
-		/// <param name="content">The content associated with the content object.</param>
-		/// <param name="renderer">The renderer to use to display the content.</param>
-		public NoContentPanel(IContent content, IEditorContentRenderer renderer)
-			: base(content, renderer)
+		public override string ContentType
 		{
-			InitializeComponent();
+			get
+			{
+				return "Default Content";
+			}
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NoContent"/> class.
+		/// </summary>
+		public NoContent()
+			: base(null)
+		{
+			
 		}
 		#endregion
 	}

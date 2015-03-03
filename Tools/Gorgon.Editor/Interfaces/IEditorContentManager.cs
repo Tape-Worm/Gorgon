@@ -20,60 +20,62 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, February 26, 2015 11:31:59 PM
+// Created: Monday, March 2, 2015 11:19:56 PM
 // 
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The default panel to show when no content is open in the editor.
+	/// Manages the currently active content in the editor.
 	/// </summary>
-	public partial class NoContentPanel 
-		: ContentPanel
+	interface IEditorContentManager
+		: IDisposable
 	{
-		#region Variables.
+		#region Events.
+		/// <summary>
+		/// Event called when the content is about to close.
+		/// </summary>
+		event EventHandler<ContentClosingEventArgs> ContentClosing;
 
+		/// <summary>
+		/// Event called when the content UI is created.
+		/// </summary>
+		event EventHandler<ContentCreatedEventArgs> ContentCreated;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the currently active content.
+		/// </summary>
+		/// <remarks>
+		/// When there is no content created/loaded, then this property will return NULL (Nothing in VB.Net) even though 
+		/// the "NoContent" content object is loaded in the display.
+		/// </remarks>
+		IContent CurrentContent
+		{
+			get;
+		}
 
+		/// <summary>
+		/// Property to return the content panel.
+		/// </summary>
+		/// <remarks>
+		/// This will return the UI for the content (if available) for use in the editor.
+		/// </remarks>
+		IContentPanel ContentPanel
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
-
-		#endregion
-
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
+		/// Function to create a content object for editing.
 		/// </summary>
-		public NoContentPanel()
-		{
-			InitializeComponent();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel" /> class.
-		/// </summary>
-		/// <param name="content">The content associated with the content object.</param>
-		/// <param name="renderer">The renderer to use to display the content.</param>
-		public NoContentPanel(IContent content, IEditorContentRenderer renderer)
-			: base(content, renderer)
-		{
-			InitializeComponent();
-		}
+		void CreateContent();
 		#endregion
 	}
 }

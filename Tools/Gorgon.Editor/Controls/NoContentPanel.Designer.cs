@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.Controls
+﻿namespace GorgonLibrary.Editor
 {
 	partial class NoContentPanel
 	{
@@ -29,19 +29,11 @@
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NoContentPanel));
-			this.label1 = new System.Windows.Forms.Label();
-			this.PanelDisplay.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// PanelDisplay
 			// 
-			this.PanelDisplay.Controls.Add(this.label1);
 			resources.ApplyResources(this.PanelDisplay, "PanelDisplay");
-			// 
-			// label1
-			// 
-			resources.ApplyResources(this.label1, "label1");
-			this.label1.Name = "label1";
 			// 
 			// NoContentPanel
 			// 
@@ -49,14 +41,11 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CaptionVisible = false;
 			this.Name = "NoContentPanel";
-			this.PanelDisplay.ResumeLayout(false);
-			this.PanelDisplay.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.Label label1;
 	}
 }

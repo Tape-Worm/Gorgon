@@ -20,59 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, February 26, 2015 11:31:59 PM
+// Created: Monday, March 2, 2015 8:16:17 PM
 // 
 #endregion
-
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The default panel to show when no content is open in the editor.
+	/// Event parameters used before content is renamed.
 	/// </summary>
-	public partial class NoContentPanel 
-		: ContentPanel
+	public class BeforeContentRenamedArgs
+		: GorgonCancelEventArgs
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
+		/// <summary>
+		/// Property to return the old name of the content.
+		/// </summary>
+		public string OldName
+		{
+			get;
+			private set;
+		}
 
-		#endregion
-
-		#region Methods.
-
+		/// <summary>
+		/// Property to set or return the new name of the content.
+		/// </summary>
+		public string NewName
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel"/> class.
+		/// Initializes a new instance of the <see cref="BeforeContentRenamedArgs"/> class.
 		/// </summary>
-		public NoContentPanel()
+		/// <param name="oldName">The old name of the content.</param>
+		/// <param name="newName">The new name of the content.</param>
+		public BeforeContentRenamedArgs(string oldName, string newName)
+			: base(false)
 		{
-			InitializeComponent();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContentPanel" /> class.
-		/// </summary>
-		/// <param name="content">The content associated with the content object.</param>
-		/// <param name="renderer">The renderer to use to display the content.</param>
-		public NoContentPanel(IContent content, IEditorContentRenderer renderer)
-			: base(content, renderer)
-		{
-			InitializeComponent();
+			OldName = oldName;
+			NewName = newName;
 		}
 		#endregion
 	}

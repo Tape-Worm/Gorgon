@@ -20,6 +20,15 @@ namespace GorgonLibrary.Editor
 			{
 				components.Dispose();
 			}
+
+			if (disposing)
+			{
+				if (_contentManager != null)
+				{
+					_contentManager.Dispose();
+				}
+			}
+
 			base.Dispose(disposing);
 		}
 

@@ -328,19 +328,19 @@ namespace GorgonLibrary.Editor
 		/// <param name="log">The application log file.</param>
 		/// <param name="mainForm">The instance of the main form.</param>
 		/// <param name="settings">The editor settings.</param>
-		/// <param name="graphicsFactory">The factory to create a new graphics interface.</param>
+		/// <param name="graphicsProxy">The factory to create a new graphics interface.</param>
 		/// <param name="splashProxy">The factory to create forms for the application.</param>
 		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
 		/// <param name="scratchServices">The services pertaining to scratch area manipulation.</param>
 		public AppContext(GorgonLogFile log, 
-			FormMain mainForm, 
 			IEditorSettings settings, 
-			IProxyObject<GorgonGraphics> graphicsFactory, 
+			IProxyObject<GorgonGraphics> graphicsProxy, 
 			IProxyObject<FormSplash> splashProxy, 
 			IPlugInRegistry plugInFactory,
-			IScratchServices scratchServices)
+			IScratchServices scratchServices,
+			FormMain mainForm)
 		{
-			_graphicsFactory = graphicsFactory;
+			_graphicsFactory = graphicsProxy;
 			_settings = settings;
 			_splashProxy = splashProxy;
 			_log = log;

@@ -38,13 +38,15 @@ namespace GorgonLibrary.Editor
 	/// A base interface for content display in the main interface.
 	/// </summary>
 	public partial class ContentPanel 
-		: UserControl
+		: UserControl, IContentPanel
 	{
 		#region Variables.
 		// Flag to indicate that the caption is visible.
 		private bool _captionVisible = true;
 		// The theme used by the parent for this control.
-		private readonly FlatFormTheme _theme;
+		private FlatFormTheme _theme;
+		// Control used to receive rendering.
+		private Control _renderControl;
 		// The panel where content will be placed.
 		[System.Runtime.CompilerServices.AccessedThroughProperty("PanelDisplay")]
 		private Panel _panelContentDisplay;
@@ -75,7 +77,7 @@ namespace GorgonLibrary.Editor
 		/// Property to set or return the content object to be manipulated by this interface.
 		/// </summary>
 		[Browsable(false)]
-		public EditorContent Content
+		public IContent Content
 		{
             get;
 			private set;
@@ -100,27 +102,7 @@ namespace GorgonLibrary.Editor
 	            UpdateCaption();
 	        }
 	    }
-
-	    /// <summary>
-	    /// Property to set or return whether the caption for the content panel is visible or not.
-	    /// </summary>
-	    [Browsable(true)]
-	    [LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
-	    [LocalDescription(typeof(Resources), "PROP_TEXT_CAPTION_VISIBLE_DESC")]
-	    [DefaultValue(true)]
-	    public bool CaptionVisible
-	    {
-	        get
-	        {
-	            return _captionVisible;
-	        }
-	        set
-	        {
-	            _captionVisible = value;
-	            panelCaption.Visible = _captionVisible;
-	        }
-	    }
-	    #endregion
+		#endregion
 
 		#region Methods.
 		/// <summary>
@@ -330,26 +312,105 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentPanel"/> class.
 		/// </summary>
-		/// <param name="theme">The theme from the content parent object.</param>
 		/// <param name="content">The content.</param>
-		protected ContentPanel(FlatFormTheme theme, EditorContent content)
+		/// <param name="renderer">The renderer to use to display the content.</param>
+		protected ContentPanel(IContent content, IEditorContentRenderer renderer)
 		{
-			if (theme == null)
-			{
-				throw new ArgumentNullException("theme");
-			}
-
-			/*if (content == null)
+			if (content == null)
 			{
 				throw new ArgumentNullException("content");
-			}*/
+			}
 
 			// Done in both places to keep the designer happy.
 			InitializeComponent();
 
-			_theme = theme;
 			Content = content;
 			UpdateCaption();
+			Renderer = renderer;
+		}
+		#endregion
+
+		#region IContentPanel Members
+		/// <summary>
+		/// Property to set or return the current theme for the application.
+		/// </summary>
+		[Browsable(false)]
+		public FlatFormTheme CurrentTheme
+		{
+			get
+			{
+				return _theme;
+			}
+			set
+			{
+				if (_theme == value)
+				{
+					return;
+				}
+
+				_theme = value;
+				ApplyTheme(value);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the caption for the content panel is visible or not.
+		/// </summary>
+		[Browsable(true)]
+		[LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE")]
+		[LocalDescription(typeof(Resources), "PROP_TEXT_CAPTION_VISIBLE_DESC")]
+		[DefaultValue(true)]
+		public bool CaptionVisible
+		{
+			get
+			{
+				return _captionVisible;
+			}
+			set
+			{
+				_captionVisible = value;
+				panelCaption.Visible = _captionVisible;
+			}
+		}
+
+
+		/// <summary>
+		/// Property to set or return whether the control uses an external renderer.
+		/// </summary>
+		[Browsable(false)]
+		public bool UsesRenderer
+		{
+			get
+			{
+				return Renderer != null;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the control that will receive rendering.
+		/// </summary>
+		/// <remarks>When this property is set to NULL (Nothing in VB.Net), then the content area of this control will be used for rendering.</remarks>
+		[Browsable(false)]
+		public Control RenderControl
+		{
+			get
+			{
+				return _renderControl ?? _panelContentDisplay;
+			}
+			set
+			{
+				_renderControl = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the renderer for the content panel.
+		/// </summary>
+		[Browsable(false)]
+		public IEditorContentRenderer Renderer
+		{
+			get;
+			private set;
 		}
 		#endregion
 	}

@@ -28,7 +28,6 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Controls;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 using StructureMap;
@@ -48,6 +47,8 @@ namespace GorgonLibrary.Editor
 		private readonly GorgonLogFile _logFile;
 		// The window text.
 		private string _windowText;
+		// The content manager interface.
+		private readonly IEditorContentManager _contentManager;
 		#endregion
 
 		#region Properties.
@@ -55,6 +56,76 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the ContentCreatedEvent event of the ContentManager control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="GorgonLibrary.Editor.ContentCreatedEventArgs"/> instance containing the event data.</param>
+		private void ContentManager_ContentCreatedEvent(object sender, ContentCreatedEventArgs e)
+		{
+			try
+			{
+				// TODO: Fix this, this will mess up bad otherwise.
+				// TODO: The default panel UI should be disposed and recreated on demand.  This will keep resources low.
+				// TODO: We may have to move it out of the object graph in that case since that doesn't deal well with 
+				// TODO: recycled objects.
+				Control previousControl = null;
+				Control newControl = e.Panel as Control;
+
+				if (panelContentHost.Controls.Count > 0)
+				{
+					previousControl = panelContentHost.Controls[0];
+				}
+
+				if (newControl == null)
+				{
+					// Get rid of the previous control.
+					if (previousControl != null)
+					{
+						previousControl.Dispose();
+					}
+					return;
+				}
+
+				e.Panel.CurrentTheme = Theme;
+
+				// Put this control on top of the old one to try and mitigate the "flashing" 
+				// that tends to happen when one control dies, and the other is being added.
+				panelContentHost.Controls.Add(newControl);
+
+				if (e.Panel.CaptionVisible)
+				{
+					e.Panel.Padding = new Padding(0, 5, 0, 0);
+				}
+
+				e.Panel.Dock = DockStyle.Fill;
+
+				if (previousControl != null)
+				{
+					previousControl.Dispose();
+				}
+
+				// Initialize rendering if necessary.
+				if (e.Panel.UsesRenderer)
+				{
+					e.Panel.Renderer.CreateResources(e.Panel.RenderControl);
+				}
+			}
+			catch
+			{
+				// If the default panel was not loaded, then put it back.
+				if ((panelContentHost.Controls.Count == 0)
+				    || (!(panelContentHost.Controls[0] is NoContentPanel)))
+				{
+					// Passing with no parameters will load the default content.
+					_contentManager.CreateContent();
+				}
+
+				// Send the exception back so the root event handler will pick it up.
+				throw;
+			}
+		}
+
 		/// <summary>
 		/// Function to update the text on this window in a thread-safe manner.
 		/// </summary>
@@ -94,6 +165,9 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				// Load in the default content here.
+				_contentManager.CreateContent();
+
 				SetWindowText(null);
 
 				if (_settings.FormState != FormWindowState.Minimized)
@@ -111,15 +185,6 @@ namespace GorgonLibrary.Editor
 				{
 					Location = Screen.PrimaryScreen.Bounds.Location;
 				}
-
-				// TODO: Get rid of this.
-				NoContentPanel panel = new NoContentPanel(Theme, null);
-				panelContentHost.Controls.Add(panel);
-				if (panel.CaptionVisible)
-				{
-					panel.Padding = new Padding(0, 5, 0, 0);
-				}
-				panel.Dock = DockStyle.Fill;
 			}
 			catch (Exception ex)
 			{
@@ -137,6 +202,8 @@ namespace GorgonLibrary.Editor
 			base.OnFormClosing(e);
 
 			_logFile.Print("Closing main window '{0}'", LoggingLevel.Verbose, Text);
+
+			_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
 
 			try
 			{
@@ -186,13 +253,17 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="settings">The settings.</param>
 		/// <param name="log">The log file for the application.</param>
+		/// <param name="contentManager">The content manager interface.</param>
 		[DefaultConstructor]
-		public FormMain(IEditorSettings settings, GorgonLogFile log)
+		public FormMain(IEditorSettings settings, GorgonLogFile log, IEditorContentManager contentManager)
 			: this()
 		{
 			_logFile = log;
 			_settings = settings;
 			_windowText = Text;
+			_contentManager = contentManager;
+
+			_contentManager.ContentCreated += ContentManager_ContentCreatedEvent;
 		}
 		#endregion
 	}

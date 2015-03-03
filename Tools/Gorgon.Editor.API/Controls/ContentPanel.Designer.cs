@@ -20,6 +20,12 @@
 
 			if (disposing)
 			{
+				if (Renderer != null)
+				{
+					Renderer.Dispose();
+				}
+
+				Renderer = null;
 			}
 
 			base.Dispose(disposing);
