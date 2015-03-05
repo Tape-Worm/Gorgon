@@ -40,20 +40,43 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
 			this.toolsFiles = new System.Windows.Forms.ToolStripContainer();
 			this.stripFiles = new System.Windows.Forms.ToolStrip();
-			this.toolStripButton1 = new System.Windows.Forms.ToolStripDropDownButton();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
+			this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
+			this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonEditContent = new System.Windows.Forms.ToolStripButton();
+			this.buttonDeleteContent = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonShowAll = new System.Windows.Forms.ToolStripButton();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
-			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemOpen = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemAddContent = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemCreateFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemImport = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemExport = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuRecentFiles = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
+			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuEdit = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemCut = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemDelete = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemPreferences = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelFooter = new System.Windows.Forms.Panel();
 			this.statusMain = new System.Windows.Forms.StatusStrip();
 			this.splitMain = new System.Windows.Forms.SplitContainer();
@@ -62,6 +85,29 @@ namespace GorgonLibrary.Editor
 			this.tabPages = new KRBTabControl.KRBTabControl();
 			this.pageFiles = new KRBTabControl.TabPageEx();
 			this.pageProperties = new KRBTabControl.TabPageEx();
+			this.propertyGrid = new System.Windows.Forms.PropertyGrid();
+			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupFileSystem = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemEdit = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemCreateFolder = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+			this.popupItemInclude = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemExclude = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemIncludeAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemExcludeAll = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.popupItemCut = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemCopy = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemPaste = new System.Windows.Forms.ToolStripMenuItem();
+			this.popupItemDelete = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.popupItemRename = new System.Windows.Forms.ToolStripMenuItem();
+			this.dialogOpenFile = new System.Windows.Forms.OpenFileDialog();
+			this.dialogSaveFile = new System.Windows.Forms.SaveFileDialog();
+			this.dialogImport = new System.Windows.Forms.OpenFileDialog();
+			this.dialogExport = new System.Windows.Forms.FolderBrowserDialog();
 			this.ContentArea.SuspendLayout();
 			this.toolsFiles.TopToolStripPanel.SuspendLayout();
 			this.toolsFiles.SuspendLayout();
@@ -76,6 +122,9 @@ namespace GorgonLibrary.Editor
 			this.panelExplorer.SuspendLayout();
 			this.tabPages.SuspendLayout();
 			this.pageFiles.SuspendLayout();
+			this.pageProperties.SuspendLayout();
+			this.popupProperties.SuspendLayout();
+			this.popupFileSystem.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// ContentArea
@@ -106,48 +155,61 @@ namespace GorgonLibrary.Editor
 			this.stripFiles.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripFiles.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.stripFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.dropNewContent,
+            this.toolStripSeparator9,
+            this.buttonEditContent,
+            this.buttonDeleteContent,
             this.toolStripButton1,
-            this.toolStripSeparator1,
-            this.toolStripButton2,
-            this.toolStripButton3,
-            this.toolStripSeparator2,
-            this.toolStripButton4});
+            this.buttonShowAll});
 			this.stripFiles.Name = "stripFiles";
 			this.stripFiles.Stretch = true;
 			// 
+			// dropNewContent
+			// 
+			this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.dropNewContent.DropDown = this.popupAddContentMenu;
+			resources.ApplyResources(this.dropNewContent, "dropNewContent");
+			this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+			this.dropNewContent.Name = "dropNewContent";
+			// 
+			// popupAddContentMenu
+			// 
+			this.popupAddContentMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.popupAddContentMenu.Name = "popupAddContentMenu";
+			this.popupAddContentMenu.OwnerItem = this.popupItemAddContent;
+			resources.ApplyResources(this.popupAddContentMenu, "popupAddContentMenu");
+			// 
+			// toolStripSeparator9
+			// 
+			this.toolStripSeparator9.Name = "toolStripSeparator9";
+			resources.ApplyResources(this.toolStripSeparator9, "toolStripSeparator9");
+			// 
+			// buttonEditContent
+			// 
+			this.buttonEditContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.buttonEditContent, "buttonEditContent");
+			this.buttonEditContent.Image = global::GorgonLibrary.Editor.Properties.Resources.edit_16x16;
+			this.buttonEditContent.Name = "buttonEditContent";
+			// 
+			// buttonDeleteContent
+			// 
+			this.buttonDeleteContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.buttonDeleteContent, "buttonDeleteContent");
+			this.buttonDeleteContent.Image = global::GorgonLibrary.Editor.Properties.Resources.delete_item_16x16;
+			this.buttonDeleteContent.Name = "buttonDeleteContent";
+			// 
 			// toolStripButton1
 			// 
-			this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
 			this.toolStripButton1.Name = "toolStripButton1";
+			resources.ApplyResources(this.toolStripButton1, "toolStripButton1");
 			// 
-			// toolStripSeparator1
+			// buttonShowAll
 			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			resources.ApplyResources(this.toolStripSeparator1, "toolStripSeparator1");
-			// 
-			// toolStripButton2
-			// 
-			this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toolStripButton2, "toolStripButton2");
-			this.toolStripButton2.Name = "toolStripButton2";
-			// 
-			// toolStripButton3
-			// 
-			this.toolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toolStripButton3, "toolStripButton3");
-			this.toolStripButton3.Name = "toolStripButton3";
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			resources.ApplyResources(this.toolStripSeparator2, "toolStripSeparator2");
-			// 
-			// toolStripButton4
-			// 
-			this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			resources.ApplyResources(this.toolStripButton4, "toolStripButton4");
-			this.toolStripButton4.Name = "toolStripButton4";
+			this.buttonShowAll.CheckOnClick = true;
+			this.buttonShowAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
+			resources.ApplyResources(this.buttonShowAll, "buttonShowAll");
+			this.buttonShowAll.Name = "buttonShowAll";
 			// 
 			// panelMenu
 			// 
@@ -159,30 +221,156 @@ namespace GorgonLibrary.Editor
 			// 
 			this.menuMain.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.editToolStripMenuItem});
+            this.menuFile,
+            this.menuEdit});
 			resources.ApplyResources(this.menuMain, "menuMain");
 			this.menuMain.Name = "menuMain";
 			// 
-			// fileToolStripMenuItem
+			// menuFile
 			// 
-			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem});
-			this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-			resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
+			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemFile,
+            this.itemOpen,
+            this.toolStripSeparator3,
+            this.itemAddContent,
+            this.itemCreateFolder,
+            this.toolStripMenuItem1,
+            this.itemSave,
+            this.itemSaveAs,
+            this.toolStripMenuItem2,
+            this.itemImport,
+            this.itemExport,
+            this.toolStripMenuItem3,
+            this.menuRecentFiles,
+            this.toolStripMenuItem4,
+            this.exitToolStripMenuItem});
+			this.menuFile.Name = "menuFile";
+			resources.ApplyResources(this.menuFile, "menuFile");
 			// 
-			// newToolStripMenuItem
+			// itemFile
 			// 
-			this.newToolStripMenuItem.Checked = true;
-			this.newToolStripMenuItem.CheckOnClick = true;
-			this.newToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-			resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
+			this.itemFile.CheckOnClick = true;
+			this.itemFile.Name = "itemFile";
+			resources.ApplyResources(this.itemFile, "itemFile");
 			// 
-			// editToolStripMenuItem
+			// itemOpen
 			// 
-			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-			resources.ApplyResources(this.editToolStripMenuItem, "editToolStripMenuItem");
+			resources.ApplyResources(this.itemOpen, "itemOpen");
+			this.itemOpen.Name = "itemOpen";
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			resources.ApplyResources(this.toolStripSeparator3, "toolStripSeparator3");
+			// 
+			// itemAddContent
+			// 
+			resources.ApplyResources(this.itemAddContent, "itemAddContent");
+			this.itemAddContent.Name = "itemAddContent";
+			// 
+			// itemCreateFolder
+			// 
+			resources.ApplyResources(this.itemCreateFolder, "itemCreateFolder");
+			this.itemCreateFolder.Name = "itemCreateFolder";
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			resources.ApplyResources(this.toolStripMenuItem1, "toolStripMenuItem1");
+			// 
+			// itemSave
+			// 
+			resources.ApplyResources(this.itemSave, "itemSave");
+			this.itemSave.Name = "itemSave";
+			// 
+			// itemSaveAs
+			// 
+			resources.ApplyResources(this.itemSaveAs, "itemSaveAs");
+			this.itemSaveAs.Name = "itemSaveAs";
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			resources.ApplyResources(this.toolStripMenuItem2, "toolStripMenuItem2");
+			// 
+			// itemImport
+			// 
+			this.itemImport.Name = "itemImport";
+			resources.ApplyResources(this.itemImport, "itemImport");
+			// 
+			// itemExport
+			// 
+			resources.ApplyResources(this.itemExport, "itemExport");
+			this.itemExport.Name = "itemExport";
+			// 
+			// toolStripMenuItem3
+			// 
+			this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+			resources.ApplyResources(this.toolStripMenuItem3, "toolStripMenuItem3");
+			// 
+			// menuRecentFiles
+			// 
+			resources.ApplyResources(this.menuRecentFiles, "menuRecentFiles");
+			this.menuRecentFiles.Name = "menuRecentFiles";
+			// 
+			// toolStripMenuItem4
+			// 
+			this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+			resources.ApplyResources(this.toolStripMenuItem4, "toolStripMenuItem4");
+			// 
+			// exitToolStripMenuItem
+			// 
+			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+			resources.ApplyResources(this.exitToolStripMenuItem, "exitToolStripMenuItem");
+			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+			// 
+			// menuEdit
+			// 
+			this.menuEdit.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemCut,
+            this.itemCopy,
+            this.itemPaste,
+            this.toolStripSeparator6,
+            this.itemDelete,
+            this.toolStripSeparator7,
+            this.itemPreferences});
+			this.menuEdit.Name = "menuEdit";
+			resources.ApplyResources(this.menuEdit, "menuEdit");
+			// 
+			// itemCut
+			// 
+			resources.ApplyResources(this.itemCut, "itemCut");
+			this.itemCut.Name = "itemCut";
+			// 
+			// itemCopy
+			// 
+			resources.ApplyResources(this.itemCopy, "itemCopy");
+			this.itemCopy.Name = "itemCopy";
+			// 
+			// itemPaste
+			// 
+			resources.ApplyResources(this.itemPaste, "itemPaste");
+			this.itemPaste.Name = "itemPaste";
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			resources.ApplyResources(this.toolStripSeparator6, "toolStripSeparator6");
+			// 
+			// itemDelete
+			// 
+			resources.ApplyResources(this.itemDelete, "itemDelete");
+			this.itemDelete.Name = "itemDelete";
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			resources.ApplyResources(this.toolStripSeparator7, "toolStripSeparator7");
+			// 
+			// itemPreferences
+			// 
+			this.itemPreferences.Name = "itemPreferences";
+			resources.ApplyResources(this.itemPreferences, "itemPreferences");
 			// 
 			// panelFooter
 			// 
@@ -235,7 +423,7 @@ namespace GorgonLibrary.Editor
 			this.tabPages.IsDrawHeader = false;
 			this.tabPages.IsUserInteraction = false;
 			this.tabPages.Name = "tabPages";
-			this.tabPages.SelectedIndex = 0;
+			this.tabPages.SelectedIndex = 1;
 			this.tabPages.TabBorderColor = System.Drawing.Color.Green;
 			this.tabPages.TabGradient.ColorEnd = System.Drawing.Color.Magenta;
 			this.tabPages.TabGradient.ColorStart = System.Drawing.Color.Magenta;
@@ -253,9 +441,142 @@ namespace GorgonLibrary.Editor
 			// 
 			// pageProperties
 			// 
+			this.pageProperties.Controls.Add(this.propertyGrid);
+			this.pageProperties.IsClosable = false;
 			resources.ApplyResources(this.pageProperties, "pageProperties");
 			this.pageProperties.Name = "pageProperties";
-			this.pageProperties.IsClosable = false;
+			// 
+			// propertyGrid
+			// 
+			this.propertyGrid.CanShowVisualStyleGlyphs = false;
+			this.propertyGrid.ContextMenuStrip = this.popupProperties;
+			resources.ApplyResources(this.propertyGrid, "propertyGrid");
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.ToolbarVisible = false;
+			// 
+			// popupProperties
+			// 
+			this.popupProperties.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.popupProperties.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemResetValue});
+			this.popupProperties.Name = "popupProperties";
+			resources.ApplyResources(this.popupProperties, "popupProperties");
+			// 
+			// itemResetValue
+			// 
+			this.itemResetValue.Name = "itemResetValue";
+			resources.ApplyResources(this.itemResetValue, "itemResetValue");
+			// 
+			// popupFileSystem
+			// 
+			this.popupFileSystem.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.popupFileSystem.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.popupItemAddContent,
+            this.popupItemEdit,
+            this.popupItemCreateFolder,
+            this.toolStripSeparator10,
+            this.popupItemInclude,
+            this.popupItemExclude,
+            this.popupItemIncludeAll,
+            this.popupItemExcludeAll,
+            this.toolStripSeparator4,
+            this.popupItemCut,
+            this.popupItemCopy,
+            this.popupItemPaste,
+            this.popupItemDelete,
+            this.toolStripSeparator5,
+            this.popupItemRename});
+			this.popupFileSystem.Name = "popupFileSystem";
+			resources.ApplyResources(this.popupFileSystem, "popupFileSystem");
+			// 
+			// popupItemAddContent
+			// 
+			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
+			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
+			this.popupItemAddContent.Name = "popupItemAddContent";
+			// 
+			// popupItemEdit
+			// 
+			resources.ApplyResources(this.popupItemEdit, "popupItemEdit");
+			this.popupItemEdit.Name = "popupItemEdit";
+			// 
+			// popupItemCreateFolder
+			// 
+			resources.ApplyResources(this.popupItemCreateFolder, "popupItemCreateFolder");
+			this.popupItemCreateFolder.Name = "popupItemCreateFolder";
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			resources.ApplyResources(this.toolStripSeparator10, "toolStripSeparator10");
+			// 
+			// popupItemInclude
+			// 
+			this.popupItemInclude.Name = "popupItemInclude";
+			resources.ApplyResources(this.popupItemInclude, "popupItemInclude");
+			// 
+			// popupItemExclude
+			// 
+			this.popupItemExclude.Name = "popupItemExclude";
+			resources.ApplyResources(this.popupItemExclude, "popupItemExclude");
+			// 
+			// popupItemIncludeAll
+			// 
+			this.popupItemIncludeAll.Name = "popupItemIncludeAll";
+			resources.ApplyResources(this.popupItemIncludeAll, "popupItemIncludeAll");
+			// 
+			// popupItemExcludeAll
+			// 
+			this.popupItemExcludeAll.Name = "popupItemExcludeAll";
+			resources.ApplyResources(this.popupItemExcludeAll, "popupItemExcludeAll");
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			resources.ApplyResources(this.toolStripSeparator4, "toolStripSeparator4");
+			// 
+			// popupItemCut
+			// 
+			resources.ApplyResources(this.popupItemCut, "popupItemCut");
+			this.popupItemCut.Name = "popupItemCut";
+			// 
+			// popupItemCopy
+			// 
+			resources.ApplyResources(this.popupItemCopy, "popupItemCopy");
+			this.popupItemCopy.Name = "popupItemCopy";
+			// 
+			// popupItemPaste
+			// 
+			resources.ApplyResources(this.popupItemPaste, "popupItemPaste");
+			this.popupItemPaste.Name = "popupItemPaste";
+			// 
+			// popupItemDelete
+			// 
+			resources.ApplyResources(this.popupItemDelete, "popupItemDelete");
+			this.popupItemDelete.Name = "popupItemDelete";
+			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			resources.ApplyResources(this.toolStripSeparator5, "toolStripSeparator5");
+			// 
+			// popupItemRename
+			// 
+			resources.ApplyResources(this.popupItemRename, "popupItemRename");
+			this.popupItemRename.Name = "popupItemRename";
+			// 
+			// dialogOpenFile
+			// 
+			resources.ApplyResources(this.dialogOpenFile, "dialogOpenFile");
+			// 
+			// dialogSaveFile
+			// 
+			resources.ApplyResources(this.dialogSaveFile, "dialogSaveFile");
+			// 
+			// dialogImport
+			// 
+			this.dialogImport.Multiselect = true;
+			resources.ApplyResources(this.dialogImport, "dialogImport");
 			// 
 			// FormMain
 			// 
@@ -286,6 +607,7 @@ namespace GorgonLibrary.Editor
 			this.Theme.WindowSizeIconsBackColorHilight = System.Drawing.Color.SteelBlue;
 			this.Theme.WindowSizeIconsForeColor = System.Drawing.Color.White;
 			this.Theme.WindowSizeIconsForeColorHilight = System.Drawing.Color.White;
+			this.Controls.SetChildIndex(this.ContentArea, 0);
 			this.ContentArea.ResumeLayout(false);
 			this.ContentArea.PerformLayout();
 			this.toolsFiles.TopToolStripPanel.ResumeLayout(false);
@@ -307,6 +629,9 @@ namespace GorgonLibrary.Editor
 			this.panelExplorer.ResumeLayout(false);
 			this.tabPages.ResumeLayout(false);
 			this.pageFiles.ResumeLayout(false);
+			this.pageProperties.ResumeLayout(false);
+			this.popupProperties.ResumeLayout(false);
+			this.popupFileSystem.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -320,20 +645,65 @@ namespace GorgonLibrary.Editor
 		private SplitContainer splitMain;
 		private Panel panelContentHost;
 		private Panel panelExplorer;
-		private ToolStripMenuItem fileToolStripMenuItem;
-		private ToolStripMenuItem editToolStripMenuItem;
-		private ToolStripMenuItem newToolStripMenuItem;
+		private ToolStripMenuItem menuFile;
+		private ToolStripMenuItem itemFile;
 		private KRBTabControl.KRBTabControl tabPages;
 		private KRBTabControl.TabPageEx pageFiles;
 		private ToolStripContainer toolsFiles;
 		private ToolStrip stripFiles;
-		private ToolStripDropDownButton toolStripButton1;
-		private ToolStripSeparator toolStripSeparator1;
-		private ToolStripButton toolStripButton2;
-		private ToolStripButton toolStripButton3;
-		private ToolStripSeparator toolStripSeparator2;
-		private ToolStripButton toolStripButton4;
 		private KRBTabControl.TabPageEx pageProperties;
+		private ToolStripMenuItem itemOpen;
+		private ToolStripSeparator toolStripSeparator3;
+		private ToolStripMenuItem itemAddContent;
+		private ToolStripMenuItem itemCreateFolder;
+		private ToolStripSeparator toolStripMenuItem1;
+		private ToolStripMenuItem itemSave;
+		private ToolStripMenuItem itemSaveAs;
+		private ToolStripSeparator toolStripMenuItem2;
+		private ToolStripMenuItem itemImport;
+		private ToolStripMenuItem itemExport;
+		private ToolStripSeparator toolStripMenuItem3;
+		private ToolStripMenuItem menuRecentFiles;
+		private ToolStripSeparator toolStripMenuItem4;
+		private ToolStripMenuItem exitToolStripMenuItem;
+		private ContextMenuStrip popupProperties;
+		private ToolStripMenuItem itemResetValue;
+		private ContextMenuStrip popupFileSystem;
+		private ToolStripMenuItem popupItemAddContent;
+		private ContextMenuStrip popupAddContentMenu;
+		private ToolStripMenuItem popupItemEdit;
+		private ToolStripMenuItem popupItemCreateFolder;
+		private ToolStripSeparator toolStripSeparator10;
+		private ToolStripMenuItem popupItemInclude;
+		private ToolStripMenuItem popupItemExclude;
+		private ToolStripMenuItem popupItemIncludeAll;
+		private ToolStripMenuItem popupItemExcludeAll;
+		private ToolStripSeparator toolStripSeparator4;
+		private ToolStripMenuItem popupItemCut;
+		private ToolStripMenuItem popupItemCopy;
+		private ToolStripMenuItem popupItemPaste;
+		private ToolStripMenuItem popupItemDelete;
+		private ToolStripSeparator toolStripSeparator5;
+		private ToolStripMenuItem popupItemRename;
+		private OpenFileDialog dialogOpenFile;
+		private SaveFileDialog dialogSaveFile;
+		private OpenFileDialog dialogImport;
+		private FolderBrowserDialog dialogExport;
+		private ToolStripMenuItem menuEdit;
+		private ToolStripMenuItem itemCut;
+		private ToolStripMenuItem itemCopy;
+		private ToolStripMenuItem itemPaste;
+		private ToolStripSeparator toolStripSeparator6;
+		private ToolStripMenuItem itemDelete;
+		private ToolStripSeparator toolStripSeparator7;
+		private ToolStripMenuItem itemPreferences;
+		private ToolStripDropDownButton dropNewContent;
+		private ToolStripSeparator toolStripSeparator9;
+		private ToolStripButton buttonEditContent;
+		private ToolStripButton buttonDeleteContent;
+		private ToolStripSeparator toolStripButton1;
+		private ToolStripButton buttonShowAll;
+		private PropertyGrid propertyGrid;
 
 
 	}

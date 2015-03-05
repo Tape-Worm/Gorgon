@@ -129,6 +129,9 @@
   <data name="GOREDIT_TEXT_NAME" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
   <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
     <value>Appearance</value>
   </data>

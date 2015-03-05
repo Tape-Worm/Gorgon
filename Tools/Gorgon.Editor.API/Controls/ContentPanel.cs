@@ -37,7 +37,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A base interface for content display in the main interface.
 	/// </summary>
-	public partial class ContentPanel 
+	public partial class ContentPanel
 		: UserControl, IContentPanel
 	{
 		#region Variables.
@@ -50,14 +50,6 @@ namespace GorgonLibrary.Editor
 		// The panel where content will be placed.
 		[System.Runtime.CompilerServices.AccessedThroughProperty("PanelDisplay")]
 		private Panel _panelContentDisplay;
-		#endregion
-
-		#region Events.
-		/// <summary>
-		/// Event fired when the content has been closed from the interface.
-		/// </summary>
-		[Browsable(false)]
-		public event EventHandler<CancelEventArgs> ContentClosed;
 		#endregion
 
 		#region Properties.
@@ -106,6 +98,31 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Handles the BeforeClosedEvent event of the Content control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void Content_BeforeClosedEvent(object sender, EventArgs eventArgs)
+		{
+			if (Content == null)
+			{
+				return;
+			}
+
+			// If we have rendering happening, then turn it off.
+			if (Renderer != null)
+			{
+				Renderer.Dispose();
+				Renderer = null;
+			}
+
+			OnBeforeContentClosed();
+
+			// Disable our link to the content.
+			Content = null;
+		}
+
+		/// <summary>
 		/// Handles the MouseEnter event of the labelClose control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -149,6 +166,13 @@ namespace GorgonLibrary.Editor
 
             try
             {
+				if (Content == null)
+				{
+					return;
+				}
+
+				labelClose.Enabled = false;
+
                 OnCloseClicked();
             }
             catch (Exception ex)
@@ -173,7 +197,16 @@ namespace GorgonLibrary.Editor
 
 			ApplyTheme(_theme);
 		}
-		
+
+		/// <summary>
+		/// Function called before the content object is closed.
+		/// </summary>
+		/// <remarks>This method can be overridden to provide clean up facilities on the UI when the content is closed.</remarks>
+		protected virtual void OnBeforeContentClosed()
+		{
+			// We have nothing in the base class to make use of this.	
+		}
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
 		/// </summary>
@@ -191,56 +224,12 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function called when the close button is clicked.
 		/// </summary>
-		private void OnCloseClicked()
+		protected virtual void OnCloseClicked()
 		{
-			/*if (Content == null)
+			if (CloseClick != null)
 			{
-				return;
-			}*/
-
-			labelClose.Enabled = false;
-
-			try
-			{
-				var args = new CancelEventArgs();
-
-				OnContentClosing(args);
-
-				if (args.Cancel)
-				{
-					return;
-				}
-
-				if (ContentClosed != null)
-				{
-					args = new CancelEventArgs();
-					ContentClosed(this, args);
-
-					if (args.Cancel)
-					{
-						return;
-					}
-				}
-
-				//ContentManagement.LoadDefaultContentPane();
+				CloseClick(this, new GorgonCancelEventArgs(false));
 			}
-			finally
-			{
-				if (!labelClose.IsDisposed)
-				{
-					labelClose.Enabled = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Function called when the content is closing.
-		/// </summary>
-		/// <param name="e">Event arguments.</param>
-		/// <remarks>Override this method to perform custom closing functionality for content.</remarks>
-		protected virtual void OnContentClosing(CancelEventArgs e)
-		{
-			
 		}
 
 		/// <summary>
@@ -280,15 +269,15 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to update the caption label.
 		/// </summary>
-		internal void UpdateCaption()
+		private void UpdateCaption()
 		{
-			/*if (Content == null)
+			if (Content == null)
 			{
-				labelCaption.Text = string.Format("{0} - {1}", base.Text, APIResources.GOREDIT_TEXT_UNTITLED);
+				labelCaption.Text = string.Format("{0} - {1}", base.Text, Resources.GOREDIT_TEXT_UNTITLED);
 				return;
 			}
 
-			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Content.Name, Content.HasChanges ? "*" : string.Empty);*/
+			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Content.Name, Content.HasChanges ? "*" : string.Empty);
 		}
 
 		/// <summary>
@@ -314,7 +303,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="content">The content.</param>
 		/// <param name="renderer">The renderer to use to display the content.</param>
-		protected ContentPanel(IContent content, IEditorContentRenderer renderer)
+		public ContentPanel(IContent content, IEditorContentRenderer renderer)
 		{
 			if (content == null)
 			{
@@ -327,10 +316,19 @@ namespace GorgonLibrary.Editor
 			Content = content;
 			UpdateCaption();
 			Renderer = renderer;
+			content.BeforeContentClosed += Content_BeforeClosedEvent;
 		}
 		#endregion
 
 		#region IContentPanel Members
+		#region Events.
+		/// <summary>
+		/// Event fired when the close button is clicked.
+		/// </summary>
+		public event EventHandler<GorgonCancelEventArgs> CloseClick;
+		#endregion
+
+		#region Properties.
 		/// <summary>
 		/// Property to set or return the current theme for the application.
 		/// </summary>
@@ -412,6 +410,7 @@ namespace GorgonLibrary.Editor
 			get;
 			private set;
 		}
+		#endregion
 		#endregion
 	}
 }

@@ -74,12 +74,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Controls\NoContentPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\NoContentPanel.Designer.cs">
-      <DependentUpon>NoContentPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="EditorContentManager.cs" />
     <Compile Include="Interfaces\IEditorContentManager.cs" />
     <Compile Include="Interfaces\IScratchLocator.cs" />
@@ -115,9 +109,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyObject.cs" />
     <Compile Include="Graphics\VideoDeviceSelector.cs" />
-    <EmbeddedResource Include="Controls\NoContentPanel.resx">
-      <DependentUpon>NoContentPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
@@ -156,6 +147,10 @@
     <Content Include="PlugIns\Instructions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\show_all_16x16.png" />
+    <None Include="Resources\edit_16x16.png" />
+    <None Include="Resources\delete_item_16x16.png" />
+    <None Include="Resources\new_item_16x16.png" />
     <None Include="Themes\DarkTheme.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -20,6 +20,11 @@
 
 			if (disposing)
 			{
+				if (Content != null)
+				{
+					Content.BeforeContentClosed -= Content_BeforeClosedEvent;
+				}
+
 				if (Renderer != null)
 				{
 					Renderer.Dispose();

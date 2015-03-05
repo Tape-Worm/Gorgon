@@ -37,6 +37,13 @@ namespace GorgonLibrary.Editor
 	public interface IContentPanel
 		: IDisposable
 	{
+		#region Events.
+		/// <summary>
+		/// Event fired when the close button is clicked.
+		/// </summary>
+		event EventHandler<GorgonCancelEventArgs> CloseClick;		
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the current theme for the application.

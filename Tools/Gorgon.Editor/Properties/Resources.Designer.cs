@@ -81,6 +81,35 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap delete_item_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("delete_item_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap edit_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("edit_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The content &apos;{0}&apos; has unsaved changes.  Would you like to save these changes now?.
+        /// </summary>
+        internal static string GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a new temporary scratch path..
         /// </summary>
         internal static string GOREDIT_DLG_SCRATCH_PATH {
@@ -296,6 +325,26 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Full {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Full", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap new_item_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("new_item_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap show_all_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("show_all_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

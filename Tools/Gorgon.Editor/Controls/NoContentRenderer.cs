@@ -30,7 +30,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.Math;
+using GorgonLibrary.Renderers;
+using SlimMath;
 
 namespace GorgonLibrary.Editor
 {
@@ -40,12 +46,32 @@ namespace GorgonLibrary.Editor
 	class NoContentRenderer
 		: EditorContentRenderer2D
 	{
+		#region Variables.
+		// The logo texture.
+		private GorgonTexture2D _logo;
+		// Images for blur states.
+		private RectangleF[] _blurStates;
+		// Source image state.
+		private RectangleF _sourceState = RectangleF.Empty;
+		// Destination image state.
+		private RectangleF _destState = RectangleF.Empty;
+		// Alpha value.
+		private float _alpha;
+		// Alpha delta.
+		private float _delta;								
+		#endregion
+
+		#region Methods.
 		/// <summary>
 		/// Function to clean up any resources provided to the renderer.
 		/// </summary>
 		protected override void OnCleanUpResources()
 		{
-			
+			if (_logo != null)
+			{
+				_logo.Dispose();
+			}
+			_logo = null;
 		}
 
 		/// <summary>
@@ -53,7 +79,21 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected override void OnCreateResources()
 		{
-			
+			// Create the logo for display.
+			_logo = Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());
+
+			var textureCoordinates = new RectangleF(Vector2.Zero, _logo.ToTexel(new Vector2(_logo.Settings.Width, _logo.Settings.Height / 3)));
+
+			// Set up coordinates for our blurred images.
+			_blurStates = new[]
+			              {
+				              textureCoordinates, // No blur.
+				              new RectangleF(new Vector2(0, textureCoordinates.Height), textureCoordinates.Size), // Medium blur.
+				              new RectangleF(new Vector2(0, textureCoordinates.Height * 2), textureCoordinates.Size) // Max blur.
+			              };
+
+			_sourceState = _blurStates[2];
+			_destState = _blurStates[1];
 		}
 
 		/// <summary>
@@ -61,18 +101,92 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public override void Draw()
 		{
-			
-		}
+			RectangleF logoBounds = RectangleF.Empty;
+			SizeF logoSize = _logo.Settings.Size;
+			SizeF screenSize = SwapChain.Settings.Size;
 
+			logoSize.Height = 256;
+
+			if (screenSize.Width < logoSize.Width)
+			{
+				logoBounds.Width = logoSize.Width * screenSize.Width / logoSize.Width;
+			}
+			else
+			{
+				logoBounds.Width = logoSize.Width;
+			}
+
+			float aspect = logoSize.Height / logoSize.Width;
+			logoBounds.Height = logoBounds.Width * aspect;
+			logoBounds.X = screenSize.Width / 2.0f - logoBounds.Width / 2.0f;
+			logoBounds.Y = screenSize.Height / 2.0f - logoBounds.Height / 2.0f;
+
+			Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+
+			if (!_delta.EqualsEpsilon(0.0f))
+			{
+				Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
+				Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
+
+				Renderer.Drawing.BlendingMode = BlendingMode.Additive;
+				Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 0.25f), _logo, _blurStates[2]);
+
+				_alpha += _delta * GorgonTiming.ScaledDelta;
+
+				if (_alpha > 1.0f)
+				{
+					if ((_destState == _blurStates[1]) && (_sourceState == _blurStates[2]))
+					{
+						_alpha = 0.0f;
+						_destState = _blurStates[0];
+						_sourceState = _blurStates[1];
+					}
+					else
+					{
+						_alpha = 1.0f;
+						_delta = -_delta;
+					}
+				}
+				else if (_alpha < 0.0f)
+				{
+					if ((_destState == _blurStates[0]) && (_sourceState == _blurStates[1]))
+					{
+						_alpha = 1.0f;
+						_destState = _blurStates[1];
+						_sourceState = _blurStates[2];
+					}
+					else
+					{
+						_alpha = 0.0f;
+						_delta = -_delta;
+					}
+				}
+			}
+			else
+			{
+				Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f), _logo, _blurStates[0]);
+				Renderer.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 0.25f), _logo, _blurStates[2]);
+			}
+		}
+		#endregion
+
+		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NoContentRenderer"/> class.
 		/// </summary>
-		/// <param name="graphicsProxy">The graphics proxy.</param>
+		/// <param name="graphics">The graphics interface.</param>
+		/// <param name="settings">The settings interface for the application.</param>
 		/// <param name="defaultContent">The default content.</param>
-		public NoContentRenderer(IProxyObject<GorgonGraphics> graphicsProxy, IContent defaultContent)
-			: base(graphicsProxy, defaultContent)
+		public NoContentRenderer(GorgonGraphics graphics, IEditorSettings settings, IContent defaultContent)
+			: base(graphics, defaultContent)
 		{
-			ClearColor = Color.Pink;
+			ClearColor = null;
+
+			// Set for 30 FPS vsync.
+			RenderInterval = 2;
+			_delta = (settings.AnimateStartPageLogo && settings.StartPageAnimationPulseRate > 0) ? settings.StartPageAnimationPulseRate : 0;
 		}
+		#endregion
 	}
 }

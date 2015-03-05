@@ -57,6 +57,97 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the exitToolStripMenuItem control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				Close();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
+		/// Function to confirm whether content should be saved if it has been changed.
+		/// </summary>
+		/// <returns>The confirmation result for the confirmation dialog.</returns>
+		private ConfirmationResult ConfirmContentSave()
+		{
+			var result = ConfirmationResult.None;
+
+			try
+			{
+				// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
+				if (_contentManager.CurrentContent == null)
+				{
+					return ConfirmationResult.No;
+				}
+
+				// Ensure that our content will be saved.
+				if (_contentManager.CurrentContent.HasChanges)
+				{
+					result = GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT, _contentManager.CurrentContent.Name), null, true);
+
+					if (result == ConfirmationResult.Cancel)
+					{
+						return result;
+					}
+				}
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				if (result != ConfirmationResult.Yes)
+				{
+					return result;
+				}
+
+				// TODO: do save functionality.
+
+				return result;
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the ContentClosingEvent event of the ContentManager control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="contentClosingEventArgs">The <see cref="ContentClosingEventArgs"/> instance containing the event data.</param>
+		private void ContentManager_ContentClosingEvent(object sender, ContentClosingEventArgs contentClosingEventArgs)
+		{
+			// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
+			if (_contentManager.CurrentContent == null)
+			{
+				return;
+			}
+
+			try
+			{
+				contentClosingEventArgs.Cancel = ConfirmContentSave() == ConfirmationResult.Cancel;
+
+				if (!contentClosingEventArgs.Cancel)
+				{
+					// Reload the default content.
+					_contentManager.CreateContent();
+				}
+			}
+			catch (GorgonException ex)
+			{
+				_contentManager.CreateContent();
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
 		/// Handles the ContentCreatedEvent event of the ContentManager control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -65,32 +156,26 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				// TODO: Fix this, this will mess up bad otherwise.
-				// TODO: The default panel UI should be disposed and recreated on demand.  This will keep resources low.
-				// TODO: We may have to move it out of the object graph in that case since that doesn't deal well with 
-				// TODO: recycled objects.
-				Control previousControl = null;
 				Control newControl = e.Panel as Control;
+				IContentPanel previousPanel = null;
 
 				if (panelContentHost.Controls.Count > 0)
 				{
-					previousControl = panelContentHost.Controls[0];
+					previousPanel = panelContentHost.Controls[0] as IContentPanel;
+				}
+
+				if (previousPanel != null)
+				{
+					previousPanel.Dispose();
 				}
 
 				if (newControl == null)
 				{
-					// Get rid of the previous control.
-					if (previousControl != null)
-					{
-						previousControl.Dispose();
-					}
 					return;
 				}
 
 				e.Panel.CurrentTheme = Theme;
 
-				// Put this control on top of the old one to try and mitigate the "flashing" 
-				// that tends to happen when one control dies, and the other is being added.
 				panelContentHost.Controls.Add(newControl);
 
 				if (e.Panel.CaptionVisible)
@@ -100,26 +185,21 @@ namespace GorgonLibrary.Editor
 
 				e.Panel.Dock = DockStyle.Fill;
 
-				if (previousControl != null)
-				{
-					previousControl.Dispose();
-				}
-
 				// Initialize rendering if necessary.
 				if (e.Panel.UsesRenderer)
 				{
 					e.Panel.Renderer.CreateResources(e.Panel.RenderControl);
 				}
+
+				// If we don't have properties, then we'll have to unhook from the properties grid.
+				// And we'll also have to hide it.
+				//pageProperties.Enabled = e.Content.HasProperties;
+				tabPages.SelectedTab = e.Content.HasProperties ? pageProperties : pageFiles;
 			}
 			catch
 			{
 				// If the default panel was not loaded, then put it back.
-				if ((panelContentHost.Controls.Count == 0)
-				    || (!(panelContentHost.Controls[0] is NoContentPanel)))
-				{
-					// Passing with no parameters will load the default content.
-					_contentManager.CreateContent();
-				}
+				_contentManager.CreateContent();
 
 				// Send the exception back so the root event handler will pick it up.
 				throw;
@@ -153,6 +233,25 @@ namespace GorgonLibrary.Editor
 			tabPages.TabGradient.ColorStart = Theme.WindowBackground;
 			tabPages.TabGradient.TabPageSelectedTextColor = Theme.HilightBackColor;
 			tabPages.TabGradient.TabPageTextColor = Theme.ForeColor;
+
+			propertyGrid.BackColor = Theme.ContentPanelBackground;
+			propertyGrid.CategoryForeColor = Theme.ForeColor;
+			propertyGrid.CommandsActiveLinkColor = Theme.HilightForeColor;
+			propertyGrid.CommandsBackColor = propertyGrid.BackColor;
+			propertyGrid.CommandsBorderColor = Theme.WindowBackground;
+			propertyGrid.CommandsDisabledLinkColor = Theme.DisabledColor;
+			propertyGrid.CommandsForeColor = Theme.ForeColor;
+			propertyGrid.CommandsLinkColor = Theme.HilightBackColor;
+			propertyGrid.DisabledItemForeColor = Theme.DisabledColor;
+			propertyGrid.HelpBackColor = Theme.WindowBackground;
+			propertyGrid.HelpBorderColor = Theme.WindowBackground;
+			propertyGrid.HelpForeColor = Theme.ForeColor;
+			propertyGrid.LineColor = Theme.WindowBackground;
+			propertyGrid.SelectedItemWithFocusBackColor = Theme.HilightBackColor;
+			propertyGrid.SelectedItemWithFocusForeColor = Theme.HilightForeColor;
+			propertyGrid.ViewBackColor = Theme.ContentPanelBackground;
+			propertyGrid.ViewBorderColor = Theme.ContentPanelBackground;
+			propertyGrid.ViewForeColor = Theme.ForeColor;
 		}
 
 		/// <summary>
@@ -203,11 +302,24 @@ namespace GorgonLibrary.Editor
 
 			_logFile.Print("Closing main window '{0}'", LoggingLevel.Verbose, Text);
 
-			_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
-
 			try
 			{
 				_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
+
+				// Shut down the content manager.
+				if ((_contentManager.CurrentContent != null) && (_contentManager.CurrentContent.HasChanges))
+				{
+					if (ConfirmContentSave() == ConfirmationResult.Cancel)
+					{
+						e.Cancel = true;
+						return;
+					}
+				}
+
+				_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
+				_contentManager.ContentClosing -= ContentManager_ContentClosingEvent;
+
+				_contentManager.Dispose();
 			}
 			catch (Exception ex)
 			{
@@ -264,6 +376,7 @@ namespace GorgonLibrary.Editor
 			_contentManager = contentManager;
 
 			_contentManager.ContentCreated += ContentManager_ContentCreatedEvent;
+			_contentManager.ContentClosing += ContentManager_ContentClosingEvent;
 		}
 		#endregion
 	}

@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
@@ -113,12 +114,16 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		// Application log file.
 		private GorgonLogFile _log;
+		// The settings object for the default content.
+		private readonly IEditorSettings _settings;
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
-		// The default content object and its UI.
-		private Tuple<IContent, IContentPanel> _noContent;
 		// Currently displayed content.
 		private Tuple<IContent, IContentPanel> _currentContent;
+		// Object and UI for the default content.
+		private Tuple<IContent, IContentPanel> _noContent;
+		// The proxy graphics interface for content.
+		private readonly IProxyObject<GorgonGraphics> _graphicsProxy;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -126,12 +131,13 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="EditorContentManager"/> class.
 		/// </summary>
 		/// <param name="log">The application log file.</param>
-		/// <param name="noContent">The default content object.</param>
-		/// <param name="noContentUI">The UI for the "no content" object.</param>
-		public EditorContentManager(GorgonLogFile log, IContent noContent, IContentPanel noContentUI)
+		/// <param name="settings">The application settings to pass to the default content.</param>
+		/// <param name="graphicsProxy">The proxy object for the graphics interface.</param>
+		public EditorContentManager(GorgonLogFile log, IEditorSettings settings, IProxyObject<GorgonGraphics> graphicsProxy)
 		{
 			_log = log;
-			_noContent = new Tuple<IContent, IContentPanel>(noContent, noContentUI);
+			_graphicsProxy = graphicsProxy;
+			_settings = settings;
 		}
 
 		/// <summary>
@@ -188,17 +194,64 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Handles the CloseClickEvent event of the Content control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="gorgonCancelEventArgs">The <see cref="GorgonCancelEventArgs"/> instance containing the event data.</param>
+		private void Content_CloseClickEvent(object sender, GorgonCancelEventArgs gorgonCancelEventArgs)
+		{
+			// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
+			if (CurrentContent == null)
+			{
+				return;
+			}
+
+			CurrentContent.Close();
+		}
+
+		/// <summary>
+		/// Function to disable any content panel events.
+		/// </summary>
+		/// <param name="panel">Panel to remove events from.</param>
+		private void DisablePanelWiring(IContentPanel panel)
+		{
+			if (panel.CaptionVisible)
+			{
+				panel.CloseClick -= Content_CloseClickEvent;
+			}
+		}
+
+		/// <summary>
+		/// Function to enable any content panel events.
+		/// </summary>
+		/// <param name="panel"></param>
+		private void EnablePanelWiring(IContentPanel panel)
+		{
+			if (panel.CaptionVisible)
+			{
+				panel.CloseClick += Content_CloseClickEvent;
+			}
+		}
+
+		/// <summary>
 		/// Function to create a content object for editing.
 		/// </summary>
 		public void CreateContent()
 		{
-			Tuple<IContent, IContentPanel> previousContent = _currentContent;
+			Tuple<IContent, IContentPanel> previousContent = _currentContent ?? _noContent;
 
+			// Disable the current content
 			_currentContent = null;
-			_noContent.Item2.Renderer.ClearResources();
 
 			if ((previousContent != null) && (previousContent.Item1 != null))
 			{
+				// We will not be removing the UI, the main form will handle that for us when 
+				// we add the new UI.  But we must disable any events for the current panel.
+				if (previousContent.Item2 != null)
+				{
+					DisablePanelWiring(previousContent.Item2);
+				}
+
 				var closeArgs = new ContentClosingEventArgs(previousContent.Item1);
 
 				if (ContentClosing != null)
@@ -212,25 +265,30 @@ namespace GorgonLibrary.Editor
 					}
 				}
 
-				// We will not be removing the UI, the main form will handle that for us when 
-				// we add the new UI.
 				previousContent.Item1.Dispose();
 			}
-			else
-			{
-				// End rendering immediately for the default content.
-				_noContent.Item2.Renderer.StopRendering();
-			}
-
+			
 			// TODO: Search for the appropriate content.
 			// TODO: For now, just load default content.
-			var panelCreatedArgs = new ContentCreatedEventArgs(null, _noContent.Item2);
+			// if (param == null) then do the lines below and return, otherwise create the content as normal.
+			// {
+			IContent defaultContent = new NoContent();
+			IContentPanel defaultContentUI = new ContentPanel(defaultContent, new NoContentRenderer(_graphicsProxy.Item, _settings, defaultContent))
+			                                 {
+				                                 CaptionVisible = false
+			                                 };
+
+			_noContent = new Tuple<IContent, IContentPanel>(defaultContent, defaultContentUI);
+
+			var panelCreatedArgs = new ContentCreatedEventArgs(_noContent.Item1, _noContent.Item2);
 			if (ContentCreated != null)
 			{
 				ContentCreated(this, panelCreatedArgs);
 
 				 _noContent.Item2.Renderer.StartRendering();
 			}
+			// return;
+			// }
 		}
 		#endregion
 		#endregion
@@ -251,6 +309,7 @@ namespace GorgonLibrary.Editor
 			{
 				if (ContentPanel != null)
 				{
+					DisablePanelWiring(ContentPanel);
 					ContentPanel.Dispose();
 				}
 

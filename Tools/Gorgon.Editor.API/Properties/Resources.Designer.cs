@@ -97,6 +97,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Untitled.
+        /// </summary>
+        internal static string GOREDIT_TEXT_UNTITLED {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_UNTITLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Appearance.
         /// </summary>
         internal static string PROP_CATEGORY_APPEARANCE {
