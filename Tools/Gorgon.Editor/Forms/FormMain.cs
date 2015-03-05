@@ -79,6 +79,8 @@ namespace GorgonLibrary.Editor
 		/// <returns>The confirmation result for the confirmation dialog.</returns>
 		private ConfirmationResult ConfirmContentSave()
 		{
+			// TODO: This doesn't make sense to have this here.
+			// TODO: We should move this into the view (content panel) as it is responsible for content interaction.
 			var result = ConfirmationResult.None;
 
 			try
