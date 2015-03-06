@@ -130,9 +130,6 @@
   <data name="edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT" xml:space="preserve">
-    <value>The content '{0}' has unsaved changes.  Would you like to save these changes now?</value>
-  </data>
   <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
     <value>Select a new temporary scratch path.</value>
   </data>
@@ -212,5 +209,8 @@ Please see the details pane for more information.</value>
   </data>
   <data name="show_all_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\show_all_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_ALREADY_HAVE_CONTENT" xml:space="preserve">
+    <value>There is already active content in the editor.  Please close this content first.</value>
   </data>
 </root>

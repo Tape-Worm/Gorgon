@@ -39,9 +39,22 @@ namespace GorgonLibrary.Editor
 	{
 		#region Events.
 		/// <summary>
-		/// Event fired when the close button is clicked.
+		/// Event triggered when content is closing.
 		/// </summary>
-		event EventHandler<GorgonCancelEventArgs> CloseClick;		
+		/// <remarks>
+		/// This event provides the action to take as specified by the user as a <see cref="ConfirmationResult" /> value. The value will be
+		/// "yes" if the user wishes to save unsaved changes, "no" if the user does not wish to save unsaved changes or "cancel" if the user
+		/// cancels the operation.
+		/// <para>
+		/// If the event action is "none", it indicates that no user action was necessary and the operation may continue.
+		/// </para>
+		/// </remarks>
+		event EventHandler<ContentClosingEventArgs> ContentClosing;
+
+		/// <summary>
+		/// Event triggered when the content is closed.
+		/// </summary>
+		event EventHandler ContentClosed;
 		#endregion
 
 		#region Properties.
@@ -109,7 +122,23 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to provide an action to perform when closing the content.
+		/// </summary>
+		/// <returns>The action to perform when closing the content.</returns>
+		/// <remarks>
+		/// The return value must one of the <see cref="ConfirmationResult"/> values. Return "yes" to ensure the content is saved, "no" to skip saving, 
+		/// "cancel" to tell the application to stop the operation, or "none" to continue ("no" and "none" pretty much do the same thing).
+		/// </remarks>
+		ConfirmationResult GetCloseConfirmation();
 		
+			/// <summary>
+		/// Function called when the close button is clicked or when the <see cref="Close"/> method is called.
+		/// </summary>
+		/// <remarks>
+		/// This method will trigger the <see cref="ContentClosing"/> and <see cref="ContentClosed"/> events.
+		/// </remarks>
+		void Close();
 		#endregion
 	}
 }

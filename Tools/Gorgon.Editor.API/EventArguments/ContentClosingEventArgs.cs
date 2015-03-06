@@ -20,63 +20,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, March 2, 2015 11:19:56 PM
+// Created: Thursday, March 5, 2015 11:12:05 PM
 // 
 #endregion
 
 using System;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Manages the currently active content in the editor.
+	/// Event arguments for the content closing event.
 	/// </summary>
-	interface IEditorContentManager
-		: IDisposable
+	public class ContentClosingEventArgs
+		: EventArgs
 	{
-		#region Events.
-		/// <summary>
-		/// Event called when the content UI is created.
-		/// </summary>
-		event EventHandler<ContentCreatedEventArgs> ContentCreated;
-		#endregion
-
 		#region Properties.
 		/// <summary>
-		/// Property to return the currently active content.
+		/// Property to return the action taken by the user.
 		/// </summary>
 		/// <remarks>
-		/// When there is no content created/loaded, then this property will return NULL (Nothing in VB.Net) even though 
-		/// the "NoContent" content object is loaded in the display.
+		/// This event argument is the action to take as specified by the user.  This value is a <see cref="ConfirmationResult" /> value and will be
+		/// "yes" if the user wishes to save unsaved changes, "no" if the user does not wish to save unsaved changes or "cancel" if the user
+		/// cancels the operation.
+		/// <para>
+		/// If the value is "none", it indicates that no user action was necessary and the operation may continue.
+		/// </para>
 		/// </remarks>
-		IContent CurrentContent
+		public ConfirmationResult Action
 		{
 			get;
-		}
-
-		/// <summary>
-		/// Property to return the content panel.
-		/// </summary>
-		/// <remarks>
-		/// This will return the UI for the content (if available) for use in the editor.
-		/// </remarks>
-		IContentPanel ContentPanel
-		{
-			get;
+			private set;
 		}
 		#endregion
 
-		#region Methods.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Function to create a content object for editing.
+		/// Initializes a new instance of the <see cref="ContentClosingEventArgs"/> class.
 		/// </summary>
-		void CreateContent();
-
-		/// <summary>
-		/// Function to close and clean up any current content to allow for new content to be loaded.
-		/// </summary>
-		/// <returns>TRUE if the content was closed, FALSE if cancelled.</returns>
-		bool CloseContent();
+		/// <param name="action">The action to take as directed by the user.</param>
+		public ContentClosingEventArgs(ConfirmationResult action)
+		{
+			Action = action;
+		}
 		#endregion
 	}
 }

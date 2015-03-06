@@ -61,6 +61,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The content &apos;{0}&apos; has unsaved changes.  Would you like to save these changes now?.
+        /// </summary>
+        internal static string GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The content UI must be a control in order for the renderer to use it..
         /// </summary>
         internal static string GOREDIT_ERR_CONTENT_UI_NOT_A_CONTROL {

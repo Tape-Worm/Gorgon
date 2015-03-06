@@ -74,79 +74,21 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to confirm whether content should be saved if it has been changed.
+		/// Function to unload the file system data and the content data with save confirmation.
 		/// </summary>
-		/// <returns>The confirmation result for the confirmation dialog.</returns>
-		private ConfirmationResult ConfirmContentSave()
+		/// <returns>TRUE if the data was unloaded, FALSE if cancelled by the user.</returns>
+		private bool UnloadData()
 		{
-			// TODO: This doesn't make sense to have this here.
-			// TODO: We should move this into the view (content panel) as it is responsible for content interaction.
-			var result = ConfirmationResult.None;
-
-			try
+			// First ensure that we want to save the current content.
+			if (!_contentManager.CloseContent())
 			{
-				// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
-				if (_contentManager.CurrentContent == null)
-				{
-					return ConfirmationResult.No;
-				}
-
-				// Ensure that our content will be saved.
-				if (_contentManager.CurrentContent.HasChanges)
-				{
-					result = GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT, _contentManager.CurrentContent.Name), null, true);
-
-					if (result == ConfirmationResult.Cancel)
-					{
-						return result;
-					}
-				}
-
-				Cursor.Current = Cursors.WaitCursor;
-
-				if (result != ConfirmationResult.Yes)
-				{
-					return result;
-				}
-
-				// TODO: do save functionality.
-
-				return result;
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the ContentClosingEvent event of the ContentManager control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="contentClosingEventArgs">The <see cref="ContentClosingEventArgs"/> instance containing the event data.</param>
-		private void ContentManager_ContentClosingEvent(object sender, ContentClosingEventArgs contentClosingEventArgs)
-		{
-			// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
-			if (_contentManager.CurrentContent == null)
-			{
-				return;
+				return false;
 			}
 
-			try
-			{
-				contentClosingEventArgs.Cancel = ConfirmContentSave() == ConfirmationResult.Cancel;
+			// Next, confirm whether to save the currently open file system.
+			// TODO: Write file system management.
 
-				if (!contentClosingEventArgs.Cancel)
-				{
-					// Reload the default content.
-					_contentManager.CreateContent();
-				}
-			}
-			catch (GorgonException ex)
-			{
-				_contentManager.CreateContent();
-				GorgonDialogs.ErrorBox(this, ex);
-			}
+			return true;
 		}
 
 		/// <summary>
@@ -306,21 +248,15 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
-
 				// Shut down the content manager.
-				if ((_contentManager.CurrentContent != null) && (_contentManager.CurrentContent.HasChanges))
+				if (!UnloadData())
 				{
-					if (ConfirmContentSave() == ConfirmationResult.Cancel)
-					{
-						e.Cancel = true;
-						return;
-					}
+					e.Cancel = true;
+					_logFile.Print("Closing main window cancelled.  User cancelled operation.", LoggingLevel.Verbose, Text);
+					return;
 				}
 
 				_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
-				_contentManager.ContentClosing -= ContentManager_ContentClosingEvent;
-
 				_contentManager.Dispose();
 			}
 			catch (Exception ex)
@@ -342,6 +278,7 @@ namespace GorgonLibrary.Editor
 				// If this fails, just log it and continue on.
 				try
 				{
+					_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
 					_settings.Save();
 				}
 				catch (Exception ex)
@@ -378,7 +315,6 @@ namespace GorgonLibrary.Editor
 			_contentManager = contentManager;
 
 			_contentManager.ContentCreated += ContentManager_ContentCreatedEvent;
-			_contentManager.ContentClosing += ContentManager_ContentClosingEvent;
 		}
 		#endregion
 	}

@@ -98,31 +98,6 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
-		/// Handles the BeforeClosedEvent event of the Content control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void Content_BeforeClosedEvent(object sender, EventArgs eventArgs)
-		{
-			if (Content == null)
-			{
-				return;
-			}
-
-			// If we have rendering happening, then turn it off.
-			if (Renderer != null)
-			{
-				Renderer.Dispose();
-				Renderer = null;
-			}
-
-			OnBeforeContentClosed();
-
-			// Disable our link to the content.
-			Content = null;
-		}
-
-		/// <summary>
 		/// Handles the MouseEnter event of the labelClose control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -162,26 +137,20 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void labelClose_Click(object sender, EventArgs e)
 		{
+			if (IsDisposed)
+			{
+				return;
+			}
+
             Cursor.Current = Cursors.WaitCursor;
 
             try
             {
-				if (Content == null)
-				{
-					return;
-				}
-
-				labelClose.Enabled = false;
-
-                OnCloseClicked();
+	            Close();
             }
             catch (Exception ex)
             {
                 GorgonDialogs.ErrorBox(ParentForm, ex);
-            }
-            finally
-            {
-                Cursor.Current = Cursors.Default;
             }
 		}
 
@@ -199,15 +168,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function called before the content object is closed.
-		/// </summary>
-		/// <remarks>This method can be overridden to provide clean up facilities on the UI when the content is closed.</remarks>
-		protected virtual void OnBeforeContentClosed()
-		{
-			// We have nothing in the base class to make use of this.	
-		}
-
-		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -222,13 +182,37 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function called when the close button is clicked.
+		/// Function called when the close button is clicked or when the <see cref="Close"/> method is called.
 		/// </summary>
-		protected virtual void OnCloseClicked()
+		/// <param name="e">Event parameters passed to the event.</param>
+		/// <remarks>
+		/// The parameter specified by <paramref name="e"/> contains a value to indicate the action to take.  This value is a <see cref="ConfirmationResult" /> value. 
+		/// The value will be "yes" if the user wishes to save unsaved changes, "no" if the user doe snot wish to save unsaved changes or "cancel" if the user
+		/// cancels the operation.
+		/// <para>
+		/// If the parameter is set to "none", it indicates that no user action was necessary and the operation may continue.
+		/// </para>
+		/// <para>
+		/// Implementors may choose to override this method in order to provide custom functionality when closing their content.
+		/// </para>
+		/// </remarks>
+		protected virtual void OnContentClosing(ContentClosingEventArgs e)
 		{
-			if (CloseClick != null)
+			if (ContentClosing != null)
 			{
-				CloseClick(this, new GorgonCancelEventArgs(false));
+				ContentClosing(this, e);
+			}
+		}
+
+		/// <summary>
+		/// Function called when the content is closed.
+		/// </summary>
+		/// <remarks>This method is used to perform actions after the content has been completely removed.</remarks>
+		protected virtual void OnContentClosed()
+		{
+			if (ContentClosed != null)
+			{
+				ContentClosed(this, EventArgs.Empty);
 			}
 		}
 
@@ -316,16 +300,27 @@ namespace GorgonLibrary.Editor
 			Content = content;
 			UpdateCaption();
 			Renderer = renderer;
-			content.BeforeContentClosed += Content_BeforeClosedEvent;
 		}
 		#endregion
 
 		#region IContentPanel Members
 		#region Events.
 		/// <summary>
-		/// Event fired when the close button is clicked.
+		/// Event triggered when content is closing.
 		/// </summary>
-		public event EventHandler<GorgonCancelEventArgs> CloseClick;
+		/// <remarks>
+		/// This event provides the action to take as specified by the user as a <see cref="ConfirmationResult" /> value. The value will be
+		/// "yes" if the user wishes to save unsaved changes, "no" if the user does not wish to save unsaved changes or "cancel" if the user
+		/// cancels the operation.
+		/// <para>
+		/// If the event action is "none", it indicates that no user action was necessary and the operation may continue.
+		/// </para>
+		/// </remarks>
+		public event EventHandler<ContentClosingEventArgs> ContentClosing;
+		/// <summary>
+		/// Event triggered after the content is closed.
+		/// </summary>
+		public event EventHandler ContentClosed;
 		#endregion
 
 		#region Properties.
@@ -409,6 +404,61 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to provide an action to perform when closing the content.
+		/// </summary>
+		/// <returns>
+		/// The action to perform when closing the content.
+		/// </returns>
+		/// <remarks>
+		/// The return value must one of the <see cref="ConfirmationResult" /> values. Return "yes" to ensure the content is saved, "no" to skip saving,
+		/// "cancel" to tell the application to stop the operation, or "none" to continue ("no" and "none" pretty much do the same thing).
+		/// </remarks>
+		public virtual ConfirmationResult GetCloseConfirmation()
+		{
+			return Content.HasChanges
+					   ? GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT, Content.Name), null, true)
+					   : ConfirmationResult.None;
+		}
+
+		/// <summary>
+		/// Function called when the close button is clicked or when the <see cref="Close" /> method is called.
+		/// </summary>
+		/// <remarks>
+		/// This method will trigger the <see cref="ContentClosing" /> and <see cref="ContentClosed" /> events.
+		/// </remarks>
+		public void Close()
+		{
+			if ((IsDisposed)
+				|| (Content == null))
+			{
+				return;
+			}
+			
+			try
+			{
+				var args = new ContentClosingEventArgs(GetCloseConfirmation());
+
+				if (args.Action == ConfirmationResult.Cancel)
+				{
+					return;
+				}
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				OnContentClosing(args);
+				OnContentClosed();
+
+				Dispose();
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
 		}
 		#endregion
 		#endregion

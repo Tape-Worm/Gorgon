@@ -101,20 +101,20 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The content &apos;{0}&apos; has unsaved changes.  Would you like to save these changes now?.
-        /// </summary>
-        internal static string GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT {
-            get {
-                return ResourceManager.GetString("GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Select a new temporary scratch path..
         /// </summary>
         internal static string GOREDIT_DLG_SCRATCH_PATH {
             get {
                 return ResourceManager.GetString("GOREDIT_DLG_SCRATCH_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already active content in the editor.  Please close this content first..
+        /// </summary>
+        internal static string GOREDIT_ERR_ALREADY_HAVE_CONTENT {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_ALREADY_HAVE_CONTENT", resourceCulture);
             }
         }
         

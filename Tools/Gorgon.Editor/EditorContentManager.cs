@@ -26,44 +26,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
-	/// <summary>
-	/// Event arguments for the content closing event.
-	/// </summary>
-	class ContentClosingEventArgs
-		: GorgonCancelEventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the content object that's closing.
-		/// </summary>
-		public IContent Content
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ContentClosingEventArgs"/> class.
-		/// </summary>
-		/// <param name="content">The content that's closing.</param>
-		public ContentClosingEventArgs(IContent content)
-			: base(false)
-		{
-			Content = content;
-		}
-		#endregion
-	}
-
 	/// <summary>
 	/// Event arguments for the content panel created event.
 	/// </summary>
@@ -152,10 +125,6 @@ namespace GorgonLibrary.Editor
 		#region IContentManager
 		#region Events.
 		/// <summary>
-		/// Event called when the content is about to close.
-		/// </summary>
-		public event EventHandler<ContentClosingEventArgs> ContentClosing;
-		/// <summary>
 		/// Event called when the content UI is created.
 		/// </summary>
 		public event EventHandler<ContentCreatedEventArgs> ContentCreated;
@@ -194,91 +163,123 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
-		/// Handles the CloseClickEvent event of the Content control.
+		/// Handles the ClosedEvent event of the Content control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="gorgonCancelEventArgs">The <see cref="GorgonCancelEventArgs"/> instance containing the event data.</param>
-		private void Content_CloseClickEvent(object sender, GorgonCancelEventArgs gorgonCancelEventArgs)
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void Content_ClosedEvent(object sender, EventArgs e)
 		{
-			// If there's a disconnect (shouldn't be), then don't cause us any grief when trying to get rid of the panel.
-			if (CurrentContent == null)
+			IContent content = CurrentContent ?? _noContent.Item1;
+			IContentPanel contentUI = sender as IContentPanel;
+
+			// Ensure that we unsubscribe from the events for this UI.
+			if (contentUI != null)
+			{
+				contentUI.ContentClosing -= Content_ClosingEvent;
+				contentUI.ContentClosed -= Content_ClosedEvent;
+			}
+
+			if (content != null)
+			{
+				content.Dispose();
+			}
+
+			_noContent = null;
+			_currentContent = null;
+
+			// Create the default content.
+			CreateContent();
+		}
+
+		/// <summary>
+		/// Handles the ClosingEvent event of the Content control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="ContentClosingEventArgs"/> instance containing the event data.</param>
+		private void Content_ClosingEvent(object sender, ContentClosingEventArgs e)
+		{
+			if (e.Action != ConfirmationResult.Yes)
 			{
 				return;
 			}
 
-			CurrentContent.Close();
+			// TODO: Do saving here.
 		}
 
 		/// <summary>
-		/// Function to disable any content panel events.
+		/// Function to close and clean up any current content to allow for new content to be loaded.
 		/// </summary>
-		/// <param name="panel">Panel to remove events from.</param>
-		private void DisablePanelWiring(IContentPanel panel)
+		/// <returns>
+		/// TRUE if the content was closed, FALSE if cancelled.
+		/// </returns>
+		public bool CloseContent()
 		{
-			if (panel.CaptionVisible)
-			{
-				panel.CloseClick -= Content_CloseClickEvent;
-			}
-		}
+			Tuple<IContent, IContentPanel> content = _currentContent ?? _noContent;
 
-		/// <summary>
-		/// Function to enable any content panel events.
-		/// </summary>
-		/// <param name="panel"></param>
-		private void EnablePanelWiring(IContentPanel panel)
-		{
-			if (panel.CaptionVisible)
+			if ((content == null) || (content.Item1 == null))
 			{
-				panel.CloseClick += Content_CloseClickEvent;
+				return true;
 			}
+			
+			if (content.Item2 != null)
+			{
+				// Turn off the events, we don't need them here.
+				content.Item2.ContentClosing -= Content_ClosingEvent;
+				content.Item2.ContentClosed -= Content_ClosedEvent;
+
+				// If we have changes, then ensure that we save them first.
+				if (content.Item1.HasChanges)
+				{
+					ConfirmationResult result = content.Item2.GetCloseConfirmation();
+
+					if (result == ConfirmationResult.Cancel)
+					{
+						return false;
+					}
+
+					if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+					{
+						// TODO: Perform saving.
+					}
+				}
+
+				content.Item2.Close();
+			}
+
+			content.Item1.Dispose();
+
+			// Disable the current content.
+			_currentContent = null;
+			_noContent = null;
+
+			return true;
 		}
 
 		/// <summary>
 		/// Function to create a content object for editing.
 		/// </summary>
+		/// <exception cref="GorgonException">Thrown when attempting to create a content object when content already exists in the editor.</exception>
 		public void CreateContent()
 		{
-			Tuple<IContent, IContentPanel> previousContent = _currentContent ?? _noContent;
-
-			// Disable the current content
-			_currentContent = null;
-
-			if ((previousContent != null) && (previousContent.Item1 != null))
+			if ((CurrentContent != null) || (_noContent != null))
 			{
-				// We will not be removing the UI, the main form will handle that for us when 
-				// we add the new UI.  But we must disable any events for the current panel.
-				if (previousContent.Item2 != null)
-				{
-					DisablePanelWiring(previousContent.Item2);
-				}
-
-				var closeArgs = new ContentClosingEventArgs(previousContent.Item1);
-
-				if (ContentClosing != null)
-				{
-					ContentClosing(this, closeArgs);
-
-					// If we cancel, then do not create a new content object.
-					if (closeArgs.Cancel)
-					{
-						return;
-					}
-				}
-
-				previousContent.Item1.Dispose();
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_ALREADY_HAVE_CONTENT);	
 			}
-			
+
 			// TODO: Search for the appropriate content.
 			// TODO: For now, just load default content.
 			// if (param == null) then do the lines below and return, otherwise create the content as normal.
 			// {
-			IContent defaultContent = new NoContent();
-			IContentPanel defaultContentUI = new ContentPanel(defaultContent, new NoContentRenderer(_graphicsProxy.Item, _settings, defaultContent))
-			                                 {
-				                                 CaptionVisible = false
-			                                 };
+			IContent content = new NoContent();
+			IContentPanel contentUI = new ContentPanel(content, new NoContentRenderer(_graphicsProxy.Item, _settings, content))
+			                          {
+				                          CaptionVisible = false
+			                          };
 
-			_noContent = new Tuple<IContent, IContentPanel>(defaultContent, defaultContentUI);
+			contentUI.ContentClosing += Content_ClosingEvent;
+			contentUI.ContentClosed += Content_ClosedEvent;
+
+			_noContent = new Tuple<IContent, IContentPanel>(content, contentUI);
 
 			var panelCreatedArgs = new ContentCreatedEventArgs(_noContent.Item1, _noContent.Item2);
 			if (ContentCreated != null)
@@ -307,27 +308,20 @@ namespace GorgonLibrary.Editor
 
 			if (disposing)
 			{
-				if (ContentPanel != null)
-				{
-					DisablePanelWiring(ContentPanel);
-					ContentPanel.Dispose();
-				}
+				Tuple<IContent, IContentPanel> content = _currentContent ?? _noContent;
 
-				if (CurrentContent != null)
+				if (content != null)
 				{
-					CurrentContent.Dispose();	
-				}
-
-				if (_noContent != null)
-				{
-					if (_noContent.Item1 != null)
+					if (content.Item2 != null)
 					{
-						_noContent.Item1.Dispose();
+						_noContent.Item2.ContentClosing -= Content_ClosingEvent;
+						_noContent.Item2.ContentClosed -= Content_ClosedEvent;
+						_noContent.Item2.Dispose();
 					}
 
-					if (_noContent.Item2 != null)
+					if (content.Item1 != null)
 					{
-						_noContent.Item2.Dispose();
+						_noContent.Item1.Dispose();
 					}
 				}
 			}

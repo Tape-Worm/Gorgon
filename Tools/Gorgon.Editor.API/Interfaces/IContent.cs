@@ -57,11 +57,6 @@ namespace GorgonLibrary.Editor
 		/// Event fired after content is renamed.
 		/// </summary>
 		event EventHandler<AfterContentRenamedArgs> AfterContentRenamed;
-
-		/// <summary>
-		/// Event fired before content is closed.
-		/// </summary>
-		event EventHandler BeforeContentClosed;
 		#endregion
 
 		#region Properties.
@@ -114,13 +109,6 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to close the content object.
-		/// </summary>
-		void Close();
 		#endregion
 	}
 }

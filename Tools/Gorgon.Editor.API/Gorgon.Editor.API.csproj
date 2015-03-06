@@ -55,6 +55,7 @@
     <Compile Include="Content\EditorContent.cs" />
     <Compile Include="Content\EditorContentRenderer2D.cs" />
     <Compile Include="Content\EditorContentSerializer.cs" />
+    <Compile Include="EventArguments\ContentClosingEventArgs.cs" />
     <Compile Include="Interfaces\IEditorContentRenderer.cs" />
     <Compile Include="Controls\ContentPanel.cs">
       <SubType>UserControl</SubType>
@@ -62,8 +63,8 @@
     <Compile Include="Controls\ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="EventArgs\AfterContentRenamedArgs.cs" />
-    <Compile Include="EventArgs\BeforeContentRenamedArgs.cs" />
+    <Compile Include="EventArguments\AfterContentRenamedArgs.cs" />
+    <Compile Include="EventArguments\BeforeContentRenamedArgs.cs" />
     <Compile Include="Interfaces\IContent.cs" />
     <Compile Include="Interfaces\IContentPanel.cs" />
     <Compile Include="Interfaces\IContentSerializer.cs" />

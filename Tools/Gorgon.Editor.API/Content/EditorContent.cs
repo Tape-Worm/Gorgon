@@ -64,17 +64,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function called before the content is closed.
-		/// </summary>
-	    protected virtual void OnBeforeContentClosed()
-	    {
-		    if (BeforeContentClosed != null)
-		    {
-			    BeforeContentClosed(this, EventArgs.Empty);
-		    }
-	    }
-
-		/// <summary>
 		/// Function called before content is renamed.
 		/// </summary>
 		/// <param name="e">Event parameters for the event.</param>
@@ -143,8 +132,6 @@ namespace GorgonLibrary.Editor
 
 			if (disposing)
 			{
-				Close();
-
 				if (Serializer != null)
 				{
 					Serializer.AfterSerialize -= Serializer_AfterSerializeEvent;
@@ -176,11 +163,6 @@ namespace GorgonLibrary.Editor
 		/// Event fired after content is renamed.
 		/// </summary>
 		public event EventHandler<AfterContentRenamedArgs> AfterContentRenamed;
-
-		/// <summary>
-		/// Event fired when content is about to be closed.
-		/// </summary>
-	    public event EventHandler BeforeContentClosed;
 		#endregion
 
 		#region Properties.
@@ -321,16 +303,6 @@ namespace GorgonLibrary.Editor
 				//TypeDescriptor["Name"].IsReadOnly = value;
 			}
 		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to close the content object.
-		/// </summary>
-	    public void Close()
-	    {
-		    OnBeforeContentClosed();
-	    }
 		#endregion
 		#endregion
 	}
