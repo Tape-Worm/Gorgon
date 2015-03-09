@@ -25,11 +25,14 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -273,6 +276,13 @@ namespace GorgonLibrary.Editor
                 {
                     LoadLastFile();
                 }*/
+
+				// TODO: Make this smarter.
+				using (var stream = File.Open(_settings.ThemeDirectory.FormatDirectory(Path.DirectorySeparatorChar) + "Darktheme.Xml", FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					var serializer = new XmlSerializer(typeof(EditorTheme));
+					((FlatForm)MainForm).Theme = (EditorTheme)serializer.Deserialize(stream);
+				}
 
 				// Set up the default pane.
 				_splash.InfoText = Resources.GOREDIT_TEXT_STARTING;

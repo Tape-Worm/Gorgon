@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<FlatFormTheme>
+<EditorTheme>
   <ToolStripBackColor Color="68, 68, 68" />
   <ToolStripArrowColor Color="White" />
   <CheckBoxBackColorHilight Color="SteelBlue" />
@@ -20,4 +20,5 @@
   <WindowCloseIconForeColor Color="White" />
   <WindowCloseIconForeColorHilight Color="White" />
   <WindowCloseIconBackColorHilight Color="Red" />
-</FlatFormTheme>
+  <PropertyPanelBackgroundColor Color="58, 58, 58"/>
+</EditorTheme>

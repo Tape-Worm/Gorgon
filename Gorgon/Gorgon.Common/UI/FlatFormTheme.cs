@@ -517,7 +517,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Function called when a color property is changed.
 		/// </summary>
-		private void OnPropertyChanged()
+		protected void OnPropertyChanged()
 		{
 			if (PropertyChanged == null)
 			{
@@ -968,13 +968,13 @@ namespace GorgonLibrary.UI
 				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
 			}
 
-			if (!string.Equals(reader.LocalName, typeof(FlatFormTheme).Name))
+			if (!string.Equals(reader.LocalName, GetType().Name))
 			{
 				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
 			}
 
 			// Get our properties so we can set them.
-			IDictionary<string, PropertyInfo> properties = (from property in typeof(FlatFormTheme).GetProperties()
+			IDictionary<string, PropertyInfo> properties = (from property in GetType().GetProperties()
 			                                                where property.PropertyType == typeof(Color)
 			                                                      && property.GetCustomAttribute<BrowsableAttribute>() != null
 			                                                select property).ToDictionary(key => key.Name, value => value, StringComparer.OrdinalIgnoreCase);
@@ -992,6 +992,7 @@ namespace GorgonLibrary.UI
 
 				if (!properties.TryGetValue(reader.LocalName, out property))
 				{
+					reader.Read();
 					continue;
 				}
 
@@ -1008,7 +1009,7 @@ namespace GorgonLibrary.UI
 		void IXmlSerializable.WriteXml(XmlWriter writer)
 		{
 			var converter = new ColorConverter();
-			IEnumerable<PropertyInfo> colorProperties = from property in typeof(FlatFormTheme).GetProperties()
+			IEnumerable<PropertyInfo> colorProperties = from property in GetType().GetProperties()
 			                                            where property.PropertyType == typeof(Color)
 			                                                  && property.GetCustomAttribute<BrowsableAttribute>() != null
 			                                            select property;

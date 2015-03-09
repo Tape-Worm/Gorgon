@@ -1425,8 +1425,8 @@ namespace GorgonLibrary.UI
 
 			using (var pen = new Pen(ActiveForm == this ? _theme.WindowBorderActive : _theme.WindowBorderInactive, _borderWidth))
 			{
-				Rectangle position = new Rectangle(_borderWidth - 1, _borderWidth - 1, (ClientSize.Width - 1) - _borderWidth, (ClientSize.Height - 1) - _borderWidth);
-				graphics.DrawRectangle(pen, position);
+				float halfBorder = _borderWidth / 2.0f;
+				graphics.DrawRectangle(pen, halfBorder, halfBorder, ClientSize.Width - _borderWidth, ClientSize.Height - _borderWidth);
 			}
 		}
 

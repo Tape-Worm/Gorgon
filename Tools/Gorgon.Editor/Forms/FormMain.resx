@@ -118,10 +118,47 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="labelUnCollapse.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="labelUnCollapse.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt, style=Bold</value>
+  </data>
+  <data name="labelUnCollapse.Location" type="System.Drawing.Point, System.Drawing">
+    <value>1252, 28</value>
+  </data>
+  <data name="labelUnCollapse.Size" type="System.Drawing.Size, System.Drawing">
+    <value>20, 630</value>
+  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="labelUnCollapse.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <metadata name="tipMainWindow.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>1570, 17</value>
+  </metadata>
+  <data name="labelUnCollapse.ToolTip" xml:space="preserve">
+    <value>Click here to show the properties and files tabs.</value>
+  </data>
+  <data name="labelUnCollapse.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="&gt;&gt;labelUnCollapse.Name" xml:space="preserve">
+    <value>labelUnCollapse</value>
+  </data>
+  <data name="&gt;&gt;labelUnCollapse.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelUnCollapse.Parent" xml:space="preserve">
+    <value>ContentArea</value>
+  </data>
+  <data name="&gt;&gt;labelUnCollapse.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="splitMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="splitMain.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 28</value>
   </data>
@@ -134,7 +171,6 @@
   <data name="panelContentHost.Size" type="System.Drawing.Size, System.Drawing">
     <value>960, 630</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="panelContentHost.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
@@ -161,6 +197,9 @@
   </data>
   <data name="&gt;&gt;splitMain.Panel1.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="splitMain.Panel1MinSize" type="System.Int32, mscorlib">
+    <value>320</value>
   </data>
   <data name="tabPages.Alignment" type="System.Windows.Forms.TabAlignment, System.Windows.Forms">
     <value>Bottom</value>
@@ -510,6 +549,9 @@
   <data name="&gt;&gt;splitMain.Panel2.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="splitMain.Panel2MinSize" type="System.Int32, mscorlib">
+    <value>156</value>
+  </data>
   <data name="splitMain.Size" type="System.Drawing.Size, System.Drawing">
     <value>1272, 630</value>
   </data>
@@ -529,7 +571,7 @@
     <value>ContentArea</value>
   </data>
   <data name="&gt;&gt;splitMain.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="panelFooter.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -583,7 +625,7 @@
     <value>ContentArea</value>
   </data>
   <data name="&gt;&gt;panelFooter.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="panelMenu.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -820,7 +862,7 @@
     <value>ContentArea</value>
   </data>
   <data name="&gt;&gt;panelMenu.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="ContentArea.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 36</value>
@@ -3128,6 +3170,12 @@
   <data name="&gt;&gt;buttonShowAll.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;popupItemAddContent.Name" xml:space="preserve">
+    <value>popupItemAddContent</value>
+  </data>
+  <data name="&gt;&gt;popupItemAddContent.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;menuFile.Name" xml:space="preserve">
     <value>menuFile</value>
   </data>
@@ -3278,12 +3326,6 @@
   <data name="&gt;&gt;itemResetValue.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;popupItemAddContent.Name" xml:space="preserve">
-    <value>popupItemAddContent</value>
-  </data>
-  <data name="&gt;&gt;popupItemAddContent.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;popupItemEdit.Name" xml:space="preserve">
     <value>popupItemEdit</value>
   </data>
@@ -3392,10 +3434,16 @@
   <data name="&gt;&gt;dialogExport.Type" xml:space="preserve">
     <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;tipMainWindow.Name" xml:space="preserve">
+    <value>tipMainWindow</value>
+  </data>
+  <data name="&gt;&gt;tipMainWindow.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>FormMain</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5535.1454, Culture=neutral, PublicKeyToken=null</value>
+    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5545.38167, Culture=neutral, PublicKeyToken=null</value>
   </data>
 </root>

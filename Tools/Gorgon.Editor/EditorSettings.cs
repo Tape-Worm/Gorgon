@@ -219,6 +219,26 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to set or return the position of the splitter on the main form.
+		/// </summary>
+		[ApplicationSetting("SplitterPosition", -1, typeof(int), "MainApplication")]
+		public int SplitPosition
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the properties & files tabs are visible in the editor.
+		/// </summary>
+		[ApplicationSetting("PropertiesVisible", true, typeof(bool), "MainApplication")]
+		public bool PropertiesVisible
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Methods.
@@ -342,6 +362,8 @@ namespace GorgonLibrary.Editor
 			RecentFiles = new List<string>();
 			DisabledPlugIns = new List<string>();
 			ScratchPath = null;
+			SplitPosition = -1;
+			PropertiesVisible = true;
 		}
 		#endregion
 	}

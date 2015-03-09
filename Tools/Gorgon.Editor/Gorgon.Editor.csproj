@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="EditorContentManager.cs" />
+    <Compile Include="EditorTheme.cs" />
     <Compile Include="Interfaces\IEditorContentManager.cs" />
     <Compile Include="Interfaces\IScratchLocator.cs" />
     <Compile Include="Interfaces\IScratchServices.cs" />
@@ -102,7 +103,7 @@
     <Compile Include="IO\ScratchArea.cs" />
     <Compile Include="IO\ScratchServices.cs" />
     <Compile Include="NoContent.cs" />
-    <Compile Include="Controls\NoContentRenderer.cs" />
+    <Compile Include="NoContentRenderer.cs" />
     <Compile Include="PlugIns\DisabledPlugIn.cs" />
     <Compile Include="PlugIns\PlugInRegistry.cs" />
     <Compile Include="Program.cs" />
@@ -147,6 +148,7 @@
     <Content Include="PlugIns\Instructions.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\expandprops_16x16.png" />
     <None Include="Resources\show_all_16x16.png" />
     <None Include="Resources\edit_16x16.png" />
     <None Include="Resources\delete_item_16x16.png" />

@@ -101,6 +101,16 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap expandprops_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("expandprops_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a new temporary scratch path..
         /// </summary>
         internal static string GOREDIT_DLG_SCRATCH_PATH {

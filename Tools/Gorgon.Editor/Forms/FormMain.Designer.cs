@@ -51,6 +51,7 @@ namespace GorgonLibrary.Editor
 			this.buttonDeleteContent = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonShowAll = new System.Windows.Forms.ToolStripButton();
+			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -89,7 +90,6 @@ namespace GorgonLibrary.Editor
 			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupFileSystem = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupItemEdit = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupItemCreateFolder = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
@@ -108,6 +108,8 @@ namespace GorgonLibrary.Editor
 			this.dialogSaveFile = new System.Windows.Forms.SaveFileDialog();
 			this.dialogImport = new System.Windows.Forms.OpenFileDialog();
 			this.dialogExport = new System.Windows.Forms.FolderBrowserDialog();
+			this.labelUnCollapse = new System.Windows.Forms.Label();
+			this.tipMainWindow = new System.Windows.Forms.ToolTip(this.components);
 			this.ContentArea.SuspendLayout();
 			this.toolsFiles.TopToolStripPanel.SuspendLayout();
 			this.toolsFiles.SuspendLayout();
@@ -130,6 +132,7 @@ namespace GorgonLibrary.Editor
 			// ContentArea
 			// 
 			this.ContentArea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.ContentArea.Controls.Add(this.labelUnCollapse);
 			this.ContentArea.Controls.Add(this.splitMain);
 			this.ContentArea.Controls.Add(this.panelFooter);
 			this.ContentArea.Controls.Add(this.panelMenu);
@@ -210,6 +213,12 @@ namespace GorgonLibrary.Editor
 			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
 			resources.ApplyResources(this.buttonShowAll, "buttonShowAll");
 			this.buttonShowAll.Name = "buttonShowAll";
+			// 
+			// popupItemAddContent
+			// 
+			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
+			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
+			this.popupItemAddContent.Name = "popupItemAddContent";
 			// 
 			// panelMenu
 			// 
@@ -389,6 +398,7 @@ namespace GorgonLibrary.Editor
 			// splitMain
 			// 
 			resources.ApplyResources(this.splitMain, "splitMain");
+			this.splitMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitMain.Name = "splitMain";
 			// 
 			// splitMain.Panel1
@@ -398,6 +408,7 @@ namespace GorgonLibrary.Editor
 			// splitMain.Panel2
 			// 
 			this.splitMain.Panel2.Controls.Add(this.panelExplorer);
+			this.splitMain.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.splitMain_MouseDoubleClick);
 			// 
 			// panelContentHost
 			// 
@@ -489,12 +500,6 @@ namespace GorgonLibrary.Editor
 			this.popupFileSystem.Name = "popupFileSystem";
 			resources.ApplyResources(this.popupFileSystem, "popupFileSystem");
 			// 
-			// popupItemAddContent
-			// 
-			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
-			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
-			this.popupItemAddContent.Name = "popupItemAddContent";
-			// 
 			// popupItemEdit
 			// 
 			resources.ApplyResources(this.popupItemEdit, "popupItemEdit");
@@ -578,12 +583,23 @@ namespace GorgonLibrary.Editor
 			this.dialogImport.Multiselect = true;
 			resources.ApplyResources(this.dialogImport, "dialogImport");
 			// 
+			// labelUnCollapse
+			// 
+			this.labelUnCollapse.Cursor = System.Windows.Forms.Cursors.Hand;
+			resources.ApplyResources(this.labelUnCollapse, "labelUnCollapse");
+			this.labelUnCollapse.Image = global::GorgonLibrary.Editor.Properties.Resources.expandprops_16x16;
+			this.labelUnCollapse.Name = "labelUnCollapse";
+			this.tipMainWindow.SetToolTip(this.labelUnCollapse, resources.GetString("labelUnCollapse.ToolTip"));
+			this.labelUnCollapse.Click += new System.EventHandler(this.labelUnCollapse_Click);
+			this.labelUnCollapse.MouseEnter += new System.EventHandler(this.labelUnCollapse_MouseEnter);
+			this.labelUnCollapse.MouseLeave += new System.EventHandler(this.labelUnCollapse_MouseLeave);
+			// 
 			// FormMain
 			// 
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Border = true;
-			this.BorderSize = 2;
+			this.BorderSize = 3;
 			this.Name = "FormMain";
 			this.ResizeHandleSize = 4;
 			this.Theme.CheckBoxBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
@@ -704,6 +720,8 @@ namespace GorgonLibrary.Editor
 		private ToolStripSeparator toolStripButton1;
 		private ToolStripButton buttonShowAll;
 		private PropertyGrid propertyGrid;
+		private Label labelUnCollapse;
+		private ToolTip tipMainWindow;
 
 
 	}

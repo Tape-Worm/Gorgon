@@ -117,65 +117,50 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="Check_Disabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_ERR_PARAM_COUNT_INVALID" xml:space="preserve">
+    <value>The parameter count must be between 1 - 4.</value>
   </data>
-  <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="delete_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\delete_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
-    <value>Select a new temporary scratch path.</value>
-  </data>
-  <data name="GOREDIT_ERR_CANNOT_CREATE_GFX" xml:space="preserve">
-    <value>Could not create the graphics interface.  No suitable video device was found.</value>
-  </data>
-  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
-    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
-  </data>
-  <data name="GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT" xml:space="preserve">
-    <value>Cannot used a disposed object.</value>
-  </data>
-  <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
-    <value>Could not create the content file '{0}'.</value>
+  <data name="GOREDIT_TEXT_STARTING" xml:space="preserve">
+    <value>Starting... Filthy humans best recognize.</value>
   </data>
   <data name="GOREDIT_ERR_ERROR_LOADING_PLUGIN" xml:space="preserve">
     <value>There was an error loading the plug-in '{0}'.
 
 Please see the details pane for more information.</value>
   </data>
-  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the file '{0}'.</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Gorgon_2_x_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
-    <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
+  <data name="GOREDIT_ERR_CANNOT_CREATE_GFX" xml:space="preserve">
+    <value>Could not create the graphics interface.  No suitable video device was found.</value>
+  </data>
+  <data name="GOREDIT_ERR_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
+    <value>Could not create the content file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_TEXT_USING_VIDEO_DEVICE" xml:space="preserve">
+    <value>Using video device '{0}'.  Feature level: {1}</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
+    <value>Unknown plug-in type.</value>
   </data>
   <data name="GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GOREDIT_ERR_PARAM_COUNT_INVALID" xml:space="preserve">
-    <value>The parameter count must be between 1 - 4.</value>
+  <data name="GOREDIT_ERR_CANNOT_USESYS_SCRATCH" xml:space="preserve">
+    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
   </data>
-  <data name="GOREDIT_TEXT_CLEANING_STALE_SCRATCH" xml:space="preserve">
-    <value>Cleaning up stale scratch areas...</value>
+  <data name="GOREDIT_ERR_ALREADY_HAVE_CONTENT" xml:space="preserve">
+    <value>There is already active content in the editor.  Please close this content first.</value>
   </data>
-  <data name="GOREDIT_TEXT_CREATING_SCRATCH" xml:space="preserve">
-    <value>Creating new scratch area...</value>
+  <data name="edit_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\edit_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
+    <value>Untitled</value>
   </data>
   <data name="GOREDIT_TEXT_DISABLED_BY_USER" xml:space="preserve">
     <value>Disabled by user.</value>
-  </data>
-  <data name="GOREDIT_TEXT_FOUND_VIDEO_DEVICES" xml:space="preserve">
-    <value>Found {0} video devices...</value>
-  </data>
-  <data name="GOREDIT_TEXT_INITIALIZE_GRAPHICS" xml:space="preserve">
-    <value>Initializing graphics...</value>
   </data>
   <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
     <value>Initializing...</value>
@@ -183,34 +168,52 @@ Please see the details pane for more information.</value>
   <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
     <value>Loading plug-ins...</value>
   </data>
-  <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
-    <value>Loading plug-in file: {0}</value>
-  </data>
-  <data name="GOREDIT_TEXT_STARTING" xml:space="preserve">
-    <value>Starting... Filthy humans best recognize.</value>
-  </data>
-  <data name="GOREDIT_TEXT_UNKNOWN_PLUG_IN_TYPE" xml:space="preserve">
-    <value>Unknown plug-in type.</value>
-  </data>
-  <data name="GOREDIT_TEXT_UNTITLED" xml:space="preserve">
-    <value>Untitled</value>
-  </data>
-  <data name="GOREDIT_TEXT_USING_VIDEO_DEVICE" xml:space="preserve">
-    <value>Using video device '{0}'.  Feature level: {1}</value>
+  <data name="GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT" xml:space="preserve">
+    <value>Cannot used a disposed object.</value>
   </data>
   <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Gorgon_2_x_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="new_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\new_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_PLUG_IN" xml:space="preserve">
+    <value>Loading plug-in file: {0}</value>
+  </data>
+  <data name="delete_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_TEXT_CREATING_SCRATCH" xml:space="preserve">
+    <value>Creating new scratch area...</value>
+  </data>
+  <data name="Check_Enabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Enabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_DLG_SCRATCH_PATH" xml:space="preserve">
+    <value>Select a new temporary scratch path.</value>
+  </data>
+  <data name="Check_Disabled1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Disabled1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>Could not find the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_TEXT_INITIALIZE_GRAPHICS" xml:space="preserve">
+    <value>Initializing graphics...</value>
+  </data>
+  <data name="GOREDIT_TEXT_FOUND_VIDEO_DEVICES" xml:space="preserve">
+    <value>Found {0} video devices...</value>
+  </data>
+  <data name="GOREDIT_ERR_NO_DRIVE_AVAILABLE" xml:space="preserve">
+    <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
   </data>
   <data name="show_all_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\show_all_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_ALREADY_HAVE_CONTENT" xml:space="preserve">
-    <value>There is already active content in the editor.  Please close this content first.</value>
+  <data name="GOREDIT_TEXT_CLEANING_STALE_SCRATCH" xml:space="preserve">
+    <value>Cleaning up stale scratch areas...</value>
+  </data>
+  <data name="expandprops_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\expandprops_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

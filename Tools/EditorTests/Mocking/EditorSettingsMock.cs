@@ -277,6 +277,15 @@ namespace EditorTests.Mocking
 		}
 
 		/// <summary>
+		/// Property to set or return the position of the splitter on the main form.
+		/// </summary>
+		public int SplitPosition
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Function to save the settings to a file.
 		/// </summary>
 		/// <remarks>
@@ -285,6 +294,20 @@ namespace EditorTests.Mocking
 		public void Save()
 		{
 			throw new NotSupportedException();
+		}
+		#endregion
+
+		#region IEditorSettings Members
+		/// <summary>
+		/// Gets or sets a value indicating whether [properties visible].
+		/// </summary>
+		/// <value>
+		///   <c>true</c> if [properties visible]; otherwise, <c>false</c>.
+		/// </value>
+		public bool PropertiesVisible
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

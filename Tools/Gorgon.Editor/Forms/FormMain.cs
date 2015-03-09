@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -56,6 +57,46 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the labelUnCollapse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelUnCollapse_Click(object sender, EventArgs e)
+		{
+			labelUnCollapse.Visible = splitMain.Panel2Collapsed = false;
+		}
+
+		/// <summary>
+		/// Handles the MouseEnter event of the labelUnCollapse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelUnCollapse_MouseEnter(object sender, EventArgs e)
+		{
+			labelUnCollapse.BackColor = Theme.HilightBackColor;
+		}
+
+		/// <summary>
+		/// Handles the MouseLeave event of the labelUnCollapse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void labelUnCollapse_MouseLeave(object sender, EventArgs e)
+		{
+			labelUnCollapse.BackColor = Theme.WindowBackground;
+		}
+
+		/// <summary>
+		/// Handles the MouseDoubleClick event of the splitMain control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void splitMain_MouseDoubleClick(object sender, MouseEventArgs e)
+		{
+			labelUnCollapse.Visible = splitMain.Panel2Collapsed = true;
+		}
+
 		/// <summary>
 		/// Handles the Click event of the exitToolStripMenuItem control.
 		/// </summary>
@@ -170,6 +211,13 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected override void ApplyTheme()
 		{
+			// TODO: Get rid of this.
+			propertyGrid.SelectedObject = this.splitMain;
+
+			splitMain.BackColor = Theme.WindowBackground;
+			splitMain.Panel2.BackColor = Theme.ContentPanelBackground;
+			splitMain.Panel1.BackColor = Theme.ContentPanelBackground;
+			
 			tabPages.BackgroundColor = Theme.ContentPanelBackground;
 			tabPages.BorderColor = Theme.WindowBackground;
 			tabPages.TabBorderColor = Theme.WindowBackground;
@@ -178,7 +226,7 @@ namespace GorgonLibrary.Editor
 			tabPages.TabGradient.TabPageSelectedTextColor = Theme.HilightBackColor;
 			tabPages.TabGradient.TabPageTextColor = Theme.ForeColor;
 
-			propertyGrid.BackColor = Theme.ContentPanelBackground;
+			propertyGrid.BackColor = ((EditorTheme)Theme).PropertyPanelBackgroundColor;
 			propertyGrid.CategoryForeColor = Theme.ForeColor;
 			propertyGrid.CommandsActiveLinkColor = Theme.HilightForeColor;
 			propertyGrid.CommandsBackColor = propertyGrid.BackColor;
@@ -193,9 +241,12 @@ namespace GorgonLibrary.Editor
 			propertyGrid.LineColor = Theme.WindowBackground;
 			propertyGrid.SelectedItemWithFocusBackColor = Theme.HilightBackColor;
 			propertyGrid.SelectedItemWithFocusForeColor = Theme.HilightForeColor;
-			propertyGrid.ViewBackColor = Theme.ContentPanelBackground;
-			propertyGrid.ViewBorderColor = Theme.ContentPanelBackground;
+			propertyGrid.ViewBackColor = propertyGrid.BackColor;
+			propertyGrid.ViewBorderColor = propertyGrid.BackColor;
 			propertyGrid.ViewForeColor = Theme.ForeColor;
+			propertyGrid.CategorySplitterColor = Theme.WindowBackground;
+
+			labelUnCollapse.BackColor = Theme.WindowBackground;
 		}
 
 		/// <summary>
@@ -204,6 +255,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			Rectangle windowRect;
+
 			base.OnLoad(e);
 
 			try
@@ -213,21 +266,35 @@ namespace GorgonLibrary.Editor
 
 				SetWindowText(null);
 
+				windowRect = _settings.WindowDimensions;
+
+				// Find the screen that contains our window.
+				var currentScreen = Screen.AllScreens.FirstOrDefault(item => item.Bounds.Contains(windowRect.Location));
+
+				if (currentScreen == null)
+				{
+					currentScreen = Screen.PrimaryScreen;
+					windowRect.Location = currentScreen.Bounds.Location;
+				}
+
+				// Ensure that the window fits within the screen.
+				windowRect.Intersect(currentScreen.WorkingArea);
+
+				Location = windowRect.Location;
+				Size = windowRect.Size;
+
+				// Set the current state of the window.
 				if (_settings.FormState != FormWindowState.Minimized)
 				{
 					WindowState = _settings.FormState;
 				}
 
-				Location = _settings.WindowDimensions.Location;
-				Size = _settings.WindowDimensions.Size;
-
-				// If this window can't be placed on a monitor, then shift it to the primary, 
-				// otherwise it'll end up off-screen and it'll just be annoying to try and 
-				// bring it back.
-				if (!Screen.AllScreens.Any(item => item.Bounds.Contains(Location)))
+				if (_settings.SplitPosition > splitMain.Panel1MinSize)
 				{
-					Location = Screen.PrimaryScreen.Bounds.Location;
+					splitMain.SplitterDistance = _settings.SplitPosition;
 				}
+
+				labelUnCollapse.Visible = splitMain.Panel2Collapsed = !_settings.PropertiesVisible;
 			}
 			catch (Exception ex)
 			{
@@ -278,7 +345,10 @@ namespace GorgonLibrary.Editor
 				// If this fails, just log it and continue on.
 				try
 				{
+					_settings.FormState = WindowState != FormWindowState.Minimized ? WindowState : FormWindowState.Normal;
 					_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
+					_settings.SplitPosition = splitMain.SplitterDistance;
+					_settings.PropertiesVisible = !splitMain.Panel2Collapsed;
 					_settings.Save();
 				}
 				catch (Exception ex)

@@ -189,6 +189,24 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to set or return the position of the splitter on the main form.
+		/// </summary>
+		int SplitPosition
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the properties & files tabs are visible in the editor.
+		/// </summary>
+		bool PropertiesVisible
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Function to save the settings to a file.
 		/// </summary>
 		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (Nothing in VB.Net).</remarks>

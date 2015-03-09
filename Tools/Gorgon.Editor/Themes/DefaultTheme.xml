@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<FlatFormTheme>
+<EditorTheme>
   <ToolStripBackColor Color="Control" />
   <ToolStripArrowColor Color="WindowText" />
   <CheckBoxBackColorHilight Color="Highlight" />
@@ -11,7 +11,7 @@
   <HilightForeColor Color="HighlightText" />
   <HilightBackColor Color="Highlight" />
   <WindowBackground Color="Control" />
-  <ContentPanelBackground Color="Window" />
+  <ContentPanelBackground Color="AppWorkspace" />
   <WindowBorderActive Color="ActiveBorder" />
   <WindowBorderInactive Color="InactiveBorder" />
   <WindowSizeIconsForeColor Color="WindowText" />
@@ -20,4 +20,5 @@
   <WindowCloseIconForeColor Color="WindowText" />
   <WindowCloseIconForeColorHilight Color="HighlightText" />
   <WindowCloseIconBackColorHilight Color="Red" />
-</FlatFormTheme>
+  <PropertyPanelBackgroundColor Color="Window" />
+</EditorTheme>
