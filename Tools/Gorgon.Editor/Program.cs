@@ -117,6 +117,10 @@ namespace GorgonLibrary.Editor
 			obj.For<IProxyObject<GorgonFileSystem>>()
 			   .Use<ProxyObject<GorgonFileSystem>>();
 
+			obj.For<IProxyObject<GorgonFileSystem>>()
+			   .Use<ProxyObject<GorgonFileSystem>>()
+			   .Named("packFileSystem");
+
 			obj.For<IScratchArea>()
 			   .Use<ScratchArea>();
 

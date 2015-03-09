@@ -187,6 +187,15 @@ namespace GorgonLibrary.IO
 		{
 			return string.Format(Resources.GOR_FILE_EXTENSION_TOSTR, Extension, Description);
 		}
+
+		/// <summary>
+		/// Function to return this extension as a formatted value suitable for a windows file dialog extension description.
+		/// </summary>
+		/// <returns>The extension formatted as "Description (*.ext)".</returns>
+		public string ToDialogDescription()
+		{
+			return string.Format(Resources.GOR_FILE_EXTENSION_DLG_FORMAT, Description, Extension);
+		}
 		#endregion
 
 		#region Constructor/Destructor.

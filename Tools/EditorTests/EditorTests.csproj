@@ -68,8 +68,10 @@
   <ItemGroup>
     <Compile Include="Mocking\EditorSettingsMock.cs" />
     <Compile Include="Mocking\FileSystemProxyMock.cs" />
+    <Compile Include="Mocking\PlugInRegistryMock.cs" />
     <Compile Include="ScratchAreaTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FileSystemTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">

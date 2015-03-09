@@ -130,7 +130,7 @@
     <value>A file is corrupted or empty in the index table.</value>
   </data>
   <data name="GORFS_FILE_DESC" xml:space="preserve">
-    <value>Gorgon Packed Files (*.gorPack)</value>
+    <value>Gorgon packed file</value>
   </data>
   <data name="GORFS_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>

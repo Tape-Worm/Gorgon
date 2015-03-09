@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.PlugIns
@@ -58,7 +59,7 @@ namespace GorgonLibrary.PlugIns
 
 			// Weed out already cached assemblies and those that are involved in the creation of dynamic assemblies (throws exception).
 			foreach (Assembly assembly in assemblies.Where(assembly => !_assemblies.ContainsKey(assembly.FullName)
-				&& (!(assembly is System.Reflection.Emit.AssemblyBuilder)
+				&& (!(assembly is AssemblyBuilder)
 				&& (!string.Equals(assembly.GetType().FullName, "System.Reflection.Emit.InternalAssemblyBuilder", StringComparison.OrdinalIgnoreCase)))))
 			{
 			    _assemblies.Add(assembly.FullName, assembly);

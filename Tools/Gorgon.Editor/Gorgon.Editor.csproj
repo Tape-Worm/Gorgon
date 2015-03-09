@@ -74,11 +74,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
-    <Compile Include="EditorContentManager.cs" />
+    <Compile Include="Content\EditorContentManager.cs" />
     <Compile Include="EditorTheme.cs" />
     <Compile Include="Interfaces\IEditorContentManager.cs" />
     <Compile Include="Interfaces\IScratchLocator.cs" />
     <Compile Include="Interfaces\IScratchServices.cs" />
+    <Compile Include="IO\EditorFileSystemService.cs" />
+    <Compile Include="Interfaces\IFileSystemService.cs" />
     <Compile Include="IO\ScratchLocator.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
@@ -102,8 +104,8 @@
     <Compile Include="Interfaces\IVideoDeviceSelector.cs" />
     <Compile Include="IO\ScratchArea.cs" />
     <Compile Include="IO\ScratchServices.cs" />
-    <Compile Include="NoContent.cs" />
-    <Compile Include="NoContentRenderer.cs" />
+    <Compile Include="Content\NoContent.cs" />
+    <Compile Include="Content\NoContentRenderer.cs" />
     <Compile Include="PlugIns\DisabledPlugIn.cs" />
     <Compile Include="PlugIns\PlugInRegistry.cs" />
     <Compile Include="Program.cs" />

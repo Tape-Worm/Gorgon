@@ -27,18 +27,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Design;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 using GorgonLibrary.Design;
 using GorgonLibrary.Properties;
@@ -952,7 +948,7 @@ namespace GorgonLibrary.UI
 		/// <returns>
 		/// An <see cref="T:System.Xml.Schema.XmlSchema" /> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)" /> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)" /> method.
 		/// </returns>
-		System.Xml.Schema.XmlSchema IXmlSerializable.GetSchema()
+		XmlSchema IXmlSerializable.GetSchema()
 		{
 			return null;
 		}

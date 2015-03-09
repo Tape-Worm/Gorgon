@@ -50,7 +50,7 @@ namespace GorgonLibrary
 		/// Property to set or return the log system to use when dumping exceptions to the log.
 		/// </summary>
 		/// <remarks>This allows Gorgon to log exceptions to a log file.
-		/// <para>The property uses an <see cref="IList{GorgonLogFile}"/> to allow broadcasting of logging information to multiple log files if desired.</para>
+		/// <para>The property uses an <see cref="IList{T}"/> to allow broadcasting of logging information to multiple log files if desired.</para>
 		/// <para>By default, only the main Gorgon library log file is assigned.</para>
 		/// </remarks>
 		public static IList<GorgonLogFile> Logs

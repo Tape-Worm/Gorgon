@@ -1,11 +1,14 @@
-﻿namespace GorgonLibrary.UI
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace GorgonLibrary.UI
 {
 	partial class FlatForm
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -298,21 +301,21 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label labelClose;
-		private System.Windows.Forms.Label labelMaxRestore;
-		private System.Windows.Forms.Label labelMinimize;
-		private System.Windows.Forms.Label labelCaption;
-		private System.Windows.Forms.Panel panelCaptionArea;
-		private System.Windows.Forms.PictureBox pictureIcon;
-		private System.Windows.Forms.ToolStripMenuItem itemRestore;
-		private System.Windows.Forms.ToolStripMenuItem itemMove;
-		private System.Windows.Forms.ToolStripMenuItem itemSize;
-		private System.Windows.Forms.ToolStripMenuItem itemMinimize;
-		private System.Windows.Forms.ToolStripMenuItem itemMaximize;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem itemClose;
-		private System.Windows.Forms.ContextMenuStrip popupSysMenu;
-		private System.Windows.Forms.ToolTip toolTip;
-		private System.Windows.Forms.TableLayoutPanel panelWinIcons;
+		private Label labelClose;
+		private Label labelMaxRestore;
+		private Label labelMinimize;
+		private Label labelCaption;
+		private Panel panelCaptionArea;
+		private PictureBox pictureIcon;
+		private ToolStripMenuItem itemRestore;
+		private ToolStripMenuItem itemMove;
+		private ToolStripMenuItem itemSize;
+		private ToolStripMenuItem itemMinimize;
+		private ToolStripMenuItem itemMaximize;
+		private ToolStripSeparator toolStripMenuItem1;
+		private ToolStripMenuItem itemClose;
+		private ContextMenuStrip popupSysMenu;
+		private ToolTip toolTip;
+		private TableLayoutPanel panelWinIcons;
 	}
 }

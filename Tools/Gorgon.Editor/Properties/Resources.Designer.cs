@@ -111,6 +111,24 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All files.
+        /// </summary>
+        internal static string GOREDIT_DLG_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All supported content files ({0}).
+        /// </summary>
+        internal static string GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a new temporary scratch path..
         /// </summary>
         internal static string GOREDIT_DLG_SCRATCH_PATH {

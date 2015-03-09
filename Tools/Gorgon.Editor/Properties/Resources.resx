@@ -216,4 +216,10 @@ Please see the details pane for more information.</value>
   <data name="expandprops_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\expandprops_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_DLG_ALL_FILES" xml:space="preserve">
+    <value>All files</value>
+  </data>
+  <data name="GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES" xml:space="preserve">
+    <value>All supported content files ({0})</value>
+  </data>
 </root>

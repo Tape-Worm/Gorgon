@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace GorgonLibrary.UI
 {
 	partial class ConfirmationDialogEx
@@ -31,7 +34,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -113,6 +116,6 @@ namespace GorgonLibrary.UI
 
 		#endregion
 
-		private System.Windows.Forms.CheckBox checkToAll;
+		private CheckBox checkToAll;
 	}
 }

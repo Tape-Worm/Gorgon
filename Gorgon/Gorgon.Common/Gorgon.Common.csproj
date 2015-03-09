@@ -169,6 +169,7 @@
     <Compile Include="IO\GorgonChunkedFormat.cs" />
     <Compile Include="IO\GorgonChunkWriter.cs" />
     <Compile Include="IO\GorgonDataStream.cs" />
+    <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="Math\GorgonRandom.cs" />
     <Compile Include="Math\GorgonSpline.cs" />
     <Compile Include="Native\Win32API.cs">

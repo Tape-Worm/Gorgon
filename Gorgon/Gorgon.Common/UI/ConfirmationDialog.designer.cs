@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace GorgonLibrary.UI
 {
 	partial class ConfirmationDialog
@@ -31,7 +34,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -135,10 +138,10 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// 
 		/// </summary>
-		protected System.Windows.Forms.Button buttonNo;
+		protected Button buttonNo;
 		/// <summary>
 		/// 
 		/// </summary>
-		protected System.Windows.Forms.Button buttonCancel;
+		protected Button buttonCancel;
 	}
 }

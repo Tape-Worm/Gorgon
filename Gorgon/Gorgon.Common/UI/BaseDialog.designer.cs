@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace GorgonLibrary.UI
 {
     partial class BaseDialog
@@ -31,7 +34,7 @@ namespace GorgonLibrary.UI
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -115,7 +118,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
         /// OK button.
         /// </summary>
-        protected System.Windows.Forms.Button buttonOK;
-		protected System.Windows.Forms.PictureBox pictureDialog;
+        protected Button buttonOK;
+		protected PictureBox pictureDialog;
     }
 }

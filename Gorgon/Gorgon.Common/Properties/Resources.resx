@@ -927,4 +927,7 @@ Code: 0x{2}</value>
   <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
     <value>Gorgon theme XML Files (*.xml)|*.xml</value>
   </data>
+  <data name="GOR_FILE_EXTENSION_DLG_FORMAT" xml:space="preserve">
+    <value>{0} (*.{1})</value>
+  </data>
 </root>

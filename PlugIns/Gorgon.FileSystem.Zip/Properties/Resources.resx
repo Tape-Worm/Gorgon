@@ -127,7 +127,7 @@
     <value>Cannot read beyond the end of the stream.</value>
   </data>
   <data name="GORFS_FILE_DESC" xml:space="preserve">
-    <value>Zip Files (*.zip)</value>
+    <value>Zip file</value>
   </data>
   <data name="GORFS_FILE_NOT_FOUND" xml:space="preserve">
     <value>Cannot find the file '{0}'entry in the zip file.</value>

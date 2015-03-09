@@ -373,6 +373,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} (*.{1}).
+        /// </summary>
+        internal static string GOR_FILE_EXTENSION_DLG_FORMAT {
+            get {
+                return ResourceManager.GetString("GOR_FILE_EXTENSION_DLG_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file extension &apos;{0}&apos; already exists in this collection..
         /// </summary>
         internal static string GOR_FILE_EXTENSION_EXISTS {
