@@ -47,9 +47,11 @@ namespace GorgonLibrary.Editor
 		// The log file for the application.
 		private readonly GorgonLogFile _logFile;
 		// The window text.
-		private string _windowText;
+		private readonly string _windowText;
 		// The content manager interface.
 		private readonly IEditorContentManager _contentManager;
+		// The file system service.
+		private readonly IFileSystemService _fileSystemService;
 		#endregion
 
 		#region Properties.
@@ -143,7 +145,7 @@ namespace GorgonLibrary.Editor
 			{
 				Control newControl = e.Panel as Control;
 				IContentPanel previousPanel = null;
-
+				
 				if (panelContentHost.Controls.Count > 0)
 				{
 					previousPanel = panelContentHost.Controls[0] as IContentPanel;
@@ -151,16 +153,20 @@ namespace GorgonLibrary.Editor
 
 				if (previousPanel != null)
 				{
+					_logFile.Print("ContentService: Removing previous content panel.", LoggingLevel.Verbose);
 					previousPanel.Dispose();
 				}
 
 				if (newControl == null)
 				{
+					_logFile.Print("ContentService: NO CONTENT SPECIFIED!!!", LoggingLevel.Simple);
 					return;
 				}
 
+				_logFile.Print("ContentService: Setting theme for content panel '{0}'.", LoggingLevel.Verbose, newControl.Name);
 				e.Panel.CurrentTheme = Theme;
 
+				_logFile.Print("ContentService: Adding content panel '{0}'.", LoggingLevel.Verbose, newControl.Name);
 				panelContentHost.Controls.Add(newControl);
 
 				if (e.Panel.CaptionVisible)
@@ -173,18 +179,29 @@ namespace GorgonLibrary.Editor
 				// Initialize rendering if necessary.
 				if (e.Panel.UsesRenderer)
 				{
+					_logFile.Print("ContentService: Content panel '{0}' supports renderer: True.", LoggingLevel.Verbose, newControl.Name);
+					_logFile.Print("ContentService: Creating renderer for '{0}'.", LoggingLevel.Verbose, newControl.Name);
 					e.Panel.Renderer.CreateResources(e.Panel.RenderControl);
 				}
 
 				// If we don't have properties, then we'll have to unhook from the properties grid.
 				// And we'll also have to hide it.
-				//pageProperties.Enabled = e.Content.HasProperties;
+				_logFile.Print("ContentService: Content '{0}' supports properties: {1}.", LoggingLevel.Verbose, e.Content.Name, e.Content.HasProperties);
+				pageProperties.Enabled = e.Content.HasProperties;
 				tabPages.SelectedTab = e.Content.HasProperties ? pageProperties : pageFiles;
 			}
 			catch
 			{
 				// If the default panel was not loaded, then put it back.
-				_contentManager.CreateContent();
+				try
+				{
+					_contentManager.CreateContent();
+				}
+				catch(Exception ex)
+				{
+					_logFile.Print("ContentService: Failure loading the default content after exception.", LoggingLevel.Simple);
+					GorgonException.Catch(ex);
+				}
 
 				// Send the exception back so the root event handler will pick it up.
 				throw;
@@ -194,16 +211,18 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to update the text on this window in a thread-safe manner.
 		/// </summary>
-		/// <param name="newText">New text to set.</param>
-		private void SetWindowText(string newText)
+		private void SetWindowText()
 		{
 			if (InvokeRequired)
 			{
-				BeginInvoke(new Action(() => SetWindowText(newText)));
+				BeginInvoke(new Action(SetWindowText));
 				return;
 			}
 
-			Text = string.Format("{0} - {1}", _windowText, string.IsNullOrWhiteSpace(newText) ? Resources.GOREDIT_TEXT_UNTITLED : newText);
+			Text = string.Format("{0} - {1}{2}",
+			                     _windowText,
+			                     string.IsNullOrWhiteSpace(_fileSystemService.CurrentFile) ? Resources.GOREDIT_TEXT_UNTITLED : _fileSystemService.CurrentFile, 
+								 string.Empty);  // TODO: Replace this with a "HasChanges" flag.
 		}
 
 		/// <summary>
@@ -264,7 +283,7 @@ namespace GorgonLibrary.Editor
 				// Load in the default content here.
 				_contentManager.CreateContent();
 
-				SetWindowText(null);
+				SetWindowText();
 
 				windowRect = _settings.WindowDimensions;
 
@@ -374,15 +393,17 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="settings">The settings.</param>
 		/// <param name="log">The log file for the application.</param>
+		/// <param name="fileSystemService">The file system service.</param>
 		/// <param name="contentManager">The content manager interface.</param>
 		[DefaultConstructor]
-		public FormMain(IEditorSettings settings, GorgonLogFile log, IEditorContentManager contentManager)
+		public FormMain(GorgonLogFile log, IEditorSettings settings, IFileSystemService fileSystemService, IEditorContentManager contentManager)
 			: this()
 		{
 			_logFile = log;
 			_settings = settings;
 			_windowText = Text;
 			_contentManager = contentManager;
+			_fileSystemService = fileSystemService;
 
 			_contentManager.ContentCreated += ContentManager_ContentCreatedEvent;
 		}

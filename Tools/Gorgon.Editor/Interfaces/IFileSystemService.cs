@@ -56,6 +56,22 @@ namespace GorgonLibrary.Editor
 	interface IFileSystemService
 	{
 		/// <summary>
+		/// Property to return the name of the currently loaded file.
+		/// </summary>
+		string CurrentFile
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the full path to the current file.
+		/// </summary>
+		string CurrentFilePath
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return a string of file types supported for reading.
 		/// </summary>
 		/// <remarks>This property will return a string formatted for the open file dialog extension property.</remarks>
@@ -65,14 +81,31 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to determine if the application can read the packed file or not.
+		/// </summary>
+		/// <param name="path">Path to the file.</param>
+		/// <returns>TRUE if the file can be read, FALSE if not.</returns>
+		/// <remarks>
+		/// This method will check against the internal list of file system providers to see if the extension is known. If the file cannot be located by extension, 
+		/// or the file could not be read, then all providers will be tested to determine if the file can be read.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		bool CanReadFile(string path);
+
+		/// <summary>
 		/// Function to load a file from the physical file system.
 		/// </summary>
 		/// <param name="path">Path to the file to load.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
 		void LoadFile(string path);
 
 		/// <summary>
-		/// Function to build the file system provider list.
+		/// Function to load the file system providers available to the application.
 		/// </summary>
-		void GetFileSystemProviders();
+		void LoadFileSystemProviders();
 	}
 }

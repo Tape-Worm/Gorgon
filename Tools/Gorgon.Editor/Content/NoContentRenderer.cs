@@ -64,8 +64,6 @@ namespace GorgonLibrary.Editor
 		private float _startMoveTime;
 		// Half of the total height for the swap chain.
 		private Size _halfScreen;
-		// Starting point for the drop down animation.
-		private float _startMovePos;
 		// Starting speed for drop animation.
 		private float _startSpeed;
 		// Drop speed.
@@ -127,7 +125,7 @@ namespace GorgonLibrary.Editor
 		protected override void OnAfterSwapChainResize(GorgonAfterSwapChainResizedEventArgs args)
 		{
 			base.OnAfterSwapChainResize(args);
-
+			
 			CalculateLogoSize();
 		}
 
@@ -163,9 +161,7 @@ namespace GorgonLibrary.Editor
 			}
 			else if (_startMoveTime.EqualsEpsilon(0.0f))
 			{
-				_startSpeed = _dropSpeed = (_logo.Settings.Height / 3);
-				// Only set this when we're animating IF we haven't started the animation yet.
-				_startMovePos = _yPos = -(_logoSprite.Anchor.Y * 1.25f);
+				_startSpeed = _dropSpeed = (_logo.Settings.Height / 3) * (_delta / 0.125f).Max(0.5f);
 			}
 		}
 
@@ -184,23 +180,19 @@ namespace GorgonLibrary.Editor
 				_startMoveTime = GorgonTiming.SecondsSinceStart;
 			}
 
-			Renderer.Drawing.DrawString(Graphics.Fonts.DefaultFont,
-			                            string.Format("Time :{0}\nYPos: {1}", GorgonTiming.SecondsSinceStart - _startMoveTime, _yPos),
-			                            Vector2.Zero,
-			                            Color.White);
+			float slowDistance = _halfScreen.Height / 3;//- (_halfScreen.Height / 2));
 
-			float slowDistance =  (_halfScreen.Height - (_halfScreen.Height - _logoSprite.Anchor.Y));
 			float posDelta = (_halfScreen.Height - _yPos);
 			_dropSpeed = _startSpeed * GorgonTiming.Delta;
 
 			if (posDelta < slowDistance)
 			{
-				_dropSpeed = _startSpeed * GorgonTiming.Delta * (posDelta / slowDistance).Max(0.025f);
+				_dropSpeed = _startSpeed * GorgonTiming.Delta * (posDelta / slowDistance);
 			}
 
 			_yPos += _dropSpeed;
 
-			_dropDown = _yPos < _halfScreen.Height;
+			_dropDown = _yPos < _halfScreen.Height && !_dropSpeed.EqualsEpsilon(0.0f, 0.1f);
 
 			if (_dropDown)
 			{
@@ -239,7 +231,7 @@ namespace GorgonLibrary.Editor
 				_logoSprite.BlendingMode = BlendingMode.Additive;
 				_logoSprite.Draw();
 
-				_alpha += _delta * GorgonTiming.ScaledDelta;
+				_alpha += _delta * GorgonTiming.Delta;
 
 				if (_alpha > 1.0f)
 				{
@@ -297,7 +289,13 @@ namespace GorgonLibrary.Editor
 
 			// Set for 30 FPS vsync.
 			RenderInterval = 1;
-			_delta = (settings.AnimateStartPageLogo && settings.StartPageAnimationPulseRate > 0) ? settings.StartPageAnimationPulseRate : 0;
+			_delta = (settings.AnimateStartPageLogo && settings.StartPageAnimationPulseRate > 0) ? settings.StartPageAnimationPulseRate.Max(0) : 0;
+
+			if (_delta > 0)
+			{
+				// Scale the delta so that our range is 0..1 in the editor settings, but more reasonable values here.
+				_delta = _delta * 0.5f;
+			}
 		}
 		#endregion
 	}

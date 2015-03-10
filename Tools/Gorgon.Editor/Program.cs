@@ -114,12 +114,14 @@ namespace GorgonLibrary.Editor
 			obj.For<IPlugInRegistry>()
 			   .Use<PlugInRegistry>();
 
-			obj.For<IProxyObject<GorgonFileSystem>>()
-			   .Use<ProxyObject<GorgonFileSystem>>();
+			obj.ForConcreteType<GorgonFileSystem>()
+			   .Configure
+			   .AlwaysUnique();
 
-			obj.For<IProxyObject<GorgonFileSystem>>()
-			   .Use<ProxyObject<GorgonFileSystem>>()
-			   .Named("packFileSystem");
+			obj.For<IFileSystemService>()
+			   .Use<EditorFileSystemService>();
+//			   .Ctor<IProxyObject<GorgonFileSystem>>()
+//			   .Is(() => new ProxyObject<GorgonFileSystem>(new Lazy<GorgonFileSystem>()));
 
 			obj.For<IScratchArea>()
 			   .Use<ScratchArea>();
@@ -127,8 +129,8 @@ namespace GorgonLibrary.Editor
 			obj.For<IScratchLocator>()
 			   .Use<ScratchLocator>();
 
-			obj.For<IScratchServices>()
-			   .Use<ScratchServices>();
+			obj.For<IScratchService>()
+			   .Use<ScratchService>();
 
 			obj.For<IAppContext>()
 			   .Use<AppContext>();

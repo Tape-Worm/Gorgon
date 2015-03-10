@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -46,11 +46,11 @@ namespace GorgonLibrary.Editor
 	{
 		#region Variables.
 		// The application log file.
-		private GorgonLogFile _log;
+		private readonly GorgonLogFile _log;
 		// The scratch file interface.
-		private IScratchArea _scratchArea;
+		private readonly IScratchArea _scratchArea;
 		// The plug-in registry holding the file system providers available.
-		private IPlugInRegistry _plugInRegistry;
+		private readonly IPlugInRegistry _plugInRegistry;
 		// The list of file system providers indexed by file extension.
 		private readonly IDictionary<GorgonFileExtension, GorgonFileSystemProvider> _providers;
 		// Application settings.
@@ -59,6 +59,97 @@ namespace GorgonLibrary.Editor
 		private readonly GorgonFileSystem _packedFileSystem;
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the applicable file system provider for the file being loaded.
+		/// </summary>
+		/// <param name="extension">The file extension to look up.</param>
+		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
+		private GorgonFileSystemProvider GetProviderByExtension(string extension)
+		{
+			var fileExtension = new GorgonFileExtension(extension);
+			GorgonFileSystemProvider provider;
+
+			_providers.TryGetValue(fileExtension, out provider);
+
+			return provider;
+		}
+
+		/// <summary>
+		/// Function to search all loaded providers to find one that will load the requested file.
+		/// </summary>
+		/// <param name="path">Path to the packed file to load.</param>
+		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
+		private GorgonFileSystemProvider SearchForProvider(string path)
+		{
+			return _providers.Values.FirstOrDefault(item => item.CanReadFile(path));
+		}
+
+		/// <summary>
+		/// Function to retrieve a provider based on the file in the path provided.
+		/// </summary>
+		/// <param name="path">Path to the packed file to load.</param>
+		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
+		private GorgonFileSystemProvider GetProvider(string path)
+		{
+			string extension = Path.GetExtension(path);
+
+			// Ensure that we have an extension.
+			if (string.IsNullOrWhiteSpace(extension))
+			{
+				// Search for the provider.
+				 return SearchForProvider(path);
+			}
+
+			GorgonFileSystemProvider provider = GetProviderByExtension(extension);
+
+			if ((provider == null)
+				|| (!provider.CanReadFile(path)))
+			{
+				return SearchForProvider(path);
+			}
+			
+			return provider;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EditorFileSystemService"/> class.
+		/// </summary>
+		/// <param name="log">The application log file.</param>
+		/// <param name="scratchArea">The scratch file area used to hold a copy of the file being edited.</param>
+		/// <param name="packFileSystem">The file system used to read packed files.</param>
+		/// <param name="plugInRegistry">The plug-in registry holding the file system providers we need.</param>
+		/// <param name="settings">The application settings.</param>
+		public EditorFileSystemService(GorgonLogFile log, GorgonFileSystem packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry, IEditorSettings settings)
+		{
+			_log = log;
+			_scratchArea = scratchArea;
+			_providers = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new GorgonFileExtensionComparer());
+			_settings = settings;
+			_packedFileSystem = packFileSystem;
+			_plugInRegistry = plugInRegistry;
+			CurrentFile = string.Empty;
+			CurrentFilePath = string.Empty;
+
+			// Notification for disabled plug-ins.
+			_plugInRegistry.PlugInDisabled += (sender, args) =>
+			                                  {
+												  // We're only interested in file system provider plug-ins here.
+												  // TODO: And writers when they're implemented.
+				                                  if (!(args.PlugIn is GorgonFileSystemProviderPlugIn))
+				                                  {
+					                                  return;
+				                                  }
+
+												  // Reload the file system providers if we've disabled one.
+				                                  LoadFileSystemProviders();
+			                                  };
+		}
+		#endregion
+
+		#region IFileSystemService Implementation.
 		#region Properties.
 		/// <summary>
 		/// Property to return a string of file types supported for reading.
@@ -69,13 +160,70 @@ namespace GorgonLibrary.Editor
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the name of the currently loaded file.
+		/// </summary>
+		public string CurrentFile
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the full path to the current file.
+		/// </summary>
+		public string CurrentFilePath
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
+		/// Function to determine if the application can read the packed file or not.
+		/// </summary>
+		/// <param name="path">Path to the file.</param>
+		/// <returns>TRUE if the file can be read, FALSE if not.</returns>
+		/// <remarks>
+		/// This method will check against the internal list of file system providers to see if the extension is known. If the file cannot be located by extension, 
+		/// or the file could not be read, then all providers will be tested to determine if the file can be read.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		public bool CanReadFile(string path)
+		{
+			if (path == null)
+			{
+				throw new ArgumentNullException("path");
+			}
+
+			if (string.IsNullOrWhiteSpace(path))
+			{
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+			}
+
+			try
+			{
+				return GetProvider(path) != null;
+			}
+			catch (Exception ex)
+			{
+				// Exceptions for this method are logged, but will just indicate that we cannot load the file.
+				GorgonException.Catch(ex);
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Function to load a file from the physical file system.
 		/// </summary>
 		/// <param name="path">Path to the file to load.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
 		public void LoadFile(string path)
 		{
 			if (path == null)
@@ -88,22 +236,65 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
 			}
 
+			if (!File.Exists(path))
+			{
+				throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
+			}
 
+			if (GetProvider(path) == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CANNOT_LOCATE_PROVIDER, path));
+			}
+
+			try
+			{
+				_packedFileSystem.Mount(path);
+
+				// Copy to the scratch area.
+				_scratchArea.CopyFileSystem(_packedFileSystem);
+
+				// Note the current file.
+				CurrentFile = Path.GetFileName(path);
+				CurrentFilePath = path;
+
+				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
+				// TODO: Provide event for the editor meta data, and main interface to hook into.
+				
+				
+				// TODO: Find an applicable writer plug-in for this file.
+			}
+			finally
+			{
+				// Unload previous mount points (we should only have 1, but just cover our asses regardless).
+				if (_packedFileSystem.MountPoints.Count > 0)
+				{
+					while (_packedFileSystem.MountPoints.Count > 0)
+					{
+						_packedFileSystem.Unmount(_packedFileSystem.MountPoints[0]);
+					}
+				}
+			}
 		}
 
 		/// <summary>
-		/// Function to build the file system provider list.
+		/// Function to load the file system providers available to the application.
 		/// </summary>
-		public void GetFileSystemProviders()
+		public void LoadFileSystemProviders()
 		{
 			var readerFileTypeList = new StringBuilder();
 			var extensionList = new StringBuilder();
 			var allSupportedList = new StringBuilder();
 
 			// Retrieve all of our file system providers for this file system.
+			_providers.Clear();
 			_packedFileSystem.Clear();
 			_packedFileSystem.Providers.UnloadAll();
-			_packedFileSystem.Providers.LoadAllProviders();
+
+			// Load only those providers in our plug-in list (disabled plug-ins will not be in here).
+			foreach (var plugIn in _plugInRegistry.FileSystemPlugIns)
+			{
+				_packedFileSystem.Providers.LoadProvider(plugIn.Value.Name);
+			}
 
 			_log.Print("Building file system provider list...", LoggingLevel.Verbose);
 
@@ -178,25 +369,6 @@ namespace GorgonLibrary.Editor
 			ReadFileTypes = readerFileTypeList.ToString();
 		}
 		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorFileSystemService"/> class.
-		/// </summary>
-		/// <param name="log">The application log file.</param>
-		/// <param name="scratchArea">The scratch file area used to hold a copy of the file being edited.</param>
-		/// <param name="packFileSystem">The file system used to read packed files.</param>
-		/// <param name="plugInRegistry">The plug-in registry holding the file system providers we need.</param>
-		/// <param name="settings">The application settings.</param>
-		public EditorFileSystemService(GorgonLogFile log, IProxyObject<GorgonFileSystem> packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry, IEditorSettings settings)
-		{
-			_log = log;
-			_scratchArea = scratchArea;
-			_providers = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new GorgonFileExtensionComparer());
-			_plugInRegistry = plugInRegistry;
-			_settings = settings;
-			_packedFileSystem = packFileSystem.Item;
-		}
 		#endregion
 	}
 }

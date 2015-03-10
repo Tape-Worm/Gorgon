@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
@@ -103,6 +104,13 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
 		ScratchAccessibility SetScratchDirectory(string directoryPath);
+
+		/// <summary>
+		/// Function to copy a packed file system file to our scratch area.
+		/// </summary>
+		/// <param name="fileSystem">File system to copy.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
+		void CopyFileSystem(GorgonFileSystem fileSystem);
 		#endregion
 	}
 }

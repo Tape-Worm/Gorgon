@@ -48,5 +48,33 @@ namespace EditorTests
 			Gorgon.PlugIns.LoadPlugInAssembly(@"..\..\..\..\PlugIns\Bin\Debug\Gorgon.FileSystem.Zip.dll");
 		}
 		#endregion
+
+		#region IPlugInRegistry Members
+		/// <summary>
+		/// Event fired when an already loaded plug-in is disabled.
+		/// </summary>
+		public event EventHandler<PlugInDisabledEventArgs> PlugInDisabled;
+
+		/// <summary>
+		/// Function to determine if a plug-in is disabled.
+		/// </summary>
+		/// <param name="plugIn">The plug-in to query.</param>
+		/// <returns>
+		/// TRUE if disabled, FALSE if not.
+		/// </returns>
+		public bool IsDisabled(GorgonLibrary.PlugIns.GorgonPlugIn plugIn)
+		{
+			return false;
+		}
+
+		/// <summary>
+		/// Function to disable a plug-in.
+		/// </summary>
+		/// <param name="plugIn">Plug-in to disable.</param>
+		public void DisablePlugIn(GorgonLibrary.PlugIns.GorgonPlugIn plugIn)
+		{
+			
+		}
+		#endregion
 	}
 }

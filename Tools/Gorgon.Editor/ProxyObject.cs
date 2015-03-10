@@ -84,26 +84,6 @@ namespace GorgonLibrary.Editor
 				return _item == null ? default(T) : _item.Value;
 			}
 		}
-
-		/// <summary>
-		/// Function to release the connection to the underlying object.
-		/// </summary>
-		public void Release()
-		{
-			if (!_item.IsValueCreated)
-			{
-				return;
-			}
-
-			var item = _item.Value as IDisposable;
-
-			if (item == null)
-			{
-				return;
-			}
-			
-			item.Dispose();
-		}
 		#endregion
 
 		#region IDisposable Members

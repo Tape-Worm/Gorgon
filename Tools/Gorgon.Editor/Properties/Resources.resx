@@ -222,4 +222,18 @@ Please see the details pane for more information.</value>
   <data name="GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES" xml:space="preserve">
     <value>All supported content files ({0})</value>
   </data>
+  <data name="GOREDIT_ERR_CANNOT_LOCATE_PROVIDER" xml:space="preserve">
+    <value>Could not locate a file system provider to load '{0}'.</value>
+  </data>
+  <data name="GOREDIT_ERR_OPEN_PACK_FILE" xml:space="preserve">
+    <value>There was an error opening '{0}'.
+
+Click the 'details' button for more information.</value>
+  </data>
+  <data name="GOREDIT_TEXT_LOAD_LAST_FILE" xml:space="preserve">
+    <value>Load last opened file on editor start up</value>
+  </data>
+  <data name="GOREDIT_TEXT_LOAD_PREV_FILE" xml:space="preserve">
+    <value>Loading previous editor file...</value>
+  </data>
 </root>

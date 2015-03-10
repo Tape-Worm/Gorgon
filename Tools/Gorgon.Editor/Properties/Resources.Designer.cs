@@ -156,6 +156,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not locate a file system provider to load &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_CANNOT_LOCATE_PROVIDER {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_LOCATE_PROVIDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot used a disposed object..
         /// </summary>
         internal static string GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT {
@@ -208,6 +217,17 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_NO_DRIVE_AVAILABLE {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_NO_DRIVE_AVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error opening &apos;{0}&apos;.
+        ///
+        ///Click the &apos;details&apos; button for more information..
+        /// </summary>
+        internal static string GOREDIT_ERR_OPEN_PACK_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_OPEN_PACK_FILE", resourceCulture);
             }
         }
         
@@ -280,6 +300,24 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_TEXT_INITIALIZING {
             get {
                 return ResourceManager.GetString("GOREDIT_TEXT_INITIALIZING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load last opened file on editor start up.
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOAD_LAST_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOAD_LAST_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading previous editor file....
+        /// </summary>
+        internal static string GOREDIT_TEXT_LOAD_PREV_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_TEXT_LOAD_PREV_FILE", resourceCulture);
             }
         }
         

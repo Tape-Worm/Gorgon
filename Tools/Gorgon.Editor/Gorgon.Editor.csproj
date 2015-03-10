@@ -107,6 +107,7 @@
     <Compile Include="Content\NoContent.cs" />
     <Compile Include="Content\NoContentRenderer.cs" />
     <Compile Include="PlugIns\DisabledPlugIn.cs" />
+    <Compile Include="PlugIns\PlugInDisabledEventArgs.cs" />
     <Compile Include="PlugIns\PlugInRegistry.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

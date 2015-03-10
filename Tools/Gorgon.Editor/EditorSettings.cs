@@ -128,7 +128,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
-		[ApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
+		[ApplicationSetting("StartPageAnimationRate", 0.5f, typeof(float), "Options")]
 		public float StartPageAnimationPulseRate
 		{
 			get

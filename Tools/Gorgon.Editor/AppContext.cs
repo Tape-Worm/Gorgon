@@ -59,7 +59,9 @@ namespace GorgonLibrary.Editor
 		// The plug-in factory.
 		private readonly IPlugInRegistry _plugInFactory;
 		// Services for scratch area manipulation.
-		private readonly IScratchServices _scratchServices;
+		private readonly IScratchService _scratchService;
+		// The file system service for packed files.
+		private readonly IFileSystemService _fileSystemService;
 		#endregion
 
 		#region Methods.
@@ -72,12 +74,12 @@ namespace GorgonLibrary.Editor
 			_splash.InfoText = Resources.GOREDIT_TEXT_CLEANING_STALE_SCRATCH;
 
 			// Clean out previous versions of the scratch file area.
-			_scratchServices.ScratchArea.CleanUp(true);
+			_scratchService.ScratchArea.CleanUp(true);
 
 			_splash.InfoText = Resources.GOREDIT_TEXT_CREATING_SCRATCH;
 
 			if ((!string.IsNullOrWhiteSpace(_settings.ScratchPath))
-				&& (_scratchServices.ScratchArea.SetScratchDirectory(_settings.ScratchPath) == ScratchAccessibility.Accessible))
+				&& (_scratchService.ScratchArea.SetScratchDirectory(_settings.ScratchPath) == ScratchAccessibility.Accessible))
 			{
 				return true;
 			}
@@ -86,7 +88,7 @@ namespace GorgonLibrary.Editor
 
 			do
 			{
-				result = _scratchServices.ScratchLocator.ChangeLocation();
+				result = _scratchService.ScratchLocator.ChangeLocation();
 
 				if (result == ScratchAccessibility.Canceled)
 				{
@@ -99,6 +101,54 @@ namespace GorgonLibrary.Editor
 
 			return true;
 		}
+
+		/// <summary>
+		/// Function to perform initialization on the file system service.
+		/// </summary>
+		private void InitializeFileSystemService()
+		{
+			// Retrieve all the file system providers.
+			_fileSystemService.LoadFileSystemProviders();
+
+			if (!_settings.AutoLoadLastFile)
+			{
+				return;
+			}
+
+			string filePath = string.Empty;
+
+			try
+			{
+				filePath = Path.GetFullPath(_settings.LastEditorFile);
+
+				// If the file no longer exists, then it's no cause for alarm.  Just leave.
+				if (!File.Exists(filePath))
+				{
+					_log.Print("FileSystemService: Could not auto load the file '{0}'.  The file was not found.", LoggingLevel.Verbose, filePath);
+					return;
+				}
+
+				// Attempt to load the last file that we saved.
+				_splash.InfoText = Resources.GOREDIT_TEXT_LOAD_PREV_FILE;
+
+				
+				
+				_fileSystemService.LoadFile(filePath);
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex,
+				                      () =>
+				                      GorgonDialogs.ErrorBox(null,
+				                                             string.Format(Resources.GOREDIT_ERR_OPEN_PACK_FILE, filePath.Ellipses(80, true)),
+				                                             null,
+															 ex));
+
+				// Reset the last file loaded if we can no longer load it.
+				_settings.LastEditorFile = string.Empty;
+			}
+		}
+
 		/*		/// <summary>
 				/// Function to update the splash screen when a plug-in is loaded.
 				/// </summary>
@@ -264,6 +314,11 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
+				// Initialize our file system service.
+				InitializeFileSystemService();
+
+
+
 				/*                
                 InitializePlugIns();
                 InitializeScratchArea();
@@ -323,7 +378,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				// Ensure that we clean up after ourselves.
-				_scratchServices.ScratchArea.CleanUp();
+				_scratchService.ScratchArea.CleanUp();
 
 				_splashProxy.Dispose();
 				_splash = null;
@@ -341,21 +396,24 @@ namespace GorgonLibrary.Editor
 		/// <param name="graphicsProxy">The factory to create a new graphics interface.</param>
 		/// <param name="splashProxy">The factory to create forms for the application.</param>
 		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
-		/// <param name="scratchServices">The services pertaining to scratch area manipulation.</param>
-		public AppContext(GorgonLogFile log, 
+		/// <param name="scratchService">The service pertaining to scratch area manipulation.</param>
+		/// <param name="fileSystemService">The service that handles packed file systems.</param>
+		public AppContext(GorgonLogFile log,
+			FormMain mainForm, 
 			IEditorSettings settings, 
 			IProxyObject<GorgonGraphics> graphicsProxy, 
 			IProxyObject<FormSplash> splashProxy, 
 			IPlugInRegistry plugInFactory,
-			IScratchServices scratchServices,
-			FormMain mainForm)
+			IScratchService scratchService,
+			IFileSystemService fileSystemService)
 		{
 			_graphicsFactory = graphicsProxy;
 			_settings = settings;
 			_splashProxy = splashProxy;
 			_log = log;
 			_plugInFactory = plugInFactory;
-			_scratchServices = scratchServices;
+			_scratchService = scratchService;
+			_fileSystemService = fileSystemService;
 			MainForm = mainForm;
 		}
 		#endregion

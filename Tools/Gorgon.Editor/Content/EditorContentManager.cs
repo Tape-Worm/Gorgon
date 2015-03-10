@@ -181,6 +181,7 @@ namespace GorgonLibrary.Editor
 
 			if (content != null)
 			{
+				_log.Print("ContentService: User destroying content '{0}'.", LoggingLevel.Verbose, content.Name);
 				content.Dispose();
 			}
 
@@ -198,6 +199,10 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="ContentClosingEventArgs"/> instance containing the event data.</param>
 		private void Content_ClosingEvent(object sender, ContentClosingEventArgs e)
 		{
+			IContent content = CurrentContent ?? _noContent.Item1;
+
+			_log.Print("ContentService: User destroying content panel for content '{0}'", LoggingLevel.Verbose, content.Name);
+
 			if (e.Action != ConfirmationResult.Yes)
 			{
 				return;
@@ -243,9 +248,11 @@ namespace GorgonLibrary.Editor
 					}
 				}
 
+				_log.Print("ContentService: Destroying content panel for content '{0}'", LoggingLevel.Verbose, content.Item1.Name);
 				content.Item2.Close();
 			}
 
+			_log.Print("ContentService: Destroying content '{0}'.", LoggingLevel.Verbose, content.Item1.Name);
 			content.Item1.Dispose();
 
 			// Disable the current content.
@@ -270,11 +277,16 @@ namespace GorgonLibrary.Editor
 			// TODO: For now, just load default content.
 			// if (param == null) then do the lines below and return, otherwise create the content as normal.
 			// {
-			IContent content = new NoContent();
+			IContent content = new NoContent
+			                   {
+				                   Name = "DefaultContent"
+			                   };
 			IContentPanel contentUI = new ContentPanel(content, new NoContentRenderer(_graphicsProxy.Item, _settings, content))
 			                          {
-				                          CaptionVisible = false
+				                          CaptionVisible = false,
+										  Name = "DefaultContentPanel"
 			                          };
+			_log.Print("ContentService: Loading content '{0}'.", LoggingLevel.Verbose, content.Name);
 
 			contentUI.ContentClosing += Content_ClosingEvent;
 			contentUI.ContentClosed += Content_ClosedEvent;

@@ -80,7 +80,7 @@ namespace EditorTests
 		{
 			string expected =
 				"Gorgon packed file (*.gorPack)|*.gorPack|Zip file (*.Zip)|*.Zip|All supported content files (*.gorPack;*.Zip)|*.gorPack;*.Zip|All files|*.*".ToLowerInvariant();
-			_fileSystemService.GetFileSystemProviders();
+			_fileSystemService.LoadFileSystemProviders();
 			
 			Assert.IsTrue(_fileSystemService.ReadFileTypes.Length > 0);
 			Assert.AreEqual(expected, _fileSystemService.ReadFileTypes.ToLowerInvariant());

@@ -26,7 +26,6 @@
 
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor

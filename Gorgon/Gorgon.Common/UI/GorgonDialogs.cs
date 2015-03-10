@@ -118,7 +118,7 @@ namespace GorgonLibrary.UI
 
 			while (nextException != null)
 			{
-				errorText.AppendFormat("{0}:  {1}\n{2}:  {3}",
+				errorText.AppendFormat("{0}: {1}\n{2}:  {3}",
 									   Resources.GOR_DLG_ERR_DETAILS_MSG,
 									   nextException.Message,
 									   Resources.GOR_DLG_ERR_EXCEPT_TYPE,
@@ -126,12 +126,12 @@ namespace GorgonLibrary.UI
 
 				if (nextException.Source != null)
 				{
-					errorText.AppendFormat("{0}:  {1}\n", Resources.GOR_DLG_ERR_SRC, nextException.Source);
+					errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_DLG_ERR_SRC, nextException.Source);
 				}
 
 				if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
 				{
-					errorText.AppendFormat("{0}:  {1}.{2}\n",
+					errorText.AppendFormat("\n{0}:  {1}.{2}",
 										   Resources.GOR_DLG_ERR_TARGET_SITE,
 										   nextException.TargetSite.DeclaringType.FullName,
 										   nextException.TargetSite.Name);
@@ -141,7 +141,7 @@ namespace GorgonLibrary.UI
 
 				if (gorgonException != null)
 				{
-					errorText.AppendFormat("{0}: [{1}] {2} (0x{3})",
+					errorText.AppendFormat("\n{0}: [{1}] {2} (0x{3})",
 										   Resources.GOR_DLG_ERR_GOREXCEPT_RESULT,
 										   gorgonException.ResultCode.Name,
 										   gorgonException.ResultCode.Description,

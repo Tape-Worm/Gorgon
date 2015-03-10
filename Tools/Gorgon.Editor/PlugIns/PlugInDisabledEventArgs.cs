@@ -20,31 +20,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, March 2, 2015 12:26:47 AM
+// Created: Monday, March 9, 2015 8:51:32 PM
 // 
 #endregion
+
+using System;
+using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Services pertaining to the usage of the scratch area.
+	/// Event arguments for the plug-in disabled event.
 	/// </summary>
-	sealed class ScratchService : IScratchService
+	class PlugInDisabledEventArgs
+		: EventArgs
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the scratch area interface.
+		/// Property to return the plug-in that was disabled.
 		/// </summary>
-		public IScratchArea ScratchArea
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the locator UI used to change the location of a scratch area.
-		/// </summary>
-		public IScratchLocator ScratchLocator
+		public GorgonPlugIn PlugIn
 		{
 			get;
 			private set;
@@ -52,16 +47,13 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Constructor/Destructor.
-
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ScratchService"/> class.
+		/// Initializes a new instance of the <see cref="PlugInDisabledEventArgs"/> class.
 		/// </summary>
-		/// <param name="scratchArea">The scratch area.</param>
-		/// <param name="locator">The locator UI to change the path to the scratch area..</param>
-		public ScratchService(IScratchArea scratchArea, IScratchLocator locator)
+		/// <param name="plugIn">The plug in that was disabled.</param>
+		public PlugInDisabledEventArgs(GorgonPlugIn plugIn)
 		{
-			ScratchArea = scratchArea;
-			ScratchLocator = locator;
+			PlugIn = plugIn;
 		}
 		#endregion
 	}

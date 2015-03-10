@@ -24,8 +24,10 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using GorgonLibrary.IO;
+using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor
 {
@@ -36,6 +38,11 @@ namespace GorgonLibrary.Editor
 	interface IPlugInRegistry
 	{
 		/// <summary>
+		/// Event fired when an already loaded plug-in is disabled.
+		/// </summary>
+		event EventHandler<PlugInDisabledEventArgs> PlugInDisabled;
+
+			/// <summary>
 		/// Property to return a list of the disabled plug-ins.
 		/// </summary>
 		IReadOnlyList<DisabledPlugIn> DisabledPlugIns
@@ -52,8 +59,22 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to determine if a plug-in is disabled.
+		/// </summary>
+		/// <param name="plugIn">The plug-in to query.</param>
+		/// <returns>TRUE if disabled, FALSE if not.</returns>
+		bool IsDisabled(GorgonPlugIn plugIn);
+
+		/// <summary>
 		/// Function to scan for and load any plug-ins located in the plug-ins folder.
 		/// </summary>
 		void ScanAndLoadPlugIns();
+
+		/// <summary>
+		/// Function to disable a plug-in.
+		/// </summary>
+		/// <param name="plugIn">Plug-in to disable.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugIn"/> parameter is NULL (Nothing in VB.Net).</exception>
+		void DisablePlugIn(GorgonPlugIn plugIn);
 	}
 }

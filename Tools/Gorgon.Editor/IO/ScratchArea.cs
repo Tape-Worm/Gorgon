@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -168,6 +169,70 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to create the scratch area.
+		/// </summary>
+		/// <param name="directoryPath">Path to the directory that will contain the scratch area.</param>
+		private void CreateScratchArea(string directoryPath)
+		{
+			// Create a new ID for the scratch area.
+			ID = Guid.NewGuid();
+
+			_settings.ScratchPath = directoryPath;
+
+			// Get the full path to the scratch area including its ID.
+			directoryPath = directoryPath + ("Gorgon.Editor." + ID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar);
+
+			// The write path is auto-mounted into the file system, so we don't need to worry about issuing a 
+			// separate mount call.
+			_fileSystem.WriteLocation = directoryPath;
+
+			// Mark the directory as hidden and non-indexable.
+			// This is to keep people from stumbling upon the directory too easily as direct interference 
+			// will mess up the editor.
+			var directoryInfo = new DirectoryInfo(directoryPath);
+
+			if (((directoryInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+				|| ((directoryInfo.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
+			{
+				directoryInfo.Attributes = FileAttributes.NotContentIndexed | FileAttributes.Hidden;
+			}
+
+			if (!directoryInfo.Exists)
+			{
+				directoryInfo.Create();
+			}
+
+			_log.Print("Scratch Area: Using '{0}' as the scratch area.", LoggingLevel.Simple, directoryPath);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ScratchArea"/> class.
+		/// </summary>
+		/// <param name="log">The applicationlog.</param>
+		/// <param name="settings">The application settings.</param>
+		/// <param name="scratchFileSystem">The proxy object for the file system used to manipulate the scratch files.</param>
+		public ScratchArea(GorgonLogFile log, GorgonFileSystem scratchFileSystem, IEditorSettings settings)
+		{
+			_log = log;
+			_settings = settings;
+			_fileSystem = scratchFileSystem;
+
+			// Get our list of system directories.
+			_systemDirs = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
+				.Select(Environment.GetFolderPath)
+				.Where(item => !string.IsNullOrWhiteSpace(item)
+				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), StringComparison.OrdinalIgnoreCase)
+				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), StringComparison.OrdinalIgnoreCase)
+				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.Personal), StringComparison.OrdinalIgnoreCase))
+				.ToArray();
+		}
+		#endregion
+
+		#region IScratchArea Implementation.
+		#region Methods.
+		/// <summary>
 		/// Function to determine if the scratch area is accessible.
 		/// </summary>
 		/// <param name="path">Path to the scratch area.</param>
@@ -190,7 +255,7 @@ namespace GorgonLibrary.Editor
 				// Ensure that the device exists or is ready.
 				var root = Path.GetPathRoot(path);
 
-				if ((string.IsNullOrWhiteSpace(root)) 
+				if ((string.IsNullOrWhiteSpace(root))
 					|| (!Directory.Exists(root)))
 				{
 					_log.Print("Scratch Area: Cannot write because the root of the path does not exist.", LoggingLevel.Verbose);
@@ -283,30 +348,7 @@ namespace GorgonLibrary.Editor
 				CleanUp();
 			}
 
-			// Create a new ID for the scratch area.
-			ID = Guid.NewGuid();
-
-			_settings.ScratchPath = directoryPath;
-
-			// Get the full path to the scratch area including its ID.
-			directoryPath = directoryPath + ("Gorgon.Editor." + ID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar);
-			
-			// The write path is auto-mounted into the file system, so we don't need to worry about issuing a 
-			// separate mount call.
-			_fileSystem.WriteLocation = directoryPath;
-
-			// Mark the directory as hidden and non-indexable.
-			// This is to keep people from stumbling upon the directory too easily as direct interference 
-			// will mess up the editor.
-			var directoryInfo = new DirectoryInfo(directoryPath);
-
-			if (((directoryInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-				|| ((directoryInfo.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
-			{
-				directoryInfo.Attributes = FileAttributes.NotContentIndexed | FileAttributes.Hidden;
-			}
-
-			_log.Print("Scratch Area: Using '{0}' as the scratch area.", LoggingLevel.Simple, directoryPath);
+			CreateScratchArea(directoryPath);
 
 			return result;
 		}
@@ -364,46 +406,72 @@ namespace GorgonLibrary.Editor
 				return false;
 			}
 		}
-		#endregion
 
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ScratchArea"/> class.
+		/// Function to copy the packed file system to the scratch area.
 		/// </summary>
-		/// <param name="log">The applicationlog.</param>
-		/// <param name="settings">The application settings.</param>
-		/// <param name="scratchFileSystemProxy">The proxy object for the file system used to manipulate the scratch files.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="log"/>, <paramref name="settings"/>, or the <paramref name="scratchFileSystemProxy"/> parameters are NULL (Nothing in VB.Net).</exception>
-		public ScratchArea(GorgonLogFile log, IEditorSettings settings, IProxyObject<GorgonFileSystem> scratchFileSystemProxy)
+		/// <param name="fileSystem">File system to copy.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void CopyFileSystem(GorgonFileSystem fileSystem)
 		{
-			if (log == null)
+			if (fileSystem == null)
 			{
-				throw new ArgumentNullException("log");
+				throw new ArgumentNullException("fileSystem");
 			}
 
-			if (settings == null)
+			Debug.Assert(_fileSystem != fileSystem, "Shit fuck goddamn cunting fucking IoC containers.  Pieces of shit.");
+
+			if (!string.IsNullOrWhiteSpace(_fileSystem.WriteLocation))
 			{
-				throw new ArgumentNullException("settings");
+				var scratchDir = new DirectoryInfo(_fileSystem.WriteLocation);
+
+				// If for some reason the scratch area is gone, then re-create it.
+				if (scratchDir.Exists)
+				{
+					CleanUp();
+				}
 			}
 
-			if (scratchFileSystemProxy == null)
+			// Refresh the scratch area.
+			CreateScratchArea(ScratchDirectory);
+
+			// Get the lists of directories and files from the file system.
+			try
 			{
-				throw new ArgumentNullException("scratchFileSystemProxy");
+				// At this point we should have a clean scratch area, so all files will exist in the packed file.
+				// Unpack the file structure so we can work with it.
+				var directories = fileSystem.FindDirectories("*", true);
+				var files = fileSystem.FindFiles("*", true);
+
+				// Create our directories.
+				foreach (var directory in directories)
+				{
+					_fileSystem.CreateDirectory(directory.FullPath);
+				}
+
+				// Copy our files.
+				foreach (var file in files)
+				{
+					using (var inputStream = file.OpenStream(false))
+					{
+						using (var outputStream = _fileSystem.OpenStream(file.FullPath, true))
+						{
+							inputStream.CopyTo(outputStream);
+						}
+					}
+				}
 			}
+			catch
+			{
+				// Recreate the scratch area if we have an exception.  This will ensure we don't 
+				// get bad data.
+				CleanUp();
+				CreateScratchArea(ScratchDirectory);
 
-			_log = log;
-			_settings = settings;
-			_fileSystem = scratchFileSystemProxy.Item;
-
-			// Get our list of system directories.
-			_systemDirs = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
-				.Select(Environment.GetFolderPath)
-				.Where(item => !string.IsNullOrWhiteSpace(item)
-				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), StringComparison.OrdinalIgnoreCase)
-				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), StringComparison.OrdinalIgnoreCase)
-				               && !string.Equals(item, Environment.GetFolderPath(Environment.SpecialFolder.Personal), StringComparison.OrdinalIgnoreCase))
-				.ToArray();
+				throw;
+			}
 		}
+		#endregion
 		#endregion
 	}
 }
