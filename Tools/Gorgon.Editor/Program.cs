@@ -103,8 +103,8 @@ namespace GorgonLibrary.Editor
 			obj.For<IVideoDeviceSelector>()
 			   .Use<VideoDeviceSelector>();
 
-			obj.For<IProxyObject<GorgonGraphics>>()
-			   .Use<GraphicsProxy>();
+			obj.For<IGraphicsService>()
+			   .Use<GraphicsService>();
 
 			obj.For<IEditorContentManager>()
 			   .Use<EditorContentManager>();
@@ -120,8 +120,6 @@ namespace GorgonLibrary.Editor
 
 			obj.For<IFileSystemService>()
 			   .Use<EditorFileSystemService>();
-//			   .Ctor<IProxyObject<GorgonFileSystem>>()
-//			   .Is(() => new ProxyObject<GorgonFileSystem>(new Lazy<GorgonFileSystem>()));
 
 			obj.For<IScratchArea>()
 			   .Use<ScratchArea>();

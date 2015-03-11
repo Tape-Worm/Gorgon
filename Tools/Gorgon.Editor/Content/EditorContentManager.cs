@@ -86,7 +86,7 @@ namespace GorgonLibrary.Editor
 	{
 		#region Variables.
 		// Application log file.
-		private GorgonLogFile _log;
+		private readonly GorgonLogFile _log;
 		// The settings object for the default content.
 		private readonly IEditorSettings _settings;
 		// Flag to indicate that the object was disposed.
@@ -95,8 +95,8 @@ namespace GorgonLibrary.Editor
 		private Tuple<IContent, IContentPanel> _currentContent;
 		// Object and UI for the default content.
 		private Tuple<IContent, IContentPanel> _noContent;
-		// The proxy graphics interface for content.
-		private readonly IProxyObject<GorgonGraphics> _graphicsProxy;
+		// The graphics service interface for content.
+		private readonly IGraphicsService _graphicsService;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -105,11 +105,11 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="log">The application log file.</param>
 		/// <param name="settings">The application settings to pass to the default content.</param>
-		/// <param name="graphicsProxy">The proxy object for the graphics interface.</param>
-		public EditorContentManager(GorgonLogFile log, IEditorSettings settings, IProxyObject<GorgonGraphics> graphicsProxy)
+		/// <param name="graphicsService">The graphics service interface used to retrieve the application graphics object instance.</param>
+		public EditorContentManager(GorgonLogFile log, IEditorSettings settings, IGraphicsService graphicsService)
 		{
 			_log = log;
-			_graphicsProxy = graphicsProxy;
+			_graphicsService = graphicsService;
 			_settings = settings;
 		}
 
@@ -281,10 +281,12 @@ namespace GorgonLibrary.Editor
 			                   {
 				                   Name = "DefaultContent"
 			                   };
-			IContentPanel contentUI = new ContentPanel(content, new NoContentRenderer(_graphicsProxy.Item, _settings, content))
+
+			IContentPanel contentUI = new ContentPanel(content,
+			                                           new NoContentRenderer(_graphicsService.GetGraphics(), _settings, content))
 			                          {
 				                          CaptionVisible = false,
-										  Name = "DefaultContentPanel"
+				                          Name = "DefaultContentPanel"
 			                          };
 			_log.Print("ContentService: Loading content '{0}'.", LoggingLevel.Verbose, content.Name);
 

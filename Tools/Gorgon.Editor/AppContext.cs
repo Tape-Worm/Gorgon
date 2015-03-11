@@ -52,8 +52,10 @@ namespace GorgonLibrary.Editor
 		private bool _disposed;
 		// The editor settings interface.
 		private readonly IEditorSettings _settings;
-		// The initialization factory.
-		private IProxyObject<GorgonGraphics> _graphicsFactory;
+		// The graphics service.
+		private readonly IGraphicsService _graphicsService;
+		// The graphics interface.
+		private GorgonGraphics _graphics;
 		// The splash screen proxy for this application.
 		private readonly IProxyObject<FormSplash> _splashProxy;
 		// The plug-in factory.
@@ -255,14 +257,14 @@ namespace GorgonLibrary.Editor
 			{
 				if (disposing)
 				{
-					if (_graphicsFactory != null)
+					if (_graphics != null)
 					{
-						_graphicsFactory.Dispose();
+						_graphics.Dispose();
 					}
 
-					if (_splashProxy != null)
+					if (_splash != null)
 					{
-						_splashProxy.Dispose();
+						_splash.Dispose();
 					}
 
 					if (_log != null)
@@ -272,7 +274,8 @@ namespace GorgonLibrary.Editor
 					}
 				}
 
-				_graphicsFactory = null;
+				_splash = null;
+				_graphics = null;
 				_log = null;
 				_disposed = true;
 			}
@@ -302,7 +305,7 @@ namespace GorgonLibrary.Editor
 				_splash.Fade(true, 500.0f);
 
 				// Create our graphics interface.
-				var graphics = _graphicsFactory.Item;
+				_graphics = _graphicsService.GetGraphics();
 
 				// Retrieve our plug-ins for the application.
 				_plugInFactory.ScanAndLoadPlugIns();
@@ -353,7 +356,8 @@ namespace GorgonLibrary.Editor
 				_splash.Fade(false, 250.0f);
 
 				// Get rid of the splash screen.
-				_splashProxy.Dispose();
+				_splash.Dispose();
+				_splash = null;
 
 				// Bring up our application form.
 				MainForm.Show();
@@ -377,11 +381,14 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
-				// Ensure that we clean up after ourselves.
-				_scratchService.ScratchArea.CleanUp();
+				// Unload the current file if one exists.
+				_fileSystemService.UnloadCurrentFile();
 
-				_splashProxy.Dispose();
-				_splash = null;
+				if (_splash != null)
+				{
+					_splash.Dispose();
+					_splash = null;
+				}
 			}
 		}
 		#endregion
@@ -393,7 +400,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="log">The application log file.</param>
 		/// <param name="mainForm">The instance of the main form.</param>
 		/// <param name="settings">The editor settings.</param>
-		/// <param name="graphicsProxy">The factory to create a new graphics interface.</param>
+		/// <param name="graphicsService">The service used to create a new graphics interface.</param>
 		/// <param name="splashProxy">The factory to create forms for the application.</param>
 		/// <param name="plugInFactory">The factory to load plug-ins for the application.</param>
 		/// <param name="scratchService">The service pertaining to scratch area manipulation.</param>
@@ -401,13 +408,13 @@ namespace GorgonLibrary.Editor
 		public AppContext(GorgonLogFile log,
 			FormMain mainForm, 
 			IEditorSettings settings, 
-			IProxyObject<GorgonGraphics> graphicsProxy, 
+			IGraphicsService graphicsService, 
 			IProxyObject<FormSplash> splashProxy, 
 			IPlugInRegistry plugInFactory,
 			IScratchService scratchService,
 			IFileSystemService fileSystemService)
 		{
-			_graphicsFactory = graphicsProxy;
+			_graphicsService = graphicsService;
 			_settings = settings;
 			_splashProxy = splashProxy;
 			_log = log;

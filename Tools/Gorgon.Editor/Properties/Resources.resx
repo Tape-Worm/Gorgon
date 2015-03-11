@@ -168,9 +168,6 @@ Please see the details pane for more information.</value>
   <data name="GOREDIT_TEXT_LOADING_PLUGINS" xml:space="preserve">
     <value>Loading plug-ins...</value>
   </data>
-  <data name="GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT" xml:space="preserve">
-    <value>Cannot used a disposed object.</value>
-  </data>
   <data name="Gorgon_2_x_Logo_Blurry" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Blurry.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -235,5 +232,10 @@ Click the 'details' button for more information.</value>
   </data>
   <data name="GOREDIT_TEXT_LOAD_PREV_FILE" xml:space="preserve">
     <value>Loading previous editor file...</value>
+  </data>
+  <data name="GOREDIT_DLG_FILE_NOT_SAVED" xml:space="preserve">
+    <value>The file '{0}' has unsaved changes. 
+
+Would you like to save these changes now?</value>
   </data>
 </root>

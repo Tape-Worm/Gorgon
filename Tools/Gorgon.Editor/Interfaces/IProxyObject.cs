@@ -32,8 +32,7 @@ namespace GorgonLibrary.Editor
 	/// A proxy object used to create objects with a short lifetime.
 	/// </summary>
 	/// <typeparam name="T">The type of the object.</typeparam>
-	public interface IProxyObject<out T>
-		: IDisposable
+	interface IProxyObject<out T>
 	{
 		/// <summary>
 		/// Property to return the short lived object.

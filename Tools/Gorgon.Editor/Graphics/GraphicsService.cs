@@ -24,21 +24,19 @@
 // 
 #endregion
 
-using System;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The proxy used to create a new instance of the graphics object and return an existing object upon subsequent calls.
+	/// A service used to bring back the graphics interface and the device selection interface.
 	/// </summary>
-	sealed class GraphicsProxy
-		: IProxyObject<GorgonGraphics>
+	/// <remarks>The calling application is responsible for disposing the graphics object after calling the <see cref="Graphics"/> method.</remarks>
+	sealed class GraphicsService 
+		: IGraphicsService
 	{
 		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// The application instance of the graphics interface.
 		private GorgonGraphics _graphics;
 		// The splash screen proxy object to display status.
@@ -49,87 +47,44 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GraphicsProxy"/> class.
+		/// Initializes a new instance of the <see cref="GraphicsService"/> class.
 		/// </summary>
 		/// <param name="splashProxy">The proxy object holding our splash screen to allow us to return status to the user.</param>
 		/// <param name="deviceSelector">The video device selector to use when searching for an appropriate video device.</param>
-		public GraphicsProxy(IProxyObject<FormSplash> splashProxy, IVideoDeviceSelector deviceSelector)
+		public GraphicsService(IProxyObject<FormSplash> splashProxy, IVideoDeviceSelector deviceSelector)
 		{
 			_splashProxy = splashProxy;
 			_deviceSelector = deviceSelector;
 		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref="GraphicsProxy"/> class.
-		/// </summary>
-		~GraphicsProxy()
-		{
-			Dispose(false);
-		}
 		#endregion
 
-		#region IDisposable Implementation.
+		#region IGraphicsService Members
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
+		/// Function to return the graphics interface.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
+		/// <returns>The new or previously existing graphics interface.</returns>
+		/// <exception cref="GorgonException">Thrown when the graphics device could not be created because the video device in the system is not sufficient.</exception>
+		public GorgonGraphics GetGraphics()
 		{
-			if (_disposed)
+			if (_graphics != null)
 			{
-				return;
-			}
-
-			if (disposing)
-			{
-				if (_graphics != null)
-				{
-					_graphics.Dispose();
-				}
-			}
-
-			_graphics = null;
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region IProxyObject<GorgonGraphics> Members
-		/// <summary>
-		/// Property to return the proxied item.
-		/// </summary>
-		public GorgonGraphics Item
-		{
-			get
-			{
-				if (_graphics != null)
-				{
-					return _graphics;
-				}
-
-				FormSplash splash = _splashProxy.Item;
-				GorgonVideoDevice device = _deviceSelector.GetBestVideoDevice();
-
-				if (device == null)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
-				}
-
-				// Create our graphics interface.
-				_graphics = new GorgonGraphics(device);
-
-				splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, device.Name, device.SupportedFeatureLevel);
-
 				return _graphics;
 			}
+
+			FormSplash splash = _splashProxy.Item;
+			GorgonVideoDevice device = _deviceSelector.GetBestVideoDevice();
+
+			if (device == null)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_CANNOT_CREATE_GFX);
+			}
+
+			// Create our graphics interface.
+			_graphics = new GorgonGraphics(device);
+
+			splash.InfoText = string.Format(Resources.GOREDIT_TEXT_USING_VIDEO_DEVICE, device.Name, device.SupportedFeatureLevel);
+
+			return _graphics;
 		}
 		#endregion
 	}

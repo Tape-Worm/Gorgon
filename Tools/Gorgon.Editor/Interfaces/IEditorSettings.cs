@@ -83,15 +83,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to set or return whether the logo on the starting page should be animated.
-		/// </summary>
-		bool AnimateStartPageLogo
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
 		float StartPageAnimationPulseRate

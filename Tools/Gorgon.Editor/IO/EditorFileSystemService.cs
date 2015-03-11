@@ -35,6 +35,7 @@ using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
+#warning Extract out some of this functionality into an "editor" file object type and have it returned by Load.  Maybe make it so that "current" file does not exist in here?  Also, put the "HasChanges" property on the file object, not in the service and hook the scratch area changed event to that file.
 	/// <summary>
 	/// The file system service used to manipulate items in the file system.
 	/// </summary>
@@ -54,7 +55,7 @@ namespace GorgonLibrary.Editor
 		// The list of file system providers indexed by file extension.
 		private readonly IDictionary<GorgonFileExtension, GorgonFileSystemProvider> _providers;
 		// Application settings.
-		private IEditorSettings _settings;
+		private readonly IEditorSettings _settings;
 		// The file system used for packed files.
 		private readonly GorgonFileSystem _packedFileSystem;
 		#endregion
@@ -150,6 +151,21 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region IFileSystemService Implementation.
+		#region Events.
+		/// <summary>
+		/// Event fired when a file is loaded.
+		/// </summary>
+		public event EventHandler FileLoaded;
+		/// <summary>
+		/// Event fired when a file is saved.
+		/// </summary>
+		public event EventHandler FileSaved;
+		/// <summary>
+		/// Event fired when a file is unloaded.
+		/// </summary>
+		public event EventHandler FileUnloaded;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return a string of file types supported for reading.
@@ -174,6 +190,66 @@ namespace GorgonLibrary.Editor
 		/// Property to return the full path to the current file.
 		/// </summary>
 		public string CurrentFilePath
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether any file system providers are loaded into the application or not.
+		/// </summary>
+		public bool HasFileSystemProviders
+		{
+			get
+			{
+				return _providers.Count > 0;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the default file type for a writer.
+		/// </summary>
+		public string WriterDefaultFileType
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the current writer extension index for the currently loaded file.
+		/// </summary>
+		/// <remarks>
+		/// This is useful to determining the (1 based) index to assign to a save file dialog if we currently have a file open.
+		/// <para>This value will be 0 if no file is currently loaded, or if no provider could be found for the currently loaded file.</para>
+		/// </remarks>
+		public int WriterCurrentExtensionIndex
+		{
+			get
+			{
+				// TODO: Change this to use the file system writer plug-ins.
+				/*if ((_providers.Count == 0)
+					|| (string.IsNullOrWhiteSpace(CurrentFile)))
+				{
+					return 0;
+				}
+
+				string fileExtension = Path.GetExtension(CurrentFile);
+
+				if (string.IsNullOrWhiteSpace(fileExtension))
+				{
+					return 0;
+				}
+
+				var extension = new GorgonFileExtension(Path.GetExtension(CurrentFile));
+				return _providers.Keys.TakeWhile(currentExt => !extension.Equals(currentExt)).Count();*/
+				return 1;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether there have been changes to this file system or not.
+		/// </summary>
+		public bool HasChanges
 		{
 			get;
 			private set;
@@ -217,6 +293,41 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to unload the currently loaded file.
+		/// </summary>
+		public void UnloadCurrentFile()
+		{
+			// Reset the scratch area.
+			try
+			{
+				_scratchArea.CleanUp();
+			}
+			catch(Exception ex)
+			{
+				// If we can't clean up the scratch area for some reason (e.g. explorer has "helped" us by locking the folder), then 
+				// we'll just leave it for now.  It'll be expunged on exit or when the application loads up again.
+				_log.Print("FileSystemService: Exception generated while performing scratch area clean up.  Error: {0}", LoggingLevel.Simple, ex.Message);
+			}
+			_scratchArea.SetScratchDirectory(_scratchArea.ScratchDirectory);
+
+			if (string.IsNullOrWhiteSpace(CurrentFilePath))
+			{
+				return;
+			}
+
+			_log.Print("FileSystemService: Unloading the file '{0}'", LoggingLevel.Verbose, CurrentFilePath);
+
+			CurrentFilePath = string.Empty;
+			CurrentFile = string.Empty;
+			HasChanges = false;
+
+			if (FileUnloaded != null)
+			{
+				FileUnloaded(this, EventArgs.Empty);
+			}
+		}
+
+		/// <summary>
 		/// Function to load a file from the physical file system.
 		/// </summary>
 		/// <param name="path">Path to the file to load.</param>
@@ -235,6 +346,8 @@ namespace GorgonLibrary.Editor
 			{
 				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
 			}
+
+			path = Path.GetFullPath(path);
 
 			if (!File.Exists(path))
 			{
@@ -256,12 +369,17 @@ namespace GorgonLibrary.Editor
 				// Note the current file.
 				CurrentFile = Path.GetFileName(path);
 				CurrentFilePath = path;
+				HasChanges = false;
 
 				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
-				// TODO: Provide event for the editor meta data, and main interface to hook into.
-				
+				if (FileLoaded != null)
+				{
+					FileLoaded(this, EventArgs.Empty);
+				}
 				
 				// TODO: Find an applicable writer plug-in for this file.
+
+				_settings.LastEditorFile = path;
 			}
 			finally
 			{
@@ -296,7 +414,7 @@ namespace GorgonLibrary.Editor
 				_packedFileSystem.Providers.LoadProvider(plugIn.Value.Name);
 			}
 
-			_log.Print("Building file system provider list...", LoggingLevel.Verbose);
+			_log.Print("FileSystemService: Building file system provider list...", LoggingLevel.Verbose);
 
 			// Get a list of the extensions for the file system providers.
 			foreach (var provider in _packedFileSystem.Providers)
@@ -317,11 +435,11 @@ namespace GorgonLibrary.Editor
 				{
 					if (_providers.ContainsKey(extension))
 					{
-						_log.Print("Extension '{0}' is already assigned to a provider, skipping...", LoggingLevel.Verbose);
+						_log.Print("FileSystemService: Extension '{0}' is already assigned to a provider, skipping...", LoggingLevel.Verbose);
 						continue;
 					}
 
-					_log.Print("Extension '{0} - {1}' assigned to provider {2} ({3})",
+					_log.Print("FileSystemService: Extension '{0} - {1}' assigned to provider {2} ({3})",
 					           LoggingLevel.Verbose,
 					           extension.Extension,
 					           extension.Description,

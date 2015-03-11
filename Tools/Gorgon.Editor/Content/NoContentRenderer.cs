@@ -68,9 +68,90 @@ namespace GorgonLibrary.Editor
 		private float _startSpeed;
 		// Drop speed.
 		private float _dropSpeed;
+		// Percentage of logo distance on the screen when the screen is resized.
+		private float _yPosPercent;
+		// Starting position of the logo.
+		private float _startPosition;
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to switch the states for the logo animation blurring/fading.
+		/// </summary>
+		/// <param name="reverse">TRUE to set the state to reverse animation, FALSE to set to forward animation.</param>
+		private void SwitchState(bool reverse)
+		{
+			RectangleF state1 = reverse ? _blurStates[1] : _blurStates[0];
+			RectangleF state2 = reverse ? _blurStates[2] : _blurStates[1];
+
+			if ((_destState == state1) && (_sourceState == state2))
+			{
+				_alpha = reverse ? 0.0f : 1.0f;
+				_destState = reverse ? _blurStates[0] : _blurStates[1];
+				_sourceState = reverse ? _blurStates[1] : _blurStates[2];
+			}
+			else
+			{
+				_alpha = reverse ? 1.0f : 0.0f;
+
+				// Switch direction.
+				_delta = -_delta;
+			}
+		}
+
+		/// <summary>
+		/// Function to draw the logo with animation.
+		/// </summary>
+		private void DrawAnimated()
+		{
+			_logoSprite.Position = new Vector2(_halfScreen.Width, _yPos);
+			_logoSprite.SmoothingMode = SmoothingMode.Smooth;
+			_logoSprite.BlendingMode = BlendingMode.Modulate;
+
+			MoveLogo();
+
+			_logoSprite.Opacity = 1.0f - _alpha;
+			_logoSprite.TextureRegion = _sourceState;
+			_logoSprite.Draw();
+
+			_logoSprite.Opacity = _alpha;
+			_logoSprite.Position = new Vector2(_halfScreen.Width, _halfScreen.Height + (_halfScreen.Height - _yPos));
+			_logoSprite.TextureRegion = _destState;
+			_logoSprite.Draw();
+
+			_logoSprite.Opacity = 0.25f;
+			_logoSprite.Position = new Vector2(_halfScreen.Width, _halfScreen.Height);
+			_logoSprite.TextureRegion = _blurStates[2];
+			_logoSprite.BlendingMode = BlendingMode.Additive;
+			_logoSprite.Draw();
+
+			_alpha += _delta * GorgonTiming.Delta;
+			
+			if (_alpha > 1.0f)
+			{
+				SwitchState(true);
+			}
+			
+			if (_alpha < 0.0f)
+			{
+				SwitchState(false);
+			}
+		}
+
+		/// <summary>
+		/// Function to draw the logo with no animation.
+		/// </summary>
+		private void DrawNoAnimation()
+		{
+			_logoSprite.Opacity = 1.0f;
+			_logoSprite.TextureRegion = _blurStates[0];
+			_logoSprite.Draw();
+
+			_logoSprite.Opacity = 0.25f;
+			_logoSprite.TextureRegion = _blurStates[2];
+			_logoSprite.Draw();
+		}
+
 		/// <summary>
 		/// Function to clean up any resources provided to the renderer.
 		/// </summary>
@@ -116,6 +197,24 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function called before the swap chain is resized.
+		/// </summary>
+		/// <remarks>
+		/// Use this method to unbind resources before the swap chain is resized.
+		/// </remarks>
+		protected override void OnBeforeSwapChainResize()
+		{
+			base.OnBeforeSwapChainResize();
+
+			if (!_dropDown)
+			{
+				return;
+			}
+
+			_yPosPercent = _yPos / (_halfScreen.Height - _startPosition);
+		}
+
+		/// <summary>
 		/// Function called after the swap chain is resized.
 		/// </summary>
 		/// <param name="args">Arguments for the resize event.</param>
@@ -127,6 +226,14 @@ namespace GorgonLibrary.Editor
 			base.OnAfterSwapChainResize(args);
 			
 			CalculateLogoSize();
+
+			if (!_dropDown)
+			{
+				return;
+			}
+
+			// Place at the approximate relative location that we were at prior to the resizing.
+			_yPos = (_halfScreen.Height - _startPosition) * _yPosPercent;
 		}
 
 		/// <summary>
@@ -162,6 +269,7 @@ namespace GorgonLibrary.Editor
 			else if (_startMoveTime.EqualsEpsilon(0.0f))
 			{
 				_startSpeed = _dropSpeed = (_logo.Settings.Height / 3) * (_delta / 0.125f).Max(0.5f);
+				_startPosition = _yPos = -_logoSprite.Anchor.Y * 1.25f;
 			}
 		}
 
@@ -180,7 +288,7 @@ namespace GorgonLibrary.Editor
 				_startMoveTime = GorgonTiming.SecondsSinceStart;
 			}
 
-			float slowDistance = _halfScreen.Height / 3;//- (_halfScreen.Height / 2));
+			float slowDistance = _halfScreen.Height / 3;
 
 			float posDelta = (_halfScreen.Height - _yPos);
 			_dropSpeed = _startSpeed * GorgonTiming.Delta;
@@ -192,7 +300,7 @@ namespace GorgonLibrary.Editor
 
 			_yPos += _dropSpeed;
 
-			_dropDown = _yPos < _halfScreen.Height && !_dropSpeed.EqualsEpsilon(0.0f, 0.1f);
+			_dropDown = _yPos.FastCeiling() < _halfScreen.Height;
 
 			if (_dropDown)
 			{
@@ -208,70 +316,13 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public override void Draw()
 		{
-			_logoSprite.Position = new Vector2(_halfScreen.Width, _yPos);
-			_logoSprite.SmoothingMode = SmoothingMode.Smooth;
-			_logoSprite.BlendingMode = BlendingMode.Modulate;
-			
-			if (!_delta.EqualsEpsilon(0.0f))
+			if (_delta.EqualsEpsilon(0.0f))
 			{
-				MoveLogo();
-
-				_logoSprite.Opacity = 1.0f - _alpha;
-				_logoSprite.TextureRegion = _sourceState;
-				_logoSprite.Draw();
-
-				_logoSprite.Opacity = _alpha;
-				_logoSprite.Position = new Vector2(_halfScreen.Width, _halfScreen.Height + (_halfScreen.Height - _yPos));
-				_logoSprite.TextureRegion = _destState;
-				_logoSprite.Draw();
-
-				_logoSprite.Opacity = 0.25f;
-				_logoSprite.Position = new Vector2(_halfScreen.Width, _halfScreen.Height);
-				_logoSprite.TextureRegion = _blurStates[2];
-				_logoSprite.BlendingMode = BlendingMode.Additive;
-				_logoSprite.Draw();
-
-				_alpha += _delta * GorgonTiming.Delta;
-
-				if (_alpha > 1.0f)
-				{
-					if ((_destState == _blurStates[1]) && (_sourceState == _blurStates[2]))
-					{
-						_alpha = 0.0f;
-						_destState = _blurStates[0];
-						_sourceState = _blurStates[1];
-					}
-					else
-					{
-						_alpha = 1.0f;
-						_delta = -_delta;
-					}
-				}
-				else if (_alpha < 0.0f)
-				{
-					if ((_destState == _blurStates[0]) && (_sourceState == _blurStates[1]))
-					{
-						_alpha = 1.0f;
-						_destState = _blurStates[1];
-						_sourceState = _blurStates[2];
-					}
-					else
-					{
-						_alpha = 0.0f;
-						_delta = -_delta;
-					}
-				}
+				DrawNoAnimation();
+				return;
 			}
-			else
-			{
-				_logoSprite.Opacity = 1.0f;
-				_logoSprite.TextureRegion = _blurStates[0];
-				_logoSprite.Draw();
 
-				_logoSprite.Opacity = 0.25f;
-				_logoSprite.TextureRegion = _blurStates[2];
-				_logoSprite.Draw();
-			}
+			DrawAnimated();
 		}
 		#endregion
 
@@ -289,7 +340,7 @@ namespace GorgonLibrary.Editor
 
 			// Set for 30 FPS vsync.
 			RenderInterval = 1;
-			_delta = (settings.AnimateStartPageLogo && settings.StartPageAnimationPulseRate > 0) ? settings.StartPageAnimationPulseRate.Max(0) : 0;
+			_delta = settings.StartPageAnimationPulseRate > 0 ? settings.StartPageAnimationPulseRate.Min(1) : 0;
 
 			if (_delta > 0)
 			{

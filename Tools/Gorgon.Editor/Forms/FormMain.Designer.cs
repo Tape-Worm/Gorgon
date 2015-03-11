@@ -55,7 +55,7 @@ namespace GorgonLibrary.Editor
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemFile = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemNew = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemOpen = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.itemAddContent = new System.Windows.Forms.ToolStripMenuItem();
@@ -238,7 +238,7 @@ namespace GorgonLibrary.Editor
 			// menuFile
 			// 
 			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemFile,
+            this.itemNew,
             this.itemOpen,
             this.toolStripSeparator3,
             this.itemAddContent,
@@ -256,16 +256,18 @@ namespace GorgonLibrary.Editor
 			this.menuFile.Name = "menuFile";
 			resources.ApplyResources(this.menuFile, "menuFile");
 			// 
-			// itemFile
+			// itemNew
 			// 
-			this.itemFile.CheckOnClick = true;
-			this.itemFile.Name = "itemFile";
-			resources.ApplyResources(this.itemFile, "itemFile");
+			this.itemNew.CheckOnClick = true;
+			this.itemNew.Name = "itemNew";
+			resources.ApplyResources(this.itemNew, "itemNew");
+			this.itemNew.Click += new System.EventHandler(this.itemNew_Click);
 			// 
 			// itemOpen
 			// 
 			resources.ApplyResources(this.itemOpen, "itemOpen");
 			this.itemOpen.Name = "itemOpen";
+			this.itemOpen.Click += new System.EventHandler(this.itemOpen_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -662,7 +664,7 @@ namespace GorgonLibrary.Editor
 		private Panel panelContentHost;
 		private Panel panelExplorer;
 		private ToolStripMenuItem menuFile;
-		private ToolStripMenuItem itemFile;
+		private ToolStripMenuItem itemNew;
 		private KRBTabControl.KRBTabControl tabPages;
 		private KRBTabControl.TabPageEx pageFiles;
 		private ToolStripContainer toolsFiles;

@@ -420,9 +420,19 @@ namespace GorgonLibrary.Editor
 		/// </remarks>
 		public virtual ConfirmationResult GetCloseConfirmation()
 		{
-			return Content.HasChanges
-					   ? GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT, Content.Name), null, true)
-					   : ConfirmationResult.None;
+			Cursor lastCursor = Cursor.Current;
+
+			try
+			{
+				return Content.HasChanges
+					       ? GorgonDialogs.ConfirmBox(ParentForm, string.Format(Resources.GOREDIT_DLG_CONFIRM_UNSAVED_CONTENT, Content.Name), null, true)
+					       : ConfirmationResult.None;
+			}
+			finally
+			{
+				// Ensure that we restore the last cursor.
+				Cursor.Current = lastCursor;
+			}
 		}
 
 		/// <summary>

@@ -633,13 +633,13 @@
   <metadata name="menuMain.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
-  <data name="itemFile.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+  <data name="itemNew.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Ctrl+N</value>
   </data>
-  <data name="itemFile.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="itemNew.Size" type="System.Drawing.Size, System.Drawing">
     <value>176, 24</value>
   </data>
-  <data name="itemFile.Text" xml:space="preserve">
+  <data name="itemNew.Text" xml:space="preserve">
     <value>&amp;New</value>
   </data>
   <data name="itemOpen.Enabled" type="System.Boolean, mscorlib">
@@ -3123,7 +3123,7 @@
     <value>5, 8, 5, 8</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>233, 192</value>
+    <value>320, 240</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 4, 4, 4</value>
@@ -3182,10 +3182,10 @@
   <data name="&gt;&gt;menuFile.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;itemFile.Name" xml:space="preserve">
-    <value>itemFile</value>
+  <data name="&gt;&gt;itemNew.Name" xml:space="preserve">
+    <value>itemNew</value>
   </data>
-  <data name="&gt;&gt;itemFile.Type" xml:space="preserve">
+  <data name="&gt;&gt;itemNew.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;itemOpen.Name" xml:space="preserve">
@@ -3444,6 +3444,6 @@
     <value>FormMain</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5545.38167, Culture=neutral, PublicKeyToken=null</value>
+    <value>GorgonLibrary.UI.FlatForm, Gorgon.Common, Version=2.0.5547.38302, Culture=neutral, PublicKeyToken=null</value>
   </data>
 </root>

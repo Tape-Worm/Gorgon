@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
@@ -56,6 +58,19 @@ namespace GorgonLibrary.Editor
 	interface IFileSystemService
 	{
 		/// <summary>
+		/// Event fired when a file is loaded.
+		/// </summary>
+		event EventHandler FileLoaded;
+		/// <summary>
+		/// Event fired when a file is saved.
+		/// </summary>
+		event EventHandler FileSaved;
+		/// <summary>
+		/// Event fired when a file is unloaded.
+		/// </summary>
+		event EventHandler FileUnloaded;
+
+		/// <summary>
 		/// Property to return the name of the currently loaded file.
 		/// </summary>
 		string CurrentFile
@@ -79,6 +94,47 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return whether any file system providers are loaded into the application or not.
+		/// </summary>
+		bool HasFileSystemProviders
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the default file type for a writer.
+		/// </summary>
+		string WriterDefaultFileType
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the current writer extension index for the currently loaded file.
+		/// </summary>
+		/// <remarks>
+		/// This is useful to determining the (1 based) index to assign to a save file dialog if we currently have a file open.
+		/// <para>This value will be 0 if no file is currently loaded, or if no provider could be found for the currently loaded file.</para>
+		/// </remarks>
+		int WriterCurrentExtensionIndex
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether there have been changes to this file system or not.
+		/// </summary>
+		bool HasChanges
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Function to unload the currently loaded file.
+		/// </summary>
+		void UnloadCurrentFile();
 
 		/// <summary>
 		/// Function to determine if the application can read the packed file or not.

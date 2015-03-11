@@ -20,54 +20,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, February 26, 2015 9:25:10 PM
+// Created: Tuesday, March 10, 2015 10:07:23 PM
 // 
 #endregion
 
-using System;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A proxy object used to create objects with a short lifetime.
+	/// A service used to bring back the graphics interface and the device selection interface.
 	/// </summary>
-	/// <typeparam name="T">Type of object.</typeparam>
-	class ProxyObject<T>
-		: IProxyObject<T>
+	interface IGraphicsService
 	{
-		#region Variables.
-		// The item being proxied.
-		private readonly Lazy<T> _item;
-		#endregion
-
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ProxyObject{T}"/> class.
+		/// Function to return the graphics interface.
 		/// </summary>
-		/// <param name="sourceObject">The source object to proxy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="sourceObject"/> is NULL (Nothing in VB.Net).</exception>
-		public ProxyObject(Lazy<T> sourceObject)
-		{
-			if (sourceObject == null)
-			{
-				throw new ArgumentNullException("sourceObject");
-			}
-
-			_item = sourceObject;
-		}
-		#endregion
-
-		#region IProxyObject<T> Members
-		/// <summary>
-		/// Property to return the proxied item.
-		/// </summary>
-		public T Item
-		{
-			get
-			{
-				return _item.Value;
-			}
-		}
-		#endregion
+		GorgonGraphics GetGraphics();
 	}
 }

@@ -116,19 +116,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to set or return whether the logo on the starting page should be animated.
-		/// </summary>
-		[ApplicationSetting("AnimateStartPageLogo", true, typeof(bool), "Options")]
-		public bool AnimateStartPageLogo
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
-		[ApplicationSetting("StartPageAnimationRate", 0.5f, typeof(float), "Options")]
+		[ApplicationSetting("StartPageAnimationRate", 0.25f, typeof(float), "Options")]
 		public float StartPageAnimationPulseRate
 		{
 			get
@@ -296,10 +286,15 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void Reset()
 		{
-			AnimateStartPageLogo = true;
-			StartPageAnimationPulseRate = 0.125f;
+			RecentFiles = new List<string>();
+			DisabledPlugIns = new List<string>();
+			ScratchPath = null;
+			SplitPosition = -1;
+			PropertiesVisible = true;
 
-			var baseSize = new Size(1280, 800);
+			StartPageAnimationPulseRate = 0.25f;
+
+			var baseSize = new Size(1280, 720);
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x720 by default.
@@ -312,7 +307,10 @@ namespace GorgonLibrary.Editor
 				baseSize.Height = Screen.PrimaryScreen.WorkingArea.Height;
 			}
 
-			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
+			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2,
+			                                 Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2,
+			                                 1280,
+			                                 720);
 
 			PlugInDirectory = (Gorgon.ApplicationDirectory + "PlugIns").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 			ThemeDirectory = (Gorgon.ApplicationDirectory + "Themes").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
@@ -358,12 +356,6 @@ namespace GorgonLibrary.Editor
 #else
 					 + "Gorgon.Editor.DEBUG.config.xml";
 #endif
-
-			RecentFiles = new List<string>();
-			DisabledPlugIns = new List<string>();
-			ScratchPath = null;
-			SplitPosition = -1;
-			PropertiesVisible = true;
 		}
 		#endregion
 	}

@@ -76,7 +76,9 @@
     <Compile Include="AppContext.cs" />
     <Compile Include="Content\EditorContentManager.cs" />
     <Compile Include="EditorTheme.cs" />
+    <Compile Include="Interfaces\IGraphicsService.cs" />
     <Compile Include="Interfaces\IEditorContentManager.cs" />
+    <Compile Include="Interfaces\IProxyObject.cs" />
     <Compile Include="Interfaces\IScratchLocator.cs" />
     <Compile Include="Interfaces\IScratchServices.cs" />
     <Compile Include="IO\EditorFileSystemService.cs" />
@@ -95,7 +97,7 @@
       <DependentUpon>FormSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="EditorSettings.cs" />
-    <Compile Include="Graphics\GraphicsProxy.cs" />
+    <Compile Include="Graphics\GraphicsService.cs" />
     <Compile Include="Interfaces\IEditorSettings.cs" />
     <Compile Include="Interfaces\IAppContext.cs" />
     <Compile Include="GlobalSuppressions.cs" />

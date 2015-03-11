@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -58,7 +59,123 @@ namespace GorgonLibrary.Editor
 
 		#endregion
 
+		#region Validation Methods.
+		/// <summary>
+		/// Function to validate the file menu.
+		/// </summary>
+		private void ValidateFileMenu()
+		{
+			itemOpen.Enabled = _fileSystemService.HasFileSystemProviders;
+		}
+
+		/// <summary>
+		/// Function to validate the controls on this form.
+		/// </summary>
+		private void ValidateControls()
+		{
+			ValidateFileMenu();
+		}
+		#endregion
+
 		#region Methods.
+		/// <summary>
+		/// Handles the Click event of the itemOpen control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemOpen_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				// Set up the file open dialog to point at the last place we saved a file at.
+				if (!string.IsNullOrWhiteSpace(_settings.LastEditorFile))
+				{
+					string lastDirectory = Path.GetDirectoryName(_settings.LastEditorFile);
+
+					if (string.IsNullOrWhiteSpace(lastDirectory))
+					{
+						return;
+					}
+
+					var directory = new DirectoryInfo(lastDirectory);
+
+					if (directory.Exists)
+					{
+						dialogOpenFile.InitialDirectory = directory.FullName;
+					}
+				}
+
+				dialogOpenFile.FileName = string.Empty;
+				dialogOpenFile.Filter = _fileSystemService.ReadFileTypes;
+				if (dialogOpenFile.ShowDialog(this) != DialogResult.OK)
+				{
+					return;
+				}
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				// Ensure that we can indeed read the file.
+				if (!_fileSystemService.CanReadFile(dialogOpenFile.FileName))
+				{
+					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_ERR_CANNOT_LOCATE_PROVIDER, dialogOpenFile.SafeFileName));
+					return;
+				}
+
+				// Unload the current file if necessary.
+				UnloadData();
+
+				_fileSystemService.LoadFile(dialogOpenFile.FileName);
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+
+				// Reload the default content if we had something catastrophic happen.
+				// Let's hope it never executes this.
+				_contentManager.CreateContent();
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemNew control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemNew_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				UnloadData();
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursor.Current;
+			}
+		}
+
+		/// <summary>
+		/// Handles the FileUpdated event of the FileSystem control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void FileSystem_FileUpdated(object sender, EventArgs eventArgs)
+		{
+			SetWindowText();
+			ValidateControls();
+		}
+
 		/// <summary>
 		/// Handles the Click event of the labelUnCollapse control.
 		/// </summary>
@@ -127,9 +244,41 @@ namespace GorgonLibrary.Editor
 			{
 				return false;
 			}
-
+			
 			// Next, confirm whether to save the currently open file system.
-			// TODO: Write file system management.
+			// TODO: Write file system management "has changes" functionality and also validate against a flag to indicate whether we have any file system writers loaded or not.
+
+			ConfirmationResult result = ConfirmationResult.None;
+
+			// If we have changes, then ask if we want to save them.
+			if (_fileSystemService.HasChanges)
+			{
+				var lastCursor = Cursor.Current;
+
+				result = GorgonDialogs.ConfirmBox(this,
+				                                  string.Format(Resources.GOREDIT_DLG_FILE_NOT_SAVED, _fileSystemService.CurrentFile),
+				                                  null,
+				                                  true);
+				Cursor.Current = lastCursor;
+			}
+
+			switch (result)
+			{
+				case ConfirmationResult.Cancel:
+					return false;
+				case ConfirmationResult.Yes:
+					if (string.IsNullOrWhiteSpace(_fileSystemService.CurrentFilePath))
+					{
+						// TODO: We need to "Save as".
+					}
+					else
+					{
+						// TODO: We need to just "Save".
+					}
+					break;
+			}
+
+			_fileSystemService.UnloadCurrentFile();
 
 			return true;
 		}
@@ -222,7 +371,7 @@ namespace GorgonLibrary.Editor
 			Text = string.Format("{0} - {1}{2}",
 			                     _windowText,
 			                     string.IsNullOrWhiteSpace(_fileSystemService.CurrentFile) ? Resources.GOREDIT_TEXT_UNTITLED : _fileSystemService.CurrentFile, 
-								 string.Empty);  // TODO: Replace this with a "HasChanges" flag.
+								 _fileSystemService.HasChanges ? "*" : string.Empty);  // TODO: Replace this with a "HasChanges" flag.
 		}
 
 		/// <summary>
@@ -230,9 +379,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected override void ApplyTheme()
 		{
-			// TODO: Get rid of this.
-			propertyGrid.SelectedObject = this.splitMain;
-
 			splitMain.BackColor = Theme.WindowBackground;
 			splitMain.Panel2.BackColor = Theme.ContentPanelBackground;
 			splitMain.Panel1.BackColor = Theme.ContentPanelBackground;
@@ -314,6 +460,11 @@ namespace GorgonLibrary.Editor
 				}
 
 				labelUnCollapse.Visible = splitMain.Panel2Collapsed = !_settings.PropertiesVisible;
+
+				_fileSystemService.FileUnloaded += FileSystem_FileUpdated;
+				_fileSystemService.FileLoaded += FileSystem_FileUpdated;
+
+				ValidateControls();
 			}
 			catch (Exception ex)
 			{
@@ -330,6 +481,8 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnFormClosing(e);
 
+			Cursor.Current = Cursors.WaitCursor;
+
 			_logFile.Print("Closing main window '{0}'", LoggingLevel.Verbose, Text);
 
 			try
@@ -342,6 +495,8 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
+				_fileSystemService.FileLoaded -= FileSystem_FileUpdated;
+				_fileSystemService.FileSaved -= FileSystem_FileUpdated;
 				_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
 				_contentManager.Dispose();
 			}
@@ -374,9 +529,10 @@ namespace GorgonLibrary.Editor
 				{
 					GorgonException.Catch(ex);
 				}
+
+				Cursor.Current = Cursors.Default;
 			}
 		}
-
 		#endregion
 
 		#region Constructor/Destructor.

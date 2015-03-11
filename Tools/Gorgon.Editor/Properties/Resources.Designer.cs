@@ -129,6 +129,17 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; has unsaved changes. 
+        ///
+        ///Would you like to save these changes now?.
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_NOT_SAVED {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_NOT_SAVED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a new temporary scratch path..
         /// </summary>
         internal static string GOREDIT_DLG_SCRATCH_PATH {
@@ -161,15 +172,6 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_ERR_CANNOT_LOCATE_PROVIDER {
             get {
                 return ResourceManager.GetString("GOREDIT_ERR_CANNOT_LOCATE_PROVIDER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot used a disposed object..
-        /// </summary>
-        internal static string GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT {
-            get {
-                return ResourceManager.GetString("GOREDIT_ERR_CANNOT_USE_DISPOSED_OBJECT", resourceCulture);
             }
         }
         
