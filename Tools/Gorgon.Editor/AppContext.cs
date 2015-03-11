@@ -382,7 +382,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				// Unload the current file if one exists.
-				_fileSystemService.UnloadCurrentFile();
+				_scratchService.ScratchArea.CleanUp();
 
 				if (_splash != null)
 				{

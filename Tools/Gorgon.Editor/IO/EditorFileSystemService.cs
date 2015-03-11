@@ -308,6 +308,7 @@ namespace GorgonLibrary.Editor
 				// we'll just leave it for now.  It'll be expunged on exit or when the application loads up again.
 				_log.Print("FileSystemService: Exception generated while performing scratch area clean up.  Error: {0}", LoggingLevel.Simple, ex.Message);
 			}
+#warning This leaves a mess.  We shouldn't be doing this here.  In fact, this whole method is suspect, and should be renamed to NewFile when we create an editor file object.  Also rename FileUnloaded to FileCreated.
 			_scratchArea.SetScratchDirectory(_scratchArea.ScratchDirectory);
 
 			if (string.IsNullOrWhiteSpace(CurrentFilePath))
@@ -399,6 +400,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void LoadFileSystemProviders()
 		{
+#warning This method is pretty large.  Can we refactor into something smaller perhaps?
 			var readerFileTypeList = new StringBuilder();
 			var extensionList = new StringBuilder();
 			var allSupportedList = new StringBuilder();
