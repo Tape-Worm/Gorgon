@@ -214,6 +214,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was no file name present in the path &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_ERR_FILENAME_NOT_FOUND_IN_PATH {
+            get {
+                return ResourceManager.GetString("GOREDIT_ERR_FILENAME_NOT_FOUND_IN_PATH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files..
         /// </summary>
         internal static string GOREDIT_ERR_NO_DRIVE_AVAILABLE {

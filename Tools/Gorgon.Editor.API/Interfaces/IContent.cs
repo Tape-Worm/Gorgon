@@ -26,8 +26,6 @@
 #endregion
 
 using System;
-using System.Security.Cryptography.X509Certificates;
-using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
@@ -44,7 +42,7 @@ namespace GorgonLibrary.Editor
 	/// into content data.
 	/// </para>
 	/// </remarks>
-	public interface IContent
+	public interface IContentData
 		: IDisposable, INamedObject
 	{
 		#region Events

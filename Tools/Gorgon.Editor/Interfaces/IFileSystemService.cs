@@ -65,23 +65,11 @@ namespace GorgonLibrary.Editor
 		/// Event fired when a file is saved.
 		/// </summary>
 		event EventHandler FileSaved;
-		/// <summary>
-		/// Event fired when a file is unloaded.
-		/// </summary>
-		event EventHandler FileUnloaded;
 
 		/// <summary>
-		/// Property to return the name of the currently loaded file.
+		/// Property to return the "default" file system that is created on application start (assuming no file was previously loaded).
 		/// </summary>
-		string CurrentFile
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the full path to the current file.
-		/// </summary>
-		string CurrentFilePath
+		IEditorFileSystem DefaultFileSystem
 		{
 			get;
 		}
@@ -124,17 +112,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return whether there have been changes to this file system or not.
+		/// Function to create a new file for use by the editor.
 		/// </summary>
-		bool HasChanges
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Function to unload the currently loaded file.
-		/// </summary>
-		void UnloadCurrentFile();
+		IEditorFileSystem NewFile();
 
 		/// <summary>
 		/// Function to determine if the application can read the packed file or not.
@@ -157,7 +137,7 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
-		void LoadFile(string path);
+		IEditorFileSystem LoadFile(string path);
 
 		/// <summary>
 		/// Function to load the file system providers available to the application.

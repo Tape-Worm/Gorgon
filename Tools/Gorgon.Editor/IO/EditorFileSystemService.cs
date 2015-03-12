@@ -35,7 +35,6 @@ using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
-#warning Extract out some of this functionality into an "editor" file object type and have it returned by Load.  Maybe make it so that "current" file does not exist in here?  Also, put the "HasChanges" property on the file object, not in the service and hook the scratch area changed event to that file.
 	/// <summary>
 	/// The file system service used to manipulate items in the file system.
 	/// </summary>
@@ -58,6 +57,10 @@ namespace GorgonLibrary.Editor
 		private readonly IEditorSettings _settings;
 		// The file system used for packed files.
 		private readonly GorgonFileSystem _packedFileSystem;
+		// The current editor file.
+		private IEditorFileSystem _currentFile;
+		// Default file created on application start.
+		private readonly IEditorFileSystem _defaultFile;
 		#endregion
 
 		#region Methods.
@@ -122,8 +125,9 @@ namespace GorgonLibrary.Editor
 		/// <param name="scratchArea">The scratch file area used to hold a copy of the file being edited.</param>
 		/// <param name="packFileSystem">The file system used to read packed files.</param>
 		/// <param name="plugInRegistry">The plug-in registry holding the file system providers we need.</param>
+		/// <param name="defaultFile">The default file created on application start up.</param>
 		/// <param name="settings">The application settings.</param>
-		public EditorFileSystemService(GorgonLogFile log, GorgonFileSystem packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry, IEditorSettings settings)
+		public EditorFileSystemService(GorgonLogFile log, GorgonFileSystem packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry, IEditorFileSystem defaultFile, IEditorSettings settings)
 		{
 			_log = log;
 			_scratchArea = scratchArea;
@@ -131,8 +135,7 @@ namespace GorgonLibrary.Editor
 			_settings = settings;
 			_packedFileSystem = packFileSystem;
 			_plugInRegistry = plugInRegistry;
-			CurrentFile = string.Empty;
-			CurrentFilePath = string.Empty;
+			_currentFile = _defaultFile = defaultFile;
 
 			// Notification for disabled plug-ins.
 			_plugInRegistry.PlugInDisabled += (sender, args) =>
@@ -160,36 +163,25 @@ namespace GorgonLibrary.Editor
 		/// Event fired when a file is saved.
 		/// </summary>
 		public event EventHandler FileSaved;
-		/// <summary>
-		/// Event fired when a file is unloaded.
-		/// </summary>
-		public event EventHandler FileUnloaded;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the "default" file system that is created on application start (assuming no file was previously loaded).
+		/// </summary>
+		public IEditorFileSystem DefaultFileSystem
+		{
+			get
+			{
+				return _defaultFile;
+			}
+		}
+
 		/// <summary>
 		/// Property to return a string of file types supported for reading.
 		/// </summary>
 		/// <remarks>This property will return a string formatted for the open file dialog extension property.</remarks>
 		public string ReadFileTypes
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the name of the currently loaded file.
-		/// </summary>
-		public string CurrentFile
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the full path to the current file.
-		/// </summary>
-		public string CurrentFilePath
 		{
 			get;
 			private set;
@@ -245,15 +237,6 @@ namespace GorgonLibrary.Editor
 				return 1;
 			}
 		}
-
-		/// <summary>
-		/// Property to return whether there have been changes to this file system or not.
-		/// </summary>
-		public bool HasChanges
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -293,9 +276,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to unload the currently loaded file.
+		/// Function to create a new file for use by the editor.
 		/// </summary>
-		public void UnloadCurrentFile()
+		public IEditorFileSystem NewFile()
 		{
 			// Reset the scratch area.
 			try
@@ -308,24 +291,13 @@ namespace GorgonLibrary.Editor
 				// we'll just leave it for now.  It'll be expunged on exit or when the application loads up again.
 				_log.Print("FileSystemService: Exception generated while performing scratch area clean up.  Error: {0}", LoggingLevel.Simple, ex.Message);
 			}
-#warning This leaves a mess.  We shouldn't be doing this here.  In fact, this whole method is suspect, and should be renamed to NewFile when we create an editor file object.  Also rename FileUnloaded to FileCreated.
+
 			_scratchArea.SetScratchDirectory(_scratchArea.ScratchDirectory);
 
-			if (string.IsNullOrWhiteSpace(CurrentFilePath))
-			{
-				return;
-			}
+			_log.Print("FileSystemService: Creating new file.", LoggingLevel.Verbose);
 
-			_log.Print("FileSystemService: Unloading the file '{0}'", LoggingLevel.Verbose, CurrentFilePath);
-
-			CurrentFilePath = string.Empty;
-			CurrentFile = string.Empty;
-			HasChanges = false;
-
-			if (FileUnloaded != null)
-			{
-				FileUnloaded(this, EventArgs.Empty);
-			}
+			_currentFile = new EditorFileSystem(null);
+			return _currentFile;
 		}
 
 		/// <summary>
@@ -336,7 +308,7 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
-		public void LoadFile(string path)
+		public IEditorFileSystem LoadFile(string path)
 		{
 			if (path == null)
 			{
@@ -368,11 +340,10 @@ namespace GorgonLibrary.Editor
 				_scratchArea.CopyFileSystem(_packedFileSystem);
 
 				// Note the current file.
-				CurrentFile = Path.GetFileName(path);
-				CurrentFilePath = path;
-				HasChanges = false;
+				_currentFile = new EditorFileSystem(path);
 
 				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
+
 				if (FileLoaded != null)
 				{
 					FileLoaded(this, EventArgs.Empty);
@@ -381,6 +352,8 @@ namespace GorgonLibrary.Editor
 				// TODO: Find an applicable writer plug-in for this file.
 
 				_settings.LastEditorFile = path;
+
+				return _currentFile;
 			}
 			finally
 			{

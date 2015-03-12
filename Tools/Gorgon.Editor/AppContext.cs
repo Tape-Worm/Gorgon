@@ -112,7 +112,8 @@ namespace GorgonLibrary.Editor
 			// Retrieve all the file system providers.
 			_fileSystemService.LoadFileSystemProviders();
 
-			if (!_settings.AutoLoadLastFile)
+			if ((!_settings.AutoLoadLastFile)
+				|| (string.IsNullOrWhiteSpace(_settings.LastEditorFile)))
 			{
 				return;
 			}
@@ -132,16 +133,15 @@ namespace GorgonLibrary.Editor
 
 				// Attempt to load the last file that we saved.
 				_splash.InfoText = Resources.GOREDIT_TEXT_LOAD_PREV_FILE;
-
 				
-				
-				_fileSystemService.LoadFile(filePath);
+				// Load the last file and send it on to the main application.
+				((FormMain)MainForm).CurrentFile = _fileSystemService.LoadFile(filePath);
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex,
 				                      () =>
-				                      GorgonDialogs.ErrorBox(null,
+				                      GorgonDialogs.ErrorBox(_splash,
 				                                             string.Format(Resources.GOREDIT_ERR_OPEN_PACK_FILE, filePath.Ellipses(80, true)),
 				                                             null,
 															 ex));
@@ -150,102 +150,6 @@ namespace GorgonLibrary.Editor
 				_settings.LastEditorFile = string.Empty;
 			}
 		}
-
-		/*		/// <summary>
-				/// Function to update the splash screen when a plug-in is loaded.
-				/// </summary>
-				/// <param name="text">Plug-in name to display.</param>
-				private void UpdateSplashPlugInText(string text)
-				{
-					// This had to be moved into this function because resharper complained
-					// about accessing a disposed object from a closure.  Even though the
-					// _splash object could not be disposed until well after the closure
-					// had completed execution.  By all rights, this should fail too, and
-					// does not, therefore resharper is wrong.
-					_splash.UpdateVersion(string.Format(Resources.GOREDIT_TEXT_PLUG_IN,
-														Path.GetFileNameWithoutExtension(text)
-															.Ellipses(40, true)));
-				}
-
-				/// <summary>
-				/// Function to initialize the plug-ins interface.
-				/// </summary>
-				private void InitializePlugIns()
-				{
-					PlugIns.PlugInPath = Program.Settings.PlugInDirectory;
-					PlugIns.UserDisabledPlugIns = Program.Settings.DisabledPlugIns.ToArray();
-
-					EditorLogging.Print("Loading plug-ins...", LoggingLevel.Verbose);
-					_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOADING_PLUGINS);
-
-					PlugIns.LoadPlugIns(UpdateSplashPlugInText);
-				}
-
-
-				/// <summary>
-				/// Function to load the previous file.
-				/// </summary>
-				private void LoadLastFile()
-				{
-					try
-					{
-						if (!ScratchArea.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
-						{
-							return;
-						}
-
-						_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_PREV_FILE);
-
-						if (!File.Exists(Program.Settings.LastEditorFile))
-						{
-							return;
-						}
-
-						FileManagement.Open(Program.Settings.LastEditorFile);
-					}
-					catch (Exception ex)
-					{
-						GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_DLG_OPEN_ERROR, Program.Settings.LastEditorFile, ex.Message), null, ex);
-						Program.Settings.LastEditorFile = string.Empty;
-					}
-				}
-
-				/// <summary>
-				/// Function to load the input interface.
-				/// </summary>
-				private void InitializeInput()
-				{
-					string inputPlugInPath = Path.Combine(Gorgon.ApplicationDirectory, "Gorgon.Input.Raw.dll");
-
-					_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_RAW_INPUT);
-
-					if (!File.Exists(inputPlugInPath))
-					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
-					}
-
-					if (!Gorgon.PlugIns.IsPlugInAssembly(inputPlugInPath))
-					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
-					}
-
-					// Ensure that it's signed with the same public key.
-					byte[] key = GetType().Assembly.GetName().GetPublicKey();
-
-					if ((key != null) && (key.Length != 0) 
-						&& (Gorgon.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
-					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
-					}
-
-					// Load the plug-in.
-					Gorgon.PlugIns.LoadPlugInAssembly(inputPlugInPath);
-
-					if (!Gorgon.PlugIns.Contains(ContentObject.GorgonRawInputTypeName))
-					{
-						throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
-					}
-				}*/
 
 		/// <summary>
 		/// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.ApplicationContext" /> and optionally releases the managed resources.
@@ -296,7 +200,6 @@ namespace GorgonLibrary.Editor
 				//PlugIns.DefaultImageEditorPlugIn = Program.Settings.DefaultImageEditor;
 				
 				// Create the splash form.
-				//_splash = _formFactory.CreateForm<FormSplash, GorgonLogFile>(_log, null, false);
 				_splash = _splashProxy.Item;
 
 				_splash.Show();
@@ -320,21 +223,6 @@ namespace GorgonLibrary.Editor
 				// Initialize our file system service.
 				InitializeFileSystemService();
 
-
-
-				/*                
-                InitializePlugIns();
-                InitializeScratchArea();
-				InitializeInput();
-				
-                FileManagement.InitializeFileTypes();
-
-                // Load the last opened file.
-                if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))
-                {
-                    LoadLastFile();
-                }*/
-
 				// TODO: Make this smarter.
 				using (var stream = File.Open(_settings.ThemeDirectory.FormatDirectory(Path.DirectorySeparatorChar) + "Darktheme.Xml", FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
@@ -344,8 +232,6 @@ namespace GorgonLibrary.Editor
 
 				// Set up the default pane.
 				_splash.InfoText = Resources.GOREDIT_TEXT_STARTING;
-				/*ContentManagement.DefaultContentType = typeof(DefaultContent);
-				ContentManagement.LoadDefaultContentPane();*/
 
 				// Keep showing the splash screen.
 				while ((GorgonTiming.SecondsSinceStart - startTime) < 3)
@@ -363,7 +249,6 @@ namespace GorgonLibrary.Editor
 				MainForm.Show();
 
 				Gorgon.Run(this);
-
 			}
 			catch (Exception ex)
 			{

@@ -162,6 +162,9 @@ namespace GorgonLibrary.Editor
 				_logo.Dispose();
 			}
 			_logo = null;
+
+			// Turn off the drop down animation if we reload this renderer.
+			_dropDown = false;
 		}
 
 		/// <summary>
@@ -333,7 +336,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="settings">The settings interface for the application.</param>
 		/// <param name="defaultContent">The default content.</param>
-		public NoContentRenderer(GorgonGraphics graphics, IEditorSettings settings, IContent defaultContent)
+		public NoContentRenderer(GorgonGraphics graphics, IEditorSettings settings, IContentData defaultContent)
 			: base(graphics, defaultContent)
 		{
 			ClearColor = null;

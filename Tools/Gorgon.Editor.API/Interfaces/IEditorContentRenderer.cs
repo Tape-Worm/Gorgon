@@ -48,7 +48,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the content to be rendered.
 		/// </summary>
-		IContent Content
+		IContentData Content
 		{
 			get;
 		}

@@ -58,10 +58,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentClosingEventArgs"/> class.
 		/// </summary>
-		/// <param name="action">The action to take as directed by the user.</param>
-		public ContentClosingEventArgs(ConfirmationResult action)
+		public ContentClosingEventArgs()
 		{
-			Action = action;
+			Action = ConfirmationResult.None;
 		}
 		#endregion
 	}

@@ -42,14 +42,9 @@ namespace GorgonLibrary.Editor
 		/// Event triggered when content is closing.
 		/// </summary>
 		/// <remarks>
-		/// This event provides the action to take as specified by the user as a <see cref="ConfirmationResult" /> value. The value will be
-		/// "yes" if the user wishes to save unsaved changes, "no" if the user does not wish to save unsaved changes or "cancel" if the user
-		/// cancels the operation.
-		/// <para>
-		/// If the event action is "none", it indicates that no user action was necessary and the operation may continue.
-		/// </para>
+		/// This event takes a cancel flag argument as an event parameter. If the user chooses to cancel closing the content, then the cancel flag will be true.
 		/// </remarks>
-		event EventHandler<ContentClosingEventArgs> ContentClosing;
+		event EventHandler<GorgonCancelEventArgs> ContentClosing;
 
 		/// <summary>
 		/// Event triggered when the content is closed.
@@ -132,7 +127,7 @@ namespace GorgonLibrary.Editor
 		/// </remarks>
 		ConfirmationResult GetCloseConfirmation();
 		
-			/// <summary>
+		/// <summary>
 		/// Function called when the close button is clicked or when the <see cref="Close"/> method is called.
 		/// </summary>
 		/// <remarks>

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -53,13 +54,46 @@ namespace GorgonLibrary.Editor
 		private readonly IEditorContentManager _contentManager;
 		// The file system service.
 		private readonly IFileSystemService _fileSystemService;
+		// The currently loaded file.
+		private IEditorFileSystem _currentFile;
+		// The default content model.
+		private IContentModel _defaultContent;
+		// The current content.
+		private IContentModel _currentContent;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the currently loaded file.
+		/// </summary>
+		/// <remarks>Set this value to NULL (Nothing in VB.Net) to create a new file.</remarks>
+		public IEditorFileSystem CurrentFile
+		{
+			get
+			{
+				return _currentFile;
+			}
+			set
+			{
+				if (value == null)
+				{
+					value = _fileSystemService.DefaultFileSystem;
+				}
 
+				_currentFile = value;
+			}
+		}
 		#endregion
 
 		#region Validation Methods.
+		/// <summary>
+		/// Function to validate the properties tab depending on the current content.
+		/// </summary>
+		private void ValidatePropertiesTab()
+		{
+			pageProperties.Enabled = _currentContent != null && _currentContent.Content.HasProperties;
+		}
+
 		/// <summary>
 		/// Function to validate the file menu.
 		/// </summary>
@@ -74,6 +108,7 @@ namespace GorgonLibrary.Editor
 		private void ValidateControls()
 		{
 			ValidateFileMenu();
+			ValidatePropertiesTab();
 		}
 		#endregion
 
@@ -122,9 +157,15 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Unload the current file if necessary.
-				UnloadData();
+				if (!UnloadData())
+				{
+					return;
+				}
 
-				_fileSystemService.LoadFile(dialogOpenFile.FileName);
+				// Create default content.
+				LoadContentView(_defaultContent.View);
+
+				_currentFile = _fileSystemService.LoadFile(dialogOpenFile.FileName);
 			}
 			catch (Exception ex)
 			{
@@ -132,10 +173,14 @@ namespace GorgonLibrary.Editor
 
 				// Reload the default content if we had something catastrophic happen.
 				// Let's hope it never executes this.
-				_contentManager.CreateContent();
+				_currentFile = _fileSystemService.DefaultFileSystem;
+
+				// Recreate the default content.
+				LoadContentView(_defaultContent.View);
 			}
 			finally
 			{
+				SetWindowText();
 				ValidateControls();
 				Cursor.Current = Cursors.Default;
 			}
@@ -152,15 +197,30 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				UnloadData();
+				// Clear out any data.
+				if (!UnloadData())
+				{
+					return;
+				}
+
+				// Load the default content.
+				LoadContentView(_defaultContent.View);
+
+				// Create a new file.
+				_currentFile = _fileSystemService.NewFile();
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+
+				// Load the default content.
+				LoadContentView(_defaultContent.View);
 			}
 			finally
 			{
+				_settings.LastEditorFile = string.Empty;
 				ValidateControls();
+				SetWindowText();
 				Cursor.Current = Cursor.Current;
 			}
 		}
@@ -239,24 +299,37 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE if the data was unloaded, FALSE if cancelled by the user.</returns>
 		private bool UnloadData()
 		{
+			ConfirmationResult result = ConfirmationResult.None;
+
 			// First ensure that we want to save the current content.
-			if (!_contentManager.CloseContent())
+			if ((_currentContent != null)
+				&& (_currentContent.HasView)
+				&& (_currentContent.Content.HasChanges))
 			{
-				return false;
+				result = _currentContent.View.GetCloseConfirmation();
+
+				if (result == ConfirmationResult.Cancel)
+				{
+					return false;
+				}
+
+				if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
+				{
+					// TODO: Perform save of content:
+					// _contentManager.SaveContent(_currentContent);
+				}
 			}
 			
 			// Next, confirm whether to save the currently open file system.
 			// TODO: Write file system management "has changes" functionality and also validate against a flag to indicate whether we have any file system writers loaded or not.
 
-			ConfirmationResult result = ConfirmationResult.None;
-
 			// If we have changes, then ask if we want to save them.
-			if (_fileSystemService.HasChanges)
+			if (_currentFile.HasChanged)
 			{
 				var lastCursor = Cursor.Current;
 
 				result = GorgonDialogs.ConfirmBox(this,
-				                                  string.Format(Resources.GOREDIT_DLG_FILE_NOT_SAVED, _fileSystemService.CurrentFile),
+				                                  string.Format(Resources.GOREDIT_DLG_FILE_NOT_SAVED, _currentFile.Name),
 				                                  null,
 				                                  true);
 				Cursor.Current = lastCursor;
@@ -267,7 +340,7 @@ namespace GorgonLibrary.Editor
 				case ConfirmationResult.Cancel:
 					return false;
 				case ConfirmationResult.Yes:
-					if (string.IsNullOrWhiteSpace(_fileSystemService.CurrentFilePath))
+					if (string.IsNullOrWhiteSpace(_currentFile.FullName))
 					{
 						// TODO: We need to "Save as".
 					}
@@ -278,12 +351,80 @@ namespace GorgonLibrary.Editor
 					break;
 			}
 
-			_fileSystemService.UnloadCurrentFile();
+			// Once we've saved the file, unload the current content if we have any.
+			if (_currentContent == null)
+			{
+				return true;
+			}
+
+			// TODO: Unassign any events from content view.
+			_currentContent.Dispose();
+			_currentContent = null;
 
 			return true;
 		}
 
 		/// <summary>
+		/// Function to load the content view into the main interface.
+		/// </summary>
+		/// <param name="view">View to load.</param>
+		private void LoadContentView(IContentPanel view)
+		{
+			// If we already have the default content loaded, then leave.
+			if (_currentContent != null)
+			{
+				_logFile.Print("Unloading current content '{0}'.", LoggingLevel.Verbose, _currentContent.Content.Name);
+
+				_currentContent.Dispose();
+				_currentContent = null;
+			}
+			else
+			{
+				// We already have the default panel loaded, leave.
+				if ((panelContentHost.Controls.Count > 0)
+					&& (panelContentHost.Controls[0] == view))
+				{
+					return;
+				}
+			}
+
+			var viewControl = view as Control;
+
+			Debug.Assert(viewControl != null, "View is not a win forms control.  Cannot load into main window.");
+
+			_logFile.Print("Setting theme for content view.", LoggingLevel.Verbose);
+			view.CurrentTheme = Theme;
+
+			_logFile.Print("Injecting content view into main view.", LoggingLevel.Verbose);
+			panelContentHost.Controls.Add(viewControl);
+
+			if (view.CaptionVisible)
+			{
+				view.Padding = new Padding(0, 5, 0, 0);
+			}
+
+			view.Dock = DockStyle.Fill;
+
+			// Initialize rendering if necessary.
+			_logFile.Print("Content view supports renderer: {0}.", LoggingLevel.Verbose, view.UsesRenderer);
+			if (!view.UsesRenderer)
+			{
+				return;
+			}
+
+			_logFile.Print("Creating renderer for view.", LoggingLevel.Verbose);
+			view.Renderer.CreateResources(view.RenderControl);
+			
+			// Begin rendering.
+			view.Renderer.StartRendering();
+
+			/*// If we don't have properties, then we'll have to unhook from the properties grid.
+			// And we'll also have to hide it.
+			_logFile.Print("Content supports properties: {1}.", LoggingLevel.Verbose, view.HasProperties);
+			tabPages.SelectedTab = e.Content.HasProperties ? pageProperties : pageFiles;*/
+		}
+
+		/*/// <summary>
 		/// Handles the ContentCreatedEvent event of the ContentManager control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -344,7 +485,7 @@ namespace GorgonLibrary.Editor
 				// If the default panel was not loaded, then put it back.
 				try
 				{
-					_contentManager.CreateContent();
+					LoadDefaultContent();
 				}
 				catch(Exception ex)
 				{
@@ -355,7 +496,7 @@ namespace GorgonLibrary.Editor
 				// Send the exception back so the root event handler will pick it up.
 				throw;
 			}
-		}
+		}*/
 
 		/// <summary>
 		/// Function to update the text on this window in a thread-safe manner.
@@ -370,8 +511,8 @@ namespace GorgonLibrary.Editor
 
 			Text = string.Format("{0} - {1}{2}",
 			                     _windowText,
-			                     string.IsNullOrWhiteSpace(_fileSystemService.CurrentFile) ? Resources.GOREDIT_TEXT_UNTITLED : _fileSystemService.CurrentFile, 
-								 _fileSystemService.HasChanges ? "*" : string.Empty);  // TODO: Replace this with a "HasChanges" flag.
+			                     _currentFile.Name, 
+								 _currentFile.HasChanged ? "*" : string.Empty);  // TODO: Replace this with a "HasChanges" flag.
 		}
 
 		/// <summary>
@@ -426,8 +567,11 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				tabPages.SelectedTab = pageFiles;
+
 				// Load in the default content here.
-				_contentManager.CreateContent();
+				_defaultContent = _contentManager.CreateContent();
+				LoadContentView(_defaultContent.View);
 
 				SetWindowText();
 
@@ -461,8 +605,7 @@ namespace GorgonLibrary.Editor
 
 				labelUnCollapse.Visible = splitMain.Panel2Collapsed = !_settings.PropertiesVisible;
 
-				_fileSystemService.FileUnloaded += FileSystem_FileUpdated;
-				_fileSystemService.FileLoaded += FileSystem_FileUpdated;
+				_fileSystemService.FileSaved += FileSystem_FileUpdated;
 
 				ValidateControls();
 			}
@@ -495,9 +638,8 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				_fileSystemService.FileLoaded -= FileSystem_FileUpdated;
+				_currentFile = null;
 				_fileSystemService.FileSaved -= FileSystem_FileUpdated;
-				_contentManager.ContentCreated -= ContentManager_ContentCreatedEvent;
 				_contentManager.Dispose();
 			}
 			catch (Exception ex)
@@ -560,8 +702,7 @@ namespace GorgonLibrary.Editor
 			_windowText = Text;
 			_contentManager = contentManager;
 			_fileSystemService = fileSystemService;
-
-			_contentManager.ContentCreated += ContentManager_ContentCreatedEvent;
+			_currentFile = fileSystemService.DefaultFileSystem;
 		}
 		#endregion
 	}

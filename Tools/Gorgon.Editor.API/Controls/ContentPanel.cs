@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
@@ -69,7 +68,7 @@ namespace GorgonLibrary.Editor
 		/// Property to set or return the content object to be manipulated by this interface.
 		/// </summary>
 		[Browsable(false)]
-		public IContent Content
+		public IContentData Content
 		{
             get;
 			private set;
@@ -186,17 +185,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="e">Event parameters passed to the event.</param>
 		/// <remarks>
-		/// The parameter specified by <paramref name="e"/> contains a value to indicate the action to take.  This value is a <see cref="ConfirmationResult" /> value. 
-		/// The value will be "yes" if the user wishes to save unsaved changes, "no" if the user doe snot wish to save unsaved changes or "cancel" if the user
-		/// cancels the operation.
-		/// <para>
-		/// If the parameter is set to "none", it indicates that no user action was necessary and the operation may continue.
-		/// </para>
-		/// <para>
-		/// Implementors may choose to override this method in order to provide custom functionality when closing their content.
-		/// </para>
+		/// The parameter specified by <paramref name="e"/> contains allows the user to cancel the close operation. If the Cancel flag is set to TRUE, then the close operation will be cancelled.
 		/// </remarks>
-		protected virtual void OnContentClosing(ContentClosingEventArgs e)
+		protected virtual void OnContentClosing(GorgonCancelEventArgs e)
 		{
 			if (ContentClosing != null)
 			{
@@ -287,7 +278,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="content">The content.</param>
 		/// <param name="renderer">The renderer to use to display the content.</param>
-		public ContentPanel(IContent content, IEditorContentRenderer renderer)
+		public ContentPanel(IContentData content, IEditorContentRenderer renderer)
 		{
 			if (content == null)
 			{
@@ -309,14 +300,9 @@ namespace GorgonLibrary.Editor
 		/// Event triggered when content is closing.
 		/// </summary>
 		/// <remarks>
-		/// This event provides the action to take as specified by the user as a <see cref="ConfirmationResult" /> value. The value will be
-		/// "yes" if the user wishes to save unsaved changes, "no" if the user does not wish to save unsaved changes or "cancel" if the user
-		/// cancels the operation.
-		/// <para>
-		/// If the event action is "none", it indicates that no user action was necessary and the operation may continue.
-		/// </para>
+		/// This event takes a cancel flag argument as an event parameter. If the user chooses to cancel closing the content, then the cancel flag will be true.
 		/// </remarks>
-		public event EventHandler<ContentClosingEventArgs> ContentClosing;
+		public event EventHandler<GorgonCancelEventArgs> ContentClosing;
 		/// <summary>
 		/// Event triggered after the content is closed.
 		/// </summary>
@@ -448,26 +434,29 @@ namespace GorgonLibrary.Editor
 			{
 				return;
 			}
+
+			Cursor lastCursor = Cursor.Current;
 			
 			try
 			{
-				var args = new ContentClosingEventArgs(GetCloseConfirmation());
+				Cursor.Current = Cursors.WaitCursor;
 
-				if (args.Action == ConfirmationResult.Cancel)
+				var args = new GorgonCancelEventArgs(false);
+
+				OnContentClosing(args);
+
+				if (args.Cancel)
 				{
 					return;
 				}
 
-				Cursor.Current = Cursors.WaitCursor;
-
-				OnContentClosing(args);
 				OnContentClosed();
 
 				Dispose();
 			}
 			finally
 			{
-				Cursor.Current = Cursors.Default;
+				Cursor.Current = lastCursor;
 			}
 		}
 		#endregion

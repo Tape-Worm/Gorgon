@@ -47,7 +47,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the content object that was created.
 		/// </summary>
-		public IContent Content
+		public IContentData Content
 		{
 			get;
 			private set;
@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="content">The content that was created.</param>
 		/// <param name="panel">The UI for the content.</param>
-		public ContentCreatedEventArgs(IContent content, IContentPanel panel)
+		public ContentCreatedEventArgs(IContentData content, IContentPanel panel)
 		{
 			Panel = panel;
 			Content = content;
@@ -92,9 +92,9 @@ namespace GorgonLibrary.Editor
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
 		// Currently displayed content.
-		private Tuple<IContent, IContentPanel> _currentContent;
+		private IContentModel _currentContent;
 		// Object and UI for the default content.
-		private Tuple<IContent, IContentPanel> _noContent;
+		private IContentModel _noContentService;
 		// The graphics service interface for content.
 		private readonly IGraphicsService _graphicsService;
 		#endregion
@@ -106,11 +106,13 @@ namespace GorgonLibrary.Editor
 		/// <param name="log">The application log file.</param>
 		/// <param name="settings">The application settings to pass to the default content.</param>
 		/// <param name="graphicsService">The graphics service interface used to retrieve the application graphics object instance.</param>
-		public EditorContentManager(GorgonLogFile log, IEditorSettings settings, IGraphicsService graphicsService)
+		/// <param name="noContentService">The content service used to create objects for use when no actual content is loaded.</param>
+		public EditorContentManager(GorgonLogFile log, IEditorSettings settings, IGraphicsService graphicsService, IContentModel noContentService)
 		{
 			_log = log;
 			_graphicsService = graphicsService;
 			_settings = settings;
+			_noContentService = noContentService;
 		}
 
 		/// <summary>
@@ -123,53 +125,15 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region IContentManager
-		#region Events.
-		/// <summary>
-		/// Event called when the content UI is created.
-		/// </summary>
-		public event EventHandler<ContentCreatedEventArgs> ContentCreated;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the currently active content.
-		/// </summary>
-		/// <remarks>
-		/// When there is no content created/loaded, then this property will return NULL (Nothing in VB.Net) even though 
-		/// the "NoContent" content object is loaded in the display.
-		/// </remarks>
-		public IContent CurrentContent
-		{
-			get
-			{
-				return _currentContent == null ? null : _currentContent.Item1;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the content panel.
-		/// </summary>
-		/// <remarks>
-		/// This will return the UI for the content (if available) for use in the editor.
-		/// </remarks>
-		public IContentPanel ContentPanel
-		{
-			get
-			{
-				return _currentContent == null ? null : _currentContent.Item2;
-			}
-		}
-		#endregion
-
 		#region Methods.
-		/// <summary>
+		/*/// <summary>
 		/// Handles the ClosedEvent event of the Content control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void Content_ClosedEvent(object sender, EventArgs e)
 		{
-			IContent content = CurrentContent ?? _noContent.Item1;
+			IContentData content = CurrentContent ?? _noContent.Item1;
 			IContentPanel contentUI = sender as IContentPanel;
 
 			// Ensure that we unsubscribe from the events for this UI.
@@ -196,114 +160,50 @@ namespace GorgonLibrary.Editor
 		/// Handles the ClosingEvent event of the Content control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="ContentClosingEventArgs"/> instance containing the event data.</param>
-		private void Content_ClosingEvent(object sender, ContentClosingEventArgs e)
+		/// <param name="e">The <see cref="GorgonCancelEventArgs"/> instance containing the event data.</param>
+		private void Content_ClosingEvent(object sender, GorgonCancelEventArgs e)
 		{
-			IContent content = CurrentContent ?? _noContent.Item1;
+			Tuple<IContentData, IContentPanel> content = _currentContent ?? _noContent;
 
-			_log.Print("ContentService: User destroying content panel for content '{0}'", LoggingLevel.Verbose, content.Name);
+			_log.Print("ContentService: User destroying content panel for content '{0}'", LoggingLevel.Verbose, content.Item1.Name);
 
-			if (e.Action != ConfirmationResult.Yes)
+			var result = ConfirmationResult.None;
+			
+			if (content.Item1.HasChanges)
+			{
+				result = content.Item2.GetCloseConfirmation();
+
+				if (result == ConfirmationResult.Cancel)
+				{
+					e.Cancel = true;
+					return;
+				}
+			}
+			
+			if (result == ConfirmationResult.Yes)
 			{
 				return;
 			}
 
 			// TODO: Do saving here.
-		}
-
-		/// <summary>
-		/// Function to close and clean up any current content to allow for new content to be loaded.
-		/// </summary>
-		/// <returns>
-		/// TRUE if the content was closed, FALSE if cancelled.
-		/// </returns>
-		public bool CloseContent()
-		{
-			Tuple<IContent, IContentPanel> content = _currentContent ?? _noContent;
-
-			if ((content == null) || (content.Item1 == null))
-			{
-				return true;
-			}
-			
-			if (content.Item2 != null)
-			{
-				// Turn off the events, we don't need them here.
-				content.Item2.ContentClosing -= Content_ClosingEvent;
-				content.Item2.ContentClosed -= Content_ClosedEvent;
-
-				// If we have changes, then ensure that we save them first.
-				if (content.Item1.HasChanges)
-				{
-					ConfirmationResult result = content.Item2.GetCloseConfirmation();
-
-					if (result == ConfirmationResult.Cancel)
-					{
-						return false;
-					}
-
-					if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-					{
-						// TODO: Perform saving.
-					}
-				}
-
-				_log.Print("ContentService: Destroying content panel for content '{0}'", LoggingLevel.Verbose, content.Item1.Name);
-				content.Item2.Close();
-			}
-
-			_log.Print("ContentService: Destroying content '{0}'.", LoggingLevel.Verbose, content.Item1.Name);
-			content.Item1.Dispose();
-
-			// Disable the current content.
-			_currentContent = null;
-			_noContent = null;
-
-			return true;
-		}
+		}*/
 
 		/// <summary>
 		/// Function to create a content object for editing.
 		/// </summary>
 		/// <exception cref="GorgonException">Thrown when attempting to create a content object when content already exists in the editor.</exception>
-		public void CreateContent()
+		public IContentModel CreateContent()
 		{
-			if ((CurrentContent != null) || (_noContent != null))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GOREDIT_ERR_ALREADY_HAVE_CONTENT);	
-			}
-
 			// TODO: Search for the appropriate content.
 			// TODO: For now, just load default content.
 			// if (param == null) then do the lines below and return, otherwise create the content as normal.
 			// {
-			IContent content = new NoContent
-			                   {
-				                   Name = "DefaultContent"
-			                   };
-
-			IContentPanel contentUI = new ContentPanel(content,
-			                                           new NoContentRenderer(_graphicsService.GetGraphics(), _settings, content))
-			                          {
-				                          CaptionVisible = false,
-				                          Name = "DefaultContentPanel"
-			                          };
-			_log.Print("ContentService: Loading content '{0}'.", LoggingLevel.Verbose, content.Name);
-
-			contentUI.ContentClosing += Content_ClosingEvent;
-			contentUI.ContentClosed += Content_ClosedEvent;
-
-			_noContent = new Tuple<IContent, IContentPanel>(content, contentUI);
-
-			var panelCreatedArgs = new ContentCreatedEventArgs(_noContent.Item1, _noContent.Item2);
-			if (ContentCreated != null)
-			{
-				ContentCreated(this, panelCreatedArgs);
-
-				 _noContent.Item2.Renderer.StartRendering();
-			}
-			// return;
+			_currentContent = _noContentService;
 			// }
+
+			_log.Print("ContentService: Loading content '{0}'.", LoggingLevel.Verbose, _currentContent.Content.Name);
+	
+			return _currentContent;
 		}
 		#endregion
 		#endregion
@@ -322,25 +222,14 @@ namespace GorgonLibrary.Editor
 
 			if (disposing)
 			{
-				Tuple<IContent, IContentPanel> content = _currentContent ?? _noContent;
-
-				if (content != null)
+				if (_noContentService != null)
 				{
-					if (content.Item2 != null)
-					{
-						_noContent.Item2.ContentClosing -= Content_ClosingEvent;
-						_noContent.Item2.ContentClosed -= Content_ClosedEvent;
-						_noContent.Item2.Dispose();
-					}
-
-					if (content.Item1 != null)
-					{
-						_noContent.Item1.Dispose();
-					}
+					_noContentService.Dispose();
 				}
+
+				_noContentService = null;
 			}
 
-			_noContent = null;
 			_currentContent = null;
 			_disposed = true;
 		}

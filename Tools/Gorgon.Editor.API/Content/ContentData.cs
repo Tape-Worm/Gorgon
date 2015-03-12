@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Threading;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
@@ -37,8 +36,18 @@ namespace GorgonLibrary.Editor
     /// <summary>
 	/// Base object for content that can be created/modified by the editor.
 	/// </summary>
-	public abstract class EditorContent
-		: IContent
+	/// <remarks>
+	/// Content objects are wrappers for data stored in the file system used by the editor. When content is created, a new content data item should be 
+	/// created by the content wrapper (e.g. a sprite, a font, text block, etc...). When the data object is created it will then expose the properties 
+	/// that the editor should edit by providing properties on the content object that reflect those of the data object.
+	/// <para>
+	/// When persisting or restoring content data from the file system, a <see cref="IContentSerializer"/> object will be passed to the constructor of 
+	/// the content object. This serializer object is responsible for sending and receiving data to and from the file system and (de)composing the data 
+	/// into content data.
+	/// </para>
+	/// </remarks>
+	public abstract class ContentData
+		: IContentData
 	{
 		#region Variables.
 		private string _name = "Content";									// Name of the content.
@@ -90,10 +99,10 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorContent"/> class.
+		/// Initializes a new instance of the <see cref="ContentData"/> class.
 		/// </summary>
 		/// <param name="serializer">The serializer used to persist or restore the data for the content.</param>
-	    protected EditorContent(IContentSerializer serializer)
+	    protected ContentData(IContentSerializer serializer)
 	    {
 		    Serializer = serializer;
 

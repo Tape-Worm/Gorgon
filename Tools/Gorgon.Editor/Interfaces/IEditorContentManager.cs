@@ -34,49 +34,10 @@ namespace GorgonLibrary.Editor
 	interface IEditorContentManager
 		: IDisposable
 	{
-		#region Events.
-		/// <summary>
-		/// Event called when the content UI is created.
-		/// </summary>
-		event EventHandler<ContentCreatedEventArgs> ContentCreated;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the currently active content.
-		/// </summary>
-		/// <remarks>
-		/// When there is no content created/loaded, then this property will return NULL (Nothing in VB.Net) even though 
-		/// the "NoContent" content object is loaded in the display.
-		/// </remarks>
-		IContent CurrentContent
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the content panel.
-		/// </summary>
-		/// <remarks>
-		/// This will return the UI for the content (if available) for use in the editor.
-		/// </remarks>
-		IContentPanel ContentPanel
-		{
-			get;
-		}
-		#endregion
-
-		#region Methods.
 		/// <summary>
 		/// Function to create a content object for editing.
 		/// </summary>
-		void CreateContent();
-
-		/// <summary>
-		/// Function to close and clean up any current content to allow for new content to be loaded.
-		/// </summary>
-		/// <returns>TRUE if the content was closed, FALSE if cancelled.</returns>
-		bool CloseContent();
-		#endregion
+		/// <returns>A content model containing the content object and other interfaces for the content.</returns>
+		IContentModel CreateContent();
 	}
 }

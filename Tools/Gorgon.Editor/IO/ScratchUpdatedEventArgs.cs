@@ -20,50 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, March 2, 2015 7:56:44 PM
+// Created: Thursday, March 12, 2015 11:53:19 AM
 // 
 #endregion
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Default content to display when no content is active.
+	/// Event arguments for the ScratchUpdated event.
 	/// </summary>
-	class NoContent
-		: ContentData
+	public class ScratchUpdatedEventArgs
+		: EventArgs
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return whether this content has properties that can be manipulated in the properties tab.
+		/// Property to return the path to the item that was updated.
 		/// </summary>
-		public override bool HasProperties
+		public string Path
 		{
-			get
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the type of content.
-		/// </summary>
-		public override string ContentType
-		{
-			get
-			{
-				return "Default Content";
-			}
+			get;
+			private set;
 		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Destructor.
+
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NoContent"/> class.
+		/// Initializes a new instance of the <see cref="ScratchUpdatedEventArgs"/> class.
 		/// </summary>
-		public NoContent()
-			: base(null)
+		/// <param name="path">Virtual file system path to the item that was updated.</param>
+		public ScratchUpdatedEventArgs(string path)
 		{
-			
+			Path = path;
 		}
 		#endregion
 	}

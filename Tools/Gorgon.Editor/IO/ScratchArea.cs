@@ -254,6 +254,13 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region IScratchArea Implementation.
+		#region Events.
+		/// <summary>
+		/// Event fired when a file or directory is updated in the scratch area.
+		/// </summary>
+		public event EventHandler<ScratchUpdatedEventArgs> ScratchUpdated;
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to determine if the scratch area is accessible.

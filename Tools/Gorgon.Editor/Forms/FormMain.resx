@@ -279,15 +279,6 @@
   <metadata name="popupAddContentMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>744, 17</value>
   </metadata>
-  <data name="popupItemAddContent.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="popupItemAddContent.Size" type="System.Drawing.Size, System.Drawing">
-    <value>209, 24</value>
-  </data>
-  <data name="popupItemAddContent.Text" xml:space="preserve">
-    <value>Add content</value>
-  </data>
   <data name="popupAddContentMenu.Size" type="System.Drawing.Size, System.Drawing">
     <value>61, 4</value>
   </data>
@@ -881,6 +872,15 @@
   </data>
   <data name="&gt;&gt;ContentArea.ZOrder" xml:space="preserve">
     <value>0</value>
+  </data>
+  <data name="popupItemAddContent.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="popupItemAddContent.Size" type="System.Drawing.Size, System.Drawing">
+    <value>209, 24</value>
+  </data>
+  <data name="popupItemAddContent.Text" xml:space="preserve">
+    <value>Add content</value>
   </data>
   <metadata name="popupFileSystem.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>570, 17</value>
@@ -3140,6 +3140,12 @@
   <data name="&gt;&gt;dropNewContent.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripDropDownButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;popupItemAddContent.Name" xml:space="preserve">
+    <value>popupItemAddContent</value>
+  </data>
+  <data name="&gt;&gt;popupItemAddContent.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;toolStripSeparator9.Name" xml:space="preserve">
     <value>toolStripSeparator9</value>
   </data>
@@ -3169,12 +3175,6 @@
   </data>
   <data name="&gt;&gt;buttonShowAll.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;popupItemAddContent.Name" xml:space="preserve">
-    <value>popupItemAddContent</value>
-  </data>
-  <data name="&gt;&gt;popupItemAddContent.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;menuFile.Name" xml:space="preserve">
     <value>menuFile</value>

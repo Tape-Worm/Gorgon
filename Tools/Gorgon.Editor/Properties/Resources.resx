@@ -238,4 +238,7 @@ Click the 'details' button for more information.</value>
 
 Would you like to save these changes now?</value>
   </data>
+  <data name="GOREDIT_ERR_FILENAME_NOT_FOUND_IN_PATH" xml:space="preserve">
+    <value>There was no file name present in the path '{0}'.</value>
+  </data>
 </root>

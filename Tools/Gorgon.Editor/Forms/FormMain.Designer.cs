@@ -46,12 +46,12 @@ namespace GorgonLibrary.Editor
 			this.stripFiles = new System.Windows.Forms.ToolStrip();
 			this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
 			this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonEditContent = new System.Windows.Forms.ToolStripButton();
 			this.buttonDeleteContent = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonShowAll = new System.Windows.Forms.ToolStripButton();
-			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -179,8 +179,14 @@ namespace GorgonLibrary.Editor
 			// 
 			this.popupAddContentMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.popupAddContentMenu.Name = "popupAddContentMenu";
-			this.popupAddContentMenu.OwnerItem = this.popupItemAddContent;
+			this.popupAddContentMenu.OwnerItem = this.dropNewContent;
 			resources.ApplyResources(this.popupAddContentMenu, "popupAddContentMenu");
+			// 
+			// popupItemAddContent
+			// 
+			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
+			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
+			this.popupItemAddContent.Name = "popupItemAddContent";
 			// 
 			// toolStripSeparator9
 			// 
@@ -213,12 +219,6 @@ namespace GorgonLibrary.Editor
 			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
 			resources.ApplyResources(this.buttonShowAll, "buttonShowAll");
 			this.buttonShowAll.Name = "buttonShowAll";
-			// 
-			// popupItemAddContent
-			// 
-			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
-			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
-			this.popupItemAddContent.Name = "popupItemAddContent";
 			// 
 			// panelMenu
 			// 
@@ -258,7 +258,6 @@ namespace GorgonLibrary.Editor
 			// 
 			// itemNew
 			// 
-			this.itemNew.CheckOnClick = true;
 			this.itemNew.Name = "itemNew";
 			resources.ApplyResources(this.itemNew, "itemNew");
 			this.itemNew.Click += new System.EventHandler(this.itemNew_Click);

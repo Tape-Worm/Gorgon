@@ -106,6 +106,9 @@ namespace GorgonLibrary.Editor
 			obj.For<IGraphicsService>()
 			   .Use<GraphicsService>();
 
+			obj.For<IContentModel>()
+			   .Use<NoContentModel>();
+
 			obj.For<IEditorContentManager>()
 			   .Use<EditorContentManager>();
 
@@ -117,6 +120,11 @@ namespace GorgonLibrary.Editor
 			obj.ForConcreteType<GorgonFileSystem>()
 			   .Configure
 			   .AlwaysUnique();
+
+			obj.For<IEditorFileSystem>()
+			   .Use<EditorFileSystem>()
+			   .Ctor<string>("filePath")
+			   .Is(string.Empty);
 
 			obj.For<IFileSystemService>()
 			   .Use<EditorFileSystemService>();

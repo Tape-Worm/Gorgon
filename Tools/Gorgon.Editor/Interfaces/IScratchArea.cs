@@ -57,6 +57,13 @@ namespace GorgonLibrary.Editor
 	/// </remarks>
 	interface IScratchArea
 	{
+		#region Events.
+		/// <summary>
+		/// Event fired when a file or directory is updated in the scratch area.
+		/// </summary>
+		event EventHandler<ScratchUpdatedEventArgs> ScratchUpdated;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the directories that will hold the scratch files.
