@@ -111,6 +111,36 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_system_root_node_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("file_system_root_node_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("folder_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap folder_open_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("folder_open_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All files.
         /// </summary>
         internal static string GOREDIT_DLG_ALL_FILES {
@@ -409,6 +439,16 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap linked_file_8x8 {
+            get {
+                object obj = ResourceManager.GetObject("linked_file_8x8", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap new_item_16x16 {
             get {
                 object obj = ResourceManager.GetObject("new_item_16x16", resourceCulture);
@@ -422,6 +462,36 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap show_all_16x16 {
             get {
                 object obj = ResourceManager.GetObject("show_all_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tree_collapse_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("tree_collapse_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tree_expand_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("tree_expand_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap unknown_document_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("unknown_document_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

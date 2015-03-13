@@ -20,73 +20,69 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, March 8, 2015 11:19:53 PM
+// Created: Thursday, March 12, 2015 11:31:18 PM
 // 
 #endregion
 
-using System.ComponentModel;
-using System.Drawing;
-using GorgonLibrary.UI;
+using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Custom extensions to the flat form.
+	/// A treeview node for the root of the file system.
 	/// </summary>
-	public class EditorTheme
-		: FlatFormTheme
+	class FileSystemRootNode
+		: FileSystemDirectoryNode
 	{
-		#region Variables.
-		// The background color of the property panel.
-		private Color _propertyPanelBackgroundColor;
-		// The background color of the property panel.
-		private Color _brokenDependencyLinkForegroundColor;
-		#endregion
-
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the property panel background color.
+		/// Property to return the type of node.
 		/// </summary>
-		[Browsable(true)]
-		public Color PropertyPanelBackgroundColor
+		public override NodeType NodeType
 		{
 			get
 			{
-				return _propertyPanelBackgroundColor;
-			}
-			set
-			{
-				_propertyPanelBackgroundColor = value;
-				OnPropertyChanged();
+				return NodeType.Root;
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the broken dependency link foreground color.
+		/// Property to return the directory associated with this node.
 		/// </summary>
-		[Browsable(true)]
-		public Color BrokenDependencyLinkForeColor
+#warning Again, we need to return something other than a file system directory here.  Perhaps we should separate this out from the directory node and have it as a standalone.
+		public override GorgonFileSystemDirectory Directory
 		{
 			get
 			{
-				return _brokenDependencyLinkForegroundColor;
+				return null; //ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.RootDirectory;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the name of the tree node.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String" /> that represents the name of the tree node.</returns>
+		public override string Text
+		{
+			get
+			{
+				return "TODO: Return file system file name, somehow";//FileManagement.Filename;
 			}
 			set
 			{
-				_brokenDependencyLinkForegroundColor = value;
-				OnPropertyChanged();
+				// Nothing.
 			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorTheme"/> class.
+		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
 		/// </summary>
-		public EditorTheme()
+		public FileSystemRootNode()
 		{
-			_propertyPanelBackgroundColor = Color.FromArgb(58, 58, 58);
-			_brokenDependencyLinkForegroundColor = Color.Red;
+			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
 		}
 		#endregion
 	}

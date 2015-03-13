@@ -21,4 +21,5 @@
   <WindowCloseIconForeColorHilight Color="HighlightText" />
   <WindowCloseIconBackColorHilight Color="Red" />
   <PropertyPanelBackgroundColor Color="Window" />
+  <BrokenDependencyLinkForeColor Color="Red"/>
 </EditorTheme>

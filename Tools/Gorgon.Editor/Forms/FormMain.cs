@@ -553,6 +553,8 @@ namespace GorgonLibrary.Editor
 			propertyGrid.CategorySplitterColor = Theme.WindowBackground;
 
 			labelUnCollapse.BackColor = Theme.WindowBackground;
+			
+			treeFileSystem.Theme = (EditorTheme)Theme;
 		}
 
 		/// <summary>

@@ -46,12 +46,12 @@ namespace GorgonLibrary.Editor
 			this.stripFiles = new System.Windows.Forms.ToolStrip();
 			this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
 			this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonEditContent = new System.Windows.Forms.ToolStripButton();
 			this.buttonDeleteContent = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonShowAll = new System.Windows.Forms.ToolStripButton();
+			this.popupItemAddContent = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelMenu = new System.Windows.Forms.Panel();
 			this.menuMain = new System.Windows.Forms.MenuStrip();
 			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -110,7 +110,9 @@ namespace GorgonLibrary.Editor
 			this.dialogExport = new System.Windows.Forms.FolderBrowserDialog();
 			this.labelUnCollapse = new System.Windows.Forms.Label();
 			this.tipMainWindow = new System.Windows.Forms.ToolTip(this.components);
+			this.treeFileSystem = new GorgonLibrary.Editor.FileSystemTreeView();
 			this.ContentArea.SuspendLayout();
+			this.toolsFiles.ContentPanel.SuspendLayout();
 			this.toolsFiles.TopToolStripPanel.SuspendLayout();
 			this.toolsFiles.SuspendLayout();
 			this.stripFiles.SuspendLayout();
@@ -132,8 +134,8 @@ namespace GorgonLibrary.Editor
 			// ContentArea
 			// 
 			this.ContentArea.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.ContentArea.Controls.Add(this.labelUnCollapse);
 			this.ContentArea.Controls.Add(this.splitMain);
+			this.ContentArea.Controls.Add(this.labelUnCollapse);
 			this.ContentArea.Controls.Add(this.panelFooter);
 			this.ContentArea.Controls.Add(this.panelMenu);
 			this.ContentArea.ForeColor = System.Drawing.Color.Silver;
@@ -144,6 +146,7 @@ namespace GorgonLibrary.Editor
 			// 
 			// toolsFiles.ContentPanel
 			// 
+			this.toolsFiles.ContentPanel.Controls.Add(this.treeFileSystem);
 			resources.ApplyResources(this.toolsFiles.ContentPanel, "toolsFiles.ContentPanel");
 			resources.ApplyResources(this.toolsFiles, "toolsFiles");
 			this.toolsFiles.Name = "toolsFiles";
@@ -179,14 +182,8 @@ namespace GorgonLibrary.Editor
 			// 
 			this.popupAddContentMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.popupAddContentMenu.Name = "popupAddContentMenu";
-			this.popupAddContentMenu.OwnerItem = this.dropNewContent;
+			this.popupAddContentMenu.OwnerItem = this.popupItemAddContent;
 			resources.ApplyResources(this.popupAddContentMenu, "popupAddContentMenu");
-			// 
-			// popupItemAddContent
-			// 
-			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
-			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
-			this.popupItemAddContent.Name = "popupItemAddContent";
 			// 
 			// toolStripSeparator9
 			// 
@@ -219,6 +216,12 @@ namespace GorgonLibrary.Editor
 			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
 			resources.ApplyResources(this.buttonShowAll, "buttonShowAll");
 			this.buttonShowAll.Name = "buttonShowAll";
+			// 
+			// popupItemAddContent
+			// 
+			this.popupItemAddContent.DropDown = this.popupAddContentMenu;
+			resources.ApplyResources(this.popupItemAddContent, "popupItemAddContent");
+			this.popupItemAddContent.Name = "popupItemAddContent";
 			// 
 			// panelMenu
 			// 
@@ -435,7 +438,7 @@ namespace GorgonLibrary.Editor
 			this.tabPages.IsDrawHeader = false;
 			this.tabPages.IsUserInteraction = false;
 			this.tabPages.Name = "tabPages";
-			this.tabPages.SelectedIndex = 1;
+			this.tabPages.SelectedIndex = 0;
 			this.tabPages.TabBorderColor = System.Drawing.Color.Green;
 			this.tabPages.TabGradient.ColorEnd = System.Drawing.Color.Magenta;
 			this.tabPages.TabGradient.ColorStart = System.Drawing.Color.Magenta;
@@ -595,6 +598,16 @@ namespace GorgonLibrary.Editor
 			this.labelUnCollapse.MouseEnter += new System.EventHandler(this.labelUnCollapse_MouseEnter);
 			this.labelUnCollapse.MouseLeave += new System.EventHandler(this.labelUnCollapse_MouseLeave);
 			// 
+			// treeFileSystem
+			// 
+			this.treeFileSystem.BackColor = System.Drawing.SystemColors.Window;
+			this.treeFileSystem.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			resources.ApplyResources(this.treeFileSystem, "treeFileSystem");
+			this.treeFileSystem.ForeColor = System.Drawing.SystemColors.WindowText;
+			this.treeFileSystem.Name = "treeFileSystem";
+			this.treeFileSystem.SelectedNode = null;
+			this.treeFileSystem.Sorted = true;
+			// 
 			// FormMain
 			// 
 			resources.ApplyResources(this, "$this");
@@ -627,6 +640,7 @@ namespace GorgonLibrary.Editor
 			this.Controls.SetChildIndex(this.ContentArea, 0);
 			this.ContentArea.ResumeLayout(false);
 			this.ContentArea.PerformLayout();
+			this.toolsFiles.ContentPanel.ResumeLayout(false);
 			this.toolsFiles.TopToolStripPanel.ResumeLayout(false);
 			this.toolsFiles.TopToolStripPanel.PerformLayout();
 			this.toolsFiles.ResumeLayout(false);
@@ -723,6 +737,7 @@ namespace GorgonLibrary.Editor
 		private PropertyGrid propertyGrid;
 		private Label labelUnCollapse;
 		private ToolTip tipMainWindow;
+		private FileSystemTreeView treeFileSystem;
 
 
 	}
