@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -85,11 +86,48 @@ namespace GorgonLibrary.Editor
 	    private ImageAttributes _linkAttributes;		// Attributes for linked items.
 	    private ImageAttributes _expandIconAttributes;	// Attributes for the expand/contract icon color.
 		private IContentData _content;					// Current content.
+		// The file system service for this view.
+		private IFileSystemService _fileSystemService;
 		// The editor theme.
 		private EditorTheme _theme;
         #endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the file system service for the view.
+		/// </summary>
+		public IFileSystemService FileSystemService
+		{
+			get
+			{
+				return _fileSystemService;
+			}
+			set
+			{
+				if (_fileSystemService != null)
+				{
+					_fileSystemService.FileCreated -= FileSystemService_FileCreated;
+					_fileSystemService.FileLoaded -= FileSystemService_FileCreated;
+				}
+				
+				Nodes.Clear();
+
+				if (value == null)
+				{
+					return;
+				}
+
+				_fileSystemService = value;
+				_fileSystemService.FileCreated += FileSystemService_FileCreated;
+				_fileSystemService.FileLoaded += FileSystemService_FileCreated;
+
+				if (Nodes.Count == 0)
+				{
+					Nodes.Add(new FileSystemRootNode(_fileSystemService.DefaultFileSystem));
+				}
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the theme for the tree view.
 		/// </summary>
@@ -166,9 +204,52 @@ namespace GorgonLibrary.Editor
 				return false;
 			}
 		}
+
+		/// <summary>
+		/// Gets the collection of tree nodes that are assigned to the tree view control.
+		/// </summary>
+		[Browsable(false)]
+		public new TreeNodeCollection Nodes
+		{
+			get
+			{
+				return base.Nodes;
+			}
+		}
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Handles the FileCreated event of the FileSystemService control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="FileSystemUpdateEventArgs"/> instance containing the event data.</param>
+		private void FileSystemService_FileCreated(object sender, FileSystemUpdateEventArgs e)
+		{
+			FileSystemRootNode root = null;
+
+			try
+			{
+				if (Nodes.Count == 0)
+				{
+					root = new FileSystemRootNode(e.FileSystem);
+					Nodes.Add(root);
+				}
+				else
+				{
+					root = Nodes[0] as FileSystemRootNode;
+				}
+
+				Debug.Assert(root != null, "Root is NULL! May not be a root node type.");
+
+				root.Redraw();
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+			}
+		}
+
 		/// <summary>
 		/// Function to retrieve the proper node foreground color based on state.
 		/// </summary>
@@ -210,11 +291,11 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Check the root before the directory because a root is a directory and will never be invalid.
-			FileSystemRootNode rootNode = node as FileSystemRootNode;
-			//if ((rootNode != null) && (_editorFile.HasChanges))
-			//{
-			//	return Theme.HilightBackColor;	
-			//}
+			var rootNode = node as FileSystemRootNode;
+			if ((rootNode != null) && (rootNode.FileSystem.HasChanged))
+			{
+				return Theme.HilightBackColor;	
+			}
 
 
 			// Disable directory node if no directory is attached.
@@ -424,6 +505,8 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
+	                FileSystemService = null;
+
 	                if (_expandIconAttributes != null)
 	                {
 		                _expandIconAttributes.Dispose();
@@ -517,7 +600,25 @@ namespace GorgonLibrary.Editor
 		    base.DefWndProc(ref m);
 	    }
 
-	    /// <summary>
+		/// <summary>
+		/// Overrides <see cref="M:System.Windows.Forms.Control.OnHandleCreated(System.EventArgs)" />.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+
+			if (DesignMode)
+			{
+				Theme = new EditorTheme();
+				return;
+			}
+
+			// Set the default sorter.
+			TreeViewNodeSorter = new FileSystemTreeNodeComparer();
+		}
+
+		/// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -638,6 +739,7 @@ namespace GorgonLibrary.Editor
 	    {
 		    Font result = node.NodeFont ?? Font;
 		    var nodeFile = node as FileSystemFileNode;
+			var rootNode = node as FileSystemRootNode;
 
 			// If the node is a file then we override some of the styles.
 			if (nodeFile == null)
@@ -916,10 +1018,6 @@ namespace GorgonLibrary.Editor
         {
 	        SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
-
-			// Set the default sorter.
-			TreeViewNodeSorter = new FileSystemTreeNodeComparer();
-	        Nodes.Add(new FileSystemRootNode());
         }
         #endregion
     }

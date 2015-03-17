@@ -27,7 +27,6 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -41,11 +40,9 @@ namespace GorgonLibrary.Editor
 	/// Primary application window.
 	/// </summary>
 	sealed partial class FormMain 
-		: FlatForm
+		: FlatForm, IMainFormView
 	{
 		#region Variables.
-		// Settings for the editor.
-		private readonly IEditorSettings _settings;
 		// The log file for the application.
 		private readonly GorgonLogFile _logFile;
 		// The window text.
@@ -53,36 +50,13 @@ namespace GorgonLibrary.Editor
 		// The content manager interface.
 		private readonly IEditorContentManager _contentManager;
 		// The file system service.
-		private readonly IFileSystemService _fileSystemService;
+		private IFileSystemService _fileSystemService;
 		// The currently loaded file.
 		private IEditorFileSystem _currentFile;
 		// The default content model.
 		private IContentModel _defaultContent;
 		// The current content.
 		private IContentModel _currentContent;
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the currently loaded file.
-		/// </summary>
-		/// <remarks>Set this value to NULL (Nothing in VB.Net) to create a new file.</remarks>
-		public IEditorFileSystem CurrentFile
-		{
-			get
-			{
-				return _currentFile;
-			}
-			set
-			{
-				if (value == null)
-				{
-					value = _fileSystemService.DefaultFileSystem;
-				}
-
-				_currentFile = value;
-			}
-		}
 		#endregion
 
 		#region Validation Methods.
@@ -120,67 +94,26 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemOpen_Click(object sender, EventArgs e)
 		{
+			Cursor.Current = Cursors.WaitCursor;
+
 			try
 			{
-				// Set up the file open dialog to point at the last place we saved a file at.
-				if (!string.IsNullOrWhiteSpace(_settings.LastEditorFile))
+				if (LoadFile != null)
 				{
-					string lastDirectory = Path.GetDirectoryName(_settings.LastEditorFile);
-
-					if (string.IsNullOrWhiteSpace(lastDirectory))
-					{
-						return;
-					}
-
-					var directory = new DirectoryInfo(lastDirectory);
-
-					if (directory.Exists)
-					{
-						dialogOpenFile.InitialDirectory = directory.FullName;
-					}
+					LoadFile(this, EventArgs.Empty);
 				}
-
-				dialogOpenFile.FileName = string.Empty;
-				dialogOpenFile.Filter = _fileSystemService.ReadFileTypes;
-				if (dialogOpenFile.ShowDialog(this) != DialogResult.OK)
-				{
-					return;
-				}
-
-				Cursor.Current = Cursors.WaitCursor;
-
-				// Ensure that we can indeed read the file.
-				if (!_fileSystemService.CanReadFile(dialogOpenFile.FileName))
-				{
-					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_ERR_CANNOT_LOCATE_PROVIDER, dialogOpenFile.SafeFileName));
-					return;
-				}
-
-				// Unload the current file if necessary.
-				if (!UnloadData())
-				{
-					return;
-				}
-
-				// Create default content.
-				LoadContentView(_defaultContent.View);
-
-				_currentFile = _fileSystemService.LoadFile(dialogOpenFile.FileName);
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
 
-				// Reload the default content if we had something catastrophic happen.
-				// Let's hope it never executes this.
-				_currentFile = _fileSystemService.DefaultFileSystem;
-
-				// Recreate the default content.
-				LoadContentView(_defaultContent.View);
+				if (CreateNewFile != null)
+				{
+					CreateNewFile(this, EventArgs.Empty);
+				}
 			}
 			finally
 			{
-				SetWindowText();
 				ValidateControls();
 				Cursor.Current = Cursors.Default;
 			}
@@ -197,30 +130,19 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				// Clear out any data.
-				if (!UnloadData())
+				if (CreateNewFile != null)
 				{
-					return;
+					CreateNewFile(this, EventArgs.Empty);
 				}
 
-				// Load the default content.
-				LoadContentView(_defaultContent.View);
-
-				// Create a new file.
-				_currentFile = _fileSystemService.NewFile();
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-
-				// Load the default content.
-				LoadContentView(_defaultContent.View);
 			}
 			finally
 			{
-				_settings.LastEditorFile = string.Empty;
 				ValidateControls();
-				SetWindowText();
 				Cursor.Current = Cursor.Current;
 			}
 		}
@@ -230,8 +152,13 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void FileSystem_FileUpdated(object sender, EventArgs eventArgs)
+		private void FileSystem_FileUpdated(object sender, FileSystemUpdateEventArgs eventArgs)
 		{
+			if (eventArgs.FileSystem != _currentFile)
+			{
+				_currentFile = eventArgs.FileSystem;
+			}
+
 			SetWindowText();
 			ValidateControls();
 		}
@@ -364,66 +291,6 @@ namespace GorgonLibrary.Editor
 			return true;
 		}
 
-		/// <summary>
-		/// Function to load the content view into the main interface.
-		/// </summary>
-		/// <param name="view">View to load.</param>
-		private void LoadContentView(IContentPanel view)
-		{
-			// If we already have the default content loaded, then leave.
-			if (_currentContent != null)
-			{
-				_logFile.Print("Unloading current content '{0}'.", LoggingLevel.Verbose, _currentContent.Content.Name);
-
-				_currentContent.Dispose();
-				_currentContent = null;
-			}
-			else
-			{
-				// We already have the default panel loaded, leave.
-				if ((panelContentHost.Controls.Count > 0)
-					&& (panelContentHost.Controls[0] == view))
-				{
-					return;
-				}
-			}
-
-			var viewControl = view as Control;
-
-			Debug.Assert(viewControl != null, "View is not a win forms control.  Cannot load into main window.");
-
-			_logFile.Print("Setting theme for content view.", LoggingLevel.Verbose);
-			view.CurrentTheme = Theme;
-
-			_logFile.Print("Injecting content view into main view.", LoggingLevel.Verbose);
-			panelContentHost.Controls.Add(viewControl);
-
-			if (view.CaptionVisible)
-			{
-				view.Padding = new Padding(0, 5, 0, 0);
-			}
-
-			view.Dock = DockStyle.Fill;
-
-			// Initialize rendering if necessary.
-			_logFile.Print("Content view supports renderer: {0}.", LoggingLevel.Verbose, view.UsesRenderer);
-			if (!view.UsesRenderer)
-			{
-				return;
-			}
-
-			_logFile.Print("Creating renderer for view.", LoggingLevel.Verbose);
-			view.Renderer.CreateResources(view.RenderControl);
-			
-			// Begin rendering.
-			view.Renderer.StartRendering();
-
-			/*// If we don't have properties, then we'll have to unhook from the properties grid.
-			// And we'll also have to hide it.
-			_logFile.Print("Content supports properties: {1}.", LoggingLevel.Verbose, view.HasProperties);
-			tabPages.SelectedTab = e.Content.HasProperties ? pageProperties : pageFiles;*/
-		}
-
 		/*/// <summary>
 		/// Handles the ContentCreatedEvent event of the ContentManager control.
 		/// </summary>
@@ -512,7 +379,7 @@ namespace GorgonLibrary.Editor
 			Text = string.Format("{0} - {1}{2}",
 			                     _windowText,
 			                     _currentFile.Name, 
-								 _currentFile.HasChanged ? "*" : string.Empty);  // TODO: Replace this with a "HasChanges" flag.
+								 _currentFile.HasChanged ? "*" : string.Empty);
 		}
 
 		/// <summary>
@@ -520,41 +387,43 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected override void ApplyTheme()
 		{
-			splitMain.BackColor = Theme.WindowBackground;
-			splitMain.Panel2.BackColor = Theme.ContentPanelBackground;
-			splitMain.Panel1.BackColor = Theme.ContentPanelBackground;
-			
-			tabPages.BackgroundColor = Theme.ContentPanelBackground;
-			tabPages.BorderColor = Theme.WindowBackground;
-			tabPages.TabBorderColor = Theme.WindowBackground;
-			tabPages.TabGradient.ColorEnd = Theme.WindowBackground;
-			tabPages.TabGradient.ColorStart = Theme.WindowBackground;
-			tabPages.TabGradient.TabPageSelectedTextColor = Theme.HilightBackColor;
-			tabPages.TabGradient.TabPageTextColor = Theme.ForeColor;
+			var editorTheme = (EditorTheme)Theme;
 
-			propertyGrid.BackColor = ((EditorTheme)Theme).PropertyPanelBackgroundColor;
-			propertyGrid.CategoryForeColor = Theme.ForeColor;
-			propertyGrid.CommandsActiveLinkColor = Theme.HilightForeColor;
+			splitMain.BackColor = editorTheme.WindowBackground;
+			splitMain.Panel2.BackColor = editorTheme.ContentPanelBackground;
+			splitMain.Panel1.BackColor = editorTheme.ContentPanelBackground;
+			
+			tabPages.BackgroundColor = editorTheme.ContentPanelBackground;
+			tabPages.BorderColor = editorTheme.WindowBackground;
+			tabPages.TabBorderColor = editorTheme.WindowBackground;
+			tabPages.TabGradient.ColorEnd = editorTheme.WindowBackground;
+			tabPages.TabGradient.ColorStart = editorTheme.WindowBackground;
+			tabPages.TabGradient.TabPageSelectedTextColor = editorTheme.HilightBackColor;
+			tabPages.TabGradient.TabPageTextColor = editorTheme.ForeColor;
+
+			propertyGrid.BackColor = editorTheme.PropertyPanelBackgroundColor;
+			propertyGrid.CategoryForeColor = editorTheme.ForeColor;
+			propertyGrid.CommandsActiveLinkColor = editorTheme.HilightForeColor;
 			propertyGrid.CommandsBackColor = propertyGrid.BackColor;
-			propertyGrid.CommandsBorderColor = Theme.WindowBackground;
-			propertyGrid.CommandsDisabledLinkColor = Theme.DisabledColor;
-			propertyGrid.CommandsForeColor = Theme.ForeColor;
-			propertyGrid.CommandsLinkColor = Theme.HilightBackColor;
-			propertyGrid.DisabledItemForeColor = Theme.DisabledColor;
-			propertyGrid.HelpBackColor = Theme.WindowBackground;
-			propertyGrid.HelpBorderColor = Theme.WindowBackground;
-			propertyGrid.HelpForeColor = Theme.ForeColor;
-			propertyGrid.LineColor = Theme.WindowBackground;
-			propertyGrid.SelectedItemWithFocusBackColor = Theme.HilightBackColor;
-			propertyGrid.SelectedItemWithFocusForeColor = Theme.HilightForeColor;
+			propertyGrid.CommandsBorderColor = editorTheme.WindowBackground;
+			propertyGrid.CommandsDisabledLinkColor = editorTheme.DisabledColor;
+			propertyGrid.CommandsForeColor = editorTheme.ForeColor;
+			propertyGrid.CommandsLinkColor = editorTheme.HilightBackColor;
+			propertyGrid.DisabledItemForeColor = editorTheme.DisabledColor;
+			propertyGrid.HelpBackColor = editorTheme.WindowBackground;
+			propertyGrid.HelpBorderColor = editorTheme.WindowBackground;
+			propertyGrid.HelpForeColor = editorTheme.ForeColor;
+			propertyGrid.LineColor = editorTheme.WindowBackground;
+			propertyGrid.SelectedItemWithFocusBackColor = editorTheme.HilightBackColor;
+			propertyGrid.SelectedItemWithFocusForeColor = editorTheme.HilightForeColor;
 			propertyGrid.ViewBackColor = propertyGrid.BackColor;
 			propertyGrid.ViewBorderColor = propertyGrid.BackColor;
-			propertyGrid.ViewForeColor = Theme.ForeColor;
-			propertyGrid.CategorySplitterColor = Theme.WindowBackground;
+			propertyGrid.ViewForeColor = editorTheme.ForeColor;
+			propertyGrid.CategorySplitterColor = editorTheme.WindowBackground;
 
-			labelUnCollapse.BackColor = Theme.WindowBackground;
-			
-			treeFileSystem.Theme = (EditorTheme)Theme;
+			labelUnCollapse.BackColor = editorTheme.WindowBackground;
+
+			treeFileSystem.Theme = editorTheme;
 		}
 
 		/// <summary>
@@ -563,8 +432,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			Rectangle windowRect;
-
 			base.OnLoad(e);
 
 			try
@@ -573,41 +440,13 @@ namespace GorgonLibrary.Editor
 
 				// Load in the default content here.
 				_defaultContent = _contentManager.CreateContent();
-				LoadContentView(_defaultContent.View);
 
-				SetWindowText();
-
-				windowRect = _settings.WindowDimensions;
-
-				// Find the screen that contains our window.
-				var currentScreen = Screen.AllScreens.FirstOrDefault(item => item.Bounds.Contains(windowRect.Location));
-
-				if (currentScreen == null)
+				if (Loaded != null)
 				{
-					currentScreen = Screen.PrimaryScreen;
-					windowRect.Location = currentScreen.Bounds.Location;
+					Loaded(this, EventArgs.Empty);
 				}
-
-				// Ensure that the window fits within the screen.
-				windowRect.Intersect(currentScreen.WorkingArea);
-
-				Location = windowRect.Location;
-				Size = windowRect.Size;
-
-				// Set the current state of the window.
-				if (_settings.FormState != FormWindowState.Minimized)
-				{
-					WindowState = _settings.FormState;
-				}
-
-				if (_settings.SplitPosition > splitMain.Panel1MinSize)
-				{
-					splitMain.SplitterDistance = _settings.SplitPosition;
-				}
-
-				labelUnCollapse.Visible = splitMain.Panel2Collapsed = !_settings.PropertiesVisible;
-
-				_fileSystemService.FileSaved += FileSystem_FileUpdated;
+				
+				treeFileSystem.FileSystemService = _fileSystemService;
 
 				ValidateControls();
 			}
@@ -628,52 +467,31 @@ namespace GorgonLibrary.Editor
 
 			Cursor.Current = Cursors.WaitCursor;
 
-			_logFile.Print("Closing main window '{0}'", LoggingLevel.Verbose, Text);
-
 			try
 			{
-				// Shut down the content manager.
-				if (!UnloadData())
+				var args = new GorgonCancelEventArgs(false);
+
+				if (ApplicationClose != null)
 				{
-					e.Cancel = true;
-					_logFile.Print("Closing main window cancelled.  User cancelled operation.", LoggingLevel.Verbose, Text);
+					ApplicationClose(this, args);
+				}
+
+				// Shut down the content manager.
+				e.Cancel = args.Cancel;
+				if (args.Cancel)
+				{
 					return;
 				}
 
 				_currentFile = null;
+				_fileSystemService.FileLoaded -= FileSystem_FileUpdated;
+				_fileSystemService.FileCreated -= FileSystem_FileUpdated;
 				_fileSystemService.FileSaved -= FileSystem_FileUpdated;
+				_fileSystemService = null;
 				_contentManager.Dispose();
-			}
-			catch (Exception ex)
-			{
-				e.Cancel = false;
-
-				// Log any exceptions on shut down of the main form just so we have a 
-				// record of things going wrong.
-				GorgonException.Catch(ex);
-
-#if DEBUG
-				// We won't bother showing anything here outside of DEBUG.
-				GorgonDialogs.ErrorBox(this, ex);
-#endif
 			}
 			finally
 			{
-				// Persist the settings on application shut down - regardless of what happens before.
-				// If this fails, just log it and continue on.
-				try
-				{
-					_settings.FormState = WindowState != FormWindowState.Minimized ? WindowState : FormWindowState.Normal;
-					_settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
-					_settings.SplitPosition = splitMain.SplitterDistance;
-					_settings.PropertiesVisible = !splitMain.Panel2Collapsed;
-					_settings.Save();
-				}
-				catch (Exception ex)
-				{
-					GorgonException.Catch(ex);
-				}
-
 				Cursor.Current = Cursors.Default;
 			}
 		}
@@ -691,21 +509,245 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FormMain"/> class.
 		/// </summary>
-		/// <param name="settings">The settings.</param>
 		/// <param name="log">The log file for the application.</param>
 		/// <param name="fileSystemService">The file system service.</param>
 		/// <param name="contentManager">The content manager interface.</param>
 		[DefaultConstructor]
-		public FormMain(GorgonLogFile log, IEditorSettings settings, IFileSystemService fileSystemService, IEditorContentManager contentManager)
+		public FormMain(GorgonLogFile log, IFileSystemService fileSystemService, IEditorContentManager contentManager)
 			: this()
 		{
 			_logFile = log;
-			_settings = settings;
 			_windowText = Text;
 			_contentManager = contentManager;
 			_fileSystemService = fileSystemService;
 			_currentFile = fileSystemService.DefaultFileSystem;
+
+			_fileSystemService.FileSaved += FileSystem_FileUpdated;
+			_fileSystemService.FileLoaded += FileSystem_FileUpdated;
+			_fileSystemService.FileCreated += FileSystem_FileUpdated;
 		}
+		#endregion
+
+		#region IMainFormView Members
+		#region Events.
+		/// <summary>
+		/// Event fired when the new file item is clicked.
+		/// </summary>
+		public event EventHandler CreateNewFile;
+
+		/// <summary>
+		/// Event fired when a file has been selected to load.
+		/// </summary>
+		public event EventHandler LoadFile;
+
+		/// <summary>
+		/// Event fired when the close button is clicked on the application window.
+		/// </summary>
+		public event EventHandler<GorgonCancelEventArgs> ApplicationClose;
+
+		/// <summary>
+		/// Event fired when the view is loaded.
+		/// </summary>
+		public event EventHandler Loaded;
+		#endregion
+
+		#region Methods
+		/// <summary>
+		/// Function to open the load file dialog.
+		/// </summary>
+		/// <param name="defaultDirectory">The default directory for the dialog.</param>
+		/// <param name="fileExtensions">The applicable file extensions for the dialog.</param>
+		/// <returns>
+		/// The path to the selected file to load, or NULL (Nothing in VB.Net) if Cancel was selected.
+		/// </returns>
+		public string LoadFileDialog(string defaultDirectory, string fileExtensions)
+		{
+			var lastCursor = Cursor.Current;
+
+			try
+			{
+				Cursor.Current = Cursors.Default;
+
+				dialogOpenFile.InitialDirectory = defaultDirectory;
+				dialogOpenFile.FileName = string.Empty;
+				dialogOpenFile.Filter = fileExtensions;
+
+				return dialogOpenFile.ShowDialog(this) != DialogResult.OK ? null : dialogOpenFile.FileName;
+			}
+			finally
+			{
+				Cursor.Current = lastCursor;
+			}
+		}
+
+		/// <summary>
+		/// Function to open the save file dialog.
+		/// </summary>
+		/// <returns>
+		/// The path to the file to save, or NULL (Nothing in VB.Net) if Cancel was selected.
+		/// </returns>
+		public string SaveFileDialog()
+		{
+			// TODO: Implement this.
+			return null;
+		}
+
+		/// <summary>
+		/// Function to ask the user whether to save the file or not.
+		/// </summary>
+		/// <param name="fileName">Name of the file to save.</param>
+		/// <returns>
+		/// A confirmation result indicating whether to save the file, discard the changes, or cancel the operation.
+		/// </returns>
+		public ConfirmationResult ConfirmFileSave(string fileName)
+		{
+			var lastCursor = Cursor.Current;
+
+			try
+			{
+				Cursor.Current = Cursors.Default;
+
+				return GorgonDialogs.ConfirmBox(this,
+				                                string.Format(Resources.GOREDIT_DLG_FILE_NOT_SAVED, fileName),
+				                                null,
+				                                true);
+			}
+			finally
+			{
+				Cursor.Current = lastCursor;
+			}
+		}
+
+		/// <summary>
+		/// Function to set the text for the application window.
+		/// </summary>
+		/// <param name="newCaption">New caption to set.</param>
+		public void SetWindowText(string newCaption)
+		{
+			if (InvokeRequired)
+			{
+				BeginInvoke(new Action(() => SetWindowText(newCaption)));
+				return;
+			}
+
+			Text = newCaption;
+		}
+
+		/// <summary>
+		/// Function to load the content view into the main interface.
+		/// </summary>
+		/// <param name="view">View to load.</param>
+		public void BindContentView(IContentPanel view)
+		{
+			// TODO: Set up a controller for the content view/model that is accessed through the left split panel child panel.
+			if (view == null)
+			{
+				view = _defaultContent.View;
+			}
+
+			// If we already have the default content loaded, then leave.
+			if (_currentContent != null)
+			{
+				_logFile.Print("Unloading current content '{0}'.", LoggingLevel.Verbose, _currentContent.Content.Name);
+
+				_currentContent.Dispose();
+				_currentContent = null;
+			}
+			else
+			{
+				// We already have the default panel loaded, leave.
+				if ((panelContentHost.Controls.Count > 0)
+					&& (panelContentHost.Controls[0] == view))
+				{
+					return;
+				}
+			}
+
+			var viewControl = view as Control;
+
+			Debug.Assert(viewControl != null, "View is not a win forms control.  Cannot load into main window.");
+
+			_logFile.Print("Setting theme for content view.", LoggingLevel.Verbose);
+			view.CurrentTheme = Theme;
+
+			_logFile.Print("Injecting content view into main view.", LoggingLevel.Verbose);
+			panelContentHost.Controls.Add(viewControl);
+
+			if (view.CaptionVisible)
+			{
+				view.Padding = new Padding(0, 5, 0, 0);
+			}
+
+			view.Dock = DockStyle.Fill;
+
+			// Initialize rendering if necessary.
+			_logFile.Print("Content view supports renderer: {0}.", LoggingLevel.Verbose, view.UsesRenderer);
+			if (!view.UsesRenderer)
+			{
+				return;
+			}
+
+			_logFile.Print("Creating renderer for view.", LoggingLevel.Verbose);
+			view.Renderer.CreateResources(view.RenderControl);
+
+			// Begin rendering.
+			view.Renderer.StartRendering();
+
+			/*// If we don't have properties, then we'll have to unhook from the properties grid.
+			// And we'll also have to hide it.
+			_logFile.Print("Content supports properties: {1}.", LoggingLevel.Verbose, view.HasProperties);
+			tabPages.SelectedTab = e.Content.HasProperties ? pageProperties : pageFiles;*/
+		}
+
+		/// <summary>
+		/// Function to store the view state in the settings object.
+		/// </summary>
+		/// <param name="settings">Settings object to update.</param>
+		public void StoreViewSettings(IEditorSettings settings)
+		{
+			settings.FormState = WindowState != FormWindowState.Minimized ? WindowState : FormWindowState.Normal;
+			settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
+			settings.SplitPosition = splitMain.SplitterDistance;
+			settings.PropertiesVisible = !splitMain.Panel2Collapsed;
+		}
+
+		/// <summary>
+		/// Function to recall the view state from the settings object.
+		/// </summary>
+		/// <param name="settings">Settings object to use when restoring view state.</param>
+		public void RestoreViewSettings(IEditorSettings settings)
+		{
+			Rectangle windowRect = settings.WindowDimensions;
+
+			// Find the screen that contains our window.
+			var currentScreen = Screen.AllScreens.FirstOrDefault(item => item.Bounds.Contains(windowRect.Location));
+
+			if (currentScreen == null)
+			{
+				currentScreen = Screen.PrimaryScreen;
+				windowRect.Location = currentScreen.Bounds.Location;
+			}
+
+			// Ensure that the window fits within the screen.
+			windowRect.Intersect(currentScreen.WorkingArea);
+
+			Location = windowRect.Location;
+			Size = windowRect.Size;
+
+			// Set the current state of the window.
+			if (settings.FormState != FormWindowState.Minimized)
+			{
+				WindowState = settings.FormState;
+			}
+
+			if (settings.SplitPosition > splitMain.Panel1MinSize)
+			{
+				splitMain.SplitterDistance = settings.SplitPosition;
+			}
+
+			labelUnCollapse.Visible = splitMain.Panel2Collapsed = !settings.PropertiesVisible;
+		}
+		#endregion
 		#endregion
 	}
 }

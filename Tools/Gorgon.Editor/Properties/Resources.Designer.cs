@@ -141,6 +141,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Editor.
+        /// </summary>
+        internal static string GOREDIT_CAPTION {
+            get {
+                return ResourceManager.GetString("GOREDIT_CAPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All files.
         /// </summary>
         internal static string GOREDIT_DLG_ALL_FILES {

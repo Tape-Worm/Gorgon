@@ -20,68 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, March 12, 2015 11:31:18 PM
+// Created: Tuesday, March 17, 2015 12:52:52 AM
 // 
 #endregion
-
-using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for the root of the file system.
+	/// The main application UI controller interface.
 	/// </summary>
-	class FileSystemRootNode
-		: FileSystemTreeNode
+	interface IMainFormController
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the type of node.
+		/// Property to return the current view bound to the controller.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Root;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the file system attached to this node.
-		/// </summary>
-		public IEditorFileSystem FileSystem
+		IMainFormView View
 		{
 			get;
-			set;
 		}
 
 		/// <summary>
-		/// Gets or sets the text displayed in the label of the tree node.
+		/// Property to return the current model bound to the controller.
 		/// </summary>
-		public override string Text
+		IMainFormModel Model
 		{
-			get
-			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
-			}
-			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				// Intentionally left blank.
-			}
+			get;
 		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Methods.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
+		/// Function to perform view binding with this controller.
 		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
-		{
-			FileSystem = fileSystem;
-			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
-		}
+		void BindView();
+
+		/// <summary>
+		/// Function to unbind the current view from this controller.
+		/// </summary>
+		void UnbindView();
 		#endregion
 	}
 }

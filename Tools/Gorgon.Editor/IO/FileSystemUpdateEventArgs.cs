@@ -20,67 +20,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, March 12, 2015 11:31:18 PM
+// Created: Monday, March 16, 2015 9:01:38 PM
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for the root of the file system.
+	/// File system updated event arguments.
 	/// </summary>
-	class FileSystemRootNode
-		: FileSystemTreeNode
+	class FileSystemUpdateEventArgs
+		: EventArgs
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the type of node.
-		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Root;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the file system attached to this node.
+		/// Property to return file system object that was just updated.
 		/// </summary>
 		public IEditorFileSystem FileSystem
 		{
 			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the text displayed in the label of the tree node.
-		/// </summary>
-		public override string Text
-		{
-			get
-			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
-			}
-			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				// Intentionally left blank.
-			}
+			private set;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
+		/// Initializes a new instance of the <see cref="FileSystemUpdateEventArgs"/> class.
 		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
+		/// <param name="fileSystem">The file system that was updated.</param>
+		public FileSystemUpdateEventArgs(IEditorFileSystem fileSystem)
 		{
+			if (fileSystem == null)
+			{
+				throw new ArgumentNullException("fileSystem");
+			}
+
 			FileSystem = fileSystem;
-			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
 		}
 		#endregion
 	}

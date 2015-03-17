@@ -58,13 +58,17 @@ namespace GorgonLibrary.Editor
 	interface IFileSystemService
 	{
 		/// <summary>
+		/// Event fired when a new file is created.
+		/// </summary>
+		event EventHandler<FileSystemUpdateEventArgs> FileCreated;
+		/// <summary>
 		/// Event fired when a file is loaded.
 		/// </summary>
-		event EventHandler FileLoaded;
+		event EventHandler<FileSystemUpdateEventArgs> FileLoaded;
 		/// <summary>
 		/// Event fired when a file is saved.
 		/// </summary>
-		event EventHandler FileSaved;
+		event EventHandler<FileSystemUpdateEventArgs> FileSaved;
 
 		/// <summary>
 		/// Property to return the "default" file system that is created on application start (assuming no file was previously loaded).
@@ -114,6 +118,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to create a new file for use by the editor.
 		/// </summary>
+		/// <returns>A new file system object.</returns>
 		IEditorFileSystem NewFile();
 
 		/// <summary>
@@ -137,6 +142,7 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
+		/// <returns>A file system object for the loaded file.</returns>
 		IEditorFileSystem LoadFile(string path);
 
 		/// <summary>

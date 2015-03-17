@@ -87,20 +87,27 @@
     <Compile Include="Controls\Tree Support\FileSystemDirectoryNode.cs" />
     <Compile Include="Controls\Tree Support\FileSystemFileNode.cs" />
     <Compile Include="EditorTheme.cs" />
+    <Compile Include="Interfaces\IMainFormController.cs" />
+    <Compile Include="Forms\Controller\MainFormController.cs" />
+    <Compile Include="Interfaces\IMainFormModel.cs" />
+    <Compile Include="Forms\Model\MainFormModel.cs" />
     <Compile Include="Interfaces\IGraphicsService.cs" />
     <Compile Include="Interfaces\IEditorContentManager.cs" />
+    <Compile Include="Interfaces\IMainFormView.cs" />
     <Compile Include="Interfaces\IProxyObject.cs" />
     <Compile Include="Interfaces\IScratchLocator.cs" />
     <Compile Include="Interfaces\IScratchServices.cs" />
+    <Compile Include="IO\EditorFile.cs" />
     <Compile Include="IO\EditorFileSystem.cs" />
     <Compile Include="IO\EditorFileSystemService.cs" />
     <Compile Include="Interfaces\IFileSystemService.cs" />
     <Compile Include="Interfaces\IEditorFileSystem.cs" />
+    <Compile Include="IO\FileSystemUpdateEventArgs.cs" />
     <Compile Include="IO\ScratchLocator.cs" />
-    <Compile Include="Forms\FormMain.cs">
+    <Compile Include="Forms\View\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\FormMain.Designer.cs">
+    <Compile Include="Forms\View\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormSplash.cs">
@@ -132,7 +139,7 @@
     <EmbeddedResource Include="Controls\FileSystemTreeView.resx">
       <DependentUpon>FileSystemTreeView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormMain.resx">
+    <EmbeddedResource Include="Forms\View\FormMain.resx">
       <DependentUpon>FormMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormSplash.resx">

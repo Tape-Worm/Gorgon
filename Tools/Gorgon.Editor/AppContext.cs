@@ -64,6 +64,8 @@ namespace GorgonLibrary.Editor
 		private readonly IScratchService _scratchService;
 		// The file system service for packed files.
 		private readonly IFileSystemService _fileSystemService;
+		// The main controller for the application UI.
+		private readonly IMainFormController _mainController;
 		#endregion
 
 		#region Methods.
@@ -135,7 +137,7 @@ namespace GorgonLibrary.Editor
 				_splash.InfoText = Resources.GOREDIT_TEXT_LOAD_PREV_FILE;
 				
 				// Load the last file and send it on to the main application.
-				((FormMain)MainForm).CurrentFile = _fileSystemService.LoadFile(filePath);
+				_fileSystemService.LoadFile(filePath);
 			}
 			catch (Exception ex)
 			{
@@ -266,6 +268,11 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				if (_mainController != null)
+				{
+					_mainController.UnbindView();
+				}
+
 				// Unload the current file if one exists.
 				_scratchService.ScratchArea.CleanUp();
 
@@ -283,7 +290,7 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="AppContext"/> class.
 		/// </summary>
 		/// <param name="log">The application log file.</param>
-		/// <param name="mainForm">The instance of the main form.</param>
+		/// <param name="mainController">The main controller for the application UI.</param>
 		/// <param name="settings">The editor settings.</param>
 		/// <param name="graphicsService">The service used to create a new graphics interface.</param>
 		/// <param name="splashProxy">The factory to create forms for the application.</param>
@@ -291,7 +298,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="scratchService">The service pertaining to scratch area manipulation.</param>
 		/// <param name="fileSystemService">The service that handles packed file systems.</param>
 		public AppContext(GorgonLogFile log,
-			FormMain mainForm, 
+			IMainFormController mainController, 
 			IEditorSettings settings, 
 			IGraphicsService graphicsService, 
 			IProxyObject<FormSplash> splashProxy, 
@@ -306,7 +313,8 @@ namespace GorgonLibrary.Editor
 			_plugInFactory = plugInFactory;
 			_scratchService = scratchService;
 			_fileSystemService = fileSystemService;
-			MainForm = mainForm;
+			_mainController = mainController;
+			MainForm = _mainController.View as Form;
 		}
 		#endregion
 	}

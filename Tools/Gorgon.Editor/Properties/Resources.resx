@@ -262,4 +262,7 @@ Would you like to save these changes now?</value>
   <data name="unknown_document_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\unknown_document_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_CAPTION" xml:space="preserve">
+    <value>Gorgon Editor</value>
+  </data>
 </root>

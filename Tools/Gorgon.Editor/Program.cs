@@ -112,7 +112,15 @@ namespace GorgonLibrary.Editor
 			obj.For<IEditorContentManager>()
 			   .Use<EditorContentManager>();
 
-			obj.ForConcreteType<FormMain>();
+			obj.For<IMainFormModel>()
+			   .Use<MainFormModel>();
+
+			obj.For<IMainFormView>()
+			   .Use<FormMain>();
+
+			obj.For<IMainFormController>()
+			   .Use<MainFormController>()
+			   .OnCreation(_ => _.BindView());
 
 			obj.For<IPlugInRegistry>()
 			   .Use<PlugInRegistry>();

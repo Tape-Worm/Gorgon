@@ -20,67 +20,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, March 12, 2015 11:31:18 PM
+// Created: Monday, March 16, 2015 10:34:42 PM
 // 
 #endregion
 
-using GorgonLibrary.Editor.Properties;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for the root of the file system.
+	/// A file that can contain content for use by the editor.
 	/// </summary>
-	class FileSystemRootNode
-		: FileSystemTreeNode
+	class EditorFile
+		: GorgonNamedObject
 	{
+		#region Variables.
+
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to return the type of node.
+		/// Property to return the file system file entry bound to this editor file.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Root;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the file system attached to this node.
-		/// </summary>
-		public IEditorFileSystem FileSystem
+		public GorgonFileSystemFileEntry File
 		{
 			get;
-			set;
+			private set;
 		}
+		#endregion
 
-		/// <summary>
-		/// Gets or sets the text displayed in the label of the tree node.
-		/// </summary>
-		public override string Text
-		{
-			get
-			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
-			}
-			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
+		#region Methods.
+
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
+		/// Initializes a new instance of the <see cref="EditorFile"/> class.
 		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
+		/// <param name="file">The file system file entry to use.</param>
+		public EditorFile(GorgonFileSystemFileEntry file)
+			: base(file.Name)
 		{
-			FileSystem = fileSystem;
-			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
+			File = file;
 		}
 		#endregion
 	}

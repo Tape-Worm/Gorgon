@@ -20,67 +20,72 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, March 12, 2015 11:31:18 PM
+// Created: Tuesday, March 17, 2015 12:14:01 AM
 // 
 #endregion
 
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for the root of the file system.
+	/// Model for the main form.
 	/// </summary>
-	class FileSystemRootNode
-		: FileSystemTreeNode
+	class MainFormModel 
+		: IMainFormModel
 	{
-		#region Properties.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Property to return the type of node.
+		/// Initializes a new instance of the <see cref="MainFormModel"/> class.
 		/// </summary>
-		public override NodeType NodeType
+		/// <param name="logFile">The log file for the application.</param>
+		/// <param name="settings">The settings for the application.</param>
+		/// <param name="defaultFileSystem">The default file system object.</param>
+		public MainFormModel(GorgonLogFile logFile, IEditorSettings settings, IEditorFileSystem defaultFileSystem)
 		{
-			get
-			{
-				return NodeType.Root;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the file system attached to this node.
-		/// </summary>
-		public IEditorFileSystem FileSystem
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Gets or sets the text displayed in the label of the tree node.
-		/// </summary>
-		public override string Text
-		{
-			get
-			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
-			}
-			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				// Intentionally left blank.
-			}
+			LogFile = logFile;
+			EditorSettings = settings;
+			WindowText = Resources.GOREDIT_CAPTION;
+			CurrentFile = defaultFileSystem;
 		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region IMainFormModel Implementation.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
+		/// Property to return the application log file.
 		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
+		public GorgonLogFile LogFile
 		{
-			FileSystem = fileSystem;
-			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the application settings.
+		/// </summary>
+		public IEditorSettings EditorSettings
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the base window text.
+		/// </summary>
+		public string WindowText
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current file.
+		/// </summary>
+		public IEditorFileSystem CurrentFile
+		{
+			get;
+			set;
 		}
 		#endregion
 	}

@@ -1,4 +1,4 @@
-﻿#region MIT.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -20,68 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, March 12, 2015 11:31:18 PM
+// Created: Tuesday, March 17, 2015 12:21:35 AM
 // 
 #endregion
 
-using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for the root of the file system.
+	/// Model for the main form data.
 	/// </summary>
-	class FileSystemRootNode
-		: FileSystemTreeNode
+	interface IMainFormModel
 	{
-		#region Properties.
 		/// <summary>
-		/// Property to return the type of node.
+		/// Property to return the application log file.
 		/// </summary>
-		public override NodeType NodeType
+		GorgonLogFile LogFile
 		{
-			get
-			{
-				return NodeType.Root;
-			}
+			get;
 		}
 
 		/// <summary>
-		/// Property to set or return the file system attached to this node.
+		/// Property to return the application settings.
 		/// </summary>
-		public IEditorFileSystem FileSystem
+		IEditorSettings EditorSettings
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the base window text.
+		/// </summary>
+		string WindowText
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the current file.
+		/// </summary>
+		IEditorFileSystem CurrentFile
 		{
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Gets or sets the text displayed in the label of the tree node.
-		/// </summary>
-		public override string Text
-		{
-			get
-			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
-			}
-			// ReSharper disable once ValueParameterNotUsed
-			set
-			{
-				// Intentionally left blank.
-			}
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
-		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
-		{
-			FileSystem = fileSystem;
-			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
-		}
-		#endregion
 	}
 }

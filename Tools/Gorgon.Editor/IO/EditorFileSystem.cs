@@ -82,7 +82,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		
 		#endregion
 
 		#region Constructor/Destructor.

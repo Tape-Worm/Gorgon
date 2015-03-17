@@ -156,13 +156,17 @@ namespace GorgonLibrary.Editor
 		#region IFileSystemService Implementation.
 		#region Events.
 		/// <summary>
+		/// Event fired when a new file is created.
+		/// </summary>
+		public event EventHandler<FileSystemUpdateEventArgs> FileCreated;
+		/// <summary>
 		/// Event fired when a file is loaded.
 		/// </summary>
-		public event EventHandler FileLoaded;
+		public event EventHandler<FileSystemUpdateEventArgs> FileLoaded;
 		/// <summary>
 		/// Event fired when a file is saved.
 		/// </summary>
-		public event EventHandler FileSaved;
+		public event EventHandler<FileSystemUpdateEventArgs> FileSaved;
 		#endregion
 
 		#region Properties.
@@ -278,6 +282,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to create a new file for use by the editor.
 		/// </summary>
+		/// <returns>
+		/// A new file system object.
+		/// </returns>
 		public IEditorFileSystem NewFile()
 		{
 			// Reset the scratch area.
@@ -297,6 +304,12 @@ namespace GorgonLibrary.Editor
 			_log.Print("FileSystemService: Creating new file.", LoggingLevel.Verbose);
 
 			_currentFile = new EditorFileSystem(null);
+
+			if (FileCreated != null)
+			{
+				FileCreated(this, new FileSystemUpdateEventArgs(_currentFile));
+			}
+
 			return _currentFile;
 		}
 
@@ -304,10 +317,14 @@ namespace GorgonLibrary.Editor
 		/// Function to load a file from the physical file system.
 		/// </summary>
 		/// <param name="path">Path to the file to load.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <returns>
+		/// A file system object for the loaded file.
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path" /> parameter is empty.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path" /> could not be found.</exception>
+		/// <exception cref="GorgonException"></exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
 		public IEditorFileSystem LoadFile(string path)
 		{
 			if (path == null)
@@ -342,17 +359,16 @@ namespace GorgonLibrary.Editor
 				// Note the current file.
 				_currentFile = new EditorFileSystem(path);
 
-				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
+				_settings.LastEditorFile = path;
 
+				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
 				if (FileLoaded != null)
 				{
-					FileLoaded(this, EventArgs.Empty);
+					FileLoaded(this, new FileSystemUpdateEventArgs(_currentFile));
 				}
 				
 				// TODO: Find an applicable writer plug-in for this file.
-
-				_settings.LastEditorFile = path;
-
+				
 				return _currentFile;
 			}
 			finally
