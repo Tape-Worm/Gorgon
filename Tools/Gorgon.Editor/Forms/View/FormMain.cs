@@ -45,14 +45,8 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		// The log file for the application.
 		private readonly GorgonLogFile _logFile;
-		// The window text.
-		private readonly string _windowText;
 		// The content manager interface.
 		private readonly IEditorContentManager _contentManager;
-		// The file system service.
-		private IFileSystemService _fileSystemService;
-		// The currently loaded file.
-		private IEditorFileSystem _currentFile;
 		// The default content model.
 		private IContentModel _defaultContent;
 		// The current content.
@@ -73,7 +67,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void ValidateFileMenu()
 		{
-			itemOpen.Enabled = _fileSystemService.HasFileSystemProviders;
+			// TODO: Fix this, put validation in the controller.
+			itemOpen.Enabled = true;//_fileSystemService.HasFileSystemProviders;
 		}
 
 		/// <summary>
@@ -148,22 +143,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Handles the FileUpdated event of the FileSystem control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="eventArgs">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void FileSystem_FileUpdated(object sender, FileSystemUpdateEventArgs eventArgs)
-		{
-			if (eventArgs.FileSystem != _currentFile)
-			{
-				_currentFile = eventArgs.FileSystem;
-			}
-
-			SetWindowText();
-			ValidateControls();
-		}
-
-		/// <summary>
 		/// Handles the Click event of the labelUnCollapse control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -218,77 +197,6 @@ namespace GorgonLibrary.Editor
 			{
 				GorgonDialogs.ErrorBox(this, ex);
 			}
-		}
-
-		/// <summary>
-		/// Function to unload the file system data and the content data with save confirmation.
-		/// </summary>
-		/// <returns>TRUE if the data was unloaded, FALSE if cancelled by the user.</returns>
-		private bool UnloadData()
-		{
-			ConfirmationResult result = ConfirmationResult.None;
-
-			// First ensure that we want to save the current content.
-			if ((_currentContent != null)
-				&& (_currentContent.HasView)
-				&& (_currentContent.Content.HasChanges))
-			{
-				result = _currentContent.View.GetCloseConfirmation();
-
-				if (result == ConfirmationResult.Cancel)
-				{
-					return false;
-				}
-
-				if ((result & ConfirmationResult.Yes) == ConfirmationResult.Yes)
-				{
-					// TODO: Perform save of content:
-					// _contentManager.SaveContent(_currentContent);
-				}
-			}
-			
-			// Next, confirm whether to save the currently open file system.
-			// TODO: Write file system management "has changes" functionality and also validate against a flag to indicate whether we have any file system writers loaded or not.
-
-			// If we have changes, then ask if we want to save them.
-			if (_currentFile.HasChanged)
-			{
-				var lastCursor = Cursor.Current;
-
-				result = GorgonDialogs.ConfirmBox(this,
-				                                  string.Format(Resources.GOREDIT_DLG_FILE_NOT_SAVED, _currentFile.Name),
-				                                  null,
-				                                  true);
-				Cursor.Current = lastCursor;
-			}
-
-			switch (result)
-			{
-				case ConfirmationResult.Cancel:
-					return false;
-				case ConfirmationResult.Yes:
-					if (string.IsNullOrWhiteSpace(_currentFile.FullName))
-					{
-						// TODO: We need to "Save as".
-					}
-					else
-					{
-						// TODO: We need to just "Save".
-					}
-					break;
-			}
-
-			// Once we've saved the file, unload the current content if we have any.
-			if (_currentContent == null)
-			{
-				return true;
-			}
-
-			// TODO: Unassign any events from content view.
-			_currentContent.Dispose();
-			_currentContent = null;
-
-			return true;
 		}
 
 		/*/// <summary>
@@ -366,23 +274,6 @@ namespace GorgonLibrary.Editor
 		}*/
 
 		/// <summary>
-		/// Function to update the text on this window in a thread-safe manner.
-		/// </summary>
-		private void SetWindowText()
-		{
-			if (InvokeRequired)
-			{
-				BeginInvoke(new Action(SetWindowText));
-				return;
-			}
-
-			Text = string.Format("{0} - {1}{2}",
-			                     _windowText,
-			                     _currentFile.Name, 
-								 _currentFile.HasChanged ? "*" : string.Empty);
-		}
-
-		/// <summary>
 		/// Function called to allow sub-classed windows to apply the theme to controls that are not necessarily themeable.
 		/// </summary>
 		protected override void ApplyTheme()
@@ -446,8 +337,6 @@ namespace GorgonLibrary.Editor
 					Loaded(this, EventArgs.Empty);
 				}
 				
-				treeFileSystem.FileSystemService = _fileSystemService;
-
 				ValidateControls();
 			}
 			catch (Exception ex)
@@ -482,12 +371,7 @@ namespace GorgonLibrary.Editor
 				{
 					return;
 				}
-
-				_currentFile = null;
-				_fileSystemService.FileLoaded -= FileSystem_FileUpdated;
-				_fileSystemService.FileCreated -= FileSystem_FileUpdated;
-				_fileSystemService.FileSaved -= FileSystem_FileUpdated;
-				_fileSystemService = null;
+				
 				_contentManager.Dispose();
 			}
 			finally
@@ -510,21 +394,13 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="FormMain"/> class.
 		/// </summary>
 		/// <param name="log">The log file for the application.</param>
-		/// <param name="fileSystemService">The file system service.</param>
 		/// <param name="contentManager">The content manager interface.</param>
 		[DefaultConstructor]
-		public FormMain(GorgonLogFile log, IFileSystemService fileSystemService, IEditorContentManager contentManager)
+		public FormMain(GorgonLogFile log, IEditorContentManager contentManager)
 			: this()
 		{
 			_logFile = log;
-			_windowText = Text;
 			_contentManager = contentManager;
-			_fileSystemService = fileSystemService;
-			_currentFile = fileSystemService.DefaultFileSystem;
-
-			_fileSystemService.FileSaved += FileSystem_FileUpdated;
-			_fileSystemService.FileLoaded += FileSystem_FileUpdated;
-			_fileSystemService.FileCreated += FileSystem_FileUpdated;
 		}
 		#endregion
 
@@ -746,6 +622,24 @@ namespace GorgonLibrary.Editor
 			}
 
 			labelUnCollapse.Visible = splitMain.Panel2Collapsed = !settings.PropertiesVisible;
+		}
+
+		/// <summary>
+		/// Function to retrieve a specific sub-view from the main view.
+		/// </summary>
+		/// <typeparam name="T">Type of view to retrieve.</typeparam>
+		/// <returns>
+		/// The view, if found, NULL (Nothing in VB.Net) if not.
+		/// </returns>
+		public T GetView<T>()
+		{
+			if (typeof(T) == typeof(IFileSystemView))
+			{
+				IFileSystemView fsView = treeFileSystem;
+				return (T)fsView;
+			}
+
+			return default(T);
 		}
 		#endregion
 		#endregion

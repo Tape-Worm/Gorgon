@@ -44,6 +44,8 @@ namespace GorgonLibrary.Editor
 		: IMainFormController
 	{
 		#region Variables.
+		// Controller for the file system sub-view and editor file system model.
+		private readonly IFileSystemController _fileSystemController;
 		// The application log file.
 		private GorgonLogFile _logFile;
 		// Data model for the main form.
@@ -104,6 +106,8 @@ namespace GorgonLibrary.Editor
 
 			_view.RestoreViewSettings(_settings);
 			_view.BindContentView(null);
+
+			_fileSystemController.BindModel(_model.CurrentFile);
 		}
 
 		/// <summary>
@@ -207,10 +211,12 @@ namespace GorgonLibrary.Editor
 				_view.BindContentView(null);
 
 				_model.CurrentFile = _fileSystemService.NewFile();
+
+				_fileSystemController.BindModel(_model.CurrentFile);
 			}
 			finally
 			{
-
+				_settings.LastEditorFile = string.Empty;
 				SetWindowText();
 			}
 		}
@@ -281,16 +287,13 @@ namespace GorgonLibrary.Editor
 					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_CANNOT_LOCATE_PROVIDER, filePath));
 				}
 
-				// Unload the current file if necessary.
-//				if (!UnloadData())
-//				{
-//					return;
-//				}
-
 				// Create default content.
 				_view.BindContentView(null);
 
 				_model.CurrentFile = _fileSystemService.LoadFile(filePath);
+
+				// Bind to a new data model.
+				_fileSystemController.BindModel(_model.CurrentFile);
 
 				_settings.LastEditorFile = filePath;
 			}
@@ -310,11 +313,18 @@ namespace GorgonLibrary.Editor
 		/// <param name="fileSystemService">The file system service.</param>
 		/// <param name="view">The view for the main form.</param>
 		/// <param name="model">The data model for the main form.</param>
-		public MainFormController(GorgonLogFile logFile, IEditorSettings settings, IFileSystemService fileSystemService, IMainFormView view, IMainFormModel model)
+		/// <param name="fileSystemController">The controller for the file system sub-view and editor file system model.</param>
+		public MainFormController(GorgonLogFile logFile, 
+			IEditorSettings settings, 
+			IFileSystemService fileSystemService, 
+			IMainFormView view, 
+			IMainFormModel model,
+			IFileSystemController fileSystemController)
 		{
 			_logFile = logFile;
 			_settings = settings;
 			_fileSystemService = fileSystemService;
+			_fileSystemController = fileSystemController;
 			_view = view;
 			_model = model;
 		}
@@ -346,6 +356,50 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to load the previously saved file on start up.
+		/// </summary>
+		public void LoadPreviousFile()
+		{
+			if ((!_settings.AutoLoadLastFile)
+				|| (string.IsNullOrWhiteSpace(_settings.LastEditorFile))
+				|| (!_fileSystemService.HasFileSystemProviders))
+			{
+				return;
+			}
+
+			try
+			{
+				string filePath = Path.GetFullPath(_settings.LastEditorFile);
+
+				// If the file no longer exists, then it's no cause for alarm.  Just leave.
+				if (!File.Exists(filePath))
+				{
+					_logFile.Print("FileSystemService: Could not auto load the file '{0}'.  The file was not found.", LoggingLevel.Verbose, filePath);
+					return;
+				}
+
+				if (!_fileSystemService.CanReadFile(filePath))
+				{
+					_logFile.Print("FileSystemService: Could not auto load the file '{0}'.  No suitable file system provider was found that can read this format.", LoggingLevel.Verbose, filePath);
+					return;
+				}
+
+				// Load the last file and send it on to the main application.
+				_model.CurrentFile = _fileSystemService.LoadFile(filePath);
+
+				SetWindowText();
+			}
+			catch
+			{
+				// Reset the last file loaded if we can no longer load it.
+				_settings.LastEditorFile = string.Empty;
+
+				// Rethrow so we can notify the user.
+				throw;
+			}
+		}
+
 		/// <summary>
 		/// Function to perform view binding with this controller.
 		/// </summary>

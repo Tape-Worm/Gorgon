@@ -23,13 +23,6 @@ namespace GorgonLibrary.Editor
 
 			if (disposing)
 			{
-				if (_fileSystemService != null)
-				{
-					_fileSystemService.FileLoaded -= FileSystem_FileUpdated;
-					_fileSystemService.FileCreated -= FileSystem_FileUpdated;
-					_fileSystemService.FileSaved -= FileSystem_FileUpdated;
-				}
-
 				if (_contentManager != null)
 				{
 					_contentManager.Dispose();

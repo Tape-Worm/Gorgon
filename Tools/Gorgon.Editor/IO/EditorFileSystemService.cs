@@ -53,17 +53,92 @@ namespace GorgonLibrary.Editor
 		private readonly IPlugInRegistry _plugInRegistry;
 		// The list of file system providers indexed by file extension.
 		private readonly IDictionary<GorgonFileExtension, GorgonFileSystemProvider> _providers;
-		// Application settings.
-		private readonly IEditorSettings _settings;
 		// The file system used for packed files.
 		private readonly GorgonFileSystem _packedFileSystem;
-		// The current editor file.
-		private IEditorFileSystem _currentFile;
-		// Default file created on application start.
-		private readonly IEditorFileSystem _defaultFile;
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the list of file extensions associated with a file system provider.
+		/// </summary>
+		/// <param name="provider">Provider being evaluated</param>
+		/// <returns>The list of associated file system provider extensions, formatted for a file dialog.</returns>
+		private static string GetProviderFileExtensions(GorgonFileSystemProvider provider)
+		{
+			var extensionList = new StringBuilder();
+
+			foreach (GorgonFileExtension extension in provider.PreferredExtensions)
+			{
+				if (extensionList.Length > 0)
+				{
+					extensionList.Append(";");
+				}
+
+				extensionList.Append("*.");
+				extensionList.Append(extension.Extension);
+			}
+
+			return extensionList.ToString();
+		}
+
+		/// <summary>
+		/// Function to build the file dialog filter for opening file systems.
+		/// </summary>
+		private void GetFileSystemOpenDialogFilter()
+		{
+			var readerFileTypeList = new StringBuilder();
+			var allSupportedList = new StringBuilder();
+
+			// Get a list of the extensions for the file system providers.
+			foreach (var provider in _providers)
+			{
+				// Build the all supported file extension list.
+				if (_providers.Count > 1)
+				{
+					if (allSupportedList.Length > 0)
+					{
+						allSupportedList.Append(";");
+					}
+
+					allSupportedList.Append("*.");
+					allSupportedList.Append(provider.Key.Extension);
+				}
+
+				// Get all the extensions registered with this provider.
+				string extensions = GetProviderFileExtensions(provider.Value);
+
+				if (string.IsNullOrWhiteSpace(extensions))
+				{
+					continue;
+				}
+
+				if (readerFileTypeList.Length > 0)
+				{
+					readerFileTypeList.Append("|");
+				}
+
+				readerFileTypeList.Append(provider.Key.ToDialogDescription());
+				readerFileTypeList.Append("|");
+				readerFileTypeList.Append(extensions);
+			}
+
+			// If we have more than 1 provider, then show the all supported list.
+			if (allSupportedList.Length > 0)
+			{
+				readerFileTypeList.Append("|");
+				readerFileTypeList.AppendFormat(Resources.GOREDIT_DLG_ALL_SUPPORTED_FILESYSTEMS, allSupportedList);
+				readerFileTypeList.Append("|");
+				readerFileTypeList.Append(allSupportedList);
+			}
+
+			// Ensure "All files" gets added.
+			readerFileTypeList.Append("|");
+			readerFileTypeList.Append(Resources.GOREDIT_DLG_ALL_FILES);
+			readerFileTypeList.Append("|*.*");
+
+			ReadFileTypes = readerFileTypeList.ToString();
+		}
+
 		/// <summary>
 		/// Function to retrieve the applicable file system provider for the file being loaded.
 		/// </summary>
@@ -80,16 +155,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to search all loaded providers to find one that will load the requested file.
-		/// </summary>
-		/// <param name="path">Path to the packed file to load.</param>
-		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
-		private GorgonFileSystemProvider SearchForProvider(string path)
-		{
-			return _providers.Values.FirstOrDefault(item => item.CanReadFile(path));
-		}
-
-		/// <summary>
 		/// Function to retrieve a provider based on the file in the path provided.
 		/// </summary>
 		/// <param name="path">Path to the packed file to load.</param>
@@ -102,7 +167,7 @@ namespace GorgonLibrary.Editor
 			if (string.IsNullOrWhiteSpace(extension))
 			{
 				// Search for the provider.
-				 return SearchForProvider(path);
+				return _providers.Values.FirstOrDefault(item => item.CanReadFile(path));
 			}
 
 			GorgonFileSystemProvider provider = GetProviderByExtension(extension);
@@ -110,7 +175,7 @@ namespace GorgonLibrary.Editor
 			if ((provider == null)
 				|| (!provider.CanReadFile(path)))
 			{
-				return SearchForProvider(path);
+				return _providers.Values.FirstOrDefault(item => item.CanReadFile(path));
 			}
 			
 			return provider;
@@ -125,17 +190,13 @@ namespace GorgonLibrary.Editor
 		/// <param name="scratchArea">The scratch file area used to hold a copy of the file being edited.</param>
 		/// <param name="packFileSystem">The file system used to read packed files.</param>
 		/// <param name="plugInRegistry">The plug-in registry holding the file system providers we need.</param>
-		/// <param name="defaultFile">The default file created on application start up.</param>
-		/// <param name="settings">The application settings.</param>
-		public EditorFileSystemService(GorgonLogFile log, GorgonFileSystem packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry, IEditorFileSystem defaultFile, IEditorSettings settings)
+		public EditorFileSystemService(GorgonLogFile log, GorgonFileSystem packFileSystem, IScratchArea scratchArea, IPlugInRegistry plugInRegistry)
 		{
 			_log = log;
 			_scratchArea = scratchArea;
 			_providers = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new GorgonFileExtensionComparer());
-			_settings = settings;
 			_packedFileSystem = packFileSystem;
 			_plugInRegistry = plugInRegistry;
-			_currentFile = _defaultFile = defaultFile;
 
 			// Notification for disabled plug-ins.
 			_plugInRegistry.PlugInDisabled += (sender, args) =>
@@ -170,17 +231,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the "default" file system that is created on application start (assuming no file was previously loaded).
-		/// </summary>
-		public IEditorFileSystem DefaultFileSystem
-		{
-			get
-			{
-				return _defaultFile;
-			}
-		}
-
 		/// <summary>
 		/// Property to return a string of file types supported for reading.
 		/// </summary>
@@ -303,14 +353,14 @@ namespace GorgonLibrary.Editor
 
 			_log.Print("FileSystemService: Creating new file.", LoggingLevel.Verbose);
 
-			_currentFile = new EditorFileSystem(null);
+			var fileSystem = new EditorFileSystem(null);
 
 			if (FileCreated != null)
 			{
-				FileCreated(this, new FileSystemUpdateEventArgs(_currentFile));
+				FileCreated(this, new FileSystemUpdateEventArgs(fileSystem));
 			}
 
-			return _currentFile;
+			return fileSystem;
 		}
 
 		/// <summary>
@@ -357,19 +407,17 @@ namespace GorgonLibrary.Editor
 				_scratchArea.CopyFileSystem(_packedFileSystem);
 
 				// Note the current file.
-				_currentFile = new EditorFileSystem(path);
-
-				_settings.LastEditorFile = path;
+				var fileSystem = new EditorFileSystem(path);
 
 				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
 				if (FileLoaded != null)
 				{
-					FileLoaded(this, new FileSystemUpdateEventArgs(_currentFile));
+					FileLoaded(this, new FileSystemUpdateEventArgs(fileSystem));
 				}
 				
 				// TODO: Find an applicable writer plug-in for this file.
 				
-				return _currentFile;
+				return fileSystem;
 			}
 			finally
 			{
@@ -389,11 +437,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void LoadFileSystemProviders()
 		{
-#warning This method is pretty large.  Can we refactor into something smaller perhaps?
-			var readerFileTypeList = new StringBuilder();
-			var extensionList = new StringBuilder();
-			var allSupportedList = new StringBuilder();
-
 			// Retrieve all of our file system providers for this file system.
 			_providers.Clear();
 			_packedFileSystem.Clear();
@@ -407,21 +450,9 @@ namespace GorgonLibrary.Editor
 
 			_log.Print("FileSystemService: Building file system provider list...", LoggingLevel.Verbose);
 
-			// Get a list of the extensions for the file system providers.
+			// Build the list of providers associated to a file extension.
 			foreach (var provider in _packedFileSystem.Providers)
 			{
-				if (readerFileTypeList.Length > 0)
-				{
-					readerFileTypeList.Append("|");
-				}
-
-				var firstExtension = provider.PreferredExtensions.First();
-
-				readerFileTypeList.Append(firstExtension.ToDialogDescription());
-				readerFileTypeList.Append("|");
-
-				extensionList.Length = 0;
-
 				foreach (var extension in provider.PreferredExtensions)
 				{
 					if (_providers.ContainsKey(extension))
@@ -431,51 +462,24 @@ namespace GorgonLibrary.Editor
 					}
 
 					_log.Print("FileSystemService: Extension '{0} - {1}' assigned to provider {2} ({3})",
-					           LoggingLevel.Verbose,
-					           extension.Extension,
-					           extension.Description,
+							   LoggingLevel.Verbose,
+							   extension.Extension,
+							   extension.Description,
 							   provider.Name,
 							   provider.Description);
 
-					_providers[extension] = provider;
-
-					if (extensionList.Length > 0)
-					{
-						extensionList.Append(";");
-					}
-
-					extensionList.Append("*.");
-					extensionList.Append(extension.Extension);
+					_providers.Add(extension, provider);
 				}
-
-				if (allSupportedList.Length > 0)
-				{
-					allSupportedList.Append(";");
-				}
-
-				allSupportedList.Append(extensionList);
-				readerFileTypeList.Append(extensionList);
 			}
 
-			// If we have more than 1 provider, then show the all supported list.
-			if ((_providers.Count > 1)
-				&& (allSupportedList.Length > 0))
+			// If no providers are found, then default to "All files".
+			if (_providers.Count == 0)
 			{
-				readerFileTypeList.Append("|");
-				readerFileTypeList.AppendFormat(Resources.GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES, allSupportedList);
-				readerFileTypeList.Append("|");
-				readerFileTypeList.Append(allSupportedList);
+				ReadFileTypes = string.Format("{0}|*.*", Resources.GOREDIT_DLG_ALL_FILES);
+				return;
 			}
 
-			if (readerFileTypeList.Length > 0)
-			{
-				readerFileTypeList.Append("|");
-			}
-
-			readerFileTypeList.Append(Resources.GOREDIT_DLG_ALL_FILES);
-			readerFileTypeList.Append("|*.*");
-
-			ReadFileTypes = readerFileTypeList.ToString();
+			GetFileSystemOpenDialogFilter();
 		}
 		#endregion
 		#endregion

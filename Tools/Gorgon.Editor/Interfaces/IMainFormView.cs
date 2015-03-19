@@ -26,7 +26,6 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -104,6 +103,13 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="settings">Settings object to use when restoring view state.</param>
 		void RestoreViewSettings(IEditorSettings settings);
+
+		/// <summary>
+		/// Function to retrieve a specific sub-view from the main view.
+		/// </summary>
+		/// <typeparam name="T">Type of view to retrieve.</typeparam>
+		/// <returns>The view, if found, NULL (Nothing in VB.Net) if not.</returns>
+		T GetView<T>();
 		#endregion
 	}
 }

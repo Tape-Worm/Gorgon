@@ -118,6 +118,12 @@ namespace GorgonLibrary.Editor
 			obj.For<IMainFormView>()
 			   .Use<FormMain>();
 
+			obj.For<IFileSystemController>()
+			   .Use<FileSystemTreeController>()
+			   .Ctor<IFileSystemView>().Is("MainFormTreeView",
+			                               ctx => ctx.GetInstance<IMainFormView>()
+			                                         .GetView<IFileSystemView>());
+
 			obj.For<IMainFormController>()
 			   .Use<MainFormController>()
 			   .OnCreation(_ => _.BindView());

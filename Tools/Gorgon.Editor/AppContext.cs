@@ -120,36 +120,22 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			string filePath = string.Empty;
-
 			try
 			{
-				filePath = Path.GetFullPath(_settings.LastEditorFile);
-
-				// If the file no longer exists, then it's no cause for alarm.  Just leave.
-				if (!File.Exists(filePath))
-				{
-					_log.Print("FileSystemService: Could not auto load the file '{0}'.  The file was not found.", LoggingLevel.Verbose, filePath);
-					return;
-				}
-
 				// Attempt to load the last file that we saved.
 				_splash.InfoText = Resources.GOREDIT_TEXT_LOAD_PREV_FILE;
-				
-				// Load the last file and send it on to the main application.
-				_fileSystemService.LoadFile(filePath);
+
+				// Open the previous file.
+				_mainController.LoadPreviousFile();
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex,
-				                      () =>
-				                      GorgonDialogs.ErrorBox(_splash,
-				                                             string.Format(Resources.GOREDIT_ERR_OPEN_PACK_FILE, filePath.Ellipses(80, true)),
-				                                             null,
+									  () =>
+									  GorgonDialogs.ErrorBox(_splash,
+															 string.Format(Resources.GOREDIT_ERR_OPEN_PACK_FILE, _settings.LastEditorFile.Ellipses(80, true)),
+															 null,
 															 ex));
-
-				// Reset the last file loaded if we can no longer load it.
-				_settings.LastEditorFile = string.Empty;
 			}
 		}
 

@@ -213,8 +213,8 @@ Please see the details pane for more information.</value>
   <data name="GOREDIT_DLG_ALL_FILES" xml:space="preserve">
     <value>All files</value>
   </data>
-  <data name="GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES" xml:space="preserve">
-    <value>All supported content files ({0})</value>
+  <data name="GOREDIT_DLG_ALL_SUPPORTED_FILESYSTEMS" xml:space="preserve">
+    <value>All supported files ({0})</value>
   </data>
   <data name="GOREDIT_ERR_CANNOT_LOCATE_PROVIDER" xml:space="preserve">
     <value>Could not locate a file system provider to load '{0}'.</value>

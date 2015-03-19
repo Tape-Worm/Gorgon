@@ -40,6 +40,34 @@ namespace GorgonLibrary.Editor
 		private string _filePath;
 		#endregion
 
+		#region Methods.
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EditorFileSystem"/> struct.
+		/// </summary>
+		/// <param name="filePath">The path to the file.</param>
+		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="filePath"/> does not contain a file name.</exception>
+		/// <remarks>Pass NULL (Nothing in VB.Net) or an empty string to the <paramref name="filePath"/> parameter to create an empty file.</remarks>
+		public EditorFileSystem(string filePath)
+		{
+			FullName = filePath;
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the filename for the file.
+		/// </summary>
+		public string Name
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region IEditorFileSystem Implementation.
 		#region Properties.
 		/// <summary>
 		/// Property to return whether the file has been changed or not.
@@ -83,30 +111,6 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorFileSystem"/> struct.
-		/// </summary>
-		/// <param name="filePath">The path to the file.</param>
-		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="filePath"/> does not contain a file name.</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) or an empty string to the <paramref name="filePath"/> parameter to create an empty file.</remarks>
-		public EditorFileSystem(string filePath)
-		{
-			FullName = filePath;
-			HasChanged = string.IsNullOrWhiteSpace(filePath);
-		}
-		#endregion
-
-		#region INamedObject Members
-		/// <summary>
-		/// Property to return the filename for the file.
-		/// </summary>
-		public string Name
-		{
-			get;
-			private set;
-		}
 		#endregion
 	}
 }

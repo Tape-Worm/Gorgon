@@ -159,11 +159,11 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to All supported content files ({0}).
+        ///   Looks up a localized string similar to All supported files ({0}).
         /// </summary>
-        internal static string GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES {
+        internal static string GOREDIT_DLG_ALL_SUPPORTED_FILESYSTEMS {
             get {
-                return ResourceManager.GetString("GOREDIT_DLG_ALL_SUPPORTED_CONTENT_FILES", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_DLG_ALL_SUPPORTED_FILESYSTEMS", resourceCulture);
             }
         }
         

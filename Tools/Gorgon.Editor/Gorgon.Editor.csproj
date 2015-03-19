@@ -76,17 +76,21 @@
     <Compile Include="AppContext.cs" />
     <Compile Include="Content\EditorContentManager.cs" />
     <Compile Include="Content\NoContentModel.cs" />
+    <Compile Include="Controls\FileSystemTree\View\GetNodeStateEventArgs.cs" />
     <Compile Include="Controls\Tree Support\FileSystemRootNode.cs" />
     <Compile Include="Controls\Tree Support\FileSystemTreeNodeCollectionExtension.cs" />
     <Compile Include="Controls\Tree Support\FileSystemTreeNodeComparer.cs" />
     <Compile Include="Controls\Tree Support\FileSystemTreeNode.cs" />
-    <Compile Include="Controls\FileSystemTreeView.cs">
+    <Compile Include="Controls\FileSystemTree\View\FileSystemTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\Tree Support\FileSystemDependencyNode.cs" />
     <Compile Include="Controls\Tree Support\FileSystemDirectoryNode.cs" />
     <Compile Include="Controls\Tree Support\FileSystemFileNode.cs" />
     <Compile Include="EditorTheme.cs" />
+    <Compile Include="Controls\FileSystemTree\Controller\FileSystemTreeController.cs" />
+    <Compile Include="Interfaces\IFileSystemController.cs" />
+    <Compile Include="Interfaces\IFileSystemTreeView.cs" />
     <Compile Include="Interfaces\IMainFormController.cs" />
     <Compile Include="Forms\Controller\MainFormController.cs" />
     <Compile Include="Interfaces\IMainFormModel.cs" />
@@ -136,7 +140,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyObject.cs" />
     <Compile Include="Graphics\VideoDeviceSelector.cs" />
-    <EmbeddedResource Include="Controls\FileSystemTreeView.resx">
+    <EmbeddedResource Include="Controls\FileSystemTree\View\FileSystemTreeView.resx">
       <DependentUpon>FileSystemTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\View\FormMain.resx">

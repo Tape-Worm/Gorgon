@@ -20,50 +20,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, March 17, 2015 12:52:52 AM
+// Created: Wednesday, March 18, 2015 11:41:28 PM
 // 
 #endregion
+
+using System;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// The main application UI controller interface.
+	/// Event arguments for the get node state event.
 	/// </summary>
-	interface IMainFormController
+	class GetNodeStateEventArgs
+		: EventArgs
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the current view bound to the controller.
+		/// Property to return the type of node.
 		/// </summary>
-		IMainFormView View
+		public NodeType NodeType
 		{
 			get;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to return the current model bound to the controller.
+		/// Property to set or return whether the node has changes or not.
 		/// </summary>
-		IMainFormModel Model
+		public bool HasChanges
 		{
 			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether there is an item that the node represents.
+		/// </summary>
+		public bool IsDetached
+		{
+			get;
+			set;
 		}
 		#endregion
 
-		#region Methods.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Function to load the previously saved file on start up.
+		/// Initializes a new instance of the <see cref="GetNodeStateEventArgs"/> class.
 		/// </summary>
-		void LoadPreviousFile();
-
-		/// <summary>
-		/// Function to perform view binding with this controller.
-		/// </summary>
-		void BindView();
-
-		/// <summary>
-		/// Function to unbind the current view from this controller.
-		/// </summary>
-		void UnbindView();
+		/// <param name="nodeType">Type of node to query.</param>
+		public GetNodeStateEventArgs(NodeType nodeType)
+		{
+			NodeType = nodeType;
+		}
 		#endregion
 	}
 }

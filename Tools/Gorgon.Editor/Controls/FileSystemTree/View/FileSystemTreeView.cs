@@ -69,10 +69,10 @@ namespace GorgonLibrary.Editor
 	}
 
 	/// <summary>
-    /// A tree view for displaying file content from the editor.
-    /// </summary>
-    sealed class FileSystemTreeView
-        : TreeView
+	/// The view used to represent the tree that will display the contents of the file system in the main UI.
+	/// </summary>
+	sealed class FileSystemTreeView
+        : TreeView, IFileSystemView
     {
         #region Variables.
         private bool _disposed;							// Flag to indicate that the object was disposed.
@@ -86,48 +86,13 @@ namespace GorgonLibrary.Editor
 	    private ImageAttributes _linkAttributes;		// Attributes for linked items.
 	    private ImageAttributes _expandIconAttributes;	// Attributes for the expand/contract icon color.
 		private IContentData _content;					// Current content.
-		// The file system service for this view.
-		private IFileSystemService _fileSystemService;
 		// The editor theme.
 		private EditorTheme _theme;
+		// The root node for the tree.
+		private FileSystemRootNode _rootNode;
         #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the file system service for the view.
-		/// </summary>
-		public IFileSystemService FileSystemService
-		{
-			get
-			{
-				return _fileSystemService;
-			}
-			set
-			{
-				if (_fileSystemService != null)
-				{
-					_fileSystemService.FileCreated -= FileSystemService_FileCreated;
-					_fileSystemService.FileLoaded -= FileSystemService_FileCreated;
-				}
-				
-				Nodes.Clear();
-
-				if (value == null)
-				{
-					return;
-				}
-
-				_fileSystemService = value;
-				_fileSystemService.FileCreated += FileSystemService_FileCreated;
-				_fileSystemService.FileLoaded += FileSystemService_FileCreated;
-
-				if (Nodes.Count == 0)
-				{
-					Nodes.Add(new FileSystemRootNode(_fileSystemService.DefaultFileSystem));
-				}
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the theme for the tree view.
 		/// </summary>
@@ -220,37 +185,6 @@ namespace GorgonLibrary.Editor
 
         #region Methods.
 		/// <summary>
-		/// Handles the FileCreated event of the FileSystemService control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="FileSystemUpdateEventArgs"/> instance containing the event data.</param>
-		private void FileSystemService_FileCreated(object sender, FileSystemUpdateEventArgs e)
-		{
-			FileSystemRootNode root = null;
-
-			try
-			{
-				if (Nodes.Count == 0)
-				{
-					root = new FileSystemRootNode(e.FileSystem);
-					Nodes.Add(root);
-				}
-				else
-				{
-					root = Nodes[0] as FileSystemRootNode;
-				}
-
-				Debug.Assert(root != null, "Root is NULL! May not be a root node type.");
-
-				root.Redraw();
-			}
-			catch (Exception ex)
-			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
-			}
-		}
-
-		/// <summary>
 		/// Function to retrieve the proper node foreground color based on state.
 		/// </summary>
 		/// <param name="node">Node to evaluate.</param>
@@ -262,12 +196,30 @@ namespace GorgonLibrary.Editor
 				return Theme.DisabledColor;
 			}
 
-			if ((node.IsCut) && (!node.IsSelected))
+			if ((node.IsCut) || (node.IsSelected))
 			{
 				return Theme.HilightForeColor;
 			}
 
-			FileSystemDependencyNode dependencyNode = node as FileSystemDependencyNode;
+			var args = new GetNodeStateEventArgs(node.NodeType);
+			if (GetNodeState != null)
+			{
+				GetNodeState(this, args);
+			}
+
+			switch (node.NodeType)
+			{
+				case NodeType.Root:
+					return args.HasChanges ? Theme.HilightBackColor : Theme.ForeColor;
+				case NodeType.Dependency:
+				case NodeType.Directory:
+				case NodeType.File:
+					return Theme.ForeColor;
+				default:
+					return Theme.DisabledColor;
+			}
+
+			/*FileSystemDependencyNode dependencyNode = node as FileSystemDependencyNode;
 
 		    if (dependencyNode != null)
 			{
@@ -290,13 +242,6 @@ namespace GorgonLibrary.Editor
 				return Theme.HilightForeColor;
 			}
 
-			// Check the root before the directory because a root is a directory and will never be invalid.
-			var rootNode = node as FileSystemRootNode;
-			if ((rootNode != null) && (rootNode.FileSystem.HasChanged))
-			{
-				return Theme.HilightBackColor;	
-			}
-
 
 			// Disable directory node if no directory is attached.
 			FileSystemDirectoryNode directoryNode = node as FileSystemDirectoryNode;
@@ -305,7 +250,7 @@ namespace GorgonLibrary.Editor
 				return Theme.DisabledColor;
 			}
 
-			return Theme.ForeColor;
+			return Theme.ForeColor;*/
 		}
 
 		/// <summary>
@@ -505,8 +450,6 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
-	                FileSystemService = null;
-
 	                if (_expandIconAttributes != null)
 	                {
 		                _expandIconAttributes.Dispose();
@@ -1020,5 +963,36 @@ namespace GorgonLibrary.Editor
             base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
         }
         #endregion
-    }
+
+		#region IFileSystemView Members
+		#region Events
+		/// <summary>
+		/// Event fired to retrieve the state of the data linked to a node.
+		/// </summary>
+		public event EventHandler<GetNodeStateEventArgs> GetNodeState;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to clear the nodes from the tree.
+		/// </summary>
+		public void Clear()
+		{
+			_rootNode = null;
+			Nodes.Clear();
+		}
+
+		/// <summary>
+		/// Function to add a new root node to the tree.
+		/// </summary>
+		/// <param name="fileSystemName">Name of the file system that's loaded (or created).</param>
+		public void AddFileSystemRoot(string fileSystemName)
+		{
+			Clear();
+			_rootNode = new FileSystemRootNode(fileSystemName);
+			Nodes.Add(_rootNode);
+		}
+		#endregion
+		#endregion
+	}
 }

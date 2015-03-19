@@ -47,22 +47,13 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to set or return the file system attached to this node.
-		/// </summary>
-		public IEditorFileSystem FileSystem
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Gets or sets the text displayed in the label of the tree node.
 		/// </summary>
 		public override string Text
 		{
 			get
 			{
-				return FileSystem == null ? Resources.GOREDIT_TEXT_UNTITLED : FileSystem.Name;
+				return base.Text;
 			}
 			// ReSharper disable once ValueParameterNotUsed
 			set
@@ -76,10 +67,11 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="FileSystemRootNode"/> class.
 		/// </summary>
-		/// <param name="fileSystem">The file system attached to the node.</param>
-		public FileSystemRootNode(IEditorFileSystem fileSystem)
+		/// <param name="fileSystemName">The name of the file system.</param>
+		public FileSystemRootNode(string fileSystemName)
 		{
-			FileSystem = fileSystem;
+			Name = fileSystemName;
+			base.Text = fileSystemName;
 			ExpandedImage = CollapsedImage = Resources.file_system_root_node_16x16;
 		}
 		#endregion

@@ -71,14 +71,6 @@ namespace GorgonLibrary.Editor
 		event EventHandler<FileSystemUpdateEventArgs> FileSaved;
 
 		/// <summary>
-		/// Property to return the "default" file system that is created on application start (assuming no file was previously loaded).
-		/// </summary>
-		IEditorFileSystem DefaultFileSystem
-		{
-			get;
-		}
-
-		/// <summary>
 		/// Property to return a string of file types supported for reading.
 		/// </summary>
 		/// <remarks>This property will return a string formatted for the open file dialog extension property.</remarks>
