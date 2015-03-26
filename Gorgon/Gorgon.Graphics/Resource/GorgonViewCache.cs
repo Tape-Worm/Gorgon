@@ -127,14 +127,14 @@ namespace GorgonLibrary.Graphics
             #endregion
 
             #region IEqualityComparer<ViewKey> Members
-            /// <summary>
-            /// Determines whether the specified objects are equal.
-            /// </summary>
-            /// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
-            /// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
-            /// <returns>
-            /// true if the specified objects are equal; otherwise, false.
-            /// </returns>
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <param name="x">The first object of type <see cref="ViewKey"/> to compare.</param>
+			/// <param name="y">The second object of type <see cref="ViewKey"/> to compare.</param>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
             bool IEqualityComparer<ViewKey>.Equals(ViewKey x, ViewKey y)
             {
                 return x.Equals(y);

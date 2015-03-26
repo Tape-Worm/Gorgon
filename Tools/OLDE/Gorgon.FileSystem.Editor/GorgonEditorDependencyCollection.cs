@@ -156,13 +156,12 @@ namespace GorgonLibrary.IO
 		private class DependencyComparer
 			: IEqualityComparer<DependencyKey>
 		{
-
 			#region IEqualityComparer<DependencyKey> Members
 			/// <summary>
 			/// Determines whether the specified objects are equal.
 			/// </summary>
-			/// <param name="x">The first object of type DependencyKey to compare.</param>
-			/// <param name="y">The second object of type DependencyKey to compare.</param>
+			/// <param name="x">The first object of type <see cref="DependencyKey"/> to compare.</param>
+			/// <param name="y">The second object of type <see cref="DependencyKey"/> to compare.</param>
 			/// <returns>
 			/// true if the specified objects are equal; otherwise, false.
 			/// </returns>

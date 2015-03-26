@@ -46,15 +46,15 @@ namespace GorgonLibrary.Editor
             : IEqualityComparer<GorgonFileExtension>
         {
             #region IEqualityComparer<FileExtension> Members
-            /// <summary>
-            /// Determines whether the specified objects are equal.
-            /// </summary>
-            /// <param name="x">The first object of type string to compare.</param>
-            /// <param name="y">The second object of type string to compare.</param>
-            /// <returns>
-            /// true if the specified objects are equal; otherwise, false.
-            /// </returns>
-            public bool Equals(GorgonFileExtension x, GorgonFileExtension y)
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <param name="x">The first object of type <see cref="GorgonFileExtension"/> to compare.</param>
+			/// <param name="y">The second object of type <see cref="GorgonFileExtension"/> to compare.</param>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			public bool Equals(GorgonFileExtension x, GorgonFileExtension y)
             {
                 return GorgonFileExtension.Equals(ref x, ref y);
             }

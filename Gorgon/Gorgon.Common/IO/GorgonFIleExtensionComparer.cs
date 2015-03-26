@@ -38,8 +38,8 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Determines whether the specified objects are equal.
 		/// </summary>
-		/// <param name="x">The first object of type <paramref name="x" /> to compare.</param>
-		/// <param name="y">The second object of type <paramref name="y" /> to compare.</param>
+		/// <param name="x">The first object of type <see cref="GorgonFileExtension"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="GorgonFileExtension"/> to compare.</param>
 		/// <returns>
 		/// true if the specified objects are equal; otherwise, false.
 		/// </returns>
@@ -53,7 +53,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="obj">The object.</param>
 		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
 		int IEqualityComparer<GorgonFileExtension>.GetHashCode(GorgonFileExtension obj)
 		{
