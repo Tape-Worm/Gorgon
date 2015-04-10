@@ -85,6 +85,21 @@ namespace GorgonLibrary.Editor
 
 		#region IFileSystemTreeController
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the currently active file system.
+		/// </summary>
+		public IEditorFileSystem CurrentFileSystem
+		{
+			get
+			{
+				return _model;
+			}
+			set
+			{
+				_model = value;
+				Refresh();
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -107,16 +122,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			_view.AddFileSystemRoot(_model.Name);
-		}
-
-		/// <summary>
-		/// Function to bind the editor file system as a model for this controller.
-		/// </summary>
-		/// <param name="model">Model to bind to the controller.</param>
-		public void BindModel(IEditorFileSystem model)
-		{
-			_model = model;
-			Refresh();
 		}
 		#endregion
 		#endregion

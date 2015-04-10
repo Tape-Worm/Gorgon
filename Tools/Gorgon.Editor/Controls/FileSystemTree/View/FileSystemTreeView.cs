@@ -38,6 +38,7 @@ using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.UI;
+using SlimMath;
 
 namespace GorgonLibrary.Editor
 {
@@ -587,6 +588,27 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
+		/// Function to retrieve the size of the icon to display based on the current DPI.
+		/// </summary>
+		/// <param name="g">Graphics interface.</param>
+		/// <param name="iconImageSize">The icon size.</param>
+		/// <returns>The size scaled to the correct DPI.</returns>
+		private static Size GetIconSize(System.Drawing.Graphics g, Size iconImageSize)
+		{
+			if ((g.DpiX.EqualsEpsilon(96.0f))
+			    && (g.DpiY.EqualsEpsilon(96.0f)))
+			{
+				return iconImageSize;
+			}
+
+			// Calculate size of image in inches in standard DPI (96 DPI for Windows).
+			var imageSizeStdDPI = new SizeF(iconImageSize.Width / 96.0f, iconImageSize.Height / 96.0f);
+
+			return new Size(((int)(imageSizeStdDPI.Width * g.DpiX).FastCeiling()).Max(iconImageSize.Width),
+			                ((int)(imageSizeStdDPI.Height * g.DpiY).FastCeiling()).Max(iconImageSize.Height));
+		}
+
+		/// <summary>
 		/// Function to draw the expand/contract icon for a node.
 		/// </summary>
 		/// <param name="g">Graphics interface.</param>
@@ -602,8 +624,7 @@ namespace GorgonLibrary.Editor
 			}
 			
 			Image expandContractIcon = node.IsExpanded ? Resources.tree_expand_16x16 : Resources.tree_collapse_16x16;
-			position = new Point(position.X + (node.Level * expandContractIcon.Width) + expandContractIcon.Width / 2, position.Y);
-
+			
 			g.DrawImage(expandContractIcon,
 			            new Rectangle(position, expandContractIcon.Size),
 			            0,
@@ -637,8 +658,10 @@ namespace GorgonLibrary.Editor
 			Debug.Assert(currentIcon != null, "Node does not have an icon.");
 
 			// Draw the icon.
+			Size scaledIconSize = GetIconSize(g, currentIcon.Size);
+
 			g.DrawImage(currentIcon,
-				        new Rectangle(position, currentIcon.Size),
+				        new Rectangle(position, scaledIconSize),
 				        0,
 				        0,
 				        currentIcon.Width,
@@ -650,11 +673,13 @@ namespace GorgonLibrary.Editor
 			// Draw the link icon overlay if we have a dependency.
 			if ((node.NodeType & NodeType.Dependency) == NodeType.Dependency)
 			{
+				Size scaledOverlaySize = GetIconSize(g, Resources.linked_file_8x8.Size);
+
 				g.DrawImage(Resources.linked_file_8x8,
 				            new Rectangle(position.X,
-				                          position.Y + currentIcon.Height - Resources.linked_file_8x8.Height,
-				                          Resources.linked_file_8x8.Width,
-				                          Resources.linked_file_8x8.Height),
+				                          position.Y + scaledIconSize.Height - scaledOverlaySize.Height,
+				                          scaledOverlaySize.Width,
+				                          scaledOverlaySize.Height),
 				            0,
 				            0,
 				            Resources.linked_file_8x8.Width,
@@ -663,7 +688,8 @@ namespace GorgonLibrary.Editor
 				            _linkAttributes);
 			}
 
-			position = new Point(position.X + currentIcon.Width + 2, position.Y);
+			int offset = (scaledIconSize.Width / currentIcon.Width) * 2;
+			position = new Point(position.X + scaledIconSize.Width + offset, position.Y);
 
 			if (!drawText)
 			{
@@ -781,7 +807,9 @@ namespace GorgonLibrary.Editor
             {
                 var rect = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height - 1);
                 e.Graphics.DrawRectangle(_focusPen, rect);
-            }			
+            }
+
+	        position = new Point(node.Level * 16 + position.X, position.Y);
 
             // Draw the icon to expand/contract child nodes (if said nodes exist).
 			DrawExpandContractIcon(e.Graphics, node, ref position);
@@ -852,6 +880,10 @@ namespace GorgonLibrary.Editor
 				Controls.Add(_renameBox);
 			}
 
+			Image nodeImage = node.IsExpanded ? node.ExpandedImage : node.CollapsedImage;
+			Size expandContractScale;
+			Size iconScale;
+
 			// Wipe out the background.
 			using (var g = CreateGraphics())
 			{
@@ -862,15 +894,17 @@ namespace GorgonLibrary.Editor
 				}
 
 				g.FillRectangle(_selectBrush, new Rectangle(0, node.Bounds.Y, ClientSize.Width, node.Bounds.Height));
+
+				iconScale = GetIconSize(g, nodeImage.Size);
 			}
 
 			Point nodePosition = node.Bounds.Location;
-			nodePosition.X += node.Level * 16 + 24;
+
+			nodePosition.X += node.Level * 16 + 21;
 			nodePosition.Y++;
-			if (node.CollapsedImage != null)
-			{
-				nodePosition.X += node.CollapsedImage.Width + 2;
-			}
+
+			int offset = iconScale.Width / nodeImage.Width;
+			nodePosition.X += iconScale.Width + (offset * 2);
 
 			_renameBox.Location = nodePosition;
 			_renameBox.Width = ClientSize.Width - nodePosition.X;

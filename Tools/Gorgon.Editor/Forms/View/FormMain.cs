@@ -633,13 +633,13 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public T GetView<T>()
 		{
-			if (typeof(T) == typeof(IFileSystemView))
+			if (typeof(T) != typeof(IFileSystemView))
 			{
-				IFileSystemView fsView = treeFileSystem;
-				return (T)fsView;
+				return default(T);
 			}
 
-			return default(T);
+			IFileSystemView fsView = treeFileSystem;
+			return (T)fsView;
 		}
 		#endregion
 		#endregion

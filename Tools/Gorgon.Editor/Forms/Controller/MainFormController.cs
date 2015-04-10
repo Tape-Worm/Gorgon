@@ -47,15 +47,15 @@ namespace GorgonLibrary.Editor
 		// Controller for the file system sub-view and editor file system model.
 		private readonly IFileSystemController _fileSystemController;
 		// The application log file.
-		private GorgonLogFile _logFile;
+		private readonly GorgonLogFile _logFile;
 		// Data model for the main form.
-		private IMainFormModel _model;
+		private readonly IMainFormModel _model;
 		// The view for the main form.
-		private IMainFormView _view;
+		private readonly IMainFormView _view;
 		// The file system service.
-		private IFileSystemService _fileSystemService;
+		private readonly IFileSystemService _fileSystemService;
 		// Application settings.
-		private IEditorSettings _settings;
+		private readonly IEditorSettings _settings;
 		#endregion
 
 		#region Properties.
@@ -107,7 +107,7 @@ namespace GorgonLibrary.Editor
 			_view.RestoreViewSettings(_settings);
 			_view.BindContentView(null);
 
-			_fileSystemController.BindModel(_model.CurrentFile);
+			_fileSystemController.CurrentFileSystem = _model.CurrentFile;
 		}
 
 		/// <summary>
@@ -212,7 +212,7 @@ namespace GorgonLibrary.Editor
 
 				_model.CurrentFile = _fileSystemService.NewFile();
 
-				_fileSystemController.BindModel(_model.CurrentFile);
+				_fileSystemController.CurrentFileSystem = _model.CurrentFile;
 			}
 			finally
 			{
@@ -293,7 +293,7 @@ namespace GorgonLibrary.Editor
 				_model.CurrentFile = _fileSystemService.LoadFile(filePath);
 
 				// Bind to a new data model.
-				_fileSystemController.BindModel(_model.CurrentFile);
+				_fileSystemController.CurrentFileSystem = _model.CurrentFile;
 
 				_settings.LastEditorFile = filePath;
 			}
