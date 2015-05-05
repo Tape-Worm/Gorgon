@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -37,8 +36,6 @@ using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
-using GorgonLibrary.UI;
-using SlimMath;
 
 namespace GorgonLibrary.Editor
 {

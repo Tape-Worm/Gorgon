@@ -353,7 +353,7 @@ namespace GorgonLibrary.Editor
 
 			_log.Print("FileSystemService: Creating new file.", LoggingLevel.Verbose);
 
-			var fileSystem = new EditorFileSystem(null);
+			var fileSystem = new EditorFileSystem(null, _scratchArea);
 
 			if (FileCreated != null)
 			{
@@ -407,7 +407,7 @@ namespace GorgonLibrary.Editor
 				_scratchArea.CopyFileSystem(_packedFileSystem);
 
 				// Note the current file.
-				var fileSystem = new EditorFileSystem(path);
+				var fileSystem = new EditorFileSystem(path, _scratchArea);
 
 				// Once the copy is complete, notify anyone who's listening that we've loaded a new file.
 				if (FileLoaded != null)

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
+using KRBTabControl;
 
 namespace GorgonLibrary.Editor
 {
@@ -679,10 +680,10 @@ namespace GorgonLibrary.Editor
 		private ToolStripMenuItem menuFile;
 		private ToolStripMenuItem itemNew;
 		private KRBTabControl.KRBTabControl tabPages;
-		private KRBTabControl.TabPageEx pageFiles;
+		private TabPageEx pageFiles;
 		private ToolStripContainer toolsFiles;
 		private ToolStrip stripFiles;
-		private KRBTabControl.TabPageEx pageProperties;
+		private TabPageEx pageProperties;
 		private ToolStripMenuItem itemOpen;
 		private ToolStripSeparator toolStripSeparator3;
 		private ToolStripMenuItem itemAddContent;

@@ -25,7 +25,6 @@
 #endregion
 
 using System.Drawing;
-using System.IO;
 
 namespace GorgonLibrary.Editor
 {

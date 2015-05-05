@@ -38,6 +38,8 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		// Path to the file.
 		private string _filePath;
+		// The scratch file location.
+		private IScratchArea _scratchArea;
 		#endregion
 
 		#region Methods.
@@ -48,10 +50,12 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="EditorFileSystem"/> struct.
 		/// </summary>
 		/// <param name="filePath">The path to the file.</param>
+		/// <param name="scratchArea">The location used for the scratch files.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="filePath"/> does not contain a file name.</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) or an empty string to the <paramref name="filePath"/> parameter to create an empty file.</remarks>
-		public EditorFileSystem(string filePath)
+		public EditorFileSystem(string filePath, IScratchArea scratchArea)
 		{
+			_scratchArea = scratchArea;
 			FullName = filePath;
 		}
 		#endregion

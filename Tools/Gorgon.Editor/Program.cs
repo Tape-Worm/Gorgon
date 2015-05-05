@@ -26,11 +26,9 @@
 
 using System;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 using StructureMap;
