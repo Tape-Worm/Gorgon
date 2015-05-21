@@ -25,12 +25,13 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// The type of structured buffer unordered access view.
@@ -57,7 +58,7 @@ namespace GorgonLibrary.Graphics
     /// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
     /// <para>Ordered access views can be read/write in the shader if the format is set to one of R32_Uint, R32_Int or R32_Float.  Otherwise the view will be read-only.  An unordered access view must 
     /// have a format that is the same bit-depth and in the same group as its bound resource.</para>
-    /// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferUnorderedAccessView">GorgonBufferUnorderedAccessView</see>, only one unordered access view may be applied to a resource.</para>
+    /// <para>Unlike a <see cref="Gorgon.Graphics.GorgonBufferUnorderedAccessView">GorgonBufferUnorderedAccessView</see>, only one unordered access view may be applied to a resource.</para>
     /// <para>This view allows structured views to be viewed as append/consume or count buffers.</para>
     /// </remarks>
     public sealed class GorgonStructuredBufferUnorderedAccessView
@@ -98,7 +99,7 @@ namespace GorgonLibrary.Graphics
         {
             var bufferType = UnorderedAccessViewBufferFlags.None;
 
-			Gorgon.Log.Print("Creating structured buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+			GorgonApplication.Log.Print("Creating structured buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
             switch (ViewType)
             {

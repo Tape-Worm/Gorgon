@@ -28,7 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A comparer for node sorting.

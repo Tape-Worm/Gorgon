@@ -8,7 +8,7 @@
     <ProjectGuid>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Graphics</RootNamespace>
+    <RootNamespace>Gorgon.Graphics</RootNamespace>
     <AssemblyName>Gorgon.Graphics</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -47,8 +47,8 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
-      <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    <Reference Include="Gorgon.Native">
+      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX">
       <HintPath>..\..\Dependencies\SharpDX_262\SharpDX.dll</HintPath>

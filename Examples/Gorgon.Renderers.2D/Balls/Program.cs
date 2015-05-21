@@ -31,15 +31,16 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Example.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Example.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// Main class for the application.
@@ -584,7 +585,7 @@ namespace GorgonLibrary.Graphics.Example
 
 				Initialize();
 
-				Gorgon.Run(_form, Idle);
+				GorgonApplication.Run(_form, Idle);
 			}
 			catch (Exception ex)
 			{

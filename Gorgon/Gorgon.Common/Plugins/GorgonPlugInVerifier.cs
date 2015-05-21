@@ -29,7 +29,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace GorgonLibrary.PlugIns
+namespace Gorgon.PlugIns
 {
 	/// <summary>
 	/// Plug-in verification object.

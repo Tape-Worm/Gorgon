@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Our blue text color writer.

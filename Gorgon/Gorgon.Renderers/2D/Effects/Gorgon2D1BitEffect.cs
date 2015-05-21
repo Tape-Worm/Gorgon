@@ -26,10 +26,10 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Native;
+using Gorgon.Graphics;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders an image as if it were 1 bit image.

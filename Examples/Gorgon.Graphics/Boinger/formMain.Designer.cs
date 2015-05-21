@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	partial class formMain
 	{

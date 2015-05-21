@@ -33,10 +33,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// The File System interface.
@@ -51,7 +52,7 @@ namespace GorgonLibrary.IO
 	/// directory is mounted first, followed by the zip, then the zip file version of the SomeText.txt file will take precedence and will be used.  The only exception to this rule is the WriteLocation directory
 	/// which has the highest precedence over all files.</para>
     /// <para>By default, a new file system instance will only have access to the folders and files of the hard drive via a folder file system.  File systems that are in packed files (e.g. WinZip files) can be loaded into the 
-    /// file system by way of a <see cref="GorgonLibrary.IO.GorgonFileSystemProvider">provider</see>.  Providers are plug-in objects that are loaded into the file system.  Once a provider plug-in is loaded, then the 
+    /// file system by way of a <see cref="Gorgon.IO.GorgonFileSystemProvider">provider</see>.  Providers are plug-in objects that are loaded into the file system.  Once a provider plug-in is loaded, then the 
     /// contents of that file system can be mounted like a standard directory.  For example, if the zip file provider plug-in is loaded, then the file system may be mounted into the root by: 
     /// <code>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</code>.</para>
 	/// </remarks>
@@ -179,7 +180,7 @@ namespace GorgonLibrary.IO
             // Find existing mount point.
             GorgonFileSystemDirectory mountDirectory = GetDirectory(mountPath) ?? AddDirectoryEntry(mountPath);
 
-            Gorgon.Log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Verbose, physicalPath, mountPath);
+            GorgonApplication.Log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Verbose, physicalPath, mountPath);
 
             provider.Enumerate(physicalPath, mountDirectory, out physicalDirectories, out physicalFiles);
 
@@ -200,7 +201,7 @@ namespace GorgonLibrary.IO
                 AddFileEntry(provider, file.VirtualPath, physicalPath, file.FullPath, file.Length, file.Offset, file.CreateDate);
             }
 
-            Gorgon.Log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Verbose, physicalDirectories.Length, physicalFiles.Length);
+            GorgonApplication.Log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Verbose, physicalDirectories.Length, physicalFiles.Length);
         }
 
         /// <summary>
@@ -472,7 +473,7 @@ namespace GorgonLibrary.IO
 		/// <param name="path">Path to the directory to start searching in.</param>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> was not found.</exception>
@@ -508,7 +509,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
 		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
@@ -525,7 +526,7 @@ namespace GorgonLibrary.IO
 		/// <param name="path">Path to start searching in.</param>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.</exception>
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> parameter was not found.</exception>
@@ -562,7 +563,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="fileMask">The file name or mask to search for.</param>
 		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="GorgonLibrary.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
+		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
 		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
@@ -811,7 +812,7 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is TRUE and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
 			GorgonFileSystemStream stream;
@@ -858,7 +859,7 @@ namespace GorgonLibrary.IO
 		/// </exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is TRUE and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is FALSE.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.IO.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(string path, bool writeable)
 		{
 			GorgonFileSystemFileEntry file = GetFile(path);

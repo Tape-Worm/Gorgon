@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Interface used to import content files or load/save the current editor file.
@@ -312,7 +312,7 @@ namespace GorgonLibrary.Editor
             FileChanged = false;
 
             // Add the new file system as a mount point.
-	        var plugIns = from plugIn in Gorgon.PlugIns
+	        var plugIns = from plugIn in GorgonApplication.PlugIns
 	                      where plugIn is GorgonFileSystemProviderPlugIn 
 						  && !PlugIns.IsDisabled(plugIn)
 	                      select plugIn;

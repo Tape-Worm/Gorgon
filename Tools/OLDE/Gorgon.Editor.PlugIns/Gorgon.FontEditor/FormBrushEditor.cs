@@ -30,13 +30,13 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// An editor that will create a brush for a font.
@@ -366,7 +366,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 				else
 				{
-					Gorgon.ApplicationIdleLoopMethod = null;
+					GorgonApplication.ApplicationIdleLoopMethod = null;
 				}
 			}
 			catch (Exception ex)
@@ -391,7 +391,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			panelTextureEditor.SetupRenderer(null);
 
 			Gorgon.AllowBackground = false;
-			Gorgon.ApplicationIdleLoopMethod = _previousIdle;
+			GorgonApplication.ApplicationIdleLoopMethod = _previousIdle;
 
 			// Remember our previous selection for the primary color attribute.
 			_primaryAttr = colorSolidBrush.PrimaryAttribute;
@@ -496,8 +496,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			: this()
 	    {
 		    _currentContent = fontContent;
-			_previousIdle = Gorgon.ApplicationIdleLoopMethod;
-			Gorgon.ApplicationIdleLoopMethod = null;
+			_previousIdle = GorgonApplication.ApplicationIdleLoopMethod;
+			GorgonApplication.ApplicationIdleLoopMethod = null;
 		    Gorgon.AllowBackground = true;		// Enable background rendering because the application will appear to have lost focus when this dialog is present.
 			SolidBrush = new GorgonGlyphSolidBrush();
 	        GradientBrush = new GorgonGlyphLinearGradientBrush

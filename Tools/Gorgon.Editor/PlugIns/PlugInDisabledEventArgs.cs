@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.PlugIns;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Event arguments for the plug-in disabled event.

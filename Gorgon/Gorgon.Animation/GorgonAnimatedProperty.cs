@@ -26,9 +26,9 @@
 
 using System;
 using System.Reflection;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// Information about a property on an object that should be animated.

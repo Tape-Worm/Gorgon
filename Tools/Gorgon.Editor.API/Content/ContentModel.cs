@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// An abstract implementation of the <see cref="IContentModel"/> interface.

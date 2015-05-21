@@ -28,13 +28,15 @@
 #endregion
 
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 using SharpDX;
 using Vector4 = SlimMath.Vector4;
 using Vector3 = SlimMath.Vector3;
 using Color = System.Drawing.Color;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// 4 component (Red, Green, Blue, and Alpha) color value.
@@ -469,7 +471,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="System.Drawing.Color"/>.
+		/// Performs an implicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="System.Drawing.Color"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -479,7 +481,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an implicit conversion from <see cref="System.Drawing.Color"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -489,7 +491,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="System.Int32"/>.
+		/// Performs an implicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="System.Int32"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -499,7 +501,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an implicit conversion from <see cref="System.Int32"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -509,7 +511,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="SlimMath.Vector3"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="SlimMath.Vector3"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -519,7 +521,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="SlimMath.Vector3"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an explicit conversion from <see cref="SlimMath.Vector3"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -529,7 +531,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="GorgonLibrary.Graphics.GorgonColor"/> to <see cref="SlimMath.Vector4"/>.
+		/// Performs an implicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="SlimMath.Vector4"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -539,7 +541,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="SlimMath.Vector4"/> to <see cref="GorgonLibrary.Graphics.GorgonColor"/>.
+		/// Performs an implicit conversion from <see cref="SlimMath.Vector4"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>

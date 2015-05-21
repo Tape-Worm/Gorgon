@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.IO.Properties {
+namespace Gorgon.IO.Properties {
 	/// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

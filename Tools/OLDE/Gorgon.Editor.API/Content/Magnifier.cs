@@ -26,12 +26,12 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Renderers;
 using SlimMath;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Interface used to magnify a texture in a window.

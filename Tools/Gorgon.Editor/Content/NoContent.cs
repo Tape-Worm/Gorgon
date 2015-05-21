@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Default content to display when no content is active.

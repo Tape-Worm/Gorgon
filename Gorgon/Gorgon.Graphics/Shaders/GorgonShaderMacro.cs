@@ -25,10 +25,11 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using D3DCommon = SharpDX.Direct3D;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A macro for a shader.

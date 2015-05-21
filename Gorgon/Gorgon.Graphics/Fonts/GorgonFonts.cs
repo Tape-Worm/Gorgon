@@ -28,10 +28,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Font interface for Gorgon.
@@ -121,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+		/// <exception cref="GorgonException">Thrown if the font cannot be read.
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
@@ -174,7 +175,7 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown if the fontData array is empty.</para>
         /// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+        /// <exception cref="GorgonException">Thrown if the font cannot be read.
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
@@ -202,7 +203,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown if the fileName or name parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+		/// <exception cref="GorgonException">Thrown if the font cannot be read.
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
@@ -253,7 +254,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
 			return CreateFont(fontName, fontFamily, pointSize, FontStyle.Regular, antiAliasMode, textureSize);
@@ -279,7 +280,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontStyle style, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
 			if (pointSize < 1e-6f)
@@ -314,7 +315,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode)
 		{
 			return CreateFont(fontName, font, antiAliasMode, new Size(256, 256));
@@ -338,7 +339,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
             if (font == null)
@@ -377,7 +378,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.DefaultCharacter">settings.DefaultCharacter</see> cannot be located in the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Characters">settings.Characters</see> list.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, GorgonFontSettings settings)
 		{
 			if (_graphics.IsDeferred)

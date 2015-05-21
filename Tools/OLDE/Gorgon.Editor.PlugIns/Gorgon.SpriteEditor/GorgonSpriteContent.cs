@@ -29,17 +29,17 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Design;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Controls;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
+using Gorgon.Design;
+using Gorgon.Editor.Design;
+using Gorgon.Editor.SpriteEditorPlugIn.Controls;
+using Gorgon.Editor.SpriteEditorPlugIn.Design;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Renderers;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
 	/// Content for a sprite object.

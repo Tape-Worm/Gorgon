@@ -30,23 +30,24 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 using SharpDX.DXGI;
 using DX = SharpDX;
 using D3DCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Collections.Specialized;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Enumerates information about the installed video devices on the system.
 	/// </summary>
 	/// <remarks>Use this to retrieve a list of video devices available on the system. A video device may be a discreet video card, or a device on the motherboard. 
-	/// Retrieve the video device information by calling the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.Enumerate">Enumerate</see> method and the 
+	/// Retrieve the video device information by calling the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator.Enumerate">Enumerate</see> method and the 
 	/// <see cref="P:GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.VideoDevices">VideoDevices</see> property will be populated with video device information.  From 
-	/// there you can pass a <see cref="GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice</see> object into the <see cref="GorgonLibrary.Graphics.GorgonGraphics">
+	/// there you can pass a <see cref="Gorgon.Graphics.GorgonVideoDevice">GorgonVideoDevice</see> object into the <see cref="Gorgon.Graphics.GorgonGraphics">
 	/// GorgonGraphics</see> constructor to use a specific video device.
 	/// <para>This interface will allow enumeration of the WARP/Reference devices.  WARP is a high performance software device that will emulate much of the functionality 
 	/// that a real video device would have. The reference device is a fully featured device, but is incredibly slow and useful when debugging driver issues.</para>
@@ -144,22 +145,22 @@ namespace GorgonLibrary.Graphics
 		/// <param name="device">Device to print.</param>
 		private static void PrintLog(GorgonVideoDevice device)
 		{
-			Gorgon.Log.Print(
+			GorgonApplication.Log.Print(
 				device.VideoDeviceType == VideoDeviceType.ReferenceRasterizer
 					? "Device found: {0} ---> !!!** WARNING:  A reference rasterizer has very poor performance."
 					: "Device found: {0}", LoggingLevel.Simple, device.Name);
-			Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
-			Gorgon.Log.Print("Hardware feature level: {0}", LoggingLevel.Verbose, device.HardwareFeatureLevel);
-			Gorgon.Log.Print("Limited to feature level: {0}", LoggingLevel.Verbose, device.SupportedFeatureLevel);
-			Gorgon.Log.Print("Video memory: {0}", LoggingLevel.Verbose, device.DedicatedVideoMemory.FormatMemory());
-			Gorgon.Log.Print("System memory: {0}", LoggingLevel.Verbose, device.DedicatedSystemMemory.FormatMemory());
-			Gorgon.Log.Print("Shared memory: {0}", LoggingLevel.Verbose, device.SharedSystemMemory.FormatMemory());
-			Gorgon.Log.Print("Device ID: 0x{0}", LoggingLevel.Verbose, device.DeviceID.FormatHex());
-			Gorgon.Log.Print("Sub-system ID: 0x{0}", LoggingLevel.Verbose, device.SubSystemID.FormatHex());
-			Gorgon.Log.Print("Vendor ID: 0x{0}", LoggingLevel.Verbose, device.VendorID.FormatHex());
-			Gorgon.Log.Print("Revision: {0}", LoggingLevel.Verbose, device.Revision);
-			Gorgon.Log.Print("Unique ID: 0x{0}", LoggingLevel.Verbose, device.UUID.FormatHex());
-			Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("Hardware feature level: {0}", LoggingLevel.Verbose, device.HardwareFeatureLevel);
+			GorgonApplication.Log.Print("Limited to feature level: {0}", LoggingLevel.Verbose, device.SupportedFeatureLevel);
+			GorgonApplication.Log.Print("Video memory: {0}", LoggingLevel.Verbose, device.DedicatedVideoMemory.FormatMemory());
+			GorgonApplication.Log.Print("System memory: {0}", LoggingLevel.Verbose, device.DedicatedSystemMemory.FormatMemory());
+			GorgonApplication.Log.Print("Shared memory: {0}", LoggingLevel.Verbose, device.SharedSystemMemory.FormatMemory());
+			GorgonApplication.Log.Print("Device ID: 0x{0}", LoggingLevel.Verbose, device.DeviceID.FormatHex());
+			GorgonApplication.Log.Print("Sub-system ID: 0x{0}", LoggingLevel.Verbose, device.SubSystemID.FormatHex());
+			GorgonApplication.Log.Print("Vendor ID: 0x{0}", LoggingLevel.Verbose, device.VendorID.FormatHex());
+			GorgonApplication.Log.Print("Revision: {0}", LoggingLevel.Verbose, device.Revision);
+			GorgonApplication.Log.Print("Unique ID: 0x{0}", LoggingLevel.Verbose, device.UUID.FormatHex());
+			GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
 		}
 				
 		/// <summary>
@@ -172,8 +173,8 @@ namespace GorgonLibrary.Graphics
 		{
 			var formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
-			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", LoggingLevel.Simple, output.Name);
-			Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("Retrieving video modes for output '{0}'...", LoggingLevel.Simple, output.Name);
+			GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
 
 			// Test each format for display compatibility.
 			foreach (var format in formats)
@@ -199,11 +200,11 @@ namespace GorgonLibrary.Graphics
 			// Output to log.
 			foreach (var videoMode in output.VideoModes)
 			{
-				Gorgon.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", LoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
+				GorgonApplication.Log.Print("Mode: {0}x{1}, Format: {2}, Refresh Rate: {3}/{4}", LoggingLevel.Verbose, videoMode.Width, videoMode.Height, videoMode.Format, videoMode.RefreshRateNumerator, videoMode.RefreshRateDenominator);
 			}
 
-			Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
-			Gorgon.Log.Print("Found {0} video modes for output '{1}'.", LoggingLevel.Simple, output.VideoModes.Count, output.Name);
+			GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("Found {0} video modes for output '{1}'.", LoggingLevel.Simple, output.VideoModes.Count, output.Name);
 		}
 
 		#pragma warning disable 0618
@@ -225,13 +226,13 @@ namespace GorgonLibrary.Graphics
 			{
 				var output = new GorgonVideoOutput();
 
-				Gorgon.Log.Print("Found output {0}.", LoggingLevel.Simple, output.Name);
-				Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
-				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
-				Gorgon.Log.Print("Monitor handle: 0x{0}", LoggingLevel.Verbose, output.Handle.FormatHex());
-				Gorgon.Log.Print("Attached to desktop: {0}", LoggingLevel.Verbose, output.IsAttachedToDesktop);
-				Gorgon.Log.Print("Monitor rotation: {0}\u00B0", LoggingLevel.Verbose, output.Rotation);
-				Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
+				GorgonApplication.Log.Print("Found output {0}.", LoggingLevel.Simple, output.Name);
+				GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
+				GorgonApplication.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
+				GorgonApplication.Log.Print("Monitor handle: 0x{0}", LoggingLevel.Verbose, output.Handle.FormatHex());
+				GorgonApplication.Log.Print("Attached to desktop: {0}", LoggingLevel.Verbose, output.IsAttachedToDesktop);
+				GorgonApplication.Log.Print("Monitor rotation: {0}\u00B0", LoggingLevel.Verbose, output.Rotation);
+				GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
 
 				outputs.Add(output);
 
@@ -240,7 +241,7 @@ namespace GorgonLibrary.Graphics
 
 				device.Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, outputs);
 
-				Gorgon.Log.Print("Output {0} on device {1} has no video modes.", LoggingLevel.Verbose, output.Name, device.Name);
+				GorgonApplication.Log.Print("Output {0} on device {1} has no video modes.", LoggingLevel.Verbose, output.Name, device.Name);
 				return;
 			}
 
@@ -260,13 +261,13 @@ namespace GorgonLibrary.Graphics
 
 					GetVideoModes(output, D3DDevice, giOutput);
 
-					Gorgon.Log.Print("Found output {0}.", LoggingLevel.Simple, output.Name);
-					Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
-					Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
-					Gorgon.Log.Print("Monitor handle: 0x{0}", LoggingLevel.Verbose, output.Handle.FormatHex());
-					Gorgon.Log.Print("Attached to desktop: {0}", LoggingLevel.Verbose, output.IsAttachedToDesktop);
-					Gorgon.Log.Print("Monitor rotation: {0}\u00B0", LoggingLevel.Verbose, output.Rotation);
-					Gorgon.Log.Print("===================================================================", LoggingLevel.Verbose);
+					GorgonApplication.Log.Print("Found output {0}.", LoggingLevel.Simple, output.Name);
+					GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
+					GorgonApplication.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
+					GorgonApplication.Log.Print("Monitor handle: 0x{0}", LoggingLevel.Verbose, output.Handle.FormatHex());
+					GorgonApplication.Log.Print("Attached to desktop: {0}", LoggingLevel.Verbose, output.IsAttachedToDesktop);
+					GorgonApplication.Log.Print("Monitor rotation: {0}\u00B0", LoggingLevel.Verbose, output.Rotation);
+					GorgonApplication.Log.Print("===================================================================", LoggingLevel.Verbose);
 
 					if (output.VideoModes.Count > 0)
 					{
@@ -274,7 +275,7 @@ namespace GorgonLibrary.Graphics
 					}
 					else
 					{
-						Gorgon.Log.Print("Output {0} on device {1} has no video modes!", LoggingLevel.Verbose, output.Name, device.Name);
+						GorgonApplication.Log.Print("Output {0} on device {1} has no video modes!", LoggingLevel.Verbose, output.Name, device.Name);
 					}
 				}
 			}
@@ -287,7 +288,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="enumerateWARPDevice">TRUE to enumerate the WARP software device.  FALSE to exclude it.</param>
 		/// <param name="enumerateReferenceDevice">TRUE to enumerate the reference device.  FALSE to exclude it.</param>
-		/// <remarks>This method will populate the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> with information about the video devices 
+		/// <remarks>This method will populate the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> with information about the video devices 
 		/// installed in the system.
 		/// <para>You may include the WARP device, which is a software based device that emulates most of the functionality of a video device, by setting the <paramref name="enumerateWARPDevice"/> to TRUE.</para>
 		/// <para>You may include the reference device, which is a software based device that all the functionality of a video device, by setting the <paramref name="enumerateReferenceDevice"/> to TRUE.  
@@ -326,7 +327,7 @@ namespace GorgonLibrary.Graphics
 
 		            devices = new List<GorgonVideoDevice>(adapterCount + 2);
 
-		            Gorgon.Log.Print("Enumerating video devices...", LoggingLevel.Simple);
+		            GorgonApplication.Log.Print("Enumerating video devices...", LoggingLevel.Simple);
 
 		            // Begin gathering device information.
 		            for (int i = 0; i < adapterCount; i++)
@@ -365,7 +366,7 @@ namespace GorgonLibrary.Graphics
 				                }
 				                else
 				                {
-					                Gorgon.Log.Print("Video device {0} has no outputs!",
+					                GorgonApplication.Log.Print("Video device {0} has no outputs!",
 					                                 LoggingLevel.Verbose, videoDevice.Name);
 				                }
 			                }
@@ -403,7 +404,7 @@ namespace GorgonLibrary.Graphics
 	                throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_DEVICE_CANNOT_FIND_DEVICES);
                 }
 
-		        Gorgon.Log.Print("Found {0} video devices.", LoggingLevel.Simple, VideoDevices.Count);
+		        GorgonApplication.Log.Print("Found {0} video devices.", LoggingLevel.Simple, VideoDevices.Count);
 		    }
 		    finally
 		    {

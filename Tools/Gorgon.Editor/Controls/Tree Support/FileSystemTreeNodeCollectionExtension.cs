@@ -29,9 +29,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Extension method for the tree node collection.

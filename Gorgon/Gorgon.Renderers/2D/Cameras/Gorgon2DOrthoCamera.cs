@@ -27,12 +27,13 @@
 using System;
 using System.Linq;
 using System.Drawing;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
     /// A camera that performs orthographic (2D) projection.

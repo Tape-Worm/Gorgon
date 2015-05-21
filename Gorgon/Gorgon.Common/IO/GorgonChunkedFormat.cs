@@ -26,9 +26,10 @@
 
 using System;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// The access mode for the file chunking object.

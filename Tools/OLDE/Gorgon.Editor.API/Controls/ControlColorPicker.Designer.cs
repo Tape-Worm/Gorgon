@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace Gorgon.Editor
 {
 	partial class ControlColorPicker
 	{
@@ -88,7 +88,7 @@
             this.buttonExpando.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
             this.buttonExpando.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonExpando.ForeColor = System.Drawing.Color.White;
-            this.buttonExpando.Image = global::GorgonLibrary.Editor.Properties.APIResources.Expando;
+            this.buttonExpando.Image = global::Gorgon.Editor.Properties.APIResources.Expando;
             this.buttonExpando.Location = new System.Drawing.Point(177, 156);
             this.buttonExpando.Name = "buttonExpando";
             this.buttonExpando.Size = new System.Drawing.Size(38, 23);

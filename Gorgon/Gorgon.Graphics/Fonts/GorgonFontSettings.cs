@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using Gorgon.Core;
 using Color = System.Drawing.Color;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Anti-aliasing modes for the font.

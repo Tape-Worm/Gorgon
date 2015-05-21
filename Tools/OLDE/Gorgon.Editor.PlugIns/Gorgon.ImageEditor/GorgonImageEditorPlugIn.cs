@@ -30,11 +30,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Controls;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.ImageEditorPlugIn.Controls;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// Image editor plug-in interface.
@@ -109,23 +109,23 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        }
 
             // Check to see if the assembly is an image codec plug-in.
-            if (!Gorgon.PlugIns.IsPlugInAssembly(assemblyPath))
+            if (!GorgonApplication.PlugIns.IsPlugInAssembly(assemblyPath))
             {
 				EditorLogging.Print("The codec plug-in '{0}' is not a valid .NET assembly.", assemblyPath);
                 return;
             }
 
-            if (Gorgon.PlugIns.EnumeratePlugIns(assemblyPath).Count == 0)
+            if (GorgonApplication.PlugIns.EnumeratePlugIns(assemblyPath).Count == 0)
             {
 				EditorLogging.Print("The codec plug-in '{0}' does not contain any image codecs.", assemblyPath);
                 return;
             }
 
             // Load the assembly.
-            Gorgon.PlugIns.LoadPlugInAssembly(assemblyPath);
+            GorgonApplication.PlugIns.LoadPlugInAssembly(assemblyPath);
 
             // Get all the plug-ins that support image codecs.
-            IEnumerable<GorgonCodecPlugIn> codecPlugIns = from plugIn in Gorgon.PlugIns
+            IEnumerable<GorgonCodecPlugIn> codecPlugIns = from plugIn in GorgonApplication.PlugIns
                                                           let codecPlugIn = plugIn as GorgonCodecPlugIn
 														  where codecPlugIn != null
                                                           select codecPlugIn;

@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Examples.Properties;
+using Gorgon.Collections;
+using Gorgon.Examples.Properties;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// A list of categories.

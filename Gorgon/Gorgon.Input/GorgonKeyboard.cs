@@ -28,10 +28,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GorgonLibrary.Input.Properties;
-using GorgonLibrary.Math;
+using Gorgon.Core.Extensions;
+using Gorgon.Input.Properties;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	#region Keyboard Keys.
 	/// <summary>

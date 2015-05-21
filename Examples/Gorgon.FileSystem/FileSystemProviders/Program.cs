@@ -28,10 +28,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Example entry point.
@@ -126,7 +127,7 @@ namespace GorgonLibrary.Examples
                 }
 
                 // Skip assemblies that aren't a plug-in.
-                if (!Gorgon.PlugIns.IsPlugInAssembly(name))
+                if (!GorgonApplication.PlugIns.IsPlugInAssembly(name))
                 {
                     continue;
                 }
@@ -137,13 +138,13 @@ namespace GorgonLibrary.Examples
                 // the plug-in types.  If there are none, an exception will be
                 // thrown.  This is why we do a check with IsPlugInAssembly before
                 // we load the assembly.
-                Gorgon.PlugIns.LoadPlugInAssembly(name);
+                GorgonApplication.PlugIns.LoadPlugInAssembly(name);
 
                 // Now try to retrieve our file system provider plug-ins.
                 // Retrieve the list of plug-ins from the assembly.  Once we have
                 // the list we look for any plug-ins that are GorgonFileSystemProviderPlugIn
                 // types and retrieve their type information.
-                var providerPlugIns = Gorgon.PlugIns.EnumeratePlugIns(name)
+                var providerPlugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name)
                                     .Where(item => item is GorgonFileSystemProviderPlugIn)
                                     .Select(item => item.GetType()).ToArray();
 

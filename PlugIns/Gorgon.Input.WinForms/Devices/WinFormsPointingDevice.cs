@@ -25,9 +25,10 @@
 #endregion
 
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Input.WinForms
+namespace Gorgon.Input.WinForms
 {
 	/// <summary>
 	/// Winforms pointing device interface.
@@ -225,7 +226,7 @@ namespace GorgonLibrary.Input.WinForms
 			: base(owner, "Win Forms Mouse")
 		{
 			AllowExclusiveMode = false;
-			Gorgon.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
 		}
 		#endregion
 	}

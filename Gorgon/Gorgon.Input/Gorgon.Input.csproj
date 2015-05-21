@@ -8,7 +8,7 @@
     <ProjectGuid>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Input</RootNamespace>
+    <RootNamespace>Gorgon.Input</RootNamespace>
     <AssemblyName>Gorgon.Input</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

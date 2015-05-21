@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	partial class FormMain
 	{
@@ -87,7 +87,7 @@ namespace GorgonLibrary.Editor
 			this.tabDocumentManager = new KRBTabControl.KRBTabControl();
 			this.pageItems = new KRBTabControl.TabPageEx();
 			this.containerFiles = new System.Windows.Forms.ToolStripContainer();
-			this.treeFiles = new GorgonLibrary.Editor.EditorTreeView();
+			this.treeFiles = new Gorgon.Editor.EditorTreeView();
 			this.popupFileSystem = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.popupItemEdit = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupItemCreateFolder = new System.Windows.Forms.ToolStripMenuItem();
@@ -222,7 +222,7 @@ namespace GorgonLibrary.Editor
 			this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.dropNewContent.DropDown = this.popupAddContentMenu;
 			this.dropNewContent.Enabled = false;
-			this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+			this.dropNewContent.Image = global::Gorgon.Editor.Properties.Resources.new_item_16x16;
 			this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.dropNewContent.Name = "dropNewContent";
 			this.dropNewContent.Size = new System.Drawing.Size(34, 24);
@@ -627,7 +627,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonEditContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonEditContent.Enabled = false;
-			this.buttonEditContent.Image = global::GorgonLibrary.Editor.Properties.Resources.edit_16x16;
+			this.buttonEditContent.Image = global::Gorgon.Editor.Properties.Resources.edit_16x16;
 			this.buttonEditContent.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditContent.Name = "buttonEditContent";
 			this.buttonEditContent.Size = new System.Drawing.Size(24, 24);
@@ -638,7 +638,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonDeleteContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonDeleteContent.Enabled = false;
-			this.buttonDeleteContent.Image = global::GorgonLibrary.Editor.Properties.Resources.delete_item_16x16;
+			this.buttonDeleteContent.Image = global::Gorgon.Editor.Properties.Resources.delete_item_16x16;
 			this.buttonDeleteContent.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonDeleteContent.Name = "buttonDeleteContent";
 			this.buttonDeleteContent.Size = new System.Drawing.Size(24, 24);
@@ -654,7 +654,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonShowAll.CheckOnClick = true;
 			this.buttonShowAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
+			this.buttonShowAll.Image = global::Gorgon.Editor.Properties.Resources.show_all_16x16;
 			this.buttonShowAll.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonShowAll.Name = "buttonShowAll";
 			this.buttonShowAll.Size = new System.Drawing.Size(24, 24);

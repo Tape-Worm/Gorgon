@@ -27,7 +27,7 @@
 using System;
 using SlimMath;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A track that will animate properties with a Vector2 data type.

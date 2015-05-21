@@ -29,10 +29,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Math;
+using Gorgon.Examples.Properties;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Panel to display information abotu an example.

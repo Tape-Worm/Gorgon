@@ -27,14 +27,15 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
+using Gorgon.Input;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main application form.
@@ -332,7 +333,7 @@ namespace GorgonLibrary.Examples
 			try
 			{				
 				// Load the plug-in assembly.
-				Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
+				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
 
 				// Create the factory.
 				_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
@@ -440,12 +441,12 @@ namespace GorgonLibrary.Examples
 					                         monitor.Bounds.Top + (monitor.WorkingArea.Height / 2) - args.Height / 2);
 					    Cursor.Position = PointToScreen(Point.Round(_mouse.Position));
 					};				
-				Gorgon.ApplicationIdleLoopMethod = Gorgon_Idle;
+				GorgonApplication.ApplicationIdleLoopMethod = Gorgon_Idle;
 			}
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 		}
 		#endregion

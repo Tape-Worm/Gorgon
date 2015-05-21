@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Our writer that uses multiple colors.

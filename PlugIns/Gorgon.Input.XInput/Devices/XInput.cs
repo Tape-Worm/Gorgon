@@ -26,10 +26,11 @@
 
 using System;
 using System.Collections.ObjectModel;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
 using XI = SharpDX.XInput;
 
-namespace GorgonLibrary.Input.XInput
+namespace Gorgon.Input.XInput
 {
 	/// <summary>
 	/// XInput XBOX 360 controller device.
@@ -277,7 +278,7 @@ namespace GorgonLibrary.Input.XInput
 		{
 		    if (!_controller.IsConnected)
 			{
-				Gorgon.Log.Print("XInput Controller {0} disconnected.", LoggingLevel.Verbose, _controllerID);
+				GorgonApplication.Log.Print("XInput Controller {0} disconnected.", LoggingLevel.Verbose, _controllerID);
 				IsConnected = false;				
 				return;
 			}
@@ -299,7 +300,7 @@ namespace GorgonLibrary.Input.XInput
 		        DeadZone.SecondaryY = new GorgonRange(previousDeadZone.SecondaryY);
 #if DEBUG
 		        XI.Capabilities caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
-		        Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", LoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);
+		        GorgonApplication.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", LoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);
 #endif
 		    }
 
@@ -371,12 +372,12 @@ namespace GorgonLibrary.Input.XInput
 				
 #if DEBUG
 				XI.Capabilities caps = controller.GetCapabilities(XI.DeviceQueryType.Any);
-				Gorgon.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", LoggingLevel.Simple, caps.SubType.ToString(), joystickID);
+				GorgonApplication.Log.Print("XInput XBOX 360 controller device {0} interface created (ID:{1}).", LoggingLevel.Simple, caps.SubType.ToString(), joystickID);
 #endif
 			}
 			else
 			{
-				Gorgon.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", LoggingLevel.Simple, joystickID);
+				GorgonApplication.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", LoggingLevel.Simple, joystickID);
 				IsConnected = false;				
 			}
 		}

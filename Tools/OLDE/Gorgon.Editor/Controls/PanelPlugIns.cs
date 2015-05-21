@@ -30,12 +30,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.PlugIns;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.Controls
+namespace Gorgon.Editor.Controls
 {
     /// <summary>
     /// Plug-in list interface.
@@ -241,7 +241,7 @@ namespace GorgonLibrary.Editor.Controls
 		        }
 
 				// Get system disabled plug-ins.
-		        foreach (var plugIn in Gorgon.PlugIns.Where(item => (item is GorgonFileSystemProviderPlugIn || item is EditorPlugIn)
+		        foreach (var plugIn in GorgonApplication.PlugIns.Where(item => (item is GorgonFileSystemProviderPlugIn || item is EditorPlugIn)
 			                                                   && (!_pendingDisabled.Contains(item.Name))
 			                                                   && (PlugIns.IsDisabled(item))))
 		        {
@@ -260,7 +260,7 @@ namespace GorgonLibrary.Editor.Controls
             listDisabledPlugIns.Items.Clear();
             listContentPlugIns.Items.Clear();
 
-            foreach (var plugIn in Gorgon.PlugIns)
+            foreach (var plugIn in GorgonApplication.PlugIns)
             {
                 if ((!(plugIn is EditorPlugIn))
                     && (!(plugIn is GorgonFileSystemProviderPlugIn)))

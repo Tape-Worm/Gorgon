@@ -26,12 +26,12 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Renderers;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A 2D renderer for the editor content.
@@ -235,7 +235,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void StopRendering()
 		{
-			Gorgon.ApplicationIdleLoopMethod = null;
+			GorgonApplication.ApplicationIdleLoopMethod = null;
 		}
 
 		/// <summary>
@@ -243,7 +243,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void StartRendering()
 		{
-			Gorgon.ApplicationIdleLoopMethod = () =>
+			GorgonApplication.ApplicationIdleLoopMethod = () =>
 			                                   {
 												   // Reset the render target.
 				                                   Renderer.Target = SwapChain;

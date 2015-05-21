@@ -26,10 +26,10 @@
 
 using System.ComponentModel;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Base panel used for preferences in the editor.

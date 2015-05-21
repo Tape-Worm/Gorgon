@@ -33,7 +33,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Font style editor.

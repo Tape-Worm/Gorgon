@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Type converter for the Alpha channel in a color.

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.Controls
+﻿namespace Gorgon.Editor.Controls
 {
     partial class PanelPlugIns
     {
@@ -143,7 +143,7 @@
 			// 
 			// itemDisablePlugIn
 			// 
-			this.itemDisablePlugIn.Image = global::GorgonLibrary.Editor.Properties.Resources.remove_16x16;
+			this.itemDisablePlugIn.Image = global::Gorgon.Editor.Properties.Resources.remove_16x16;
 			this.itemDisablePlugIn.Name = "itemDisablePlugIn";
 			this.itemDisablePlugIn.Size = new System.Drawing.Size(153, 22);
 			this.itemDisablePlugIn.Text = "disable plug-in";
@@ -151,7 +151,7 @@
 			// 
 			// itemEnablePlugIn
 			// 
-			this.itemEnablePlugIn.Image = global::GorgonLibrary.Editor.Properties.Resources.add_16x16;
+			this.itemEnablePlugIn.Image = global::Gorgon.Editor.Properties.Resources.add_16x16;
 			this.itemEnablePlugIn.Name = "itemEnablePlugIn";
 			this.itemEnablePlugIn.Size = new System.Drawing.Size(153, 22);
 			this.itemEnablePlugIn.Text = "enable plug-in";
@@ -203,7 +203,7 @@
 			// 
 			this.imagePlugInHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.imagePlugInHelp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.imagePlugInHelp.Image = global::GorgonLibrary.Editor.Properties.Resources.info_16x16;
+			this.imagePlugInHelp.Image = global::Gorgon.Editor.Properties.Resources.info_16x16;
 			this.imagePlugInHelp.Location = new System.Drawing.Point(649, 6);
 			this.imagePlugInHelp.Name = "imagePlugInHelp";
 			this.imagePlugInHelp.Size = new System.Drawing.Size(16, 16);

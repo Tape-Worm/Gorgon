@@ -29,11 +29,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Renderers;
+using Gorgon.Design;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Renderers;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
     /// <summary>
     /// A list of sprite vertices.

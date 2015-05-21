@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using GorgonLibrary.Input.WinForms.Properties;
+using Gorgon.Input.WinForms.Properties;
 
-namespace GorgonLibrary.Input.WinForms
+namespace Gorgon.Input.WinForms
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.
@@ -84,7 +84,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
-		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <returns>
 		/// A new custom HID interface.
 		/// </returns>
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>

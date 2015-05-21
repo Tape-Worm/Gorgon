@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Used to determine the most suitable video device to use for the application when creating a graphics instance.

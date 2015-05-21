@@ -31,14 +31,14 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	/// <summary>
 	/// An interface for managing the application of a texture to font glyphs.
@@ -693,7 +693,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			try
 			{
-				Gorgon.ApplicationIdleLoopMethod = null;
+				GorgonApplication.ApplicationIdleLoopMethod = null;
 
 				if (_renderer != renderer)
 				{
@@ -737,7 +737,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				_renderer.Target = _swapChain;
 
-				Gorgon.ApplicationIdleLoopMethod = Idle;
+				GorgonApplication.ApplicationIdleLoopMethod = Idle;
 			}
 			finally
 			{

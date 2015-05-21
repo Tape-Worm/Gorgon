@@ -30,7 +30,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
 	/// Editor type for an anchor value.

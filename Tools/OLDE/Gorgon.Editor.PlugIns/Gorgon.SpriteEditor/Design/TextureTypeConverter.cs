@@ -27,10 +27,10 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
 	/// A type converter for textures on a sprite.

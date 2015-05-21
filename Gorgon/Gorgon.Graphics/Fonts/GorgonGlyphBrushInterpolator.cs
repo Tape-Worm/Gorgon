@@ -25,11 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Graphics.Fonts
+namespace Gorgon.Graphics.Fonts
 {
 	/// <summary>
 	/// An interpolation value used to weight the color blending in a gradient brush.

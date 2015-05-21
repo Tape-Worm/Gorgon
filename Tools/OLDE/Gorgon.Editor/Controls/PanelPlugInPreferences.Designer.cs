@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     partial class PanelPlugInPreferences
     {

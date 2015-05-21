@@ -29,9 +29,9 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// List box for write masking flags.

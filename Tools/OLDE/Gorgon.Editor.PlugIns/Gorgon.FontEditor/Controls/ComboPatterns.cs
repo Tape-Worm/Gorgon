@@ -33,7 +33,7 @@ using System.Drawing.Text;
 using System.Text;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// A combo box for displaying hatch patterns.

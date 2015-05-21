@@ -27,12 +27,12 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// An image buffer containing data about the image.

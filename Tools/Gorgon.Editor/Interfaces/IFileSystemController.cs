@@ -25,7 +25,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The controller for the file system to synchronize between the editor file system object and the UI.

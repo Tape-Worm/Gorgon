@@ -27,14 +27,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Gorgon.Core;
 using SharpDX.Direct3D;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Math;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     #region Enums
     /// <summary>
@@ -247,7 +248,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to set or return the vertex buffer binding for a given slot.
 			/// </summary>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
+			/// <exception cref="GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public GorgonVertexBufferBinding this[int index]
 			{
 				get
@@ -393,7 +394,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="slot">Index to start writing at.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
+			/// <exception cref="GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonVertexBufferBinding[] binding)
 			{
 				int count = _bindings.Length - slot;
@@ -757,7 +758,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the name parameter is NULL.</para>
 		/// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
+        /// <exception cref="GorgonException">Thrown when the graphics context is deferred.</exception>
 		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
 		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
         /// <para>This function should not be called from a deferred context.</para>
@@ -800,7 +801,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown when the graphics context is deferred.</exception>
 		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
 		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
 		/// <para>This function should not be called from a deferred context.</para>

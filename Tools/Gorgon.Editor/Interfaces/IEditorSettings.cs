@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The settings for the application.
@@ -201,7 +201,7 @@ namespace GorgonLibrary.Editor
 		/// Function to save the settings to a file.
 		/// </summary>
 		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (Nothing in VB.Net).</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
 		void Save();
 	}
 }

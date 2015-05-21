@@ -28,11 +28,12 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Input;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.Input;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Our main form for the example.
@@ -483,7 +484,7 @@ namespace GorgonLibrary.Examples
 				_currentCursor = Resources.hand_icon;
 				
 				// Load our raw input plug-in assembly.
-				Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
+				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
 
 				// Create our input factory.
 				_factory = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
@@ -497,13 +498,13 @@ namespace GorgonLibrary.Examples
 				if (_factory.PointingDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no mice detected on this computer.  The application requires a mouse.");
-					Gorgon.Quit();
+					GorgonApplication.Quit();
 				}
 
 				if (_factory.KeyboardDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no keyboards detected on this computer.  The application requires a keyboard.");
-					Gorgon.Quit();
+					GorgonApplication.Quit();
 				}
 
 				// Get our input devices.				
@@ -526,14 +527,14 @@ namespace GorgonLibrary.Examples
                     };
 
 			    // Set up our idle method.
-                Gorgon.ApplicationIdleLoopMethod = Idle;                
+                GorgonApplication.ApplicationIdleLoopMethod = Idle;                
 			}
 			catch (Exception ex)
 			{
 				// We do this here instead of just calling the dialog because this
 				// function will send the exception to the Gorgon log file.
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 		}
 

@@ -33,7 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
 	/// A type converter for a sprite vertex object.

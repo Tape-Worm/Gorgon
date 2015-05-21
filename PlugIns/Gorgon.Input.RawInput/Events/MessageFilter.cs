@@ -26,10 +26,11 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Object representing a message loop filter.

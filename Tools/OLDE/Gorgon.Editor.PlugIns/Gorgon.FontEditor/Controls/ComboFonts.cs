@@ -30,7 +30,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// A combo box for displaying fonts.

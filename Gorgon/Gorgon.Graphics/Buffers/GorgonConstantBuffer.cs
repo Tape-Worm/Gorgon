@@ -25,13 +25,14 @@
 #endregion
 
 using System.ComponentModel;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Native;
 using DX = SharpDX;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A constant buffer for shaders.

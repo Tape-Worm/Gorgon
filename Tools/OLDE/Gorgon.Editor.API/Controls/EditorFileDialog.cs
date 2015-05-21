@@ -28,11 +28,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Views available to the file view.

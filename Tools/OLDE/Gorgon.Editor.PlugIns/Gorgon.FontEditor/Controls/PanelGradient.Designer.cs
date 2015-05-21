@@ -1,6 +1,6 @@
-﻿using GorgonLibrary.UI;
+﻿using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	partial class PanelGradient
 	{
@@ -81,7 +81,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             this.checkScaleAngle = new System.Windows.Forms.CheckBox();
             this.checkUseGamma = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panelSelectedColor = new GorgonLibrary.UI.GorgonSelectablePanel();
+            this.panelSelectedColor = new Gorgon.UI.GorgonSelectablePanel();
             this.labelPreview = new System.Windows.Forms.Label();
             this.labelSelectedColor = new System.Windows.Forms.Label();
             this.numericSelectedWeight = new System.Windows.Forms.NumericUpDown();
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             // panelGradientDisplay
             // 
-            this.panelGradientDisplay.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelGradientDisplay.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelGradientDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelGradientDisplay.Location = new System.Drawing.Point(0, 25);
             this.panelGradientDisplay.Margin = new System.Windows.Forms.Padding(0);
@@ -143,7 +143,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // buttonAddNode
             // 
             this.buttonAddNode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonAddNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.add_16x16;
+            this.buttonAddNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.add_16x16;
             this.buttonAddNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonAddNode.Name = "buttonAddNode";
             this.buttonAddNode.Size = new System.Drawing.Size(23, 22);
@@ -154,7 +154,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             this.buttonRemoveNode.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.buttonRemoveNode.Enabled = false;
-            this.buttonRemoveNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_16x16;
+            this.buttonRemoveNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.remove_16x16;
             this.buttonRemoveNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonRemoveNode.Name = "buttonRemoveNode";
             this.buttonRemoveNode.Size = new System.Drawing.Size(23, 22);
@@ -169,7 +169,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // buttonDuplicateNode
             // 
             this.buttonDuplicateNode.Enabled = false;
-            this.buttonDuplicateNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
+            this.buttonDuplicateNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
             this.buttonDuplicateNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonDuplicateNode.Name = "buttonDuplicateNode";
             this.buttonDuplicateNode.Size = new System.Drawing.Size(106, 22);
@@ -184,7 +184,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // buttonClearNodes
             // 
             this.buttonClearNodes.Enabled = false;
-            this.buttonClearNodes.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.clear_16x16;
+            this.buttonClearNodes.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.clear_16x16;
             this.buttonClearNodes.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonClearNodes.Name = "buttonClearNodes";
             this.buttonClearNodes.Size = new System.Drawing.Size(87, 22);
@@ -282,7 +282,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             // panelSelectedColor
             // 
-            this.panelSelectedColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelSelectedColor.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelSelectedColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelSelectedColor.Enabled = false;
             this.panelSelectedColor.Location = new System.Drawing.Point(282, 31);
@@ -346,7 +346,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // panelPreview
             // 
             this.panelPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelPreview.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelPreview.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelPreview.Location = new System.Drawing.Point(432, 24);
             this.panelPreview.Name = "panelPreview";
@@ -366,7 +366,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             // itemAddNode
             // 
-            this.itemAddNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.add_16x16;
+            this.itemAddNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.add_16x16;
             this.itemAddNode.Name = "itemAddNode";
             this.itemAddNode.Size = new System.Drawing.Size(153, 22);
             this.itemAddNode.Text = "add node";
@@ -374,7 +374,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             // itemRemoveNode
             // 
-            this.itemRemoveNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_16x16;
+            this.itemRemoveNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.remove_16x16;
             this.itemRemoveNode.Name = "itemRemoveNode";
             this.itemRemoveNode.Size = new System.Drawing.Size(153, 22);
             this.itemRemoveNode.Text = "remove node...";
@@ -387,7 +387,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             // 
             // itemDuplicateNode
             // 
-            this.itemDuplicateNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
+            this.itemDuplicateNode.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
             this.itemDuplicateNode.Name = "itemDuplicateNode";
             this.itemDuplicateNode.Size = new System.Drawing.Size(153, 22);
             this.itemDuplicateNode.Text = "duplicate node";

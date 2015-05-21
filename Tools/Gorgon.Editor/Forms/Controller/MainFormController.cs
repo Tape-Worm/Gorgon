@@ -26,11 +26,11 @@
 
 using System;
 using System.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The controller for the main form of the application.

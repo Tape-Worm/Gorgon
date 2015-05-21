@@ -33,13 +33,13 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	/// <summary>
 	/// A panel that will allow for editing of a linear gradient brush.

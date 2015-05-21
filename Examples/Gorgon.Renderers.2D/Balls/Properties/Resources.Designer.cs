@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Graphics.Example.Properties {
+namespace Gorgon.Graphics.Example.Properties {
 	/// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

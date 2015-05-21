@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Native;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// The WMM joystick implementation of a device name.

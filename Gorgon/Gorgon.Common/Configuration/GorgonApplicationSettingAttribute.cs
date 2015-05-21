@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Configuration
+namespace Gorgon.Configuration
 {
 	/// <summary>
 	/// An attribute defining whether a property is to be used as an application setting.

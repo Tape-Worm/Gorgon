@@ -31,11 +31,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Interface for content management.
@@ -292,7 +292,7 @@ namespace GorgonLibrary.Editor
 
 			if (contentObject.HasRenderer)
 			{
-				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
+				GorgonApplication.ApplicationIdleLoopMethod = IdleLoop;
 			}
 	    }
 
@@ -499,7 +499,7 @@ namespace GorgonLibrary.Editor
 			Current = null;
 
 			// Turn off any idle time activity during the load.
-			Gorgon.ApplicationIdleLoopMethod = null;
+			GorgonApplication.ApplicationIdleLoopMethod = null;
 
 			if (ContentPanelUnloadAction != null)
 			{

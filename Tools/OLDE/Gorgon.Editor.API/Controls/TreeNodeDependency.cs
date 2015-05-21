@@ -26,9 +26,9 @@
 
 using System.Drawing;
 using System.IO;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A treeview node for a file dependency.

@@ -27,9 +27,9 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A renderer to draw the visual styles for UI elements.

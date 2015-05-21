@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Defines an object that can use colliders.

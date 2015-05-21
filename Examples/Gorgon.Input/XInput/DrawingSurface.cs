@@ -28,10 +28,10 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Examples.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Examples.Properties;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The drawing surface for our joystick.

@@ -28,11 +28,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
+using Gorgon.IO;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.PlugIns
+namespace Gorgon.PlugIns
 {
 	/// <summary>
 	/// Collection to hold search paths for plug-ins.
@@ -104,7 +105,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			// Add default paths:
 			// 1. Local directory.
-			Add(Gorgon.ApplicationDirectory);
+			Add(GorgonApplication.ApplicationDirectory);
 			// 2. Working directory.
 			Add(Environment.CurrentDirectory);
 			// 3. System directory.

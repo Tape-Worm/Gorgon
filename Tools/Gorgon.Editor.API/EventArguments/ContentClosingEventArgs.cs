@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Event arguments for the content closing event.

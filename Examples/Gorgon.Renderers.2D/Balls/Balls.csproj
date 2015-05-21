@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
     <AssemblyName>Balls</AssemblyName>
-    <StartupObject>GorgonLibrary.Graphics.Example.Program</StartupObject>
+    <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
     <ApplicationIcon>AmigaBoingBallSmoothShaded256.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>

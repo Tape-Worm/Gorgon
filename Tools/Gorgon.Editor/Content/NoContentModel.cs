@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A default content model used when there is no content.

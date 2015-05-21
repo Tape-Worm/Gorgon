@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Input.Raw;
+using Gorgon.Input.Raw;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// The entry point for the raw input plug-in.

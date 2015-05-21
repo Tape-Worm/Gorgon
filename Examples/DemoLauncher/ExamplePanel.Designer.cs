@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Examples
+﻿namespace Gorgon.Examples
 {
 	partial class ExamplePanel
 	{
@@ -44,7 +44,7 @@
 			// 
 			this.pictureIcon.BackColor = System.Drawing.Color.White;
 			this.pictureIcon.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureIcon.Image = global::GorgonLibrary.Examples.Properties.Resources.Default_128x128;
+			this.pictureIcon.Image = global::Gorgon.Examples.Properties.Resources.Default_128x128;
 			this.pictureIcon.Location = new System.Drawing.Point(0, 0);
 			this.pictureIcon.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.pictureIcon.Name = "pictureIcon";

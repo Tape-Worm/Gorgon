@@ -27,9 +27,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.IO.Properties;
+using Gorgon.Core;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// The base Gorgon file system provider.

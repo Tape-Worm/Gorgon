@@ -30,11 +30,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Configuration;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Configuration;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Configuration settings for the editor.
@@ -312,8 +312,8 @@ namespace GorgonLibrary.Editor
 			                                 1280,
 			                                 720);
 
-			PlugInDirectory = (Gorgon.ApplicationDirectory + "PlugIns").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
-			ThemeDirectory = (Gorgon.ApplicationDirectory + "Themes").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			PlugInDirectory = (GorgonApplication.ApplicationDirectory + "PlugIns").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			ThemeDirectory = (GorgonApplication.ApplicationDirectory + "Themes").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 
 			// Set the default scratch location.
 			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)

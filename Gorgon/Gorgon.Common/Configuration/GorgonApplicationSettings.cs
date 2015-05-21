@@ -34,11 +34,11 @@ using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using Gorgon.Core;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 using Gorgon.Core.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Configuration
+namespace Gorgon.Configuration
 {
 	/// <summary>
 	/// A base class used to handle settings for an application.

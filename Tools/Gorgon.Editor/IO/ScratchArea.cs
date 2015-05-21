@@ -27,11 +27,11 @@
 using System;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Accessibility for the scratch area.

@@ -37,13 +37,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A file selector window for retrieving files from the mounted scratch area.

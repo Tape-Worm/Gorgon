@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The main application UI controller interface.

@@ -25,9 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A kerning pair value.

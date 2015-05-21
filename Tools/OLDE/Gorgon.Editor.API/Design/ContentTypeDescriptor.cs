@@ -27,9 +27,9 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {	
 	/// <summary>
 	/// A collection of properties.

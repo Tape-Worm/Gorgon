@@ -28,9 +28,9 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Type converter for the RGBA color scheme.

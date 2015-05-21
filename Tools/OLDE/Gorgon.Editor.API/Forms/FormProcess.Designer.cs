@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace Gorgon.Editor
 {
 	partial class FormProcess
 	{
@@ -65,7 +65,7 @@
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.APIResources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.Properties.APIResources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(279, 74);
 			this.buttonCancel.Name = "buttonCancel";

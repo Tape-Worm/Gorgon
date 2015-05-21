@@ -28,16 +28,17 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Native;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
+using Gorgon.Design;
+using Gorgon.Native;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// A panel that can receive keyboard focus.
 	/// </summary>
-	[ToolboxItem(true), ToolboxBitmap(typeof(Gorgon), "Resources.GorgonSelectablePanel.bmp")]
+	[ToolboxItem(true), ToolboxBitmap(typeof(GorgonApplication), "Resources.GorgonSelectablePanel.bmp")]
 	public class GorgonSelectablePanel
 		: Panel
 	{

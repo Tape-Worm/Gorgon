@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The primary plug-in interface.
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Editor
 			{
 				EditorLogging.Print("Loading plug-in assembly \"{0}\".", assembly.FullName);
 
-				if (!Gorgon.PlugIns.IsPlugInAssembly(assembly.FullName))
+				if (!GorgonApplication.PlugIns.IsPlugInAssembly(assembly.FullName))
 				{
 					EditorLogging.Print("Assembly \"{0}\" is not a valid plug-in assembly.", assembly.FullName);
 					continue;
@@ -149,8 +149,8 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Load the DLL and return the list of plugins from it.
-				AssemblyName name = Gorgon.PlugIns.LoadPlugInAssembly(assembly.FullName);
-				IEnumerable<GorgonPlugIn> plugIns = Gorgon.PlugIns.EnumeratePlugIns(name);
+				AssemblyName name = GorgonApplication.PlugIns.LoadPlugInAssembly(assembly.FullName);
+				IEnumerable<GorgonPlugIn> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
 				
 				results.AddRange(plugIns.Where(item => item is EditorPlugIn || item is GorgonFileSystemProviderPlugIn));
 			}

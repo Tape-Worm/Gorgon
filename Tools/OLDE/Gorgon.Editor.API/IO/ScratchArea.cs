@@ -34,11 +34,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Accessibility for the scratch area.

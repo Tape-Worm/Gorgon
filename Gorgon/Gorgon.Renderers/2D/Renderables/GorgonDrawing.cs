@@ -25,11 +25,11 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Interface for immediate drawing of renderables.
@@ -256,7 +256,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="blitRegion">The position, and size of the blitted region.</param>
 		/// <param name="textureRegion">The region of the texture to blit.</param>
-		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion, RectangleF textureRegion)
 		{
@@ -269,7 +269,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="blitRegion">The position, and size of the blitted region.</param>
-		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion)
 		{
@@ -281,7 +281,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="position">Position on the screen to blit onto.</param>
-		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
+		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, Vector2 position)
 		{

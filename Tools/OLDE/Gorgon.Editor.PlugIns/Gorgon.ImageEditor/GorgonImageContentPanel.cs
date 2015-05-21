@@ -31,17 +31,17 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Input;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// Control for displaying image data.
@@ -1972,7 +1972,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// </summary>
 		/// <remarks>
 		/// Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This
-		/// only applies to plug-ins that implement <see cref="GorgonLibrary.Editor.IPlugInSettingsUI" />.
+		/// only applies to plug-ins that implement <see cref="Gorgon.Editor.IPlugInSettingsUI" />.
 		/// </remarks>
 	    protected override void OnEditorSettingsChanged()
 	    {

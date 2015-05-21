@@ -30,12 +30,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Native;
 using Microsoft.Win32;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.
@@ -370,12 +371,12 @@ namespace GorgonLibrary.Input.Raw
 
             if (windowHandle == IntPtr.Zero)
             {
-	            if (Gorgon.ApplicationForm == null)
+	            if (GorgonApplication.ApplicationForm == null)
 	            {
 		            throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
 	            }
 
-	            windowHandle = Gorgon.ApplicationForm.Handle;
+	            windowHandle = GorgonApplication.ApplicationForm.Handle;
             }
 
 			_hookedWindow = windowHandle;
@@ -463,7 +464,7 @@ namespace GorgonLibrary.Input.Raw
 			int deviceCount = Win32API.joyGetNumDevs();
 			int capsSize = Marshal.SizeOf(typeof(JOYCAPS));
 
-			Gorgon.Log.Print("Enumerating joysticks...", LoggingLevel.Intermediate);
+			GorgonApplication.Log.Print("Enumerating joysticks...", LoggingLevel.Intermediate);
 
 			for (int i = 0; i < deviceCount; i++)
 			{
@@ -501,7 +502,7 @@ namespace GorgonLibrary.Input.Raw
 			    result.Add(new GorgonMultimediaDeviceInfo(keyName, "Game device", "N/A", i));
 			}
 
-		    Gorgon.Log.Print("{0} joysticks found.", LoggingLevel.Intermediate, result.Count);
+		    GorgonApplication.Log.Print("{0} joysticks found.", LoggingLevel.Intermediate, result.Count);
 
 			return result;
 		}
@@ -540,7 +541,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a custom HID interface.
 		/// </summary>
-		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>
 		/// A new custom HID interface.
@@ -600,7 +601,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Function to create a joystick interface.
 		/// </summary>
-		/// <param name="joystickInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>

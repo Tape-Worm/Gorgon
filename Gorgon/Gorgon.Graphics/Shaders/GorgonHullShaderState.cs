@@ -26,7 +26,7 @@
 
 using SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Hull shader states.

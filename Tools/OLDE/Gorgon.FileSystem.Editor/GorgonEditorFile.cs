@@ -29,15 +29,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using GorgonLibrary.IO.Properties;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// Loads files from a Gorgon file system created by the Gorgon Editor.
     /// </summary>
     /// <remarks>This interface is meant for end-user applications to help with loading objects from a gorgon editor file.
-    /// <para>Since the gorgon editor file is treated as a <see cref="GorgonLibrary.IO.GorgonFileSystem">file system</see>, the interface requires a file system when working with Gorgon editor files.</para>
+    /// <para>Since the gorgon editor file is treated as a <see cref="Gorgon.IO.GorgonFileSystem">file system</see>, the interface requires a file system when working with Gorgon editor files.</para>
     /// <para>This interface will load in any type of file from the file system as the correct type provided it knows how to load the file. This means that developer defined file formats and 
     /// objects can be loaded by adding file handlers to the interface. These file handlers should be capable of loading any files that is required by the object being read from the file system.</para>
     /// <para>Gorgon will provide file readers for Textures, sprites, animations and fonts by default, but any of these may be overridden by the user if required.</para>

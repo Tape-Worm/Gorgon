@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// A collection of custom HID properties.
@@ -37,7 +37,7 @@ namespace GorgonLibrary.Input
 	{
 		#region Properties.
 		/// <summary>
-		/// Function to return the <see cref="GorgonLibrary.Input.GorgonCustomHIDProperty"/> at the specified index.
+		/// Function to return the <see cref="Gorgon.Input.GorgonCustomHIDProperty"/> at the specified index.
 		/// </summary>
 		public GorgonCustomHIDProperty this[int index]
 		{
@@ -48,7 +48,7 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
-		/// Function to return the <see cref="GorgonLibrary.Input.GorgonCustomHIDProperty"/> with the specified name.
+		/// Function to return the <see cref="Gorgon.Input.GorgonCustomHIDProperty"/> with the specified name.
 		/// </summary>
 		public GorgonCustomHIDProperty this[string name]
 		{

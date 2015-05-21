@@ -28,24 +28,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Animation.Properties;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
+using Gorgon.Animation.Properties;
+using Gorgon.Collections;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// Manages and controls animations for an object.
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
-	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="GorgonLibrary.Animation.GorgonAnimation{T}.Tracks">Tracks</see> of an 
-	/// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
-	/// of a sprite uses a floating point value, so a <see cref="GorgonLibrary.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
-	/// <para>To ensure the object will animate, it should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
+	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="Gorgon.Animation.GorgonAnimation{T}.Tracks">Tracks</see> of an 
+	/// <see cref="Gorgon.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="Gorgon.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
+	/// of a sprite uses a floating point value, so a <see cref="Gorgon.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
+	/// <para>To ensure the object will animate, it should have a <see cref="Gorgon.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
 	/// all have appropriate attributes assigned to their properties.</para>
-	/// <para>A user may add a custom track by inheriting from <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="GorgonLibrary.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
+	/// <para>A user may add a custom track by inheriting from <see cref="Gorgon.Animation.GorgonAnimationTrack{T}">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="Gorgon.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
 	/// custom track to the animation (not the controller).</para>
 	/// </remarks>
 	public class GorgonAnimationController<T>

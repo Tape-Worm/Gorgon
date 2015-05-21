@@ -31,11 +31,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
+using Gorgon.IO;
+using Gorgon.Native;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Status for the stream.

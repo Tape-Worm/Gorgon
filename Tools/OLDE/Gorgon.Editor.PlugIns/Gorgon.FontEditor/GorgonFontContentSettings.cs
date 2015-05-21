@@ -27,11 +27,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.UI;
+using Gorgon.IO;
+using Gorgon.Graphics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// Settings for font content.

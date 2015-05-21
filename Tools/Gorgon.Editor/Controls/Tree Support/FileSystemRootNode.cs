@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A treeview node for the root of the file system.

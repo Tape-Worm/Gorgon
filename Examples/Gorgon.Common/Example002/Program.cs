@@ -27,10 +27,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Entry point class.
@@ -104,7 +105,7 @@ namespace GorgonLibrary.Examples
 				// Other overloads allow using only the form and assigning the idle method at another time (if at all), or setting
 				// up an application context object to manage the life time of the application (with or without an idle loop 
 				// method).
-				Gorgon.Run(_form, Idle);
+				GorgonApplication.Run(_form, Idle);
 			}
 			catch (Exception ex)
 			{

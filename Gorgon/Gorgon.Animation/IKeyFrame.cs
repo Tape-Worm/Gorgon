@@ -25,9 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// An animation key frame.

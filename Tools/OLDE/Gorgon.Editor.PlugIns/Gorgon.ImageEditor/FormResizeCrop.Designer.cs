@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn
+﻿namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	partial class FormResizeCrop
 	{
@@ -70,7 +70,7 @@
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(356, 6);
 			this.buttonCancel.Name = "buttonCancel";
@@ -90,7 +90,7 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(263, 6);
 			this.buttonOK.Name = "buttonOK";
@@ -306,7 +306,7 @@
 			this.radioBottomRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_se_16x16;
+			this.radioBottomRight.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_se_16x16;
 			this.radioBottomRight.Location = new System.Drawing.Point(110, 67);
 			this.radioBottomRight.Name = "radioBottomRight";
 			this.radioBottomRight.Size = new System.Drawing.Size(29, 26);
@@ -322,7 +322,7 @@
 			this.radioBottomCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_down_16x16;
+			this.radioBottomCenter.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_down_16x16;
 			this.radioBottomCenter.Location = new System.Drawing.Point(75, 67);
 			this.radioBottomCenter.Name = "radioBottomCenter";
 			this.radioBottomCenter.Size = new System.Drawing.Size(29, 26);
@@ -338,7 +338,7 @@
 			this.radioBottomLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_sw_16x16;
+			this.radioBottomLeft.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_sw_16x16;
 			this.radioBottomLeft.Location = new System.Drawing.Point(40, 67);
 			this.radioBottomLeft.Name = "radioBottomLeft";
 			this.radioBottomLeft.Size = new System.Drawing.Size(29, 26);
@@ -354,7 +354,7 @@
 			this.radioMiddleRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioMiddleRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioMiddleRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_right_16x16;
+			this.radioMiddleRight.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_right_16x16;
 			this.radioMiddleRight.Location = new System.Drawing.Point(110, 35);
 			this.radioMiddleRight.Name = "radioMiddleRight";
 			this.radioMiddleRight.Size = new System.Drawing.Size(29, 26);
@@ -371,7 +371,7 @@
 			this.radioCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.center_16x16;
+			this.radioCenter.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.center_16x16;
 			this.radioCenter.Location = new System.Drawing.Point(75, 35);
 			this.radioCenter.Name = "radioCenter";
 			this.radioCenter.Size = new System.Drawing.Size(29, 26);
@@ -388,7 +388,7 @@
 			this.radioMiddleLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioMiddleLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioMiddleLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_left_16x16;
+			this.radioMiddleLeft.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_left_16x16;
 			this.radioMiddleLeft.Location = new System.Drawing.Point(40, 35);
 			this.radioMiddleLeft.Name = "radioMiddleLeft";
 			this.radioMiddleLeft.Size = new System.Drawing.Size(29, 26);
@@ -404,7 +404,7 @@
 			this.radioTopRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopRight.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_ne_16x16;
+			this.radioTopRight.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_ne_16x16;
 			this.radioTopRight.Location = new System.Drawing.Point(110, 3);
 			this.radioTopRight.Name = "radioTopRight";
 			this.radioTopRight.Size = new System.Drawing.Size(29, 26);
@@ -420,7 +420,7 @@
 			this.radioTopCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopCenter.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_up_16x16;
+			this.radioTopCenter.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_up_16x16;
 			this.radioTopCenter.Location = new System.Drawing.Point(75, 3);
 			this.radioTopCenter.Name = "radioTopCenter";
 			this.radioTopCenter.Size = new System.Drawing.Size(29, 26);
@@ -436,7 +436,7 @@
 			this.radioTopLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopLeft.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.arrow_nw_16x16;
+			this.radioTopLeft.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.arrow_nw_16x16;
 			this.radioTopLeft.Location = new System.Drawing.Point(40, 3);
 			this.radioTopLeft.Name = "radioTopLeft";
 			this.radioTopLeft.Size = new System.Drawing.Size(29, 26);

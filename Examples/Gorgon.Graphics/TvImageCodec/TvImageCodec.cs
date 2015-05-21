@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using GorgonLibrary.IO;
-using GorgonLibrary.Native;
+using Gorgon.IO;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
     /// Our TV image codec.
@@ -291,7 +291,7 @@ namespace GorgonLibrary.Graphics.Example
         /// <summary>
         /// Function to persist image data to a stream.
         /// </summary>
-        /// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
+        /// <param name="imageData"><see cref="Gorgon.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
         /// <param name="stream">Stream that will contain the data.</param>
         protected override void SaveToStream(GorgonImageData imageData, Stream stream)
         {
@@ -453,7 +453,7 @@ namespace GorgonLibrary.Graphics.Example
         /// </summary>
         /// <param name="stream">Stream used to read the metadata.</param>
         /// <returns>
-        /// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+        /// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
         /// </returns>
         /// <remarks>
         /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so

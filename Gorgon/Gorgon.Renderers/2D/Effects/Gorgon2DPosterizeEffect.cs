@@ -26,9 +26,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders a posterized image.

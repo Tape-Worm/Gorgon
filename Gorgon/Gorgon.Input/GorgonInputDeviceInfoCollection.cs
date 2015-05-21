@@ -25,9 +25,9 @@
 #endregion
 
 using System.Collections.Generic;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// A collection containing device information for each input device.

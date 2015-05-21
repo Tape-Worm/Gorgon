@@ -26,7 +26,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
 	// ReSharper disable InconsistentNaming
 

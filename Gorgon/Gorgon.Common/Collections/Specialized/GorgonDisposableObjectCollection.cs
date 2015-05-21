@@ -29,7 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GorgonLibrary.Collections.Specialized
+namespace Gorgon.Collections.Specialized
 {
 	/// <summary>
 	/// A collection of custom objects that are managed by the another interface.

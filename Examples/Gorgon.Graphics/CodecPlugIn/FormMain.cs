@@ -28,12 +28,13 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Example.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Example.Properties;
+using Gorgon.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
 namespace CodecPlugIn
@@ -106,22 +107,22 @@ namespace CodecPlugIn
 	    private bool LoadCodec()
 		{
 			// Load our plug-in.
-			string plugInPath = Gorgon.ApplicationDirectory + "TVImageCodec.dll";
+			string plugInPath = GorgonApplication.ApplicationDirectory + "TVImageCodec.dll";
 
 			if (!File.Exists(plugInPath))
 			{
 				return false;
 			}
 
-			if (!Gorgon.PlugIns.IsPlugInAssembly(plugInPath))
+			if (!GorgonApplication.PlugIns.IsPlugInAssembly(plugInPath))
 			{
 				return false;
 			}
 
-			Gorgon.PlugIns.LoadPlugInAssembly(plugInPath);
+			GorgonApplication.PlugIns.LoadPlugInAssembly(plugInPath);
 
 			// Get the plug-in object.
-			var plugIn = Gorgon.PlugIns["GorgonLibrary.Graphics.Example.TvImageCodecPlugIn"] as GorgonCodecPlugIn;
+			var plugIn = GorgonApplication.PlugIns["GorgonLibrary.Graphics.Example.TvImageCodecPlugIn"] as GorgonCodecPlugIn;
 
 			if (plugIn == null)
 			{
@@ -213,7 +214,7 @@ namespace CodecPlugIn
 	            if (!LoadCodec())
 	            {
 					GorgonDialogs.ErrorBox(this, "Unable to load the useless image codec plug-in.");
-					Gorgon.Quit();
+					GorgonApplication.Quit();
 		            return;
 	            }
 
@@ -221,7 +222,7 @@ namespace CodecPlugIn
 				ConvertImage();
 
                 // Set up our idle time processing.
-                Gorgon.ApplicationIdleLoopMethod = () =>
+                GorgonApplication.ApplicationIdleLoopMethod = () =>
                                                    {
                                                        _2D.Clear(Color.White);
 
@@ -237,7 +238,7 @@ namespace CodecPlugIn
             catch (Exception ex)
             {
                 GorgonDialogs.ErrorBox(this, ex);
-                Gorgon.Quit();
+                GorgonApplication.Quit();
             }
             finally
             {

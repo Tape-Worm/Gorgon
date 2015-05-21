@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Collections;
 using Gorgon.Core.Properties;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A collection of file extensions.

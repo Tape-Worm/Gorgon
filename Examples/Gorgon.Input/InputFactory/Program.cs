@@ -29,10 +29,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Input;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.Input;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Entry point class.
@@ -50,11 +51,11 @@ namespace GorgonLibrary.Examples
     /// for the example only, in most cases the developer will know the DLL and plug-in type and create it directly.  For example:
     /// 
     /// // Load the raw input plug-in DLL.
-    /// var assemblyName = Gorgon.PlugIns.LoadPlugInAssembly("[directory for plug-ins]\Gorgon.Input.Raw.DLL");
+    /// var assemblyName = GorgonApplication.PlugIns.LoadPlugInAssembly("[directory for plug-ins]\Gorgon.Input.Raw.DLL");
     ///
     /// // Create the factory.  Notice that we're using the full type name of the plug-in.
     /// // Alternatively, one could enumerate the plug-ins after loading the assembly by calling:
-    /// // var plugIns = Gorgon.PlugIns.EnumeratePlugIns(assemblyName);
+    /// // var plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(assemblyName);
     /// // And then check for a GorgonInputPlugIn in the list returned.
     /// GorgonInputFactory rawInput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
     /// 
@@ -136,7 +137,7 @@ namespace GorgonLibrary.Examples
 				}
 
 				// Skip any assemblies that aren't a plug-in assembly.
-				if (!Gorgon.PlugIns.IsPlugInAssembly(name))
+				if (!GorgonApplication.PlugIns.IsPlugInAssembly(name))
 				{
 					continue;
 				}
@@ -147,13 +148,13 @@ namespace GorgonLibrary.Examples
                 // the plug-in types.  If there are none, an exception will be
                 // thrown.  This is why we do a check with IsPlugInAssembly before
                 // we load the assembly.
-				Gorgon.PlugIns.LoadPlugInAssembly(name);
+				GorgonApplication.PlugIns.LoadPlugInAssembly(name);
 
 				// Now try to retrieve our input plug-ins.
                 // Retrieve the list of plug-ins from the assembly.  Once we have
                 // the list we look for any plug-ins that are GorgonInputPlugIn
                 // types and retrieve their type information.
-				var inputPlugIns = Gorgon.PlugIns.EnumeratePlugIns(name)
+				var inputPlugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name)
 									.Where(item => item is GorgonInputPlugIn)
 									.Select(item => item.GetType()).ToArray();
 
@@ -173,7 +174,7 @@ namespace GorgonLibrary.Examples
 					if (factory != null)
 					{
 						result.Add(new Tuple<GorgonInputPlugIn, GorgonInputFactory>(
-							(GorgonInputPlugIn)Gorgon.PlugIns[inputPlugIn.FullName], 
+							(GorgonInputPlugIn)GorgonApplication.PlugIns[inputPlugIn.FullName], 
 							factory));
 					}
 				}

@@ -26,13 +26,13 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 using SlimMath;
 using GI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A 2 dimensional texture object.
@@ -295,8 +295,8 @@ namespace GorgonLibrary.Graphics
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
         /// texture at the same time.</para>
         /// </remarks>
-        /// <returns>This method will return a <see cref="GorgonLibrary.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
-        /// a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
+        /// <returns>This method will return a <see cref="Gorgon.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
+        /// a <see cref="Gorgon.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
         /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
         /// <para>-or-</para>
         /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
@@ -326,7 +326,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
         /// <para>Textures that have a usage of staging cannot create shader views.</para>
         /// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
         public GorgonTextureShaderView GetShaderView(BufferFormat format, int mipStart = 0, int mipCount = 1, int arrayIndex = 0, int arrayCount = 1)
         {
@@ -346,7 +346,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// <para>Textures that have a usage of staging cannot create unordered views.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
 		public GorgonTextureUnorderedAccessView GetUnorderedAccessView(BufferFormat format, int mipStart = 0, int arrayStart = 0,
 																			 int arrayCount = 1)
 		{

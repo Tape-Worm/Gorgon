@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A base effect for the 2D renderer.

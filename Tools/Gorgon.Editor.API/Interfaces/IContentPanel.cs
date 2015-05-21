@@ -27,9 +27,9 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A content panel to give content a UI for users to work with.

@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Metadata for a file contained within the file system.

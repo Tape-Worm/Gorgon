@@ -25,13 +25,14 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// An unordered access texture view.
@@ -39,7 +40,7 @@ namespace GorgonLibrary.Graphics
 	/// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
 	/// <para>Ordered access views can be read/write in the shader if the format is set to one of R32_Uint, R32_Int or R32_Float.  Otherwise the view will be read-only.  An unordered access view must 
 	/// have a format that is the same bit-depth and in the same group as its bound resource.</para>
-	/// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonTextureShaderView">GorgonTextureShaderView</see>, only one unordered access view may be applied to a resource.</para>
+	/// <para>Unlike a <see cref="Gorgon.Graphics.GorgonTextureShaderView">GorgonTextureShaderView</see>, only one unordered access view may be applied to a resource.</para>
 	/// </remarks>
 	public class GorgonTextureUnorderedAccessView
 		: GorgonUnorderedAccessView
@@ -231,7 +232,7 @@ namespace GorgonLibrary.Graphics
 			UnorderedAccessViewDescription desc;
 			var texture = (GorgonTexture)Resource;
 
-			Gorgon.Log.Print("Creating texture unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+			GorgonApplication.Log.Print("Creating texture unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
 			ValidateViewSettings(texture);
 
@@ -254,7 +255,7 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
+				GorgonApplication.Log.Print("Gorgon resource view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
 
 				// Create our SRV.
 				D3DView = new UnorderedAccessView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)

@@ -24,9 +24,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The interface used to control the scratch file area for the application.

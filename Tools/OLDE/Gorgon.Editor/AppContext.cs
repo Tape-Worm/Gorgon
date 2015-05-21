@@ -29,14 +29,14 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.PlugIns;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Application context for the editor.
@@ -155,7 +155,7 @@ namespace GorgonLibrary.Editor
                 {
                     // Exit the application if we cancel.
                     MainForm.Dispose();
-                    Gorgon.Quit();
+                    GorgonApplication.Quit();
                     return;
                 }
 
@@ -168,7 +168,7 @@ namespace GorgonLibrary.Editor
             ScratchArea.InitializeScratch();
 
 			// Get only the providers that are not disabled.
-			var plugIns = from plugIn in Gorgon.PlugIns
+			var plugIns = from plugIn in GorgonApplication.PlugIns
 						  where plugIn is GorgonFileSystemProviderPlugIn
 						  && PlugIns.UserDisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
 						  select plugIn;
@@ -212,7 +212,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeInput()
 		{
-			string inputPlugInPath = Path.Combine(Gorgon.ApplicationDirectory, "Gorgon.Input.Raw.dll");
+			string inputPlugInPath = Path.Combine(GorgonApplication.ApplicationDirectory, "Gorgon.Input.Raw.dll");
 
 			_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_RAW_INPUT);
 
@@ -221,7 +221,7 @@ namespace GorgonLibrary.Editor
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
-			if (!Gorgon.PlugIns.IsPlugInAssembly(inputPlugInPath))
+			if (!GorgonApplication.PlugIns.IsPlugInAssembly(inputPlugInPath))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
@@ -230,15 +230,15 @@ namespace GorgonLibrary.Editor
 			byte[] key = GetType().Assembly.GetName().GetPublicKey();
 
 			if ((key != null) && (key.Length != 0) 
-				&& (Gorgon.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
+				&& (GorgonApplication.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
 
 			// Load the plug-in.
-			Gorgon.PlugIns.LoadPlugInAssembly(inputPlugInPath);
+			GorgonApplication.PlugIns.LoadPlugInAssembly(inputPlugInPath);
 
-			if (!Gorgon.PlugIns.Contains(ContentObject.GorgonRawInputTypeName))
+			if (!GorgonApplication.PlugIns.Contains(ContentObject.GorgonRawInputTypeName))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}
@@ -318,7 +318,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Signal quit.
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 			finally
 			{

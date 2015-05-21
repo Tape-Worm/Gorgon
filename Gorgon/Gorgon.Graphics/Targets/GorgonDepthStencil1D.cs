@@ -26,12 +26,13 @@
 
 using System;
 using System.ComponentModel;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A 1D depth/stencil buffer.
@@ -80,7 +81,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("Destroying GorgonDepthStencil '{0}'...", LoggingLevel.Verbose, Name);
+			GorgonApplication.Log.Print("Destroying GorgonDepthStencil '{0}'...", LoggingLevel.Verbose, Name);
 			GorgonRenderStatistics.DepthBufferCount--;
 			GorgonRenderStatistics.DepthBufferSize -= SizeInBytes;
 
@@ -125,7 +126,7 @@ namespace GorgonLibrary.Graphics
 					OptionFlags = ResourceOptionFlags.None
 				};
 
-			Gorgon.Log.Print("{0} {1}: Creating 1D depth/stencil texture...", LoggingLevel.Verbose, GetType().Name, Name);
+			GorgonApplication.Log.Print("{0} {1}: Creating 1D depth/stencil texture...", LoggingLevel.Verbose, GetType().Name, Name);
 
 			// Create the texture.
 			D3DResource = initialData != null
@@ -199,7 +200,7 @@ namespace GorgonLibrary.Graphics
         /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
         /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        /// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
         public GorgonDepthStencilView GetDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount, DepthStencilViewFlags flags)
 		{

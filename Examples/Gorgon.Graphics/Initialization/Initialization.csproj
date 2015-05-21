@@ -37,7 +37,7 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>GorgonLibrary.Graphics.Example.Program</StartupObject>
+    <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SlimMath">

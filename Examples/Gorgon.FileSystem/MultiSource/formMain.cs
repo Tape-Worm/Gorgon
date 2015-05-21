@@ -31,10 +31,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main application interface.
@@ -202,7 +203,7 @@ namespace GorgonLibrary.Examples
 			AssemblyName plugInAssembly = AssemblyName.GetAssemblyName(Program.PlugInPath + @"\Gorgon.FileSystem.Zip.DLL");
 
 			// Load our plug-in assembly.
-			Gorgon.PlugIns.LoadPlugInAssembly(plugInAssembly);
+			GorgonApplication.PlugIns.LoadPlugInAssembly(plugInAssembly);
 
 			// Add the zip file provider.
 			_fileSystem.Providers.LoadProvider("GorgonLibrary.IO.GorgonZipPlugIn");

@@ -27,7 +27,7 @@
 using System;
 using SlimMath;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// An animation track for 32 bit integer values.

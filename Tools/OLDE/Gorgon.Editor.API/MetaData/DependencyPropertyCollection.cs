@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Collections;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A collection of dependency properties.

@@ -24,11 +24,13 @@
 // 
 #endregion
 
-using GorgonLibrary.Math;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Math;
+using Gorgon.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A box structure with width, height and depth.

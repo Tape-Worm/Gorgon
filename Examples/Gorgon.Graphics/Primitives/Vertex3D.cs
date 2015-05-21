@@ -25,10 +25,10 @@
 #endregion
 
 using System.Runtime.InteropServices;
-using GorgonLibrary.Native;
+using Gorgon.Native;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// The layout for our vertex.

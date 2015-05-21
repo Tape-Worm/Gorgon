@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+﻿namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	partial class PanelHatch
 	{
@@ -58,11 +58,11 @@
             this.panelPreview = new System.Windows.Forms.Panel();
             this.labelPatternType = new System.Windows.Forms.Label();
             this.labelForegroundColor = new System.Windows.Forms.Label();
-            this.panelForegroundColor = new GorgonLibrary.UI.GorgonSelectablePanel();
-            this.panelBackgroundColor = new GorgonLibrary.UI.GorgonSelectablePanel();
+            this.panelForegroundColor = new Gorgon.UI.GorgonSelectablePanel();
+            this.panelBackgroundColor = new Gorgon.UI.GorgonSelectablePanel();
             this.labelBackgroundColor = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.comboHatch = new GorgonLibrary.Editor.FontEditorPlugIn.ComboPatterns();
+            this.comboHatch = new Gorgon.Editor.FontEditorPlugIn.ComboPatterns();
             this.panel4 = new System.Windows.Forms.Panel();
             this.labelPreview = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
@@ -76,7 +76,7 @@
             this.panelPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelPreview.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelPreview.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelPreview.Location = new System.Drawing.Point(6, 23);
             this.panelPreview.Name = "panelPreview";
@@ -107,7 +107,7 @@
             // panelForegroundColor
             // 
             this.panelForegroundColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelForegroundColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelForegroundColor.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelForegroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelForegroundColor.Location = new System.Drawing.Point(78, 30);
             this.panelForegroundColor.Name = "panelForegroundColor";
@@ -120,7 +120,7 @@
             // panelBackgroundColor
             // 
             this.panelBackgroundColor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelBackgroundColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+            this.panelBackgroundColor.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
             this.panelBackgroundColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelBackgroundColor.Location = new System.Drawing.Point(78, 57);
             this.panelBackgroundColor.Name = "panelBackgroundColor";

@@ -26,8 +26,9 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary;
-using GorgonLibrary.UI;
+using Gorgon;
+using Gorgon.Core;
+using Gorgon.UI;
 
 namespace CodecPlugIn
 {
@@ -53,7 +54,7 @@ namespace CodecPlugIn
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
 
-                Gorgon.Run(new FormMain());
+                GorgonApplication.Run(new FormMain());
             }
             catch (Exception ex)
             {

@@ -25,8 +25,9 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings for defining a render target buffer.

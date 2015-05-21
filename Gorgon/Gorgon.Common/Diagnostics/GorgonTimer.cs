@@ -26,10 +26,10 @@
 
 using System;
 using System.ComponentModel;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Diagnostics
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// A timer interface for handling situations where higher accuracy is required for time measurement.

@@ -24,9 +24,11 @@
 // 
 #endregion
 
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Operations applied to stencil buffers.

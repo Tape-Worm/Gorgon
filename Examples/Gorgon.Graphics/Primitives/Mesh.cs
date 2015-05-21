@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
     /// Base class for a mesh object.

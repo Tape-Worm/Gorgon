@@ -25,9 +25,11 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A render target item.

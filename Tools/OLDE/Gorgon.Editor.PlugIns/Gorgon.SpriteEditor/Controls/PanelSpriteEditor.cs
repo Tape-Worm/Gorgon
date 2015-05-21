@@ -30,16 +30,16 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Input;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
+namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 {
 	/// <summary>
 	/// Mode for the sprite editor.

@@ -28,9 +28,10 @@ using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Our form for the example.

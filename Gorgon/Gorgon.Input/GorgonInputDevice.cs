@@ -27,10 +27,11 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Properties;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Abstract class for input devices.
@@ -367,7 +368,7 @@ namespace GorgonLibrary.Input
 		    BoundControl.LostFocus -= BoundWindow_LostFocus;
 		    BoundControl.GotFocus -= BoundWindow_GotFocus;
 
-            Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", LoggingLevel.Intermediate,
+            GorgonApplication.Log.Print("Unbinding input device object {1} from window 0x{0}.", LoggingLevel.Intermediate,
                              BoundControl.Handle.FormatHex(), GetType().Name);
         }
 
@@ -375,7 +376,7 @@ namespace GorgonLibrary.Input
 		/// Function to bind the device to a window.
 		/// </summary>
 		/// <param name="boundWindow">Window to bind with.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonLibrary.Gorgon.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonApplication.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the boundWindow parameter and the Gorgon.ApplicationForm property are both NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the top level form cannot be determined.</para>
@@ -391,18 +392,18 @@ namespace GorgonLibrary.Input
 
 			if (boundWindow == null)
 			{
-			    if (Gorgon.ApplicationForm == null)
+			    if (GorgonApplication.ApplicationForm == null)
 			    {
 			        throw new ArgumentException(Resources.GORINP_NO_WINDOW_TO_BIND, "boundWindow");
 			    }
 
-			    boundWindow = Gorgon.ApplicationForm;
+			    boundWindow = GorgonApplication.ApplicationForm;
 			}
 
-			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", LoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);
+			GorgonApplication.Log.Print("Binding input device object {1} to window 0x{0}.", LoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);
 
 			BoundControl = boundWindow;
-			BoundTopLevelForm = Gorgon.GetTopLevelForm(BoundControl);
+			BoundTopLevelForm = GorgonApplication.GetTopLevelForm(BoundControl);
 
 		    if (BoundTopLevelForm == null)
 		    {

@@ -12,9 +12,9 @@ using System.CodeDom.Compiler;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Editor.Properties {
+namespace Gorgon.Editor.Properties {
     
     
     [CompilerGenerated()]

@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	/// <summary>
 	/// Main UI for the codec loader.
@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				listCodecs.Items.Clear();
 
-				IEnumerable<GorgonCodecPlugIn> plugIns = Gorgon.PlugIns.OfType<GorgonCodecPlugIn>().OrderBy(item => item.Name);
+				IEnumerable<GorgonCodecPlugIn> plugIns = GorgonApplication.PlugIns.OfType<GorgonCodecPlugIn>().OrderBy(item => item.Name);
 
 				foreach (GorgonCodecPlugIn codecPlugIn in plugIns)
 				{

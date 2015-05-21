@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Examples
+﻿namespace Gorgon.Examples
 {
 	partial class formMain
 	{
@@ -110,7 +110,7 @@
 			// 
 			// buttonSave
 			// 
-			this.buttonSave.Image = global::GorgonLibrary.Examples.Properties.Resources.save_as_16x16;
+			this.buttonSave.Image = global::Gorgon.Examples.Properties.Resources.save_as_16x16;
 			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSave.Name = "buttonSave";
 			this.buttonSave.Size = new System.Drawing.Size(51, 22);
@@ -122,7 +122,7 @@
 			this.buttonReload.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemLoadChanged,
             this.itemLoadOriginal});
-			this.buttonReload.Image = global::GorgonLibrary.Examples.Properties.Resources.reload_filesystem_16x16;
+			this.buttonReload.Image = global::Gorgon.Examples.Properties.Resources.reload_filesystem_16x16;
 			this.buttonReload.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonReload.Name = "buttonReload";
 			this.buttonReload.Size = new System.Drawing.Size(72, 22);
@@ -180,7 +180,7 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox1.Image = global::GorgonLibrary.Examples.Properties.Resources.file_system_16x16;
+			this.pictureBox1.Image = global::Gorgon.Examples.Properties.Resources.file_system_16x16;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.pictureBox1.Name = "pictureBox1";
@@ -229,7 +229,7 @@
 			// pictureBox3
 			// 
 			this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox3.Image = global::GorgonLibrary.Examples.Properties.Resources.file_system_16x16;
+			this.pictureBox3.Image = global::Gorgon.Examples.Properties.Resources.file_system_16x16;
 			this.pictureBox3.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.pictureBox3.Name = "pictureBox3";
@@ -263,7 +263,7 @@
 			// pictureBox2
 			// 
 			this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox2.Image = global::GorgonLibrary.Examples.Properties.Resources.Info_16x16;
+			this.pictureBox2.Image = global::Gorgon.Examples.Properties.Resources.Info_16x16;
 			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(22, 22);

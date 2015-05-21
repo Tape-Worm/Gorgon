@@ -28,9 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A compositor system that allows for the creation of specialized effects through shaders and various states.
@@ -141,7 +143,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return a list of additional parameters for the effect.
         /// </summary>
-        /// <remarks>These parameters can be passed in via construction of the effect using the <see cref="GorgonLibrary.Graphics.GorgonShaderBinding.CreateEffect{T}">CreateEffect</see> method 
+        /// <remarks>These parameters can be passed in via construction of the effect using the <see cref="Gorgon.Graphics.GorgonShaderBinding.CreateEffect{T}">CreateEffect</see> method 
         /// or they may be updated after the object was created.
         /// </remarks>
         public IDictionary<string, object> Parameters

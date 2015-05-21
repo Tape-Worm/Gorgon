@@ -27,10 +27,10 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Application context.

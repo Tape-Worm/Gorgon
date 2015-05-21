@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// An attribute to define a property on an animated object as being animated.

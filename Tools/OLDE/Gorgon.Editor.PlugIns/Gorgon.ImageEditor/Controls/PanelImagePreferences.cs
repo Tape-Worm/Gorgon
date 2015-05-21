@@ -30,11 +30,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
+namespace Gorgon.Editor.ImageEditorPlugIn.Controls
 {
 	/// <summary>
 	/// Panel for image editor preferences.
@@ -130,17 +130,17 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 			}
 
 			// Ensure that this DLL is a valid .NET assembly.
-			if (!Gorgon.PlugIns.IsPlugInAssembly(codecPath))
+			if (!GorgonApplication.PlugIns.IsPlugInAssembly(codecPath))
 			{
 				GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORIMG_ERR_DLL_NOT_ASSEMBLY, codecPath));
 				return new CodecDescriptor[0];
 			}
 
 			// Load the assembly so we can enumerate the plug-ins from it.
-			AssemblyName assemblyName = Gorgon.PlugIns.LoadPlugInAssembly(codecPath);
+			AssemblyName assemblyName = GorgonApplication.PlugIns.LoadPlugInAssembly(codecPath);
 
 			// Get a list of codec plug-ins.
-			GorgonCodecPlugIn[] plugIns = Gorgon.PlugIns.EnumeratePlugIns(assemblyName).OfType<GorgonCodecPlugIn>().ToArray();
+			GorgonCodecPlugIn[] plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(assemblyName).OfType<GorgonCodecPlugIn>().ToArray();
 
 			if (plugIns.Length == 0)
 			{
@@ -211,7 +211,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 					_codecs.Add(codec);
 
 					// Now remove from the active plug-in list because we don't want them loaded just yet.
-					Gorgon.PlugIns.Unload(codec.CodecTypeName);
+					GorgonApplication.PlugIns.Unload(codec.CodecTypeName);
 				}
 
 				// Remember the last codec path.
@@ -285,9 +285,9 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 							foreach (CodecDescriptor codecDesc in codecs)
 							{
 								_codecs.Remove(codecDesc);
-								if (Gorgon.PlugIns.Contains(codecDesc.CodecTypeName))
+								if (GorgonApplication.PlugIns.Contains(codecDesc.CodecTypeName))
 								{
-									Gorgon.PlugIns.Unload(codecDesc.CodecTypeName);
+									GorgonApplication.PlugIns.Unload(codecDesc.CodecTypeName);
 								}
 							}
 						}
@@ -316,12 +316,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 					}
 
 					_codecs.Remove(codecs[0]);
-					if (!Gorgon.PlugIns.Contains(codecs[0].CodecTypeName))
+					if (!GorgonApplication.PlugIns.Contains(codecs[0].CodecTypeName))
 					{
 						continue;
 					}
 
-					Gorgon.PlugIns.Unload(codecs[0].CodecTypeName);
+					GorgonApplication.PlugIns.Unload(codecs[0].CodecTypeName);
 				}
 
 				// Refresh the codec list.
@@ -462,7 +462,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
 		    comboResizeFilter.Text = _filterTypes[GorgonImageEditorPlugIn.Settings.ResizeImageFilter];
             
 			// Get the list of already loaded image codecs.
-			_codecs = (from plugIn in Gorgon.PlugIns
+			_codecs = (from plugIn in GorgonApplication.PlugIns
 			           let codec = plugIn as GorgonCodecPlugIn
 			           where codec != null
 			           orderby codec.Name

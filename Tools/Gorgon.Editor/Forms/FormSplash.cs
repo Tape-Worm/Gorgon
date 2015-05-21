@@ -26,11 +26,11 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
 using StructureMap;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Splash screen form.

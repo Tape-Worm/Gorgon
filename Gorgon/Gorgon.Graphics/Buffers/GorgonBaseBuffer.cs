@@ -25,14 +25,15 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
+using Gorgon.IO;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// Type of buffer.
@@ -377,7 +378,7 @@ namespace GorgonLibrary.Graphics
             D3DResource = null;
             D3DBuffer = null;
 
-            Gorgon.Log.Print("Destroyed {0} Buffer '{1}'.", LoggingLevel.Verbose, BufferType, Name);
+            GorgonApplication.Log.Print("Destroyed {0} Buffer '{1}'.", LoggingLevel.Verbose, BufferType, Name);
         }
 
 		/// <summary>
@@ -464,7 +465,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Raw views require that the format be set to R32 (typeless).</para>
         /// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
+        /// <exception cref="GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
         /// <para>-or-</para>
         /// <para>Thrown when the video device feature level is not SM_5 or better.</para>
         /// <para>-or-</para>
@@ -557,7 +558,7 @@ namespace GorgonLibrary.Graphics
         /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing buffer, and if the format is set to Unknown, then it will 
         /// use the format from the buffer.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        /// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         protected GorgonRenderTargetBufferView OnGetRenderTargetView(BufferFormat format, BufferFormat bufferFormat, int firstElement, int elementCount)
         {
             // If we pass unknown, use the format from the texture.
@@ -594,14 +595,14 @@ namespace GorgonLibrary.Graphics
         /// <param name="count">Element count.</param>
         /// <param name="isRaw">TRUE if using a raw view of the buffer, FALSE if not.</param>
         /// <returns>A shader view for the buffer.</returns>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+        /// <exception cref="GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
         /// <para>Thrown when the view could not be created.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+        /// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
         /// <para>Raw views can only be used on SM5 video devices or better. </para>
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -692,7 +693,7 @@ namespace GorgonLibrary.Graphics
         /// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
         internal void Initialize(GorgonDataStream data)
         {
-            Gorgon.Log.Print("Creating {0} Buffer '{1}'...", LoggingLevel.Verbose, BufferType, Name);
+            GorgonApplication.Log.Print("Creating {0} Buffer '{1}'...", LoggingLevel.Verbose, BufferType, Name);
 
             CreateResources(data);
 
@@ -740,7 +741,7 @@ namespace GorgonLibrary.Graphics
         /// Function to return this buffer as a staging buffer.
         /// </summary>
         /// <returns>The new staging buffer.</returns>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the video device is a SM2_a_b video device.
+        /// <exception cref="GorgonException">Thrown when the video device is a SM2_a_b video device.
         /// <para>-or-</para>
         /// <para>Thrown when the current buffer is immutable.</para>
         /// </exception>
@@ -772,7 +773,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="buffer">Buffer to copy.</param>
         /// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
+        /// <exception cref="GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
         public void Copy(GorgonBaseBuffer buffer)
         {
 #if DEBUG
@@ -820,7 +821,7 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
         /// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
+        /// <exception cref="GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
         public void Copy(GorgonBaseBuffer buffer, int sourceOffset, int byteCount, int destOffset)
         {
             int sourceByteIndex = sourceOffset + byteCount;
@@ -867,7 +868,7 @@ namespace GorgonLibrary.Graphics
         /// </para>
         /// <para>This will only work on buffers created with a usage type of [Default].</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
+		/// <exception cref="GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
 		public void Update<T>(ref T data, GorgonGraphics deferred = null)
 			where T : struct
 		{
@@ -906,7 +907,7 @@ namespace GorgonLibrary.Graphics
         /// <para>This will only work on buffers created with a usage type of [Default].</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
+		/// <exception cref="GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
 		public virtual void Update<T>(T[] data, GorgonGraphics deferred = null)
 			where T : struct
 		{
@@ -934,7 +935,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="stream">Stream containing the data used to update the buffer.</param>
         /// <param name="deferred">[Optional] A deferred context to use when updating the buffer.</param>
         /// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-        /// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
+        /// <para>This method will respect the <see cref="Gorgon.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
         /// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
         /// to 0.</para>
         /// <para>
@@ -945,7 +946,7 @@ namespace GorgonLibrary.Graphics
         /// </para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+        /// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
         public void Update(GorgonDataStream stream, GorgonGraphics deferred = null)
         {
             GorgonDebug.AssertNull(stream, "stream");
@@ -988,7 +989,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="lockFlags">The flags to use when locking the buffer.</param>
         /// <param name="deferred">[Optional] A deferred context to use when locking the buffer.</param>
         /// <returns>A data stream pointing to the memory used by the buffer.</returns>
-        /// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Unlock">unlocked</see>, the memory pointed 
+        /// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="Gorgon.Graphics.GorgonBaseBuffer.Unlock">unlocked</see>, the memory pointed 
         /// at by the stream will be considered invalid.  However, for the sake of following practice, it is a good idea to call the Dispose method 
         /// on the resulting data stream when finished.
         /// <para>This method only works on buffers with a Dynamic or Staging usage.  Immutable or default buffers will throw an exception when an attempt 
@@ -1002,7 +1003,7 @@ namespace GorgonLibrary.Graphics
         /// <para>When locking using a deferred context, either the NoOverwrite or Discard flags must be provided along with a Write flag.  No other flags will work.</para>
         /// </para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer is already locked.
+        /// <exception cref="GorgonException">Thrown when the buffer is already locked.
         /// <para>-or-</para>
         /// <para>Thrown when the usage for the buffer does not allow the buffer to be locked.</para>		
         /// </exception>		

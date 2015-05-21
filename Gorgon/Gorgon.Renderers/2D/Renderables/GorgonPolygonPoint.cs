@@ -24,11 +24,13 @@
 // 
 #endregion
 
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Renderers.Properties;
 using SlimMath;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
     /// <summary>
     /// A point for a polygon or triangle.

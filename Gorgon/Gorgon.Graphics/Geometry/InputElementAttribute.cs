@@ -26,12 +26,12 @@
 
 using System;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// An attribute to mark a field in a structure as an input element.
 	/// </summary>
-	/// <remarks>Apply this to a field in a structure/object to allow the <see cref="GorgonLibrary.Graphics.GorgonInputLayout">GorgonInputLayout</see> to parse the object and build
+	/// <remarks>Apply this to a field in a structure/object to allow the <see cref="Gorgon.Graphics.GorgonInputLayout">GorgonInputLayout</see> to parse the object and build
 	/// an input element element list from it.
 	/// <para>Using Unknown for the format will tell the library to try and figure out the type from the field/property.  Use this with caution, it will be very explicit 
 	/// about the type it chooses.  This will only work on primitive types such as byte, (u)short, (u)int, float and double or the GorgonVector2/3/4D types.  Furthermore, it can only

@@ -27,10 +27,11 @@
 using System;
 using System.Linq;
 using System.Threading;
-using GorgonLibrary.Collections;
-using GorgonLibrary.IO.Properties;
+using Gorgon.Collections;
+using Gorgon.Core;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A collection of file system providers.
@@ -95,7 +96,7 @@ namespace GorgonLibrary.IO
 		/// <remarks>This is a convenience method to allow mass loading of file system providers.</remarks>
 		public void LoadAllProviders()
 		{
-			var plugIns = from plugInList in Gorgon.PlugIns
+			var plugIns = from plugInList in GorgonApplication.PlugIns
 						  where plugInList is GorgonFileSystemProviderPlugIn
 						  select plugInList;
 
@@ -126,7 +127,7 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerName"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerName"/> parameter is empty.</exception>
         /// <exception cref="System.InvalidCastException">Thrown when the plug-in was not found or was not of the correct type.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the provider interface could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the provider interface could not be created.</exception>
 		public void LoadProvider(string providerName)
 		{
 			if (providerName == null)
@@ -150,7 +151,7 @@ namespace GorgonLibrary.IO
 
 				// Find the plug-in.
 				var plugIn =
-					Gorgon.PlugIns.FirstOrDefault(
+					GorgonApplication.PlugIns.FirstOrDefault(
 						item => string.Equals(providerName, item.Name, StringComparison.OrdinalIgnoreCase)) as
 					GorgonFileSystemProviderPlugIn;
 
@@ -199,7 +200,7 @@ namespace GorgonLibrary.IO
 		/// Function to unload a file system provider by index in the collection.
 		/// </summary>
 		/// <param name="index">Index of the file system provider to unload.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the <see cref="GorgonLibrary.Collections.GorgonBaseNamedObjectCollection{T}.Count">Count</see>.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the <see cref="Gorgon.Collections.GorgonBaseNamedObjectCollection{T}.Count">Count</see>.</exception>
 		public void Unload(int index)
 		{
 			lock(_syncLock)

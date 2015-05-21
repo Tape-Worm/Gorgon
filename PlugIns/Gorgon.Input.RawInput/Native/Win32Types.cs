@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
     // ReSharper disable InconsistentNaming
     // ReSharper disable FieldCanBeMadeReadOnly.Local

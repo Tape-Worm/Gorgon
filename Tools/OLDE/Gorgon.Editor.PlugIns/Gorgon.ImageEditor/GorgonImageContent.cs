@@ -33,17 +33,17 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Design;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// Image content.
@@ -1127,7 +1127,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 			}
 
-			string texConvPath = Gorgon.ApplicationDirectory + "texconv.exe";
+			string texConvPath = GorgonApplication.ApplicationDirectory + "texconv.exe";
 
 			// If we can't find our converter, then we're out of luck.
 			if (!File.Exists(texConvPath))
@@ -1257,7 +1257,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 				return null;
 			}
 
-			string texConvPath = Gorgon.ApplicationDirectory + "texconv.exe";
+			string texConvPath = GorgonApplication.ApplicationDirectory + "texconv.exe";
 
 			// If we can't find our converter, then we're out of luck.
 			if (!File.Exists(texConvPath))
@@ -1678,7 +1678,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentPanel OnInitialize()
         {
-	        CanChangeBCImages = File.Exists(Gorgon.ApplicationDirectory + "texconv.exe");
+	        CanChangeBCImages = File.Exists(GorgonApplication.ApplicationDirectory + "texconv.exe");
 
 	        _contentPanel = new GorgonImageContentPanel(this, GetRawInput());
 

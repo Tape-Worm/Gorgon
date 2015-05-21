@@ -29,9 +29,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Result value for the find executable function.

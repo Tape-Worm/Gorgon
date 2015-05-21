@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Preferences for plug-ins.

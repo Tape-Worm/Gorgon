@@ -54,25 +54,26 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using Gorgon.Core;
 using SharpDX.WIC;
 using DX = SharpDX;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Graphics.Properties;
 using Bitmap = SharpDX.WIC.Bitmap;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A container for raw image data that can be sent to or read from a image.
     /// </summary>
     /// <remarks>This object will allow pixel manipulation of image data.  It will break a image into buffers, such as a series of buffers 
     /// for arrays (for 1D and 2D images only), mip-map levels and depth slices (for 3D images only).
-	/// <para>The object takes its settings from an object that implements <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see>.  All texture settings objects such as 
-	/// <see cref="GorgonLibrary.Graphics.GorgonTexture1DSettings">GorgonTexture1DSettings</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings">GorgonTexture2DSettings</see> and 
-	/// <see cref="GorgonLibrary.Graphics.GorgonTexture3DSettings">GorgonTexture3DSettings</see> implement the IImageSettings interface and can be used with this object.</para>
+	/// <para>The object takes its settings from an object that implements <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see>.  All texture settings objects such as 
+	/// <see cref="Gorgon.Graphics.GorgonTexture1DSettings">GorgonTexture1DSettings</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">GorgonTexture2DSettings</see> and 
+	/// <see cref="Gorgon.Graphics.GorgonTexture3DSettings">GorgonTexture3DSettings</see> implement the IImageSettings interface and can be used with this object.</para>
 	/// </remarks>
     public class GorgonImageData
         : IDisposable
@@ -438,9 +439,9 @@ namespace GorgonLibrary.Graphics
         /// <returns>A new image data object containing the image data from the image array.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="images"/> parameter is NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="images"/> parameter is empty.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the image could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the image could not be created.</exception>
         /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from an array of <see cref="System.Drawing.Image">System.Drawing.Images</see>. 
+        /// This method will create a new <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> object from an array of <see cref="System.Drawing.Image">System.Drawing.Images</see>. 
         /// The method will copy the image information and do a best fit conversion.
         /// <para>If <paramref name="imageType"/> is set to Image1D/2D, then the array can be laid out as mip slices and array indices, if it is a 3D image, then it will be laid out as mip slices and depth slices. 
         /// If the MipCount is set to 1, then only the first image will be processed IF there is only one image in the list.</para>
@@ -566,9 +567,9 @@ namespace GorgonLibrary.Graphics
         /// A new image data object containing a copy of the System.Drawing.Image data.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when image could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when image could not be created.</exception>
         /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image"/>. 
+        /// This method will create a new <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image"/>. 
         /// The method will copy the image information and do a best fit conversion.
         /// <para>This overload will only support 1D and 2D images (non-cubemap, since they require 6 array indices), other image types are not supported for this overload.</para>
         /// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
@@ -741,7 +742,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> or <paramref name="mipLevel"/> parameters are greater than or equal to the number of array indices or mip map levels.</exception>
-        /// <remarks>This will create a system memory clone of the <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
+        /// <remarks>This will create a system memory clone of the <see cref="Gorgon.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
         public static GorgonImageData CreateFromTexture(GorgonTexture texture, int mipLevel, int arrayIndex = 0)
         {
@@ -814,7 +815,7 @@ namespace GorgonLibrary.Graphics
         /// <returns>A new image data object containing the data from the texture.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
-        /// <remarks>This will create a system memory clone of the <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
+        /// <remarks>This will create a system memory clone of the <see cref="Gorgon.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
         public static GorgonImageData CreateFromTexture(GorgonTexture texture)
         {
@@ -871,7 +872,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="arrayCount">[Optional] Number of array indices.</param>
 		/// <param name="mipCount">[Optional] Number of mip-map levels in the 1D image.</param>
 		/// <returns>The number of bytes for the 1D image.</returns>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
 		public static int GetSizeInBytes(int width, BufferFormat format, int arrayCount = 1, int mipCount = 1)
 		{
 			return GetSizeInBytes(width, 1, format, arrayCount, mipCount);
@@ -887,7 +888,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mipCount">[Optional] Number of mip-map levels in the 2D image.</param>
 		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch size.</param>
 		/// <returns>The number of bytes for the 2D image.</returns>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+        /// <exception cref="GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
 		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount = 1, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			int result = 0;
@@ -912,7 +913,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mipCount">[Optional] Number of mip-map levels in the 3D image.</param>
 		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
 		/// <returns>The number of bytes for the 3D image.</returns>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+		/// <exception cref="GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
 		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			if (format == BufferFormat.Unknown)
@@ -1310,7 +1311,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public static GorgonImageData FromFile(string filePath, GorgonImageCodec codec)
 		{
-			Gorgon.Log.Print("GorgonImageData : Loading image data from '{0}'...", LoggingLevel.Verbose, filePath);
+			GorgonApplication.Log.Print("GorgonImageData : Loading image data from '{0}'...", LoggingLevel.Verbose, filePath);
 
             using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -1839,7 +1840,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="format">New format for the image.</param>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> is set to Unknown.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
+        /// <exception cref="GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
         /// <remarks>This will convert the current image data to another buffer format.  If a format is unable to be converted then an exception will be thrown.</remarks>
 		public void ConvertFormat(BufferFormat format)
 		{
@@ -1852,7 +1853,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="format">New format for the image.</param>
         /// <param name="ditherMode">Dithering to apply to images that have to be downsampled.</param>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> is set to Unknown.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
+        /// <exception cref="GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
         /// <remarks>This will convert the current image data to another buffer format.  If a format is unable to be converted then an exception will be thrown.</remarks>
         public void ConvertFormat(BufferFormat format, ImageDithering ditherMode)
         {
@@ -1952,10 +1953,10 @@ namespace GorgonLibrary.Graphics
         /// <param name="data">Pointer to pre-existing image data.</param>
         /// <param name="dataSize">Size of the data, in bytes.  This parameter is ignored if the data parameter is NULL.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
-		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> interface.  
-		/// The GorgonTexture[n]DSettings (where n = <see cref="GorgonLibrary.Graphics.GorgonTexture1DSettings">1</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings">2</see>, 
-		/// or <see cref="GorgonLibrary.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.
+        /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
+		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
+		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
+		/// or <see cref="Gorgon.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.
 		/// <para>If the <paramref name="data"/> pointer is NULL, then a buffer will be created, otherwise the buffer that the pointer is pointing 
         /// at must be large enough to accomodate the size of the image described in the settings parameter and will be validated against the 
         /// <paramref name="dataSize"/> parameter.</para>
@@ -1994,10 +1995,10 @@ namespace GorgonLibrary.Graphics
         /// <param name="data">Pointer to pre-existing image data.</param>
         /// <param name="dataSize">Size of the data, in bytes.  This parameter is ignored if the data parameter is NULL.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
-		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> interface.  
-		/// The GorgonTexture[n]DSettings (where n = <see cref="GorgonLibrary.Graphics.GorgonTexture1DSettings">1</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings">2</see>, 
-		/// or <see cref="GorgonLibrary.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.
+        /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
+		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
+		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
+		/// or <see cref="Gorgon.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.
 		/// <para>If the <paramref name="data"/> pointer is NULL, then a buffer will be created, otherwise the buffer that the pointer is pointing 
         /// at must be large enough to accomodate the size of the image described in the settings parameter and will be validated against the 
 		/// <paramref name="dataSize"/> parameter.</para>
@@ -2014,10 +2015,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="settings">The settings to describe an image.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
-		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> interface.  
-		/// The GorgonTexture[n]DSettings (where n = <see cref="GorgonLibrary.Graphics.GorgonTexture1DSettings">1</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings">2</see>, 
-		/// or <see cref="GorgonLibrary.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.</remarks>
+		/// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
+		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
+		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
+		/// or <see cref="Gorgon.Graphics.GorgonTexture3DSettings">3</see>) types all implement IImageSettings.</remarks>
 		public unsafe GorgonImageData(IImageSettings settings)
 			: this(settings, null, 0)
 		{

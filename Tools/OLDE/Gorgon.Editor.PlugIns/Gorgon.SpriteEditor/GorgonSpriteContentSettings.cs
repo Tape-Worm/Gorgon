@@ -27,12 +27,12 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
 	/// Settings for sprite content.

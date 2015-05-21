@@ -25,9 +25,10 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A cache for state Direct 3D state objects.

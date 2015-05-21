@@ -27,9 +27,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A collection of dependency properties.

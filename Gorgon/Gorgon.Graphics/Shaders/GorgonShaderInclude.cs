@@ -25,9 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// An include file for a shader.

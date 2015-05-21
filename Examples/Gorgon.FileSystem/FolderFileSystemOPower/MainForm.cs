@@ -29,15 +29,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main application form.
@@ -234,7 +235,7 @@ namespace GorgonLibrary.Examples
 				_sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
 			};
 
-			Gorgon.ApplicationIdleLoopMethod = Idle;
+			GorgonApplication.ApplicationIdleLoopMethod = Idle;
 		}
 
 		/// <summary>
@@ -247,7 +248,7 @@ namespace GorgonLibrary.Examples
 
 			if (e.KeyCode == Keys.Escape)
 			{
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 
 			if (e.KeyCode == Keys.F1)
@@ -279,7 +280,7 @@ namespace GorgonLibrary.Examples
 			catch (Exception ex)
 			{
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 			finally
 			{

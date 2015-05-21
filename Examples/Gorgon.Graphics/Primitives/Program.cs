@@ -28,16 +28,17 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
-using GorgonLibrary.Graphics.Example.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers;
+using Gorgon.UI;
+using Gorgon.Graphics.Example.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	[StructLayout(LayoutKind.Sequential, Pack = 16, Size = 16)]
 	struct Material
@@ -640,7 +641,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			_cameraRotation = Vector2.Zero;
 
-			Gorgon.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
+			GorgonApplication.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
 
 			_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
 			_keyboard = _input.CreateKeyboard(_form);
@@ -706,7 +707,7 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				Initialize();
 
-				Gorgon.Run(_form, Idle);
+				GorgonApplication.Run(_form, Idle);
 			}
 			catch (Exception ex)
 			{

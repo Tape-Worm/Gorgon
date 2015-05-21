@@ -29,9 +29,9 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Type editor for write mask options.

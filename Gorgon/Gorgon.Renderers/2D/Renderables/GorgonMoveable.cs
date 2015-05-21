@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.Animation;
+using Gorgon.Animation;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Defines a moveable and renderable object.
@@ -109,9 +109,9 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the renderable after scaling has been applied.
 		/// </summary>
-		/// <remarks>This property will set or return the actual size of the renderable.  This means that if a <see cref="GorgonLibrary.Renderers.GorgonMoveable.Scale">Scale</see> has been set, 
+		/// <remarks>This property will set or return the actual size of the renderable.  This means that if a <see cref="Gorgon.Renderers.GorgonMoveable.Scale">Scale</see> has been set, 
 		/// then this property will return the size of the renderable with multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
-		/// <para>A renderable with a size of 1,1 will set/return the same value as <see cref="GorgonLibrary.Renderers.GorgonMoveable.Scale">Scale</see> property.</para></remarks>
+		/// <para>A renderable with a size of 1,1 will set/return the same value as <see cref="Gorgon.Renderers.GorgonMoveable.Scale">Scale</see> property.</para></remarks>
 		[AnimatedProperty]
 		public Vector2 ScaledSize
 		{

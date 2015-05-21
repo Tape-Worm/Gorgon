@@ -28,9 +28,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using GorgonLibrary.Native;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Diagnostics
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// Process management interface.

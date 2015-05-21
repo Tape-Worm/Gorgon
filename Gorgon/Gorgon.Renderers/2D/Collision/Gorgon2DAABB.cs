@@ -25,11 +25,11 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.IO;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A 2 dimensional axis aligned bounding box collider.
@@ -54,8 +54,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the upper-left coordinates for the bounding box.
 		/// </summary>
-		/// <remarks>Use this to adjust the location for the AABB, use <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> to get the actual location.  
-		/// If this object is not attached to a <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderBoundaries location will be the same as the Location.</remarks>
+		/// <remarks>Use this to adjust the location for the AABB, use <see cref="Gorgon.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> to get the actual location.  
+		/// If this object is not attached to a <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderBoundaries location will be the same as the Location.</remarks>
 		public Vector2 Location
 		{
 			get
@@ -92,8 +92,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size for the AABB.
 		/// </summary>
-		/// <remarks>Use this to adjust the size for the AABB, use <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> to get the actual size.  
-		/// If this object is not attached to a <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderBoundaries size will be the same as the Size.</remarks>
+		/// <remarks>Use this to adjust the size for the AABB, use <see cref="Gorgon.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> to get the actual size.  
+		/// If this object is not attached to a <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderBoundaries size will be the same as the Size.</remarks>
 		public Vector2 Size
 		{
 			get
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Renderers
         /// <param name="reader">The reader for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
+        /// <para>Unlike the <see cref="Gorgon.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>

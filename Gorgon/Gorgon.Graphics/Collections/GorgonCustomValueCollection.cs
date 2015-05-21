@@ -26,9 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// The named value type to be stored in the collection.

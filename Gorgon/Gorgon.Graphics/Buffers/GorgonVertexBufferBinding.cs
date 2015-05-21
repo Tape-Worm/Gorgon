@@ -24,10 +24,12 @@
 // 
 #endregion
 
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A vertex buffer binding.

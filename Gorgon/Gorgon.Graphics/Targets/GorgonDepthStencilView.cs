@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using D3D = SharpDX.Direct3D11;
 using GI = SharpDX.DXGI;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// Flags to determine how the view will be handled.
@@ -211,7 +212,7 @@ namespace GorgonLibrary.Graphics
 				Resource.Graphics.Output.DepthStencilView = null;
 			}
 
-			Gorgon.Log.Print("Destroying depth/stencil view for {0}.",
+			GorgonApplication.Log.Print("Destroying depth/stencil view for {0}.",
 							 LoggingLevel.Verbose,
 							 Resource.Name);
 			D3DView.Dispose();

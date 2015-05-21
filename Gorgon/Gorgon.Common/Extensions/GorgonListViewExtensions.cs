@@ -28,8 +28,8 @@
 using System;
 using System.Windows.Forms;
 using Gorgon.Core;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
+using Gorgon.Native;
 
 namespace Gorgon.UI
 {

@@ -29,12 +29,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using Gorgon.Core;
 using SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
+using Gorgon.Diagnostics;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Shader state interface.
@@ -603,7 +604,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to set or return a constant buffer at the specified index.
 			/// </summary>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
+			/// <exception cref="GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
 			public GorgonConstantBuffer this[int index]
 			{
 				get
@@ -726,7 +727,7 @@ namespace GorgonLibrary.Graphics
             /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="buffers"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
 			/// </remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
+			/// <exception cref="GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonConstantBuffer[] buffers)
 			{
 			    int count = _buffers.Length - slot;
@@ -1126,7 +1127,7 @@ namespace GorgonLibrary.Graphics
             /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="resourceViews"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
 			/// </remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view is already bound to another slot.</exception>
+			/// <exception cref="GorgonException">Thrown when a view is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonShaderView[] resourceViews)
 			{
 			    int count = _resources.Length - slot;
@@ -1468,7 +1469,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the list of resources for the shaders.
 		/// </summary>
 		/// <remarks>
-		/// A resource may be a raw buffer (with shader binding enabled), <see cref="GorgonLibrary.Graphics.GorgonStructuredBuffer">structured buffer</see>, append/consume buffer, or a <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.
+		/// A resource may be a raw buffer (with shader binding enabled), <see cref="Gorgon.Graphics.GorgonStructuredBuffer">structured buffer</see>, append/consume buffer, or a <see cref="Gorgon.Graphics.GorgonTexture">texture</see>.
 		/// <para>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</para></remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		public virtual ShaderResourceViews Resources

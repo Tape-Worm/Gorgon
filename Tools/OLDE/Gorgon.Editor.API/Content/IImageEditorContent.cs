@@ -26,9 +26,9 @@
 
 using System;
 using System.IO;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The interface that defines the content produced by an image editor.

@@ -27,7 +27,7 @@
 
 using System;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A model to retrieve the content interface and any ancillary interfaces.

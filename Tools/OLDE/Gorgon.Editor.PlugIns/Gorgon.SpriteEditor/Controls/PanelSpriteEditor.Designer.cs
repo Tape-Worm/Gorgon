@@ -1,6 +1,6 @@
-﻿using GorgonLibrary.UI;
+﻿using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
+namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 {
 	partial class PanelSpriteEditor
 	{
@@ -50,7 +50,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panelSprite = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.panelSprite = new Gorgon.UI.GorgonSelectablePanel();
 			this.containerSprite = new System.Windows.Forms.ToolStripContainer();
 			this.stripUIOptions = new System.Windows.Forms.ToolStrip();
 			this.dropDownZoom = new System.Windows.Forms.ToolStripDropDownButton();
@@ -169,7 +169,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
             this.menuItem25,
             this.toolStripSeparator2,
             this.menuItemToWindow});
-			this.dropDownZoom.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.zoom_16x16;
+			this.dropDownZoom.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.zoom_16x16;
 			this.dropDownZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.dropDownZoom.Name = "dropDownZoom";
 			this.dropDownZoom.Size = new System.Drawing.Size(128, 22);
@@ -329,7 +329,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			this.buttonCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
 			this.buttonCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCenter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.buttonCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.pan_21x16;
+			this.buttonCenter.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.pan_21x16;
 			this.buttonCenter.Location = new System.Drawing.Point(0, 511);
 			this.buttonCenter.Margin = new System.Windows.Forms.Padding(0);
 			this.buttonCenter.Name = "buttonCenter";
@@ -491,7 +491,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			// buttonSave
 			// 
 			this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonSave.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.save_16x16;
+			this.buttonSave.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.save_16x16;
 			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSave.Name = "buttonSave";
 			this.buttonSave.Size = new System.Drawing.Size(23, 22);
@@ -501,7 +501,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			// buttonRevert
 			// 
 			this.buttonRevert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonRevert.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.revert_16x16;
+			this.buttonRevert.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.revert_16x16;
 			this.buttonRevert.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonRevert.Name = "buttonRevert";
 			this.buttonRevert.Size = new System.Drawing.Size(23, 22);
@@ -517,7 +517,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			// 
 			this.buttonClip.CheckOnClick = true;
 			this.buttonClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonClip.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.sprite_16x16;
+			this.buttonClip.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.sprite_16x16;
 			this.buttonClip.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonClip.Name = "buttonClip";
 			this.buttonClip.Size = new System.Drawing.Size(23, 22);
@@ -528,7 +528,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Controls
 			// 
 			this.buttonAutoClip.CheckOnClick = true;
 			this.buttonAutoClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonAutoClip.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.auto_clip_16x16;
+			this.buttonAutoClip.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.auto_clip_16x16;
 			this.buttonAutoClip.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonAutoClip.Name = "buttonAutoClip";
 			this.buttonAutoClip.Size = new System.Drawing.Size(23, 22);

@@ -31,13 +31,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Native;
-using GorgonLibrary.PlugIns;
 using Gorgon.Core.Properties;
-using GorgonLibrary.UI;
+using Gorgon.IO;
+using Gorgon.Collections.Specialized;
+using Gorgon.Diagnostics;
+using Gorgon.Native;
+using Gorgon.PlugIns;
+using Gorgon.UI;
 
 namespace Gorgon.Core
 {
@@ -45,12 +45,12 @@ namespace Gorgon.Core
 	/// The gorgon application.
 	/// </summary>
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
-	/// <para>The application uses an <see cref="Gorgon.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
-	/// <para>An application is started by calling its <see cref="Gorgon.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
+	/// <para>The application uses an <see cref="GorgonApplication.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="GorgonApplication.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
+	/// <para>An application is started by calling its <see cref="GorgonApplication.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
 	/// Alternatively, the application can be terminated by returning FALSE from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>
-	public static class Gorgon
+	public static class GorgonApplication
 	{
 		#region Constants.
 		private const string LogFile = "GorgonLibrary";				// Log file application name.
@@ -560,7 +560,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="trackedObject">Object to add.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonLibrary.Gorgon.Quit">termination</see>.</remarks>
+		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
 		public static void AddTrackedObject(IDisposable trackedObject)
 		{
 		    if (trackedObject == null)
@@ -650,9 +650,9 @@ namespace Gorgon.Core
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes the <see cref="Gorgon"/> class.
+		/// Initializes the <see cref="GorgonApplication"/> class.
 		/// </summary>
-		static Gorgon()		
+		static GorgonApplication()		
 		{			
 			PlugIns = new GorgonPlugInFactory();
 			Log = new GorgonLogFile(LogFile, "Tape_Worm");

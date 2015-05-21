@@ -25,11 +25,11 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// This object contains data about a locked sub resource in a texture.
@@ -38,9 +38,9 @@ namespace GorgonLibrary.Graphics
     /// <para>The lock will allow the data in the sub resource to be accessible to the CPU and will keep the GPU from accessing the texture.  Because of this, it is important to only 
     /// keep the lock open for as short a duration as possible.</para>
     /// <para>If a texture is disposed while a lock is open, that lock will be unlocked and become invalid.</para>
-    /// <seealso cref="GorgonLibrary.Graphics.GorgonTexture1D.Lock"/>
-    /// <seealso cref="GorgonLibrary.Graphics.GorgonTexture2D.Lock"/>
-    /// <seealso cref="GorgonLibrary.Graphics.GorgonTexture3D.Lock"/>
+    /// <seealso cref="Gorgon.Graphics.GorgonTexture1D.Lock"/>
+    /// <seealso cref="Gorgon.Graphics.GorgonTexture2D.Lock"/>
+    /// <seealso cref="Gorgon.Graphics.GorgonTexture3D.Lock"/>
     /// </remarks>
     public unsafe class GorgonTextureLockData
         : GorgonImageBuffer, IDisposable

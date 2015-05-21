@@ -25,11 +25,11 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.IO;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	class Plane
 		: MoveableMesh

@@ -33,11 +33,11 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Tree node editing state.

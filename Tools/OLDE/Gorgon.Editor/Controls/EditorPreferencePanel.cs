@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Preferences for the editor.

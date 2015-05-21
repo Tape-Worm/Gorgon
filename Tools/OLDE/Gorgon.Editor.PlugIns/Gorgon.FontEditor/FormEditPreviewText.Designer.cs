@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	partial class FormEditPreviewText
 	{
@@ -69,7 +69,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(336, 338);
 			this.buttonCancel.Name = "buttonCancel";
@@ -89,7 +89,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(238, 338);
 			this.buttonOK.Name = "buttonOK";

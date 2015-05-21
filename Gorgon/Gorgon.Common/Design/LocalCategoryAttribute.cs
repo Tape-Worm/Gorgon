@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Resources;
 using System.Threading;
 
-namespace GorgonLibrary.Design
+namespace Gorgon.Design
 {
 	/// <summary>
 	/// A localizable version of the category attribute.

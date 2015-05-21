@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// Type of render target.
@@ -66,7 +66,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the format of the backing texture for the render target.
 		/// </summary>
-		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.IImageSettings.Format">Format</see>.
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="Gorgon.Graphics.IImageSettings.Format">Format</see>.
 		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>

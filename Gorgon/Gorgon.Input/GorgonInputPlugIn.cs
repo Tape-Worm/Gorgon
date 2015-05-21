@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Plug-in interface for an input device factory plug-in.

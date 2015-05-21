@@ -32,9 +32,10 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Graphics;
+using Gorgon.Core;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A property for content.

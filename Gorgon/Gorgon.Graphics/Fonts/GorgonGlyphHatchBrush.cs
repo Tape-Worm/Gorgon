@@ -26,9 +26,9 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a hatching patterns.

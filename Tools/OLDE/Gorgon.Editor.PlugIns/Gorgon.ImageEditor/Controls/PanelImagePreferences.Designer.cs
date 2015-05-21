@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn.Controls
+﻿namespace Gorgon.Editor.ImageEditorPlugIn.Controls
 {
 	partial class PanelImagePreferences
 	{
@@ -221,7 +221,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pictureBox1.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.info_16x16;
+            this.pictureBox1.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.info_16x16;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(16, 21);
@@ -244,7 +244,7 @@
             // 
             // buttonAddCodec
             // 
-            this.buttonAddCodec.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.image_add_16x16;
+            this.buttonAddCodec.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.image_add_16x16;
             this.buttonAddCodec.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonAddCodec.Name = "buttonAddCodec";
             this.buttonAddCodec.Size = new System.Drawing.Size(154, 22);
@@ -254,7 +254,7 @@
             // buttonRemoveCodec
             // 
             this.buttonRemoveCodec.Enabled = false;
-            this.buttonRemoveCodec.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.remove_image_16x16;
+            this.buttonRemoveCodec.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.remove_image_16x16;
             this.buttonRemoveCodec.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonRemoveCodec.Name = "buttonRemoveCodec";
             this.buttonRemoveCodec.Size = new System.Drawing.Size(174, 22);

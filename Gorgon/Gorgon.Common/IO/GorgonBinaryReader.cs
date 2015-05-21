@@ -27,10 +27,10 @@
 using System;
 using System.IO;
 using System.Text;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// An extended binary writer class.

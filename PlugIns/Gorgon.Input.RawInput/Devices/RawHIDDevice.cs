@@ -25,11 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// A raw input generic HID device object.
@@ -151,7 +152,7 @@ namespace GorgonLibrary.Input.Raw
 		internal RawHIDDevice(GorgonRawInputFactory owner, GorgonRawInputDeviceInfo deviceData)
 			: base(owner, deviceData.Name)
 		{
-			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
+			GorgonApplication.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
 
 			_deviceData = deviceData;
 			_messageFilter = owner.MessageFilter;

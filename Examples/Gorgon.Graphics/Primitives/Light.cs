@@ -26,11 +26,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.IO;
-using GorgonLibrary.Native;
+using Gorgon.IO;
+using Gorgon.Native;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// A light to shine on our sad primitives

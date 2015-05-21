@@ -25,11 +25,11 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.IO;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A 2 dimensional bounding circle.
@@ -54,7 +54,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the collider radius.
 		/// </summary>
-		/// <remarks>This returns the actual radius with the <see cref="GorgonLibrary.Renderers.Gorgon2DBoundingCircle.Radius">Radius</see> applied to the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> bounds.</remarks>
+		/// <remarks>This returns the actual radius with the <see cref="Gorgon.Renderers.Gorgon2DBoundingCircle.Radius">Radius</see> applied to the <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> bounds.</remarks>
 		public float ColliderRadius
 		{
 			get;
@@ -64,7 +64,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the collider radius.
 		/// </summary>
-		/// <remarks>This returns the actual center with the <see cref="GorgonLibrary.Renderers.Gorgon2DBoundingCircle.Center">Center</see> applied to the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> bounds.</remarks>
+		/// <remarks>This returns the actual center with the <see cref="Gorgon.Renderers.Gorgon2DBoundingCircle.Center">Center</see> applied to the <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> bounds.</remarks>
 		public Vector2 ColliderCenter
 		{
 			get;
@@ -74,8 +74,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the center for the bounding circle.
 		/// </summary>
-		/// <remarks>Use this to adjust the center for the bounding circle, use <see cref="GorgonLibrary.Renderers.Gorgon2DBoundingCircle.ColliderCenter">ColliderCenter</see> to get the actual center.  
-		/// If this object is not attached to a <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderCenter will be the same as the Center.</remarks>
+		/// <remarks>Use this to adjust the center for the bounding circle, use <see cref="Gorgon.Renderers.Gorgon2DBoundingCircle.ColliderCenter">ColliderCenter</see> to get the actual center.  
+		/// If this object is not attached to a <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderCenter will be the same as the Center.</remarks>
 		public Vector2 Center
 		{
 			get
@@ -98,8 +98,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the radius for the bounding circle.
 		/// </summary>
-		/// <remarks>Use this to adjust the radius for the bounding circle, use <see cref="GorgonLibrary.Renderers.Gorgon2DBoundingCircle.ColliderRadius">ColliderRadius</see> to get the actual radius.  
-		/// If this object is not attached to a <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderRadius will be the same as the Radius.</remarks>
+		/// <remarks>Use this to adjust the radius for the bounding circle, use <see cref="Gorgon.Renderers.Gorgon2DBoundingCircle.ColliderRadius">ColliderRadius</see> to get the actual radius.  
+		/// If this object is not attached to a <see cref="Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see>, then the ColliderRadius will be the same as the Radius.</remarks>
 		public float Radius
 		{
 			get
@@ -160,7 +160,7 @@ namespace GorgonLibrary.Renderers
         /// <param name="reader">The reader for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
+        /// <para>Unlike the <see cref="Gorgon.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>

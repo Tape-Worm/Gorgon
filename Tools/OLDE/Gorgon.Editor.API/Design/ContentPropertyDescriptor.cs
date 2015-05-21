@@ -27,7 +27,7 @@
 using System;
 using System.ComponentModel;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Content property descriptor.

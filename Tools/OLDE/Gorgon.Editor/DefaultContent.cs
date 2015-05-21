@@ -26,15 +26,15 @@
 
 using System.Drawing;
 using System.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers;
 using SlimMath;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Default content object.

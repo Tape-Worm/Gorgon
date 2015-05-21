@@ -28,11 +28,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Graphics;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Interface for renderable objects.
@@ -61,7 +61,7 @@ namespace GorgonLibrary.Renderers
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		public T FromStream<T>(string name, Stream stream)
 			where T : class, IPersistedRenderable
 		{
@@ -105,7 +105,7 @@ namespace GorgonLibrary.Renderers
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		public T FromMemory<T>(string name, byte[] data)
 			where T : class, IPersistedRenderable
 		{
@@ -136,7 +136,7 @@ namespace GorgonLibrary.Renderers
 		/// <para>Thrown when the filePath parameter is empty.</para>
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		public T FromFile<T>(string name, string filePath)
 			where T : class, IPersistedRenderable
 		{

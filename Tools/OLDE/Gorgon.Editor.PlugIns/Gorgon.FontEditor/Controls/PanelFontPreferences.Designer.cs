@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     partial class PanelFontPreferences
     {
@@ -75,10 +75,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.labelSep = new System.Windows.Forms.Label();
 			this.numericShadowOffsetY = new System.Windows.Forms.NumericUpDown();
 			this.labelShadowOpacity = new System.Windows.Forms.Label();
-			this.panelShadowOpacity = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.panelShadowOpacity = new Gorgon.UI.GorgonSelectablePanel();
 			this.labelTextColor = new System.Windows.Forms.Label();
-			this.panelTextColor = new GorgonLibrary.UI.GorgonSelectablePanel();
-			this.panelBackColor = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.panelTextColor = new Gorgon.UI.GorgonSelectablePanel();
+			this.panelBackColor = new Gorgon.UI.GorgonSelectablePanel();
 			this.labelPreview = new System.Windows.Forms.Label();
 			this.panel5 = new System.Windows.Forms.Panel();
 			this.panel6 = new System.Windows.Forms.Panel();
@@ -407,7 +407,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// 
 			// panelShadowOpacity
 			// 
-			this.panelShadowOpacity.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+			this.panelShadowOpacity.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
 			this.panelShadowOpacity.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelShadowOpacity.Location = new System.Drawing.Point(125, 40);
 			this.panelShadowOpacity.Name = "panelShadowOpacity";
@@ -429,7 +429,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// 
 			// panelTextColor
 			// 
-			this.panelTextColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+			this.panelTextColor.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
 			this.panelTextColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelTextColor.Location = new System.Drawing.Point(4, 92);
 			this.panelTextColor.Name = "panelTextColor";
@@ -441,7 +441,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// 
 			// panelBackColor
 			// 
-			this.panelBackColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
+			this.panelBackColor.BackgroundImage = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
 			this.panelBackColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelBackColor.Location = new System.Drawing.Point(113, 92);
 			this.panelBackColor.Name = "panelBackColor";

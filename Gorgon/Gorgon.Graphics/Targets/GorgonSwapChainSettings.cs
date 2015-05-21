@@ -28,7 +28,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Usage flags for the swap chain.

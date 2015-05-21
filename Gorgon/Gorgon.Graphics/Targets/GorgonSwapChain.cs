@@ -28,15 +28,16 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Native;
+using Gorgon.UI;
 using SharpDX;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Render target after resized event arguments.
@@ -120,13 +121,13 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
-	/// <remarks>The swap chain is used to display data to the <see cref="GorgonLibrary.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
+	/// <remarks>The swap chain is used to display data to the <see cref="Gorgon.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
 	/// <para>Swap chains embedded into child controls (a panel, group box, etc...) will not be able to switch to full screen mode and will automatically revert to windowed mode.</para>
 	/// <para>Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window
 	/// for the extra video output is located on the monitor attached to that video output.  Failure to do so will keep the mode from switching.
 	/// </para>	
 	/// <para>
-	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="GorgonLibrary.Graphics.GorgonVideoDevice">multiple video devices</see>.  
+	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="Gorgon.Graphics.GorgonVideoDevice">multiple video devices</see>.  
 	/// One possible workaround is to create a full screen borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround
 	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
 	/// </para>	
@@ -288,12 +289,12 @@ namespace GorgonLibrary.Graphics
                 GorgonException.Catch(ex,
                                       () =>
                                       GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
 																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
-                Gorgon.Quit();
+				GorgonApplication.Quit();
 #else
 		        GorgonException.Catch(ex);
 #endif
@@ -332,12 +333,12 @@ namespace GorgonLibrary.Graphics
                 GorgonException.Catch(ex,
                                       () =>
                                       GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
 																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
-                Gorgon.Quit();
+				GorgonApplication.Quit();
 #else
 		        GorgonException.Catch(ex);
 #endif
@@ -351,7 +352,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthReseat">The depth/stencil view needs to be re-seated.</param>
 		private void CreateResources(bool targetReseat = false, bool depthReseat = false)
 		{
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", LoggingLevel.Intermediate, Name);
+			GorgonApplication.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", LoggingLevel.Intermediate, Name);
 
 			if (_renderTarget == null)
 			{
@@ -432,7 +433,7 @@ namespace GorgonLibrary.Graphics
 		        // If the actual control has changed parents, update the top level control.
 		        if (sender == Settings.Window)
 		        {
-		            var newTopLevelParent = Gorgon.GetTopLevelControl(Settings.Window);
+		            var newTopLevelParent = GorgonApplication.GetTopLevelControl(Settings.Window);
 
 		            if (newTopLevelParent != _topLevelControl)
 		            {
@@ -454,7 +455,7 @@ namespace GorgonLibrary.Graphics
 		            _parentForm.ResizeEnd -= _parentForm_ResizeEnd;
 		        }
 
-		        _parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+		        _parentForm = GorgonApplication.GetTopLevelForm(Settings.Window);
 
 		        if (_parentForm == null)
 		        {
@@ -470,12 +471,12 @@ namespace GorgonLibrary.Graphics
                 GorgonException.Catch(ex,
                                       () =>
                                       GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
 																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
-                Gorgon.Quit();
+				GorgonApplication.Quit();
 #else
 		        GorgonException.Catch(ex);
 #endif
@@ -524,7 +525,7 @@ namespace GorgonLibrary.Graphics
 			// Attempt to get the parent form if we don't have one yet.
 			if (_parentForm == null)
 			{
-				_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+				_parentForm = GorgonApplication.GetTopLevelForm(Settings.Window);
 				_parentForm.ResizeBegin += _parentForm_ResizeBegin;
 				_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 			}
@@ -556,12 +557,12 @@ namespace GorgonLibrary.Graphics
                 GorgonException.Catch(ex,
                                       () =>
                                       GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
 																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
-                Gorgon.Quit();
+				GorgonApplication.Quit();
 #else
                 // Log the exception.
 		        GorgonException.Catch(ex);
@@ -621,7 +622,7 @@ namespace GorgonLibrary.Graphics
 				switch (sdEx.ResultCode.Code)
 				{
 				    case (int)GI.DXGIStatus.ModeChangeInProgress:
-				        Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
+				        GorgonApplication.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
 				        break;
 				    default:
 				        if (sdEx.ResultCode != GI.ResultCode.NotCurrentlyAvailable)
@@ -629,7 +630,7 @@ namespace GorgonLibrary.Graphics
 				            throw;
 				        }
 
-				        Gorgon.Log.Print(
+				        GorgonApplication.Log.Print(
 				            "GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .",
 				            LoggingLevel.All,
 				            Name);
@@ -684,7 +685,7 @@ namespace GorgonLibrary.Graphics
                 D3DSettings.Usage |= GI.Usage.UnorderedAccess;
             }
 
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", LoggingLevel.Simple, Name);
+			GorgonApplication.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", LoggingLevel.Simple, Name);
             GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, D3DSettings)
             {
                 DebugName = Name + " DXGISwapChain"
@@ -797,11 +798,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mode">New video mode to use.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -816,11 +817,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
         /// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -836,11 +837,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
         /// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -854,8 +855,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <exception cref="GorgonLibrary.GorgonException">
-        /// Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.
+		/// <exception cref="Gorgon.GorgonException">
+        /// Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.
 		///   <para>-or-</para>
 		///   <para>The width and height are not valid for the render target.</para>
 		///   </exception>
@@ -874,9 +875,9 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -922,7 +923,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Flip(int interval)
 		{
 			var flags = GI.PresentFlags.None;
@@ -966,7 +967,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Flip()
 		{
 			Flip(0);
@@ -1027,8 +1028,8 @@ namespace GorgonLibrary.Graphics
 			Settings = settings;
 
 			// Get the parent form for our window.
-			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
-			_topLevelControl = Gorgon.GetTopLevelControl(settings.Window);
+			_parentForm = GorgonApplication.GetTopLevelForm(settings.Window);
+			_topLevelControl = GorgonApplication.GetTopLevelControl(settings.Window);
 			settings.Window.ParentChanged += Window_ParentChanged;
 
 			if (_topLevelControl != settings.Window)
@@ -1077,7 +1078,7 @@ namespace GorgonLibrary.Graphics
 					_renderTarget = null;
 				}
 
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", LoggingLevel.Simple, Name);
+				GorgonApplication.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", LoggingLevel.Simple, Name);
 
 				if (GISwapChain != null)
 				{

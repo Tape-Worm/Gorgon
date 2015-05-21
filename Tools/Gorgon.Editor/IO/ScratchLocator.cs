@@ -26,9 +26,9 @@
 
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A UI to allow a user to locate the scratch path.

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A track that will animate properties with a GorgonColor data type.

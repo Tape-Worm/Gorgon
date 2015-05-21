@@ -27,7 +27,7 @@
 using SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A vertex shader object.

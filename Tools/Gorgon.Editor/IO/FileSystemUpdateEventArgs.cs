@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// File system updated event arguments.

@@ -25,9 +25,9 @@
 #endregion
 
 using System.Collections.Generic;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A collection of shader include files.

@@ -29,14 +29,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Animation;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Animation;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// The corners of a rectangle.
@@ -420,7 +420,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>
 		/// Please note that this doesn't draw the object to the target right away, but queues it up to be
-		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="Gorgon.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public override void Draw()
 		{
@@ -455,7 +455,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="stream">Open file stream containing the renderable data.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		void IPersistedRenderable.Load(Stream stream)
 		{		
 			if (stream == null)

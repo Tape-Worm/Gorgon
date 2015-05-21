@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Configuration;
-using GorgonLibrary.IO;
+using Gorgon.Configuration;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Configuration settings for the plug-in interfaces.

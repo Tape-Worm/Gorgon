@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Event arguments for the content panel created event.

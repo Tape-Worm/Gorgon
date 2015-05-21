@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn
+﻿namespace Gorgon.Editor.ImageEditorPlugIn
 {
     partial class GorgonImageContentPanel
     {
@@ -59,8 +59,8 @@
         private void InitializeComponent()
         {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonImageContentPanel));
-			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
-			this.panelTextureDisplay = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.imageFileBrowser = new Gorgon.Editor.EditorFileDialog();
+			this.panelTextureDisplay = new Gorgon.UI.GorgonSelectablePanel();
 			this.stripImageEditor = new System.Windows.Forms.ToolStrip();
 			this.labelImageInfo = new System.Windows.Forms.ToolStripLabel();
 			this.sepMip = new System.Windows.Forms.ToolStripSeparator();
@@ -92,7 +92,7 @@
 			this.itemImportFileSystem = new System.Windows.Forms.ToolStripMenuItem();
 			this.buttonGenerateMips = new System.Windows.Forms.ToolStripButton();
 			this.dialogOpenImage = new System.Windows.Forms.OpenFileDialog();
-			this.dialogImportImage = new GorgonLibrary.Editor.EditorFileDialog();
+			this.dialogImportImage = new Gorgon.Editor.EditorFileDialog();
 			this.PanelDisplay.SuspendLayout();
 			this.stripImageEditor.SuspendLayout();
 			this.panelTextureArea.SuspendLayout();
@@ -175,7 +175,7 @@
 			// 
 			this.buttonPrevMipLevel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonPrevMipLevel.Enabled = false;
-			this.buttonPrevMipLevel.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
+			this.buttonPrevMipLevel.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
 			this.buttonPrevMipLevel.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonPrevMipLevel.Name = "buttonPrevMipLevel";
 			this.buttonPrevMipLevel.Size = new System.Drawing.Size(23, 22);
@@ -196,7 +196,7 @@
 			// 
 			this.buttonNextMipLevel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonNextMipLevel.Enabled = false;
-			this.buttonNextMipLevel.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
+			this.buttonNextMipLevel.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
 			this.buttonNextMipLevel.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonNextMipLevel.Name = "buttonNextMipLevel";
 			this.buttonNextMipLevel.Size = new System.Drawing.Size(23, 22);
@@ -212,7 +212,7 @@
 			// 
 			this.buttonPrevDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonPrevDepthSlice.Enabled = false;
-			this.buttonPrevDepthSlice.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
+			this.buttonPrevDepthSlice.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
 			this.buttonPrevDepthSlice.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonPrevDepthSlice.Name = "buttonPrevDepthSlice";
 			this.buttonPrevDepthSlice.Size = new System.Drawing.Size(23, 22);
@@ -235,7 +235,7 @@
 			// 
 			this.buttonNextDepthSlice.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonNextDepthSlice.Enabled = false;
-			this.buttonNextDepthSlice.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
+			this.buttonNextDepthSlice.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
 			this.buttonNextDepthSlice.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonNextDepthSlice.Name = "buttonNextDepthSlice";
 			this.buttonNextDepthSlice.Size = new System.Drawing.Size(23, 22);
@@ -247,7 +247,7 @@
 			// 
 			this.buttonPrevArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonPrevArrayIndex.Enabled = false;
-			this.buttonPrevArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
+			this.buttonPrevArrayIndex.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.back_16x16png1;
 			this.buttonPrevArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonPrevArrayIndex.Name = "buttonPrevArrayIndex";
 			this.buttonPrevArrayIndex.Size = new System.Drawing.Size(23, 22);
@@ -268,7 +268,7 @@
 			// 
 			this.buttonNextArrayIndex.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonNextArrayIndex.Enabled = false;
-			this.buttonNextArrayIndex.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
+			this.buttonNextArrayIndex.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.forward_16x161;
 			this.buttonNextArrayIndex.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonNextArrayIndex.Name = "buttonNextArrayIndex";
 			this.buttonNextArrayIndex.Size = new System.Drawing.Size(23, 22);
@@ -283,7 +283,7 @@
 			// buttonActualSize
 			// 
 			this.buttonActualSize.CheckOnClick = true;
-			this.buttonActualSize.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.zoom_16x16;
+			this.buttonActualSize.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.zoom_16x16;
 			this.buttonActualSize.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonActualSize.Name = "buttonActualSize";
 			this.buttonActualSize.Size = new System.Drawing.Size(94, 22);
@@ -368,7 +368,7 @@
 			// buttonSave
 			// 
 			this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonSave.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.save_16x16;
+			this.buttonSave.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.save_16x16;
 			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSave.Name = "buttonSave";
 			this.buttonSave.Size = new System.Drawing.Size(23, 22);
@@ -378,7 +378,7 @@
 			// buttonRevert
 			// 
 			this.buttonRevert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonRevert.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.revert_16x16;
+			this.buttonRevert.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.revert_16x16;
 			this.buttonRevert.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonRevert.Name = "buttonRevert";
 			this.buttonRevert.Size = new System.Drawing.Size(23, 22);
@@ -393,7 +393,7 @@
 			// buttonEditFileExternal
 			// 
 			this.buttonEditFileExternal.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonEditFileExternal.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.pencil_16x16;
+			this.buttonEditFileExternal.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.pencil_16x16;
 			this.buttonEditFileExternal.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditFileExternal.Name = "buttonEditFileExternal";
 			this.buttonEditFileExternal.Size = new System.Drawing.Size(23, 22);
@@ -410,7 +410,7 @@
 			this.buttonImport.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemImportFileDisk,
             this.itemImportFileSystem});
-			this.buttonImport.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_image_filesystem_16x16;
+			this.buttonImport.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.import_image_filesystem_16x16;
 			this.buttonImport.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonImport.Name = "buttonImport";
 			this.buttonImport.Size = new System.Drawing.Size(103, 22);
@@ -418,7 +418,7 @@
 			// 
 			// itemImportFileDisk
 			// 
-			this.itemImportFileDisk.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_disk_16x16;
+			this.itemImportFileDisk.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.import_disk_16x16;
 			this.itemImportFileDisk.Name = "itemImportFileDisk";
 			this.itemImportFileDisk.Size = new System.Drawing.Size(141, 22);
 			this.itemImportFileDisk.Text = "not localized";
@@ -426,7 +426,7 @@
 			// 
 			// itemImportFileSystem
 			// 
-			this.itemImportFileSystem.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.import_16x16;
+			this.itemImportFileSystem.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.import_16x16;
 			this.itemImportFileSystem.Name = "itemImportFileSystem";
 			this.itemImportFileSystem.Size = new System.Drawing.Size(141, 22);
 			this.itemImportFileSystem.Text = "not localized";
@@ -434,7 +434,7 @@
 			// 
 			// buttonGenerateMips
 			// 
-			this.buttonGenerateMips.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.gen_mips_16x16;
+			this.buttonGenerateMips.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.gen_mips_16x16;
 			this.buttonGenerateMips.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGenerateMips.Name = "buttonGenerateMips";
 			this.buttonGenerateMips.Size = new System.Drawing.Size(94, 22);
@@ -478,7 +478,7 @@
         #endregion
 
 		private EditorFileDialog imageFileBrowser;
-		internal GorgonLibrary.UI.GorgonSelectablePanel panelTextureDisplay;
+		internal Gorgon.UI.GorgonSelectablePanel panelTextureDisplay;
         private System.Windows.Forms.ToolStrip stripImageEditor;
         private System.Windows.Forms.ToolStripLabel labelMipLevel;
         private System.Windows.Forms.ToolStripButton buttonPrevMipLevel;

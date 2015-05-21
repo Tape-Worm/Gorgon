@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
     /// <summary>
     /// Our entry point into the TV image codec.

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+﻿namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	partial class PanelTexture
 	{
@@ -43,7 +43,7 @@
             this.labelTexLeft = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
+            this.imageFileBrowser = new Gorgon.Editor.EditorFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.numericHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericY)).BeginInit();
@@ -69,7 +69,7 @@
             this.buttonOpen.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.buttonOpen.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
             this.buttonOpen.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.buttonOpen.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
+            this.buttonOpen.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
             this.buttonOpen.Location = new System.Drawing.Point(14, 278);
             this.buttonOpen.Name = "buttonOpen";
             this.buttonOpen.Size = new System.Drawing.Size(256, 28);

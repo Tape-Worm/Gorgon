@@ -28,16 +28,17 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Example.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Example.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// A vertex for our boinger objects.
@@ -543,7 +544,7 @@ namespace GorgonLibrary.Graphics.Example
 			try
 			{
 				Initialize();
-				Gorgon.Run(_mainForm, Idle);
+				GorgonApplication.Run(_mainForm, Idle);
 			}
 			catch (Exception ex)
 			{

@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// State changes.

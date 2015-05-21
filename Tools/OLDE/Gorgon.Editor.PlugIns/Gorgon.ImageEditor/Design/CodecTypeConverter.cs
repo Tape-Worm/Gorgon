@@ -28,10 +28,10 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// A type converter used to retrieve a list of applicable image formats.

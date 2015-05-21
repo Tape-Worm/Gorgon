@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Native;
+using Gorgon.Graphics;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A pixel shader state for the 2D renderer.

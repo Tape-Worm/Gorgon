@@ -27,7 +27,7 @@
 using System;
 using System.Drawing.Drawing2D;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	/// <summary>
 	/// A wrap mode combo box item.

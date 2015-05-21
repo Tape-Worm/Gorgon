@@ -24,11 +24,12 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A view to allow texture based render targets to be bound to the pipeline.

@@ -25,11 +25,11 @@
 #endregion
 
 using System.Collections.Generic;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
 using SharpDX.WIC;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// A codec to handle read/writing of high defintion photo files.

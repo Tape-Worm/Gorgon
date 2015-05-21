@@ -26,11 +26,12 @@
 
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.IO;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// An animation clip for an animated object.

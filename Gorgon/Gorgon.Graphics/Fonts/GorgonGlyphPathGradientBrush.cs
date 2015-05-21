@@ -28,12 +28,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.IO;
+using Gorgon.Graphics.Fonts;
+using Gorgon.IO;
 using SlimMath;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A brush that paints the font glyphs using a gradient that follows a specific path.

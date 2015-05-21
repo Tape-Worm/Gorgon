@@ -28,11 +28,12 @@ using System;
 using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Math;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Compute shader states.
@@ -67,7 +68,7 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// Property to set or return a constant buffer at the specified index.
             /// </summary>
-            /// <exception cref="GorgonLibrary.GorgonException">Thrown when an unordered access view or its resource is already bound to another slot.</exception>
+            /// <exception cref="GorgonException">Thrown when an unordered access view or its resource is already bound to another slot.</exception>
             /// <remarks>When binding an unordered access view, ensure that it is not already bound or that the resource the view is attached to is not bound elsewhere in pipeline or on the same 
             /// stage of the pipeline.</remarks>
             public GorgonUnorderedAccessView this[int index]
@@ -328,7 +329,7 @@ namespace GorgonLibrary.Graphics
             /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="views"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
             /// </remarks>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
-            /// <exception cref="GorgonLibrary.GorgonException">Thrown when one of the views in the <paramref name="views"/> parameter is already bound to another slot or has a resource bound to another slot.</exception>
+            /// <exception cref="GorgonException">Thrown when one of the views in the <paramref name="views"/> parameter is already bound to another slot or has a resource bound to another slot.</exception>
             public void SetRange(int slot, GorgonUnorderedAccessView[] views)
             {
                 int count = _unorderedViews.Length - slot;

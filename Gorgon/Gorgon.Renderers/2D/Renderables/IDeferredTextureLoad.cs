@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Renderers
+﻿namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Used on objects that can defer the texture assignment until later.

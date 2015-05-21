@@ -29,12 +29,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Graphics.Properties;
 using Bitmap = SharpDX.WIC.Bitmap;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	// ReSharper disable ForCanBeConvertedToForeach
 

@@ -25,10 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Blending operations.

@@ -27,11 +27,11 @@
 using System;
 using System.ComponentModel;
 using System.Threading;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
 	/// Base object for content that can be created/modified by the editor.

@@ -26,9 +26,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The view for the main form.

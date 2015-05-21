@@ -27,10 +27,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.IO;
+using Gorgon.Graphics.Fonts;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a linear gradient value.

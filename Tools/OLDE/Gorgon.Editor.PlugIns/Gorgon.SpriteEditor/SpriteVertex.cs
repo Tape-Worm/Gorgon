@@ -32,15 +32,15 @@ using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Design;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Design;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
+using Gorgon.Design;
+using Gorgon.Editor.Design;
+using Gorgon.Editor.SpriteEditorPlugIn.Design;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Renderers;
 using SlimMath;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
     /// <summary>
     /// Vertex information for a sprite.

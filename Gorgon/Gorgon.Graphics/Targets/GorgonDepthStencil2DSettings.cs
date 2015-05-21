@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings for a 2D depth/stencil buffer.
@@ -135,7 +135,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return whether this depth/stencil buffer uses a cube texture.
 		/// </summary>
 		/// <remarks>
-		/// When setting this value to TRUE, ensure that the <see cref="GorgonLibrary.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// When setting this value to TRUE, ensure that the <see cref="Gorgon.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
 		public bool IsTextureCube
@@ -148,7 +148,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multisampling count/quality for the depth/stencil buffer.
 		/// </summary>
 		/// <remarks>
-		/// Note that multisampled resources cannot have sub resources (e.g. mipmaps), so the <see cref="GorgonLibrary.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.
+		/// Note that multisampled resources cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.
 		/// <para>The default value is a count of 1, and a quality of 0 (no multisampling).</para>
 		/// </remarks>
 		public GorgonMultisampling Multisampling

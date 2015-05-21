@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A proxy object used to create objects with a short lifetime.

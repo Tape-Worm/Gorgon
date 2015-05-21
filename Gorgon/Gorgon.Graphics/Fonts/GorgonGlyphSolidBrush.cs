@@ -25,9 +25,9 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a solid fill color.

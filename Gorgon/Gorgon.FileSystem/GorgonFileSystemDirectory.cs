@@ -27,11 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Core;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
-	/// A virtual directory in the <see cref="GorgonLibrary.IO.GorgonFileSystem"/>.
+	/// A virtual directory in the <see cref="Gorgon.IO.GorgonFileSystem"/>.
 	/// </summary>
 	public sealed class GorgonFileSystemDirectory
 		: GorgonNamedObject

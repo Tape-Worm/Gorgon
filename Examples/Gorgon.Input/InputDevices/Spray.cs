@@ -27,9 +27,9 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
     /// <summary>
     /// This object is resposible for drawing the spray effect on the display surface.

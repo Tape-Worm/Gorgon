@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// Values for aligning.

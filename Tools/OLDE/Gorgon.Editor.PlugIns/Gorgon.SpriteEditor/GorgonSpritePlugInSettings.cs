@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Configuration;
+using Gorgon.Configuration;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
 	/// Settings for the gorgon sprite plug-in.

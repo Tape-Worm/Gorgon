@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A collection of file system virtual directories.

@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Input.XInput.Properties;
+using Gorgon.Input.XInput.Properties;
 using XI = SharpDX.XInput;
 
-namespace GorgonLibrary.Input.XInput
+namespace Gorgon.Input.XInput
 {
 	/// <summary>
 	/// Object representing the main interface to the input library.
@@ -121,7 +121,7 @@ namespace GorgonLibrary.Input.XInput
 		/// Function to create a joystick interface.
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
-		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
+		/// <param name="joystickName">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickName)

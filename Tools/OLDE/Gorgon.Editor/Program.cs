@@ -27,9 +27,9 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Main application interface.
@@ -70,10 +70,10 @@ namespace GorgonLibrary.Editor
 
 				Settings.Load();
 
-				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
+				GorgonApplication.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
 				                                                             .FirstOrDefault(assembly => assembly.FullName == e.Name);
 
-				Gorgon.Run(new AppContext());
+				GorgonApplication.Run(new AppContext());
 			}
 			catch (Exception ex)
 			{
@@ -81,7 +81,7 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
-                Gorgon.PlugIns.AssemblyResolver = null;
+                GorgonApplication.PlugIns.AssemblyResolver = null;
 
 				ContentManagement.UnloadCurrentContent();
 

@@ -27,10 +27,11 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Example entry point.
@@ -76,7 +77,7 @@ namespace GorgonLibrary.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				Gorgon.Run(new formMain());
+				GorgonApplication.Run(new formMain());
 			}
 			catch (Exception ex)
 			{

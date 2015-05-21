@@ -27,10 +27,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The application context.
@@ -60,13 +61,13 @@ namespace GorgonLibrary.Examples
 
 			((formMain)MainForm).Clear();
 
-			if (Gorgon.ApplicationIdleLoopMethod == Program.Idle)
+			if (GorgonApplication.ApplicationIdleLoopMethod == Program.Idle)
 			{
-				Gorgon.ApplicationIdleLoopMethod = Program.NewIdle;
+				GorgonApplication.ApplicationIdleLoopMethod = Program.NewIdle;
 			}
 			else
 			{
-				Gorgon.ApplicationIdleLoopMethod = Program.Idle;
+				GorgonApplication.ApplicationIdleLoopMethod = Program.Idle;
 			}
 		}
 

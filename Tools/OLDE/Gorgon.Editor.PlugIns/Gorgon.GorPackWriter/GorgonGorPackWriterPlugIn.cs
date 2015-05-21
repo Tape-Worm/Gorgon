@@ -31,11 +31,11 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.GorPackWriterPlugIn.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.GorPackWriterPlugIn.Properties;
+using Gorgon.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace GorgonLibrary.Editor.GorPackWriterPlugIn
+namespace Gorgon.Editor.GorPackWriterPlugIn
 {
     /// <summary>
     /// Font editor plug-in interface.

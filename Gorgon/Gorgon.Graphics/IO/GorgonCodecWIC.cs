@@ -105,9 +105,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Math;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 using SharpDX;
 using SharpDX.WIC;
 using Bitmap = SharpDX.WIC.Bitmap;
@@ -115,7 +115,7 @@ using Color = SharpDX.Color;
 using Point = System.Drawing.Point;
 using Rectangle = SharpDX.Rectangle;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Special case flags for decoding images.
@@ -617,7 +617,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to persist image data to a stream.
 		/// </summary>
-		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
+		/// <param name="imageData"><see cref="Gorgon.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
 		{
@@ -732,7 +732,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="stream">Stream used to read the metadata.</param>
 		/// <returns>
-		/// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
 		/// </returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.

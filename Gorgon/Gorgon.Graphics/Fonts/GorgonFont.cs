@@ -33,13 +33,14 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Provides functionality for creating, reading, and saving bitmap fonts.
@@ -1196,7 +1197,7 @@ namespace GorgonLibrary.Graphics
 		/// and clean up will be the responsibility of the user.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
+		/// <exception cref="GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
 		/// <para>-or-</para>
 		/// <para>Thrown when the font family name is NULL or Empty.</para>
 		/// </exception>

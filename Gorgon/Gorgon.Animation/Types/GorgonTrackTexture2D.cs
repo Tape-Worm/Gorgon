@@ -26,10 +26,10 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A track that will animate properties with a 2D texture data type.

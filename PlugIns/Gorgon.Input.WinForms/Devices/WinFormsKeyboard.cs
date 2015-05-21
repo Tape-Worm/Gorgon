@@ -27,9 +27,10 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Input.WinForms
+namespace Gorgon.Input.WinForms
 {
 	/// <summary>
 	/// Object representing keyboard data.
@@ -182,7 +183,7 @@ namespace GorgonLibrary.Input.WinForms
 			: base(owner, "Win Forms Input Keyboard")
 		{
 			AllowExclusiveMode = false;
-			Gorgon.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
+			GorgonApplication.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
 		}
 		#endregion
 	}

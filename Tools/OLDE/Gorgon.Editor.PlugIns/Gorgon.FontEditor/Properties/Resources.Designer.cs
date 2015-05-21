@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
+namespace Gorgon.Editor.FontEditorPlugIn.Properties {
 	/// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

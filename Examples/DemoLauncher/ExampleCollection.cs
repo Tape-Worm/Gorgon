@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
-using GorgonLibrary.Collections;
+using Gorgon.Collections;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	class ExampleCollection
 		: GorgonBaseNamedObjectDictionary<Example>

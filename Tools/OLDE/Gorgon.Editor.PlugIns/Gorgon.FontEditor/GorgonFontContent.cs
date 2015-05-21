@@ -33,16 +33,16 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Design;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers;
+using Gorgon.Design;
+using Gorgon.Editor.Design;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Renderers;
 using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Current state for drawing.

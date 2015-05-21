@@ -28,8 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Gorgon.Core;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Entry point class.
@@ -51,7 +52,7 @@ namespace GorgonLibrary.Examples
 	/// The plug-in interface is the actual interface for the functionality.  It should be an interface or class
 	/// that is inherited in the plug-in assembly and will implement specific functionality for that plug-in.
 	/// 
-	/// To load a plug-in, the user should first load the assembly using the Gorgon.PlugIns.LoadPlugInAssembly 
+	/// To load a plug-in, the user should first load the assembly using the GorgonApplication.PlugIns.LoadPlugInAssembly 
 	/// method.  This will load all the plug-in entry point object types from that assembly.  The developer can
 	/// then look up the plug-in entry point by the fully qualified type name of the plug-in and create an instance
 	/// of the plug-in interface.
@@ -65,7 +66,7 @@ namespace GorgonLibrary.Examples
 		/// <returns>The list of plug-in assemblies.</returns>
 		static IEnumerable<string> GetPlugInAssemblies()
 		{
-			return Directory.EnumerateFiles(Gorgon.ApplicationDirectory, "Example004.*PlugIn.dll");
+			return Directory.EnumerateFiles(GorgonApplication.ApplicationDirectory, "Example004.*PlugIn.dll");
 		}
 
 		/// <summary>
@@ -97,12 +98,12 @@ namespace GorgonLibrary.Examples
 				IList<TextColorWriter> writers = new List<TextColorWriter>();			// Our text writer plug-in interfaces.
 				foreach (var path in plugInFiles)
 				{
-					Gorgon.PlugIns.LoadPlugInAssembly(path);
+					GorgonApplication.PlugIns.LoadPlugInAssembly(path);
 				}
 
 				// Get our plug-ins.
 				// But limit to 9 entries.
-				var plugIns = (from plugIn in Gorgon.PlugIns
+				var plugIns = (from plugIn in GorgonApplication.PlugIns
 								let textPlugIn = plugIn as TextColorPlugIn
 								where textPlugIn != null
 								select textPlugIn).Take(9).ToArray();

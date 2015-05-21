@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.ImageEditorPlugIn
+﻿namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	partial class FormCodecs
 	{
@@ -67,7 +67,7 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(471, 3);
 			this.buttonOK.Name = "buttonOK";
@@ -87,7 +87,7 @@
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(564, 3);
 			this.buttonCancel.Name = "buttonCancel";
@@ -130,7 +130,7 @@
 			// 
 			// buttonAddCodec
 			// 
-			this.buttonAddCodec.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.image_add_16x16;
+			this.buttonAddCodec.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.image_add_16x16;
 			this.buttonAddCodec.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonAddCodec.Name = "buttonAddCodec";
 			this.buttonAddCodec.Size = new System.Drawing.Size(154, 22);
@@ -139,7 +139,7 @@
 			// buttonRemoveCodec
 			// 
 			this.buttonRemoveCodec.Enabled = false;
-			this.buttonRemoveCodec.Image = global::GorgonLibrary.Editor.ImageEditorPlugIn.Properties.Resources.remove_image_16x16;
+			this.buttonRemoveCodec.Image = global::Gorgon.Editor.ImageEditorPlugIn.Properties.Resources.remove_image_16x16;
 			this.buttonRemoveCodec.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonRemoveCodec.Name = "buttonRemoveCodec";
 			this.buttonRemoveCodec.Size = new System.Drawing.Size(174, 22);

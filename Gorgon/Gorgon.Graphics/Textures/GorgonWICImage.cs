@@ -106,16 +106,17 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using WIC = SharpDX.WIC;
 using DX = SharpDX;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.IO;
+using Gorgon.Math;
 
 using Bitmap = System.Drawing.Bitmap;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A Gorgon image data converter for WIC images.

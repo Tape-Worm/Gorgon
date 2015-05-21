@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	partial class FormNewSprite
 	{
@@ -96,7 +96,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(300, 120);
 			this.buttonCancel.Name = "buttonCancel";
@@ -117,7 +117,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(207, 120);
 			this.buttonOK.Name = "buttonOK";
@@ -156,7 +156,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn
 			this.buttonSelectTexture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonSelectTexture.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonSelectTexture.ForeColor = System.Drawing.Color.White;
-			this.buttonSelectTexture.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.open_image_16x16;
+			this.buttonSelectTexture.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.open_image_16x16;
 			this.buttonSelectTexture.Location = new System.Drawing.Point(350, 87);
 			this.buttonSelectTexture.Name = "buttonSelectTexture";
 			this.buttonSelectTexture.Size = new System.Drawing.Size(33, 23);

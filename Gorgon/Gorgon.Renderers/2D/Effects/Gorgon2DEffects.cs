@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Pre defined effects for Gorgon 2D.

@@ -27,8 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using Gorgon.Core;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// A category for our examples.

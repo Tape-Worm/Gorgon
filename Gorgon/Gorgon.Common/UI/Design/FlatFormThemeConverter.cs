@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Globalization;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.UI.Design
+namespace Gorgon.UI.Design
 {
 	/// <summary>
 	/// Type converter for the theme type.

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Graphics
+﻿namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A resource view.

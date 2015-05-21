@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A service used to bring back the graphics interface and the device selection interface.

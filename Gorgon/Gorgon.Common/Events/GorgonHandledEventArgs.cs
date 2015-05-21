@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary
+namespace Gorgon
 {
 	/// <summary>
 	/// A base handled event argument.

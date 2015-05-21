@@ -102,8 +102,8 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess">
-      <HintPath>..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    <Reference Include="Gorgon.Native">
+      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="SlimMath">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>

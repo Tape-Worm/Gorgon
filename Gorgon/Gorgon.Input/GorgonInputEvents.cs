@@ -27,7 +27,7 @@
 using System;
 using System.Drawing;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Pointing device event arguments.

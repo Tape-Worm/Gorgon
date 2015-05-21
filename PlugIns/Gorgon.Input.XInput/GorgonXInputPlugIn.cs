@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Input.XInput;
+using Gorgon.Input.XInput;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// The entry point for the Xinput plug-in.

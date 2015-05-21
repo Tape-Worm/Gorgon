@@ -8,7 +8,7 @@
     <ProjectGuid>{EDDBDEE0-8DA3-4A98-9E73-AD08830E6CC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.IO.GorPack</RootNamespace>
+    <RootNamespace>Gorgon.IO.GorPack</RootNamespace>
     <AssemblyName>Gorgon.FileSystem.GorPack</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

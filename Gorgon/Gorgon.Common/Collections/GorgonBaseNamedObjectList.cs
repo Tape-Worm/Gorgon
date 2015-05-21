@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// Base list type for Gorgon library named objects.
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Collections
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonLibrary.Collections.GorgonBaseNamedObjectCollection&lt;T&gt;"/> class.
+		/// Initializes a new instance of the <see cref="Gorgon.Collections.GorgonBaseNamedObjectCollection&lt;T&gt;"/> class.
 		/// </summary>
 		protected GorgonBaseNamedObjectList()
 			: this(false)

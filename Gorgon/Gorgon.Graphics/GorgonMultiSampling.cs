@@ -25,16 +25,17 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Values to define the number and quality of multisampling.
 	/// </summary>
-	/// <remarks>Setting the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Count">count</see> and <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
+	/// <remarks>Setting the <see cref="Gorgon.Graphics.GorgonMultisampling.Count">count</see> and <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">quality</see> values to 1 and 0 respectively, will disable multisampling.</remarks>
 	public struct GorgonMultisampling
 		: IEquatable<GorgonMultisampling>
 	{
@@ -53,7 +54,7 @@ namespace GorgonLibrary.Graphics
 		/// Image quality.
 		/// </summary>
 		/// <remarks>There is a performance penalty for setting this value to higher levels.
-		/// <para>This value must be 0 or less than the value returned by <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
+		/// <para>This value must be 0 or less than the value returned by <see cref="Gorgon.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
 		/// </remarks>
 		public readonly int Quality;
 		#endregion

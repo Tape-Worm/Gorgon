@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
 	/// <summary>
 	/// Static class for Native Win32 methods and corresponding structures.

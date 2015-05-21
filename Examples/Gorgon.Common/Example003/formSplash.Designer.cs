@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Examples
+﻿namespace Gorgon.Examples
 {
 	partial class formSplash
 	{
@@ -36,7 +36,7 @@
 			// 
 			// panel1
 			// 
-			this.panel1.BackgroundImage = global::GorgonLibrary.Examples.Properties.Resources.Gorgon_2_x_Logo_Full;
+			this.panel1.BackgroundImage = global::Gorgon.Examples.Properties.Resources.Gorgon_2_x_Logo_Full;
 			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panel1.Controls.Add(this.labelText);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;

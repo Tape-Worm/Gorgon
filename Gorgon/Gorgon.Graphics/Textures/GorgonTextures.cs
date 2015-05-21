@@ -28,10 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Textures interface.
@@ -430,9 +431,9 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
         /// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the texture could not be created.</exception>
         /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see> object from a list of <see cref="System.Drawing.Image">System.Drawing.Images</see>.
+        /// This method will create a new <see cref="Gorgon.Graphics.GorgonTexture">GorgonTexture</see> object from a list of <see cref="System.Drawing.Image">System.Drawing.Images</see>.
         /// The method will copy the image information and do a best fit conversion.
         /// <para>If type is a 1D or 2D texture, then the array can be laid out as mip slices and array indices, if it is a 3D texture, then it will be laid out as mip slices and depth slices. 
         /// If the MipCount is set to 1, then only the first image will be processed IF there is only one image in the list.</para>
@@ -594,9 +595,9 @@ namespace GorgonLibrary.Graphics
         /// <returns>A texture containing the same data as the GDI+ image.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="image"/> parameters are NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the texture could not be created.</exception>
         /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see> object from a <see cref="System.Drawing.Image"/>. 
+        /// This method will create a new <see cref="Gorgon.Graphics.GorgonTexture">GorgonTexture</see> object from a <see cref="System.Drawing.Image"/>. 
         /// The method will copy the image information and do a best fit conversion.
         /// <para>This overload only applies to 1D and 2D textures only.  3D textures are not supported.</para>
         /// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
@@ -707,7 +708,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load texture data from a file.
 		/// </summary>
-		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="Gorgon.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="filePath">Path to the texture image file.</param>
 		/// <param name="codec">Codec used to load the image data.</param>
@@ -731,7 +732,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		/// <exception cref="GorgonException">Thrown if the texture type was not recognized.</exception>
 		public T FromFile<T>(string name, string filePath, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
@@ -754,7 +755,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load texture data from a byte array.
 		/// </summary>
-		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="Gorgon.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="data">Byte array containing the texture data.</param>
 		/// <param name="codec">Codec used to load the image data.</param>
@@ -780,7 +781,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		/// <exception cref="GorgonException">Thrown if the texture type was not recognized.</exception>
 		public T FromMemory<T>(string name, byte[] data, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
@@ -798,7 +799,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load texture data from a stream.
 		/// </summary>
-		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="Gorgon.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="stream">Stream containing the texture data to load.</param>
 		/// <param name="length">Length of the texture data, in bytes.</param>
@@ -825,7 +826,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		/// <exception cref="GorgonException">Thrown if the texture type was not recognized.</exception>
 		public T FromStream<T>(string name, Stream stream, int length, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
@@ -890,7 +891,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -923,7 +924,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -956,7 +957,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -984,7 +985,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -1038,7 +1039,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -1092,7 +1093,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
+		/// <exception cref="GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
@@ -1151,7 +1152,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if there is no data to upload to the texture.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture could not be created.</exception>
+		/// <exception cref="GorgonException">Thrown when the texture could not be created.</exception>
 		public T CreateTexture<T>(string name, GorgonImageData data, ITextureSettings settingsOverride = null)
 			where T : GorgonTexture
 		{

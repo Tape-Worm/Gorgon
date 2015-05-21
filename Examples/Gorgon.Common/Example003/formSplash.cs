@@ -26,7 +26,7 @@
 
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	public partial class formSplash : Form
 	{

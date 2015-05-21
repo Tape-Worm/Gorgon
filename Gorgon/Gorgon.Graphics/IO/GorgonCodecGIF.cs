@@ -29,14 +29,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Math;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 using SharpDX.WIC;
 using Bitmap = SharpDX.WIC.Bitmap;
 using DX = SharpDX;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A codec to handle reading/writing GIF files.

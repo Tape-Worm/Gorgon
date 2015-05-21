@@ -26,10 +26,10 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
+using Gorgon.IO;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The interface to the plug-in registry.

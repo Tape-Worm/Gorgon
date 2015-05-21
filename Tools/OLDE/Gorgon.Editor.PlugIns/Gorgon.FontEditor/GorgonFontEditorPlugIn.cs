@@ -30,10 +30,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// Font editor plug-in interface.

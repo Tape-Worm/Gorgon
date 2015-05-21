@@ -29,13 +29,13 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Application context for the editor.
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Editor
 				// Create our scratch area.
 				if (!InitializeScratchArea())
 				{
-					Gorgon.Quit();
+					GorgonApplication.Quit();
 					return;
 				}
 
@@ -236,7 +236,7 @@ namespace GorgonLibrary.Editor
 				// Bring up our application form.
 				MainForm.Show();
 
-				Gorgon.Run(this);
+				GorgonApplication.Run(this);
 			}
 			catch (Exception ex)
 			{
@@ -250,7 +250,7 @@ namespace GorgonLibrary.Editor
 				_log.Close();
 
 				// Signal quit.
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 			finally
 			{

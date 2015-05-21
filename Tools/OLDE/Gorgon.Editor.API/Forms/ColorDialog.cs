@@ -25,9 +25,9 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// A dialog for selecting a color.

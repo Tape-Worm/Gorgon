@@ -24,9 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A file that can contain content for use by the editor.

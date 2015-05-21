@@ -31,11 +31,11 @@ using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Font brush editor.

@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Type of image data.

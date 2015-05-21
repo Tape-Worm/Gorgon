@@ -8,7 +8,7 @@
     <ProjectGuid>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Renderers</RootNamespace>
+    <RootNamespace>Gorgon.Renderers</RootNamespace>
     <AssemblyName>Gorgon.Renderer.2D</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,9 +50,8 @@
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    <Reference Include="Gorgon.Native">
+      <HintPath>..\..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="SlimMath">
       <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>

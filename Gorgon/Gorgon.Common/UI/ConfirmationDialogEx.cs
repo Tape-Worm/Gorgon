@@ -28,7 +28,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// Dialog for confirmation + plus to all option.

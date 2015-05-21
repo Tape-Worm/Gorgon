@@ -25,12 +25,13 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A Gorgon v1.x compatible sprite reader.

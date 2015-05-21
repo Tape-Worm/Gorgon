@@ -1,6 +1,6 @@
-﻿using GorgonLibrary.Graphics;
+﻿using Gorgon.Graphics;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Options for the GDI+ image texture import.
@@ -119,7 +119,7 @@ namespace GorgonLibrary.IO
 		/// <remarks>
 		/// Set this value to apply multisampling to the texture.  
 		/// <para>Note that if multisampling is applied, then the mip-map count and array count must be set to 1.  If these values are not set to 1, then this value will be ignored.</para>
-		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
+		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
 		/// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
 		/// </remarks>
 		public GorgonMultisampling Multisampling
@@ -177,7 +177,7 @@ namespace GorgonLibrary.IO
 		/// Property to set or return the shader view format for a texture loaded with this codec.
 		/// </summary>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown the view format is taken from the texture format.
-		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>
@@ -196,9 +196,9 @@ namespace GorgonLibrary.IO
 		/// then write-only access will be given to the UAV.</para> 
 		/// <para>If this value is set to TRUE, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
 		/// used with typed texture resources.</para>
-		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
-		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>

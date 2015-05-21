@@ -26,10 +26,11 @@
 
 using System;
 using System.Threading;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Used to handle the menu options for the application.

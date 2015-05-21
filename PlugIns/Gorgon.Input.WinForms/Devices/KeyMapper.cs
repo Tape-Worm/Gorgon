@@ -27,7 +27,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Input.WinForms
+namespace Gorgon.Input.WinForms
 {
 	/// <summary>
 	/// Used to map win forms keys to gorgon keyboard keys.

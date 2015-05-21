@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.IO.GorPack;
-using GorgonLibrary.IO.GorPack.Properties;
+using Gorgon.IO.GorPack;
+using Gorgon.IO.GorPack.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Plug-in entry point for the Gorgon packed file file system provider plug-in.

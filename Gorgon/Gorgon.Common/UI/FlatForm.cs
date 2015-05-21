@@ -36,13 +36,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
-using GorgonLibrary.UI.Design;
+using Gorgon.Design;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.UI.Design;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// A form that provides a flattened interface look.
@@ -296,7 +296,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the size of the border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
@@ -331,7 +331,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize

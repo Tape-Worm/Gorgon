@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
     // ReSharper disable InconsistentNaming
 	#region Enumerations

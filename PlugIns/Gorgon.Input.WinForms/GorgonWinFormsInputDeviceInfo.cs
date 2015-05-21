@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Input.WinForms
+namespace Gorgon.Input.WinForms
 {
 	/// <summary>
 	/// The Raw Input implementation of a device name.

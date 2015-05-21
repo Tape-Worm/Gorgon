@@ -26,12 +26,13 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Animation;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using Gorgon.Animation;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A renderable object for drawing a point on the screen.
@@ -486,7 +487,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="Gorgon.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public void Draw()
 		{

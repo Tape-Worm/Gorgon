@@ -29,9 +29,9 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Enumeration for pointing device buttons.

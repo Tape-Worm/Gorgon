@@ -30,9 +30,10 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
 	// ReSharper disable InconsistentNaming
 	/// <summary>

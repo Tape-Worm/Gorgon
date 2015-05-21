@@ -26,10 +26,10 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Editor dialog for editing vector/point values.

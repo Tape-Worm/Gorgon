@@ -27,11 +27,11 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Native;
+using Gorgon.Graphics;
+using Gorgon.Native;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders the edges of an image with Sobel edge detection.

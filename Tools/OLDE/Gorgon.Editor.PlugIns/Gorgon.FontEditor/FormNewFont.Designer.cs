@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
+﻿namespace Gorgon.Editor.FontEditorPlugIn
 {
 	partial class FormNewFont
 	{
@@ -52,7 +52,7 @@
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.tipInfo = new System.Windows.Forms.ToolTip(this.components);
-			this.comboFonts = new GorgonLibrary.Editor.FontEditorPlugIn.ComboFonts();
+			this.comboFonts = new Gorgon.Editor.FontEditorPlugIn.ComboFonts();
 			this.buttonCharacterList = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
@@ -379,7 +379,7 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(212, 324);
 			this.buttonOK.Name = "buttonOK";
@@ -399,7 +399,7 @@
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(305, 324);
 			this.buttonCancel.Name = "buttonCancel";

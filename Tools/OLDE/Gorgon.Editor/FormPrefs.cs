@@ -29,12 +29,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.Controls;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Controls;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 using KRBTabControl;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Handles the preferences and plug-ins management for the application.

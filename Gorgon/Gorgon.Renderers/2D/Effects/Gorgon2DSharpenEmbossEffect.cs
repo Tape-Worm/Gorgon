@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that sharpens (and optionally embosses) an image.

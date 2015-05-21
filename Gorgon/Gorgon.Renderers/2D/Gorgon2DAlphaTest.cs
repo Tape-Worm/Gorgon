@@ -26,8 +26,9 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Gorgon.Core.Extensions;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An immutable value for alpha testing.

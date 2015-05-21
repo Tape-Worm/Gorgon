@@ -28,10 +28,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 using DX = SharpDX;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A container for a list of image buffers.
@@ -70,7 +70,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
 		/// <remarks>To get the array length, or the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData.Settings">Settings</see> property.
-		/// <para>To get the depth slice count, use the <see cref="GorgonLibrary.Graphics.GorgonImageData.GetDepthCount">GetDepthCount</see> method.</para>
+		/// <para>To get the depth slice count, use the <see cref="Gorgon.Graphics.GorgonImageData.GetDepthCount">GetDepthCount</see> method.</para>
 		/// <para>The <paramref name="arrayIndexDepthSlice"/> parameter is used as an array index if the image is 1D or 2D.  If it is a 3D image, then the value indicates a depth slice.</para>
 		/// </remarks>
 		public GorgonImageBuffer this[int mipLevel, int arrayIndexDepthSlice = 0]

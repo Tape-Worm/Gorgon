@@ -28,10 +28,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using GorgonLibrary.Native;
 using Gorgon.Core.Properties;
+using Gorgon.IO;
+using Gorgon.Native;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Writes Gorgon chunked formatted data.

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace Gorgon.Editor
 {
 	partial class AlphaChannelDialog
 	{
@@ -68,7 +68,7 @@
 			this.buttonOK.Enabled = false;
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.APIResources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.Properties.APIResources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(151, 208);
 			this.buttonOK.Name = "buttonOK";
@@ -84,7 +84,7 @@
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.APIResources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.Properties.APIResources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(244, 208);
 			this.buttonCancel.Name = "buttonCancel";

@@ -26,7 +26,7 @@
 
 using XI = SharpDX.XInput;
 
-namespace GorgonLibrary.Input.XInput
+namespace Gorgon.Input.XInput
 {
 	/// <summary>
 	/// The XInput implementation of a device name.

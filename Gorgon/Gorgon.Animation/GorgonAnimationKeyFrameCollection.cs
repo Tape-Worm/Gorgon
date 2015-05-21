@@ -28,10 +28,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GorgonLibrary.Animation.Properties;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Animation.Properties;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A collection of animation key frames.

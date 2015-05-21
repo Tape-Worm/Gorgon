@@ -29,11 +29,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The file system service used to manipulate items in the file system.
@@ -374,7 +374,7 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path" /> parameter is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path" /> could not be found.</exception>
 		/// <exception cref="GorgonException"></exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
 		public IEditorFileSystem LoadFile(string path)
 		{
 			if (path == null)

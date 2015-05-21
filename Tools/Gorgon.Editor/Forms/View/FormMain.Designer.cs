@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using KRBTabControl;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	partial class FormMain
 	{
@@ -111,7 +111,7 @@ namespace GorgonLibrary.Editor
 			this.dialogExport = new System.Windows.Forms.FolderBrowserDialog();
 			this.labelUnCollapse = new System.Windows.Forms.Label();
 			this.tipMainWindow = new System.Windows.Forms.ToolTip(this.components);
-			this.treeFileSystem = new GorgonLibrary.Editor.FileSystemTreeView();
+			this.treeFileSystem = new Gorgon.Editor.FileSystemTreeView();
 			this.ContentArea.SuspendLayout();
 			this.toolsFiles.ContentPanel.SuspendLayout();
 			this.toolsFiles.TopToolStripPanel.SuspendLayout();
@@ -176,7 +176,7 @@ namespace GorgonLibrary.Editor
 			this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.dropNewContent.DropDown = this.popupAddContentMenu;
 			resources.ApplyResources(this.dropNewContent, "dropNewContent");
-			this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+			this.dropNewContent.Image = global::Gorgon.Editor.Properties.Resources.new_item_16x16;
 			this.dropNewContent.Name = "dropNewContent";
 			// 
 			// popupAddContentMenu
@@ -195,14 +195,14 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonEditContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			resources.ApplyResources(this.buttonEditContent, "buttonEditContent");
-			this.buttonEditContent.Image = global::GorgonLibrary.Editor.Properties.Resources.edit_16x16;
+			this.buttonEditContent.Image = global::Gorgon.Editor.Properties.Resources.edit_16x16;
 			this.buttonEditContent.Name = "buttonEditContent";
 			// 
 			// buttonDeleteContent
 			// 
 			this.buttonDeleteContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			resources.ApplyResources(this.buttonDeleteContent, "buttonDeleteContent");
-			this.buttonDeleteContent.Image = global::GorgonLibrary.Editor.Properties.Resources.delete_item_16x16;
+			this.buttonDeleteContent.Image = global::Gorgon.Editor.Properties.Resources.delete_item_16x16;
 			this.buttonDeleteContent.Name = "buttonDeleteContent";
 			// 
 			// toolStripButton1
@@ -214,7 +214,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonShowAll.CheckOnClick = true;
 			this.buttonShowAll.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonShowAll.Image = global::GorgonLibrary.Editor.Properties.Resources.show_all_16x16;
+			this.buttonShowAll.Image = global::Gorgon.Editor.Properties.Resources.show_all_16x16;
 			resources.ApplyResources(this.buttonShowAll, "buttonShowAll");
 			this.buttonShowAll.Name = "buttonShowAll";
 			// 
@@ -592,7 +592,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.labelUnCollapse.Cursor = System.Windows.Forms.Cursors.Hand;
 			resources.ApplyResources(this.labelUnCollapse, "labelUnCollapse");
-			this.labelUnCollapse.Image = global::GorgonLibrary.Editor.Properties.Resources.expandprops_16x16;
+			this.labelUnCollapse.Image = global::Gorgon.Editor.Properties.Resources.expandprops_16x16;
 			this.labelUnCollapse.Name = "labelUnCollapse";
 			this.tipMainWindow.SetToolTip(this.labelUnCollapse, resources.GetString("labelUnCollapse.ToolTip"));
 			this.labelUnCollapse.Click += new System.EventHandler(this.labelUnCollapse_Click);
@@ -626,8 +626,8 @@ namespace GorgonLibrary.Editor
 			this.Theme.ForeColorInactive = System.Drawing.Color.Black;
 			this.Theme.HilightBackColor = System.Drawing.Color.SteelBlue;
 			this.Theme.HilightForeColor = System.Drawing.Color.White;
-			this.Theme.MenuCheckDisabledImage = global::GorgonLibrary.Editor.Properties.Resources.Check_Disabled1;
-			this.Theme.MenuCheckEnabledImage = global::GorgonLibrary.Editor.Properties.Resources.Check_Enabled1;
+			this.Theme.MenuCheckDisabledImage = global::Gorgon.Editor.Properties.Resources.Check_Disabled1;
+			this.Theme.MenuCheckEnabledImage = global::Gorgon.Editor.Properties.Resources.Check_Enabled1;
 			this.Theme.ToolStripArrowColor = System.Drawing.Color.White;
 			this.Theme.ToolStripBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.Theme.WindowBackground = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));

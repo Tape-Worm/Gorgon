@@ -26,10 +26,11 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A video mode information record.

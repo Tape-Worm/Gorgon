@@ -27,11 +27,12 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Example entry point.

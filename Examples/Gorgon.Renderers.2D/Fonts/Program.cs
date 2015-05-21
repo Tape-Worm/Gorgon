@@ -32,11 +32,11 @@ using System.IO;
 using System.Windows.Forms;
 using Fonts.Properties;
 using Gorgon.Core;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
-using GorgonLibrary.UI;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Fonts;
+using Gorgon.IO;
+using Gorgon.Renderers;
+using Gorgon.UI;
 using SlimMath;
 
 namespace Fonts
@@ -221,7 +221,7 @@ namespace Fonts
 				Initialize();
 
 				// Start it running.
-				Gorgon.Run(_formMain, Idle);
+				GorgonApplication.Run(_formMain, Idle);
 			}
 			catch (Exception ex)
 			{

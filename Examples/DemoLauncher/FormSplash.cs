@@ -26,9 +26,9 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Examples.Properties;
+using Gorgon.Examples.Properties;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Splash screen form.

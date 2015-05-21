@@ -32,10 +32,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Win32 functions.

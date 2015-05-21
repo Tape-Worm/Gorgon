@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Properties {
+namespace Gorgon.Editor.SpriteEditorPlugIn.Properties {
     using System;
     
     

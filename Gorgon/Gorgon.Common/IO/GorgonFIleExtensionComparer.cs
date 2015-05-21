@@ -26,7 +26,7 @@
 
 using System.Collections.Generic;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A comparer used to determine equality between file extensions.

@@ -27,7 +27,7 @@
 
 using System;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The view used to represent the view that will display the contents of the file system in the main UI.

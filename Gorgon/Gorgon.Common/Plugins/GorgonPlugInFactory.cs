@@ -32,12 +32,12 @@ using System.Reflection;
 using System.Security.Policy;
 using System.Text;
 using Gorgon.Core;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Diagnostics;
 using Gorgon.Core.Properties;
+using Gorgon.Collections;
+using Gorgon.Collections.Specialized;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.PlugIns
+namespace Gorgon.PlugIns
 {
 	/// <summary>
     /// The return values for the <see cref="GorgonPlugInFactory.IsAssemblySigned(System.Reflection.AssemblyName,byte[])">IsAssemblySigned</see> method.
@@ -62,10 +62,10 @@ namespace GorgonLibrary.PlugIns
 	/// <summary>
 	/// A factory to load, unload and keep track of plug-in interfaces.
 	/// </summary>
-	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.Gorgon.PlugIns">PlugIns</see> parameter on the primary 
+	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.GorgonApplication.PlugIns">PlugIns</see> parameter on the primary 
 	/// <seealso cref="Gorgon">Gorgon</seealso> object and cannot be created by the user.
 	/// <para>In some cases, a plug-in assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
-	/// use the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
+	/// use the <see cref="GorgonApplication.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
 	/// assemblies.</para></remarks>
 	public class GorgonPlugInFactory
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
@@ -363,7 +363,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
 		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <returns>One of the values in the <seealso cref="GorgonApplication.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey = null)
 		{
@@ -412,7 +412,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
 		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <returns>One of the values in the <seealso cref="GorgonApplication.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
@@ -499,10 +499,10 @@ namespace GorgonLibrary.PlugIns
 			catch (ReflectionTypeLoadException rex)
 			{
 				// In this case, we'll just return false and log the message.				
-				Gorgon.Log.Print("Exception while determining if assembly is a plug-in assembly:", LoggingLevel.Verbose);
+				GorgonApplication.Log.Print("Exception while determining if assembly is a plug-in assembly:", LoggingLevel.Verbose);
 				foreach (Exception loaderEx in rex.LoaderExceptions)
 				{
-					Gorgon.Log.Print("{0}", LoggingLevel.Verbose, loaderEx.Message);
+					GorgonApplication.Log.Print("{0}", LoggingLevel.Verbose, loaderEx.Message);
 				}
 			}
 
@@ -554,7 +554,7 @@ namespace GorgonLibrary.PlugIns
 
 					if (!Contains(plugIn.Name))
 					{
-						Gorgon.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
+						GorgonApplication.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
 						AddItem(plugIn);
 					}
 					else
@@ -567,7 +567,7 @@ namespace GorgonLibrary.PlugIns
 							                                        this[plugIn.Name].GetType().Assembly.FullName));
 						}
 
-						Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", LoggingLevel.Simple, plugIn.Name);
+						GorgonApplication.Log.Print("Plug-in '{0}' already created.  Using this instance.", LoggingLevel.Simple, plugIn.Name);
 					}
 				}
 			}

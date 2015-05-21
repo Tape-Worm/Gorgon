@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	partial class FlatForm
 	{

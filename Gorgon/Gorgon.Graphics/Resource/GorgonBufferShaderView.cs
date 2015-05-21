@@ -25,14 +25,15 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using DXCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A shader view for buffers.
@@ -85,7 +86,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnInitialize()
 		{
-			Gorgon.Log.Print("Creating buffer shader view for {0}.", LoggingLevel.Verbose, Resource.Name);
+			GorgonApplication.Log.Print("Creating buffer shader view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
 			var desc = new D3D.ShaderResourceViewDescription
 				{

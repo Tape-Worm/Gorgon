@@ -25,9 +25,9 @@
 #endregion
 
 using System.Xml.Linq;
-using GorgonLibrary.IO.Properties;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// Dependency for a content file.

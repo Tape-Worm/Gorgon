@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace Gorgon.Editor
 {
     partial class EditorPreferencePanel
     {
@@ -73,7 +73,7 @@
 			this.buttonScratch.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonScratch.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonScratch.ForeColor = System.Drawing.Color.White;
-			this.buttonScratch.Image = global::GorgonLibrary.Editor.Properties.Resources.folder_open_16x16;
+			this.buttonScratch.Image = global::Gorgon.Editor.Properties.Resources.folder_open_16x16;
 			this.buttonScratch.Location = new System.Drawing.Point(688, 37);
 			this.buttonScratch.Name = "buttonScratch";
 			this.buttonScratch.Size = new System.Drawing.Size(26, 26);
@@ -106,7 +106,7 @@
 			this.buttonPlugInLocation.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonPlugInLocation.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.buttonPlugInLocation.ForeColor = System.Drawing.Color.White;
-			this.buttonPlugInLocation.Image = global::GorgonLibrary.Editor.Properties.Resources.folder_open_16x16;
+			this.buttonPlugInLocation.Image = global::Gorgon.Editor.Properties.Resources.folder_open_16x16;
 			this.buttonPlugInLocation.Location = new System.Drawing.Point(688, 81);
 			this.buttonPlugInLocation.Name = "buttonPlugInLocation";
 			this.buttonPlugInLocation.Size = new System.Drawing.Size(26, 26);
@@ -197,7 +197,7 @@
 			// imagePlugInHelp
 			// 
 			this.imagePlugInHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.imagePlugInHelp.Image = global::GorgonLibrary.Editor.Properties.Resources.info_16x16;
+			this.imagePlugInHelp.Image = global::Gorgon.Editor.Properties.Resources.info_16x16;
 			this.imagePlugInHelp.Location = new System.Drawing.Point(720, 87);
 			this.imagePlugInHelp.Name = "imagePlugInHelp";
 			this.imagePlugInHelp.Size = new System.Drawing.Size(16, 16);
@@ -208,7 +208,7 @@
 			// imageScratchHelp
 			// 
 			this.imageScratchHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.imageScratchHelp.Image = global::GorgonLibrary.Editor.Properties.Resources.info_16x16;
+			this.imageScratchHelp.Image = global::Gorgon.Editor.Properties.Resources.info_16x16;
 			this.imageScratchHelp.Location = new System.Drawing.Point(720, 43);
 			this.imageScratchHelp.Name = "imageScratchHelp";
 			this.imageScratchHelp.Size = new System.Drawing.Size(16, 16);
@@ -289,7 +289,7 @@
 			// imageImageEditorHelp
 			// 
 			this.imageImageEditorHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.imageImageEditorHelp.Image = global::GorgonLibrary.Editor.Properties.Resources.info_16x16;
+			this.imageImageEditorHelp.Image = global::Gorgon.Editor.Properties.Resources.info_16x16;
 			this.imageImageEditorHelp.Location = new System.Drawing.Point(326, 44);
 			this.imageImageEditorHelp.Name = "imageImageEditorHelp";
 			this.imageImageEditorHelp.Size = new System.Drawing.Size(16, 16);

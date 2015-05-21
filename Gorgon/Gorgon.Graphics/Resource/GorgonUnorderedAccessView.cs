@@ -25,13 +25,14 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// An unordered access resource view.
@@ -39,7 +40,7 @@ namespace GorgonLibrary.Graphics
     /// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
     /// <para>Unordered access views can be read/write in the shader if the format is set to one of R32_Uint, R32_Int or R32_Float.  Otherwise the view will be read-only.  An unordered access view must 
     /// have a format that is the same bit-depth and in the same group as its bound resource.</para>
-    /// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonTextureShaderView">GorgonTextureShaderView</see> or <see cref="GorgonLibrary.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, 
+    /// <para>Unlike a <see cref="Gorgon.Graphics.GorgonTextureShaderView">GorgonTextureShaderView</see> or <see cref="Gorgon.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, 
     /// only one unordered access view may be applied to a resource.</para>
     /// <para>Unordered access views are only available on SM_5 or better video devices.</para>
     /// </remarks>
@@ -71,7 +72,7 @@ namespace GorgonLibrary.Graphics
             Resource.Graphics.Shaders.Unbind(this);     // Unbind this from the compute shaders.
             Resource.Graphics.Output.Unbind(this);      // Unbind pixel shaders/render targets.
 
-            Gorgon.Log.Print("Destroying unordered access resource view for {0}.",
+            GorgonApplication.Log.Print("Destroying unordered access resource view for {0}.",
                              LoggingLevel.Verbose,
                              Resource.Name);
             D3DView.Dispose();

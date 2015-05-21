@@ -27,13 +27,13 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.UI;
 using StructureMap;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Main entry point to the application.
@@ -58,7 +58,7 @@ namespace GorgonLibrary.Editor
 			               log =>
 			               {
 				               // Set the logging level based on whatever is in our config file.
-				               Gorgon.Log.LogFilterLevel = log.LogFilterLevel = Settings.Default.LogLevel;
+				               GorgonApplication.Log.LogFilterLevel = log.LogFilterLevel = Settings.Default.LogLevel;
 
 				               // Register this log with Gorgon's exception handler.
 				               GorgonException.Logs.Add(log);
@@ -168,7 +168,7 @@ namespace GorgonLibrary.Editor
 				Application.SetCompatibleTextRenderingDefault(false);
 
 				// Set up the plug-in assembly resolver to handle missing assemblies.
-				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
+				GorgonApplication.PlugIns.AssemblyResolver = (appDomain, e) => appDomain.GetAssemblies()
 				                                                             .FirstOrDefault(assembly => string.Equals(assembly.FullName, e.Name, StringComparison.Ordinal));
 
 				_objectContainer = new Container(BuildGraph);

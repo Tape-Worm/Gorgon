@@ -33,13 +33,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
-using GorgonLibrary.IO;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
+using Gorgon.Input;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
 	/// Base object for content that can be created/modified by the editor.
@@ -376,7 +376,7 @@ namespace GorgonLibrary.Editor
                 return _input;
             }
 
-            if (!Gorgon.PlugIns.Contains(GorgonRawInputTypeName))
+            if (!GorgonApplication.PlugIns.Contains(GorgonRawInputTypeName))
             {
                 return null;
             }

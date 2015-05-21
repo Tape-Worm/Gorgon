@@ -28,12 +28,12 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Input;
-using GorgonLibrary.UI;
+using Gorgon.Design;
+using Gorgon.Editor.Properties;
+using Gorgon.Input;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A base interface for content display in the main interface.
@@ -303,7 +303,7 @@ namespace GorgonLibrary.Editor
         /// Function called when the settings for the editor or content plug-in have changed.
         /// </summary>
         /// <remarks>Plug-in implementors should implement this method to facilitate the updating of the UI when a plug-in setting has changed.  This 
-        /// only applies to plug-ins that implement <see cref="GorgonLibrary.Editor.IPlugInSettingsUI"/>.</remarks>
+        /// only applies to plug-ins that implement <see cref="Gorgon.Editor.IPlugInSettingsUI"/>.</remarks>
         protected internal virtual void OnEditorSettingsChanged()
         {
         }

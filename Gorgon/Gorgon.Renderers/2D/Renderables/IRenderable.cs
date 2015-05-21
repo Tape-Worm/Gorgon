@@ -25,10 +25,10 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Defines a renderable object and its states.
@@ -155,8 +155,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return pre-defined smoothing states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
-		/// property exposed by the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="Gorgon.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+		/// property exposed by the <see cref="Gorgon.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
 		SmoothingMode SmoothingMode
 		{
 			get;
@@ -167,8 +167,8 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
 		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-		/// <see cref="GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		/// or the <see cref="Gorgon.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="Gorgon.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		BlendingMode BlendingMode
 		{
 			get;

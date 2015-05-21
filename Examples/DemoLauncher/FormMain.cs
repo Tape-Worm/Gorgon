@@ -27,10 +27,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 using KRBTabControl;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main interface.

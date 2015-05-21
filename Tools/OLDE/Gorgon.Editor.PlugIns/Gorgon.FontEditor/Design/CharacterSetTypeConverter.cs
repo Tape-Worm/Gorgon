@@ -28,9 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Type converter for the character set.

@@ -25,10 +25,10 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Settings for a sprite object.

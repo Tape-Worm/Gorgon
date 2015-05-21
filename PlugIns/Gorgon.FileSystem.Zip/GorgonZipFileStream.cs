@@ -26,10 +26,10 @@
 
 using System;
 using System.IO;
-using GorgonLibrary.IO.Zip.Properties;
+using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace GorgonLibrary.IO.Zip
+namespace Gorgon.IO.Zip
 {
 	/// <summary>
 	/// A stream used to read zip files.

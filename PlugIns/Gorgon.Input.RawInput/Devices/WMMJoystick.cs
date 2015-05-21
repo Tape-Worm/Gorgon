@@ -25,11 +25,12 @@
 #endregion
 
 using System.Runtime.InteropServices;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Windows Multimedia based joystick interface.
@@ -374,7 +375,7 @@ namespace GorgonLibrary.Input.Raw
 		{
 		    AllowExclusiveMode = false;
 			_joystickID = joystickID;
-			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
+			GorgonApplication.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
 		}
 		#endregion
 	}

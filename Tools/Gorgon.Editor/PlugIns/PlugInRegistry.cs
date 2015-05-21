@@ -29,13 +29,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.PlugIns;
-using GorgonLibrary.UI;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
+using Gorgon.PlugIns;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The registry used by the application to load and register plug-ins.
@@ -94,7 +94,7 @@ namespace GorgonLibrary.Editor
 				{
 					currentAssembly = assemblyFile.FullName;
 					// Ensure that any other DLL types are not loaded (native images, non-Gorgon plug-in dlls, etc...)
-					if (!Gorgon.PlugIns.IsPlugInAssembly(assemblyFile.FullName))
+					if (!GorgonApplication.PlugIns.IsPlugInAssembly(assemblyFile.FullName))
 					{
 						_log.Print("PlugInRegistry: The file '{0}' is not a plug-in assembly. It will be skipped.", LoggingLevel.Verbose, currentAssembly);
 						continue;
@@ -102,8 +102,8 @@ namespace GorgonLibrary.Editor
 
 					splash.InfoText = string.Format(Resources.GOREDIT_TEXT_PLUG_IN, Path.GetFileNameWithoutExtension(assemblyFile.FullName).Ellipses(40, true));
 
-					AssemblyName name = Gorgon.PlugIns.LoadPlugInAssembly(assemblyFile.FullName);
-					IEnumerable<GorgonPlugIn> plugIns = Gorgon.PlugIns.EnumeratePlugIns(name);
+					AssemblyName name = GorgonApplication.PlugIns.LoadPlugInAssembly(assemblyFile.FullName);
+					IEnumerable<GorgonPlugIn> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
 
 					_log.Print("PlugInRegistry: Plug-in assembly '{0}' loaded from {1}.", LoggingLevel.Verbose, name.FullName, assemblyFile.FullName);
 
@@ -134,7 +134,7 @@ namespace GorgonLibrary.Editor
 			// Unload the plug-in if it's disabled, just so there's no conflicts or attempts to use it.
 			foreach (DisabledPlugIn disabledPlugIn in DisabledPlugIns)
 			{
-				GorgonPlugIn plugIn = Gorgon.PlugIns.FirstOrDefault(item => string.Equals(disabledPlugIn.Name, item.Name, StringComparison.OrdinalIgnoreCase)
+				GorgonPlugIn plugIn = GorgonApplication.PlugIns.FirstOrDefault(item => string.Equals(disabledPlugIn.Name, item.Name, StringComparison.OrdinalIgnoreCase)
 																			&& string.Equals(disabledPlugIn.Path, item.PlugInPath, StringComparison.OrdinalIgnoreCase));
 
 				if (plugIn == null)
@@ -142,7 +142,7 @@ namespace GorgonLibrary.Editor
 					continue;
 				}
 
-				Gorgon.PlugIns.Unload(plugIn);
+				GorgonApplication.PlugIns.Unload(plugIn);
 			}
 		}
 		#endregion
@@ -250,7 +250,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Finally, unload the plug-in.
-			Gorgon.PlugIns.Unload(plugIn);
+			GorgonApplication.PlugIns.Unload(plugIn);
 		}
 
 		/// <summary>

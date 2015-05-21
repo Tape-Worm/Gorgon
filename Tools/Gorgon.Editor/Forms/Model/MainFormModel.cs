@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Diagnostics;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Model for the main form.

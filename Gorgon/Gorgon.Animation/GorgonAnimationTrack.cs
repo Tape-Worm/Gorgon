@@ -27,11 +27,12 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using GorgonLibrary.Animation.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using Gorgon.Animation.Properties;
+using Gorgon.Core;
+using Gorgon.IO;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// Interpolation mode for animating between key frames.
@@ -57,8 +58,8 @@ namespace GorgonLibrary.Animation
 	/// A track for an animated property on an animated object.
 	/// </summary>
 	/// <remarks>Custom tracks may be built by the user by inheriting from this object.  When a custom track is built, the user will need to add that track to the 
-    /// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
-	/// <see cref="GorgonLibrary.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
+    /// <see cref="Gorgon.Animation.GorgonAnimation{T}.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
+	/// <see cref="Gorgon.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
 	/// <typeparam name="T">The type of object being animated.</typeparam>
 	public abstract class GorgonAnimationTrack<T>
 		: GorgonNamedObject
@@ -405,7 +406,7 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve a key frame for a given time.
 		/// </summary>
 		/// <param name="time">Time to look up.</param>
-		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
+		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="Gorgon.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
 		    IKeyFrame result;

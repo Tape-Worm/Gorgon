@@ -25,10 +25,12 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Defines how a triangle should be culled.
@@ -210,7 +212,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether antialiasing should be used when drawing lines.
 		/// </summary>
-		/// <remarks>This value is only valid if <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
+		/// <remarks>This value is only valid if <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
 		public bool IsAntialiasedLinesEnabled;
@@ -526,7 +528,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="rectangle">Rectangle to set.</param>
 		/// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
-        /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
+        /// <para>To use scissor rectangles, set the <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
 		/// state to TRUE. If the state is set to FALSE, this value will have no effect.</para>
         /// <para>This method will only set the first scissor test rectangle.</para>
 		/// </remarks>
@@ -595,13 +597,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="rectangles">An array containing the scissor testing rectangles.</param>
         /// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
-        /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
+        /// <para>To use scissor rectangles, set the <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
 		/// state to TRUE. If the state is set to FALSE, then setting a scissor test rectangle will have no effect.</para>
         /// <para>Scissor test rectangles must be set all at once, any viewports not defined in the <paramref name="rectangles"/> parameter will be disabled.  Passing NULL (Nothing in VB.Net) to the 
         /// <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
         /// <para>Which scissor rectangle is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 
         /// geometry shader does not make use of the <c>SV_ViewportArrayIndex</c> semantic, then only the first rectangle is used.</para>
-        /// <para>Each scissor test rectangle corresponds to a <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.SetViewports">viewport</see> in an array of viewports.</para>
+        /// <para>Each scissor test rectangle corresponds to a <see cref="Gorgon.Graphics.GorgonRasterizerRenderState.SetViewports">viewport</see> in an array of viewports.</para>
         /// <para>Only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
         /// a geometry shader because these devices do not support geometry shaders.</para>
 		/// </remarks>

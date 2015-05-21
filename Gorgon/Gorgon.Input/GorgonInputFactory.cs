@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Input.Properties;
+using Gorgon.Core;
+using Gorgon.Input.Properties;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Base for the input device factory object.
@@ -244,7 +245,7 @@ namespace GorgonLibrary.Input
 		/// Function to create a joystick interface.
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
-		/// <param name="joystickInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
+		/// <param name="joystickInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
@@ -254,7 +255,7 @@ namespace GorgonLibrary.Input
 		/// Function to create a custom HID interface.
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
-		/// <param name="hidInfo">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
+		/// <param name="hidInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <returns>A new custom HID interface.</returns>
 		/// <remarks>Implementors must implement this method if they wish to return data from a undefined (custom) device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
@@ -518,7 +519,7 @@ namespace GorgonLibrary.Input
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty.</exception>
 		/// <exception cref="System.InvalidCastException">Thrown when the input plug-in was not found or was not the correct type.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the input factory could not be created.</exception>
+		/// <exception cref="GorgonException">Thrown when the input factory could not be created.</exception>
 		public static GorgonInputFactory CreateInputFactory(string plugInType)
 		{
 		    if (plugInType == null)
@@ -532,7 +533,7 @@ namespace GorgonLibrary.Input
             }
 
 		    var plugIn =
-		        Gorgon.PlugIns.FirstOrDefault(
+				GorgonApplication.PlugIns.FirstOrDefault(
 		            item => string.Equals(item.Name, plugInType, StringComparison.OrdinalIgnoreCase)) as
 		        GorgonInputPlugIn;
 
@@ -552,7 +553,7 @@ namespace GorgonLibrary.Input
 			// Enumerate the devices.
 			factory.EnumerateDevices();
 
-		    Gorgon.AddTrackedObject(factory);
+			GorgonApplication.AddTrackedObject(factory);
 
 			return factory;
 		}
@@ -601,7 +602,7 @@ namespace GorgonLibrary.Input
 			{
 				if (disposing)
 				{
-					Gorgon.RemoveTrackedObject(this);
+					GorgonApplication.RemoveTrackedObject(this);
 
 					// Destroy any outstanding device instances.
 					DestroyDevices();

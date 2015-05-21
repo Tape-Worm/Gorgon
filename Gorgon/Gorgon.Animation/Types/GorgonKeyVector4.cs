@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 using SlimMath;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A key frame that manipulates a Vector4 data type.

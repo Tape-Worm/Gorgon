@@ -24,10 +24,10 @@
 // 
 #endregion
 
-using GorgonLibrary.Math;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// Defines a mesh that can be transformed.

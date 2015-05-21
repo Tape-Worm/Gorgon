@@ -26,9 +26,9 @@
 
 using System;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// A dependency for content files.

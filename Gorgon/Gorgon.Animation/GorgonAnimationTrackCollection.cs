@@ -26,11 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Animation.Properties;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Animation.Properties;
+using Gorgon.Collections;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A collection of animation tracks.

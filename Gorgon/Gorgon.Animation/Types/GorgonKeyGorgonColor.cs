@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using Gorgon.Graphics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A key frame that manipulates a GorgonColor data type.

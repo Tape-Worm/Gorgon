@@ -28,10 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.IO.Zip.Properties;
+using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace GorgonLibrary.IO.Zip
+namespace Gorgon.IO.Zip
 {
 	/// <summary>
 	/// A file system provider for zip files.

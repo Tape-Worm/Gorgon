@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Event parameters for the <see cref="E:GorgonLibrary.Input.GorgonCustomHID.DataChanged">DataChanged</see> event.

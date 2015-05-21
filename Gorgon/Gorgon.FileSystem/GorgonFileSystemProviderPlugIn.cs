@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// The base entry point for an Gorgon file system provider plug-in.

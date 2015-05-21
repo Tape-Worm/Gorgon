@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// Base dictionary for Gorgon library named objects.

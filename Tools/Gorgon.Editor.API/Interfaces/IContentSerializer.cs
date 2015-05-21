@@ -28,7 +28,7 @@
 using System;
 using System.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Defines how to serialize or deserialize a piece of content to and from the file system.

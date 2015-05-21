@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.UI;
-using GorgonLibrary.Diagnostics;
+using Gorgon.UI;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
     /// <summary>
     /// Interface for the editor logging.

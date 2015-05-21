@@ -27,7 +27,7 @@
 using System.Drawing;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A camera interface.

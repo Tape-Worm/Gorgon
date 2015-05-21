@@ -26,8 +26,9 @@
 
 using System;
 using System.IO;
+using Gorgon.Core;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A file entry corresponding to a file on the physical file system.

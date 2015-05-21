@@ -29,12 +29,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input;
+using Gorgon.Math;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Our main form for the example.
@@ -275,7 +276,7 @@ namespace GorgonLibrary.Examples
 			try
 			{
 				// Load the XInput plug-in assembly.
-				Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.XInput.dll");
+				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.XInput.dll");
 
 				// Create our factory.
 				_factory = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
@@ -284,7 +285,7 @@ namespace GorgonLibrary.Examples
 				if (_factory.JoystickDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "No XBox controllers were found on this system.\nThis example requires an XBox controller.");
-					Gorgon.Quit();
+					GorgonApplication.Quit();
 					return;
 				}
 
@@ -324,7 +325,7 @@ namespace GorgonLibrary.Examples
 		                continue;
 	                }
 
-	                Gorgon.Quit();
+	                GorgonApplication.Quit();
 	                return;
                 }
 
@@ -332,14 +333,14 @@ namespace GorgonLibrary.Examples
 				_surface = new DrawingSurface(panelDisplay);
 
 				// Set up our idle loop.
-				Gorgon.ApplicationIdleLoopMethod += Idle;
+				GorgonApplication.ApplicationIdleLoopMethod += Idle;
 			}
 			catch (Exception ex)
 			{
 				// We do this here instead of just calling the dialog because this
 				// function will send the exception to the Gorgon log file.
 				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
-				Gorgon.Quit();
+				GorgonApplication.Quit();
 			}
 		}
 

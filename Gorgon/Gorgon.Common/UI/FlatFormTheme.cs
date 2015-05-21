@@ -36,11 +36,11 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using GorgonLibrary.Design;
 using Gorgon.Core.Properties;
-using GorgonLibrary.UI.Design;
+using Gorgon.Design;
+using Gorgon.UI.Design;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// A theme to apply to flat forms.

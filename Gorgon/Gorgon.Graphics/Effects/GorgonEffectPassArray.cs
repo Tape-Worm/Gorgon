@@ -27,9 +27,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// An array of effect passes.

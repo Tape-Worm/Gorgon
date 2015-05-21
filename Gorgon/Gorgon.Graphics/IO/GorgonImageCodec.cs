@@ -27,15 +27,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Math;
+using Gorgon.Native;
 using SharpDX;
 using SharpDX.WIC;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// Filter to be applied to an image that's been stretched or shrunk.
@@ -100,7 +101,7 @@ namespace GorgonLibrary.IO
 	/// </summary>
 	/// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
 	/// image formats, or use one of the predefined image codecs available in Gorgon.
-	/// <para>The codec accepts and returns a <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
+	/// <para>The codec accepts and returns a <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
 	/// </remarks>
 	public abstract class GorgonImageCodec
 		: INamedObject
@@ -124,8 +125,8 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to set or return the width of the image.
 		/// </summary>
-		/// <remarks>Use this to clip or scale the width of the image.  To clip, ensure that the <see cref="GorgonLibrary.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
-		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="GorgonLibrary.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <remarks>Use this to clip or scale the width of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
+		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
 		/// <para>Set this value to 0 to use the width in the file.</para>
 		/// <para>This property only applies to decoding image data.</para>
 		/// <para>The default value is 0.</para>
@@ -139,8 +140,8 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to set or return the height of the image.
 		/// </summary>
-		/// <remarks>Use this to clip or scale the height of the image.  To clip, ensure that the <see cref="GorgonLibrary.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
-		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="GorgonLibrary.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <remarks>Use this to clip or scale the height of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
+		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
 		/// <para>Set this value to 0 to use the height in the file.</para>
 		/// <para>This property only applies to decoding image data.</para>
 		/// <para>The default value is 0.</para>
@@ -195,7 +196,7 @@ namespace GorgonLibrary.IO
 		/// Property to set or return the usage for textures loaded with this codec.
 		/// </summary>
 		/// <remarks>This will assign the usage pattern for a texture that is loaded by this codc.
-		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is Default.</para>
 		/// </remarks>
@@ -209,7 +210,7 @@ namespace GorgonLibrary.IO
 		/// Property to set or return the shader view format for a texture loaded with this codec.
 		/// </summary>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown the view format is taken from the texture format.
-		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>
@@ -226,11 +227,11 @@ namespace GorgonLibrary.IO
 		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
 		/// then write-only access will be given to the UAV.</para> 
-		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
         /// <para>If this value is set to TRUE, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
         /// used with typed texture resources.</para>
-        /// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+        /// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
@@ -246,7 +247,7 @@ namespace GorgonLibrary.IO
         /// <remarks>
         /// Set this value to apply multisampling to the texture.  
         /// <para>Note that if multisampling is applied, then the mip-map count and array count must be set to 1.  If these values are not set to 1, then this value will be ignored.</para>
-        /// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
+        /// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
         /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
         /// </remarks>
         public GorgonMultisampling Multisampling
@@ -779,7 +780,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to persist image data to a stream.
 		/// </summary>
-		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
+		/// <param name="imageData"><see cref="Gorgon.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal abstract void SaveToStream(GorgonImageData imageData, Stream stream);
 
@@ -942,7 +943,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <param name="stream">Stream used to read the metadata.</param>
         /// <returns>
-        /// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+        /// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
         /// </returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
 		/// <para>-or-</para>

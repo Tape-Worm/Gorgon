@@ -26,9 +26,9 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A renderer for the editor content.

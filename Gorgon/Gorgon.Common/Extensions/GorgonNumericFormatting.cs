@@ -26,8 +26,8 @@
 
 using System;
 using System.Globalization;
-using GorgonLibrary.Diagnostics;
 using Gorgon.Core.Properties;
+using Gorgon.Diagnostics;
 
 namespace Gorgon.Core
 {

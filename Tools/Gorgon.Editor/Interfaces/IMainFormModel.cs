@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Model for the main form data.

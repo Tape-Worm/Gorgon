@@ -26,9 +26,9 @@
 
 using System.Collections.Generic;
 using System.Globalization;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Provides a lookup for error codes.

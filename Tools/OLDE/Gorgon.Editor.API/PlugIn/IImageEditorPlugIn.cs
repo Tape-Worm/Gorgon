@@ -25,9 +25,9 @@
 #endregion
 
 using System.IO;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Interface that must be applied to image editors for other plug-ins to utilize the image editing plug-in.

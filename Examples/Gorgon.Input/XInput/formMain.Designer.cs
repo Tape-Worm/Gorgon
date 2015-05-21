@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Examples
+﻿namespace Gorgon.Examples
 {
 	partial class formMain
 	{
@@ -101,7 +101,7 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox1.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox1.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(23, 23);
@@ -136,7 +136,7 @@
 			// pictureBox2
 			// 
 			this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox2.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox2.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(23, 23);
@@ -171,7 +171,7 @@
 			// pictureBox3
 			// 
 			this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox3.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox3.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox3.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox3.Name = "pictureBox3";
 			this.pictureBox3.Size = new System.Drawing.Size(23, 23);
@@ -206,7 +206,7 @@
 			// pictureBox4
 			// 
 			this.pictureBox4.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox4.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox4.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox4.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox4.Name = "pictureBox4";
 			this.pictureBox4.Size = new System.Drawing.Size(23, 23);

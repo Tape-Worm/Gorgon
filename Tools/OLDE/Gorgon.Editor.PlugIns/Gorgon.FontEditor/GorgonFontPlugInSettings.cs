@@ -26,11 +26,11 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Configuration;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Configuration;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Plug-in specific settings.

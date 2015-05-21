@@ -29,12 +29,13 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
+using Gorgon.Native;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A video output on a video device.

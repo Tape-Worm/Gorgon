@@ -27,12 +27,12 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
 	/// Interface used to create a new sprite.

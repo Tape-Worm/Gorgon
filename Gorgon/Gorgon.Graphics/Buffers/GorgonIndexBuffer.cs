@@ -24,13 +24,14 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A buffer to hold a set of indices.
@@ -158,7 +159,7 @@ namespace GorgonLibrary.Graphics
 		/// Passing a separate deferred context will alleviate that.</para>
 		/// </para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		/// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(ref int value, int offset, GorgonGraphics deferred = null)
 		{
 #if DEBUG
@@ -198,7 +199,7 @@ namespace GorgonLibrary.Graphics
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		/// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(int[] values, int offset, GorgonGraphics deferred = null)
 		{
 			GorgonDebug.AssertNull(values, "values");
@@ -234,7 +235,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="deferred">[Optional] The deferred context used to update the buffer.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
 		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
-		/// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// <para>This method will respect the <see cref="Gorgon.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
         /// <para>
@@ -245,7 +246,7 @@ namespace GorgonLibrary.Graphics
         /// </para>
         /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		/// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
         public void Update(GorgonDataStream stream, int offset, int size, GorgonGraphics deferred = null)
 		{
             if (deferred == null)
@@ -265,11 +266,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="useRaw">TRUE to use a raw shader view, FALSE to use a normal view.</param>
 		/// <returns>A shader view for the buffer.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="startIndex"/> or <paramref name="count"/> parameters are less than 0 or 1, respectively.  Or if the total is larger than the buffer size.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
         /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>To use a shader view, the index buffer must have <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowShaderViews">AllowShaderViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
+        /// <para>To use a shader view, the index buffer must have <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.AllowShaderViews">AllowShaderViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
         /// <para>The <paramref name="startIndex"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependent upon the size, in bytes, of the format specified in the <paramref name="format"/> parameter.</para>
-		/// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
 		/// <para>Raw views can only be used on SM5 video devices or better. </para>
 		/// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -288,12 +289,12 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An unordered access view for the buffer.</returns>
 		/// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="GetShaderView">Shader View</see>, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
-		/// <para>To use an unordered access view, the index buffer must have <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowUnorderedAccessViews">AllowUnorderedAccessViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
+		/// <para>To use an unordered access view, the index buffer must have <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.AllowUnorderedAccessViews">AllowUnorderedAccessViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
 		/// <para>The <paramref name="startIndex"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependent upon the size, in bytes, of the format specified in the <paramref name="format"/> parameter.</para>
-		/// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="startIndex"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
 		public GorgonBufferUnorderedAccessView GetUnorderedAccessView(BufferFormat format, int startIndex, int count, bool useRaw)

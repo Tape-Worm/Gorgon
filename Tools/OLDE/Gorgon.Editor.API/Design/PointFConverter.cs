@@ -28,9 +28,9 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Class to extend the PointConverter class to handle floating point point values.

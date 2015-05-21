@@ -26,7 +26,7 @@
 
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	class Triangle
 		: MoveableMesh

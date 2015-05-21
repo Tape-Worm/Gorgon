@@ -25,10 +25,10 @@
 #endregion
 
 using System.Collections.Generic;
-using GorgonLibrary.IO.Zip;
-using GorgonLibrary.IO.Zip.Properties;
+using Gorgon.IO.Zip;
+using Gorgon.IO.Zip.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// Plug-in entry point for the zip file file system provider plug-in.

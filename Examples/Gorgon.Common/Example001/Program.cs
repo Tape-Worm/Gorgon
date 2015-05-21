@@ -27,9 +27,9 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Entry point class.

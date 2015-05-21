@@ -17,7 +17,7 @@ using System.Globalization;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
-namespace GorgonLibrary.Editor.Properties {
+namespace Gorgon.Editor.Properties {
 	/// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

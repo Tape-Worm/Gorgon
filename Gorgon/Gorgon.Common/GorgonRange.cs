@@ -26,10 +26,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Math;
+using Gorgon.Core.Extensions;
 using Gorgon.Core.Properties;
+using Gorgon.Math;
 
-namespace GorgonLibrary
+namespace Gorgon
 {
 	#region Double
 	/// <summary>
@@ -370,7 +371,7 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeD"/> to <see cref="GorgonLibrary.GorgonRangeM"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeD"/> to <see cref="Gorgon.GorgonRangeM"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -380,7 +381,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeD"/> to <see cref="GorgonLibrary.GorgonRange"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeD"/> to <see cref="Gorgon.GorgonRange"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -390,7 +391,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeD"/> to <see cref="GorgonLibrary.GorgonRangeF"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeD"/> to <see cref="Gorgon.GorgonRangeF"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -913,7 +914,7 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeM"/> to <see cref="GorgonLibrary.GorgonRange"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeM"/> to <see cref="Gorgon.GorgonRange"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -923,7 +924,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeM"/> to <see cref="GorgonLibrary.GorgonRangeF"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeM"/> to <see cref="Gorgon.GorgonRangeF"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -933,7 +934,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeM"/> to <see cref="GorgonLibrary.GorgonRangeD"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeM"/> to <see cref="Gorgon.GorgonRangeD"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1456,7 +1457,7 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeF"/> to <see cref="GorgonLibrary.GorgonRange"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeF"/> to <see cref="Gorgon.GorgonRange"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1466,7 +1467,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeF"/> to <see cref="GorgonLibrary.GorgonRangeM"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeF"/> to <see cref="Gorgon.GorgonRangeM"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1476,7 +1477,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeF"/> to <see cref="GorgonLibrary.GorgonRangeD"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRangeF"/> to <see cref="Gorgon.GorgonRangeD"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -1999,7 +2000,7 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRange"/> to <see cref="GorgonLibrary.GorgonRangeF"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRange"/> to <see cref="Gorgon.GorgonRangeF"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -2009,7 +2010,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRange"/> to <see cref="GorgonLibrary.GorgonRangeM"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRange"/> to <see cref="Gorgon.GorgonRangeM"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -2020,7 +2021,7 @@ namespace GorgonLibrary
 
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRange"/> to <see cref="GorgonLibrary.GorgonRangeD"/>.
+		/// Performs an explicit conversion from <see cref="Gorgon.GorgonRange"/> to <see cref="Gorgon.GorgonRangeD"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>

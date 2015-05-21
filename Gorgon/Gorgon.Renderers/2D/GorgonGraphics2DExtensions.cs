@@ -26,9 +26,10 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Renderers;
+using Gorgon.Core;
+using Gorgon.Renderers;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Extensions to the main graphics interface.
@@ -63,11 +64,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface used to create the 2D interface.</param>
 		/// <param name="window">Window to use for rendering.</param>
 		/// <returns>A new 2D graphics interface.</returns>
-		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(GorgonLibrary.Graphics.GorgonOutputMerger,GorgonLibrary.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.</remarks>
+		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(Gorgon.Graphics.GorgonOutputMerger,Gorgon.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.
 		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -78,7 +79,7 @@ namespace GorgonLibrary.Graphics
                 return Create2DRenderer(graphics, window, window.ClientSize.Width, window.ClientSize.Height);
             }
 
-            window = Gorgon.ApplicationForm;
+            window = GorgonApplication.ApplicationForm;
 
             if (window == null)
             {
@@ -100,7 +101,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthStencilFormat">[Optional] Depth/stencil buffer format.</param>
 		/// <param name="vertexCacheSize">[Optional] The number of vertices that the renderer will cache when drawing.</param>
 		/// <returns>A new 2D graphics interface.</returns>
-		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(GorgonLibrary.Graphics.GorgonOutputMerger,GorgonLibrary.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.
+		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(Gorgon.Graphics.GorgonOutputMerger,Gorgon.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.
 		/// <para>The depth/stencil buffer is optional, and will only be used when <paramref name="depthStencilFormat"/> is not set to Unknown.</para>
 		/// <para>The <paramref name="vertexCacheSize"/> allows for adjustment to the size of the cache that stores vertices when rendering.  More vertices means a larger buffer and more memory used, but may 
 		/// provide a performance increase by rendering many objects at the same time.  Lower values means a smaller buffer and possibly reduced performance because not as many objects can be drawn 
@@ -111,7 +112,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="format"/> parameter cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>

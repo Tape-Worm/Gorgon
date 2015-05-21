@@ -26,11 +26,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Math;
+using Gorgon.Native;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// The world/view/projection matrix.

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Native;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// The Raw Input implementation of a device name.

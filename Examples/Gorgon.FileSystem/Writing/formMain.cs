@@ -28,10 +28,11 @@ using System;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main application interface.
@@ -194,7 +195,7 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
-				_writePath = Path.GetDirectoryName(Gorgon.Log.LogPath) + @"\Examples\FileSystem.Writing\";
+				_writePath = Path.GetDirectoryName(GorgonApplication.Log.LogPath) + @"\Examples\FileSystem.Writing\";
 
 				// Create our virtual file system.
 				_fileSystem = new GorgonFileSystem();

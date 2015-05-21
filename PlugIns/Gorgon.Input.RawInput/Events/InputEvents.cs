@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Native;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Object representing event arguments for the raw input keyboard events.

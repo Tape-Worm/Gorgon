@@ -25,11 +25,11 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input;
-using GorgonLibrary.Math;
+using Gorgon.Diagnostics;
+using Gorgon.Input;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The spray can effect state object.

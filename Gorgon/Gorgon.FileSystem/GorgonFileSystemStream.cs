@@ -27,7 +27,7 @@
 using System;
 using System.IO;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A file stream for the Gorgon file system.

@@ -27,7 +27,7 @@
 using System;
 using System.Drawing;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// Dialog for error messages.

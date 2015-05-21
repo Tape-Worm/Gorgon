@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A render target bound to a buffer.
@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
         /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing buffer, and if the format is set to Unknown, then it will 
         /// use the format from the buffer.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        /// <exception cref="Gorgon.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         public GorgonRenderTargetBufferView GetRenderTargetView(BufferFormat format, int firstElement, int elementCount)
         {
             return OnGetRenderTargetView(format, Settings.Format, firstElement, elementCount);

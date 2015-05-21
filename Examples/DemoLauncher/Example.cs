@@ -28,10 +28,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Xml.Linq;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// An example item.
@@ -110,7 +111,7 @@ namespace GorgonLibrary.Examples
 			// If we have a numeric value, then use the resource section.
 			if (int.TryParse(icon, out iconIndexValue))
 			{
-				string directory = (Gorgon.ApplicationDirectory + "Images" + Path.DirectorySeparatorChar + category).FormatDirectory(Path.DirectorySeparatorChar);
+				string directory = (GorgonApplication.ApplicationDirectory + "Images" + Path.DirectorySeparatorChar + category).FormatDirectory(Path.DirectorySeparatorChar);
 				string fileName = "E" + icon + "_128x128.png".FormatFileName();
 				string filePath = directory + fileName;
 

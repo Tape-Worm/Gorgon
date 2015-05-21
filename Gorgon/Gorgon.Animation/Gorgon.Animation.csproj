@@ -8,7 +8,7 @@
     <ProjectGuid>{7EE86743-18E9-4667-9BCB-989D5C926922}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Animation</RootNamespace>
+    <RootNamespace>Gorgon.Animation</RootNamespace>
     <AssemblyName>Gorgon.Animation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -106,11 +106,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     #region Enums.
     /// <summary>
@@ -224,7 +224,7 @@ namespace GorgonLibrary.IO
 	/// </summary>
     /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
     /// image formats, or use one of the predefined image codecs available in Gorgon.
-    /// <para>The codec accepts and returns a <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
+    /// <para>The codec accepts and returns a <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
     /// <para>The TGA encoder has the following limitations:
     /// <list type="bullet">
     ///     <item>
@@ -1129,7 +1129,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to persist image data to a stream.
 		/// </summary>
-		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
+		/// <param name="imageData"><see cref="Gorgon.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
 		{
@@ -1198,7 +1198,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="stream">Stream used to read the metadata.</param>
 		/// <returns>
-		/// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
 		/// <para>-or-</para>

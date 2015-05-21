@@ -1,6 +1,6 @@
 using System;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings for the constant buffer.

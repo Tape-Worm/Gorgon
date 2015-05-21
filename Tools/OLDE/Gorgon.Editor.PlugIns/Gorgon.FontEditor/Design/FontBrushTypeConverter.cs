@@ -27,10 +27,10 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Type converter for the font brush.

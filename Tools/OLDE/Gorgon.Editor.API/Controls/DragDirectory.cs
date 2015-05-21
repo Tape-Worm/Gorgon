@@ -26,7 +26,7 @@
 
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Drag and drop directory data.

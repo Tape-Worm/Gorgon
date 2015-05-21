@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders an inverted image.

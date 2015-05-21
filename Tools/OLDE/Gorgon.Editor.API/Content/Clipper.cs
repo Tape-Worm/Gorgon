@@ -27,13 +27,13 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Input;
-using GorgonLibrary.Renderers;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics;
+using Gorgon.Input;
+using Gorgon.Renderers;
 using SlimMath;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Current dragging mode.

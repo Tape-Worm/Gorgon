@@ -24,9 +24,10 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A base class for state types.

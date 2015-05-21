@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace Gorgon.Editor
 {
 	internal interface IEditorFileSystem : INamedObject
 	{

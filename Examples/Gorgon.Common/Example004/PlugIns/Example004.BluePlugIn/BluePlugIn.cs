@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Here's our main plug-in entry point.

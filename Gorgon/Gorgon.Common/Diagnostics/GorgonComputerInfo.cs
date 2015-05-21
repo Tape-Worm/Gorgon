@@ -27,9 +27,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using GorgonLibrary.Native;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Diagnostics
+namespace Gorgon.Diagnostics
 {
 	#region Enumerations.
     // ReSharper disable InconsistentNaming

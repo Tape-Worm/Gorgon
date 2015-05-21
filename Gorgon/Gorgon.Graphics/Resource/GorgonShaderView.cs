@@ -24,10 +24,11 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
     /// A shader resource view.
@@ -61,7 +62,7 @@ namespace GorgonLibrary.Graphics
 
 			Resource.Graphics.Shaders.Unbind(this);
 
-			Gorgon.Log.Print("Destroying shader resource view for {0}.",
+			GorgonApplication.Log.Print("Destroying shader resource view for {0}.",
 							 LoggingLevel.Verbose,
 							 Resource.Name);
 			D3DView.Dispose();

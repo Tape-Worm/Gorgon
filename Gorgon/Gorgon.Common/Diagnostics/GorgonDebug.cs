@@ -28,7 +28,7 @@ using System;
 using System.Diagnostics;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.Diagnostics
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// Debugging utility methods.

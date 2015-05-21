@@ -26,11 +26,11 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn
+namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	/// <summary>
 	/// Provides an interface to automatically clip a sprite region from a texture.

@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A brush used to draw glyphs using a texture.

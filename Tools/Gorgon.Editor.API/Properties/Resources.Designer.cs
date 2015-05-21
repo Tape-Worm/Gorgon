@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Editor.Properties {
+namespace Gorgon.Editor.Properties {
     using System;
     
     

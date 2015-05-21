@@ -30,10 +30,10 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using GorgonLibrary.IO.GorPack.Properties;
+using Gorgon.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace GorgonLibrary.IO.GorPack
+namespace Gorgon.IO.GorPack
 {
 	/// <summary>
 	/// A file system provider for Gorgon BZip2 compressed packed files.

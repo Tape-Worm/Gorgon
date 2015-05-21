@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
-using GorgonLibrary.Graphics;
+using Gorgon.IO;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
     /// <summary>
     /// A cache used to hold vertices for rendering.

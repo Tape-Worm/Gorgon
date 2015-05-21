@@ -26,9 +26,9 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A node for the glyph packing.

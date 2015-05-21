@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings for defining a 3D render target.
@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the format of the backing texture for the render target.
 		/// </summary>
-		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.Format">Format</see>.
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="Gorgon.Graphics.GorgonTexture2DSettings.Format">Format</see>.
 		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>
@@ -112,7 +112,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Render targets using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the <see cref="TextureFormat">backing texture</see>,
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float,
 		/// then write-only access will be given to the UAV.</para>
-		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
 		/// Function to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>

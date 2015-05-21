@@ -26,10 +26,10 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A dialog to handle picking an alpha value for a color.

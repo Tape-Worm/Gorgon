@@ -29,15 +29,15 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Collections.Specialized;
+using Gorgon.Graphics;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A vertex for a renderable object.
@@ -75,7 +75,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// The renderer for 2D graphics.
 	/// </summary>
-	/// <remarks>This is the interface that renders 2D graphics such as sprites, lines, circles, etc...  This object is also a factory for various types of 2D renderable objects such as a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.
+	/// <remarks>This is the interface that renders 2D graphics such as sprites, lines, circles, etc...  This object is also a factory for various types of 2D renderable objects such as a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.
 	/// <para>This renderer also handles state management for the various 2D objects through the exposed properties on the renderer object and automatically through the states from the properties on each object being rendered.</para>
 	/// <para>A developer can initialize this object with any render target as the default render target, or one will be created automatically when this object is initialized.  
 	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.  
@@ -903,7 +903,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="color">Color to clear with.</param>
 		/// <param name="depth">Depth value to clear with.</param>
 		/// <param name="stencil">Stencil value to clear with.</param>
-		/// <remarks>Unlike a render target <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// <remarks>Unlike a render target <see cref="Gorgon.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
 		public void Clear(GorgonColor color, float depth, byte stencil)
 		{
@@ -938,7 +938,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
 		/// <param name="depth">Depth value to clear with.</param>
-		/// <remarks>Unlike a render target <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// <remarks>Unlike a render target <see cref="Gorgon.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
 		public void Clear(GorgonColor color, float depth)
 		{
@@ -949,7 +949,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to clear the current target and its depth/stencil buffer.
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
-		/// <remarks>Unlike a render target <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// <remarks>Unlike a render target <see cref="Gorgon.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
 		public void Clear(GorgonColor color)
 		{

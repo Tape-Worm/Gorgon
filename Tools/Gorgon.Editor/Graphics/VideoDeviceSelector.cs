@@ -25,10 +25,10 @@
 #endregion
 
 using System.Linq;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A video device selector used to determine the best video device suited for the editor.

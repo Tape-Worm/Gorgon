@@ -25,11 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A view to allow render targets to be bound to the pipeline.
@@ -72,7 +73,7 @@ namespace GorgonLibrary.Graphics
 
 			Resource.Graphics.Output.Unbind(this);
 
-			Gorgon.Log.Print("Destroying render target view for {0}.",
+			GorgonApplication.Log.Print("Destroying render target view for {0}.",
 							 LoggingLevel.Verbose,
 							 Resource.Name);
 			D3DView.Dispose();

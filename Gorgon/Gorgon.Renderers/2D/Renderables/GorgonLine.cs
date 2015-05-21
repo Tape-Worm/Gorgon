@@ -26,12 +26,12 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Animation;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using Gorgon.Animation;
+using Gorgon.Graphics;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Points on the line.

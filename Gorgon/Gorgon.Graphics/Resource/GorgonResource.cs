@@ -26,10 +26,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Native;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// The type of data in the resource.

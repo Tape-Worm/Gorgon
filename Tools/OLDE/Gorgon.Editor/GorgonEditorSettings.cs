@@ -30,11 +30,11 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Configuration;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Configuration;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Configuration settings for the editor.
@@ -294,7 +294,7 @@ namespace GorgonLibrary.Editor
 
             RecentFiles = new List<string>();
 			_userDisabledPlugIns = new List<string>();
-            PlugInDirectory = Gorgon.ApplicationDirectory + "PlugIns";
+            PlugInDirectory = GorgonApplication.ApplicationDirectory + "PlugIns";
 
 			// Set the default scratch location.
 			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)

@@ -29,7 +29,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
     // ReSharper disable InconsistentNaming
 	#region Value types.

@@ -24,7 +24,9 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Input
+using Gorgon.Core;
+
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// A specific property for the HID.

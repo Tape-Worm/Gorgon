@@ -27,7 +27,7 @@
 using System.Drawing;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// A plane object.

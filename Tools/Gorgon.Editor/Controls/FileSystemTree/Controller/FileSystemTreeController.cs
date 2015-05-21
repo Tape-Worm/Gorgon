@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// The controller used to negotiate between the data model (the file system) and the tree view.

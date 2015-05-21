@@ -27,10 +27,11 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// This is an example of using the base graphics API.  It's very similar to how Direct 3D 11 works, but with some enhancements
@@ -204,7 +205,7 @@ namespace GorgonLibrary.Graphics.Example
 				Initialize();
 
 				// Now begin running the application idle loop.
-				Gorgon.Run(_mainForm, Idle);
+				GorgonApplication.Run(_mainForm, Idle);
 			}
 			catch (Exception ex)
 			{

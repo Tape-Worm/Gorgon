@@ -27,10 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using GorgonLibrary.Configuration;
-using GorgonLibrary.IO;
+using Gorgon.Configuration;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     /// <summary>
     /// Properties for the image editor plugin.

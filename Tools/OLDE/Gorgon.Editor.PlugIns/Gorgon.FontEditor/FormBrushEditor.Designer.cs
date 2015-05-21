@@ -1,6 +1,6 @@
-﻿using GorgonLibrary.Editor.FontEditorPlugIn.Controls;
+﻿using Gorgon.Editor.FontEditorPlugIn.Controls;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     partial class FormBrushEditor
     {
@@ -35,19 +35,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.tabBrushEditor = new KRBTabControl.KRBTabControl();
 			this.pageTexture = new KRBTabControl.TabPageEx();
-			this.panelTextureEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.PanelTexture();
+			this.panelTextureEditor = new Gorgon.Editor.FontEditorPlugIn.Controls.PanelTexture();
 			this.pageSolid = new KRBTabControl.TabPageEx();
 			this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
 			this.pagePattern = new KRBTabControl.TabPageEx();
-			this.panelHatchEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.PanelHatch();
+			this.panelHatchEditor = new Gorgon.Editor.FontEditorPlugIn.Controls.PanelHatch();
 			this.pageGradient = new KRBTabControl.TabPageEx();
-			this.panelGradEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.PanelGradient();
+			this.panelGradEditor = new Gorgon.Editor.FontEditorPlugIn.Controls.PanelGradient();
 			this.labelInfo = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.comboBrushType = new System.Windows.Forms.ComboBox();
 			this.labelBrushType = new System.Windows.Forms.Label();
-			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
+			this.imageFileBrowser = new Gorgon.Editor.EditorFileDialog();
 			this.tabBrushEditor.SuspendLayout();
 			this.pageTexture.SuspendLayout();
 			this.pageSolid.SuspendLayout();
@@ -67,7 +67,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(511, 9);
 			this.buttonCancel.Name = "buttonCancel";
@@ -88,7 +88,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(418, 9);
 			this.buttonOK.Name = "buttonOK";

@@ -30,11 +30,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Gorgon.Core;
 using Shaders = SharpDX.D3DCompiler;
-using GorgonLibrary.IO;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.IO;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Version for the shaders.
@@ -469,7 +470,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
+		/// <exception cref="GorgonException">Thrown when the graphics context is deferred.</exception>
 		public T CreateEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : GorgonEffect
 		{
@@ -501,7 +502,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
 		/// Function to load a shader from a byte array.
 		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
+		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="Gorgon.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="shaderData">Array of bytes containing the shader data.</param>
@@ -518,7 +519,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the shaderData parameter length is less than or equal to 0.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
         public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
@@ -540,7 +541,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load a shader from a stream of data.
 		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
+		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="Gorgon.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="stream">Stream to load the shader from.</param>
@@ -558,7 +559,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
         public T FromStream<T>(string name, string entryPoint, Stream stream, int size, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
@@ -640,7 +641,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load a shader from a file.
 		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
+		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="Gorgon.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="fileName">File name and path to the shader file.</param>
@@ -656,7 +657,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name, entryPoint or fileName parameters are empty.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+        /// <exception cref="GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
         public T FromFile<T>(string name, string entryPoint, string fileName, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
@@ -693,7 +694,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a shader.
 		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
+		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="Gorgon.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
 		/// <param name="name">Name of the shader.</param>
 		/// <param name="entryPoint">Name of the function serves as the entry point to the shader program.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
@@ -703,11 +704,11 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
-		/// <exception cref="System.NotSupportedException">Thrown when T is a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see>.</exception>
-        /// <remarks>This method will create one of the 6 shader types (<see cref="GorgonLibrary.Graphics.GorgonVertexShader">vertex</see>, <see cref="GorgonLibrary.Graphics.GorgonPixelShader">pixel</see>, 
-        /// <see cref="GorgonLibrary.Graphics.GorgonGeometryShader">geometry</see>, <see cref="GorgonLibrary.Graphics.GorgonComputeShader">compute</see>, 
-        /// <see cref="GorgonLibrary.Graphics.GorgonHullShader">hull</see> and <see cref="GorgonLibrary.Graphics.GorgonDomainShader">domain</see>).  
+		/// <exception cref="GorgonException">Thrown when the shader could not be created.</exception>
+		/// <exception cref="System.NotSupportedException">Thrown when T is a <see cref="Gorgon.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see>.</exception>
+        /// <remarks>This method will create one of the 6 shader types (<see cref="Gorgon.Graphics.GorgonVertexShader">vertex</see>, <see cref="Gorgon.Graphics.GorgonPixelShader">pixel</see>, 
+        /// <see cref="Gorgon.Graphics.GorgonGeometryShader">geometry</see>, <see cref="Gorgon.Graphics.GorgonComputeShader">compute</see>, 
+        /// <see cref="Gorgon.Graphics.GorgonHullShader">hull</see> and <see cref="Gorgon.Graphics.GorgonDomainShader">domain</see>).  
         /// Shaders are small programs that can be run on the GPU and are invoked 
 		/// when processing data on the GPU.  
         /// <para>A vertex shader is used when processing a single vertex.<para> </para>
@@ -722,7 +723,7 @@ namespace GorgonLibrary.Graphics
         /// <para>If the DEBUG version of Gorgon is being used, then the <paramref name="debug"/> flag will be defaulted to TRUE, if the RELEASE version is used, then it will be defaulted to FALSE.</para>
         /// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
         /// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the <paramref name="sourceCode"/> parameter is not NULL or empty.</para>
-		/// <para>Do not use this method to create a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, IList{GorgonStreamOutputElement}, IList{int}, int, IList{GorgonShaderMacro}, bool)">overload</see> 
+		/// <para>Do not use this method to create a <see cref="Gorgon.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, IList{GorgonStreamOutputElement}, IList{int}, int, IList{GorgonShaderMacro}, bool)">overload</see> 
 		/// instead.</para>
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
@@ -800,7 +801,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new geometry shader that can stream output to a buffer.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, the <paramref name="entryPoint"/>, <paramref name="bufferStrides"/> or the <paramref name="streamOutputElements"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/>, the <paramref name="entryPoint"/>, <paramref name="bufferStrides"/> or the <paramref name="streamOutputElements"/> parameters are empty.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+		/// <exception cref="GorgonException">Thrown when the shader could not be created.</exception>
 		/// <remarks>Create this shader when you need to stream the output of the shader pipeline into a buffer along with (or instead of) the rasterizer.  If the <paramref name="rasterizeStream"/> value is less than 0 or greater than 3 then 
 		/// it is assumed that the stream does not get rasterized. 
 		/// <para>The <paramref name="bufferStrides"/> is the size of an element inside of a buffer.  This value must not be larger than 2048 bytes, and must be at least the same size as the total of all the component counts per stream

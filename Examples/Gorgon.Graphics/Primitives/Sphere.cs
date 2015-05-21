@@ -25,12 +25,12 @@
 #endregion
 
 using System.Drawing;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Native;
 using SlimMath;
 
-namespace GorgonLibrary.Graphics.Example
+namespace Gorgon.Graphics.Example
 {
 	/// <summary>
 	/// A sphere object.

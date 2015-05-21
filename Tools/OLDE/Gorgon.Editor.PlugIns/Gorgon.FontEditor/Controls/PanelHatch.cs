@@ -31,11 +31,11 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.UI;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	/// <summary>
 	/// A panel used to dislpay hatch patterns for font glyphs.

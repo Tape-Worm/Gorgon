@@ -25,11 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Object representing keyboard data.
@@ -200,7 +201,7 @@ namespace GorgonLibrary.Input.Raw
 		internal RawKeyboard(GorgonRawInputFactory owner, string deviceName, IntPtr handle)
 			: base(owner, deviceName)
 		{
-			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
+			GorgonApplication.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
 
 			_deviceHandle = handle;
 			_messageFilter = owner.MessageFilter;

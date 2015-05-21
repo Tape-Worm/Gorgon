@@ -26,11 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Properties;
+using Gorgon.Collections;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Properties;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// Enumeration for joystick axis directions.
@@ -537,9 +538,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the X axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections X
 			{
 				get;
@@ -549,9 +550,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the Y axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections Y
 			{
 				get;
@@ -561,9 +562,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the secondary X axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections SecondaryX
 			{
 				get;
@@ -573,9 +574,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the secondary Y axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections SecondaryY
 			{
 				get;
@@ -585,9 +586,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the throttle axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections Throttle
 			{
 				get;
@@ -597,9 +598,9 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the direction that the rudder axis is pointed towards.
 			/// </summary>
-			/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+			/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 			/// property.  If the axis position is within the dead-zone range only the 
-			/// <see cref="GorgonLibrary.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
+			/// <see cref="Gorgon.Input.JoystickDirections">JoystickDirections.Center</see> position is returned.</remarks>
 			public JoystickDirections Rudder
 			{
 				get;
@@ -789,7 +790,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the x coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the X axis range will be returned (center position of the axis).</remarks>
 		public int X
@@ -801,7 +802,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the y coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Y axis range will be returned (center position of the axis).</remarks>
 		public int Y
@@ -813,7 +814,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the throttle coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the throttle axis range will be returned (center position of the axis).</remarks>
 		public int Throttle
@@ -825,7 +826,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the secondary X axis for the joystick (if applicable).
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Z axis range will be returned (center position of the axis).</remarks>
 		public int SecondaryX
@@ -838,7 +839,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the secondary Y axis for the joystick (if applicable).
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the Z axis range will be returned (center position of the axis).</remarks>
 		public int SecondaryY
@@ -850,7 +851,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Property to return the rudder coordinate for the joystick.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="GorgonLibrary.Input.GorgonJoystick.DeadZone">DeadZone</see> 
+		/// <remarks>This is affected by the <see cref="Gorgon.Input.GorgonJoystick.DeadZone">DeadZone</see> 
 		/// property.  Any values that fall within the dead zone range are ignored and as such only the mid-point 
 		/// of the rudder range will be returned (center position of the axis).</remarks>
 		public int Rudder
@@ -877,7 +878,7 @@ namespace GorgonLibrary.Input
 		/// <param name="deadZone">Dead zone range.</param>
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
+		/// <exception cref="GorgonException">Thrown when the joystick has not been initialized.</exception>
 		private static int DeadZoneValue(int value, GorgonRange deadZone, int midRange)
 		{
 		    // The dead zone range needs to be within the range of the axis.
@@ -1018,7 +1019,7 @@ namespace GorgonLibrary.Input
 		/// <see cref="P:GorgonLibrary.Input.GorgonJoystick.JoystickCapabilities.VibrationMotorCount">VibrationMotorCount</see>, or else an exception will be thrown.  Check the
 		/// <see cref="P:GorgonLibrary.Input.GorgonJoystick.JoystickCapabilities.ExtraCapabilities">ExtraCapabilities</see> property to see if vibration is supported by the device.
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
+		/// <exception cref="GorgonException">Thrown when the device has not been initialized.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the motorIndex parameter is less than 0 or greater than or equal to the VibrationMotorCount range.</exception>
 		public void Vibrate(int motorIndex, int value)
 		{
@@ -1044,7 +1045,7 @@ namespace GorgonLibrary.Input
 		/// Function to read the joystick state.
 		/// </summary>
 		/// <remarks>Users must call this in order to retrieve the state of the joystick/gamepad at any given time.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
+		/// <exception cref="GorgonException">Thrown when the device has not been initialized.</exception>
 		public void Poll()
 		{
             if (Capabilities == null)

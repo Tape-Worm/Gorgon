@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// A plug-in to allow for loading of custom image codecs.

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A key frame that manipulates an unsigned 32 bit integer data type.

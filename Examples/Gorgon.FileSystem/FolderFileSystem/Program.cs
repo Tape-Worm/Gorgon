@@ -28,10 +28,11 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Example entry point.

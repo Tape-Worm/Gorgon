@@ -26,11 +26,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// Type of wave effect.

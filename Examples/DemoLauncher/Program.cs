@@ -26,9 +26,10 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.UI;
+using Gorgon.Core;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// The launcher program.

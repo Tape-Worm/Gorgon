@@ -29,10 +29,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Type converter for renderable blending parameters.

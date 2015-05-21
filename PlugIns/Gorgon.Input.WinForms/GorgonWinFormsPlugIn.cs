@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.Input.WinForms;
+using Gorgon.Input.WinForms;
 
-namespace GorgonLibrary.Input
+namespace Gorgon.Input
 {
 	/// <summary>
 	/// The entry point for the win forms input plug-in.

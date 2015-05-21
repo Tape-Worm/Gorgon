@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	partial class SpriteAnchorEditor
 	{
@@ -93,7 +93,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioBottomRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomRight.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_se_16x16;
+			this.radioBottomRight.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_se_16x16;
 			this.radioBottomRight.Location = new System.Drawing.Point(82, 76);
 			this.radioBottomRight.Name = "radioBottomRight";
 			this.radioBottomRight.Size = new System.Drawing.Size(29, 26);
@@ -110,7 +110,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioBottomCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_down_16x16;
+			this.radioBottomCenter.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_down_16x16;
 			this.radioBottomCenter.Location = new System.Drawing.Point(47, 76);
 			this.radioBottomCenter.Name = "radioBottomCenter";
 			this.radioBottomCenter.Size = new System.Drawing.Size(29, 26);
@@ -127,7 +127,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioBottomLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioBottomLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioBottomLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioBottomLeft.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_sw_16x16;
+			this.radioBottomLeft.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_sw_16x16;
 			this.radioBottomLeft.Location = new System.Drawing.Point(12, 76);
 			this.radioBottomLeft.Name = "radioBottomLeft";
 			this.radioBottomLeft.Size = new System.Drawing.Size(29, 26);
@@ -144,7 +144,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioMiddleRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioMiddleRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioMiddleRight.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_right_16x16;
+			this.radioMiddleRight.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_right_16x16;
 			this.radioMiddleRight.Location = new System.Drawing.Point(82, 44);
 			this.radioMiddleRight.Name = "radioMiddleRight";
 			this.radioMiddleRight.Size = new System.Drawing.Size(29, 26);
@@ -161,7 +161,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.center_16x16;
+			this.radioCenter.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.center_16x16;
 			this.radioCenter.Location = new System.Drawing.Point(47, 44);
 			this.radioCenter.Name = "radioCenter";
 			this.radioCenter.Size = new System.Drawing.Size(29, 26);
@@ -178,7 +178,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioMiddleLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioMiddleLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioMiddleLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioMiddleLeft.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_left_16x16;
+			this.radioMiddleLeft.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_left_16x16;
 			this.radioMiddleLeft.Location = new System.Drawing.Point(12, 44);
 			this.radioMiddleLeft.Name = "radioMiddleLeft";
 			this.radioMiddleLeft.Size = new System.Drawing.Size(29, 26);
@@ -195,7 +195,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioTopRight.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopRight.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopRight.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopRight.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_ne_16x16;
+			this.radioTopRight.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_ne_16x16;
 			this.radioTopRight.Location = new System.Drawing.Point(82, 12);
 			this.radioTopRight.Name = "radioTopRight";
 			this.radioTopRight.Size = new System.Drawing.Size(29, 26);
@@ -212,7 +212,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioTopCenter.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopCenter.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopCenter.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopCenter.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_up_16x16;
+			this.radioTopCenter.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_up_16x16;
 			this.radioTopCenter.Location = new System.Drawing.Point(47, 12);
 			this.radioTopCenter.Name = "radioTopCenter";
 			this.radioTopCenter.Size = new System.Drawing.Size(29, 26);
@@ -229,7 +229,7 @@ namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
 			this.radioTopLeft.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.radioTopLeft.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.radioTopLeft.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.radioTopLeft.Image = global::GorgonLibrary.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_nw_16x16;
+			this.radioTopLeft.Image = global::Gorgon.Editor.SpriteEditorPlugIn.Properties.Resources.arrow_nw_16x16;
 			this.radioTopLeft.Location = new System.Drawing.Point(12, 12);
 			this.radioTopLeft.Name = "radioTopLeft";
 			this.radioTopLeft.Size = new System.Drawing.Size(29, 26);

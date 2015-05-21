@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using Gorgon.PlugIns;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Here's where we define the entry point interface for the plug-in.

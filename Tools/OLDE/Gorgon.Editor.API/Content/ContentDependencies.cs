@@ -28,9 +28,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GorgonLibrary.Editor.Properties;
+using Gorgon.Editor.Properties;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A collection of dependency items for content.

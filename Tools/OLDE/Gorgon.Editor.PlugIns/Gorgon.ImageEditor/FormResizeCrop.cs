@@ -26,11 +26,11 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
+using Gorgon.Editor.ImageEditorPlugIn.Properties;
+using Gorgon.IO;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.ImageEditorPlugIn
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	/// <summary>
 	/// UI to determine whether to crop or resize an image.

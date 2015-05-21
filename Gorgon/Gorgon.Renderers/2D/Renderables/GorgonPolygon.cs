@@ -30,15 +30,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Drawing;
-using GorgonLibrary.Animation;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Animation;
+using Gorgon.Core;
+using Gorgon.IO;
+using Gorgon.Math;
+using Gorgon.Diagnostics;
+using Gorgon.Renderers.Properties;
 using SlimMath;
-using GorgonLibrary.Graphics;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
     /// <summary>
     /// The type of drawing to use when drawing the polygon.
@@ -1014,8 +1015,8 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return pre-defined smoothing states for the renderable.
         /// </summary>
-        /// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
-        /// property exposed by the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
+        /// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="Gorgon.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+        /// property exposed by the <see cref="Gorgon.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
         public SmoothingMode SmoothingMode
         {
             get
@@ -1057,7 +1058,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return a pre-defined blending states for the renderable.
         /// </summary>
-        /// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
+        /// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="Gorgon.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
         /// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
         /// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
         public BlendingMode BlendingMode
@@ -1227,7 +1228,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         /// <remarks>
         /// Please note that this doesn't draw the object to the target right away, but queues it up to be
-        /// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+        /// drawn when <see cref="Gorgon.Renderers.Gorgon2D.Render">Render</see> is called.
         /// </remarks>
         public void Draw()
         {

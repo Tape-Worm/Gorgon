@@ -29,9 +29,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using Fetze.WinFormsColor;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Control to be displayed for picking colors on the property grid drop down.

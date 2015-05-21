@@ -26,11 +26,12 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// An effect that renders a displacement effect.

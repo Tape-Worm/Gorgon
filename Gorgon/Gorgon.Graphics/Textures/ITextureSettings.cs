@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings to describe a texture structure.
@@ -52,7 +52,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
 		/// then write-only access will be given to the UAV.</para> 
-		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
-		/// <remarks>When setting this value to TRUE, ensure that the <see cref="GorgonLibrary.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="Gorgon.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
 		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
 		bool IsTextureCube
 		{
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multisampling count/quality for the texture.
 		/// </summary>
 		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
-		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="GorgonLibrary.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.</para>
+		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.</para>
 		/// </remarks>
 		GorgonMultisampling Multisampling
 		{

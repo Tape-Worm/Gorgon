@@ -28,10 +28,10 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using GorgonLibrary.IO;
 using Gorgon.Core.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Diagnostics
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// Enumeration containing the logging levels.

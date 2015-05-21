@@ -25,10 +25,10 @@
 #endregion
 
 using System.Collections.Generic;
-using GorgonLibrary.Diagnostics;
+using Gorgon.Diagnostics;
 using SlimMath;
 
-namespace GorgonLibrary.Math
+namespace Gorgon.Math
 {
     /// <summary>
     /// Used to return spline interpolated values across a set of points.

@@ -27,12 +27,12 @@
 // Portions of this code were adapted from the Vortex 2D graphics library by Alex Khomich.
 // Vortex2D.Net is available from http://www.vortex2d.net/
 
-using GorgonLibrary.Animation;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
+using Gorgon.Animation;
+using Gorgon.Graphics;
+using Gorgon.Math;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A renderable object for drawing an ellipse on the screen.

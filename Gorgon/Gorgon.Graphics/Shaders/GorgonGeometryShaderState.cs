@@ -26,7 +26,7 @@
 
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Geometry shader states.
@@ -150,7 +150,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to set a single stream output buffer.
 		/// </summary>
 		/// <param name="buffer">Buffer to set.</param>
-		/// <remarks>Stream output buffers are only used by the <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> object.  If the currently bound shader 
+		/// <remarks>Stream output buffers are only used by the <see cref="Gorgon.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> object.  If the currently bound shader 
 		/// is not an output geometry shader, then any values set here will be ignored.</remarks>
 		public void SetStreamOutputBuffer(GorgonOutputBufferBinding buffer)
 		{
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to set a list of stream output buffers at the same time.
 		/// </summary>
 		/// <param name="buffers">Buffers to bind.</param>
-		/// <remarks>Stream output buffers are only used by the <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> object.  If the currently bound shader 
+		/// <remarks>Stream output buffers are only used by the <see cref="Gorgon.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> object.  If the currently bound shader 
 		/// is not an output geometry shader, then any values set here will be ignored.</remarks>
 		public void SetStreamOutputBuffers(GorgonOutputBufferBinding[] buffers)
 		{

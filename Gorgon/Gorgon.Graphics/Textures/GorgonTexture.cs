@@ -27,14 +27,15 @@
 using System;
 using System.Drawing;
 using System.IO;
-using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Math;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// The base texture object for all textures.
@@ -93,7 +94,7 @@ namespace GorgonLibrary.Graphics
             {
                 if (disposing)
                 {
-                    Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", LoggingLevel.Verbose, Name);
+                    GorgonApplication.Log.Print("Gorgon texture {0}: Unbound from shaders.", LoggingLevel.Verbose, Name);
                     Graphics.Shaders.UnbindResource(this);
 
                     if (_lockCache != null)
@@ -151,7 +152,7 @@ namespace GorgonLibrary.Graphics
         /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
         /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
         /// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
+		/// <exception cref="GorgonException">Thrown when the texture has a usage of staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
 		/// <para>-or-</para>
@@ -248,7 +249,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
         /// <para>Textures that have a usage of staging cannot create shader views.</para>
         /// </remarks>
-	    /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
+	    /// <exception cref="GorgonException">Thrown when the texture has a usage of staging.
 	    /// <para>-or-</para>
 	    /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
 	    /// <para>-or-</para>
@@ -347,7 +348,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
 		/// use the format from the texture.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target view could not be created.</exception>
+		/// <exception cref="GorgonException">Thrown when the render target view could not be created.</exception>
 		protected GorgonRenderTargetTextureView OnGetRenderTargetView(BufferFormat format, int mipSlice, int arrayOrDepthIndex,
 															   int arrayOrDepthCount)
 		{
@@ -433,7 +434,7 @@ namespace GorgonLibrary.Graphics
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
+		/// <exception cref="GorgonException">Thrown when the usage for this texture is set to Staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
 		/// <para>-or-</para>
@@ -489,7 +490,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", LoggingLevel.Verbose, Name);
+			GorgonApplication.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", LoggingLevel.Verbose, Name);
 
 		    if (D3DResource == null)
 		    {
@@ -546,7 +547,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
 		/// <remarks>The <paramref name="initialData"/> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
-		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
+		/// <para>To initialize the texture, create a new <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
 		/// </remarks>
 		protected abstract void OnInitialize(GorgonImageData initialData);
 
@@ -724,8 +725,8 @@ namespace GorgonLibrary.Graphics
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
         /// texture at the same time.</para>
         /// </remarks>
-        /// <returns>This method will return a <see cref="GorgonLibrary.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
-        /// a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
+        /// <returns>This method will return a <see cref="Gorgon.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
+        /// a <see cref="Gorgon.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
         /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
         /// <para>-or-</para>
         /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
@@ -840,7 +841,7 @@ namespace GorgonLibrary.Graphics
 		{
 			try
 			{
-				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", LoggingLevel.Verbose, GetType().Name, Name);
+				GorgonApplication.Log.Print("{0} {1}: Creating D3D11 texture resource...", LoggingLevel.Verbose, GetType().Name, Name);
                 
 				OnInitialize(initialData);
 				CreateDefaultResourceView();

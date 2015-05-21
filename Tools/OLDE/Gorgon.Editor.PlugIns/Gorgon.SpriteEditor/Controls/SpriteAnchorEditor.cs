@@ -29,7 +29,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
 	/// Control used to axis-align a sprite anchor.

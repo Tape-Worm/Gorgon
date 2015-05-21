@@ -29,10 +29,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.Examples.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Core;
+using Gorgon.Examples.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Example entry point.
@@ -152,10 +153,10 @@ namespace GorgonLibrary.Examples
 
             // Load the plug-in assembly.
             AssemblyName assembly = AssemblyName.GetAssemblyName(zipProviderPath);
-            Gorgon.PlugIns.LoadPlugInAssembly(assembly);
+            GorgonApplication.PlugIns.LoadPlugInAssembly(assembly);
 
             // Add the provider.
-            if (!Gorgon.PlugIns.Contains(PlugInName))
+            if (!GorgonApplication.PlugIns.Contains(PlugInName))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("The plug-in assembly file:\n'{0}' does not contain a file system plug in named '{1}'.", zipProviderPath, PlugInName);
@@ -167,7 +168,7 @@ namespace GorgonLibrary.Examples
             }
 
             // Ensure this plug in is a file system provider.
-            var plugIn = Gorgon.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
+            var plugIn = GorgonApplication.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
 
             if (plugIn == null)
             {

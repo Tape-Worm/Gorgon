@@ -28,10 +28,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
+using Gorgon.Editor.Properties;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A file for meta data in the file system used by the editor. 
@@ -187,7 +187,7 @@ namespace GorgonLibrary.Editor
 		/// Function to load in the meta data.
 		/// </summary>
 		/// <remarks>Use this method to retrieve any stored meta data.  If no meta data exists, then this function will do nothing.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the meta data is corrupted.</exception>
+		/// <exception cref="Gorgon.GorgonException">Thrown when the meta data is corrupted.</exception>
 		public static void Load()
 		{
 			_metaDataFile = ScratchArea.ScratchFiles.GetFile(_path);

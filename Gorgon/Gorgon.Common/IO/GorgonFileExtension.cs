@@ -26,9 +26,10 @@
 
 using System;
 using Gorgon.Core;
+using Gorgon.Core.Extensions;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// An extension and description for a file.

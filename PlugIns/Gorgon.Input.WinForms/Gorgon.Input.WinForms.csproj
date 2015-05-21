@@ -8,7 +8,7 @@
     <ProjectGuid>{BE449FB9-9001-4954-B856-B466F90D55E3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Input.WinForms</RootNamespace>
+    <RootNamespace>Gorgon.Input.WinForms</RootNamespace>
     <AssemblyName>Gorgon.Input.WinForms</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

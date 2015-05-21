@@ -32,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SlimMath;
 
-namespace GorgonLibrary.Math
+namespace Gorgon.Math
 {
 	/// <summary>
 	/// A random number generator for floating point and integer values.

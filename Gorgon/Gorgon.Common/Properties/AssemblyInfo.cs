@@ -24,8 +24,6 @@
 // 
 #endregion
 
-//#define BETA
-
 using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
@@ -35,21 +33,15 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
+[assembly: AssemblyTitle("Gorgon Core Functionality")]
+[assembly: AssemblyDescription("Contains core functionality used by Gorgon and the various Gorgon libraries.")]
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Common Objects [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Contains common objects for the Gorgon libraries. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Common Objects ")]
-[assembly: AssemblyDescription("Contains common objects for the Gorgon libraries.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
-#if DEBUG
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
-#else
 [assembly: AssemblyProduct("Gorgon")]
-#endif
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Examples
+﻿namespace Gorgon.Examples
 {
 	partial class formMain
 	{
@@ -61,7 +61,7 @@
 			this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.ForeColor = System.Drawing.Color.Black;
-			this.label1.Image = global::GorgonLibrary.Examples.Properties.Resources.keyboardIcon;
+			this.label1.Image = global::Gorgon.Examples.Properties.Resources.keyboardIcon;
 			this.label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.label1.Location = new System.Drawing.Point(0, 231);
 			this.label1.Name = "label1";

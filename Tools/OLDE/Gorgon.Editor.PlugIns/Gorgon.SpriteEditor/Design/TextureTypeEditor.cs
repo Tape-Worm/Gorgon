@@ -30,11 +30,11 @@ using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Editor.SpriteEditorPlugIn.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using Gorgon.Editor.SpriteEditorPlugIn.Properties;
+using Gorgon.Graphics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Editor.SpriteEditorPlugIn.Design
+namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	/// <summary>
 	/// Design time editor interface for grabbing a texture.

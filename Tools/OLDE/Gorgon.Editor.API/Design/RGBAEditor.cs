@@ -30,10 +30,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
+using Gorgon.Editor.Properties;
+using Gorgon.Graphics;
 
-namespace GorgonLibrary.Editor.Design
+namespace Gorgon.Editor.Design
 {
 	/// <summary>
 	/// Editor for RGBA colors.

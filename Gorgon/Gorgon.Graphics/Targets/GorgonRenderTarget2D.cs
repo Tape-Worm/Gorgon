@@ -25,21 +25,22 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A render target bound to a 2D texture.
     /// </summary>
     /// <remarks>
-    /// A 2D render target is a texture that can be used to receive rendering data in the pipeline by binding it as a render target.  Because it is inherited from <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> 
-    /// it can be cast to that type and used as a normal 2D texture.  Also, for convenience, it can also be cast to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see> or 
-	/// a <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.SetRenderTarget">binding a render target</see> to the output merger stage in the pipeline or 
-    /// to the <see cref="GorgonLibrary.Graphics.GorgonShaderState{T}.Resources">shader resource list</see>.
+    /// A 2D render target is a texture that can be used to receive rendering data in the pipeline by binding it as a render target.  Because it is inherited from <see cref="Gorgon.Graphics.GorgonTexture2D">GorgonTexture2D</see> 
+    /// it can be cast to that type and used as a normal 2D texture.  Also, for convenience, it can also be cast to a <see cref="Gorgon.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see> or 
+	/// a <see cref="Gorgon.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of <see cref="Gorgon.Graphics.GorgonOutputMerger.SetRenderTarget">binding a render target</see> to the output merger stage in the pipeline or 
+    /// to the <see cref="Gorgon.Graphics.GorgonShaderState{T}.Resources">shader resource list</see>.
     /// </remarks>
     public sealed class GorgonRenderTarget2D
         : GorgonTexture2D
@@ -101,7 +102,7 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating internal depth/stencil...", LoggingLevel.Verbose, Name);
+			GorgonApplication.Log.Print("GorgonRenderTarget '{0}': Creating internal depth/stencil...", LoggingLevel.Verbose, Name);
 
 		    if (DepthStencilBuffer == null)
 		    {
@@ -159,7 +160,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("Destroying GorgonRenderTarget '{0}'...", LoggingLevel.Intermediate, Name);
+			GorgonApplication.Log.Print("Destroying GorgonRenderTarget '{0}'...", LoggingLevel.Intermediate, Name);
 		    GorgonRenderStatistics.RenderTargetCount--;
 		    GorgonRenderStatistics.RenderTargetSize -= SizeInBytes * (_swapChain == null ? 1 : _swapChain.Settings.BufferCount);
 
@@ -168,7 +169,7 @@ namespace GorgonLibrary.Graphics
                 // If the swap chain is resized, we don't want to destroy these objects.
 		        if (_swapChain == null)
 		        {
-			        Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...",
+			        GorgonApplication.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...",
 			                         LoggingLevel.Verbose,
 			                         Name);
 			        DepthStencilBuffer.Dispose();
@@ -204,7 +205,7 @@ namespace GorgonLibrary.Graphics
 				SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
 			};
 
-			Gorgon.Log.Print("{0} {1}: Creating 2D render target texture...", LoggingLevel.Verbose, GetType().Name, Name);
+			GorgonApplication.Log.Print("{0} {1}: Creating 2D render target texture...", LoggingLevel.Verbose, GetType().Name, Name);
 
 			// Create the texture.
 			D3DResource = initialData != null
@@ -316,7 +317,7 @@ namespace GorgonLibrary.Graphics
         /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
         /// use the format from the texture.</para>
         /// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         public GorgonRenderTargetTextureView GetRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
 															   int arrayCount)
 		{

@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// Settings for a 1D depth/stencil buffer.

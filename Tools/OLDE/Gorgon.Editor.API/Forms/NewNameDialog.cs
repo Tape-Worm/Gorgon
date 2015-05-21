@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Form to allow entry of a new name for an object.

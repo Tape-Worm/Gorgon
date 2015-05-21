@@ -29,10 +29,10 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
-using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
-using GorgonLibrary.UI;
+using Gorgon.Editor.FontEditorPlugIn.Properties;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor.FontEditorPlugIn
+namespace Gorgon.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// UI for the font editor preferences.

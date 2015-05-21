@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A parameter to pass to an effect.

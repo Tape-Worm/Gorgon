@@ -29,19 +29,20 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using GorgonLibrary.Animation;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
+using Gorgon.Animation;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.Math;
+using Gorgon.UI;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A renderable object that renders a block of text.
 	/// </summary>
 	/// <remarks>Text in Gorgon is like any other renderable.  It can be used as a discrete object that can be translated, scaled, or rotated.  Additionally it can 
-	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="GorgonLibrary.Graphics.GorgonFont">font</see> 
+	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="Gorgon.Graphics.GorgonFont">font</see> 
 	/// objects in order to render the glyphs used in the text.</remarks>
 	public class GorgonText
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
@@ -1369,7 +1370,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
-		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="Gorgon.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// <para>
 		/// If texture filtering is turned on, then the text will not look quite right because of sub-pixel accuracy.  In order to ensure the 
 		/// vertical spacing is aligned with a pixel we need to ensure point filtering is turned on.

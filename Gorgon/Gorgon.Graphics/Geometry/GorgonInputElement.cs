@@ -25,11 +25,13 @@
 #endregion
 
 using System;
+using Gorgon.Core;
+using Gorgon.Core.Extensions;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Graphics.Properties;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// An input element for a buffer.

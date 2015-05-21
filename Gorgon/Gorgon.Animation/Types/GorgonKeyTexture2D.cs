@@ -27,11 +27,12 @@
 using System;
 using System.Drawing;
 using System.Linq;
-using GorgonLibrary.Animation.Properties;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using Gorgon.Animation.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics;
+using Gorgon.IO;
 
-namespace GorgonLibrary.Animation
+namespace Gorgon.Animation
 {
 	/// <summary>
 	/// A key frame that manipulates a 2D texture data type.
@@ -76,7 +77,7 @@ namespace GorgonLibrary.Animation
 				// Our texture is deferred, so we need to find it in the graphics object tracked
 				// object list.
 				// In order to do that, we need to find all graphics objects first:
-				var graphics = Gorgon.GetTrackedObjectsOfType<GorgonGraphics>();
+				var graphics = GorgonApplication.GetTrackedObjectsOfType<GorgonGraphics>();
 
 				// We have no graphics, then we can't do display a texture anyway, so throw an exception.
 			    if (graphics.Count == 0)

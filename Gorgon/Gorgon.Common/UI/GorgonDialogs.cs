@@ -31,7 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// Enumeration for confirmation results.

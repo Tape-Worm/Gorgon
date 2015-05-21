@@ -26,7 +26,7 @@
 
 using System.IO;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// Wrapper for a stream because WIC (not SharpDX) resets the stream position to 0 by default.

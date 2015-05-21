@@ -25,14 +25,15 @@
 #endregion
 
 using System;
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
 using SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Math;
+using Gorgon.Math;
 using Rectangle = System.Drawing.Rectangle;
 using RectangleF = System.Drawing.RectangleF;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
 	/// <summary>
 	/// A viewport rectangle to define extents for screen space rendering.

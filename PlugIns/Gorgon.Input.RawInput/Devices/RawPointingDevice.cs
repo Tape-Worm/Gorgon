@@ -27,12 +27,13 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input.Raw.Properties;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Properties;
+using Gorgon.Math;
+using Gorgon.Native;
 
-namespace GorgonLibrary.Input.Raw
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Mouse interface.
@@ -416,7 +417,7 @@ namespace GorgonLibrary.Input.Raw
 		internal RawPointingDevice(GorgonRawInputFactory owner, string deviceName, IntPtr handle)
 			: base(owner, deviceName)
 		{
-			Gorgon.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
+			GorgonApplication.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
 			_deviceHandle = handle;
 			_doubleClicker = new GorgonTimer();
 			_doubleClicker.Reset();

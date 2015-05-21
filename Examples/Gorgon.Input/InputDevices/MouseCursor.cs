@@ -29,7 +29,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Examples
+namespace Gorgon.Examples
 {
     /// <summary>
     /// This will display our mouse cursor on a double buffered surface.

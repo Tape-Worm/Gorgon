@@ -37,14 +37,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>GorgonLibrary.Graphics.Example.Program</StartupObject>
+    <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess">
-      <HintPath>..\..\..\Gorgon\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    <Reference Include="Gorgon.Native">
+      <HintPath>..\..\..\Gorgon\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="SlimMath">
       <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>

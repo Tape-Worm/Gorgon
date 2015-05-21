@@ -24,11 +24,12 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics.Properties;
+using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using Compiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     /// <summary>
     /// A geometry shader object.

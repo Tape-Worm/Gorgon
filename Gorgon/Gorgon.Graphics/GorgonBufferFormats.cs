@@ -28,10 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Math;
+using Gorgon.Core.Extensions;
+using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 
-namespace GorgonLibrary.Graphics
+namespace Gorgon.Graphics
 {
     // ReSharper disable InconsistentNaming
 	#region The Formats.

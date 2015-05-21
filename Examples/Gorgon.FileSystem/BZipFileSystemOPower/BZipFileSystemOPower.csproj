@@ -11,7 +11,7 @@
     <RootNamespace>GorgonLibrary.Examples</RootNamespace>
     <AssemblyName>BZipFileSystemOPower</AssemblyName>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <StartupObject>GorgonLibrary.Examples.Program</StartupObject>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>

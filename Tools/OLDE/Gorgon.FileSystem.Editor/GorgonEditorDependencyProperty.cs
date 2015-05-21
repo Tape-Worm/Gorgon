@@ -26,9 +26,9 @@
 
 using System;
 using System.Xml.Linq;
-using GorgonLibrary.IO.Properties;
+using Gorgon.IO.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
 	/// <summary>
 	/// A user defined property that is assigned to dependency objects.

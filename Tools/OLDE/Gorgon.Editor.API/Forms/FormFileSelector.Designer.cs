@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	partial class FormEditorFileSelector
 	{
@@ -71,7 +71,7 @@ namespace GorgonLibrary.Editor
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.splitMainPanes = new System.Windows.Forms.SplitContainer();
 			this.splitFiles = new System.Windows.Forms.SplitContainer();
-			this.treeDirectories = new GorgonLibrary.Editor.EditorTreeView();
+			this.treeDirectories = new Gorgon.Editor.EditorTreeView();
 			this.listFiles = new System.Windows.Forms.ListView();
 			this.columnFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -95,7 +95,7 @@ namespace GorgonLibrary.Editor
 			this.itemViewLarge = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelSearch = new System.Windows.Forms.Panel();
 			this.buttonSearch = new System.Windows.Forms.Button();
-			this.textSearch = new GorgonLibrary.Editor.FormEditorFileSelector.CuedTextBox();
+			this.textSearch = new Gorgon.Editor.FormEditorFileSelector.CuedTextBox();
 			this.labelNoFilesFound = new System.Windows.Forms.Label();
 			this.panelFilters = new System.Windows.Forms.Panel();
 			this.comboFilters = new System.Windows.Forms.ComboBox();
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Editor
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.APIResources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Editor.Properties.APIResources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(696, 3);
 			this.buttonCancel.Name = "buttonCancel";
@@ -152,7 +152,7 @@ namespace GorgonLibrary.Editor
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.APIResources.ok_16x16;
+			this.buttonOK.Image = global::Gorgon.Editor.Properties.APIResources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(603, 3);
 			this.buttonOK.Name = "buttonOK";
@@ -337,7 +337,7 @@ namespace GorgonLibrary.Editor
 			// pictureBox1
 			// 
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox1.Image = global::GorgonLibrary.Editor.Properties.APIResources.find_16x16;
+			this.pictureBox1.Image = global::Gorgon.Editor.Properties.APIResources.find_16x16;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(24, 24);
@@ -385,7 +385,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonBack.Enabled = false;
-			this.buttonBack.Image = global::GorgonLibrary.Editor.Properties.APIResources.back_16x16png;
+			this.buttonBack.Image = global::Gorgon.Editor.Properties.APIResources.back_16x16png;
 			this.buttonBack.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonBack.Name = "buttonBack";
 			this.buttonBack.Size = new System.Drawing.Size(23, 22);
@@ -407,7 +407,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonForward.Enabled = false;
-			this.buttonForward.Image = global::GorgonLibrary.Editor.Properties.APIResources.forward_16x16;
+			this.buttonForward.Image = global::Gorgon.Editor.Properties.APIResources.forward_16x16;
 			this.buttonForward.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonForward.Name = "buttonForward";
 			this.buttonForward.Size = new System.Drawing.Size(23, 22);
@@ -425,7 +425,7 @@ namespace GorgonLibrary.Editor
 			this.buttonView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemViewDetails,
             this.itemViewLarge});
-			this.buttonView.Image = global::GorgonLibrary.Editor.Properties.APIResources.choose_view_16x16;
+			this.buttonView.Image = global::Gorgon.Editor.Properties.APIResources.choose_view_16x16;
 			this.buttonView.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonView.Name = "buttonView";
 			this.buttonView.Size = new System.Drawing.Size(29, 22);
@@ -466,7 +466,7 @@ namespace GorgonLibrary.Editor
 			this.buttonSearch.FlatAppearance.BorderSize = 0;
 			this.buttonSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.AliceBlue;
 			this.buttonSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.buttonSearch.Image = global::GorgonLibrary.Editor.Properties.APIResources.find_16x16;
+			this.buttonSearch.Image = global::Gorgon.Editor.Properties.APIResources.find_16x16;
 			this.buttonSearch.Location = new System.Drawing.Point(174, 0);
 			this.buttonSearch.Name = "buttonSearch";
 			this.buttonSearch.Size = new System.Drawing.Size(24, 23);
@@ -632,7 +632,7 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.Panel panelTools;
 		private System.Windows.Forms.Panel panelSearch;
 		private System.Windows.Forms.Button buttonSearch;
-		private GorgonLibrary.Editor.FormEditorFileSelector.CuedTextBox textSearch;
+		private Gorgon.Editor.FormEditorFileSelector.CuedTextBox textSearch;
 		private System.Windows.Forms.ComboBox comboFile;
 		private System.Windows.Forms.ColumnHeader columnFileName;
 		private System.Windows.Forms.ColumnHeader columnDate;

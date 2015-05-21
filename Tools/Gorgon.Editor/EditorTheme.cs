@@ -26,9 +26,9 @@
 
 using System.ComponentModel;
 using System.Drawing;
-using GorgonLibrary.UI;
+using Gorgon.UI;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Custom extensions to the flat form.

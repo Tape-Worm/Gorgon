@@ -26,7 +26,7 @@
 
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// Base class for data dragging.

@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
+﻿namespace Gorgon.Editor.FontEditorPlugIn
 {
     partial class GorgonFontContentPanel
     {
@@ -69,7 +69,7 @@
         {
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonFontContentPanel));
-			this.panelTextures = new GorgonLibrary.UI.GorgonSelectablePanel();
+			this.panelTextures = new Gorgon.UI.GorgonSelectablePanel();
 			this.panelGlyphEdit = new System.Windows.Forms.Panel();
 			this.panelGlyphClip = new System.Windows.Forms.Panel();
 			this.buttonGlyphClipCancel = new System.Windows.Forms.Button();
@@ -172,7 +172,7 @@
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.panelTextVertScroll = new System.Windows.Forms.Panel();
 			this.scrollTextVertical = new System.Windows.Forms.VScrollBar();
-			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileDialog();
+			this.imageFileBrowser = new Gorgon.Editor.EditorFileDialog();
 			this.tipButtons = new System.Windows.Forms.ToolTip(this.components);
 			this.PanelDisplay.SuspendLayout();
 			this.panelGlyphEdit.SuspendLayout();
@@ -276,7 +276,7 @@
 			this.buttonGlyphClipCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonGlyphClipCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonGlyphClipCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonGlyphClipCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonGlyphClipCancel.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonGlyphClipCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonGlyphClipCancel.Location = new System.Drawing.Point(82, 236);
 			this.buttonGlyphClipCancel.Name = "buttonGlyphClipCancel";
@@ -297,7 +297,7 @@
 			this.buttonGlyphClipOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonGlyphClipOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonGlyphClipOK.ForeColor = System.Drawing.Color.White;
-			this.buttonGlyphClipOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonGlyphClipOK.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonGlyphClipOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonGlyphClipOK.Location = new System.Drawing.Point(9, 236);
 			this.buttonGlyphClipOK.Name = "buttonGlyphClipOK";
@@ -581,7 +581,7 @@
 			this.buttonKernCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonKernCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonKernCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonKernCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonKernCancel.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonKernCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonKernCancel.Location = new System.Drawing.Point(82, 44);
 			this.buttonKernCancel.Name = "buttonKernCancel";
@@ -601,7 +601,7 @@
 			this.buttonKernOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonKernOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonKernOK.ForeColor = System.Drawing.Color.White;
-			this.buttonKernOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
+			this.buttonKernOK.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonKernOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonKernOK.Location = new System.Drawing.Point(3, 44);
 			this.buttonKernOK.Name = "buttonKernOK";
@@ -682,7 +682,7 @@
 			this.buttonResetGlyphOffset.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonResetGlyphOffset.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonResetGlyphOffset.ForeColor = System.Drawing.Color.White;
-			this.buttonResetGlyphOffset.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonResetGlyphOffset.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonResetGlyphOffset.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonResetGlyphOffset.Location = new System.Drawing.Point(11, 91);
 			this.buttonResetGlyphOffset.Name = "buttonResetGlyphOffset";
@@ -701,7 +701,7 @@
 			this.buttonResetGlyphAdvance.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonResetGlyphAdvance.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonResetGlyphAdvance.ForeColor = System.Drawing.Color.White;
-			this.buttonResetGlyphAdvance.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
+			this.buttonResetGlyphAdvance.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonResetGlyphAdvance.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonResetGlyphAdvance.Location = new System.Drawing.Point(11, 167);
 			this.buttonResetGlyphAdvance.Name = "buttonResetGlyphAdvance";
@@ -973,7 +973,7 @@
             this.menuItem25,
             this.toolStripSeparator1,
             this.menuItemToWindow});
-			this.dropDownZoom.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.zoom_16x16;
+			this.dropDownZoom.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.zoom_16x16;
 			this.dropDownZoom.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.dropDownZoom.Name = "dropDownZoom";
 			this.dropDownZoom.Size = new System.Drawing.Size(128, 22);
@@ -1134,7 +1134,7 @@
 			// buttonSave
 			// 
 			this.buttonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonSave.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.save_16x16;
+			this.buttonSave.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.save_16x16;
 			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSave.Name = "buttonSave";
 			this.buttonSave.Size = new System.Drawing.Size(23, 22);
@@ -1144,7 +1144,7 @@
 			// buttonRevert
 			// 
 			this.buttonRevert.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonRevert.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.revert_16x16;
+			this.buttonRevert.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.revert_16x16;
 			this.buttonRevert.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonRevert.Name = "buttonRevert";
 			this.buttonRevert.Size = new System.Drawing.Size(23, 22);
@@ -1180,7 +1180,7 @@
 			// 
 			this.buttonSearchGlyph.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonSearchGlyph.Enabled = false;
-			this.buttonSearchGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.find_16x16;
+			this.buttonSearchGlyph.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.find_16x16;
 			this.buttonSearchGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSearchGlyph.Name = "buttonSearchGlyph";
 			this.buttonSearchGlyph.Size = new System.Drawing.Size(23, 22);
@@ -1194,7 +1194,7 @@
 			// 
 			// buttonGoHome
 			// 
-			this.buttonGoHome.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.back_16x16png;
+			this.buttonGoHome.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.back_16x16png;
 			this.buttonGoHome.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGoHome.Name = "buttonGoHome";
 			this.buttonGoHome.Size = new System.Drawing.Size(75, 22);
@@ -1205,7 +1205,7 @@
 			// 
 			this.buttonEditGlyph.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonEditGlyph.Enabled = false;
-			this.buttonEditGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
+			this.buttonEditGlyph.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
 			this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditGlyph.Name = "buttonEditGlyph";
 			this.buttonEditGlyph.Size = new System.Drawing.Size(23, 22);
@@ -1222,7 +1222,7 @@
 			this.buttonGlyphKern.CheckOnClick = true;
 			this.buttonGlyphKern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonGlyphKern.Enabled = false;
-			this.buttonGlyphKern.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_kerning_16x16;
+			this.buttonGlyphKern.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.glyph_kerning_16x16;
 			this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGlyphKern.Name = "buttonGlyphKern";
 			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
@@ -1238,7 +1238,7 @@
             this.toolStripSeparator8,
             this.menuItemSetGlyph});
 			this.buttonGlyphTools.Enabled = false;
-			this.buttonGlyphTools.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_tools_16x16;
+			this.buttonGlyphTools.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.glyph_tools_16x16;
 			this.buttonGlyphTools.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGlyphTools.Name = "buttonGlyphTools";
 			this.buttonGlyphTools.Size = new System.Drawing.Size(32, 22);
@@ -1248,7 +1248,7 @@
 			// menuItemLoadGlyphImage
 			// 
 			this.menuItemLoadGlyphImage.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.menuItemLoadGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
+			this.menuItemLoadGlyphImage.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.open_image_16x16;
 			this.menuItemLoadGlyphImage.Name = "menuItemLoadGlyphImage";
 			this.menuItemLoadGlyphImage.Size = new System.Drawing.Size(193, 22);
 			this.menuItemLoadGlyphImage.Text = "&load image for glyph...";
@@ -1257,7 +1257,7 @@
 			// menuItemRemoveGlyphImage
 			// 
 			this.menuItemRemoveGlyphImage.Enabled = false;
-			this.menuItemRemoveGlyphImage.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.remove_image_16x16;
+			this.menuItemRemoveGlyphImage.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.remove_image_16x16;
 			this.menuItemRemoveGlyphImage.Name = "menuItemRemoveGlyphImage";
 			this.menuItemRemoveGlyphImage.Size = new System.Drawing.Size(193, 22);
 			this.menuItemRemoveGlyphImage.Text = "reset glyph image...";
@@ -1271,7 +1271,7 @@
 			// menuItemSetGlyph
 			// 
 			this.menuItemSetGlyph.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.menuItemSetGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
+			this.menuItemSetGlyph.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
 			this.menuItemSetGlyph.Name = "menuItemSetGlyph";
 			this.menuItemSetGlyph.Size = new System.Drawing.Size(193, 22);
 			this.menuItemSetGlyph.Text = "&clip glyph from image";
@@ -1303,7 +1303,7 @@
 			this.menuTextColor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemSampleTextForeground,
             this.itemSampleTextBackground});
-			this.menuTextColor.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Color;
+			this.menuTextColor.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.Color;
 			this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.menuTextColor.Name = "menuTextColor";
 			this.menuTextColor.Size = new System.Drawing.Size(29, 22);
@@ -1331,7 +1331,7 @@
             this.toolStripSeparator4,
             this.itemShadowOpacity,
             this.itemShadowOffset});
-			this.menuShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
+			this.menuShadow.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
 			this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.menuShadow.Name = "menuShadow";
 			this.menuShadow.Size = new System.Drawing.Size(29, 22);
@@ -1390,7 +1390,7 @@
 			// buttonEditPreviewText
 			// 
 			this.buttonEditPreviewText.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonEditPreviewText.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
+			this.buttonEditPreviewText.Image = global::Gorgon.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
 			this.buttonEditPreviewText.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditPreviewText.Name = "buttonEditPreviewText";
 			this.buttonEditPreviewText.Size = new System.Drawing.Size(23, 22);
@@ -1515,7 +1515,7 @@
 		private System.Windows.Forms.Splitter splitContent;
 		private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panelControls;
-		internal GorgonLibrary.UI.GorgonSelectablePanel panelTextures;
+		internal Gorgon.UI.GorgonSelectablePanel panelTextures;
         internal System.Windows.Forms.Panel panelText;
         private System.Windows.Forms.Panel panelToolbar;
 		private System.Windows.Forms.ToolStrip stripFontDisplay;

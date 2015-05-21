@@ -28,13 +28,13 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers.Properties;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Graphics;
+using Gorgon.Renderers.Properties;
 using SlimMath;
 
-namespace GorgonLibrary.Renderers
+namespace Gorgon.Renderers
 {
 	/// <summary>
 	/// A post process effect to give an old scratched film effect.
