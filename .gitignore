@@ -15,7 +15,7 @@ x64/
 x86/
 build/
 bld/
-
+Test/
 
 # Roslyn cache directories
 *.ide/
