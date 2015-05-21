@@ -37,7 +37,7 @@
   .publickeytoken = (B7 7A 5C 56 19 34 E0 89 )                         // .z\V.4..
   .ver 4:0:0:0
 }
-.assembly Gorgon.MemoryAccess
+.assembly Gorgon.Native
 {
   .custom instance void [mscorlib]System.Reflection.AssemblyTitleAttribute::.ctor(string) = ( 01 00 0D 47 6F 72 67 6F 6E 2E 4D 65 6D 6F 72 79   // ...Gorgon.Memory
                                                                                               00 00 ) 
@@ -74,7 +74,7 @@
   .hash algorithm 0x00008004
   .ver 1:0:0:0
 }
-.module Gorgon.MemoryAccess.dll
+.module Gorgon.Native.dll
 // MVID: {CCFCC4F1-0B70-4F64-9DBC-52A4D4F1DF15}
 .imagebase 0x00400000
 .file alignment 0x00000200
@@ -86,7 +86,7 @@
 
 // =============== CLASS MEMBERS DECLARATION ===================
 
-.class public auto ansi GorgonLibrary.Native.DirectAccess
+.class public auto ansi Gorgon.Native.DirectAccess
        extends [mscorlib]System.Object
 {
 	// Function to return the size of a type (value types only) in bytes.
