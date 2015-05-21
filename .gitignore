@@ -41,6 +41,7 @@ dlldata.c
 *.obj
 *.pch
 *.pdb
+!Gorgon.Native.pdb
 *.pgc
 *.pgd
 *.rsp
