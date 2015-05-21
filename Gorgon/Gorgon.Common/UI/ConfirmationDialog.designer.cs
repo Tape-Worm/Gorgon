@@ -71,12 +71,12 @@ namespace GorgonLibrary.UI
 			this.buttonOK.Location = new System.Drawing.Point(12, 78);
 			this.buttonOK.Size = new System.Drawing.Size(55, 30);
 			this.buttonOK.TabIndex = 0;
-			this.buttonOK.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_YES;
+			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_YES;
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Confirm_48x48;
+			this.pictureDialog.Image = global::Gorgon.Core.Properties.Resources.Confirm_48x48;
 			// 
 			// buttonNo
 			// 
@@ -91,7 +91,7 @@ namespace GorgonLibrary.UI
 			this.buttonNo.Name = "buttonNo";
 			this.buttonNo.Size = new System.Drawing.Size(55, 30);
 			this.buttonNo.TabIndex = 1;
-			this.buttonNo.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_NO;
+			this.buttonNo.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_NO;
 			this.buttonNo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonNo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
@@ -103,13 +103,13 @@ namespace GorgonLibrary.UI
 			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonCancel.Image = global::GorgonLibrary.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::Gorgon.Core.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(135, 78);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(79, 30);
 			this.buttonCancel.TabIndex = 2;
-			this.buttonCancel.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_CANCEL;
+			this.buttonCancel.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_CANCEL;
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.buttonCancel.Visible = false;
@@ -121,7 +121,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(243, 130);
 			this.Controls.Add(this.buttonNo);
 			this.Controls.Add(this.buttonCancel);
-			this.DialogImage = global::GorgonLibrary.Properties.Resources.Confirm_48x48;
+			this.DialogImage = global::Gorgon.Core.Properties.Resources.Confirm_48x48;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ConfirmationDialog";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);

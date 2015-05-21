@@ -27,14 +27,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using GorgonLibrary.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.Collections
 {
 	/// <summary>
 	/// Base list type for Gorgon library named objects.
 	/// </summary>
-	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
+	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectList<T>
 		: IList<T>, IReadOnlyList<T>
 		where T : INamedObject

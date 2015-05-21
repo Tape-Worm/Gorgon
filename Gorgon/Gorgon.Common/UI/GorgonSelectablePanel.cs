@@ -30,7 +30,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Native;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.UI
 {

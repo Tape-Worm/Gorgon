@@ -39,7 +39,7 @@ using System.Windows.Forms;
 using GorgonLibrary.Design;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 using GorgonLibrary.UI.Design;
 
 namespace GorgonLibrary.UI

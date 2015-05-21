@@ -29,7 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using GorgonLibrary.IO;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.Diagnostics
 {

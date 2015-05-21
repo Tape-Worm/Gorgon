@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Implementation of the named object interface. 

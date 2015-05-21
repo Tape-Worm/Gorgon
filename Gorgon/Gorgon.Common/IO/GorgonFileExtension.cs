@@ -25,7 +25,8 @@
 #endregion
 
 using System;
-using GorgonLibrary.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.IO
 {

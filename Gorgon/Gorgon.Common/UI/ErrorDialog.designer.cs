@@ -110,7 +110,7 @@ namespace GorgonLibrary.UI
 			this.checkDetail.Name = "checkDetail";
 			this.checkDetail.Size = new System.Drawing.Size(81, 30);
 			this.checkDetail.TabIndex = 1;
-			this.checkDetail.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_DETAILS;
+			this.checkDetail.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_DETAILS;
 			this.checkDetail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkDetail.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);

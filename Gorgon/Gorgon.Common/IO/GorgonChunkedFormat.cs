@@ -26,7 +26,7 @@
 
 using System;
 using System.IO;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.IO
 {

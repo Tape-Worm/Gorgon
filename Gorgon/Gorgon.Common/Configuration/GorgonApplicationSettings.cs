@@ -33,9 +33,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
+using Gorgon.Core;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.Configuration
 {
@@ -532,7 +533,7 @@ namespace GorgonLibrary.Configuration
 		/// Function to save the settings to a file.
 		/// </summary>
 		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (Nothing in VB.Net).</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
+		/// <exception cref="GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
 		public void Save()
 		{
 			SerializeSettings();

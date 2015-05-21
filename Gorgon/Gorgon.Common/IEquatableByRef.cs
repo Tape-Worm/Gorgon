@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Extends the IEquatable{T} type to pass by reference.

@@ -31,7 +31,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using Fonts.Properties;
-using GorgonLibrary;
+using Gorgon.Core;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Fonts;
 using GorgonLibrary.IO;

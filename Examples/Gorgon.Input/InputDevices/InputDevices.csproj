@@ -83,9 +83,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Common\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
-      <Name>Gorgon.Common</Name>
+      <Name>Gorgon.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780b5b61-77bb-4456-af77-e6681e7e48bf}</Project>

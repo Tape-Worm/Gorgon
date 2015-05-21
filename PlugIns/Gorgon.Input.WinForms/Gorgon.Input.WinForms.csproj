@@ -78,9 +78,9 @@
     <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon.Common</Name>
+      <Name>Gorgon.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>

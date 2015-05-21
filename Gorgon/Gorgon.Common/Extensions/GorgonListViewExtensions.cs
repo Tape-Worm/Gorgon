@@ -27,10 +27,11 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Core;
 using GorgonLibrary.Native;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.UI
+namespace Gorgon.UI
 {
 	/// <summary>
 	/// Extensions used for the list view object.
@@ -43,7 +44,7 @@ namespace GorgonLibrary.UI
 		/// <param name="listViewControl">Listview to update.</param>
 		/// <param name="headerIndex">Column header index.</param>
 		/// <param name="order">Sort order.</param>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the column header was not found or could not be updated.</exception>
+		/// <exception cref="GorgonException">Thrown if the column header was not found or could not be updated.</exception>
 		/// <remarks>Use this extension method to set a sorting icon for the specified column.  This will give users a clue as to how the 
 		/// list view is sorted.</remarks>
 		public static void SetSortIcon(this ListView listViewControl, int headerIndex, SortOrder order)

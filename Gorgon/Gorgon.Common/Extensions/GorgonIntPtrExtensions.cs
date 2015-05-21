@@ -26,9 +26,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.Native
+namespace Gorgon.Native
 {
 	/// <summary>
 	/// Extensions for manipulating memory via an Intptr.

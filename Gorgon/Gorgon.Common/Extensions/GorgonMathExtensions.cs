@@ -26,7 +26,7 @@
 
 using System;
 
-namespace GorgonLibrary.Math
+namespace Gorgon.Math
 {
 	/// <summary>
 	/// Extensions for mathematical operations on single floating point values.

@@ -25,6 +25,7 @@
 #endregion
 
 using System.Reflection;
+using Gorgon.Core;
 
 namespace GorgonLibrary.PlugIns
 {

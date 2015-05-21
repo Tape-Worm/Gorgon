@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
-	/// A defined error message to be packaged with <see cref="GorgonLibrary.GorgonException"/>.
+	/// A defined error message to be packaged with <see cref="GorgonException"/>.
 	/// </summary>
 	public struct GorgonResult
 		: INamedObject, IEquatable<GorgonResult>

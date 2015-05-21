@@ -54,8 +54,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
-    <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
-      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    <Reference Include="SlimMath">
+      <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -128,9 +128,9 @@
       <Project>{7EE86743-18E9-4667-9BCB-989D5C926922}</Project>
       <Name>Gorgon.Animation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Common\Gorgon.Common.csproj">
+    <ProjectReference Include="..\..\Gorgon.Common\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon.Common</Name>
+      <Name>Gorgon.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>

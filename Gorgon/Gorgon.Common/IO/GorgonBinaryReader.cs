@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Text;
 using GorgonLibrary.Native;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.IO
 {

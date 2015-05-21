@@ -24,13 +24,15 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace GorgonLibrary.Diagnostics
 {	
 	/// <summary>
 	/// Timing data for code within a Gorgon Idle loop.
 	/// </summary>
 	/// <remarks>This object is used to calculate the time it takes for a single iteration (but, continuously) of the idle loop to execute, the frames per second, and the time elapsed since the application started as well as peaks, lows and averages for those values.
-	/// <para>This object will automatically gather data if your application has an <see cref="GorgonLibrary.Gorgon.ApplicationIdleLoopMethod">idle loop</see> assigned.  Otherwise, if a custom idle time polling method is 
+	/// <para>This object will automatically gather data if your application has an <see cref="Gorgon.ApplicationIdleLoopMethod">idle loop</see> assigned.  Otherwise, if a custom idle time polling method is 
 	/// used, then the user should call <see cref="GorgonLibrary.Diagnostics.GorgonTiming.Reset">Reset</see> before starting the application loop, and <see cref="GorgonLibrary.Diagnostics.GorgonTiming.Update">Update</see> at the beginning of the idle loop.</para>
 	/// </remarks>
 	public static class GorgonTiming

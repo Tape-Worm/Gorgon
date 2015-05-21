@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Various path formatting methods.

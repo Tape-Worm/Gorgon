@@ -26,13 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Core;
 
 namespace GorgonLibrary.Collections.Specialized
 {
 	/// <summary>
 	/// Read-only collection for Gorgon library named objects.
 	/// </summary>
-	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
+	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
 	public sealed class GorgonNamedObjectReadOnlyCollection<T>
 		: GorgonBaseNamedObjectList<T>
 		where T : INamedObject

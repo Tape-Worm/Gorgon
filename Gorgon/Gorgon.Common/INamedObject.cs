@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Applied to objects that require names.

@@ -55,9 +55,9 @@
     <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
+    <ProjectReference Include="..\..\..\..\..\Gorgon\Gorgon.Common\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
-      <Name>Gorgon.Common</Name>
+      <Name>Gorgon.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Example004.csproj">
       <Project>{7e9e7c1e-ae39-4474-833f-a85ec045c74f}</Project>

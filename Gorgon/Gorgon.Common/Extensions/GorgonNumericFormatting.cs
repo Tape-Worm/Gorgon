@@ -27,9 +27,9 @@
 using System;
 using System.Globalization;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Utility for formatting numeric values into various types of strings.

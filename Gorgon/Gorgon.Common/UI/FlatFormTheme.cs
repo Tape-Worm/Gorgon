@@ -37,7 +37,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using GorgonLibrary.Design;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 using GorgonLibrary.UI.Design;
 
 namespace GorgonLibrary.UI

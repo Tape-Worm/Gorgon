@@ -31,10 +31,11 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
 using System.Text;
+using Gorgon.Core;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.PlugIns
 {
@@ -62,7 +63,7 @@ namespace GorgonLibrary.PlugIns
 	/// A factory to load, unload and keep track of plug-in interfaces.
 	/// </summary>
 	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.Gorgon.PlugIns">PlugIns</see> parameter on the primary 
-	/// <seealso cref="GorgonLibrary.Gorgon">Gorgon</seealso> object and cannot be created by the user.
+	/// <seealso cref="Gorgon">Gorgon</seealso> object and cannot be created by the user.
 	/// <para>In some cases, a plug-in assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
 	/// use the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
 	/// assemblies.</para></remarks>
@@ -428,7 +429,7 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
+		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
 		public AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
@@ -513,7 +514,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
+		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
 			if (assemblyName == null)

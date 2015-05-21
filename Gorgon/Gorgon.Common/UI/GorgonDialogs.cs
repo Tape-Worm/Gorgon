@@ -28,7 +28,8 @@ using System;
 using System.Collections;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Properties;
+using Gorgon.Core;
+using Gorgon.Core.Properties;
 
 namespace GorgonLibrary.UI
 {

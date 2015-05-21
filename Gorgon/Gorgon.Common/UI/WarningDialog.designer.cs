@@ -75,7 +75,7 @@ namespace GorgonLibrary.UI
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Image = global::GorgonLibrary.Properties.Resources.Warning_48x48;
+			this.pictureDialog.Image = global::Gorgon.Core.Properties.Resources.Warning_48x48;
 			// 
 			// textWarningDetails
 			// 
@@ -110,7 +110,7 @@ namespace GorgonLibrary.UI
 			this.checkDetail.Name = "checkDetail";
 			this.checkDetail.Size = new System.Drawing.Size(81, 30);
 			this.checkDetail.TabIndex = 1;
-			this.checkDetail.Text = global::GorgonLibrary.Properties.Resources.GOR_DLG_DETAILS;
+			this.checkDetail.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_DETAILS;
 			this.checkDetail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkDetail.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
@@ -121,7 +121,7 @@ namespace GorgonLibrary.UI
 			this.ClientSize = new System.Drawing.Size(243, 130);
 			this.Controls.Add(this.checkDetail);
 			this.Controls.Add(this.textWarningDetails);
-			this.DialogImage = global::GorgonLibrary.Properties.Resources.Warning_48x48;
+			this.DialogImage = global::Gorgon.Core.Properties.Resources.Warning_48x48;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "WarningDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

@@ -1,5 +1,5 @@
 ﻿
-namespace GorgonLibrary
+namespace Gorgon.Core.Extensions
 {
 	/// <summary>
 	/// An extension to provide hash code generation for dictionaries.

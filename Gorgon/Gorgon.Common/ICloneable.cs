@@ -24,7 +24,7 @@
 // 
 #endregion
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// A cloneable object interface.

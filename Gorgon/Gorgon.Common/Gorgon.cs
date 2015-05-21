@@ -36,17 +36,17 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 using GorgonLibrary.UI;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// The gorgon application.
 	/// </summary>
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
-	/// <para>The application uses an <see cref="P:GorgonLibrary.Gorgon.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
-	/// <para>An application is started by calling its <see cref="GorgonLibrary.Gorgon.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
+	/// <para>The application uses an <see cref="Gorgon.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="Gorgon.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
+	/// <para>An application is started by calling its <see cref="Gorgon.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
 	/// Alternatively, the application can be terminated by returning FALSE from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>

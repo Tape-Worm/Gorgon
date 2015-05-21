@@ -29,9 +29,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// Delegate to define an exception handler.

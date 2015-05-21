@@ -29,9 +29,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Properties;
+using Gorgon.Core.Properties;
 
-namespace GorgonLibrary.IO
+namespace Gorgon.IO
 {
     /// <summary>
     /// String formatting extensions for IO operations.
