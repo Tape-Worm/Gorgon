@@ -25,9 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Input.XInput.Properties;
 using XI = SharpDX.XInput;
 
@@ -44,33 +45,38 @@ namespace Gorgon.Input.XInput
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
-			return new GorgonInputDeviceInfo[] {};
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
 		}
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
-			return new GorgonInputDeviceInfo[] {};
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
 		}
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
 			// Enumerate all controllers.
-			return (from xiDeviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
-					where xiDeviceIndex != XI.UserIndex.Any
-					orderby xiDeviceIndex
-					select new GorgonXInputDeviceInfo(string.Format("{0}: XInput Controller", (int)xiDeviceIndex + 1),
-					string.Format("XInput_{0}", xiDeviceIndex), new XI.Controller(xiDeviceIndex), (int)xiDeviceIndex))
-						.OrderBy(item => item.Name);
+			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
+			result.AddRange((from xiDeviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
+			                 where xiDeviceIndex != XI.UserIndex.Any
+			                 orderby xiDeviceIndex
+			                 select new GorgonXInputDeviceInfo(string.Format("{0}: XInput Controller", (int)xiDeviceIndex + 1),
+			                                                   string.Format("XInput_{0}", xiDeviceIndex),
+			                                                   new XI.Controller(xiDeviceIndex),
+			                                                   (int)xiDeviceIndex))
+				                .OrderBy(item => item.Name));
+
+			return result;
 		}
 
 		/// <summary>
@@ -79,9 +85,9 @@ namespace Gorgon.Input.XInput
 		/// <returns>
 		/// A list of custom HID types.
 		/// </returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
-			return new GorgonInputDeviceInfo[] {};
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
 		}
 
 		/// <summary>

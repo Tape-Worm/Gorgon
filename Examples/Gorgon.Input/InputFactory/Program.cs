@@ -57,7 +57,7 @@ namespace Gorgon.Examples
     /// // Alternatively, one could enumerate the plug-ins after loading the assembly by calling:
     /// // var plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(assemblyName);
     /// // And then check for a GorgonInputPlugIn in the list returned.
-    /// GorgonInputFactory rawInput = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+    /// GorgonInputFactory rawInput = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
     /// 
     /// While this is more complex than the previous version of Gorgon, it's also far more flexible.
 	/// </remarks>
@@ -248,12 +248,10 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				// Catch all exceptions here.  If we had logging for the application enabled, then this 
-				// would record the exception in the log.
-				GorgonException.Catch(ex, () => {
+				GorgonException.Catch(ex, _ => {
 					Console.Clear();
 					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);					
+					Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);					
 				});
 				Console.ResetColor();
 #if DEBUG

@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using SharpDX.DXGI;
 using DX = SharpDX;
@@ -37,6 +38,8 @@ using D3DCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
@@ -62,7 +65,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the list of available video devices installed on the system.
 		/// </summary>
-		public static GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice> VideoDevices
+		public static IGorgonNamedObjectReadOnlyList<GorgonVideoDevice> VideoDevices
 		{
 			get;
 			private set;
@@ -218,7 +221,7 @@ namespace Gorgon.Graphics
 	    /// <param name="noOutputDevice">TRUE if the device has no outputs, FALSE if it does.</param>
 	    private static void GetOutputs(GorgonVideoDevice device, D3D.Device D3DDevice, Adapter adapter, int outputCount, bool noOutputDevice)
 		{
-			var outputs = new List<GorgonVideoOutput>(outputCount);
+			var outputs = new GorgonNamedObjectList<GorgonVideoOutput>(false);
 			
 			// We need to fake outputs.
 			// Windows 8 does not support outputs on WARP devices and ref rasterizer devices.
@@ -239,7 +242,7 @@ namespace Gorgon.Graphics
 				// No video modes for these devices.
 				output.VideoModes = new GorgonVideoMode[0];
 
-				device.Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, outputs);
+				device.Outputs = outputs;
 
 				GorgonApplication.Log.Print("Output {0} on device {1} has no video modes.", LoggingLevel.Verbose, output.Name, device.Name);
 				return;
@@ -280,7 +283,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-			device.Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, outputs);
+			device.Outputs = outputs;
 		}
 
 		/// <summary>
@@ -319,13 +322,11 @@ namespace Gorgon.Graphics
 		            return;
 		        }
 
-			    List<GorgonVideoDevice> devices;
+			    var devices = new GorgonNamedObjectList<GorgonVideoDevice>(false);
 
 			    using(var factory = new Factory1())
 		        {
 		            int adapterCount = factory.GetAdapterCount1();
-
-		            devices = new List<GorgonVideoDevice>(adapterCount + 2);
 
 		            GorgonApplication.Log.Print("Enumerating video devices...", LoggingLevel.Simple);
 
@@ -397,7 +398,7 @@ namespace Gorgon.Graphics
 #endif
 		        }
 
-		        VideoDevices = new GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice>(false, devices);
+		        VideoDevices = devices;
 
                 if (devices.Count == 0)
                 {
@@ -420,7 +421,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		static GorgonVideoDeviceEnumerator()
 		{
-			VideoDevices = new GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice>(false, new GorgonVideoDevice[] { });
+			VideoDevices = new GorgonNamedObjectList<GorgonVideoDevice>();
 			Enumerate(false, false);
 		}
 		#endregion

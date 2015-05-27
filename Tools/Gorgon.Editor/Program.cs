@@ -90,7 +90,7 @@ namespace Gorgon.Editor
 				               catch (Exception ex)
 				               {
 					               settings.Reset();
-					               GorgonException.Catch(ex);
+					               GorgonApplication.Log.LogException(ex);
 				               }
 			               });
 
@@ -178,7 +178,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 			finally
 			{

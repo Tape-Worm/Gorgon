@@ -196,7 +196,7 @@ namespace Gorgon.Examples
             _fileSystem = new GorgonFileSystem();
             
             // Add the Gorgon BZip packed file provider to the file system.
-            _fileSystem.Providers.LoadProvider("GorgonLibrary.IO.GorgonGorPackPlugIn");
+            _fileSystem.Providers.LoadProvider("Gorgon.IO.GorgonGorPackPlugIn");
 
             // Mount the packed file.
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
@@ -294,7 +294,7 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+                GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
                 GorgonApplication.Quit();
             }
             finally

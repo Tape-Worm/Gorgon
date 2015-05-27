@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Gorgon.Native;
 
@@ -59,8 +60,10 @@ namespace Gorgon.Diagnostics
 	public static class GorgonComputerInfo
 	{
 		#region Variables.
-		private static IDictionary<string, string> _machineVariables;		// List of machine specific environment variables.
-		private static IDictionary<string, string> _userVariables;			// List of user specific environment variables.
+		// List of machine specific environment variables.
+		private static ConcurrentDictionary<string, string> _machineVariables;
+		// List of user specific environment variables.
+		private static ConcurrentDictionary<string, string> _userVariables;			
 		#endregion
 
 		#region Properties.
@@ -213,41 +216,26 @@ namespace Gorgon.Diagnostics
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the path for a specialized folder.
-		/// </summary>
-		/// <param name="folder">Folder to return.</param>
-		/// <returns>The path to the folder.</returns>
-		public static string FolderPath(Environment.SpecialFolder folder)
-		{
-			return Environment.GetFolderPath(folder);
-		}
-
-		/// <summary>
-		/// Function to retrieve a list of logical drives for the computer.
-		/// </summary>
-		/// <returns>A list of logical drives for the computer.</returns>
-		public static IList<string> GetLogicalDrives()
-		{
-			return Environment.GetLogicalDrives();
-		}
-
-		/// <summary>
 		/// Function to refresh the list of user and machine specific environment variables.
 		/// </summary>
 		public static void RefreshEnvironmentVariables()
 		{
 			IDictionary oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
 
-			_machineVariables = new Dictionary<string, string>();
-			_userVariables = new Dictionary<string, string>();
+			_machineVariables = new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
+			_userVariables = new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
 
 			foreach (DictionaryEntry variable in oldVariables)
-				_machineVariables.Add(variable.Key.ToString(), variable.Value.ToString());
+			{
+				_machineVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
+			}
 
 			oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
 
 			foreach (DictionaryEntry variable in oldVariables)
-				_userVariables.Add(variable.Key.ToString(), variable.Value.ToString());			
+			{
+				_userVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
+			}
 		}
 		#endregion
 

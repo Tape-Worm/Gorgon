@@ -624,7 +624,7 @@ namespace Gorgon.Configuration
 			ApplicationName = applicationName;
 			Version = settingsVersion;
 
-			_path = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);
+			_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 			_path += System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			_path += applicationName.RemoveIllegalFilenameChars() + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			_path += System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");

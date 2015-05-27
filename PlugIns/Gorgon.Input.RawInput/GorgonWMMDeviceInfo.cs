@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Runtime.InteropServices;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
@@ -35,7 +36,10 @@ namespace Gorgon.Input.Raw
 		: GorgonInputDeviceInfo
 	{
 		#region Variables.
-		private readonly int _joyCapsSize;			// Structure size of the JOYCAPS value type.
+		// Structure size of the JOYCAPS value type.
+		// We have to use Marshal.SizeOf here because the structure uses marshalling for strings, and DirectAccess.SizeOf was not 
+		// designed for that.
+		private readonly int _joyCapsSize = Marshal.SizeOf(typeof(JOYCAPS));			
 		#endregion
 
 		#region Properties.
@@ -75,7 +79,6 @@ namespace Gorgon.Input.Raw
 			: base(name, InputDeviceType.Joystick, className, hidPath)
 		{
 			JoystickID = joystickID;
-			_joyCapsSize = DirectAccess.SizeOf<JOYCAPS>();
 		}
 		#endregion
 	}

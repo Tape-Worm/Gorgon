@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,69 +20,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, January 11, 2013 8:27:27 AM
+// Created: Tuesday, September 23, 2014 2:35:19 AM
 // 
 #endregion
 
-using System;
-using System.IO;
-using System.Windows.Forms;
-using Gorgon.Core;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Examples.Properties;
-using Gorgon.UI;
 
 namespace Gorgon.Examples
 {
 	/// <summary>
-	/// Example entry point.
+	/// Loads categories from the manifest XML.
 	/// </summary>
-	/// <remarks>To see a description of this example, look in formMain.cs</remarks>
-	static class Program
+	static class CategoryLoader
 	{
 		/// <summary>
-		/// Property to return the path to the plug-ins.
+		/// Function to read the categories and examples from the embedded example list.
 		/// </summary>
-		public static string PlugInPath
+		/// <returns>A new category collection.</returns>
+		public static IReadOnlyList<Category> Read()
 		{
-			get
+			var result = new List<Category>();
+			var document = XDocument.Parse(Resources.Examples);
+
+			XElement root = document.Element("Examples");
+
+			if (root == null)
 			{
-				string path = Settings.Default.PlugInLocation;
-
-				if (path.Contains("{0}"))
-				{
-#if DEBUG
-					path = string.Format(path, "Debug");
-#else
-					path = string.Format(path, "Release");					
-#endif
-				}
-
-				if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				{
-					path += Path.DirectorySeparatorChar.ToString();
-				}
-
-				return Path.GetFullPath(path);
+				return result;
 			}
-		}
 
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			try
-			{
-				Application.EnableVisualStyles();
-				Application.SetCompatibleTextRenderingDefault(false);
+			IEnumerable<XElement> categories = root.Elements("Category");
 
-				GorgonApplication.Run(new formMain());
-			}
-			catch (Exception ex)
-			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
-			}
+			result.AddRange(categories.Select(Category.Read));
+
+			return result;
 		}
 	}
 }

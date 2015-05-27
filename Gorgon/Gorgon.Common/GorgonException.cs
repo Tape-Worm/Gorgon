@@ -25,19 +25,10 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Gorgon.Core.Properties;
-using Gorgon.Diagnostics;
 
 namespace Gorgon.Core
 {
-	/// <summary>
-	/// Delegate to define an exception handler.
-	/// </summary>
-	public delegate void GorgonExceptionHandler();
-
 	/// <summary>
 	/// Primary exception used for Gorgon.
 	/// </summary>
@@ -46,19 +37,6 @@ namespace Gorgon.Core
 		: Exception
 	{
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the log system to use when dumping exceptions to the log.
-		/// </summary>
-		/// <remarks>This allows Gorgon to log exceptions to a log file.
-		/// <para>The property uses an <see cref="IList{T}"/> to allow broadcasting of logging information to multiple log files if desired.</para>
-		/// <para>By default, only the main Gorgon library log file is assigned.</para>
-		/// </remarks>
-		public static IList<GorgonLogFile> Logs
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return the exception result code.
 		/// </summary>
@@ -70,164 +48,6 @@ namespace Gorgon.Core
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to format a stack trace to be more presentable.
-		/// </summary>
-		/// <param name="log">The current log file being processed.</param>
-		/// <param name="stack">Stack trace to format.</param>
-		/// <param name="indicator">Inner exception indicator.</param>
-		/// <param name="logLevel">Logging level to use.</param>
-		private static void FormatStackTrace(GorgonLogFile log, string stack, string indicator, LoggingLevel logLevel)
-		{
-		    if (string.IsNullOrEmpty(stack))
-				return;
-
-			stack = stack.Replace('\t', ' ');
-			string[] lines = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-			// Output to each log file.
-			log.Print("{0}Stack trace:", logLevel, indicator);
-			for (int i = lines.Length - 1; i >= 0; i--)
-			{
-				int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
-				int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
-
-				if ((inIndex > -1) && (pathIndex > -1))
-					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
-
-				log.Print("{1}{0}", logLevel, lines[i], indicator);
-			}
-
-			log.Print("{0}<<<{1}>>>", logLevel, indicator, Resources.GOR_DLG_ERR_STACK_END);
-		}
-
-		/// <summary>
-		/// Function to format the exception message for the log output.
-		/// </summary>
-		/// <param name="log">The current log file being processed.</param>
-		/// <param name="message">Message to format.</param>
-		/// <param name="indicator">Inner exception indicator.</param>
-		/// <param name="logLevel">Logging level to use.</param>
-		private static void FormatMessage(GorgonLogFile log, string message, string indicator, LoggingLevel logLevel)
-		{
-		    if (string.IsNullOrEmpty(message))
-				return;
-
-			message = message.Replace('\t', ' ');
-			string[] lines = message.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-			for (int i = 0; i < lines.Length; i++)
-			{
-				log.Print(i == 0 ? "{1}{2}: {0}" : "{1}           {0}", logLevel, lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
-			}
-		}
-
-		/// <summary>
-		/// Function to send the exception to the log file.
-		/// </summary>
-		private static void LogException(Exception ex)
-		{
-		    string indicator = string.Empty;	// Inner exception indicator.
-			string branch = string.Empty;		// Branching character.
-
-			if ((ex == null)
-				|| (Logs.Count == 0))
-			{
-				return;
-			}
-
-			foreach (GorgonLogFile log in Logs)
-			{
-				if ((log == null)
-					|| (log.LogFilterLevel == LoggingLevel.NoLogging)
-				    || (log.IsClosed))
-				{
-					continue;
-				}
-
-				log.Print("", LoggingLevel.All);
-				log.Print("================================================", LoggingLevel.All);
-				log.Print("\t{0}!!", LoggingLevel.All, Resources.GOR_LOG_EXCEPTION.ToUpper());
-				log.Print("================================================", LoggingLevel.All);
-
-				Exception inner = ex;
-
-				while (inner != null)
-				{
-					var gorgonException = inner as GorgonException;
-
-					FormatMessage(log, inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-					log.Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator, Resources.GOR_DLG_ERR_EXCEPT_TYPE);
-					if (inner.Source != null)
-					{
-						log.Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_DLG_ERR_SRC);
-					}
-
-					if ((inner.TargetSite != null) && (inner.TargetSite.DeclaringType != null))
-					{
-						log.Print("{1}{2}: {0}",
-						          (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-						          inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name,
-						          indicator,
-						          Resources.GOR_DLG_ERR_TARGET_SITE);
-					}
-
-					if (gorgonException != null)
-					{
-						log.Print("{3}{4}: [{0}] {1} (0x{2:X})",
-						          (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-						          gorgonException.ResultCode.Name,
-						          gorgonException.ResultCode.Description,
-						          gorgonException.ResultCode.Code,
-						          indicator,
-						          Resources.GOR_DLG_ERR_GOREXCEPT_RESULT);
-					}
-
-					IDictionary extraInfo = inner.Data;
-
-					// Print custom information.
-					if (extraInfo.Count > 0)
-					{
-						log.Print("{0}", LoggingLevel.Verbose, indicator);
-						log.Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_DLG_ERR_CUSTOM_INFO);
-						log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
-						foreach (DictionaryEntry item in extraInfo)
-						{
-							if (item.Value != null)
-							{
-								log.Print("{0}{1}:  {2}", LoggingLevel.Verbose, indicator, item.Key, item.Value);
-							}
-						}
-						log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
-						log.Print("{0}", LoggingLevel.Verbose, indicator);
-					}
-
-					FormatStackTrace(log, inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-
-					if (inner.InnerException != null)
-					{
-						if (!string.IsNullOrWhiteSpace(indicator))
-						{
-							log.Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|->   ");
-							branch += "  ";
-							indicator = branch + "|   ";
-						}
-						else
-						{
-							log.Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|-> ");
-							indicator = "|   ";
-						}
-
-						log.Print("{0}  {2} \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message, Resources.GOR_DLG_ERR_NEXT_EXCEPTION);
-						log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
-					}
-
-					inner = inner.InnerException;
-				}
-				log.Print("", LoggingLevel.All);
-			}
-		}
-
 		/// <summary>
 		/// When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
 		/// </summary>
@@ -248,29 +68,35 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Functon to catch and handle an exception.
 		/// </summary>
+		/// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
 		/// <param name="ex">Exception to pass to the handler.</param>
-		/// <param name="handler">[Optional] Handler to handle the exception.</param>
-		/// <returns>The exception that was caught.</returns>
+		/// <param name="handler">A method that is called to handle the exception.</param>
+		/// <param name="logException">[Optional] <c>true</c> to log the exception to the primary application log, <c>false</c> to skip logging.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		public static Exception Catch(Exception ex, GorgonExceptionHandler handler = null)
+		/// <remarks>
+		/// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
+		/// that has a type that is or derives from <see cref="Exception"/>.
+		/// </remarks>
+		public static void Catch<T>(T ex, Action<T> handler, bool logException = false)
+			where T : Exception
 		{
-			if (ex == null)
+			if ((ex == null)
+				|| (handler == null))
 			{
-				throw new ArgumentNullException("ex");
+				return;
 			}
 
-			LogException(ex);
+			if (logException)
+			{
+				// Automatically log this exception.
+				GorgonApplication.Log.LogException(ex);
+			}
 
-		    if (handler != null)
-		    {
-		        handler();
-		    }
-
-		    return ex;
+			handler(ex);
 		}
 
 		/// <summary>
-		/// Function to repackage an arbitrary exception as an Gorgon exception.
+		/// Function to repackage an arbitrary exception as a <see cref="GorgonException"/>.
 		/// </summary>
 		/// <param name="result">Result code to use.</param>
 		/// <param name="message">Message to append to the result.</param>
@@ -413,14 +239,6 @@ namespace Gorgon.Core
 		public GorgonException()
 		{
 			ResultCode = new GorgonResult("GorgonException", int.MinValue, string.Empty);
-		}
-
-		/// <summary>
-		/// Initializes the <see cref="GorgonException"/> class.
-		/// </summary>
-		static GorgonException()
-		{
-			Logs = new List<GorgonLogFile>();
 		}
 		#endregion
 	}

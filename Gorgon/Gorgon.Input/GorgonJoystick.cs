@@ -648,7 +648,7 @@ namespace Gorgon.Input
 		/// Defines the state of the buttons for the device.
 		/// </summary>
 		public abstract class JoystickButtons
-			: GorgonBaseNamedObjectCollection<JoystickButtonState>
+			: GorgonBaseNamedObjectList<JoystickButtonState>
 		{
 			#region Properties.
 			/// <summary>
@@ -658,11 +658,11 @@ namespace Gorgon.Input
 			{
 				get
 				{
-					return GetItem(index);
+					return Items[index];
 				}
 				protected set
 				{
-					SetItem(value.Name, value);
+					Items[index] = value;
 				}
 			}
 
@@ -673,11 +673,7 @@ namespace Gorgon.Input
 			{
 				get
 				{
-					return GetItem(name);
-				}
-				protected set
-				{
-					SetItem(name, value);
+					return GetItemByName(name);
 				}
 			}
 			#endregion
@@ -694,9 +690,17 @@ namespace Gorgon.Input
 			/// </exception>
 			protected void DefineButton(string name)
 			{
-				GorgonDebug.AssertParamString(name, "name");
+				if (name == null)
+				{
+					throw new ArgumentNullException("name");
+				}
 
-				AddItem(new JoystickButtonState(name, false));
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					throw new ArgumentException(Resources.GORINP_PARAMETER_NULL_EMPTY, "name");
+				}
+
+				Items.Add(new JoystickButtonState(name, false));
 			}
 
 			/// <summary>

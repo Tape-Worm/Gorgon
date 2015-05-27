@@ -30,7 +30,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Core.Collections.Specialized;
 using Shaders = SharpDX.D3DCompiler;
 using Gorgon.IO;
 using Gorgon.Graphics.Properties;
@@ -173,7 +175,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return a list of include files for the shaders.
 		/// </summary>
-		public GorgonShaderIncludeCollection IncludeFiles
+		public IGorgonNamedObjectDictionary<GorgonShaderInclude> IncludeFiles
 		{
 			get;
 			private set;
@@ -904,7 +906,7 @@ namespace Gorgon.Graphics
 		/// <param name="graphics">The graphics.</param>
 		internal GorgonShaderBinding(GorgonGraphics graphics)
 		{
-			IncludeFiles = new GorgonShaderIncludeCollection();
+			IncludeFiles = new GorgonNamedObjectDictionary<GorgonShaderInclude>(false);
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
 		    GeometryShader = new GorgonGeometryShaderState(graphics);

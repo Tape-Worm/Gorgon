@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -336,18 +337,12 @@ namespace Gorgon.Examples
 				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
 
 				// Create the factory.
-				_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				_input = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
 
 				// Create mouse, keyboard and joystick interfaces.
 				_keyboard = _input.CreateKeyboard(this);
 				_mouse = _input.CreatePointingDevice(this);
-				_joystickList = new GorgonJoystick[_input.JoystickDevices.Count];
-
-				// Create each joystick interface.
-				for (int i = 0; i < _joystickList.Length; i++)
-				{
-					_joystickList[i] = _input.CreateJoystick(this, _input.JoystickDevices[i].Name);
-				}
+				_joystickList = _input.JoystickDevices.Select(item => _input.CreateJoystick(this, item.Name)).ToArray();
 
 				// Create the graphics interface.
 				_graphics = new GorgonGraphics();
@@ -445,7 +440,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 		}

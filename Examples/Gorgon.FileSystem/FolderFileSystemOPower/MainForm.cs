@@ -279,7 +279,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 			finally

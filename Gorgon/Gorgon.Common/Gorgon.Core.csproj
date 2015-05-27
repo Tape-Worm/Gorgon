@@ -128,15 +128,19 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonDisposableObjectCollection.cs" />
-    <Compile Include="Collections\Specialized\GorgonNamedObjectReadOnlyCollection.cs" />
+    <Compile Include="Collections\Specialized\GorgonNamedObjectList.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectList.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
     <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
     <Compile Include="Configuration\GorgonApplicationSettings.cs" />
     <Compile Include="Design\LocalCategoryAttribute.cs" />
     <Compile Include="Design\LocalDescriptionAttribute.cs" />
     <Compile Include="Design\LocalDisplayNameAttribute.cs" />
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
-    <Compile Include="Diagnostics\GorgonProcess.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />
     <Compile Include="Events\GorgonHandledEventArgs.cs" />
     <Compile Include="Extensions\GorgonHashGenerationExtension.cs" />
@@ -152,7 +156,6 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="IEquatableByRef.cs" />
     <Compile Include="GorgonRange.cs" />
-    <Compile Include="Collections\GorgonBaseNamedObjectCollection.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />

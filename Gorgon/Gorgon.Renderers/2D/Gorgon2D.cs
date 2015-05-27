@@ -605,7 +605,7 @@ namespace Gorgon.Renderers
             // Add shader includes if they're gone.
             if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
             {
-                Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
+                Graphics.Shaders.IncludeFiles.Add(new GorgonShaderInclude("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite)));
             }
             
             // Record the initial state before set up.
@@ -726,7 +726,7 @@ namespace Gorgon.Renderers
 			// Add shader includes.
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
 			{
-				Graphics.ImmediateContext.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
+				Graphics.ImmediateContext.Shaders.IncludeFiles.Add(new GorgonShaderInclude("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite)));
 			}
 
 			// Create shader states.

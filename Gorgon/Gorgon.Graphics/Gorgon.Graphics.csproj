@@ -77,7 +77,6 @@
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
-    <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="D3DErrors.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceEnumerator.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
@@ -157,7 +156,6 @@
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderBinding.cs" />
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
-    <Compile Include="Shaders\GorgonShaderIncludeCollection.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
     <Compile Include="Shaders\GorgonOutputBufferBinding.cs" />

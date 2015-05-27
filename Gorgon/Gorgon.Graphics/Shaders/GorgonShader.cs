@@ -403,7 +403,8 @@ namespace Gorgon.Graphics
 			catch (CompilationException cex)
 			{
 				Errors = cex.Message;
-				throw GorgonException.Catch(cex);
+				GorgonApplication.Log.LogException(cex);
+				throw;
 			}
 		}
 

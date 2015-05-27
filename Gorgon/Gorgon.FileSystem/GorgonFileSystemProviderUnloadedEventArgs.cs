@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +20,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, August 26, 2013 10:57:41 PM
+// Created: Tuesday, May 26, 2015 11:17:04 PM
 // 
 #endregion
 
 using System;
-using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.UI;
 
-namespace Gorgon.Examples
+namespace Gorgon.IO
 {
 	/// <summary>
-	/// The launcher program.
+	/// Event arguments for the <see cref="GorgonFileSystemProviderCollection.ProviderUnloaded"/> event.
 	/// </summary>
-	static class Program
+	public class GorgonFileSystemProviderUnloadedEventArgs
+		: EventArgs
 	{
 		/// <summary>
-		/// The main entry point for the application.
+		/// Property to return the file system provider that is being unloaded.
 		/// </summary>
-		[STAThread]
-		static void Main()
+		public GorgonFileSystemProvider Provider
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
+			get;
+			private set;
+		}
 
-			try
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonFileSystemProviderUnloadedEventArgs"/> class.
+		/// </summary>
+		/// <param name="provider">The provider.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="provider"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		internal GorgonFileSystemProviderUnloadedEventArgs(GorgonFileSystemProvider provider)
+		{
+			if (provider == null)
 			{
-				Application.Run(new AppContext());
+				throw new ArgumentNullException("provider");
 			}
-			catch (Exception ex)
-			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
-			}
+
+			Provider = provider;
 		}
 	}
 }

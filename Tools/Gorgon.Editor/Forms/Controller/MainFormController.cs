@@ -159,7 +159,7 @@ namespace Gorgon.Editor
 
 				// Log any exceptions on shut down of the main form just so we have a 
 				// record of things going wrong.
-				GorgonException.Catch(ex);
+				GorgonApplication.Log.LogException(ex);
 
 #if DEBUG
 				// We won't bother showing anything here outside of DEBUG.
@@ -177,7 +177,7 @@ namespace Gorgon.Editor
 				}
 				catch (Exception ex)
 				{
-					GorgonException.Catch(ex);
+					GorgonApplication.Log.LogException(ex);
 				}
 			}
 		}

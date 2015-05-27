@@ -25,8 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
@@ -37,26 +37,21 @@ namespace Gorgon.IO
 	/// A collection of file system providers.
 	/// </summary>
 	public class GorgonFileSystemProviderCollection
-		: GorgonBaseNamedObjectCollection<GorgonFileSystemProvider>
+		: GorgonBaseNamedObjectDictionary<GorgonFileSystemProvider>
 	{
+		#region Events.
+		/// <summary>
+		/// Event triggered when a file system provider is unloaded.
+		/// </summary>
+		public event EventHandler<GorgonFileSystemProviderUnloadedEventArgs> ProviderUnloaded;
+		#endregion
+
 		#region Variables.
-		private static readonly object _syncLock = new object();	// Synchronization lock.
-		private readonly GorgonFileSystem _fileSystem;			    // File system that owns this collection.
-		private int _incVar;										// Synchronization increment.
+		// Synchronization lock for threading.
+		private static readonly object _syncLock = new object();
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the item at the specified index.
-		/// </summary>
-		public GorgonFileSystemProvider this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-		}
-
 		/// <summary>
 		/// Property to return the item with the specified name.
 		/// </summary>
@@ -64,31 +59,101 @@ namespace Gorgon.IO
 		{
 			get
 			{
-				return GetItem(name);
+				return Items[name];
 			}
 		}
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to remove an item from the collection by index.
-        /// </summary>
-        /// <param name="provider">The provider to remove.</param>
-        protected override void RemoveItem(GorgonFileSystemProvider provider)
-        {
-		    // Perform any special clean up.
-		    provider.OnUnload();
+		/// <summary>
+		/// Function to trigger the <see cref="ProviderUnloaded"/> event.
+		/// </summary>
+		/// <param name="provider">The provider being unloaded.</param>
+		private void OnFileSystemProviderUnloaded(GorgonFileSystemProvider provider)
+		{
+			EventHandler<GorgonFileSystemProviderUnloadedEventArgs> handler = ProviderUnloaded;
 
-		    // Remove any files attached to this provider.
-		    var files = _fileSystem.FindFiles("*", true).Where(file => file.Provider == provider);
+			if (handler != null)
+			{
+				handler(this, new GorgonFileSystemProviderUnloadedEventArgs(provider));
+			}
+		}
 
-		    foreach (GorgonFileSystemFileEntry file in files)
-		    {
-			    file.Directory.Files.Remove(file);
-		    }
+		/// <summary>
+		/// Function to unload a file system provider.
+		/// </summary>
+		/// <param name="provider">The provider to unload.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <remarks>
+		/// This method will unload the provider from the file system, and will unload any file entries associated with that provider. However, directories will still be present.
+		/// </remarks>
+		public void UnloadProvider(GorgonFileSystemProvider provider)
+		{
+			if (provider == null)
+			{
+				throw new ArgumentNullException("provider");
+			}
 
-		    base.RemoveItem(provider);
-        }
+			// If the provider isn't in this list, then continue on.
+			if (!Contains(provider))
+			{
+				return;
+			}
+
+			lock (_syncLock)
+			{
+				OnFileSystemProviderUnloaded(provider);
+
+				provider.OnUnload();
+				Items.Remove(provider.Name);
+			}
+		}
+
+		/// <summary>
+		/// Function to unload a file system provider.
+		/// </summary>
+		/// <param name="name">The name of the provider to unload.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when the provider specified by the <paramref name="name"/> parameter is not found in the file system.</exception>
+		/// <remarks>
+		/// This method will unload the provider from the file system, and will unload any file entries associated with that provider. However, directories will still be present.
+		/// </remarks>
+		public void UnloadProvider(string name)
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "name");
+			}
+
+			GorgonFileSystemProvider provider;
+
+			if (!TryGetValue(name, out provider))
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GORFS_PROVIDER_NOT_FOUND, name));
+			}
+
+			UnloadProvider(provider);
+		}
+
+		/// <summary>
+		/// Function to remove all providers from the file system.
+		/// </summary>
+		/// <remarks>
+		/// This method will unload all the providers from the file system, and will unload any file entries associated with those providers. However, directories will still be present.
+		/// </remarks>
+		public void UnloadAllProviders()
+		{
+			while (Items.Count > 0)
+			{
+				UnloadProvider(Items.First().Value);
+			}
+		}
 
 		/// <summary>
 		/// Function to search through the plug-in list and load any providers that haven't already been loaded.
@@ -168,127 +233,8 @@ namespace Gorgon.IO
 					                          string.Format(Resources.GORFS_PROVIDER_INVALID, providerName));
 				}
 
-				AddItem(provider);
+				Items.Add(provider.Name, provider);
 			}
-		}
-
-		/// <summary>
-		/// Function to unload the file system provider from the file system.
-		/// </summary>
-		/// <param name="provider">The provider to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="provider"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Unload(GorgonFileSystemProvider provider)
-		{
-			if (provider == null)
-			{
-				throw new ArgumentNullException("provider");
-			}
-
-			lock(_syncLock)
-			{
-				if (!Contains(provider))
-				{
-					throw new ArgumentException(string.Format(Resources.GORFS_PROVIDER_NOT_FOUND, provider.GetType().FullName),
-					                            "provider");
-				}
-
-				RemoveItem(provider);
-			}
-		}
-
-		/// <summary>
-		/// Function to unload a file system provider by index in the collection.
-		/// </summary>
-		/// <param name="index">Index of the file system provider to unload.</param>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the <see cref="Gorgon.Collections.GorgonBaseNamedObjectCollection{T}.Count">Count</see>.</exception>
-		public void Unload(int index)
-		{
-			lock(_syncLock)
-			{
-				if ((index < 0) || (index >= Count))
-				{
-					throw new ArgumentOutOfRangeException("index", string.Format(Resources.GORFS_INDEX_OUT_OF_RANGE, index, Count));
-				}
-
-				Unload(GetItem(index));
-			}
-		}
-
-		/// <summary>
-		/// Function to unload a file system provider by its type name.
-		/// </summary>
-		/// <param name="providerType">Type of the file system provider.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerType"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="providerType"/> was not found in the collection.</exception>
-		public void Unload(Type providerType)
-		{
-            if (providerType == null)
-            {
-                throw new ArgumentNullException("providerType");
-            }
-
-		    Unload(providerType.FullName);
-		}
-
-		/// <summary>
-		/// Function to unload a file system provider by its type name.
-		/// </summary>
-		/// <param name="providerTypeName">Name of the file system provider type.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerTypeName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> is empty.</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the name in <paramref name="providerTypeName"/> was not found in the collection.</exception>
-		public void Unload(string providerTypeName)
-		{
-			if (providerTypeName == null)
-			{
-				throw new ArgumentNullException("providerTypeName");
-			}
-
-			if (string.IsNullOrWhiteSpace(providerTypeName))
-			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "providerTypeName");
-			}
-
-			lock(_syncLock)
-			{
-				int index = IndexOf(providerTypeName);
-
-				if (index < 0)
-				{
-					throw new ArgumentException(string.Format(Resources.GORFS_PROVIDER_NOT_FOUND, providerTypeName), "providerTypeName");
-				}
-
-				Unload(GetItem(index));
-			}
-		}
-
-		/// <summary>
-		/// Function to remove all of the providers.
-		/// </summary>
-		public void UnloadAll()
-		{
-		    try
-		    {
-		        if (Interlocked.Increment(ref _incVar) > 1)
-		        {
-		            return;
-		        }
-
-		        // Remove file system provider data.
-		        foreach (GorgonFileSystemProvider provider in this)
-		        {
-		            provider.OnUnload();
-		        }
-
-		        ClearItems();
-
-		        // Clear any left over items and reset to the root directory.  Add the default folder file system provider.
-		        _fileSystem.Clear();
-		    }
-		    finally
-		    {
-		        Interlocked.Decrement(ref _incVar);
-		    }
 		}
 		#endregion
 
@@ -296,11 +242,9 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFileSystemProviderCollection"/> class.
 		/// </summary>
-		/// <param name="fileSystem">File system that owns this collection.</param>
-		internal GorgonFileSystemProviderCollection(GorgonFileSystem fileSystem)
+		internal GorgonFileSystemProviderCollection()
 			: base(false)
 		{
-			_fileSystem = fileSystem;
 		}
 		#endregion
 	}

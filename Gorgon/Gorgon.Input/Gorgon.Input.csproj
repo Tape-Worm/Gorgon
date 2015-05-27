@@ -60,10 +60,8 @@
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonCustomHIDProperty.cs" />
-    <Compile Include="GorgonCustomHIDPropertyCollection.cs" />
     <Compile Include="GorgonInputDevice.cs" />
     <Compile Include="GorgonInputDeviceInfo.cs" />
-    <Compile Include="GorgonInputDeviceInfoCollection.cs" />
     <Compile Include="GorgonInputEvents.cs" />
     <Compile Include="GorgonInputFactory.cs" />
     <Compile Include="GorgonInputPlugIn.cs" />

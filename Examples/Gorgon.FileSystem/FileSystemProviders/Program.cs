@@ -192,16 +192,14 @@ namespace Gorgon.Examples
                 Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders());
 
                 // Loop through each provider and print some info.
-                for (int i = 0; i < _fileSystem.Providers.Count; i++)
+                foreach(var provider in _fileSystem.Providers.Select((item, index) => new {Provider = item, Index = index}))
                 {
-                    var provider = _fileSystem.Providers[i];
-
                     // Print some info about the file system provider.
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("{0}. {1}", (i + 1), provider.Name);
+                    Console.WriteLine("{0}. {1}", (provider.Index + 1), provider.Provider.Name);
 
                     Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine("    Description: {0}", provider.Description);
+                    Console.WriteLine("    Description: {0}", provider.Provider.Description);
                     
                     // Gather the preferred extensions.
 					// File system providers that use a file (like a Zip file) as its root
@@ -213,7 +211,7 @@ namespace Gorgon.Examples
 					// concatenate each preferred extension description into a single string.  
 					//
 					// Note that a provider may have multiple preferred extensions.
-	                var extensionList = (from preferred in provider.PreferredExtensions
+	                var extensionList = (from preferred in provider.Provider.PreferredExtensions
 	                                     select string.Format("*.{0}", preferred.Extension)).ToArray();
 
                     if (extensionList.Length > 0)
@@ -228,14 +226,12 @@ namespace Gorgon.Examples
             }
             catch (Exception ex)
             {
-                // Catch all exceptions here.  If we had logging for the application enabled, then this 
-                // would record the exception in the log.
-                GorgonException.Catch(ex, () =>
+                GorgonException.Catch(ex, _ =>
                 {
                     Console.Clear();
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", ex.Message, ex.StackTrace);
-                });
+                    Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+                }, true);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();

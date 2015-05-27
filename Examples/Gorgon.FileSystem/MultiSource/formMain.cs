@@ -142,7 +142,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				splitFileSystem.Panel2.Controls.Add(_instructions);
 			}
 		}
@@ -168,7 +168,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace Gorgon.Examples
 			GorgonApplication.PlugIns.LoadPlugInAssembly(plugInAssembly);
 
 			// Add the zip file provider.
-			_fileSystem.Providers.LoadProvider("GorgonLibrary.IO.GorgonZipPlugIn");
+			_fileSystem.Providers.LoadProvider("Gorgon.IO.GorgonZipPlugIn");
 		}
 
 		/// <summary>
@@ -361,7 +361,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -413,7 +413,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				Application.Exit();
 			}
 		}

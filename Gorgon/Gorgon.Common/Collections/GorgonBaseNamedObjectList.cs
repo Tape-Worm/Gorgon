@@ -27,7 +27,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Collections
@@ -35,9 +37,9 @@ namespace Gorgon.Collections
 	/// <summary>
 	/// Base list type for Gorgon library named objects.
 	/// </summary>
-	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
+	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	public abstract class GorgonBaseNamedObjectList<T>
-		: IList<T>, IReadOnlyList<T>
+		: IGorgonNamedObjectList<T>, IGorgonNamedObjectReadOnlyList<T>
 		where T : INamedObject
 	{
 		#region Variables.
@@ -69,111 +71,28 @@ namespace Gorgon.Collections
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the item at the specified index.
+		/// Function to retrieve the item at the specified index by name.
 		/// </summary>
-		/// <param name="index">Index of the item to retrieve.</param>
-		/// <returns>The item at the specified index.</returns>
-		protected virtual T GetItem(int index)
+		/// <param name="name">Name of the object to find.</param>
+		/// <returns>The object with the specified name.</returns>
+		/// <exception cref="KeyNotFoundException">Thrown when no object with the specified <paramref name="name"/> was found in the collection.</exception>
+		protected T GetItemByName(string name)
 		{
-			return _list[index];
-		}
+			int index = IndexOf(name);
 
-		/// <summary>
-		/// Function to retrieve the item by its name.
-		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
-		/// <returns>The item with the specified name.</returns>
-        protected virtual T GetItem(string name)
-		{
-			for (int i = 0; i < Count; i++)
+			if (index == -1)
 			{
-				T item = GetItem(i);
-			    if (string.Equals(name, item.Name, _caseSensitivity))
-			    {
-			        return item;
-			    }
+				throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, "name"));
 			}
 
-			throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, name));
-		}
-
-		/// <summary>
-		/// Function to set an item at the specified index.
-		/// </summary>
-		/// <param name="index">Index of the item to set.</param>
-		/// <param name="value">Value to set the item.</param>
-        protected virtual void SetItem(int index, T value)
-		{
-            _list[index] = value;
-		}
-
-		/// <summary>
-		/// Function to set an item at the specified index.
-		/// </summary>
-		/// <param name="value">Value used to set the item with.</param>
-        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the Name property of the <paramref name="value"/> parameter was not found in the collection.</exception>
-		protected virtual void SetItem(T value)
-		{
-            int i = IndexOf(value.Name);
-
-		    if (i == -1)
-		    {
-		        throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, value.Name));
-		    }
-
-		    SetItem(i, value);
-		}
-
-		/// <summary>
-		/// Function to add an item to the collection.
-		/// </summary>
-		/// <param name="value">Value to add.</param>
-		protected virtual void AddItem(T value)
-		{
-		    _list.Add(value);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="index">The index of the item to remove.</param>
-		protected virtual void RemoveItem(int index)
-		{
-			_list.RemoveAt(index);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected virtual void RemoveItem(T item)
-		{
-			_list.Remove(item);
-		}
-
-		/// <summary>
-		/// Function to insert an item into the list.
-		/// </summary>
-		/// <param name="index">Index to insert at.</param>
-		/// <param name="value">Value to insert.</param>
-		protected virtual void InsertItem(int index, T value)
-		{
-			_list.Insert(index, value);
-		}
-
-		/// <summary>
-		/// Function to remove all the items from the collection.
-		/// </summary>
-		protected virtual void ClearItems()
-		{
-			_list.Clear();
+			return _list[index];
 		}
 
 		/// <summary>
 		/// Function to add items to the list.
 		/// </summary>
 		/// <param name="items">List of items to add.</param>
-		protected virtual void AddItems(IEnumerable<T> items)
+		protected void AddItems(IEnumerable<T> items)
 		{
 			_list.AddRange(items);
 		}
@@ -183,18 +102,25 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="index">Index to insert at.</param>
 		/// <param name="items">Items to add.</param>
-		protected virtual void InsertItems(int index, IEnumerable<T> items)
+		protected void InsertItems(int index, IEnumerable<T> items)
 		{
 			_list.InsertRange(index, items);			
 		}
 
 		/// <summary>
-		/// Function to return an array of the items in this collection.
+		/// Function to remove an item from the list by its name.
 		/// </summary>
-		/// <returns>The array of items.</returns>
-		public T[] ToArray()
+		/// <param name="name">Name of the item to remove.</param>
+		protected void RemoveItemByName(string name)
 		{
-			return _list.ToArray();
+			int index = IndexOf(name);
+
+			if (index == -1)
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, name));
+			}
+
+			Items.RemoveAt(index);
 		}
 
 		/// <summary>
@@ -202,8 +128,13 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>TRUE if found, FALSE if not.</returns>
-		public virtual bool Contains(string name)
+		public bool Contains(string name)
 		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return false;
+			}
+
 			// ReSharper disable once LoopCanBeConvertedToQuery
 			// ReSharper disable once ForCanBeConvertedToForeach
 		    for (int i = 0; i < _list.Count; i++)
@@ -224,11 +155,16 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// The index of <paramref name="name"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public virtual int IndexOf(string name)
+		public int IndexOf(string name)
 		{
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return -1;
+			}
+
 			for (int i = 0; i < Count; i++)
 			{
-				T item = GetItem(i);
+				T item = _list[i];
 
 			    if (string.Equals(item.Name, name, _caseSensitivity))
 			    {
@@ -253,14 +189,6 @@ namespace Gorgon.Collections
 
 			_list = new List<T>();
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon.Collections.GorgonBaseNamedObjectCollection&lt;T&gt;"/> class.
-		/// </summary>
-		protected GorgonBaseNamedObjectList()
-			: this(false)
-		{			
-		}
 		#endregion
 
 		#region IList<T> Members
@@ -271,7 +199,7 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public virtual int IndexOf(T item)
+		public int IndexOf(T item)
 		{
 			return _list.IndexOf(item);
 		}
@@ -284,17 +212,9 @@ namespace Gorgon.Collections
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
 		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		/// </exception>
 		void IList<T>.Insert(int index, T item)
 		{
-		    if (IsReadOnly)
-		    {
-		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-		    }
-
-		    InsertItem(index, item);
+			_list.Insert(index, item);
 		}
 
 		/// <summary>
@@ -304,17 +224,9 @@ namespace Gorgon.Collections
 		/// <exception cref="T:System.ArgumentOutOfRangeException">
 		/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
 		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		/// </exception>
 		void IList<T>.RemoveAt(int index)
 		{
-		    if (IsReadOnly)
-		    {
-		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-		    }
-
-		    RemoveItem(index);
+			_list.RemoveAt(index);
 		}
 
 		/// <summary>
@@ -324,16 +236,11 @@ namespace Gorgon.Collections
 		{
 			get
 			{
-				return GetItem(index);
+				return _list[index];
 			}
 			set
 			{
-			    if (IsReadOnly)
-			    {
-			        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-			    }
-
-			    SetItem(index, value);
+				_list[index] = value;
 			}
 		}
 		#endregion
@@ -343,32 +250,17 @@ namespace Gorgon.Collections
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		/// </exception>
 		void ICollection<T>.Add(T item)
 		{
-			if (IsReadOnly)
-			{
-				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-			}
-
-			AddItem(item);
+			_list.Add(item);
 		}
 
 		/// <summary>
 		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		/// </summary>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		/// </exception>
 		void ICollection<T>.Clear()
 		{
-			if (IsReadOnly)
-			{
-				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-			}
-			ClearItems();
+			_list.Clear();
 		}
 
 		/// <summary>
@@ -434,7 +326,8 @@ namespace Gorgon.Collections
 		/// <value></value>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
 		/// </returns>
-		public virtual bool IsReadOnly
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsReadOnly
 		{
 			get 
 			{
@@ -449,18 +342,9 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		/// </exception>
 		bool ICollection<T>.Remove(T item)
 		{
-			if (IsReadOnly)
-			{
-				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
-			}
-
-			RemoveItem(item);
-			return true;
+			return _list.Remove(item);
 		}
 		#endregion
 
@@ -471,7 +355,7 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
 		/// </returns>
-		public virtual IEnumerator<T> GetEnumerator()
+		public IEnumerator<T> GetEnumerator()
 		{
 		    return _list.GetEnumerator();
 		}
@@ -498,9 +382,75 @@ namespace Gorgon.Collections
 		{
 			get
 			{
-				return GetItem(index);
+				return _list[index];
 			}
 		}
+		#endregion
+
+		#region IGorgonNamedObjectReadOnlyList<T> Members
+		/// <summary>
+		/// Property to return an item in this list by its name.
+		/// </summary>
+		T IGorgonNamedObjectReadOnlyList<T>.this[string name]
+		{
+			get
+			{
+				return GetItemByName(name);
+			}
+		}
+		#endregion
+
+		#region IGorgonNamedObjectList<T> Members
+		#region Properties.
+		/// <summary>
+		/// Property to set or return an item within this list by its name.
+		/// </summary>
+		T IGorgonNamedObjectList<T>.this[string name]
+		{
+			get
+			{
+				return GetItemByName(name);
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to remove an item with the specified name from this list.
+		/// </summary>
+		/// <param name="name">Name of the item to remove.</param>
+		void IGorgonNamedObjectList<T>.Remove(string name)
+		{
+			RemoveItemByName(name);
+		}
+
+		/// <summary>
+		/// Function to add a list of items to the list.
+		/// </summary>
+		/// <param name="items">Items to add to the list.</param>
+		void IGorgonNamedObjectList<T>.AddRange(IEnumerable<T> items)
+		{
+			AddItems(items);
+		}
+
+		/// <summary>
+		/// Function to remove an item at the specified index.
+		/// </summary>
+		/// <param name="index">Index to remove at.</param>
+		void IGorgonNamedObjectList<T>.RemoveAt(int index)
+		{
+			_list.RemoveAt(index);
+		}
+
+		/// <summary>
+		/// Function to remove an item with the specified name from this list.
+		/// </summary>
+		/// <param name="index">The index of the item to remove.</param>
+		void IGorgonNamedObjectList<T>.Remove(int index)
+		{
+			_list.RemoveAt(index);
+		}
+		#endregion
 		#endregion
 	}
 }

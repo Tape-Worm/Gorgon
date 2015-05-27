@@ -24,85 +24,265 @@
 // 
 #endregion
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using Gorgon.Collections;
+using Gorgon.IO.Properties;
 
 namespace Gorgon.IO
 {
 	/// <summary>
 	/// A collection of file system virtual directories.
 	/// </summary>
-	public class GorgonFileSystemDirectoryCollection
-		: GorgonBaseNamedObjectCollection<GorgonFileSystemDirectory>
-    {
-        #region Properties.
-        /// <summary>
-		/// Property to return a directory by index.
+	class GorgonFileSystemDirectoryCollection
+		: IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>, IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemDirectory>
+	{
+		#region Variables.
+		// The backing store for the directories.
+		private readonly Dictionary<string, GorgonFileSystemDirectory> _directories = new Dictionary<string, GorgonFileSystemDirectory>(StringComparer.OrdinalIgnoreCase);
+		#endregion
+
+		#region IGorgonNamedObjectDictionary<GorgonFileSystemDirectory> Members
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the directory names are case sensitive.
 		/// </summary>
-		public GorgonFileSystemDirectory this[int index]
+		public bool KeysAreCaseSensitive
 		{
 			get
 			{
-				return GetItem(index);
+				return false;
 			}
 		}
 
 		/// <summary>
-		/// Property to return a directory by name.
+		/// Property to set or return a directory by its name.
 		/// </summary>
 		public GorgonFileSystemDirectory this[string name]
 		{
 			get
 			{
-				return GetItem(name.RemoveIllegalPathChars());
+				name = name.RemoveIllegalPathChars();
+
+				GorgonFileSystemDirectory directory;
+
+				if (!_directories.TryGetValue(name, out directory))
+				{
+					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, name));
+				}
+
+				return directory;
+			}
+			set
+			{
+				name = name.RemoveIllegalPathChars();
+
+				if ((value == null)
+					|| (string.IsNullOrWhiteSpace(name)))
+				{
+					return;
+				}
+
+				_directories[name] = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to return whether an item with the specified name exists in this collection.
+		/// Function to remove a directory by its name.
 		/// </summary>
-		/// <param name="name">Name of the item to find.</param>
+		/// <param name="name">The name of the directory to remove.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="DirectoryNotFoundException">Thrown when no directory with the <paramref name="name"/> could be found in the collection.</exception>
+		public void Remove(string name)
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY);
+			}
+
+			name = name.RemoveIllegalPathChars();
+
+			if (!_directories.ContainsKey(name))
+			{
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, name));
+			}
+
+			_directories.Remove(name);
+		}
+
+		/// <summary>
+		/// Function to return a directory by its name.
+		/// </summary>
+		/// <param name="name">The name of the item to look up.</param>
+		/// <param name="value">The directory, if found, or <c>null</c> if not.</param>
+		/// <returns>
+		///   <c>true</c> if the directory was found, <c>false</c> if not.
+		/// </returns>
+		public bool TryGetValue(string name, out GorgonFileSystemDirectory value)
+		{
+			value = null;
+
+			name = name.RemoveIllegalPathChars();
+
+			return !string.IsNullOrWhiteSpace(name) && _directories.TryGetValue(name, out value);
+		}
+
+		/// <summary>
+		/// Function to return whether a directory with the specified name exists in this collection.
+		/// </summary>
+		/// <param name="name">Name of the directory to find.</param>
 		/// <returns>TRUE if found, FALSE if not.</returns>
-		public override bool Contains(string name)
+		public bool Contains(string name)
 		{
-			return base.Contains(name.RemoveIllegalPathChars());
+			name = name.RemoveIllegalPathChars();
+
+			return !string.IsNullOrWhiteSpace(name) && _directories.ContainsKey(name);
+		}
+		#endregion
+		#endregion
+
+		#region ICollection<GorgonFileSystemDirectory> Members
+		#region Properties.
+		/// <summary>
+		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// </summary>
+		public int Count
+		{
+			get
+			{
+				return _directories.Count;
+			}
 		}
 
 		/// <summary>
-		/// Function to remove a directory from this list.
+		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
-		/// <param name="directory">Directory to remove.</param>
-		internal void Remove(GorgonFileSystemDirectory directory)
+		public bool IsReadOnly
 		{
-			RemoveItem(directory);
+			get
+			{
+				return true;
+			}
 		}
 
 		/// <summary>
-		/// Function to clear all directories from this collection.
+		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
-		internal void Clear()
+		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <returns>
+		/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// </returns>
+		public bool Remove(GorgonFileSystemDirectory item)
 		{
-			ClearItems();
-		}
+			if (item == null)
+			{
+				return false;
+			}
 
-		/// <summary>
-		/// Function to add a virtual directory to the collection.
-		/// </summary>
-		/// <param name="directory">Directory to add.</param>		
-		internal void Add(GorgonFileSystemDirectory directory)
-		{
-			AddItem(directory);
+			if (!_directories.ContainsValue(item))
+			{
+				return false;
+			}
+
+			_directories.Remove(item.Name);
+			return true;
 		}
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Methods.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystemDirectoryCollection"/> class.
+		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
-		internal GorgonFileSystemDirectoryCollection()
-			: base(false)
+		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
+		public void Add(GorgonFileSystemDirectory item)
 		{
+			if (item == null)
+			{
+				throw new ArgumentNullException("item");
+			}
+
+			if (_directories.ContainsKey(item.Name))
+			{
+				throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, item.Name));
+			}
+
+			_directories.Add(item.Name, item);
+		}
+
+		/// <summary>
+		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// </summary>
+		public void Clear()
+		{
+			_directories.Clear();
+		}
+
+		/// <summary>
+		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+		/// </summary>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <returns>
+		/// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
+		/// </returns>
+		public bool Contains(GorgonFileSystemDirectory item)
+		{
+			return item != null && _directories.ContainsValue(item);
+		}
+
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="array">The array.</param>
+		/// <param name="arrayIndex">Index of the array.</param>
+		public void CopyTo(GorgonFileSystemDirectory[] array, int arrayIndex)
+		{
+			_directories.Values.CopyTo(array, arrayIndex);
+		}
+		#endregion
+
+		#endregion
+
+		#region IEnumerable<GorgonFileSystemDirectory> Members
+		/// <summary>
+		/// Returns an enumerator that iterates through the collection.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+		/// </returns>
+		public IEnumerator<GorgonFileSystemDirectory> GetEnumerator()
+		{
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			foreach (KeyValuePair<string, GorgonFileSystemDirectory> directory in _directories)
+			{
+				yield return directory.Value;
+			}
+		}
+
+		#endregion
+
+		#region IEnumerable Members
+		/// <summary>
+		/// Returns an enumerator that iterates through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+		/// </returns>
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return ((IEnumerable)_directories.Values).GetEnumerator();
 		}
 		#endregion
 	}

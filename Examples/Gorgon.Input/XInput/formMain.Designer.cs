@@ -86,6 +86,7 @@
 			this.panelController0.Name = "panelController0";
 			this.panelController0.Size = new System.Drawing.Size(778, 23);
 			this.panelController0.TabIndex = 2;
+			this.panelController0.Visible = false;
 			// 
 			// labelController0
 			// 
@@ -101,7 +102,7 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox1.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(23, 23);
@@ -136,7 +137,7 @@
 			// pictureBox2
 			// 
 			this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox2.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
 			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(23, 23);
@@ -171,7 +172,7 @@
 			// pictureBox3
 			// 
 			this.pictureBox3.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox3.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
 			this.pictureBox3.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox3.Name = "pictureBox3";
 			this.pictureBox3.Size = new System.Drawing.Size(23, 23);
@@ -206,7 +207,7 @@
 			// pictureBox4
 			// 
 			this.pictureBox4.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureBox4.Image = global::Gorgon.Examples.Properties.Resources.device_gamepad_16x16;
+			this.pictureBox4.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox4.Image")));
 			this.pictureBox4.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox4.Name = "pictureBox4";
 			this.pictureBox4.Size = new System.Drawing.Size(23, 23);
@@ -217,7 +218,7 @@
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(778, 554);
 			this.Controls.Add(this.panelDisplay);

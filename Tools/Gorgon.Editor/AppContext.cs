@@ -240,7 +240,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 
 				if ((MainForm != null) && (!MainForm.IsDisposed))
 				{

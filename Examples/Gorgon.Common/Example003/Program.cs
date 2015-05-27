@@ -159,9 +159,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				// Catch all exceptions here.  If we had logging for the application enabled, then this 
-				// would record the exception in the log.
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
 			}
 		}
 		#endregion

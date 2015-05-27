@@ -33,6 +33,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
@@ -40,21 +41,32 @@ using Gorgon.IO.Properties;
 namespace Gorgon.IO
 {
 	/// <summary>
-	/// The File System interface.
+	/// The virtual file System interface.
 	/// </summary>
-	/// <remarks>This will allow the user to mount folders or packed files (such as Zip files) into a unified file system.  For example, if the user has mount MyData.zip and C:\users\Bob\Data\ into the file system then
+	/// <remarks>
+	/// <para>
+	/// This will allow the user to mount folders or packed files (such as Zip files) into a unified file system.  For example, if the user has mount MyData.zip and C:\users\Bob\Data\ into the file system then
 	/// all files and/or directories from both sources would be combined into a single virtual file system.
-	/// <para>Accessing a file is handled like this:  GorgonFileSystem.ReadFile("/MyFile.txt");  It won't matter where MyFile.txt is stored on the physical file system, the system will know where to find it.</para>
-	/// <para>Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocaton</see> property.  
+	/// </para>
+	/// <para>
+	/// Accessing a file is handled like this:  GorgonFileSystem.ReadFile("/MyFile.txt");  It won't matter where MyFile.txt is stored on the physical file system, the system will know where to find it.
+	/// </para>
+	/// <para>
+	/// Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocaton</see> property.  
 	/// For example, if the user sets the WriteLocation to C:\MyWriteDirectory, and proceeds to create a new file called "SomeText.txt" in the root of the virtual file system, then the file will be sent to 
-	/// "C:\MyWriteDirectory\SomeText.txt".  Likewise, if a file, /SubDir1/SomeText.txt is in a sub directory on the virtual file system, the file will be rerouted to "C:\MyWriteDirectory\SubDir1\SomeText.txt".</para>
-	/// <para>The order in which file systems are mounted into the virtual file system is important.  If a zip file contains SomeText.txt, and a directory to be mounted as root contains the same file and the
+	/// "C:\MyWriteDirectory\SomeText.txt".  Likewise, if a file, /SubDir1/SomeText.txt is in a sub directory on the virtual file system, the file will be rerouted to "C:\MyWriteDirectory\SubDir1\SomeText.txt".
+	/// </para>
+	/// <para>
+	/// The order in which file systems are mounted into the virtual file system is important.  If a zip file contains SomeText.txt, and a directory to be mounted as root contains the same file and the
 	/// directory is mounted first, followed by the zip, then the zip file version of the SomeText.txt file will take precedence and will be used.  The only exception to this rule is the WriteLocation directory
-	/// which has the highest precedence over all files.</para>
-    /// <para>By default, a new file system instance will only have access to the folders and files of the hard drive via a folder file system.  File systems that are in packed files (e.g. WinZip files) can be loaded into the 
+	/// which has the highest precedence over all files.
+	/// </para>
+    /// <para>
+    /// By default, a new file system instance will only have access to the folders and files of the hard drive via a folder file system.  File systems that are in packed files (e.g. WinZip files) can be loaded into the 
     /// file system by way of a <see cref="Gorgon.IO.GorgonFileSystemProvider">provider</see>.  Providers are plug-in objects that are loaded into the file system.  Once a provider plug-in is loaded, then the 
     /// contents of that file system can be mounted like a standard directory.  For example, if the zip file provider plug-in is loaded, then the file system may be mounted into the root by: 
-    /// <code>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</code>.</para>
+    /// <code>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</code>.
+    /// </para>
 	/// </remarks>
 	public class GorgonFileSystem
 	{
@@ -155,6 +167,21 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the UnloadedEvent event for a file system provider.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="GorgonFileSystemProviderUnloadedEventArgs"/> instance containing the event data.</param>
+		private void Provider_UnloadedEvent(object sender, GorgonFileSystemProviderUnloadedEventArgs e)
+		{
+			IEnumerable<GorgonFileSystemFileEntry> files = FindFiles("*", true).Where(item => item.Provider == e.Provider);
+
+			foreach (GorgonFileSystemFileEntry file in files)
+			{
+				((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)file.Directory.Files).Remove(file);
+			}
+		}
+
         /// <summary>
         /// Function to retrieve the file system objects from the physical file system.
         /// </summary>
@@ -360,7 +387,7 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the path parameter is an empty string.
 		/// <para>-or-</para><para>The directory already exists.</para>
-		/// <para>-or-</para><para>The driectory path is not valid.</para></exception>
+		/// <para>-or-</para><para>The directory path is not valid.</para></exception>
 		/// <returns>A new virtual directory entry.</returns>
 		private GorgonFileSystemDirectory AddDirectoryEntry(string path)
 		{
@@ -402,11 +429,13 @@ namespace Gorgon.IO
                 }
 
 				if (directory.Directories.Contains(item))
+				{
 					directory = directory.Directories[item];
+				}
 				else
 				{
 					var newDirectory = new GorgonFileSystemDirectory(this, item, directory);
-					directory.Directories.Add(newDirectory);
+					((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Directories).Add(newDirectory);
 					directory = newDirectory;
 				}
 			}
@@ -462,7 +491,7 @@ namespace Gorgon.IO
 			var result = new GorgonFileSystemFileEntry(provider, directory, fileName, mountPoint, physicalLocation, size, offset, createDate);
 
             // If the file exists, then override it, otherwise it'll just be added.
-			directory.Files[fileName] = result;
+			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files)[fileName] = result;
 
 			return result;
 		}
@@ -480,7 +509,7 @@ namespace Gorgon.IO
 		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
 		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
 		/// </remarks>
-		public IEnumerable<GorgonFileSystemDirectory> FindDirectories(string path, string directoryMask, bool recursive)
+		public IReadOnlyList<GorgonFileSystemDirectory> FindDirectories(string path, string directoryMask, bool recursive)
 		{
 		    if (path == null)
             {
@@ -515,7 +544,7 @@ namespace Gorgon.IO
 		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
 		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
 		/// </remarks>
-		public IEnumerable<GorgonFileSystemDirectory> FindDirectories(string directoryMask, bool recursive)
+		public IReadOnlyList<GorgonFileSystemDirectory> FindDirectories(string directoryMask, bool recursive)
 		{
 			return FindDirectories("/", directoryMask, recursive);
 		}
@@ -533,7 +562,7 @@ namespace Gorgon.IO
 		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
 		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
 		/// </remarks>
-		public IEnumerable<GorgonFileSystemFileEntry> FindFiles(string path, string fileMask, bool recursive)
+		public IReadOnlyList<GorgonFileSystemFileEntry> FindFiles(string path, string fileMask, bool recursive)
 		{
             if (path == null)
             {
@@ -569,7 +598,7 @@ namespace Gorgon.IO
 		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
 		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
 		/// </remarks>
-		public IEnumerable<GorgonFileSystemFileEntry> FindFiles(string fileMask, bool recursive)
+		public IReadOnlyList<GorgonFileSystemFileEntry> FindFiles(string fileMask, bool recursive)
 		{
 			return FindFiles("/", fileMask, recursive);
 		}
@@ -957,7 +986,7 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GORFS_FILE_FILESYSTEM_MISMATCH);
             }
 
-            file.Directory.Files.Remove(file);
+            ((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)file.Directory.Files).Remove(file);
 
             if (string.IsNullOrWhiteSpace(WriteLocation))
             {
@@ -1034,8 +1063,8 @@ namespace Gorgon.IO
 	            // If we specify the root, then remove everything.
 	            if (directory.Name == "/")
 	            {
-	                directory.Directories.Clear();
-	                directory.Files.Clear();
+					((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Directories).Clear();
+	                ((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files).Clear();
 
 	                if (!string.IsNullOrWhiteSpace(WriteLocation))
 	                {
@@ -1049,7 +1078,7 @@ namespace Gorgon.IO
 	                    newPath = GetWritePath(directory.FullPath);
 	                }
 
-	                directory.Parent.Directories.Remove(directory);
+	                ((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Parent.Directories).Remove(directory);
 	            }
 
 	            if ((string.IsNullOrWhiteSpace(newPath)) || (!Directory.Exists(newPath)))
@@ -1128,8 +1157,8 @@ namespace Gorgon.IO
 			_mountListChanged = true;
 			_mountPoints.Clear();
 		    _writeLocation = string.Empty;
-			RootDirectory.Directories.Clear();
-			RootDirectory.Files.Clear();
+			((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)RootDirectory.Directories).Clear();
+			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)RootDirectory.Files).Clear();
 		}
 
 		/// <summary>
@@ -1147,8 +1176,8 @@ namespace Gorgon.IO
 
 		        string writeLocation = WriteLocation;
 
-		        RootDirectory.Directories.Clear();
-		        RootDirectory.Files.Clear();
+				((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)RootDirectory.Directories).Clear();
+				((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)RootDirectory.Files).Clear();
 
 		        _writeLocation = string.Empty;
 
@@ -1381,7 +1410,8 @@ namespace Gorgon.IO
 			_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
 
 			_defaultProvider = new GorgonFileSystemProvider();
-			Providers = new GorgonFileSystemProviderCollection(this);
+			Providers = new GorgonFileSystemProviderCollection();
+			Providers.ProviderUnloaded += Provider_UnloadedEvent;
 
 			RootDirectory = new GorgonFileSystemDirectory(this, "/", null);
 			Clear();

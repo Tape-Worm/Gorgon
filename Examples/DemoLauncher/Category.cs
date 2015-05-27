@@ -46,7 +46,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Property to return the examples for this category.
 		/// </summary>
-		public ExampleCollection Examples
+		public IReadOnlyList<Example> Examples
 		{
 			get;
 			private set;
@@ -76,7 +76,7 @@ namespace Gorgon.Examples
 			IEnumerable<XElement> examples = categoryNode.Elements("Example");
 
 
-			result.Examples = ExampleCollection.Read(result.Name, examples);
+			result.Examples = ExampleLoader.Read(result.Name, examples);
 
 			if ((result.Examples == null)
 				|| (result.Examples.Count == 0))

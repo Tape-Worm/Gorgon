@@ -54,10 +54,11 @@ namespace Gorgon.Input.XInput
 			public void SetButtonState(XI.GamepadButtonFlags name, bool state)
 			{
 				string enumName = name.ToString();
+				int index = IndexOf(enumName);
 
-			    if (Contains(enumName))
+			    if (index != -1)
 			    {
-			        this[enumName] = new JoystickButtonState(enumName, state);
+			        this[index] = new JoystickButtonState(enumName, state);
 			    }
 			}
 			#endregion

@@ -27,6 +27,8 @@
 using System;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
+using Gorgon.Core.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;
@@ -215,7 +217,7 @@ namespace Gorgon.Graphics
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		public GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput> Outputs
+		public IGorgonNamedObjectReadOnlyList<GorgonVideoOutput> Outputs
 		{
 			get;
 			internal set;
@@ -792,7 +794,7 @@ namespace Gorgon.Graphics
 			}
 
 			
-			Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, new GorgonVideoOutput[] { });
+			Outputs = new GorgonNamedObjectList<GorgonVideoOutput>();
 		}
 		#endregion
 

@@ -129,6 +129,9 @@
   <data name="GORFS_DIR_FILESYSTEM_MISMATCH" xml:space="preserve">
     <value>Cannot use a directory from another file system in this operation.</value>
   </data>
+  <data name="GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY" xml:space="preserve">
+    <value>The file entry '{0}' already belongs to the directory '{1}'.</value>
+  </data>
   <data name="GORFS_FILE_EXISTS" xml:space="preserve">
     <value>A file with the path '{0}' already exists.</value>
   </data>

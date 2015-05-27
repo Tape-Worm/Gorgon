@@ -107,7 +107,7 @@ namespace Gorgon.Examples
 			}
 			else
 			{
-				label.Text = string.Format("{0} ({1})", joystick.Name, _factory.JoystickDevices[index].ClassName);
+				label.Text = string.Format("{0} ({1})", joystick.Name, _factory.JoystickDevices[joystick.Name].ClassName);
 
 				// Turn off the other ones since we don't want to clutter 
 				// up the screen.
@@ -127,7 +127,7 @@ namespace Gorgon.Examples
 									joystick.SecondaryY,
 									joystick.Throttle,
 									joystick.Rudder,
-									_factory.JoystickDevices[index].ClassName);
+									_factory.JoystickDevices[joystick.Name].ClassName);
 		}
 
 	    /// <summary>
@@ -279,7 +279,7 @@ namespace Gorgon.Examples
 				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.XInput.dll");
 
 				// Create our factory.
-				_factory = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonXInputPlugIn");
+				_factory = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonXInputPlugIn");
 
 				// Ensure that we have and XBox controller to work with.
 				if (_factory.JoystickDevices.Count == 0)
@@ -290,23 +290,21 @@ namespace Gorgon.Examples
 				}
 
 				// Enumerate the active joysticks.  We'll only take 3 of the 4 available xbox controllers.
-				_joystick = new GorgonJoystick[3];
+				_joystick = _factory.JoystickDevices.Take(3).Select(item => _factory.CreateJoystick(this, item.Name)).ToArray();
 				_stickPosition = new PointF[_joystick.Count];
 				_sprayStates = new SprayCan[_joystick.Count];
 
 				for (int i = 0; i < _joystick.Count; i++)
 				{
-					var joystick = _factory.CreateJoystick(this, _factory.JoystickDevices[i].Name);
+					var joystick = _joystick[i];
 					
 					// Set a dead zone on the joystick.
 					// A dead zone will stop input from the joystick until it reaches the outside
 					// of the specified coordinates.
-					joystick.DeadZone.X = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 4, joystick.Capabilities.XAxisRange.Maximum / 4);
-					joystick.DeadZone.Y = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 4, joystick.Capabilities.YAxisRange.Maximum / 4);
-					joystick.DeadZone.SecondaryX = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 128, joystick.Capabilities.XAxisRange.Maximum / 128);
-					joystick.DeadZone.SecondaryY = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
-
-					_joystick[i] = joystick;
+					_joystick[i].DeadZone.X = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 4, joystick.Capabilities.XAxisRange.Maximum / 4);
+					_joystick[i].DeadZone.Y = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 4, joystick.Capabilities.YAxisRange.Maximum / 4);
+					_joystick[i].DeadZone.SecondaryX = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 128, joystick.Capabilities.XAxisRange.Maximum / 128);
+					_joystick[i].DeadZone.SecondaryY = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
 
 					// Start at a random spot.					
 					_stickPosition[i] = new Point(GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Width - 64), GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Height - 64));
@@ -339,7 +337,7 @@ namespace Gorgon.Examples
 			{
 				// We do this here instead of just calling the dialog because this
 				// function will send the exception to the Gorgon log file.
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 		}

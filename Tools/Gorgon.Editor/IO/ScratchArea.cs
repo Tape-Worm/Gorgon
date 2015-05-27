@@ -185,7 +185,7 @@ namespace Gorgon.Editor
 				{
 					// If we can't delete, then something else is amiss and we'll have to try again later.
 					// So just eat the exception and move on to the next directory.
-					GorgonException.Catch(ex);
+					GorgonApplication.Log.LogException(ex);
 				}
 			}
 
@@ -320,7 +320,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex);
+				GorgonApplication.Log.LogException(ex);
 				return ScratchAccessibility.CannotWrite;
 			}
 
@@ -360,7 +360,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex);
+				GorgonApplication.Log.LogException(ex);
 				return ScratchAccessibility.CannotWrite;
 			}
 
@@ -432,7 +432,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex);
+				GorgonApplication.Log.LogException(ex);
 				return false;
 			}
 		}

@@ -53,9 +53,9 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="Category.cs" />
-    <Compile Include="CategoryCollection.cs" />
+    <Compile Include="CategoryLoader.cs" />
     <Compile Include="Example.cs" />
-    <Compile Include="ExampleCollection.cs" />
+    <Compile Include="ExamplerLoader.cs" />
     <Compile Include="ExamplePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

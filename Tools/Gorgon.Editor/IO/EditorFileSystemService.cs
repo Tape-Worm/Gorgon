@@ -324,7 +324,7 @@ namespace Gorgon.Editor
 			catch (Exception ex)
 			{
 				// Exceptions for this method are logged, but will just indicate that we cannot load the file.
-				GorgonException.Catch(ex);
+				GorgonApplication.Log.LogException(ex);
 				return false;
 			}
 		}

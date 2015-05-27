@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Collections;
 using Gorgon.Core;
 
 namespace Gorgon.IO
@@ -36,9 +37,16 @@ namespace Gorgon.IO
 	/// </summary>
 	public sealed class GorgonFileSystemDirectory
 		: GorgonNamedObject
-    {
-        #region Properties.
-        /// <summary>
+	{
+		#region Variables.
+		// The list of sub directories.
+		private readonly GorgonFileSystemDirectoryCollection _directories = new GorgonFileSystemDirectoryCollection();
+		// The list of files in this directory.
+		private readonly GorgonFileSystemFileEntryCollection _files;
+		#endregion
+
+		#region Properties.
+		/// <summary>
         /// Property to return the file system that owns this directory.
         /// </summary>
         public GorgonFileSystem FileSystem
@@ -50,19 +58,23 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the list of child directories for this directory.
 		/// </summary>
-		public GorgonFileSystemDirectoryCollection Directories
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemDirectory> Directories
 		{
-			get;
-			private set;
+			get
+			{
+				return _directories;
+			}
 		}
 
 		/// <summary>
 		/// Property to return the list of files within this directory.
 		/// </summary>
-		public GorgonFileSystemFileEntryCollection Files
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemFileEntry> Files
 		{
-			get;
-			private set;
+			get
+			{
+				return _files;
+			}
 		}
 
 		/// <summary>
@@ -82,7 +94,9 @@ namespace Gorgon.IO
 			get
 			{
 				if (Parent == null)
+				{
 					return "/";
+				}
 
 				return Parent.FullPath + Name + "/";
 			}
@@ -189,9 +203,8 @@ namespace Gorgon.IO
 		internal GorgonFileSystemDirectory(GorgonFileSystem fileSystem, string name, GorgonFileSystemDirectory parent)
 			: base(name.RemoveIllegalPathChars())
 		{
-			Directories = new GorgonFileSystemDirectoryCollection();
 		    FileSystem = fileSystem;
-			Files = new GorgonFileSystemFileEntryCollection(this);
+			_files = new GorgonFileSystemFileEntryCollection(this);
 			Parent = parent;			
 		}
 		#endregion

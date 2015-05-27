@@ -52,78 +52,34 @@ namespace Gorgon.Animation
 		{
 			get
 			{
-				return GetItem(name);
+				return Items[name];
 			}
 			set
 			{
 				if (value == null)
 				{
 					if (Contains(name))
-						RemoveItem(name);
+					{
+						Remove(name);
+					}
 
 					return;
 				}
 
 				if (Contains(name))
-					SetItem(name, value);
+				{
+					UpdateItem(name, value);
+					value.Animation = _animation;
+				}
 				else
-					AddItem(value);
+				{
+					Add(value);
+				}
 			}
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to add an item to a collection.
-		/// </summary>
-		/// <param name="value">Item to add.</param>
-		protected override void AddItem(GorgonAnimationTrack<T> value)
-		{
-			base.AddItem(value);
-			value.Animation = _animation;
-		}
-
-		/// <summary>
-		/// Function to set an item in the collection.
-		/// </summary>
-		/// <param name="name">Name of the item to set.</param>
-		/// <param name="value">Value to set.</param>
-		protected override void SetItem(string name, GorgonAnimationTrack<T> value)
-		{
-			base.SetItem(name, value);
-			value.Animation = _animation;
-		}
-
-		/// <summary>
-		/// Function to remove an item from a collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected override void RemoveItem(GorgonAnimationTrack<T> item)
-		{
-			item.Animation = null;
-			base.RemoveItem(item);
-		}
-
-		/// <summary>
-		/// Function to remove an item by its name from a collection.
-		/// </summary>
-		/// <param name="name">Name of the item to remove.</param>
-		protected override void RemoveItem(string name)
-		{
-			this[name].Animation = null;
-			base.RemoveItem(name);
-		}
-
-		/// <summary>
-		/// Function to clear the items from a collection.
-		/// </summary>
-		protected override void ClearItems()
-		{
-			foreach (var item in this)
-				item.Animation = null;
-			base.ClearItems();
-		}
-
 		/// <summary>
 		/// Function to build the track list for the animated object.
 		/// </summary>
@@ -204,7 +160,8 @@ namespace Gorgon.Animation
 		        throw new ArgumentException(string.Format(Resources.GORANM_TRACK_ALREADY_EXISTS, track.Name), "track");
 		    }
 
-		    AddItem(track);
+			Items.Add(track.Name, track);
+			track.Animation = _animation;
 		}
 
 		/// <summary>
@@ -214,7 +171,13 @@ namespace Gorgon.Animation
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Remove(GorgonAnimationTrack<T> track)
 		{
-			RemoveItem(track);
+			if (track == null)
+			{
+				throw new ArgumentNullException("track");
+			}
+
+			track.Animation = null;
+			Items.Remove(track.Name);
 		}
 
 		/// <summary>
@@ -236,12 +199,15 @@ namespace Gorgon.Animation
 		        throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 		    }
 
-		    if (!Contains(name))
-		    {
-		        throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
-		    }
+			GorgonAnimationTrack<T> track;
 
-		    RemoveItem(name);
+			if (!Items.TryGetValue(name, out track))
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+			}
+
+			track.Animation = null;
+		    Items.Remove(name);
 		}
 
 		/// <summary>
@@ -249,7 +215,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		public void Clear()
 		{
-			ClearItems();
+			Items.Clear();
 		}
 		#endregion
 

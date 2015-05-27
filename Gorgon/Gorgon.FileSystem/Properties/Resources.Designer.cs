@@ -97,6 +97,15 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file entry &apos;{0}&apos; already belongs to the directory &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A file with the path &apos;{0}&apos; already exists..
         /// </summary>
         internal static string GORFS_FILE_EXISTS {

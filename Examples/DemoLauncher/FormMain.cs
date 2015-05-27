@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.UI;
@@ -40,7 +41,7 @@ namespace Gorgon.Examples
 	{
 		#region Variables.
 		// List of categories.
-		private CategoryCollection _categories;
+		private IReadOnlyList<Category> _categories;
 		#endregion
 
 		#region Properties.
@@ -120,9 +121,14 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
-			if (_categories != null)
+			if (_categories == null)
 			{
-				_categories.Dispose();
+				return;
+			}
+
+			foreach (Category category in _categories)
+			{
+				category.Dispose();
 			}
 		}
 
@@ -160,7 +166,7 @@ namespace Gorgon.Examples
 
 			try
 			{
-				_categories = CategoryCollection.Read();
+				_categories = CategoryLoader.Read();
 
 				tabCategories.TabPages.Clear();
 
@@ -184,7 +190,10 @@ namespace Gorgon.Examples
 			{
 				if (_categories != null)
 				{
-					_categories.Dispose();
+					foreach (Category category in _categories)
+					{
+						category.Dispose();
+					}
 				}
 
 				GorgonDialogs.ErrorBox(this, ex);

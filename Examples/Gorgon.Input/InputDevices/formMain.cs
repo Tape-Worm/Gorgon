@@ -487,7 +487,7 @@ namespace Gorgon.Examples
 				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
 
 				// Create our input factory.
-				_factory = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
+				_factory = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
 
 				// Get our device info.
                 // This function is called when the factory is created.
@@ -533,7 +533,7 @@ namespace Gorgon.Examples
 			{
 				// We do this here instead of just calling the dialog because this
 				// function will send the exception to the Gorgon log file.
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 		}

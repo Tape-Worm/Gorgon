@@ -100,7 +100,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 
 				if (CreateNewFile != null)
 				{
@@ -133,7 +133,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 			finally
 			{
@@ -265,7 +265,7 @@ namespace Gorgon.Editor
 				catch(Exception ex)
 				{
 					_logFile.Print("ContentService: Failure loading the default content after exception.", LoggingLevel.Simple);
-					GorgonException.Catch(ex);
+					GorgonApplication.Log.LogException(ex);
 				}
 
 				// Send the exception back so the root event handler will pick it up.
@@ -341,7 +341,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 		}

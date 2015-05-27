@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Input.Properties;
 
@@ -71,7 +72,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the names of the pointing devices attached to the system.
 		/// </summary>
-		public GorgonInputDeviceInfoCollection PointingDevices
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> PointingDevices
 		{
 			get;
 			private set;
@@ -80,7 +81,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the names of the keyboard devices attached to the system.
 		/// </summary>
-		public GorgonInputDeviceInfoCollection KeyboardDevices
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> KeyboardDevices
 		{
 			get;
 			private set;
@@ -89,7 +90,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the names of the joystick devices attached to the system.
 		/// </summary>
-		public GorgonInputDeviceInfoCollection JoystickDevices
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> JoystickDevices
 		{
 			get;
 			private set;
@@ -99,7 +100,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the names of custom HIDs.
 		/// </summary>
-		public GorgonInputDeviceInfoCollection CustomHIDs
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> CustomHIDs
 		{
 			get;
 			private set;
@@ -196,19 +197,19 @@ namespace Gorgon.Input
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected abstract IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices();
+		protected abstract IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices();
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices();
+		protected abstract IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices();
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices();
+		protected abstract IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices();
 
         // ReSharper disable InconsistentNaming
         /// <summary>
@@ -217,7 +218,7 @@ namespace Gorgon.Input
 		/// <returns>A list of custom HID types.</returns>
 		/// <remarks>Custom devices are devices that are unknown to Gorgon.  The user can provide a subclass that will take the data returned from the
 		/// device and parse it out and provide properties depending on the device.</remarks>
-        protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs();
+		protected abstract IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs();
         // ReSharper restore InconsistentNaming
 
 		/// <summary>
@@ -500,10 +501,10 @@ namespace Gorgon.Input
 
 			try
 			{
-				PointingDevices = new GorgonInputDeviceInfoCollection(EnumeratePointingDevices());
-				KeyboardDevices = new GorgonInputDeviceInfoCollection(EnumerateKeyboardDevices());
-				JoystickDevices = new GorgonInputDeviceInfoCollection(EnumerateJoysticksDevices());
-				CustomHIDs = new GorgonInputDeviceInfoCollection(EnumerateCustomHIDs());
+				PointingDevices = EnumeratePointingDevices();
+				KeyboardDevices = EnumerateKeyboardDevices();
+				JoystickDevices = EnumerateJoysticksDevices();
+				CustomHIDs = EnumerateCustomHIDs();
 			}
 			finally
 			{

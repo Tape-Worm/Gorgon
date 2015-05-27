@@ -711,20 +711,8 @@ Code: 0x{2}</value>
   <data name="GOR_DLG_YES" xml:space="preserve">
     <value>&amp;Yes</value>
   </data>
-  <data name="GOR_LOG_BEGINS" xml:space="preserve">
-    <value>logging begins</value>
-  </data>
-  <data name="GOR_LOG_ENDS" xml:space="preserve">
-    <value>logging ends</value>
-  </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
-  </data>
-  <data name="GOR_LOG_FILTER_LEVEL" xml:space="preserve">
-    <value>Log Filter Level</value>
-  </data>
-  <data name="GOR_LOG_VERSION" xml:space="preserve">
-    <value>Version</value>
   </data>
   <data name="GOR_TIME_CANNOT_BEGIN" xml:space="preserve">
     <value>Cannot begin the timer period.</value>
@@ -929,5 +917,8 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_FILE_EXTENSION_DLG_FORMAT" xml:space="preserve">
     <value>{0} (*.{1})</value>
+  </data>
+  <data name="GOR_ERR_CANNOT_DISPOSE_LOG_FROM_OTHER_THREAD" xml:space="preserve">
+    <value>Cannot dispose the log object from a thread that did not create the object.</value>
   </data>
 </root>

@@ -51,7 +51,7 @@ namespace Gorgon.IO
 					extension = extension.Substring(1);
 				}
 
-				return GetItem(extension);
+				return Items[extension];
 			}
 			set
 			{
@@ -66,7 +66,7 @@ namespace Gorgon.IO
 					return;
 				}
 
-				SetItem(extension, value);
+				UpdateItem(extension, value);
 			}
 		}
 		#endregion
@@ -88,7 +88,7 @@ namespace Gorgon.IO
 				throw new ArgumentException(string.Format(Resources.GOR_FILE_EXTENSION_EXISTS, extension.Extension));
 			}
 
-			AddItem(extension);
+			Items.Add(extension.Extension, extension);
 		}
 
 		/// <summary>
@@ -107,7 +107,7 @@ namespace Gorgon.IO
 				throw new KeyNotFoundException();
 			}
 
-			RemoveItem(extension);
+			Items.Remove(extension);
 		}
 
 		/// <summary>
@@ -129,7 +129,7 @@ namespace Gorgon.IO
 		/// </summary>
 		public void Clear()
 		{
-			ClearItems();
+			Items.Clear();
 		}
 		#endregion
 

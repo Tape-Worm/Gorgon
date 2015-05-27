@@ -30,7 +30,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
@@ -88,7 +90,7 @@ namespace Gorgon.Input.Raw
 		/// <param name="deviceType">Type of device.</param>
 		/// <param name="deviceList">List of devices.</param>
 		/// <returns>A device name structure.</returns>
-		private unsafe static void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
+		private unsafe static void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, GorgonNamedObjectDictionary<GorgonInputDeviceInfo> deviceList)
 		{
 			int dataSize = 0;
 			RegistryKey deviceKey = null;
@@ -187,8 +189,8 @@ namespace Gorgon.Input.Raw
 		        string baseName;
 		        string name = baseName = regValue[regValue.Length - 1];
 
-		        while (deviceList.Find(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)) != null)
-		        {
+			    while (deviceList.Contains(name))
+			    {
 		            counter++;
 		            name = baseName + " #" + counter;
 		        }
@@ -421,10 +423,10 @@ namespace Gorgon.Input.Raw
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
 		    IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Where(item => item.DeviceType == RawInputType.Mouse);
-			var result = new List<GorgonRawInputDeviceInfo>();
+			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
 
 		    foreach (var pointingDevice in devices)
 		    {
@@ -438,10 +440,10 @@ namespace Gorgon.Input.Raw
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
 		    IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Where(item => item.DeviceType == RawInputType.Keyboard);
-			var result = new List<GorgonRawInputDeviceInfo>();
+			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
 
 		    foreach (var keyboardDevice in devices)
 		    {
@@ -455,12 +457,12 @@ namespace Gorgon.Input.Raw
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
 		    var capabilities = new JOYCAPS();	    // Joystick capabilities.
 		    int nameCount = 0;						// Name counter.
 
-			var result = new List<GorgonMultimediaDeviceInfo>();
+			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
 			int deviceCount = Win32API.joyGetNumDevs();
 			int capsSize = Marshal.SizeOf(typeof(JOYCAPS));
 
@@ -493,8 +495,8 @@ namespace Gorgon.Input.Raw
 
 			    string keyName = name;
 
-			    while (result.Find(item => string.Equals(item.Name, keyName, StringComparison.OrdinalIgnoreCase)) != null)
-			    {
+				while (result.Contains(keyName))
+				{ 
 			        nameCount++;
 			        keyName = name + " " + nameCount;
 			    }
@@ -524,11 +526,11 @@ namespace Gorgon.Input.Raw
 		/// <returns>
 		/// A list of custom HID types.
 		/// </returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
 			IEnumerable<RAWINPUTDEVICELIST> devices =
 				_enumeratedDevices.Where(item => item.DeviceType != RawInputType.Keyboard && item.DeviceType != RawInputType.Mouse);
-			var result = new List<GorgonRawInputDeviceInfo>();
+			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
 
 		    foreach (var hidDevice in devices)
 		    {

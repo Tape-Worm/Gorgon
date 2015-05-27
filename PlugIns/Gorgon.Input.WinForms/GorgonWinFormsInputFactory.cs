@@ -25,8 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
+using Gorgon.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
@@ -42,31 +43,33 @@ namespace Gorgon.Input.WinForms
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
-			return new[] {
-				new GorgonWinFormsInputDeviceInfo("System Mouse", InputDeviceType.PointingDevice, "SysMouse", "SysMouse")
-			};
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false)
+			       {
+				       new GorgonWinFormsInputDeviceInfo("System Mouse", InputDeviceType.PointingDevice, "SysMouse", "SysMouse")
+			       };
 		}
 
 		/// <summary>
 		/// Function to enumerate the keyboard devices on the system.
 		/// </summary>
 		/// <returns>A list of keyboard device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
-			return new[] {
-				new GorgonWinFormsInputDeviceInfo("System Keyboard", InputDeviceType.Keyboard, "SysKeyboard", "SysKeyboard")
-			};
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false)
+			       {
+				       new GorgonWinFormsInputDeviceInfo("System Keyboard", InputDeviceType.Keyboard, "SysKeyboard", "SysKeyboard")
+			       };
 		}
 
 		/// <summary>
 		/// Function to enumerate the joystick devices attached to the system.
 		/// </summary>
 		/// <returns>A list of joystick device names.</returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
-			return new GorgonWinFormsInputDeviceInfo[] { };
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
 		}
 
 		/// <summary>
@@ -75,9 +78,9 @@ namespace Gorgon.Input.WinForms
 		/// <returns>
 		/// A list of custom HID types.
 		/// </returns>
-		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
+		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
-			return new GorgonWinFormsInputDeviceInfo[] { };
+			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
 		}
 
 		/// <summary>

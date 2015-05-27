@@ -79,7 +79,7 @@ namespace Gorgon.Editor
 		{
 			get
 			{
-				return GetItem(name);
+				return GetItemByName(name);
 			}
 		}
 		#endregion

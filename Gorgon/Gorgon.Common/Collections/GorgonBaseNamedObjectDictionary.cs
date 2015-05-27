@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
@@ -37,7 +38,7 @@ namespace Gorgon.Collections
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectDictionary<T>
-		: ICollection<T>
+		: IGorgonNamedObjectDictionary<T>, IGorgonNamedObjectReadOnlyDictionary<T>
 		where T : INamedObject
 	{
 		#region Variables.
@@ -66,17 +67,6 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Property to return whether the collection is read-only or not.
-		/// </summary>
-		public virtual bool IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		/// </summary>
 		/// <value></value>
@@ -94,88 +84,43 @@ namespace Gorgon.Collections
 
 		#region Methods.
 		/// <summary>
-		/// Function to add an item to the collection.
-		/// </summary>
-		/// <param name="value">Value to add.</param>
-		protected virtual void AddItem(T value)
-		{
-		    if (Contains(value.Name))
-		    {
-                throw new ArgumentException(string.Format(Resources.GOR_ITEM_ALREADY_EXISTS, value.Name), "value");
-		    }
-
-		    if (string.IsNullOrEmpty(value.Name))
-		    {
-		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
-		    }
-
-		    _list.Add(value.Name, value);
-		}
-
-		/// <summary>
 		/// Function to add several items to the list.
 		/// </summary>
 		/// <param name="items">IEnumerable containing the items to copy.</param>
-		protected virtual void AddItems(IEnumerable<T> items)
+		protected void AddItems(IEnumerable<T> items)
 		{
 		    foreach (T item in items)
 		    {
-		        AddItem(item);
+				_list[item.Name] = item;
 		    }
 		}
 
 		/// <summary>
-		/// Function to retrieve an item with the specified name.
-		/// </summary>
-		/// <param name="name">Name of the item to retrieve.</param>
-		/// <returns>Item with the specified key.</returns>
-		protected virtual T GetItem(string name)
-		{
-			return _list[name];
-		}
-
-		/// <summary>
-		/// Fnction to set an item with the specified name.
+		/// Function to update an item in the list by its name, and optionally, rename the key for that item if necessary.
 		/// </summary>
 		/// <param name="name">Name of the object to set.</param>
 		/// <param name="value">Value to set to the item.</param>
-		protected virtual void SetItem(string name, T value)
+		/// <remarks>
+		/// If the item in <paramref name="value"/> has a different name than the name provided, then the object with the name specified will be 
+		/// removed, and the new item will be added. This allows the collection to rename the key for an item should its name change.
+		/// </remarks>
+		protected void UpdateItem(string name, T value)
 		{
-			if (string.Equals(name, value.Name, !KeysAreCaseSensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
+			if (!string.Equals(name, value.Name, !KeysAreCaseSensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal))
 			{
-			    _list[name] = value;
+				_list.Remove(name);
 			}
-			else
-			{
-				RemoveItem(name);
-				AddItem(value);
-			}
-		}
 
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="name">Name of the item to remove.</param>
-		protected virtual void RemoveItem(string name)
-		{
-		    _list.Remove(name);
+			_list[value.Name] = value;
 		}
 
 	    /// <summary>
 		/// Function to remove an item from the collection.
 		/// </summary>
 		/// <param name="item">Item to remove.</param>
-		protected virtual void RemoveItem(T item)
-		{
-			RemoveItem(item.Name);
-		}
-
-		/// <summary>
-		/// Function to remove all the items from the collection.
-		/// </summary>
-		protected virtual void ClearItems()
-		{
-			_list.Clear();
+		protected void RemoveItem(T item)
+	    {
+		    _list.Remove(item.Name);
 		}
 
 		/// <summary>
@@ -183,7 +128,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>TRUE if found, FALSE if not.</returns>
-		public virtual bool Contains(string name)
+		public bool Contains(string name)
 		{
 			return _list.ContainsKey(name);
 		}
@@ -193,27 +138,20 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="value">The value to find.</param>
 		/// <returns>TRUE if found, FALSE if not.</returns>
-		public virtual bool Contains(T value)
+		public bool Contains(T value)
 		{
 			return _list.ContainsValue(value);
 		}
 
 		/// <summary>
-		/// Function to copy the contents of the collection to an array.
+		/// Function to return an item from the collection.
 		/// </summary>
-		/// <returns>Array containing the contents of this collection.</returns>
-		public T[] ToArray()
+		/// <param name="name">The name of the item to look up.</param>
+		/// <param name="value">The item, if found, or the default value for the type if not.</param>
+		/// <returns><c>true</c> if the item was found, <c>false</c> if not.</returns>
+		public bool TryGetValue(string name, out T value)
 		{
-			var array = new T[Count];
-			int i = 0;
-
-			foreach(T item in this)
-			{
-				array[i] = item;
-				i++;
-			}
-
-			return array;
+			return _list.TryGetValue(name, out value);
 		}
 		#endregion
 
@@ -224,10 +162,7 @@ namespace Gorgon.Collections
 		/// <param name="caseSensitive">TRUE if the key names are case sensitive, FALSE if not.</param>
 		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
 		{
-		    _list = caseSensitive
-		                ? new Dictionary<string, T>()
-		                : new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
-
+		    _list = new Dictionary<string, T>(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
 		    KeysAreCaseSensitive = caseSensitive;
 		}
 		#endregion
@@ -268,12 +203,23 @@ namespace Gorgon.Collections
 
 		#region ICollection<T> Members
 		/// <summary>
+		/// Property to return whether the collection is read-only or not.
+		/// </summary>
+		bool ICollection<T>.IsReadOnly
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		void ICollection<T>.Add(T item)
 		{
-			AddItem(item);
+			_list.Add(item.Name, item);
 		}
 
 		/// <summary>
@@ -281,7 +227,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		void ICollection<T>.Clear()
 		{
-			ClearItems();
+			_list.Clear();
 		}
 
 		/// <summary>
@@ -306,27 +252,7 @@ namespace Gorgon.Collections
 		/// </exception>
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			if (array == null)
-			{
-				throw new ArgumentNullException("array");
-			}
-
-			if ((array.Rank > 1)
-				|| (arrayIndex >= array.Length)
-				|| (Count > (array.Length - arrayIndex)))
-			{
-				throw new ArgumentException();
-			}
-
-			if (arrayIndex < 0)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-
-			foreach (var item in _list)
-			{
-				array[arrayIndex++] = item.Value;
-			}
+			_list.Values.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
@@ -343,8 +269,96 @@ namespace Gorgon.Collections
 				return false;
 			}
 
-			RemoveItem(item);
+			_list.Remove(item.Name);
 			return true;
+		}
+		#endregion
+
+		#region IGorgonNamedObjectDictionary<T> Members
+		/// <summary>
+		/// Gets a value indicating whether this instance is read only.
+		/// </summary>
+		/// <value>
+		/// <c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// </value>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsReadOnly
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return an item in the dictionary by its name.
+		/// </summary>
+		T IGorgonNamedObjectDictionary<T>.this[string name]
+		{
+			get
+			{
+				return _list[name];
+			}
+			set
+			{
+				if (!_list.ContainsKey(name))
+				{
+					if (value != null)
+					{
+						_list[value.Name] = value;
+					}
+
+					return;
+				}
+
+				if (value == null)
+				{
+					_list.Remove(name);
+					return;
+				}
+
+				UpdateItem(name, value);
+			}
+		}
+
+		/// <summary>
+		/// Function to remove an item by its name.
+		/// </summary>
+		/// <param name="name">The name of the object to remove.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
+		void IGorgonNamedObjectDictionary<T>.Remove(string name)
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			if (!Contains(name))
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, name));
+			}
+
+			_list.Remove(name);
+		}
+		#endregion
+
+		#region IGorgonNamedObjectReadOnlyDictionary<T> Members
+		/// <summary>
+		/// Property to set or return an item in the dictionary by its name.
+		/// </summary>
+		T IGorgonNamedObjectReadOnlyDictionary<T>.this[string name]
+		{
+			get
+			{
+				return _list[name];
+			}
 		}
 		#endregion
 	}

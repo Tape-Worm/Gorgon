@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using Gorgon.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Input
@@ -89,14 +91,21 @@ namespace Gorgon.Input
 		public event EventHandler<GorgonCustomHIDDataChangedEventArgs> DataChanged;
 		#endregion
 
+		#region Variables.
+		// Custom properties for the HID.
+		private readonly GorgonNamedObjectDictionary<GorgonCustomHIDProperty> _properties = new GorgonNamedObjectDictionary<GorgonCustomHIDProperty>(false);
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the user organized data for the device.
 		/// </summary>
-		public GorgonCustomHIDPropertyCollection Data
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonCustomHIDProperty> Data
 		{
-			get;
-			private set;
+			get
+			{
+				return _properties;
+			}
 		}
 		#endregion
 
@@ -106,7 +115,7 @@ namespace Gorgon.Input
 		/// </summary>
 		protected internal void ClearData()
 		{
-			Data.Clear();
+			_properties.Clear();
 		}
 		
 		/// <summary>
@@ -129,7 +138,7 @@ namespace Gorgon.Input
 		    }
 		    else
 		    {
-		        Data.Add(new GorgonCustomHIDProperty(propertyName, value));
+		        _properties.Add(new GorgonCustomHIDProperty(propertyName, value));
 		    }
 
 		    if (DataChanged != null)
@@ -149,7 +158,6 @@ namespace Gorgon.Input
 		protected GorgonCustomHID(GorgonInputFactory owner, string deviceName)
 			: base(owner, deviceName)
 		{
-			Data = new GorgonCustomHIDPropertyCollection();
 		}
 		#endregion
 	}

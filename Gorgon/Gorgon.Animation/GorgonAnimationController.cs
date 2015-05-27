@@ -49,7 +49,7 @@ namespace Gorgon.Animation
 	/// custom track to the animation (not the controller).</para>
 	/// </remarks>
 	public class GorgonAnimationController<T>
-		: GorgonBaseNamedObjectCollection<GorgonAnimation<T>>
+		: GorgonBaseNamedObjectDictionary<GorgonAnimation<T>>
 		where T : class
 	{
 		#region Constants.
@@ -97,45 +97,29 @@ namespace Gorgon.Animation
 		}
 
 		/// <summary>
-		/// Property to set or return the animation at the specified index.
-		/// </summary>
-		public GorgonAnimation<T> this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-			set
-			{
-				if (value == null)
-					return;
-
-				SetItem(value.Name, value);
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return an animation by name.
 		/// </summary>
 		public GorgonAnimation<T> this[string name]
 		{
 			get
 			{
-				return GetItem(name);
+				return Items[name];
 			}
 			set
 			{
 				if (value == null)
 				{
 					if (Contains(name))
-						RemoveItem(name);
+					{
+						Items.Remove(name);
+					}
 					return;
 				}
 
 				if (Contains(name))
 					SetItem(name, value);
 				else
-					AddItem(value);
+					Add(value);
 			}
 		}
 		#endregion
@@ -146,10 +130,12 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="name">Name of the item to set.</param>
 		/// <param name="value">Value to set.</param>
-		protected override void SetItem(string name, GorgonAnimation<T> value)
+		private void SetItem(string name, GorgonAnimation<T> value)
 		{
 			if (CurrentAnimation == this[name])
+			{
 				Stop();
+			}
 
 			// Remove the clip from the other 
 		    if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) &&
@@ -160,38 +146,8 @@ namespace Gorgon.Animation
 
 		    this[name].AnimationController = this;
 
-			base.SetItem(name, value);
+			UpdateItem(name, value);
 		}
-
-		/// <summary>
-		/// Function to add an animation to the collection.
-		/// </summary>
-		/// <param name="value">Animation to add.</param>
-		protected override void AddItem(GorgonAnimation<T> value)
-		{
-            GorgonDebug.AssertNull(value, "value");
-
-		    if ((value.AnimationController != null) && (value.AnimationController != this) &&
-		        (value.AnimationController.Contains(value)))
-		    {
-		        value.AnimationController.Remove(value);
-                value.AnimationController = this;
-		    }
-		    
-			base.AddItem(value);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected override void RemoveItem(GorgonAnimation<T> item)
-		{
-			if (CurrentAnimation == item)
-				Stop();
-			item.AnimationController = null;
-			base.RemoveItem(item);
-		}		
 
 		/// <summary>
 		/// Function to load an animation from a stream.
@@ -376,19 +332,6 @@ namespace Gorgon.Animation
 		}
 
 		/// <summary>
-		/// Function to set an animation playing.
-		/// </summary>
-		/// <param name="animatedObject">The object to apply the animation onto.</param>
-		/// <param name="index">Index of the animation to start playing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animatedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of animations.</exception>
-		public void Play(T animatedObject, int index)
-		{
-			GorgonDebug.AssertParamRange(index, 0, Count, "index");
-			Play(animatedObject, this[index]);
-		}
-
-		/// <summary>
 		/// Function to stop the currently playing animation.
 		/// </summary>
 		public void Stop()
@@ -410,16 +353,15 @@ namespace Gorgon.Animation
 		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
 		public void AddRange(IEnumerable<GorgonAnimation<T>> animations)
 		{
-            var animationList = animations.ToArray();
+			if (animations == null)
+			{
+				throw new ArgumentNullException("animations");
+			}
 
-			GorgonDebug.AssertNull(animationList, "animations");
-
-		    if (animationList.Length == 0)
-		    {
-		        return;
-		    }
-
-		    AddItems(animationList);
+			foreach (GorgonAnimation<T> item in animations)
+			{
+				Add(item);
+			}
 		}
 
 		/// <summary>
@@ -439,7 +381,16 @@ namespace Gorgon.Animation
 		    }
 #endif
 
-		    AddItem(animation);
+			GorgonDebug.AssertNull(animation, "value");
+
+			if ((animation.AnimationController != null) && (animation.AnimationController != this) &&
+				(animation.AnimationController.Contains(animation)))
+			{
+				animation.AnimationController.Remove(animation);
+				animation.AnimationController = this;
+			}
+
+			Items.Add(animation.Name, animation);
 		}
 
 		/// <summary>
@@ -464,7 +415,8 @@ namespace Gorgon.Animation
 #endif
 
 		    var result = new GorgonAnimation<T>(this, name, length);
-			AddItem(result);
+
+			Add(result);
 
 			return result;
 		}
@@ -480,7 +432,7 @@ namespace Gorgon.Animation
 			foreach (var item in this)
 				item.AnimationController = null;
 
-			ClearItems();
+			Items.Clear();
 		}
 
 		/// <summary>
@@ -499,6 +451,13 @@ namespace Gorgon.Animation
 		    }
 #endif
 
+			if (CurrentAnimation == animation)
+			{
+				Stop();
+			}
+
+			animation.AnimationController = null;
+
 		    RemoveItem(animation);
 		}
 
@@ -511,27 +470,23 @@ namespace Gorgon.Animation
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
 		public void Remove(string animation)
 		{
+			GorgonAnimation<T> anim;
+
 			GorgonDebug.AssertParamString(animation, "animation");
-#if DEBUG
-		    if (!Contains(animation))
-		    {
+
+			if (!Items.TryGetValue(animation, out anim))
+			{
 		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation));
 		    }
-#endif
 
-		    RemoveItem(this[animation]);
-		}
+			if (CurrentAnimation == anim)
+			{
+				Stop();
+			}
 
-		/// <summary>
-		/// Function to remove an animation from the collection.
-		/// </summary>
-		/// <param name="index">Index of the animation to remove.</param>
-		/// <exception cref="System.IndexOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than (or equal to) the number of items in the collection.</exception>
-		public void Remove(int index)
-		{
-			GorgonDebug.AssertParamRange(index, 0, Count, "index");
+			anim.AnimationController = null;
 
-			RemoveItem(this[index]);
+			Items.Remove(animation);
 		}
 		#endregion
 

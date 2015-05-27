@@ -35,6 +35,7 @@ using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Collections;
 using Gorgon.Collections.Specialized;
+using Gorgon.Core.Collections;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.PlugIns
@@ -68,7 +69,7 @@ namespace Gorgon.PlugIns
 	/// use the <see cref="GorgonApplication.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
 	/// assemblies.</para></remarks>
 	public class GorgonPlugInFactory
-		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
+		: GorgonBaseNamedObjectDictionary<GorgonPlugIn>
 	{
 		#region Variables.
 		private GorgonPlugInPathCollection _paths;	// Search paths for the plug-in assemblies.
@@ -114,18 +115,6 @@ namespace Gorgon.PlugIns
         }
 
 		/// <summary>
-		/// Property to return a plug-in by its index in the list.
-		/// </summary>
-		/// <param name="index">Index of the plug-in.</param>
-		public GorgonPlugIn this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-		}
-
-		/// <summary>
 		/// Property to return a plug-in by its name.
 		/// </summary>
 		/// <param name="name">The friendly name of the plug-in or the fully qualified type name of the plug-in.</param>
@@ -133,7 +122,7 @@ namespace Gorgon.PlugIns
 		{
 			get
 			{
-				return GetItem(name);
+				return Items[name];
 			}
 		}
 		#endregion
@@ -219,49 +208,6 @@ namespace Gorgon.PlugIns
 		}
 
 		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="index">The index of the item to remove.</param>
-		protected override void RemoveItem(int index)
-		{
-			CheckDisposable(this[index]);
-			base.RemoveItem(index);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="item">Item to remove.</param>
-		protected override void RemoveItem(GorgonPlugIn item)
-		{
-			CheckDisposable(item);
-			base.RemoveItem(item);
-		}
-
-		/// <summary>
-		/// Function to remove an item from the collection.
-		/// </summary>
-		/// <param name="name">Name of the item to remove.</param>
-		protected override void RemoveItem(string name)
-		{
-			CheckDisposable(this[name]);
-			base.RemoveItem(name);
-		}
-
-		/// <summary>
-		/// Function to remove all the items from the collection.
-		/// </summary>
-		protected override void ClearItems()
-		{
-			foreach (GorgonPlugIn plugIn in this)
-			{
-				CheckDisposable(plugIn);
-			}
-
-			base.ClearItems();
-		}
-
-		/// <summary>
 		/// Function to enumerate all the plug-in names from an assembly.
 		/// </summary>
 		/// <param name="assemblyFile">File containing the plug-ins.</param>
@@ -287,13 +233,11 @@ namespace Gorgon.PlugIns
 		/// <returns>A read-only list of plug-ins.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
-		public GorgonNamedObjectReadOnlyCollection<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
+		public IReadOnlyList<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
 		{
 			GorgonDebug.AssertNull(assemblyName, "assemblyName");
 
-			var plugIns = this.Where(item => AssemblyName.ReferenceMatchesDefinition(item.Assembly, assemblyName));
-
-			return new GorgonNamedObjectReadOnlyCollection<GorgonPlugIn>(false, plugIns);
+			return this.Where(item => AssemblyName.ReferenceMatchesDefinition(item.Assembly, assemblyName)).ToArray();
 		}
 
 		/// <summary>
@@ -319,7 +263,13 @@ namespace Gorgon.PlugIns
 		{
 			// Unload our discovery domain.
 			PurgeCachedPlugInInfo();
-			ClearItems();
+
+			foreach (var item in Items)
+			{
+				CheckDisposable(item.Value);
+			}
+			
+			Items.Clear();
 		}
 
 		/// <summary>
@@ -331,16 +281,8 @@ namespace Gorgon.PlugIns
 		public void Unload(string name)
 		{
 			GorgonDebug.AssertParamString(name, "name");
-			RemoveItem(name);
-		}
 
-		/// <summary>
-		/// Function to remove a plug-in by index.
-		/// </summary>
-		/// <param name="index">Index of the plug-in to remove.</param>
-		public void Unload(int index)
-		{
-			RemoveItem(index);
+			Items.Remove(name);
 		}
 
 		/// <summary>
@@ -555,7 +497,7 @@ namespace Gorgon.PlugIns
 					if (!Contains(plugIn.Name))
 					{
 						GorgonApplication.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
-						AddItem(plugIn);
+						Items.Add(plugIn.Name, plugIn);
 					}
 					else
 					{
