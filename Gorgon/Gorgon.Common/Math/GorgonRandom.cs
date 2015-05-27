@@ -29,7 +29,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SlimMath;
 
 namespace Gorgon.Math
@@ -135,7 +134,7 @@ namespace Gorgon.Math
 		/// <summary>
 		/// Property to set or return the Simplex noise permutation array.
 		/// </summary>
-		public static IEnumerable<byte> SimplexPermutations
+		public static IReadOnlyList<byte> SimplexPermutations
 		{
 			get
 			{
@@ -148,12 +147,15 @@ namespace Gorgon.Math
 			        return;
 			    }
 
-			    int length = value.Count().Min(_permutations.Length);
+			    int length = value.Count.Min(_permutations.Length);
 
 			    for (int i = 0; i < length; i++)
 			    {
-			        _permutations[i] = value.ElementAt(i);
-				    _permMod12[i] = (byte)(value.ElementAt(i) % 12);
+				    byte byteValue = value[i];
+
+			        _permutations[i] = byteValue;
+				    _permMod12[i] = (byte)(byteValue % 12);
+				    _permMod32[i] = (byte)(byteValue % 32);
 			    }
 			}
 		}

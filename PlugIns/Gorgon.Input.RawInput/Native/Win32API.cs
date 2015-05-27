@@ -141,7 +141,7 @@ namespace Gorgon.Native
 		/// <param name="pRawInputDevices">Array of raw input devices.</param>
 		/// <param name="uiNumDevices">Number of devices.</param>
 		/// <param name="cbSize">Size of the RAWINPUTDEVICE structure.</param>
-		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool RegisterRawInputDevices([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices, int uiNumDevices, int cbSize);
@@ -223,7 +223,7 @@ namespace Gorgon.Native
 		/// Function to register a raw input device.
 		/// </summary>
 		/// <param name="device">Device information.</param>
-		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
 		public static bool RegisterRawInputDevices(RAWINPUTDEVICE device)
 		{
 			var devices = new RAWINPUTDEVICE[1];		// Raw input devices.

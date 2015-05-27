@@ -160,7 +160,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Funciton to retrieve the total number of files in this directory and optionally, any directories under this one.
         /// </summary>
-        /// <param name="includeChildren">[Optional] TRUE to include child directories, FALSE to only use this directory.</param>
+        /// <param name="includeChildren">[Optional] <c>true</c> to include child directories, <c>false</c> to only use this directory.</param>
         /// <returns>The total number of files.</returns>
 	    public int GetFileCount(bool includeChildren = true)
         {
@@ -178,8 +178,8 @@ namespace Gorgon.IO
         /// Function to determine if the directory contains the specified file.
         /// </summary>
         /// <param name="file">File to look for.</param>
-        /// <param name="searchChildren">[Optional] TRUE to search through child directories, FALSE to only search this directory.</param>
-        /// <returns>TRUE if found, FALSE if not.</returns>
+        /// <param name="searchChildren">[Optional] <c>true</c> to search through child directories, <c>false</c> to only search this directory.</param>
+        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
 	    public bool Contains(GorgonFileSystemFileEntry file, bool searchChildren = true)
 	    {

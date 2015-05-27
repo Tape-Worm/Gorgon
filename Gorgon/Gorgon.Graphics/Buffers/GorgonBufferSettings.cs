@@ -48,7 +48,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
 		/// <remarks>
-		/// The default value is FALSE.
+		/// The default value is <c>false</c>.
 		/// </remarks>
 		public bool IsOutput
 		{
@@ -87,8 +87,8 @@ namespace Gorgon.Graphics
         /// Property to set or return whether to allow unordered access to the buffer.
         /// </summary>
         /// <remarks>
-        /// This value must be set to FALSE if <see cref="IsOutput" /> is set to TRUE.
-        /// <para>The default value is FALSE.</para>
+        /// This value must be set to <c>false</c> if <see cref="IsOutput" /> is set to <c>true</c>.
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool AllowUnorderedAccessViews
         {
@@ -101,7 +101,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <remarks>
         /// This value does not apply to constant buffers.
-        /// <para>The default value is FALSE.</para>
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool AllowShaderViews
         {
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <remarks>
         /// Setting this value to any other value than Unknown will create a default shader view for the buffer that will encompass the entire buffer with the specified format.
-        /// <para>If <see cref="AllowRawViews" /> is set to TRUE, then this value should be set to one of: R32_Uint, R32_Int, R32_Float.</para>
+        /// <para>If <see cref="AllowRawViews" /> is set to <c>true</c>, then this value should be set to one of: R32_Uint, R32_Int, R32_Float.</para>
         /// <para>This value does not apply to constant or structured buffers.</para>
         /// <para>The default value is Unknown.</para>
         /// </remarks>
@@ -128,8 +128,8 @@ namespace Gorgon.Graphics
         /// Property to set or return whether a buffer will allow raw views.
         /// </summary>
         /// <remarks>
-        /// This value must be set to FALSE if <see cref="AllowShaderViews" /> or <see cref="AllowUnorderedAccessViews" /> is set to FALSE.
-        /// <para>The default value is FALSE.</para>
+        /// This value must be set to <c>false</c> if <see cref="AllowShaderViews" /> or <see cref="AllowUnorderedAccessViews" /> is set to <c>false</c>.
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool AllowRawViews
         {
@@ -142,7 +142,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <remarks>
         /// This value does not apply to structured buffers or constant buffers.
-        /// <para>The default value is FALSE.</para>
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool AllowIndirectArguments
         {

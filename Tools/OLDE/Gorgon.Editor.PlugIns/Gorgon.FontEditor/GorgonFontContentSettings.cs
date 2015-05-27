@@ -59,7 +59,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>
-        /// TRUE if the object was set up, FALSE if not.
+        /// <c>true</c> if the object was set up, <c>false</c> if not.
         /// </returns>
         public override bool PerformSetup()
         {

@@ -428,7 +428,7 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Function to compare version numbers.
 		/// </summary>
-		/// <returns>TRUE if the versions match, FALSE if not.</returns>
+		/// <returns><c>true</c> if the versions match, <c>false</c> if not.</returns>
 		private bool CheckVersion()
 		{
 			XElement rootElement = _xmlSettings.Element("ApplicationSettings");

@@ -148,7 +148,7 @@ namespace Gorgon.Input
             /// </summary>
 			public readonly string Name;
             /// <summary>
-            /// TRUE if the button is pressed, FALSE if not.
+            /// <c>true</c> if the button is pressed, <c>false</c> if not.
             /// </summary>
 			public readonly bool IsPressed;
 			#endregion
@@ -158,7 +158,7 @@ namespace Gorgon.Input
 			/// Initializes a new instance of the <see cref="JoystickButtonState"/> struct.
 			/// </summary>
 			/// <param name="name">The name of the button.</param>
-			/// <param name="state">State of the button, TRUE for pressed, FALSE if not.</param>
+			/// <param name="state">State of the button, <c>true</c> for pressed, <c>false</c> if not.</param>
 			public JoystickButtonState(string name, bool state)
 			{
 				Name = name;

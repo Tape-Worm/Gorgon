@@ -113,7 +113,7 @@ namespace Gorgon.Graphics
 			_errors = new Dictionary<long, D3DError>();
             
             Add(0x00000000, "S_OK", Win32ResStr.WINERR_S_OK);
-            Add(0x00000001, "S_FALSE", Win32ResStr.WINERR_S_FALSE);
+            Add(0x00000001, "S_<c>false</c>", Win32ResStr.WINERR_S_<c>false</c>);
             Add(0x00000002, "ERROR_FILE_NOT_FOUND", Win32ResStr.WINERR_ERROR_FILE_NOT_FOUND);
             Add(0x00000003, "ERROR_PATH_NOT_FOUND", Win32ResStr.WINERR_ERROR_PATH_NOT_FOUND);
             Add(0x00000004, "ERROR_TOO_MANY_OPEN_FILES", Win32ResStr.WINERR_ERROR_TOO_MANY_OPEN_FILES);

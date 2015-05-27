@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 		/// Function to return whether the character exists in this collection.
 		/// </summary>
 		/// <param name="character">The character to find.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(char character)
 		{
 			return _list.ContainsKey(character);
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="character">Character for the glyph.</param>
         /// <param name="glyph">The glyph in the list.</param>
-        /// <returns>TRUE if found, FALSE if not.</returns>
+        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 	    public bool TryGetValue(char character, out GorgonGlyph glyph)
         {
             return _list.TryGetValue(character, out glyph);

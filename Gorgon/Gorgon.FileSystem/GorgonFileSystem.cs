@@ -251,7 +251,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="parent">Parent directory for the files.</param>
 		/// <param name="entries">List of entries to populate.</param>
-		/// <param name="recurse">TRUE to search all children, FALSE to use only the immediate directory.</param>
+		/// <param name="recurse"><c>true</c> to search all children, <c>false</c> to use only the immediate directory.</param>
 		/// <param name="fileName">Filename/mask to search for.</param>
 		private static void SearchDirectories(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemDirectory> entries, bool recurse, string fileName)
 		{
@@ -275,7 +275,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="parent">Parent directory for the files.</param>
 		/// <param name="entries">List of entries to populate.</param>
-		/// <param name="recurse">TRUE to search all children, FALSE to use only the immediate directory.</param>
+		/// <param name="recurse"><c>true</c> to search all children, <c>false</c> to use only the immediate directory.</param>
 		/// <param name="fileName">Filename/mask to search for.</param>
 		private static void SearchFiles(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemFileEntry> entries, bool recurse, string fileName)
 		{
@@ -308,7 +308,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="mountPoint">Mount point to unmount.</param>
 		/// <exception cref="System.IO.IOException">The path was not found.</exception>
-		/// <returns>TRUE if unmounted, FALSE if not.</returns>
+		/// <returns><c>true</c> if unmounted, <c>false</c> if not.</returns>
 		private bool UnmountMountPoint(GorgonFileSystemMountPoint mountPoint)
 		{
 			if (string.IsNullOrWhiteSpace(mountPoint.PhysicalPath))
@@ -501,7 +501,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to the directory to start searching in.</param>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
-		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
+		/// <param name="recursive"><c>true</c> to search all child directories, <c>false</c> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
@@ -537,7 +537,7 @@ namespace Gorgon.IO
 		/// Function to find all the directories specified in the directory mask.
 		/// </summary>
 		/// <param name="directoryMask">The directory name or mask to search for.</param>
-		/// <param name="recursive">TRUE to search all child directories, FALSE to search only the immediate directory.</param>
+		/// <param name="recursive"><c>true</c> to search all child directories, <c>false</c> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
@@ -554,7 +554,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="path">Path to start searching in.</param>
 		/// <param name="fileMask">The file name or mask to search for.</param>
-		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
+		/// <param name="recursive"><c>true</c> to search all directories, <c>false</c> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.</exception>
@@ -591,7 +591,7 @@ namespace Gorgon.IO
 		/// Function to find all the files specified in the file mask.
 		/// </summary>
 		/// <param name="fileMask">The file name or mask to search for.</param>
-		/// <param name="recursive">TRUE to search all directories, FALSE to search only the immediate directory.</param>
+		/// <param name="recursive"><c>true</c> to search all directories, <c>false</c> to search only the immediate directory.</param>
 		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
@@ -836,11 +836,11 @@ namespace Gorgon.IO
 		/// Function to open a file stream for reading/writing.
 		/// </summary>
 		/// <param name="file">The file to read or write.</param>
-		/// <param name="writeable">TRUE to write to this file, FALSE to open read-only.</param>
+		/// <param name="writeable"><c>true</c> to write to this file, <c>false</c> to open read-only.</param>
 		/// <remarks>Some file system providers cannot write, and will throw an exception if this is the case.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is TRUE and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <c>true</c> and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
@@ -880,14 +880,14 @@ namespace Gorgon.IO
 		/// Function to open a file stream for reading/writing.
 		/// </summary>
 		/// <param name="path">Path to the file to read or write.</param>
-		/// <param name="writeable">TRUE to write to this file, FALSE to open read-only.</param>
+		/// <param name="writeable"><c>true</c> to write to this file, <c>false</c> to open read-only.</param>
 		/// <remarks>Some file system providers cannot write, and will throw an exception if this is the case.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para>
 		/// </exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is TRUE and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is FALSE.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <c>true</c> and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is <c>false</c>.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(string path, bool writeable)
 		{

@@ -218,7 +218,7 @@ namespace Gorgon.Graphics
 	    /// <param name="D3DDevice">D3D device to find closest matching mode.</param>
 	    /// <param name="device">Device used to filter video modes that aren't supported.</param>
 	    /// <param name="outputCount">The number of outputs attached to the device.</param>
-	    /// <param name="noOutputDevice">TRUE if the device has no outputs, FALSE if it does.</param>
+	    /// <param name="noOutputDevice"><c>true</c> if the device has no outputs, <c>false</c> if it does.</param>
 	    private static void GetOutputs(GorgonVideoDevice device, D3D.Device D3DDevice, Adapter adapter, int outputCount, bool noOutputDevice)
 		{
 			var outputs = new GorgonNamedObjectList<GorgonVideoOutput>(false);
@@ -289,12 +289,12 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to perform an enumeration of the video devices attached to the system.
 		/// </summary>
-		/// <param name="enumerateWARPDevice">TRUE to enumerate the WARP software device.  FALSE to exclude it.</param>
-		/// <param name="enumerateReferenceDevice">TRUE to enumerate the reference device.  FALSE to exclude it.</param>
+		/// <param name="enumerateWARPDevice"><c>true</c> to enumerate the WARP software device.  <c>false</c> to exclude it.</param>
+		/// <param name="enumerateReferenceDevice"><c>true</c> to enumerate the reference device.  <c>false</c> to exclude it.</param>
 		/// <remarks>This method will populate the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> with information about the video devices 
 		/// installed in the system.
-		/// <para>You may include the WARP device, which is a software based device that emulates most of the functionality of a video device, by setting the <paramref name="enumerateWARPDevice"/> to TRUE.</para>
-		/// <para>You may include the reference device, which is a software based device that all the functionality of a video device, by setting the <paramref name="enumerateReferenceDevice"/> to TRUE.  
+		/// <para>You may include the WARP device, which is a software based device that emulates most of the functionality of a video device, by setting the <paramref name="enumerateWARPDevice"/> to <c>true</c>.</para>
+		/// <para>You may include the reference device, which is a software based device that all the functionality of a video device, by setting the <paramref name="enumerateReferenceDevice"/> to <c>true</c>.  
 		/// If a reference device is used in rendering, the performance will be poor and as such, this device is only useful to diagnosing issues with video drivers.</para>
 		/// <para>The reference device is a DEBUG only device, and as such, it will only appear under the following conditions:
 		/// <list type="bullet">

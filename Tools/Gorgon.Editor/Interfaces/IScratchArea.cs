@@ -93,8 +93,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to clean up the scratch area data.
 		/// </summary>
-		/// <param name="cleanEverything">[Optional] TRUE to remove this scratch area and stale scratch area IDs from the folder, FALSE to clean up the current scratch area only.</param>
-		/// <returns>TRUE if the call was successful and the data deleted.  FALSE if not.</returns>
+		/// <param name="cleanEverything">[Optional] <c>true</c> to remove this scratch area and stale scratch area IDs from the folder, <c>false</c> to clean up the current scratch area only.</param>
+		/// <returns><c>true</c> if the call was successful and the data deleted.  <c>false</c> if not.</returns>
 		/// <remarks>This will delete the files and folders under the scratch area path, and will delete the scratch area folder (<see cref="ScratchDirectory"/>\<see cref="ID"/>).</remarks>
 		bool CleanUp(bool cleanEverything = false);
 

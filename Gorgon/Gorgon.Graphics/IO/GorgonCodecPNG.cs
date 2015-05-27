@@ -117,7 +117,7 @@ namespace Gorgon.IO
         /// <remarks>
         /// Use this property to control the output of vertical rows in the image.  
         /// <para>This property only applies when encoding the image.</para>
-        /// <para>The default value is FALSE.</para>
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool UseInterlacing
         {

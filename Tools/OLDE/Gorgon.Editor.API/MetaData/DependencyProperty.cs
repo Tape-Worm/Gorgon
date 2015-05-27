@@ -90,7 +90,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref DependencyProperty left, ref DependencyProperty right)
 		{
 			return string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
@@ -140,7 +140,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left property to compare.</param>
 		/// <param name="right">Right property to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator ==(DependencyProperty left, DependencyProperty right)
 		{
 			return Equals(ref left, ref right);
@@ -151,7 +151,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left property to compare.</param>
 		/// <param name="right">Right property to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator !=(DependencyProperty left, DependencyProperty right)
 		{
 			return !Equals(ref left, ref right);

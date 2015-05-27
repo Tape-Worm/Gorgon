@@ -134,7 +134,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to find and return the registered image editor plug-in.
 		/// </summary>
-		/// <returns>The image editor plug-in, if found.  FALSE if not.</returns>
+		/// <returns>The image editor plug-in, if found.  <c>false</c> if not.</returns>
 		public IImageEditorPlugIn GetRegisteredImageEditor()
 		{
 			ContentPlugIn plugIn;
@@ -164,7 +164,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to determine if an image editor plug-in is loaded.
 		/// </summary>
-		/// <returns>TRUE if loaded, FALSE if not.</returns>
+		/// <returns><c>true</c> if loaded, <c>false</c> if not.</returns>
 		public bool HasImageEditor()
 		{
 			return GetRegisteredImageEditor() != null;
@@ -174,7 +174,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a specific plug-in has been loaded already.
 		/// </summary>
 		/// <param name="plugInName">Name of the plug-in to look up.</param>
-		/// <returns>TRUE if the plug-in is loaded, FALSE if not.</returns>
+		/// <returns><c>true</c> if the plug-in is loaded, <c>false</c> if not.</returns>
 		public bool HasPlugIn(string plugInName)
 		{
 			if (string.IsNullOrWhiteSpace(plugInName))

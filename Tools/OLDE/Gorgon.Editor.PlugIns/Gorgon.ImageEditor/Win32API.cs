@@ -241,7 +241,7 @@ namespace Gorgon.Editor
 		/// Function to determine if this file has an associated application or not.
 		/// </summary>
 		/// <param name="filePath">Path to the file to look up.</param>
-		/// <returns>TRUE if an association exists, FALSE if not.</returns>
+		/// <returns><c>true</c> if an association exists, <c>false</c> if not.</returns>
 		public static bool HasAssociation(string filePath)
 		{
 			var exePath = new StringBuilder(1024);

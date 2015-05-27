@@ -201,7 +201,7 @@ namespace Gorgon.Editor
 		/// Function to save the file.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
-		/// <returns>TRUE if the file was saved successfully, FALSE if not.</returns>
+		/// <returns><c>true</c> if the file was saved successfully, <c>false</c> if not.</returns>
 		public bool Save(string path)
 		{
 			using (_processForm = new FormProcess(ProcessType.FileWriter))

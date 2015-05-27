@@ -166,7 +166,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether a triangle uses clockwise or counterclockwise vertices to determine whether it is front or back facing respectively.
 		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
+		/// <remarks>The default value is <c>false</c>.</remarks>
 		public bool IsFrontFacingTriangleCounterClockwise;
 
 		/// <summary>
@@ -190,30 +190,30 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether the hardware should clip the Z value.
 		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
+		/// <remarks>The default value is <c>true</c>.</remarks>
 		public bool IsDepthClippingEnabled;
 
 		/// <summary>
 		/// Property to set or return whether to enable scissor testing.
 		/// </summary>
-		/// <remarks>When this value is set to TRUE any pixels outside the active scissor rectangle are culled.
-		/// <para>The default value is FALSE.</para>
+		/// <remarks>When this value is set to <c>true</c> any pixels outside the active scissor rectangle are culled.
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool IsScissorTestingEnabled;
 
 		/// <summary>
 		/// Property to set or return whether multisampling is enabled or not.
 		/// </summary>
-		/// <remarks>This must be set to TRUE in order to activate multisampling.
-		/// <para>The default value is FALSE.</para>
+		/// <remarks>This must be set to <c>true</c> in order to activate multisampling.
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool IsMultisamplingEnabled;
 
 		/// <summary>
 		/// Property to set or return whether antialiasing should be used when drawing lines.
 		/// </summary>
-		/// <remarks>This value is only valid if <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
-		/// <para>The default value is FALSE.</para>
+		/// <remarks>This value is only valid if <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to <c>false</c>.
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool IsAntialiasedLinesEnabled;
 		#endregion
@@ -266,7 +266,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left states to compare.</param>
 		/// <param name="right">Right states to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonRasterizerStates left, ref GorgonRasterizerStates right)
 		{
 			// ReSharper disable CompareOfFloatsByEqualityOperator
@@ -529,7 +529,7 @@ namespace Gorgon.Graphics
 		/// <param name="rectangle">Rectangle to set.</param>
 		/// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
         /// <para>To use scissor rectangles, set the <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
-		/// state to TRUE. If the state is set to FALSE, this value will have no effect.</para>
+		/// state to <c>true</c>. If the state is set to <c>false</c>, this value will have no effect.</para>
         /// <para>This method will only set the first scissor test rectangle.</para>
 		/// </remarks>
 		public void SetScissorRectangle(Rectangle rectangle)
@@ -598,7 +598,7 @@ namespace Gorgon.Graphics
 		/// <param name="rectangles">An array containing the scissor testing rectangles.</param>
         /// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
         /// <para>To use scissor rectangles, set the <see cref="Gorgon.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
-		/// state to TRUE. If the state is set to FALSE, then setting a scissor test rectangle will have no effect.</para>
+		/// state to <c>true</c>. If the state is set to <c>false</c>, then setting a scissor test rectangle will have no effect.</para>
         /// <para>Scissor test rectangles must be set all at once, any viewports not defined in the <paramref name="rectangles"/> parameter will be disabled.  Passing NULL (Nothing in VB.Net) to the 
         /// <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
         /// <para>Which scissor rectangle is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 

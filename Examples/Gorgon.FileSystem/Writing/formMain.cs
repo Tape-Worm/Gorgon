@@ -142,7 +142,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to enable or disable the command buttons.
         /// </summary>
-        /// <param name="value">TRUE to enable the command buttons, FALSE to disable.</param>
+        /// <param name="value"><c>true</c> to enable the command buttons, <c>false</c> to disable.</param>
         private void CommandEnable(bool value)
         {
             buttonSave.Enabled = buttonReload.Enabled = textDisplay.Enabled = value;

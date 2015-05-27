@@ -49,7 +49,7 @@ namespace Gorgon
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCancelEventArgs"/> class.
 		/// </summary>
-		/// <param name="cancel">TRUE if the operation should be canceled, FALSE if not.</param>
+		/// <param name="cancel"><c>true</c> if the operation should be canceled, <c>false</c> if not.</param>
 		public GorgonCancelEventArgs(bool cancel)
 		{
 			Cancel = cancel;

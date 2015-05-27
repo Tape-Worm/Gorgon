@@ -103,7 +103,7 @@ namespace CodecPlugIn
 		/// <summary>
 		/// Function to load our useless image codec plug-in.
 		/// </summary>
-		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
 	    private bool LoadCodec()
 		{
 			// Load our plug-in.

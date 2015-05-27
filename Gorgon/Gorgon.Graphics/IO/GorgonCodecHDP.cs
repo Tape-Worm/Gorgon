@@ -71,10 +71,10 @@ namespace Gorgon.IO
         /// Property to set or return whether lossless compression should be used to encode the image.
         /// </summary>
         /// <remarks>
-        /// Set the property to TRUE to avoid lossy compression which may introduce artifacts to the image.  Setting this value to TRUE 
+        /// Set the property to <c>true</c> to avoid lossy compression which may introduce artifacts to the image.  Setting this value to <c>true</c> 
         /// will cause the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.ImageQuality">ImageQuality</see> property to be ignored.
         /// <para>This property is only used when encoding the image.</para>
-        /// <para>The default value is FALSE.</para>
+        /// <para>The default value is <c>false</c>.</para>
         /// </remarks>
         public bool UseLosslessCompression
         {
@@ -88,7 +88,7 @@ namespace Gorgon.IO
         /// <remarks>
         /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
         /// lowest quality and 1.0f will give the highest.  If the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.UseLosslessCompression">UseLosslessCompression</see> 
-        /// property is set to TRUE, then this property will be ignored.
+        /// property is set to <c>true</c>, then this property will be ignored.
         /// <para>This property is only used when encoding the image.</para>
         /// <para>The default value is 1.0f.</para>
         /// </remarks>

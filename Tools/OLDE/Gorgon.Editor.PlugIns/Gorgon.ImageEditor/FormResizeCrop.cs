@@ -58,7 +58,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 			/// </summary>
 			/// <param name="left">The left instance to compare.</param>
 			/// <param name="right">The right instance to compare.</param>
-			/// <returns>TRUE if equal, FALSE if not.</returns>
+			/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 			private static bool Equals(ref FilterComboItem left, ref FilterComboItem right)
 			{
 				return (left.Filter == right.Filter);

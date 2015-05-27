@@ -22,7 +22,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
 		/// <remarks>
-		/// This value always returns FALSE for constant buffers.
+		/// This value always returns <c>false</c> for constant buffers.
 		/// </remarks>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
 		bool IBufferSettings.IsOutput
@@ -62,7 +62,7 @@ namespace Gorgon.Graphics
         /// Property to set or return whether to allow unordered access to the buffer.
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        /// <remarks>This value does not apply to constant buffers and will always return <c>false</c>.</remarks>
         bool IBufferSettings.AllowUnorderedAccessViews
         {
             get
@@ -79,7 +79,7 @@ namespace Gorgon.Graphics
         /// Property to set or return whether to allow shader resource views for this buffer.
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        /// <remarks>This value does not apply to constant buffers and will always return <c>false</c>.</remarks>
         bool IBufferSettings.AllowShaderViews
         {
             get
@@ -113,7 +113,7 @@ namespace Gorgon.Graphics
         /// Property to set or return whether a buffer will allow raw views.
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        /// <remarks>This value does not apply to constant buffers and will always return <c>false</c>.</remarks>
         bool IBufferSettings.AllowRawViews
         {
             get
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>
-        /// This value does not apply to constant buffers and will always return FALSE.
+        /// This value does not apply to constant buffers and will always return <c>false</c>.
         /// </remarks>
         bool IBufferSettings.AllowIndirectArguments
         {

@@ -34,11 +34,13 @@ namespace Gorgon.Math
 	public static class GorgonMathExtensions
 	{
 		#region Constants.
-		private const float DegConvert = ((float)System.Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
-		private const float RadConvert = (180.0f / (float)System.Math.PI);		// Constant containing the value used to convert radians to degrees.
+		// Constant containing the value used to convert degrees to radians.
+		private const float DegConvert = ((float)System.Math.PI / 180.0f);
+		// Constant containing the value used to convert radians to degrees.
+		private const float RadConvert = (180.0f / (float)System.Math.PI);		
 
 		/// <summary>
-		/// PI
+		/// Constant value for &#x03C0;.
 		/// </summary>
 		public const float PI = 3.141593f;
 		#endregion
@@ -495,7 +497,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool EqualsEpsilon(this float left, float right)
 		{
 			return Abs(right - left) <= 1e-06f;
@@ -507,7 +509,7 @@ namespace Gorgon.Math
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
 		/// <param name="delta">Delta to account for error between the two values.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool EqualsEpsilon(this float left, float right, float delta)
 		{
 			return Abs(right - left) <= delta;
@@ -518,7 +520,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="left">Left value to compare.</param>
         /// <param name="right">Right value to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool EqualsEpsilon(this double left, double right)
         {
             return Abs(right - left) <= 1e-06f;
@@ -530,7 +532,7 @@ namespace Gorgon.Math
         /// <param name="left">Left value to compare.</param>
         /// <param name="right">Right value to compare.</param>
         /// <param name="delta">Delta to account for error between the two values.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool EqualsEpsilon(this double left, double right, double delta)
         {
             return Abs(right - left) <= delta;

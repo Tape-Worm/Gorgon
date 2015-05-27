@@ -507,7 +507,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonFormatPitch left, ref GorgonFormatPitch right)
 		{
 			return ((left.RowPitch == right.RowPitch) && (left.SlicePitch == right.SlicePitch)
@@ -561,7 +561,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not</returns>
 		public static bool operator ==(GorgonFormatPitch left, GorgonFormatPitch right)
 		{
 			return Equals(ref left, ref right);
@@ -572,7 +572,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
-		/// <returns>TRUE if not equal, FALSE if they are.</returns>
+		/// <returns><c>true</c> if not equal, <c>false</c> if they are.</returns>
 		public static bool operator !=(GorgonFormatPitch left, GorgonFormatPitch right)
 		{
 			return !Equals(ref left, ref right);
@@ -611,7 +611,7 @@ namespace Gorgon.Graphics
 		/// Function to compare two instances for equality.
 		/// </summary>
 		/// <param name="other">The other instance to compare to this one.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(GorgonFormatPitch other)
 		{
 			return Equals(ref this, ref other);

@@ -386,7 +386,7 @@ namespace Gorgon.PlugIns
 		/// Function to determine if an assembly is a plug-in assembly.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly file.</param>
-		/// <returns>TRUE if this is a plug-in assembly, FALSE if it is not.</returns>
+		/// <returns><c>true</c> if this is a plug-in assembly, <c>false</c> if it is not.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
 		public bool IsPlugInAssembly(string assemblyPath)
@@ -421,7 +421,7 @@ namespace Gorgon.PlugIns
 		/// Function to determine if an assembly is a plug-in assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly.</param>
-		/// <returns>TRUE if this is a plug-in assembly, FALSE if it is not.</returns>
+		/// <returns><c>true</c> if this is a plug-in assembly, <c>false</c> if it is not.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public bool IsPlugInAssembly(AssemblyName assemblyName)
 		{

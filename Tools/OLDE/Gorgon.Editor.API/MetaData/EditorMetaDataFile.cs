@@ -264,7 +264,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the specified file is linked to another.
 		/// </summary>
 		/// <param name="file">File to check.</param>
-		/// <returns>TRUE if a link is found, FALSE if not.</returns>
+		/// <returns><c>true</c> if a link is found, <c>false</c> if not.</returns>
 		public static bool HasFileLinks(EditorFile file)
 		{
 			return Files.Any(item => item.DependsOn.Contains(file));
@@ -274,7 +274,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the directory or its sub-directories contain files that are linked.
 		/// </summary>
 		/// <param name="directory">Directory to evaluate.</param>
-		/// <returns>TRUE if the directory or sub directory contains file links, FALSE if not.</returns>
+		/// <returns><c>true</c> if the directory or sub directory contains file links, <c>false</c> if not.</returns>
 		public static bool HasFileLinks(GorgonFileSystemDirectory directory)
 		{
 			if ((directory.Directories.Count > 0) && (directory.Directories.Any(HasFileLinks)))

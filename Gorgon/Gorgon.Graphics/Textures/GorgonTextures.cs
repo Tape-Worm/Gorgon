@@ -497,13 +497,13 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>The format for the default shader view applied to the texture.  If this value is set to Unknown, then the texture format will be used.  The default value is Unknown.</description>
         /// </item>
         /// <item>
-        /// <term>AllowUnorderedAccess</term><description>TRUE to allow unordered access views to be used with this texture, FALSE to disallow.  The default value is FALSE.</description>
+        /// <term>AllowUnorderedAccess</term><description><c>true</c> to allow unordered access views to be used with this texture, <c>false</c> to disallow.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <term>Multisampling</term><description>For 2D textures only and only if the <paramref name="images"/> parameter contains 1 image.  Multisampling values to apply to the texture.  The default is a count of 1 and a quality of 0 (no multisampling).</description>
@@ -630,13 +630,13 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <description>ViewFormat</description><description>The format for the default shader view applied to the texture.  If this value is set to Unknown, then the texture format will be used.  The default value is Unknown.</description>
         /// </item>
         /// <item>
-        /// <description>AllowUnorderedAccess</description><description>TRUE to allow unordered access views to be used with this texture, FALSE to disallow.  The default value is FALSE.</description>
+        /// <description>AllowUnorderedAccess</description><description><c>true</c> to allow unordered access views to be used with this texture, <c>false</c> to disallow.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <description>Multisampling</description><description>For 2D textures only.  Multisampling values to apply to the texture.  The default is a count of 1 and a quality of 0 (no multisampling).</description>

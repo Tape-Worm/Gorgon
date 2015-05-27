@@ -127,7 +127,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(string name)
 		{
 			return _list.ContainsKey(name);
@@ -137,7 +137,7 @@ namespace Gorgon.Collections
 		/// Function to return whether the specified object exists in the collection.
 		/// </summary>
 		/// <param name="value">The value to find.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(T value)
 		{
 			return _list.ContainsValue(value);
@@ -159,7 +159,7 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="caseSensitive">TRUE if the key names are case sensitive, FALSE if not.</param>
+		/// <param name="caseSensitive"><c>true</c> if the key names are case sensitive, <c>false</c> if not.</param>
 		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
 		{
 		    _list = new Dictionary<string, T>(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);

@@ -127,7 +127,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(string name)
 		{
 			if (string.IsNullOrWhiteSpace(name))
@@ -180,7 +180,7 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="caseSensitive">TRUE to use case sensitive keys, FALSE to ignore casing.</param>
+		/// <param name="caseSensitive"><c>true</c> to use case sensitive keys, <c>false</c> to ignore casing.</param>
 		protected GorgonBaseNamedObjectList(bool caseSensitive)			
 		{
 			KeysAreCaseSensitive = caseSensitive;

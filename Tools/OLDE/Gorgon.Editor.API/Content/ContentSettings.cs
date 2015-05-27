@@ -55,7 +55,7 @@ namespace Gorgon.Editor
         /// Property to return whether the content should be created.
         /// </summary>
         /// <remarks>
-        /// When set to TRUE this property will determine if the content object creates content after the content object has been initialized.
+        /// When set to <c>true</c> this property will determine if the content object creates content after the content object has been initialized.
         /// </remarks>
         public bool CreateContent
         {
@@ -97,7 +97,7 @@ namespace Gorgon.Editor
 	    /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
-        /// <returns>TRUE if the object was set up, FALSE if not.</returns>
+        /// <returns><c>true</c> if the object was set up, <c>false</c> if not.</returns>
         public abstract bool PerformSetup();
         #endregion
     }

@@ -298,7 +298,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the application can read the packed file or not.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
-		/// <returns>TRUE if the file can be read, FALSE if not.</returns>
+		/// <returns><c>true</c> if the file can be read, <c>false</c> if not.</returns>
 		/// <remarks>
 		/// This method will check against the internal list of file system providers to see if the extension is known. If the file cannot be located by extension, 
 		/// or the file could not be read, then all providers will be tested to determine if the file can be read.

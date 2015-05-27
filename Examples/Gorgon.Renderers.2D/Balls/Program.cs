@@ -317,7 +317,7 @@ namespace Gorgon.Graphics.Example
 		/// Function for the main idle loop.
 		/// </summary>
 		/// <remarks>This is used as the main loop for the application.  All drawing and logic can go in here.</remarks>
-		/// <returns>TRUE to keep running, FALSE to exit.</returns>
+		/// <returns><c>true</c> to keep running, <c>false</c> to exit.</returns>
 		private static bool Idle()
 		{
 			if (!_paused)

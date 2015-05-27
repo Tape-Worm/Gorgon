@@ -499,7 +499,7 @@ namespace Gorgon.Graphics
 			/// Function to return whether the specified sampler state is bound.
 			/// </summary>
 			/// <param name="item">Sampler state to look up.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			public bool Contains(GorgonTextureSamplerStates item)
 			{
 				return IndexOf(item) > -1;
@@ -710,7 +710,7 @@ namespace Gorgon.Graphics
 			/// Function to determine if the list contains a buffer with the specified name.
 			/// </summary>
 			/// <param name="name">Name of the buffer.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public bool Contains(string name)
@@ -1098,7 +1098,7 @@ namespace Gorgon.Graphics
 			/// Function to determine if the list contains a resource with the specified name.
 			/// </summary>
 			/// <param name="name">Name of the resource.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			/// <remarks>This only looks up resources bound to a view that's bound to a pipeline.</remarks>
@@ -1111,7 +1111,7 @@ namespace Gorgon.Graphics
 			/// Function to determine if a resource has a view bound to this shader stage.
 			/// </summary>
 			/// <param name="resource">Resource to look up.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public bool Contains(GorgonResource resource)
 			{
@@ -1260,7 +1260,7 @@ namespace Gorgon.Graphics
 			/// Function to return whether the list contains the specified texture.
 			/// </summary>
 			/// <param name="item">Texture to find.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			public bool Contains(GorgonShaderView item)
 			{
 				return _resources.Contains(item);

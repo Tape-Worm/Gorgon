@@ -135,7 +135,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to load the zip file provider plug-in.
         /// </summary>
-        /// <returns>TRUE if successfully loaded, FALSE if not.</returns>
+        /// <returns><c>true</c> if successfully loaded, <c>false</c> if not.</returns>
         static bool LoadZipProviderPlugIn()
         {
             string zipProviderPath = PlugInPath + "Gorgon.FileSystem.Zip.dll";

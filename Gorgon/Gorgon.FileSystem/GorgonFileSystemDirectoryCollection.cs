@@ -142,7 +142,7 @@ namespace Gorgon.IO
 		/// Function to return whether a directory with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the directory to find.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(string name)
 		{
 			name = name.RemoveIllegalPathChars();

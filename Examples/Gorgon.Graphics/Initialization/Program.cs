@@ -119,7 +119,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Function to handle idle time for the application.
 		/// </summary>
-		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue processing, <c>false</c> to stop.</returns>
 		private static bool Idle()
 		{
 			// Clear the swap chain.  

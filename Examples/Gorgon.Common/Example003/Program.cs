@@ -53,7 +53,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function that's called during idle time.
 		/// </summary>
-		/// <returns>TRUE to continue execution, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue execution, <c>false</c> to stop.</returns>
 		/// <remarks>This is the secondary default idle loop.</remarks>
 		public static bool NewIdle()
 		{
@@ -108,7 +108,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function that's called during idle time.
 		/// </summary>
-		/// <returns>TRUE to continue execution, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue execution, <c>false</c> to stop.</returns>
 		/// <remarks>This is the default idle loop.</remarks>
 		public static bool Idle()
 		{

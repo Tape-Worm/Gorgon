@@ -109,7 +109,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBeforeStateTransitionEventArgs"/> class.
 		/// </summary>
-		/// <param name="wasWindowed">TRUE if the swap chain was previously windowed, FALSE if it was full screen.</param>
+		/// <param name="wasWindowed"><c>true</c> if the swap chain was previously windowed, <c>false</c> if it was full screen.</param>
 		public GorgonBeforeStateTransitionEventArgs(bool wasWindowed)
 			: base(false)
 		{
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics
 	/// </para>	
 	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
 	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
-	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is FALSE in this scenario, then the behaviour when switching between applications will be undefined.  
+	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is <c>false</c> in this scenario, then the behaviour when switching between applications will be undefined.  
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
 	public sealed class GorgonSwapChain
@@ -814,7 +814,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to update the settings for the swap chain.
 		/// </summary>
-		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
+		/// <param name="isWindowed"><c>true</c> to use windowed mode, <c>false</c> to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
@@ -834,7 +834,7 @@ namespace Gorgon.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
-		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
+		/// <param name="isWindowed"><c>true</c> to use windowed mode, <c>false</c> to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
@@ -870,7 +870,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <param name="isWindowed">TRUE to switch to windowed mode, FALSE to switch to full screen.</param>
+		/// <param name="isWindowed"><c>true</c> to switch to windowed mode, <c>false</c> to switch to full screen.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.

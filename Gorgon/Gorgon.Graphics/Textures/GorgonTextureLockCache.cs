@@ -60,7 +60,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="left">Left key to compare.</param>
             /// <param name="right">Right key to compare.</param>
-            /// <returns>TRUE if equal, FALSE if not.</returns>
+            /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
             private static bool Equals(ref LockCacheKey left, ref LockCacheKey right)
             {
                 return (left._keyValue1 == right._keyValue1) && (left._keyValue2 == right._keyValue2) && (left._context == right._context);

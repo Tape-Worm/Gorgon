@@ -139,7 +139,7 @@ namespace Gorgon.Graphics
 		/// Function to initialize the image data.
 		/// </summary>
 		/// <param name="data">Pre-existing data to use.</param>
-		/// <param name="copy">TRUE to copy the data, FALSE to take ownership of the pointer.  Only applies when data is non-null.</param>
+		/// <param name="copy"><c>true</c> to copy the data, <c>false</c> to take ownership of the pointer.  Only applies when data is non-null.</param>
 		private unsafe void Initialize(void* data, bool copy)
         {
             // Create a buffer large enough to hold our data.
@@ -505,7 +505,7 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
@@ -1419,7 +1419,7 @@ namespace Gorgon.Graphics
         /// Function to determine if this image format can be converted to another format.
         /// </summary>
         /// <param name="format">Format to convert to.</param>
-        /// <returns>TRUE if the the current format and the requested format can be converted, FALSE if not.</returns>
+        /// <returns><c>true</c> if the the current format and the requested format can be converted, <c>false</c> if not.</returns>
         public bool CanConvert(BufferFormat format)
         {
 	        return CanConvert(Settings.Format, format);
@@ -1430,7 +1430,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="sourceFormat">The source format to compare.</param>
 		/// <param name="destFormat">The destination format to compare.</param>
-		/// <returns>TRUE if the format can be converted, FALSE if not.</returns>
+		/// <returns><c>true</c> if the format can be converted, <c>false</c> if not.</returns>
 	    public static bool CanConvert(BufferFormat sourceFormat, BufferFormat destFormat)
 	    {
 			using (var wic = new GorgonWICImage())
@@ -1510,7 +1510,7 @@ namespace Gorgon.Graphics
 	    /// </summary>
 	    /// <param name="sourceFormat">Source format to compare.</param>
 	    /// <param name="destFormat">List of destination formats to compare.</param>
-	    /// <returns>TRUE if the format can be converted, FALSE if not.</returns>
+	    /// <returns><c>true</c> if the format can be converted, <c>false</c> if not.</returns>
 	    public static bool CanConvertToAll(BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormat)
 	    {
 			if ((sourceFormat == BufferFormat.Unknown)
@@ -1711,11 +1711,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="width">New width of the image data.</param>
 		/// <param name="height">New height of the image data.</param>
-		/// <param name="clip">TRUE to clip the image data, or FALSE to scale the image data to the new size.</param>
+		/// <param name="clip"><c>true</c> to clip the image data, or <c>false</c> to scale the image data to the new size.</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
 		/// <remarks>
-		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to TRUE, then the image data will be clipped.  That is, it
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <c>true</c>, then the image data will be clipped.  That is, it
 		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
 		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
 		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
@@ -1733,16 +1733,16 @@ namespace Gorgon.Graphics
 		/// <param name="width">New width of the image data.</param>
 		/// <param name="height">New height of the image data.</param>
 		/// <param name="filter">Filtering to apply to the image if it was upscaled or downscaled.</param>
-		/// <param name="clip">TRUE to clip the image data, or FALSE to scale the image data to the new size.</param>
+		/// <param name="clip"><c>true</c> to clip the image data, or <c>false</c> to scale the image data to the new size.</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
 		/// <remarks>
-		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to TRUE, then the image data will be clipped.  That is, it
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <c>true</c>, then the image data will be clipped.  That is, it
 		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
 		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
 		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
 		/// <para>If the image is in a format that is not supported, an exception will be thrown.</para>
-		/// <para>The <paramref name="filter"/> parameter will only be applied with <paramref name="clip"/> is set to FALSE.  Otherwise it has no effect.</para>
+		/// <para>The <paramref name="filter"/> parameter will only be applied with <paramref name="clip"/> is set to <c>false</c>.  Otherwise it has no effect.</para>
 		/// </remarks>
 		public void Resize(int width, int height, bool clip, ImageFilter filter)
 		{

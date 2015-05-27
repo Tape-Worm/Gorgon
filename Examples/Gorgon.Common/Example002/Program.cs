@@ -52,7 +52,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function that's called during idle time.
 		/// </summary>
-		/// <returns>TRUE to continue execution, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue execution, <c>false</c> to stop.</returns>
 		private static bool Idle()
 		{
 			int x = _rnd.Next(0, _form.GraphicsSize.Width - 1);

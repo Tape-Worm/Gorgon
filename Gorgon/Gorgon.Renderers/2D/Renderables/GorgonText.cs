@@ -136,10 +136,10 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return whether to allow the embedding of different colors in the <see cref="Text"/>.
 		/// </summary>
-		/// <remarks>When this value is set to TRUE, Gorgon will parse the string to look for codes to change the color of the text.  The codes 
+		/// <remarks>When this value is set to <c>true</c>, Gorgon will parse the string to look for codes to change the color of the text.  The codes 
 		/// should follow the format of [c=RRGGBBAA]text[/c].
 		/// <para>For example, in the text "The quick brown fox", a code of "The quick [c=554400FF]brown[/c] fox" will change the word 'brown' to the color brown.</para>
-		/// <para>Be aware that when this value is set to TRUE there will be a slight performance penalty.</para>
+		/// <para>Be aware that when this value is set to <c>true</c> there will be a slight performance penalty.</para>
 		/// </remarks>
 	    public bool AllowColorCodes
 	    {
@@ -203,7 +203,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the offset for the shadow.
 		/// </summary>
-		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <c>true</c>.</remarks>
 		[AnimatedProperty]
 		public Vector2 ShadowOffset
 		{
@@ -250,7 +250,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the shadow opacity.
 		/// </summary>
-		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
+		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <c>true</c>.</remarks>
 		[AnimatedProperty]
 		public float ShadowOpacity
 		{
@@ -371,8 +371,8 @@ namespace Gorgon.Renderers
 		/// <remarks>
 		/// This defines the range used when aligning text horizontally and/or vertically.  For example, if the alignment is set to center horizontally, then the width of this rectangle is 
 		/// used to determine the horizontal center point.  Likewise for vertically aligned text.
-		/// <para>If <see cref="P:GorgonLibrary.Renderers.GorgonText.WordWrap">WordWrap</see> is set to TRUE, then this determines how far, in pixels, a line of text can go before it will be wrapped.</para>
-		/// <para>This property will clip the text to the rectangle if the <see cref="P:GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to TRUE.</para>
+		/// <para>If <see cref="P:GorgonLibrary.Renderers.GorgonText.WordWrap">WordWrap</see> is set to <c>true</c>, then this determines how far, in pixels, a line of text can go before it will be wrapped.</para>
+		/// <para>This property will clip the text to the rectangle if the <see cref="P:GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to <c>true</c>.</para>
 		/// <para>Setting this value to NULL (Nothing in VB.Net) will disable alignment, word wrapping and clipping.</para>
 		/// </remarks>
 		public RectangleF? TextRectangle
@@ -1298,10 +1298,10 @@ namespace Gorgon.Renderers
 		/// Function to return the size, in pixels, of a string.
 		/// </summary>
 		/// <param name="text">Text to measure.</param>
-		/// <param name="useWordWrap">TRUE to use word wrapping.</param>
+		/// <param name="useWordWrap"><c>true</c> to use word wrapping.</param>
 		/// <param name="wrapBoundaryWidth">The boundary to word wrap on.</param>
 		/// <returns>The size of the text, in pixels.</returns>
-		/// <remarks>If the <paramref name="useWordWrap"/> is TRUE and the <paramref name="wrapBoundaryWidth"/> is 0 or less, then word wrapping is disabled.</remarks>
+		/// <remarks>If the <paramref name="useWordWrap"/> is <c>true</c> and the <paramref name="wrapBoundaryWidth"/> is 0 or less, then word wrapping is disabled.</remarks>
 		public Vector2 MeasureText(string text, bool useWordWrap, float wrapBoundaryWidth)
 		{
 			string previousString = Text;

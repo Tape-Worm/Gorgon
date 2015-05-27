@@ -434,7 +434,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function called before rendering begins.
         /// </summary>
-        /// <returns>TRUE to continue rendering, FALSE to stop.</returns>
+        /// <returns><c>true</c> to continue rendering, <c>false</c> to stop.</returns>
         protected virtual bool OnBeforeRender()
         {
             return true;
@@ -451,7 +451,7 @@ namespace Gorgon.Graphics
         /// Function called before a pass is rendered.
         /// </summary>
         /// <param name="pass">Pass to render.</param>
-        /// <returns>TRUE to continue rendering, FALSE to stop.</returns>
+        /// <returns><c>true</c> to continue rendering, <c>false</c> to stop.</returns>
         protected abstract bool OnBeforePassRender(GorgonEffectPass pass);
 
         /// <summary>

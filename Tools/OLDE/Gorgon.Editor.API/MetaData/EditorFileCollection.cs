@@ -148,7 +148,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the collection contains a dependency with the specified name and type.
 		/// </summary>
 		/// <param name="name">Name of the dependency.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(string name)
 		{
 			return !string.IsNullOrWhiteSpace(name) && _files.ContainsKey(name);
@@ -159,7 +159,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="name">Name of the item to retrieve.</param>
 		/// <param name="value">The value, if found.  NULL if not.</param>
-		/// <returns>TRUE if the value was found, FALSE if not.</returns>
+		/// <returns><c>true</c> if the value was found, <c>false</c> if not.</returns>
 		public bool TryGetValue(string name, out EditorFile value)
 		{
 			return _files.TryGetValue(name, out value);

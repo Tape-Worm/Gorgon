@@ -702,7 +702,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// Function called when the content is reverted back to its original state.
 		/// </summary>
 		/// <returns>
-		/// TRUE if reverted, FALSE if not.
+		/// <c>true</c> if reverted, <c>false</c> if not.
 		/// </returns>
 		protected override bool OnRevert()
 		{

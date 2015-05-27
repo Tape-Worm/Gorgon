@@ -280,8 +280,8 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to set the visibility of the pointing device cursor.
 		/// </summary>
-		/// <param name="bShow">TRUE to show, FALSE to hide.</param>
-		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
+		/// <param name="bShow"><c>true</c> to show, <c>false</c> to hide.</param>
+		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with <c>true</c>.</returns>
 		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
 		private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
 
@@ -348,7 +348,7 @@ namespace Gorgon.Input
 		/// Function to fire the pointing device move event.
 		/// </summary>
 		/// <param name="newPosition">New position for the pointing device.</param>
-		/// <param name="setRelative">TRUE to calculate the relative motion of the device, FALSE to have the plug-in set it.</param>
+		/// <param name="setRelative"><c>true</c> to calculate the relative motion of the device, <c>false</c> to have the plug-in set it.</param>
 		/// <remarks>Some plug-ins provide their own relative position data, which is likely to be more accurate, so we can tell the library to not calculate in that instance.</remarks>
 		protected void OnPointingDeviceMove(PointF newPosition, bool setRelative)
 		{

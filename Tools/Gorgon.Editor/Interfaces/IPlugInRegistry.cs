@@ -62,7 +62,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a plug-in is disabled.
 		/// </summary>
 		/// <param name="plugIn">The plug-in to query.</param>
-		/// <returns>TRUE if disabled, FALSE if not.</returns>
+		/// <returns><c>true</c> if disabled, <c>false</c> if not.</returns>
 		bool IsDisabled(GorgonPlugIn plugIn);
 
 		/// <summary>

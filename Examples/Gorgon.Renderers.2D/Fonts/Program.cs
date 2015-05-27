@@ -94,7 +94,7 @@ namespace Fonts
 		/// <summary>
 		/// Function to handle idle CPU time.
 		/// </summary>
-		/// <returns>TRUE to continue handling idle time, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue handling idle time, <c>false</c> to stop.</returns>
 		private static bool Idle()
 		{
 			_renderer.Clear(Color.Blue);

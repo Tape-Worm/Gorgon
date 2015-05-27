@@ -49,7 +49,7 @@ namespace Gorgon.IO
         /// Function to determine if the next bytes indicate match the chunk ID.
         /// </summary>
         /// <param name="chunkName">Name of the chunk.</param>
-        /// <returns>TRUE if the next bytes are a the specified chunk ID, FALSE if not.</returns>
+        /// <returns><c>true</c> if the next bytes are a the specified chunk ID, <c>false</c> if not.</returns>
         /// <remarks>The <paramref name="chunkName"/> parameter must be at least 8 characters in length, if it is not, then an exception will be thrown. 
         /// If the chunkName parameter is longer than 8 characters, then it will be truncated to 8 characters.
         /// </remarks>

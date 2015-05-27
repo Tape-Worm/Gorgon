@@ -54,7 +54,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left kerning pair to compare.</param>
 		/// <param name="right">Right kerning pair to compare.</param>
-		/// <returns>TRUE if the same, FALSE if not.</returns>
+		/// <returns><c>true</c> if the same, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonKerningPair left, ref GorgonKerningPair right)
 		{
 			return ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));

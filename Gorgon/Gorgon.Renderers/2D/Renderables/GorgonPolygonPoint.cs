@@ -112,7 +112,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool Equals(ref GorgonPolygonPoint left, ref GorgonPolygonPoint right)
         {
 	        // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -175,7 +175,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool operator ==(GorgonPolygonPoint left, GorgonPolygonPoint right)
         {
             return Equals(ref left, ref right);
@@ -186,7 +186,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if not equal, FALSE if equal.</returns>
+        /// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
         public static bool operator !=(GorgonPolygonPoint left, GorgonPolygonPoint right)
         {
             return !Equals(ref left, ref right);
@@ -233,7 +233,7 @@ namespace Gorgon.Renderers
         /// Function to determine if this instance is equal to another by reference.
         /// </summary>
         /// <param name="other">The other instance to compare against this one.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public bool Equals(ref GorgonPolygonPoint other)
         {
             return Equals(ref this, ref other);
@@ -245,7 +245,7 @@ namespace Gorgon.Renderers
         /// Function to determine if this instance is equal to another by value.
         /// </summary>
         /// <param name="other">The other instance to compare against this one.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public bool Equals(GorgonPolygonPoint other)
         {
             return Equals(ref this, ref other);

@@ -563,7 +563,7 @@ namespace Gorgon.Graphics
         /// <param name="destZ">Depth offset into the destination texture to place the copied data.</param>
         /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
         /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
-        /// <param name="unsafeCopy">TRUE to disable all range checking for coorindates, FALSE to clip coorindates to safe ranges.</param>
+        /// <param name="unsafeCopy"><c>true</c> to disable all range checking for coorindates, <c>false</c> to clip coorindates to safe ranges.</param>
         /// <param name="context">The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceBox"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
@@ -801,8 +801,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Funtion to retrieve the binding flags for a resource.
         /// </summary>
-        /// <param name="isDepth">TRUE if the texture is meant for depth/stencil.</param>
-        /// <param name="isTarget">TRUE if the texture is meant for use as a render target.</param>
+        /// <param name="isDepth"><c>true</c> if the texture is meant for depth/stencil.</param>
+        /// <param name="isTarget"><c>true</c> if the texture is meant for use as a render target.</param>
         /// <returns>The Direct3D binding flags.</returns>
         internal D3D.BindFlags GetBindFlags(bool isDepth, bool isTarget)
         {

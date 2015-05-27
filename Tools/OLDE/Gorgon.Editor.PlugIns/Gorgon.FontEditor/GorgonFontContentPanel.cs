@@ -767,7 +767,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    /// <summary>
 		/// Function to enable or disable the clipper numeric control limits.
 		/// </summary>
-		/// <param name="enable">TRUE to enable the control limits, FALSE to turn off the limits.</param>
+		/// <param name="enable"><c>true</c> to enable the control limits, <c>false</c> to turn off the limits.</param>
 	    private void EnableClipNumericLimits(bool enable)
 	    {
 			if ((!enable)
@@ -3925,7 +3925,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    /// <summary>
 		/// Function to initialize the editor transition.
 		/// </summary>
-		/// <param name="editOn">TRUE when editing a glyph, FALSE when exiting the editor.</param>
+		/// <param name="editOn"><c>true</c> when editing a glyph, <c>false</c> when exiting the editor.</param>
 	    private void InitializeGlyphEditTransition(bool editOn)
 	    {
 			// Move back to the selected texture index.

@@ -553,7 +553,7 @@ namespace Gorgon.Editor
 		/// Function to populate the list view with file entries.
 		/// </summary>
 		/// <param name="files">File entries used to populate the list view.</param>
-		/// <param name="doNotClear">TRUE to disable the clearing of items in the list, FALSE to clear the items in the list.</param>
+		/// <param name="doNotClear"><c>true</c> to disable the clearing of items in the list, <c>false</c> to clear the items in the list.</param>
 		private void FillListView(IEnumerable<DialogFileEntry> files, bool doNotClear)
 		{
 			if (!doNotClear)
@@ -1242,7 +1242,7 @@ namespace Gorgon.Editor
 		/// Function to fill in the directory tree.
 		/// </summary>
 		/// <param name="root">The root node of the tree to fill.</param>
-		/// <param name="setInitialSelected">TRUE to set the initially selected node, FALSE to sjip it.</param>
+		/// <param name="setInitialSelected"><c>true</c> to set the initially selected node, <c>false</c> to sjip it.</param>
 		private void FillDirectoryTree(TreeNodeEditor root, bool setInitialSelected)
 		{
 			TreeNodeDirectory selectedNode = null;
@@ -1717,7 +1717,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to retrieve the selected files from the view.
 		/// </summary>
-		/// <returns>TRUE if the selected files exist, FALSE if not.</returns>
+		/// <returns><c>true</c> if the selected files exist, <c>false</c> if not.</returns>
 		private bool GetSelectedFiles()
 		{
 			if (string.IsNullOrWhiteSpace(comboFile.Text))

@@ -443,9 +443,9 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="destination">Pointer to marhsal the data into.</param>
 		/// <param name="value">Object or value type to marshal.</param>
-		/// <param name="deleteContents">TRUE to remove any pre-allocated data, FALSE to leave alone.</param>
+		/// <param name="deleteContents"><c>true</c> to remove any pre-allocated data, <c>false</c> to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
-		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
+		/// <para>Passing <c>false</c> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
 		/// </remarks>
 		public static void MarshalFrom(this IntPtr destination, object value, bool deleteContents)
@@ -480,7 +480,6 @@ namespace Gorgon.Native
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public static void MarshalTo<T>(this IntPtr source, ref T value)
-			where T : class
 		{
 			Marshal.PtrToStructure(source, value);
 		}

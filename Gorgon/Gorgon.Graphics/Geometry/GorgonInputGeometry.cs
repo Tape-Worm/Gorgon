@@ -344,7 +344,7 @@ namespace Gorgon.Graphics
 			/// Function to determine if the list contains a buffer with the specified name.
 			/// </summary>
 			/// <param name="name">Name of the buffer.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public bool Contains(string name)
@@ -380,7 +380,7 @@ namespace Gorgon.Graphics
 			/// Function to return whether the vertex buffer specified has a binding in the list.
 			/// </summary>
 			/// <param name="buffer">The buffer to find.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public bool Contains(GorgonVertexBuffer buffer)
 			{
@@ -556,7 +556,7 @@ namespace Gorgon.Graphics
 			/// Function to return whether an item exists within this collection.
 			/// </summary>
 			/// <param name="item">Item to scan for.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 			public bool Contains(GorgonVertexBufferBinding item)
 			{
 				return IndexOf(item) > -1;

@@ -162,9 +162,9 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether the client area of the window should stay in sync with the swap chain back buffer size.
 		/// </summary>
 		/// <remarks>
-		/// Set this to TRUE to tell the swap chain to -not- resize the client window when the swap chain back buffer is not the same size.
+		/// Set this to <c>true</c> to tell the swap chain to -not- resize the client window when the swap chain back buffer is not the same size.
 		/// <para>This is only applied when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">Window</see> property is set to a windows form object, otherwise it is ignored.</para>
-		/// <para>The default value is FALSE.</para></remarks>
+		/// <para>The default value is <c>false</c>.</para></remarks>
 		public bool NoClientResize
 		{
 			get;

@@ -105,7 +105,7 @@ namespace Gorgon.Renderers
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
-		/// TRUE to continue rendering, FALSE to exit.
+		/// <c>true</c> to continue rendering, <c>false</c> to exit.
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{

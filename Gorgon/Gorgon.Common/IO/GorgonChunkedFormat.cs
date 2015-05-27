@@ -124,7 +124,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to validate the access mode.
 		/// </summary>
-		/// <param name="isWrite">TRUE if writing, FALSE if not.</param>
+		/// <param name="isWrite"><c>true</c> if writing, <c>false</c> if not.</param>
 		protected void ValidateAccess(bool isWrite)
 		{
 			if ((isWrite) && (Writer == null))

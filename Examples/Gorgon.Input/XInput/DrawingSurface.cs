@@ -106,7 +106,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to perform clean up on the objects within this object.
 		/// </summary>
-		/// <param name="clearDrawing">TRUE to destroy the drawing image, FALSE to leave alone.</param>
+		/// <param name="clearDrawing"><c>true</c> to destroy the drawing image, <c>false</c> to leave alone.</param>
 		private void CleanUp(bool clearDrawing)
 		{
 			if (_buffer != null)
@@ -162,7 +162,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to allocate resources for our graphics.
 		/// </summary>
-		/// <param name="clearDrawing">TRUE to clear the drawing, FALSE to leave alone.</param>
+		/// <param name="clearDrawing"><c>true</c> to clear the drawing, <c>false</c> to leave alone.</param>
 		private void GetResources(bool clearDrawing)
 		{
 			CleanUp(clearDrawing);

@@ -176,7 +176,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// Function to determine if right-to-left rendering is required for text.
         /// </summary>
         /// <param name="control">Control to examine.</param>
-        /// <returns>TRUE if RTL text is required, FALSE if not.</returns>
+        /// <returns><c>true</c> if RTL text is required, <c>false</c> if not.</returns>
         internal static bool IsRightToLeft(Control control)
         {
             switch (control.RightToLeft)

@@ -202,7 +202,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(ref GorgonDepthStencilOperations other)
 		{
 			return Equals(ref this, ref other);
@@ -311,19 +311,19 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Is the depth buffer enabled or not.
 		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
+		/// <remarks>The default value is <c>true</c>.</remarks>
 		public bool IsDepthEnabled;
 
 		/// <summary>
 		/// Is the stencil buffer enabled or not.
 		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
+		/// <remarks>The default value is <c>false</c>.</remarks>
 		public bool IsStencilEnabled;
 
 		/// <summary>
 		/// Is depth writing enabled or not.
 		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
+		/// <remarks>The default value is <c>true</c>.</remarks>
 		public bool IsDepthWriteEnabled;
 
 		/// <summary>
@@ -451,7 +451,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(ref GorgonDepthStencilStates other)
 		{
 			return Equals(ref this, ref other);

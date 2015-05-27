@@ -62,8 +62,8 @@ namespace Gorgon.Diagnostics
 		/// <param name="value">Value to compare.</param>
 		/// <param name="min">Minimum value.</param>
 		/// <param name="max">Maximum value.</param>
-		/// <param name="minInclusive">TRUE if the minimum is inclusive in the range (i.e. value &lt; min).</param>
-		/// <param name="maxInclusive">TRUE if the maximum is inclusive in the range (i.e. value &gt; max).</param>
+		/// <param name="minInclusive"><c>true</c> if the minimum is inclusive in the range (i.e. value &lt; min).</param>
+		/// <param name="maxInclusive"><c>true</c> if the maximum is inclusive in the range (i.e. value &gt; max).</param>
 		/// <param name="paramName">Name of the parameter.</param>
         [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamRange(int value, int min, int max, bool minInclusive, bool maxInclusive, string paramName)

@@ -221,7 +221,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to process during idle time.
 		/// </summary>
-		/// <returns>TRUE to continue processing, FALSE to end processing.</returns>
+		/// <returns><c>true</c> to continue processing, <c>false</c> to end processing.</returns>
 		private bool Gorgon_Idle()
 		{
 			Vector2 cursorPosition = _mouse.Position;		// Cursor position.

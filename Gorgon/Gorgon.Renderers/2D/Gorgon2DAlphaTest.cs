@@ -105,7 +105,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DAlphaTest"/> struct.
 		/// </summary>
-		/// <param name="isEnabled">TRUE to enable alpha testing, FALSE to disable.</param>
+		/// <param name="isEnabled"><c>true</c> to enable alpha testing, <c>false</c> to disable.</param>
 		/// <param name="alphaRange">The alpha range to clip.</param>
 		public Gorgon2DAlphaTest(bool isEnabled, GorgonRangeF alphaRange)
 		{

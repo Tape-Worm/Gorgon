@@ -118,7 +118,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">First instance to compare.</param>
 		/// <param name="right">Second instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonStreamOutputElement left, ref GorgonStreamOutputElement right)
 		{
 			return ((string.Equals(left.Context, right.Context)) && (left.ComponentCount == right.ComponentCount)

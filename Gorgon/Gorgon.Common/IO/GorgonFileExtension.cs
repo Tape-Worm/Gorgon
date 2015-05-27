@@ -69,7 +69,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return Equals(ref left, ref right);
@@ -80,7 +80,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if not equal, FALSE if equal.</returns>
+		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
 		public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return !Equals(ref left, ref right);
@@ -91,7 +91,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if less than or equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if less than or equal, <c>false</c> if not.</returns>
 		public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			if (Equals(ref left, ref right))
@@ -107,7 +107,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if greater or equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if greater or equal, <c>false</c> if not.</returns>
 		public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			if (Equals(ref left, ref right))
@@ -123,7 +123,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if less than, FALSE if not.</returns>
+		/// <returns><c>true</c> if less than, <c>false</c> if not.</returns>
 		public static bool operator <(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
@@ -134,7 +134,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if greater than, FALSE if not.</returns>
+		/// <returns><c>true</c> if greater than, <c>false</c> if not.</returns>
 		public static bool operator >(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
@@ -145,7 +145,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonFileExtension left, ref GorgonFileExtension right)
 		{
 			return string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);

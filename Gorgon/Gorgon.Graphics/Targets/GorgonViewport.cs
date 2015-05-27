@@ -131,7 +131,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonViewport left, ref GorgonViewport right)
 		{
 		    return ((left.Left.EqualsEpsilon(right.Left)) && (left.Top.EqualsEpsilon(right.Top))

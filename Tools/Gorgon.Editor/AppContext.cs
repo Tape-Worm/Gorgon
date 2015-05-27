@@ -72,7 +72,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to initialize the scratch files area.
 		/// </summary>
-		/// <returns>TRUE if the init was successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if the init was successful, <c>false</c> if not.</returns>
 		private bool InitializeScratchArea()
 		{
 			_splash.InfoText = Resources.GOREDIT_TEXT_CLEANING_STALE_SCRATCH;

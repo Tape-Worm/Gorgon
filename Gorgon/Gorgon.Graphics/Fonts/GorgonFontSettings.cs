@@ -281,10 +281,10 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to include kerning pair information in the font.
 		/// </summary>
-		/// <remarks>Kerning pairs are used to define spacing between 2 characters in a font.  Set this to TRUE to retrieve kerning information if the font 
+		/// <remarks>Kerning pairs are used to define spacing between 2 characters in a font.  Set this to <c>true</c> to retrieve kerning information if the font 
 		/// does not seem to be rendering properly.
 		/// <para>Note that some fonts do not employ the use of kerning pairs, and consequently, this setting will be ignored if that is the case.</para>
-		/// <para>The default value is TRUE.</para>
+		/// <para>The default value is <c>true</c>.</para>
 		/// </remarks>
 		public bool UseKerningPairs
 		{

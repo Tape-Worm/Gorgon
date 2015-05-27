@@ -421,7 +421,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="startSlot">Starting slot for the unordered access views.</param>
         /// <param name="views">Views to bind.</param>
-        /// <returns>TRUE if the UAV bindings have changed, FALSE if not.</returns>
+        /// <returns><c>true</c> if the UAV bindings have changed, <c>false</c> if not.</returns>
         private bool BindUnorderedAccessViews(int startSlot, GorgonUnorderedAccessView[] views)
         {
             bool hasChanged = false;
@@ -1498,7 +1498,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="buffer">Buffer holding the GPU generated data.</param>
 		/// <param name="alignedByteOffset">Number of bytes to start at within the buffer.</param>
-		/// <param name="isIndexed">TRUE if the data is indexed, FALSE if not.</param>
+		/// <param name="isIndexed"><c>true</c> if the data is indexed, <c>false</c> if not.</param>
 		/// <remarks>This method is not supported by SM2_a_b or SM_4.x video devices.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> passed to the parameter was not set up to have indirect arguments.</exception>
@@ -1544,7 +1544,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="Gorgon.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
 		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
-        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to TRUE, and 
+        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <c>true</c>, and 
         /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
         /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
         /// </para>
@@ -1600,7 +1600,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="Gorgon.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
         /// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
-        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to TRUE, and 
+        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <c>true</c>, and 
         /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
         /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
         /// </para>

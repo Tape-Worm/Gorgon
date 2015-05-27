@@ -118,7 +118,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool Equals(ref GorgonOutputBufferBinding left, ref GorgonOutputBufferBinding right)
         {
 	        return ((left.OutputBuffer == right.OutputBuffer) && (left.Offset == right.Offset));
@@ -172,7 +172,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="other">The other instance.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(GorgonOutputBufferBinding other)
 		{
 		    return Equals(ref this, ref other);

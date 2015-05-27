@@ -69,7 +69,7 @@ namespace Gorgon.Editor
 		/// <param name="file">Editor file for the dependency.</param>
 		/// <param name="type">Type of dependency.</param>
 		/// <param name="value">The dependency, if found.  NULL (Nothing in VB.Net) if not.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> or the <paramref name="type"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="type"/> parameter is empty.</exception>
 		public bool TryGetValue(EditorFile file, string type, out Dependency value)
@@ -110,7 +110,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="file">The dependency file.</param>
 		/// <param name="type">Type of the dependency.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
 		public bool Contains(EditorFile file, string type = null)
 		{
 			return _dependencies.Contains(file, type);

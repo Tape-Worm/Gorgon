@@ -1112,7 +1112,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
 		/// <param name="vertexCacheSize">The number of vertices that can be placed in vertex cache.</param>
-		/// <param name="autoCreatedTarget">TRUE if Gorgon created the target, FALSE if the user created the target.</param>
+		/// <param name="autoCreatedTarget"><c>true</c> if Gorgon created the target, <c>false</c> if the user created the target.</param>
 		internal Gorgon2D(GorgonRenderTargetView target, int vertexCacheSize, bool autoCreatedTarget)
 		{
 			_systemCreatedTarget = autoCreatedTarget;

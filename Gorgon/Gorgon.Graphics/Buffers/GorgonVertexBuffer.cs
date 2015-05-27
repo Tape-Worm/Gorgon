@@ -265,7 +265,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the shader view.</param>
         /// <param name="startElement">Starting element to map to the view.</param>
         /// <param name="count">Number of elements to map to the view.</param>
-		/// <param name="useRaw">TRUE to use a raw shader view, FALSE to use a normal view.</param>
+		/// <param name="useRaw"><c>true</c> to use a raw shader view, <c>false</c> to use a normal view.</param>
         /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="startElement"/> or <paramref name="count"/> parameters are less than 0 or 1, respectively.  Or if the total is larger than the buffer size.</exception>
 		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics
         /// <para>The <paramref name="startElement"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependant upon the format passed, and consequently the number of elements in the buffer 
         /// may be larger or smaller depending on the view format.  For example, a 48 byte buffer with a view of R32G32B32A32_Float will have an element count of 3 (48 / 16 bytes = 3).  Whereas the same buffer with a view of R8G8B8A8_Int will 
         /// have a count of 12 (48 / 4 bytes = 12).</para>
-		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonBufferSettings.AllowRawViews">AllowRawViews</see> property set to <c>true</c> in its settings.</para>
 		/// <para>Raw views can only be used on SM5 video devices or better. </para>
 		/// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -290,14 +290,14 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the unordered access view.</param>
         /// <param name="startElement">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
-		/// <param name="useRaw">TRUE to use a raw shader view, FALSE to use a normal view.</param>
+		/// <param name="useRaw"><c>true</c> to use a raw shader view, <c>false</c> to use a normal view.</param>
         /// <returns>An unordered access view for the buffer.</returns>
         /// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="GetShaderView">Shader View</see>, only one 
         /// unordered access view can be bound to the pipeline at any given time.
         /// <para>The <paramref name="startElement"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependant upon the format passed, and consequently the number of elements in the buffer 
         /// may be larger or smaller depending on the view format.  For example, a 48 byte buffer with a view of R32G32B32A32_Float will have an element count of 3 (48 / 16 bytes = 3).  Whereas the same buffer with a view of R8G8B8A8_Int will 
         /// have a count of 12 (48 / 4 bytes = 12).</para>
-		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.GorgonBufferSettings.AllowRawViews">AllowRawViews</see> property set to <c>true</c> in its settings.</para>
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// </remarks>
 		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>

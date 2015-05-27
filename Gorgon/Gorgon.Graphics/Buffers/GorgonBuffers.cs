@@ -197,7 +197,7 @@ namespace Gorgon.Graphics
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
         /// <para>-or-</para>
@@ -506,7 +506,7 @@ namespace Gorgon.Graphics
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 4.</para>
         /// <para>-or-</para>
@@ -544,7 +544,7 @@ namespace Gorgon.Graphics
         /// <param name="name">The name of the buffer.</param>
         /// <param name="data">Data used to initialize the buffer.</param>
         /// <param name="usage">[Optional] Usage of the buffer.</param>
-        /// <param name="is32Bit">[Optional] TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+        /// <param name="is32Bit">[Optional] <c>true</c> to indicate that we're using 32 bit indices, <c>false</c> to use 16 bit indices </param>
         /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
         /// <returns>A new index buffer.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (Nothing in VB.Net).
@@ -596,7 +596,7 @@ namespace Gorgon.Graphics
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
         /// <para>-or-</para>

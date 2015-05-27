@@ -182,7 +182,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left color to compare.</param>
 		/// <param name="right">Right color to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
 		{
 			// ReSharper disable CompareOfFloatsByEqualityOperator

@@ -55,7 +55,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref DisabledPlugIn left, ref DisabledPlugIn right)
 		{
 			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)
@@ -67,7 +67,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator ==(DisabledPlugIn left, DisabledPlugIn right)
 		{
 			return Equals(ref left, ref right);
@@ -78,7 +78,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if not equal, FALSE if equal.</returns>
+		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
 		public static bool operator !=(DisabledPlugIn left, DisabledPlugIn right)
 		{
 			return !Equals(ref left, ref right);

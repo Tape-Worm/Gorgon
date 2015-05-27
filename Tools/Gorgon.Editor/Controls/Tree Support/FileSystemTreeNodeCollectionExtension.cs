@@ -69,7 +69,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="nodes">Source collection.</param>
 		/// <param name="directory">Directory to add.</param>
-		/// <param name="autoExpand">TRUE to expand the new node (if it has children) after it's been added, FALSE to leave collapsed.</param>
+		/// <param name="autoExpand"><c>true</c> to expand the new node (if it has children) after it's been added, <c>false</c> to leave collapsed.</param>
 		/// <returns>The new node.</returns>
 		public static FileSystemDirectoryNode AddDirectory(this TreeNodeCollection nodes, GorgonFileSystemDirectory directory, bool autoExpand)
 		{

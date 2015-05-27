@@ -70,7 +70,7 @@ namespace Gorgon.Editor
 		/// Property to return whether this content makes use of the property pane in the editor.
 		/// </summary>
 		/// <remarks>
-		/// Return TRUE to enable the use of the property pane, FALSE to disable the pane.  Note that if the pane is disabled, it will be invisible.
+		/// Return <c>true</c> to enable the use of the property pane, <c>false</c> to disable the pane.  Note that if the pane is disabled, it will be invisible.
 		/// </remarks>
 		bool HasProperties
 		{
@@ -81,7 +81,7 @@ namespace Gorgon.Editor
 		/// Property to return whether the content has pending changes that need saving.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="Serializer"/> property is NULL (Nothing in VB.Net), then this property will always return FALSE.
+		/// If the <see cref="Serializer"/> property is NULL (Nothing in VB.Net), then this property will always return <c>false</c>.
 		/// </remarks>
 		bool HasChanges
 		{

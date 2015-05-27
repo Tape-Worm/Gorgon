@@ -162,7 +162,7 @@ namespace Gorgon.Editor
         /// Function to determine if a plug-in has been disabled.
         /// </summary>
         /// <param name="plugIn">Plug-in to check.</param>
-        /// <returns>TRUE if the plug-in has been disabled, FALSE if not.</returns>
+        /// <returns><c>true</c> if the plug-in has been disabled, <c>false</c> if not.</returns>
 	    public static bool IsDisabled(GorgonPlugIn plugIn)
         {
             return _disabled.Contains(new DisabledPlugIn(plugIn, String.Empty));

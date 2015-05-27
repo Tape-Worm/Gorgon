@@ -119,7 +119,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
         public static bool Equals(ref GorgonVertexBufferBinding left, ref GorgonVertexBufferBinding right)
         {
             return ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
@@ -169,7 +169,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="other">The other instance.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(GorgonVertexBufferBinding other)
 		{
 		    return Equals(ref this, ref other);
@@ -181,7 +181,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="other">The other instance.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(ref GorgonVertexBufferBinding other)
 		{
 			return Equals(ref this, ref other);

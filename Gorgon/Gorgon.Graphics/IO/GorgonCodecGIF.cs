@@ -103,7 +103,7 @@ namespace Gorgon.IO
 		/// <remarks>This property will encode or decode multiple frames from or into an array.  Note that this is only supported on codecs that support multiple frames (e.g. animated Gif).  
 		/// Images that do not support multiple frames will ignore this flag.
 		/// <para>This property applies to both encoding and decoding of image data.</para>
-		/// <para>The default value is FALSE.</para>
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool UseAllFrames
 		{

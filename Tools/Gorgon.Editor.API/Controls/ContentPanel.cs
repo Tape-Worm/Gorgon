@@ -185,7 +185,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="e">Event parameters passed to the event.</param>
 		/// <remarks>
-		/// The parameter specified by <paramref name="e"/> contains allows the user to cancel the close operation. If the Cancel flag is set to TRUE, then the close operation will be cancelled.
+		/// The parameter specified by <paramref name="e"/> contains allows the user to cancel the close operation. If the Cancel flag is set to <c>true</c>, then the close operation will be cancelled.
 		/// </remarks>
 		protected virtual void OnContentClosing(GorgonCancelEventArgs e)
 		{

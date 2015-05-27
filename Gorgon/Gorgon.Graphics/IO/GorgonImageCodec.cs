@@ -125,8 +125,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to set or return the width of the image.
 		/// </summary>
-		/// <remarks>Use this to clip or scale the width of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
-		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <remarks>Use this to clip or scale the width of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to <c>true</c>.  To scale, ensure that 
+		/// the property is set to <c>false</c>.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
 		/// <para>Set this value to 0 to use the width in the file.</para>
 		/// <para>This property only applies to decoding image data.</para>
 		/// <para>The default value is 0.</para>
@@ -140,8 +140,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to set or return the height of the image.
 		/// </summary>
-		/// <remarks>Use this to clip or scale the height of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
-		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <remarks>Use this to clip or scale the height of the image.  To clip, ensure that the <see cref="Gorgon.IO.GorgonImageCodec.Clip">Clip</see> property is set to <c>true</c>.  To scale, ensure that 
+		/// the property is set to <c>false</c>.  Filtering may be applied to scaled images by the <see cref="Gorgon.IO.GorgonImageCodec.Filter">Filter</see> property.
 		/// <para>Set this value to 0 to use the height in the file.</para>
 		/// <para>This property only applies to decoding image data.</para>
 		/// <para>The default value is 0.</para>
@@ -229,11 +229,11 @@ namespace Gorgon.IO
 		/// then write-only access will be given to the UAV.</para> 
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
-        /// <para>If this value is set to TRUE, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
+        /// <para>If this value is set to <c>true</c>, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
         /// used with typed texture resources.</para>
         /// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
-		/// <para>The default value is FALSE.</para>
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccess
 		{
@@ -259,9 +259,9 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to set or return whether to clip the image or to scale it if the size is mismatched.
 		/// </summary>
-		/// <remarks>Setting this value to FALSE will scale the image to match the image data buffer size.  Setting it to TRUE will clip it to the buffer size.
+		/// <remarks>Setting this value to <c>false</c> will scale the image to match the image data buffer size.  Setting it to <c>true</c> will clip it to the buffer size.
 		/// <para>This applies to decoding images only and only when the image width or height is smaller than the width or height in the image file.</para>
-		/// <para>The default value is TRUE.</para>
+		/// <para>The default value is <c>true</c>.</para>
 		/// </remarks>
 		public bool Clip
 		{
@@ -929,7 +929,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">Stream used to read the file information.</param>
         /// <returns>
-        /// TRUE if the codec can read the file, FALSE if not.
+        /// <c>true</c> if the codec can read the file, <c>false</c> if not.
         /// </returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>

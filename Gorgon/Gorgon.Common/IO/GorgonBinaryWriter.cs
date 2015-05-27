@@ -35,15 +35,16 @@ namespace Gorgon.IO
 	/// <summary>
 	/// An extended binary writer class.
 	/// </summary>
-	/// <remarks>The <see cref="System.IO.BinaryWriter">BinaryWriter</see> object included with .NET automatically closes the underlying stream when the writer
-	/// is closed.  This object was created to allow the user to decide when to close the underlying stream.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This object extends the functionality of the <see cref="BinaryWriter"/> type by adding extra functions to write to a pointer (or <see cref="IntPtr"/>), and to generic value types.
+	/// </para>
+	/// </remarks>
 	public class GorgonBinaryWriter
 		: BinaryWriter
 	{
 		#region Variables.
-		private bool _isDisposed;		// Flag to indicate that the object was disposed.
 		private byte[] _tempBuffer;		// Temporary buffer.
-		private bool _keepOpen;			// Flag to keep the underlying stream open.
 		#endregion
 
 		#region Properties.
@@ -52,41 +53,12 @@ namespace Gorgon.IO
 		/// </summary>
 		public bool KeepStreamOpen
 		{
-			get
-			{
-				return _keepOpen;
-			}
-			set
-			{
-				_keepOpen = value;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.IO.BinaryReader"/> class and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					// Force the dispose to -not- destroy the underlying stream.
-					if (!_keepOpen)
-					{
-						BaseStream.Dispose();
-					}
-				}
-
-				_isDisposed = true;
-			}
-			
-			base.Dispose(false);
-		}
-
 		/// <summary>
 		/// Function to write the bytes pointed at by the pointer into the stream.
 		/// </summary>
@@ -296,19 +268,19 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="output">Output stream.</param>
 		/// <param name="encoder">Encoding for the binary writer.</param>
-		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen)
-			: base(output, encoder)
+		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
+			: base(output, encoder, keepStreamOpen)
 		{
-			_keepOpen = keepStreamOpen;
+			KeepStreamOpen = keepStreamOpen;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
 		/// </summary>
 		/// <param name="output">Output stream.</param>
-		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryWriter(Stream output, bool keepStreamOpen)
+		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		public GorgonBinaryWriter(Stream output, bool keepStreamOpen = false)
 			: this(output, Encoding.UTF8, keepStreamOpen)
 		{
 		}

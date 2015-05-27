@@ -473,7 +473,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function called when the content is reverted back to its original state.
         /// </summary>
-        /// <returns>TRUE if reverted, FALSE if not.</returns>
+        /// <returns><c>true</c> if reverted, <c>false</c> if not.</returns>
         protected virtual bool OnRevert()
         {
             return false;
@@ -582,7 +582,7 @@ namespace Gorgon.Editor
         /// Function to determine if a content property is available to the UI.
         /// </summary>
         /// <param name="propertyName">The name of the property to look up.</param>
-        /// <returns>TRUE if found, FALSE if not.</returns>
+        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
         public bool HasProperty(string propertyName)
@@ -637,7 +637,7 @@ namespace Gorgon.Editor
         /// Function to set a property as disabled.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <param name="disabled">TRUE if disabled, FALSE if not.</param>
+        /// <param name="disabled"><c>true</c> if disabled, <c>false</c> if not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="propertyName"/> does not exist as a property for this content.</exception>

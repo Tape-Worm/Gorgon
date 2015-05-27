@@ -293,7 +293,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// Function to determine if a character is supported by the font.
 		/// </summary>
 		/// <param name="c">Character to check.</param>
-		/// <returns>TRUE if supported, FALSE if not.</returns>
+		/// <returns><c>true</c> if supported, <c>false</c> if not.</returns>
 		private bool IsCharacterSupported(char c)
 		{
 			if ((char.IsWhiteSpace(c)) || (char.IsControl(c)))

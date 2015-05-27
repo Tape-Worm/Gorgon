@@ -273,7 +273,7 @@ namespace Gorgon.Graphics
             /// Function to determine if the list contains a resource with the specified name.
             /// </summary>
             /// <param name="name">Name of the resource.</param>
-            /// <returns>TRUE if found, FALSE if not.</returns>
+            /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
             /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
             /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
             /// <remarks>This only looks up resources bound to a view that's bound to a pipeline.</remarks>
@@ -313,7 +313,7 @@ namespace Gorgon.Graphics
             /// Function to determine if a view is bound and is also bound to the specified resource.
             /// </summary>
             /// <param name="resource">Resource to look up.</param>
-            /// <returns>TRUE if found, FALSE if not.</returns>
+            /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
             /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
             public bool Contains(GorgonResource resource)
             {

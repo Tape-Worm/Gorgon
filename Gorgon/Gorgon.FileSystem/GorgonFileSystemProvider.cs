@@ -243,7 +243,7 @@ namespace Gorgon.IO
 		/// Function to determine if a file can be read by this provider.
 		/// </summary>
 		/// <param name="physicalPath">Path to the file containing the file system.</param>
-		/// <returns>TRUE if the provider can read the packed file, FALSE if not.</returns>
+		/// <returns><c>true</c> if the provider can read the packed file, <c>false</c> if not.</returns>
 		/// <remarks>This method is applicable to packed files only.
 		/// <para>Implementors must use this method to determine if a packed file can be read by reading the header of the file.</para>
 		/// </remarks>

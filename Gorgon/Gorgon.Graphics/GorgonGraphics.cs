@@ -285,7 +285,7 @@ namespace Gorgon.Graphics
         /// Property to set or return whether object tracking is disabled.
         /// </summary>
         /// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
-        /// <para>The default value for DEBUG mode is TRUE, and for RELEASE it is set to FALSE.  Disabling object tracking will
+        /// <para>The default value for DEBUG mode is <c>true</c>, and for RELEASE it is set to <c>false</c>.  Disabling object tracking will
         /// give a slight performance increase.</para>
         /// </remarks>
         public bool IsObjectTrackingEnabled
@@ -304,9 +304,9 @@ namespace Gorgon.Graphics
         /// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
         /// </summary>
         /// <remarks>
-        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to FALSE, and the window 
-        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to TRUE, it will try to reacquire full screen mode.
-        /// <para>The default value for this is TRUE.  However, for a full screen multimonitor scenario, this should be set to FALSE.</para>
+        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to <c>false</c>, and the window 
+        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to <c>true</c>, it will try to reacquire full screen mode.
+        /// <para>The default value for this is <c>true</c>.  However, for a full screen multimonitor scenario, this should be set to <c>false</c>.</para>
         /// </remarks>
         public bool ResetFullscreenOnFocus
         {
@@ -528,8 +528,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to clear the states for the graphics object.
         /// </summary>
-        /// <param name="flush">[Optional] TRUE to flush the queued graphics object commands, FALSE to leave as is.</param>
-        /// <remarks>If <paramref name="flush"/> is set to TRUE, then a performance penalty is incurred.</remarks>
+        /// <param name="flush">[Optional] <c>true</c> to flush the queued graphics object commands, <c>false</c> to leave as is.</param>
+        /// <remarks>If <paramref name="flush"/> is set to <c>true</c>, then a performance penalty is incurred.</remarks>
         public void ClearState(bool flush = false)
         {
             if (flush)

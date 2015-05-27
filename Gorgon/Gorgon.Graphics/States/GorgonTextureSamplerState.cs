@@ -223,7 +223,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left side to evaluate.</param>
 		/// <param name="right">Right side to evaluate.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonTextureSamplerStates left, ref GorgonTextureSamplerStates right)
 		{
 			// ReSharper disable CompareOfFloatsByEqualityOperator

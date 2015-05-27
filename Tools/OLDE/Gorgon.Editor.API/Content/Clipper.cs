@@ -123,7 +123,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return whether bounds checking should be applied when clipping.
 		/// </summary>
-		/// <remarks>When this is set to TRUE, the clipped with limit the selection rectangle to the size of the texture (and its <see cref="Offset"/>).  Otherwise, 
+		/// <remarks>When this is set to <c>true</c>, the clipped with limit the selection rectangle to the size of the texture (and its <see cref="Offset"/>).  Otherwise, 
 		/// it will allow for unconstrained clipping.</remarks>
 		public bool NoBounds
 		{
@@ -688,7 +688,7 @@ namespace Gorgon.Editor
         /// Function to call in the mouse up event of the control being rendered into.
         /// </summary>
         /// <param name="e">Event parameters.</param>
-        /// <returns>TRUE if handled, FALSE if not.</returns>
+        /// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
         public bool OnMouseUp(PointingDeviceEventArgs e)
         {
             return OnMouseUp(Convert(e));
@@ -698,7 +698,7 @@ namespace Gorgon.Editor
 		/// Function to call in the mouse up event of the control being rendered into.
 		/// </summary>
 		/// <param name="e">Event parameters.</param>
-		/// <returns>TRUE if handled, FALSE if not.</returns>
+		/// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
 		public bool OnMouseUp(MouseEventArgs e)
 		{
 			if ((_clipRegion == null)
@@ -724,7 +724,7 @@ namespace Gorgon.Editor
         /// Function to call in the mouse down event of the control being rendered into.
         /// </summary>
         /// <param name="e">Event parameters.</param>
-        /// <returns>TRUE if handled, FALSE if not.</returns>
+        /// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
         public bool OnMouseDown(PointingDeviceEventArgs e)
 	    {
 	        return OnMouseDown(Convert(e));
@@ -734,7 +734,7 @@ namespace Gorgon.Editor
 		/// Function to call in the mouse down event of the control being rendered into.
 		/// </summary>
 		/// <param name="e">Event parameters.</param>
-		/// <returns>TRUE if handled, FALSE if not.</returns>
+		/// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
 		public bool OnMouseDown(MouseEventArgs e)
 		{
 			if (_clipRegion == null)
@@ -779,7 +779,7 @@ namespace Gorgon.Editor
 		/// Function to call in the mouse move event of the control being rendered into.
 		/// </summary>
 		/// <param name="e">Event parameters.</param>
-		/// <returns>TRUE if handled, FALSE if not.</returns>
+		/// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
 		public bool OnMouseMove(PointingDeviceEventArgs e)
 		{
 			return OnMouseMove(Convert(e));
@@ -789,7 +789,7 @@ namespace Gorgon.Editor
 		/// Function to call in the mouse move event of the control being rendered into.
 		/// </summary>
 		/// <param name="e">Event parameters.</param>
-		/// <returns>TRUE if handled, FALSE if not.</returns>
+		/// <returns><c>true</c> if handled, <c>false</c> if not.</returns>
 		public bool OnMouseMove(MouseEventArgs e)
 		{
 			if (_clipRegion == null)

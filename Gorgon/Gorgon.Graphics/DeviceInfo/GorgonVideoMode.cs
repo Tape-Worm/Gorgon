@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode1">A video mode to compare.</param>
 		/// <param name="mode2">A video mode to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator ==(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
 			return Equals(ref mode1, ref mode2);
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode1">A video mode to compare.</param>
 		/// <param name="mode2">A video mode to compare.</param>
-		/// <returns>TRUE if not equal, FALSE if equal.</returns>
+		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
 		public static bool operator !=(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
 			return !Equals(ref mode1, ref mode2);
@@ -160,7 +160,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left video mode to compare.</param>
 		/// <param name="right">Right video mode to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonVideoMode left, ref GorgonVideoMode right)
 		{
 			return (left.Width == right.Width) && (left.Height == right.Height) && (left.Format == right.Format) &&

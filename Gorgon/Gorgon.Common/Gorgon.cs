@@ -47,7 +47,7 @@ namespace Gorgon.Core
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
 	/// <para>The application uses an <see cref="GorgonApplication.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="GorgonApplication.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
 	/// <para>An application is started by calling its <see cref="GorgonApplication.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
-	/// Alternatively, the application can be terminated by returning FALSE from the idle loop method.</para>
+	/// Alternatively, the application can be terminated by returning <c>false</c> from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>
 	public static class GorgonApplication
@@ -101,7 +101,7 @@ namespace Gorgon.Core
 		/// Set this value to 0 to use all CPU time when the application is not focused.  The default is 10 milliseconds.
 		/// <para>This is handy in situations when the application is in the background and processing does not need to continue.  For laptops this means battery savings when the application is not focused.
 		/// </para>
-		/// <para>This property is ignore when <see cref="P:GorgonLibrary.Gorgon.AllowBackground">AllowBackground</see> is set to FALSE.</para>
+		/// <para>This property is ignore when <see cref="P:GorgonLibrary.Gorgon.AllowBackground">AllowBackground</see> is set to <c>false</c>.</para>
 		/// </remarks>
 		public static int UnfocusedSleepTime
 		{
@@ -112,7 +112,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to allow the idle loop to continue running while the window is not focused or minimized.
 		/// </summary>
-		/// <remarks>This is set to TRUE by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is FALSE, the application will suspend until it regains focus.
+		/// <remarks>This is set to <c>true</c> by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is <c>false</c>, the application will suspend until it regains focus.
 		/// <para>There will be a delay for code that is executing in the background when the <see cref="P:GorgonLibrary.Gorgon.UnfocusedSleepTime">UnfocusedSleepTime</see> property is set greater than 0.</para>
 		/// </remarks>
 		public static bool AllowBackground
@@ -188,8 +188,8 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return if the app is in a running state or not.
 		/// </summary>
-		/// <remarks>This flag is set to TRUE when the application is in a running state and FALSE when it is not.</remarks>
-		/// <value>TRUE if the application is running, and FALSE if not.</value>
+		/// <remarks>This flag is set to <c>true</c> when the application is in a running state and <c>false</c> when it is not.</remarks>
+		/// <value><c>true</c> if the application is running, and <c>false</c> if not.</value>
 		public static bool IsRunning
 		{
 			get;
@@ -280,7 +280,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to initialize the main form and idle loop..
 		/// </summary>
-		/// <returns>TRUE if the application has signalled to quit before it starts running, FALSE to continue.</returns>
+		/// <returns><c>true</c> if the application has signalled to quit before it starts running, <c>false</c> to continue.</returns>
 		private static bool Initialize()
 		{
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.

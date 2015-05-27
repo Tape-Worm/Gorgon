@@ -73,7 +73,7 @@ namespace Gorgon.Editor
 			/// Initializes a new instance of the <see cref="CutCopyObject"/> struct.
 			/// </summary>
 			/// <param name="fullPath">Path to the object being cut/copied.</param>
-			/// <param name="isCut">TRUE if the object is being cut instead of copied, FALSE if not.</param>
+			/// <param name="isCut"><c>true</c> if the object is being cut instead of copied, <c>false</c> if not.</param>
 			public CutCopyObject(string fullPath, bool isCut)
 			{
 				FullPath = fullPath;
@@ -123,7 +123,7 @@ namespace Gorgon.Editor
         /// Function to include/exclude all files under a directory.
         /// </summary>
         /// <param name="directory">The directory containing the files.</param>
-        /// <param name="exclude">TRUE to exclude the files, FALSE to include.</param>
+        /// <param name="exclude"><c>true</c> to exclude the files, <c>false</c> to include.</param>
 	    private static void IncludeExcludeAll(GorgonFileSystemDirectory directory, bool exclude)
 	    {
             IEnumerable<GorgonFileSystemFileEntry> files =
@@ -386,7 +386,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="dialog">Dialog to update.</param>
 		/// <param name="extensions">Extensions to use as a filter.</param>
-		/// <param name="includeAllFiles">TRUE to include all files in the filter, FALSE to exclude.</param>
+		/// <param name="includeAllFiles"><c>true</c> to include all files in the filter, <c>false</c> to exclude.</param>
 		/// <param name="allSupportedDesc">The description to apply to the all supported files line.  Setting this value will add a filter for all supported file types.</param>
 		/// <param name="defaultExt">The default extension to append if none is given.</param>
 		/// <param name="defaultFilterExpr">The expression used to determine the default filter.</param>
@@ -531,7 +531,7 @@ namespace Gorgon.Editor
         /// Function called when a file export is completed.
         /// </summary>
         /// <param name="cancelled">Flag to indicate whether the operation was cancelled or not.</param>
-        /// <param name="importExport">TRUE if an import, FALSE if an export.</param>
+        /// <param name="importExport"><c>true</c> if an import, <c>false</c> if an export.</param>
         /// <param name="filesCopied">The number of files copied.</param>
         /// <param name="totalFiles">The total number of files to copy.</param>
 	    private void FileImportExportCompleted(bool cancelled, bool importExport, int filesCopied, int totalFiles)
@@ -582,7 +582,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a file is able to be imported or not.
 		/// </summary>
 		/// <param name="file">File to evaluate.</param>
-		/// <returns>TRUE if the file can be imported or FALSE if not.</returns>
+		/// <returns><c>true</c> if the file can be imported or <c>false</c> if not.</returns>
 		private bool EvaluateFileImport(GorgonFileSystemFileEntry file)
 		{
 			bool result = false;
@@ -815,7 +815,7 @@ namespace Gorgon.Editor
         /// Function to determine if a directory has excluded files.
         /// </summary>
         /// <param name="directory">Directory to evaluate.</param>
-        /// <returns>TRUE if excluded files are present, FALSE if not.</returns>
+        /// <returns><c>true</c> if excluded files are present, <c>false</c> if not.</returns>
 	    private static bool DirectoryHasExcludedFiles(GorgonFileSystemDirectory directory)
         {
             IEnumerable<GorgonFileSystemFileEntry> files = ScratchArea.ScratchFiles.FindFiles(directory.FullPath,
@@ -829,7 +829,7 @@ namespace Gorgon.Editor
         /// Function to determine if a directory has included files.
         /// </summary>
         /// <param name="directory">Directory to evaluate.</param>
-        /// <returns>TRUE if excluded files are present, FALSE if not.</returns>
+        /// <returns><c>true</c> if excluded files are present, <c>false</c> if not.</returns>
         private static bool DirectoryHasIncludedFiles(GorgonFileSystemDirectory directory)
         {
             IEnumerable<GorgonFileSystemFileEntry> files = ScratchArea.ScratchFiles.FindFiles(directory.FullPath,
@@ -1242,7 +1242,7 @@ namespace Gorgon.Editor
 		/// Function called when the name property of the content has been changed.
 		/// </summary>
 		/// <param name="newName">The new name for the content.</param>
-		/// <returns>TRUE if successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
 		private void ContentNamePropertyChanged(string newName)
 		{
 			Cursor.Current = Cursors.WaitCursor;
@@ -1452,7 +1452,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to pop up the save confirmation dialog.
 		/// </summary>
-		/// <returns>TRUE if canceled, FALSE if not.</returns>
+		/// <returns><c>true</c> if canceled, <c>false</c> if not.</returns>
 		private bool ConfirmSave()
 		{
 			// Ensure both the content and the file change flags are checked.
@@ -1686,7 +1686,7 @@ namespace Gorgon.Editor
         /// Function to determine if all the files in this directory are blocked or not.
         /// </summary>
         /// <param name="directory">Directory to evaluate.</param>
-        /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
+        /// <returns><c>true</c> if some files can be shown, <c>false</c> if not.</returns>
         private bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
         {
 	        return directory.Files.Count != 0 &&
@@ -1725,7 +1725,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to retrieve the directory from the selected node.
         /// </summary>
-        /// <param name="expandDirectory">TRUE to expand the directory for the selected node, FALSE to leave alone.</param>
+        /// <param name="expandDirectory"><c>true</c> to expand the directory for the selected node, <c>false</c> to leave alone.</param>
         /// <returns>The selected node.</returns>
         private TreeNodeDirectory GetSelectedDirectoryNode(bool expandDirectory)
         {
@@ -2650,7 +2650,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="sourceNode">Source node directory to move/copy.</param>
         /// <param name="destinationNode">The destination directory for the copied/moved node.</param>
-        /// <param name="isCopy">TRUE to copy the directory, FALSE to move.</param>
+        /// <param name="isCopy"><c>true</c> to copy the directory, <c>false</c> to move.</param>
         /// <returns>The new node.</returns>
 	    private TreeNodeEditor MoveCopyNodeDirectory(TreeNodeDirectory sourceNode,
 	                                                 TreeNodeDirectory destinationNode,
@@ -2738,8 +2738,8 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="sourceFile">Source file that contains the dependencies.</param>
 		/// <param name="destFile">Destination file to contain the dependencies.</param>
-		/// <param name="isCopy">TRUE if the update is from a copy operation, FALSE if it's from a cut operation.</param>
-		/// <param name="saveMetaData">TRUE to save the meta data file, FALSE to leave alone.</param>
+		/// <param name="isCopy"><c>true</c> if the update is from a copy operation, <c>false</c> if it's from a cut operation.</param>
+		/// <param name="saveMetaData"><c>true</c> to save the meta data file, <c>false</c> to leave alone.</param>
 		private static void UpdateEditorFile(string sourceFile, string destFile, bool isCopy, bool saveMetaData)
 		{
 			EditorFile file;
@@ -2795,8 +2795,8 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="sourceFile">Source file that contains the dependencies.</param>
 		/// <param name="destFile">Destination file to contain the dependencies.</param>
-		/// <param name="isCopy">TRUE if the update is from a copy operation, FALSE if it's from a cut operation.</param>
-		/// <param name="saveMetaData">TRUE to save the meta data file, FALSE to leave alone.</param>
+		/// <param name="isCopy"><c>true</c> if the update is from a copy operation, <c>false</c> if it's from a cut operation.</param>
+		/// <param name="saveMetaData"><c>true</c> to save the meta data file, <c>false</c> to leave alone.</param>
 		private static void UpdateDependencyList(string sourceFile, string destFile, bool isCopy, bool saveMetaData)
 		{
 			if (!EditorMetaDataFile.Dependencies.ContainsKey(sourceFile))
@@ -2842,7 +2842,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="sourceNode">Source node file to move/copy.</param>
 		/// <param name="destinationNode">The destination directory for the copied/moved node.</param>
-		/// <param name="isCopy">TRUE to copy the file, FALSE to move.</param>
+		/// <param name="isCopy"><c>true</c> to copy the file, <c>false</c> to move.</param>
 		/// <returns>The new node.</returns>
 		private TreeNodeEditor MoveCopyNodeFile(TreeNodeFile sourceNode, TreeNodeDirectory destinationNode, bool isCopy)
 		{
@@ -2915,7 +2915,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="sourceNode">Source node to move/copy.</param>
 		/// <param name="destinationNode">Destination directory node that will receive the copied/moved node.</param>
-		/// <param name="isCopy">TRUE if the function should copy instead of move.</param>
+		/// <param name="isCopy"><c>true</c> if the function should copy instead of move.</param>
 		/// <param name="cutCopyObject">The reference to the object being cut in a cut operation.</param>
 		private void MoveCopyNode(TreeNodeEditor sourceNode, TreeNodeDirectory destinationNode, bool isCopy, CutCopyObject? cutCopyObject = null)
 		{

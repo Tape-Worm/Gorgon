@@ -426,7 +426,7 @@ namespace Gorgon.Renderers
 		/// <param name="text">Text to draw.</param>
 		/// <param name="position">Position of the text.</param>
 		/// <param name="color">Color of the text.</param>
-		/// <param name="useShadow">TRUE to use a shadow, FALSE to display normally.</param>
+		/// <param name="useShadow"><c>true</c> to use a shadow, <c>false</c> to display normally.</param>
 		/// <param name="shadowOffset">Offset of the shadow, in pixels.</param>
 		/// <param name="shadowOpacity">Opacity of the shadow.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -456,7 +456,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="font">Font to use when measuring.</param>
 		/// <param name="text">Text to measure.</param>
-		/// <param name="wordWrap">TRUE if word wrapping should be used.</param>
+		/// <param name="wordWrap"><c>true</c> if word wrapping should be used.</param>
 		/// <param name="bounds">Boundaries for the size of the string.</param>
 		/// <returns>The size of the string.</returns>
 		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, SizeF bounds)

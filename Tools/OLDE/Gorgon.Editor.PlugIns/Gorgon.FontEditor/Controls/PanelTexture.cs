@@ -586,7 +586,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Function to execute during idle time.
 		/// </summary>
-		/// <returns>TRUE to continue executing, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue executing, <c>false</c> to stop.</returns>
 		private bool Idle()
 		{
 			_renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;

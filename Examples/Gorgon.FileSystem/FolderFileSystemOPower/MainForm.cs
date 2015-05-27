@@ -72,7 +72,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to handle idle time processing.
 		/// </summary>
-		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
+		/// <returns><c>true</c> to continue processing, <c>false</c> to stop.</returns>
 		private bool Idle()
 		{
 			int width = ClientSize.Width;

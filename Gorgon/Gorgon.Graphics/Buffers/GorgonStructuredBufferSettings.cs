@@ -38,7 +38,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow unordered access to the buffer.
 		/// </summary>
 		/// <remarks>Unordered access views require a video device with SM5 capabilities.
-		/// <para>The default value is FALSE.</para>
+		/// <para>The default value is <c>false</c>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccessViews
 		{
@@ -49,7 +49,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to allow shader resource views for this buffer.
 		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
+		/// <remarks>The default value is <c>true</c>.</remarks>
 		public bool AllowShaderViews
 		{
 			get;
@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to create a default shader view for this buffer.
 		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
+		/// <remarks>The default value is <c>true</c>.</remarks>
 		public bool CreateDefaultShaderView
 		{
 			get;
@@ -87,7 +87,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether a buffer will allow raw views.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		/// <remarks>This value does not apply to structured buffers will always return <c>false</c>.</remarks>
 		bool IBufferSettings.AllowRawViews
 		{
 			get
@@ -104,7 +104,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether the buffer will be used as an indirect argument buffer.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		/// <remarks>This value does not apply to structured buffers will always return <c>false</c>.</remarks>
 		bool IBufferSettings.AllowIndirectArguments
 		{
 			get
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		/// <remarks>This value does not apply to structured buffers will always return <c>false</c>.</remarks>
 		bool IBufferSettings.IsOutput
 		{
 			get

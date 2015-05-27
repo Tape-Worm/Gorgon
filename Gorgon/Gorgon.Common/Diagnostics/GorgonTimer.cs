@@ -287,7 +287,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTimer"/> class.
 		/// </summary>
-		/// <param name="useHighResolution">TRUE to use a high resolution timer, FALSE to use the standard timer.</param>
+		/// <param name="useHighResolution"><c>true</c> to use a high resolution timer, <c>false</c> to use the standard timer.</param>
 		/// <remarks>The high resolution timer uses QueryPerformanceCounter, and the standard timer uses timeGetTime.</remarks>
 		public GorgonTimer(bool useHighResolution)
 		{

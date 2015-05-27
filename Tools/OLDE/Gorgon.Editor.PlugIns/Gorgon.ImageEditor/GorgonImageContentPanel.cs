@@ -626,7 +626,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to confirm whether to overwrite the currently selected image buffer.
 		/// </summary>
-		/// <returns>TRUE to overwrite, FALSE to stop.</returns>
+		/// <returns><c>true</c> to overwrite, <c>false</c> to stop.</returns>
 	    private bool ConfirmBufferOverwrite()
 	    {
 			// If we have data in this buffer, then ask if we want to over write it.
@@ -1780,7 +1780,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Function to draw the previous/next cube array animation.
         /// </summary>
-        /// <param name="next">TRUE if moving to the next cube array, FALSE if moving to the previous cube array.</param>
+        /// <param name="next"><c>true</c> if moving to the next cube array, <c>false</c> if moving to the previous cube array.</param>
         private void DrawPrevNextCubeAnimation(bool next)
         {
             if (_animStartTime.EqualsEpsilon(0))
@@ -1884,7 +1884,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to draw the animation for moving to the next depth slice.
 		/// </summary>
-		/// <param name="next">TRUE to move to the next slice, FALSE to move to the previous slice.</param>
+		/// <param name="next"><c>true</c> to move to the next slice, <c>false</c> to move to the previous slice.</param>
 		private void DrawPrevNextSliceAnimation(bool next)
 		{
 			int currentSlice = _content.DepthSlice;
@@ -1929,7 +1929,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to draw the animation for moving to the next array index.
 		/// </summary>
-		/// <param name="next">TRUE to move to the next index, FALSE to move to the previous index.</param>
+		/// <param name="next"><c>true</c> to move to the next index, <c>false</c> to move to the previous index.</param>
 	    private void DrawPrevNextArrayAnimation(bool next)
 		{
 			int currentIndex = _content.ArrayIndex;

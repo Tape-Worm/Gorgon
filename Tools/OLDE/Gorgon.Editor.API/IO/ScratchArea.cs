@@ -300,7 +300,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the method that is called when the file import/export is completed or cancelled.
         /// </summary>
-        /// <remarks>The first parameter will be TRUE if the export is cancelled, the 2nd indicates TRUE for import, FALSE for export, the third is the number of files imported or exported, and the fourth is the total number of files.</remarks>
+        /// <remarks>The first parameter will be <c>true</c> if the export is cancelled, the 2nd indicates <c>true</c> for import, <c>false</c> for export, the third is the number of files imported or exported, and the fourth is the total number of files.</remarks>
         public static Action<bool, bool, int, int> ImportExportFileCompleteAction
         {
             get;
@@ -584,7 +584,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the path is a root path or system location.
 		/// </summary>
 		/// <param name="path">Path to evaluate.</param>
-		/// <returns>TRUE if a system location or root directory.</returns>
+		/// <returns><c>true</c> if a system location or root directory.</returns>
 		private static bool IsSystemLocation(string path)
 		{
 			var sysRoot = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
@@ -927,7 +927,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="file">File to move.</param>
 		/// <param name="destination">Destination directory/file.</param>
-		/// <param name="forceOverwrite">TRUE to force an overwrite if the file exists, FALSE to prompt the user.</param>
+		/// <param name="forceOverwrite"><c>true</c> to force an overwrite if the file exists, <c>false</c> to prompt the user.</param>
 		/// <returns>The new file system file or NULL if the file was not copied.</returns>
 		public static GorgonFileSystemFileEntry Move(GorgonFileSystemFileEntry file, string destination, bool forceOverwrite)
 		{
@@ -966,7 +966,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="file">File to copy.</param>
         /// <param name="destination">Destination file name or directory.</param>
-        /// <param name="forceOverwrite">TRUE to force an overwrite if the file already exists, FALSE to prompt the user.</param>
+        /// <param name="forceOverwrite"><c>true</c> to force an overwrite if the file already exists, <c>false</c> to prompt the user.</param>
         /// <returns>The new file system file or NULL if the file was not copied.</returns>
 	    public static GorgonFileSystemFileEntry Copy(GorgonFileSystemFileEntry file, string destination, bool forceOverwrite)
         {
@@ -1409,9 +1409,9 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="file">File to export.</param>
         /// <param name="destinationPath">Path to export the file into.</param>
-        /// <param name="overwriteIfExists">TRUE to overwrite the file if it already exists, FALSE to prompt.</param>
+        /// <param name="overwriteIfExists"><c>true</c> to overwrite the file if it already exists, <c>false</c> to prompt.</param>
         /// <param name="dependencyCount">Count of dependency files being exported with the file.</param>
-        /// <returns>TRUE if the export was successul, FALSE if not.</returns>
+        /// <returns><c>true</c> if the export was successul, <c>false</c> if not.</returns>
         public static bool Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists, int dependencyCount = 0)
         {
             Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in single file Export");
@@ -1571,7 +1571,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to destroy the current scratch area.
 		/// </summary>
-		/// <returns>TRUE if the clean up operation was successful, FALSE if not.</returns>
+		/// <returns><c>true</c> if the clean up operation was successful, <c>false</c> if not.</returns>
 		public static bool DestroyScratchArea()
 		{
 			if (string.IsNullOrWhiteSpace(ScratchPath))
@@ -1745,7 +1745,7 @@ namespace Gorgon.Editor
 		/// Function to return whether or not a file is in the blocked list.
 		/// </summary>
 		/// <param name="file">File to check.</param>
-		/// <returns>TRUE if blocked, FALSE if not.</returns>
+		/// <returns><c>true</c> if blocked, <c>false</c> if not.</returns>
 		public static bool IsBlocked(GorgonFileSystemFileEntry file)
 		{
 			return _blockedFiles.Contains(file.Name);

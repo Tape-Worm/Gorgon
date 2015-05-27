@@ -144,7 +144,7 @@ namespace Gorgon.Graphics
         /// <summary>
 		/// Function called if this buffer is attached to a swap chain and it's been resized.
 		/// </summary>
-		/// <returns>TRUE if this depth buffer was bound to the pipeline, FALSE if not.</returns>
+		/// <returns><c>true</c> if this depth buffer was bound to the pipeline, <c>false</c> if not.</returns>
 		internal bool OnDepthStencilResize()
 		{
 			bool result = (Graphics.Output.DepthStencilView != null) && (Graphics.Output.DepthStencilView.Resource == this);

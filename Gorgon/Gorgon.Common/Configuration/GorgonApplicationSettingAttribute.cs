@@ -31,7 +31,7 @@ namespace Gorgon.Configuration
 	/// <summary>
 	/// An attribute defining whether a property is to be used as an application setting.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property, Inherited=true, AllowMultiple=false)]
+	[AttributeUsage(AttributeTargets.Property)]
 	public sealed class ApplicationSettingAttribute
 		: Attribute
 	{

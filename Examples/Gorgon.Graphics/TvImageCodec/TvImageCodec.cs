@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="stream">Stream used to read the file information.</param>
         /// <returns>
-        /// TRUE if the codec can read the file, FALSE if not.
+        /// <c>true</c> if the codec can read the file, <c>false</c> if not.
         /// </returns>
         /// <remarks>
         /// This is the method we'll use to determine if the data in the stream can actually be read by our codec.  Typically this is done by a "magic number" consisting of a set of bytes 

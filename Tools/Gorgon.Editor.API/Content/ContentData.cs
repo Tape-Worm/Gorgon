@@ -188,7 +188,7 @@ namespace Gorgon.Editor
 		/// Property to return whether the content has pending changes that need saving.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="Serializer" /> property is NULL (Nothing in VB.Net), then this property will always return FALSE.
+		/// If the <see cref="Serializer" /> property is NULL (Nothing in VB.Net), then this property will always return <c>false</c>.
 		/// </remarks>
 		[Browsable(false)]
 		public bool HasChanges

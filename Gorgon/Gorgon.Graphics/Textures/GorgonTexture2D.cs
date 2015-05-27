@@ -499,7 +499,7 @@ namespace Gorgon.Graphics
         /// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data.</param>
         /// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into.</param>
         /// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
-        /// <param name="unsafeCopy">[Optional] TRUE to disable all range checking for coorindates, FALSE to clip coorindates to safe ranges.</param>
+        /// <param name="unsafeCopy">[Optional] <c>true</c> to disable all range checking for coorindates, <c>false</c> to clip coorindates to safe ranges.</param>
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
 	    /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
 	    /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
@@ -508,9 +508,9 @@ namespace Gorgon.Graphics
 	    /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
 	    /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
 	    /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
-        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to TRUE it will 
+        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to <c>true</c> it will 
         /// just pass the coordinates without testing and adjusting for clipping.  If your coordinates are outside of the source/destination texture range, then the behaviour will be undefined (i.e. depending on your 
-        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to TRUE.</para>
+        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to <c>true</c>.</para>
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
 	    /// accessing the sub resource.</para>
 	    /// </remarks>
@@ -561,7 +561,7 @@ namespace Gorgon.Graphics
         /// <param name="sourceRange">The dimensions of the source area to copy.</param>
         /// <param name="destX">Horizontal offset into the destination texture to place the copied data.</param>
         /// <param name="destY">Vertical offset into the destination texture to place the copied data.</param>
-        /// <param name="unsafeCopy">[Optional] TRUE to disable all range checking for coorindates, FALSE to clip coorindates to safe ranges.</param>
+        /// <param name="unsafeCopy">[Optional] <c>true</c> to disable all range checking for coorindates, <c>false</c> to clip coorindates to safe ranges.</param>
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
@@ -570,9 +570,9 @@ namespace Gorgon.Graphics
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
-        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to TRUE it will 
+        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to <c>true</c> it will 
         /// just pass the coordinates without testing and adjusting for clipping.  If your coordinates are outside of the source/destination texture range, then the behaviour will be undefined (i.e. depending on your 
-        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to TRUE.</para>
+        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to <c>true</c>.</para>
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
         /// </remarks>
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics
         /// <param name="sourceMipLevel">The mip map level of the sub resource to copy.</param>
         /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
         /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
-        /// <param name="unsafeCopy">[Optional] TRUE to disable all range checking for coorindates, FALSE to clip coorindates to safe ranges.</param>
+        /// <param name="unsafeCopy">[Optional] <c>true</c> to disable all range checking for coorindates, <c>false</c> to clip coorindates to safe ranges.</param>
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  
         /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
@@ -610,9 +610,9 @@ namespace Gorgon.Graphics
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
-        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to TRUE it will 
+        /// <para>The <paramref name="unsafeCopy"/> parameter is meant to provide a performance increase by skipping any checking of the destination and source coorindates passed in to the function.  When set to <c>true</c> it will 
         /// just pass the coordinates without testing and adjusting for clipping.  If your coordinates are outside of the source/destination texture range, then the behaviour will be undefined (i.e. depending on your 
-        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to TRUE.</para>
+        /// video driver, it may clip, or throw an exception or do nothing).  Care must be taken to ensure the coordinates fit within the source and destination if this parameter is set to <c>true</c>.</para>
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
         /// </remarks>

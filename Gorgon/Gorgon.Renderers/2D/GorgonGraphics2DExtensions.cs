@@ -41,7 +41,7 @@ namespace Gorgon.Graphics
         /// Function to create a new 2D renderer interface.
         /// </summary>
         /// <param name="target">Default target for the renderer.</param>
-        /// <param name="systemCreatedSwap">TRUE if the system generated the swap chain, FALSE if not.</param>
+        /// <param name="systemCreatedSwap"><c>true</c> if the system generated the swap chain, <c>false</c> if not.</param>
         /// <param name="vertexCacheSize">The number of vertices that can be placed in the vertex cache.</param>
         /// <returns>A new 2D graphics interface.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -97,7 +97,7 @@ namespace Gorgon.Graphics
 		/// <param name="width">Width of the video mode used for rendering.</param>
 		/// <param name="height">Height of the video mode used for rendering.</param>
 		/// <param name="format">[Optional] Format of the video mode used for rendering.</param>
-		/// <param name="isWindowed">[Optional] TRUE to use windowed mode, FALSE to to use full screen mode.</param>
+		/// <param name="isWindowed">[Optional] <c>true</c> to use windowed mode, <c>false</c> to to use full screen mode.</param>
 		/// <param name="depthStencilFormat">[Optional] Depth/stencil buffer format.</param>
 		/// <param name="vertexCacheSize">[Optional] The number of vertices that the renderer will cache when drawing.</param>
 		/// <returns>A new 2D graphics interface.</returns>

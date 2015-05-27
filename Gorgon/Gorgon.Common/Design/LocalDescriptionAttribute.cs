@@ -34,7 +34,7 @@ namespace Gorgon.Design
 	/// <summary>
 	/// A localizable version of the description attribute.
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false,Inherited = true)]
+	[AttributeUsage(AttributeTargets.Property)]
 	public class LocalDescriptionAttribute
 		: DescriptionAttribute
 	{

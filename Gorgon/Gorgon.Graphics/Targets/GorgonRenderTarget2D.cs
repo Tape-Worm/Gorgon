@@ -227,7 +227,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function called when the attached swap chain is resized.
 		/// </summary>
-		/// <returns>TRUE if the swap chain was bound to slot 0, and needs to be rebound.</returns>
+		/// <returns><c>true</c> if the swap chain was bound to slot 0, and needs to be rebound.</returns>
 		internal bool OnSwapChainResize()
 		{
 			var currentTarget = Graphics.Output.GetRenderTarget(0);

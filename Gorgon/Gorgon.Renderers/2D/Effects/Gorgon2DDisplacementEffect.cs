@@ -221,7 +221,7 @@ namespace Gorgon.Renderers
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
-		/// TRUE to continue rendering, FALSE to exit.
+		/// <c>true</c> to continue rendering, <c>false</c> to exit.
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
@@ -269,7 +269,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="pass">Pass to render.</param>
 		/// <returns>
-		/// TRUE to continue rendering, FALSE to stop.
+		/// <c>true</c> to continue rendering, <c>false</c> to stop.
 		/// </returns>
 		protected override bool OnBeforePassRender(GorgonEffectPass pass)
 		{

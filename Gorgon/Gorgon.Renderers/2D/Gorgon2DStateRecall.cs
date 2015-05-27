@@ -198,7 +198,7 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Function to restore the previous states.
         /// </summary>
-        /// <param name="disposing">TRUE to restore states just for the graphics API on diposal of the 2D renderer, FALSE to restore all states.</param>
+        /// <param name="disposing"><c>true</c> to restore states just for the graphics API on diposal of the 2D renderer, <c>false</c> to restore all states.</param>
         internal void Restore(bool disposing)
         {
 	        if (_uavs.Length > 0)

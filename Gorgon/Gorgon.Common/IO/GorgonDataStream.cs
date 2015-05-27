@@ -32,7 +32,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.IO;
 using Gorgon.Native;
 using Gorgon.Diagnostics;
 
@@ -307,7 +306,7 @@ namespace Gorgon.IO
 		/// Function to determine if marshalling is required.
 		/// </summary>
 		/// <param name="type">Type to examine.</param>
-		/// <returns>TRUE if the type requires marshalling, FALSE if not.</returns>
+		/// <returns><c>true</c> if the type requires marshalling, <c>false</c> if not.</returns>
 		private static bool UseMarshalling(Type type)
 		{
 			var members = type.GetMembers().Where(item => item.MemberType == MemberTypes.Property || item.MemberType == MemberTypes.Field);
@@ -1774,9 +1773,9 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of data to marshal.</typeparam>
 		/// <param name="data">Data to marshal.</param>
-		/// <param name="deleteContents">TRUE to remove any pre-allocated data within the data, FALSE to leave alone.</param>
+		/// <param name="deleteContents"><c>true</c> to remove any pre-allocated data within the data, <c>false</c> to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
-		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
+		/// <para>Passing <c>false</c> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr" /> method.</para>
 		/// </remarks>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>

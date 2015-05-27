@@ -28,6 +28,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics
@@ -61,9 +62,11 @@ namespace Gorgon.Diagnostics
 	{
 		#region Variables.
 		// List of machine specific environment variables.
-		private static ConcurrentDictionary<string, string> _machineVariables;
+		private static Dictionary<string, string> _machineVariables;
 		// List of user specific environment variables.
-		private static ConcurrentDictionary<string, string> _userVariables;			
+		private static Dictionary<string, string> _userVariables;
+		// Synchronization primitive for threads.
+		private static int _syncPrimitive;
 		#endregion
 
 		#region Properties.
@@ -194,7 +197,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return a list of machine specific environment variables.
 		/// </summary>
-		public static IEnumerable<KeyValuePair<string, string>> SystemEnvironmentVariables
+		public static IReadOnlyDictionary<string, string> SystemEnvironmentVariables
 		{
 			get
 			{
@@ -205,7 +208,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return a list of user specific environment variables.
 		/// </summary>
-		public static IEnumerable<KeyValuePair<string, string>> UserEnvironmentVariables
+		public static IReadOnlyDictionary<string, string> UserEnvironmentVariables
 		{
 			get
 			{
@@ -220,21 +223,33 @@ namespace Gorgon.Diagnostics
 		/// </summary>
 		public static void RefreshEnvironmentVariables()
 		{
-			IDictionary oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
-
-			_machineVariables = new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
-			_userVariables = new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
-
-			foreach (DictionaryEntry variable in oldVariables)
+			try
 			{
-				_machineVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
+				if (Interlocked.Increment(ref _syncPrimitive) > 1)
+				{
+					return;
+				}
+
+				_machineVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+				_userVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+				IDictionary systemVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+				IDictionary userVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
+
+				foreach (DictionaryEntry variable in systemVariables)
+				{
+					_machineVariables.Add(variable.Key.ToString(), variable.Value.ToString());
+				}
+
+
+				foreach (DictionaryEntry variable in userVariables)
+				{
+					_userVariables.Add(variable.Key.ToString(), variable.Value.ToString());
+				}
 			}
-
-			oldVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
-
-			foreach (DictionaryEntry variable in oldVariables)
+			finally
 			{
-				_userVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
+				Interlocked.Decrement(ref _syncPrimitive);
 			}
 		}
 		#endregion

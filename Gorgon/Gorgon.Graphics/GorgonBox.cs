@@ -265,7 +265,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 	    public static bool Equals(ref GorgonBox left, ref GorgonBox right)
 	    {
 	        return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
@@ -294,7 +294,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
+        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 	    public static bool operator ==(GorgonBox left, GorgonBox right)
 	    {
 	        return Equals(ref left, ref right);
@@ -305,7 +305,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns>TRUE if not equal, FALSE if equal.</returns>
+        /// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
         public static bool operator !=(GorgonBox left, GorgonBox right)
 	    {
 	        return !Equals(ref left, ref right);

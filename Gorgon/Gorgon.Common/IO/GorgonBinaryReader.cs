@@ -33,17 +33,18 @@ using Gorgon.Native;
 namespace Gorgon.IO
 {
 	/// <summary>
-	/// An extended binary writer class.
+	/// An extended binary reader class.
 	/// </summary>
-	/// <remarks>The <see cref="System.IO.BinaryReader">BinaryReader</see> object included with .NET automatically closes the underlying stream when the reader
-	/// is closed.  This object was created to allow the user to decide when to close the underlying stream.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This object extends the functionality of the <see cref="BinaryReader"/> type by adding extra functions to read from a pointer (or <see cref="IntPtr"/>), and from generic value types.
+	/// </para>
+	/// </remarks>
 	public class GorgonBinaryReader
 		: BinaryReader
 	{
 		#region Variables.
-		private bool _isDisposed;			// Flag to indicate that the object was disposed.
 		private byte[] _tempBuffer;			// Temporary buffer.
-		private bool _keepOpen;				// Flag to keep the underlying stream open.
 		#endregion
 
 		#region Properties.
@@ -52,41 +53,12 @@ namespace Gorgon.IO
 		/// </summary>
 		public bool KeepStreamOpen
 		{
-			get
-			{
-				return _keepOpen;
-			}
-			set
-			{
-				_keepOpen = value;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.IO.BinaryReader"/> class and optionally releases the managed resources.
-		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					// Force the dispose to -not- destroy the underlying stream.
-					if (!_keepOpen)
-					{
-						BaseStream.Dispose();
-					}
-				}
-
-				_isDisposed = true;
-			}
-			
-			base.Dispose(false);
-		}
-
 		/// <summary>
 		/// Function to read bytes from a stream into a buffer pointed at by the pointer.
 		/// </summary>
@@ -314,19 +286,19 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="input">Input stream.</param>
 		/// <param name="encoder">Encoding for the binary reader.</param>
-		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen)
-			: base(input, encoder)
+		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		public GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
+			: base(input, encoder, keepStreamOpen)
 		{
-			_keepOpen = keepStreamOpen;
+			KeepStreamOpen = keepStreamOpen;
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
 		/// </summary>
 		/// <param name="input">Input stream.</param>
-		/// <param name="keepStreamOpen">TRUE to keep the underlying stream open when the writer is closed, FALSE to close when done.</param>
-		public GorgonBinaryReader(Stream input, bool keepStreamOpen)
+		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		public GorgonBinaryReader(Stream input, bool keepStreamOpen = false)
 			: this(input, Encoding.UTF8, keepStreamOpen)
 		{
 		}

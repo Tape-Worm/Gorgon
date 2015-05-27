@@ -204,7 +204,7 @@ namespace Gorgon.Renderers
 		/// <param name="font">Font to use for the text.</param>
 		/// <param name="text">Initial text to display.</param>
 		/// <param name="color">Color of the text.</param>
-		/// <param name="shadowed">TRUE to place a shadow behind the text, FALSE to display normally.</param>
+		/// <param name="shadowed"><c>true</c> to place a shadow behind the text, <c>false</c> to display normally.</param>
 		/// <param name="shadowOffset">Offset of the shadow.</param>
 		/// <param name="shadowOpacity">Opacity for the shadow.</param>
 		/// <returns>A new text object.</returns>
@@ -366,7 +366,7 @@ namespace Gorgon.Renderers
 		/// <param name="point1">First point in the triangle.</param>
 		/// <param name="point2">Second point in the triangle.</param>
 		/// <param name="point3">Third point in the triangle.</param>
-		/// <param name="filled">TRUE to create a filled triangle, FALSE to create an unfilled triangle.</param>
+		/// <param name="filled"><c>true</c> to create a filled triangle, <c>false</c> to create an unfilled triangle.</param>
 		/// <returns>A new triangle primitive object.</returns>
 		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:GorgonLibrary.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -401,7 +401,7 @@ namespace Gorgon.Renderers
 		/// <param name="name">Name of the rectangle.</param>
 		/// <param name="rectangle">Rectangle dimensions.</param>
 		/// <param name="color">Color of the rectangle.</param>
-		/// <param name="filled">TRUE to create a filled rectangle, FALSE to create an empty rectangle.</param>
+		/// <param name="filled"><c>true</c> to create a filled rectangle, <c>false</c> to create an empty rectangle.</param>
 		/// <returns>A new rectangle primitive object.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
@@ -507,7 +507,7 @@ namespace Gorgon.Renderers
 		/// <param name="position">Position of the ellipse.</param>
 		/// <param name="size">Size of the ellipse.</param>
 		/// <param name="color">Color of the ellipse.</param>
-		/// <param name="isFilled">TRUE if the ellipse should be filled, FALSE if not.</param>
+		/// <param name="isFilled"><c>true</c> if the ellipse should be filled, <c>false</c> if not.</param>
 		/// <param name="quality">Quality of the ellipse rendering.</param>
 		/// <returns>A new ellipse object.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -542,7 +542,7 @@ namespace Gorgon.Renderers
 		/// <param name="position">Position of the ellipse.</param>
 		/// <param name="size">Size of the ellipse.</param>
 		/// <param name="color">Color of the ellipse.</param>
-		/// <param name="isFilled">TRUE if the ellipse should be filled, FALSE if not.</param>
+		/// <param name="isFilled"><c>true</c> if the ellipse should be filled, <c>false</c> if not.</param>
 		/// <returns>A new ellipse object.</returns>
 		/// <remarks>This method creates an ellipse with a quality of 64 segments.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
@@ -577,8 +577,8 @@ namespace Gorgon.Renderers
 		/// <param name="vertices">[Optional] Vertices for the polygon.</param>
 		/// <param name="indices">[Optional] Indices for the polygon.</param>
 		/// <param name="type">[Optional] The type of primitive to use when drawing the polygon.</param>
-		/// <param name="useDynamicVertexBuffer">[Optional] TRUE to use a dynamic buffer to hold the vertices, FALSE to use a static buffer.</param>
-		/// <param name="useDynamicIndexBuffer">[Optional] TRUE to use a dynamic buffer to hold the indices, FALSE to use a static buffer.</param>
+		/// <param name="useDynamicVertexBuffer">[Optional] <c>true</c> to use a dynamic buffer to hold the vertices, <c>false</c> to use a static buffer.</param>
+		/// <param name="useDynamicIndexBuffer">[Optional] <c>true</c> to use a dynamic buffer to hold the indices, <c>false</c> to use a static buffer.</param>
 		/// <returns>A new polygon object.</returns>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="indices"/> parameter will disable the index buffer on the polygon.  An index buffer can help with performance by 
 		/// decreasing the required number of vertices to be sent to the video device.</remarks>

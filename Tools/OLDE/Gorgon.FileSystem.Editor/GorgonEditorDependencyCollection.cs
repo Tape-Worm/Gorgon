@@ -64,7 +64,7 @@ namespace Gorgon.IO
 			/// </summary>
 			/// <param name="left">Left instance to compare.</param>
 			/// <param name="right">Right instance to compare.</param>
-			/// <returns>TRUE if equal, FALSE if not.</returns>
+			/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 			public static bool Equals(ref DependencyKey left, ref DependencyKey right)
 			{
 				return ((string.Equals(left._name, right._name, StringComparison.OrdinalIgnoreCase))
@@ -229,7 +229,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="name">Name of the dependency.</param>
 		/// <param name="type">Type of the dependency.</param>
-		/// <returns>TRUE if found, FALSE if not.</returns>
+		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are empty.</exception>
         public bool Contains(string name, string type)
@@ -243,7 +243,7 @@ namespace Gorgon.IO
         /// <param name="name">Name of the dependency.</param>
         /// <param name="type">Type of dependency.</param>
         /// <param name="dependency">The dependency if it exists, NULL (Nothing in VB.Net) if not.</param>
-        /// <returns>TRUE if the dependency name and type were found, FALSE if not.</returns>
+        /// <returns><c>true</c> if the dependency name and type were found, <c>false</c> if not.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are empty.</exception>
 	    public bool TryGetValue(string name, string type, out GorgonEditorDependency dependency)

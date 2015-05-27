@@ -304,7 +304,7 @@ namespace Gorgon.Graphics
         /// <param name="arrayIndexElementCount">Array index for a texture, element count for a buffer.</param>
         /// <param name="arrayCount">Array count for a texture.</param>
         /// <param name="viewType">View type for structured buffers.</param>
-        /// <param name="isRaw">TRUE for raw views, FALSE for normal.</param>
+        /// <param name="isRaw"><c>true</c> for raw views, <c>false</c> for normal.</param>
         /// <returns>The cached unordered access view.</returns>
         public GorgonUnorderedAccessView GetUnorderedAccessView(BufferFormat format,
                                                                         int mipSliceElementStart,
@@ -461,7 +461,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the view.</param>
         /// <param name="start">Starting element for the view.</param>
         /// <param name="count">Number of elements for the view.</param>
-        /// <param name="isRaw">TRUE for raw buffers, FALSE for standard.</param>
+        /// <param name="isRaw"><c>true</c> for raw buffers, <c>false</c> for standard.</param>
         /// <returns>The cached buffer shader view.</returns>
         public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count, bool isRaw)
         {

@@ -457,7 +457,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the buffer.</param>
         /// <param name="start">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
-        /// <param name="isRaw">TRUE if using a raw view to the buffer, FALSE if not.</param>
+        /// <param name="isRaw"><c>true</c> if using a raw view to the buffer, <c>false</c> if not.</param>
         /// <param name="viewType">The type of view for a structured buffer.</param>
         /// <returns>An unordered access view for the buffer.</returns>
         /// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a Shader View, only one 
@@ -593,7 +593,7 @@ namespace Gorgon.Graphics
         /// <param name="format">The format of the view.</param>
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
-        /// <param name="isRaw">TRUE if using a raw view of the buffer, FALSE if not.</param>
+        /// <param name="isRaw"><c>true</c> if using a raw view of the buffer, <c>false</c> if not.</param>
         /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+        /// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to <c>true</c> in its settings.</para>
         /// <para>Raw views can only be used on SM5 video devices or better. </para>
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>

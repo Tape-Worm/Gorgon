@@ -53,7 +53,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
 			return (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
@@ -104,7 +104,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
 			return Equals(ref left, ref right);
@@ -115,7 +115,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns>TRUE if not equal, FALSE if equal.</returns>
+		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
 		public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
 			return !Equals(ref left, ref right);
@@ -162,7 +162,7 @@ namespace Gorgon.IO
 		/// Function to determine if this instance is equal to another instance.
 		/// </summary>
 		/// <param name="other">The other instance to compare.</param>
-		/// <returns>TRUE if equal, FALSE if not.</returns>
+		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
 		public bool Equals(GorgonFileSystemMountPoint other)
 		{
 			return Equals(ref this, ref other);
