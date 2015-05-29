@@ -190,7 +190,7 @@ namespace Gorgon.Examples
 #if DEBUG
 	                        Console.ReadKey();
 #endif
-                        }, true);
+						}, GorgonApplication.Log);
             }
         }
         #endregion

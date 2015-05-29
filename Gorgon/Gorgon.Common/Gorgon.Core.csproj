@@ -141,6 +141,9 @@
     <Compile Include="Design\LocalDescriptionAttribute.cs" />
     <Compile Include="Design\LocalDisplayNameAttribute.cs" />
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
+    <Compile Include="Diagnostics\GorgonLogDummy.cs" />
+    <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
+    <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />
     <Compile Include="Events\GorgonHandledEventArgs.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
@@ -154,7 +157,7 @@
     <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Gorgon.cs" />
+    <Compile Include="GorgonApplication.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="IEquatableByRef.cs" />
     <Compile Include="GorgonRange.cs" />

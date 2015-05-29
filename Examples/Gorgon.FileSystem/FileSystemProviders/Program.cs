@@ -231,7 +231,7 @@ namespace Gorgon.Examples
 	                        Console.Clear();
 	                        Console.ForegroundColor = ConsoleColor.Red;
 	                        Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
-                        }, true);
+						}, GorgonApplication.Log);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();

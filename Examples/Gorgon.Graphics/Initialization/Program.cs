@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
 			}
 			finally
 			{

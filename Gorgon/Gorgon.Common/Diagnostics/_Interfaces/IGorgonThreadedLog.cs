@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, August 26, 2013 10:57:41 PM
+// Created: Friday, May 23, 2015 3:05:29 PM
 // 
 #endregion
 
-using System;
-using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.UI;
-
-namespace Gorgon.Examples
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
-	/// The launcher program.
+	/// Provides logging functionality for an application.
 	/// </summary>
-	static class Program
+	/// <remarks>
+	/// <para>
+	/// This object will send logging information to a logging data source. This could be a text file, XML document, a database, etc... 
+	/// </para>
+	/// <para>
+	/// This interface is meant to handle logging for log objects that are thread safe.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonThreadedLog
+		: IGorgonLog
 	{
 		/// <summary>
-		/// The main entry point for the application.
+		/// Property to return the ID of the thread that created the log object.
 		/// </summary>
-		[STAThread]
-		static void Main()
+		int ThreadID
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-
-			try
-			{
-				Application.Run(new AppContext());
-			}
-			catch (Exception ex)
-			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), GorgonApplication.Log);
-			}
+			get;
 		}
 	}
 }

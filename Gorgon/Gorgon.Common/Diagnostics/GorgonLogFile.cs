@@ -56,15 +56,17 @@ namespace Gorgon.Diagnostics
 	/// <summary>
 	/// Sends logging information to a file.
 	/// </summary>
-	public class GorgonLogFile
+	/// <remarks>
+	/// This is a concrete implementation of the <see cref="IGorgonLog"/> interface.
+	/// </remarks>
+	public class GorgonLogFile : 
+		IGorgonThreadedLog
 	{
 		#region Variables.
 		// File stream object.
 		private StreamWriter _stream;
 		// Logging filter.
 		private LoggingLevel _filterLevel = LoggingLevel.All;
-		// The ID of the thread that this object was created on.
-		private readonly int _threadID;
 		// Buffer used to send data to the log file.
 		private readonly StringBuilder _outputBuffer = new StringBuilder(1024);
 		#endregion
@@ -145,7 +147,9 @@ namespace Gorgon.Diagnostics
 				int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
 
 				if ((inIndex > -1) && (pathIndex > -1))
+				{
 					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+				}
 
 				Print("{1}{0}", logLevel, lines[i], indicator);
 			}
@@ -345,7 +349,7 @@ namespace Gorgon.Diagnostics
 		public void Close()
 		{
 			if ((IsClosed)
-				|| (_threadID != Thread.CurrentThread.ManagedThreadId))
+				|| (ThreadID != Thread.CurrentThread.ManagedThreadId))
 			{
 				return;
 			}
@@ -373,7 +377,7 @@ namespace Gorgon.Diagnostics
 		public void Open()
 		{
 			if ((!IsClosed)
-				|| (_threadID != Thread.CurrentThread.ManagedThreadId))
+				|| (ThreadID != Thread.CurrentThread.ManagedThreadId))
 			{
 				return;
 			}
@@ -419,7 +423,7 @@ namespace Gorgon.Diagnostics
 		/// <exception cref="System.ArgumentException">Thrown when the appname parameter is empty.</exception>
 		public GorgonLogFile(string appname, string extraPath)
 		{
-			_threadID = Thread.CurrentThread.ManagedThreadId;
+			ThreadID = Thread.CurrentThread.ManagedThreadId;
 
 			GorgonDebug.AssertParamString(appname, "appname");
 
@@ -461,6 +465,17 @@ namespace Gorgon.Diagnostics
 			LogPath += appname;
 			LogPath = LogPath.FormatDirectory(Path.DirectorySeparatorChar);
 			LogPath += "ApplicationLogging.txt";
+		}
+		#endregion
+
+		#region IGorgonThreadedLog Members
+		/// <summary>
+		/// Property to return the ID of the thread that created the log object.
+		/// </summary>
+		public int ThreadID
+		{
+			get;
+			private set;
 		}
 		#endregion
 	}

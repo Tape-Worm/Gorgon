@@ -29,6 +29,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -80,7 +81,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 			}
 			finally
 			{
@@ -104,7 +105,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 			}
 			finally
 			{
@@ -128,7 +129,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 			}
 			finally
 			{
@@ -152,16 +153,11 @@ namespace Gorgon.Examples
 		/// Function to update the information label.
 		/// </summary>
 		private void UpdateInfo()
-		{
-			if (string.Equals(_originalText, textDisplay.Text))
-			{
-				labelInfo.Text = string.Format("Using original text from {0}", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true));
-			}
-			else
-			{
-				labelInfo.Text = string.Format("Using modified text from {0}", _writePath.Ellipses(100, true));
-			}
-		}
+        {
+	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text)
+		                         ? string.Format("Using original text from {0}", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true))
+		                         : string.Format("Using modified text from {0}", _writePath.Ellipses(100, true));
+        }
 
 		/// <summary>
 		/// Function to load the text into the file system.
@@ -193,9 +189,11 @@ namespace Gorgon.Examples
 		{
 			base.OnLoad(e);
 
+			GorgonLogFile logFile = (GorgonLogFile)GorgonApplication.Log;
+
 			try
 			{
-				_writePath = Path.GetDirectoryName(GorgonApplication.Log.LogPath) + @"\Examples\FileSystem.Writing\";
+				_writePath = Path.GetDirectoryName(logFile.LogPath) + @"\Examples\FileSystem.Writing\";
 
 				// Create our virtual file system.
 				_fileSystem = new GorgonFileSystem();
@@ -207,7 +205,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 				Application.Exit();
 			}
 			finally

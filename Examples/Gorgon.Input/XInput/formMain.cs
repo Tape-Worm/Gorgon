@@ -336,7 +336,7 @@ namespace Gorgon.Examples
 			{
 				// We do this here instead of just calling the dialog because this
 				// function will send the exception to the Gorgon log file.
-				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 				GorgonApplication.Quit();
 			}
 		}

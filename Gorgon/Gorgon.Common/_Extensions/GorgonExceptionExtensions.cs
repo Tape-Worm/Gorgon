@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
 
 namespace Gorgon.Core
 {
@@ -39,13 +40,13 @@ namespace Gorgon.Core
 		/// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
 		/// <param name="ex">Exception to pass to the handler.</param>
 		/// <param name="handler">A method that is called to handle the exception.</param>
-		/// <param name="logException">[Optional] <c>true</c> to log the exception to the primary application log, <c>false</c> to skip logging.</param>
+		/// <param name="log">[Optional] A logger that will capture the exception, or <c>null</c> to disable logging of this exception.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>
 		/// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
 		/// that has a type that is or derives from <see cref="Exception"/>.
 		/// </remarks>
-		public static void Catch<T>(this T ex, Action<T> handler, bool logException = false)
+		public static void Catch<T>(this T ex, Action<T> handler, IGorgonLog log = null)
 			where T : Exception
 		{
 			if ((ex == null)
@@ -54,10 +55,9 @@ namespace Gorgon.Core
 				return;
 			}
 
-			if (logException)
+			if ((log != null) && (!log.IsClosed))
 			{
-				// Automatically log this exception.
-				GorgonApplication.Log.LogException(ex);
+				log.LogException(ex);
 			}
 
 			handler(ex);
