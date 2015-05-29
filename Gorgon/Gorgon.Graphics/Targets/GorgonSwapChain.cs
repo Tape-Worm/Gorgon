@@ -286,12 +286,12 @@ namespace Gorgon.Graphics
             catch (Exception ex)
             {
 #if DEBUG
-                GorgonException.Catch(ex,
-                                      _ =>
-                                      GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
-																null,
-                                                                _), true);
+	            ex.Catch(_ =>
+	                     GorgonDialogs.ErrorBox(_parentForm,
+	                                            string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
+	                                            null,
+	                                            _),
+	                     true);
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
 				GorgonApplication.Quit();
@@ -330,12 +330,12 @@ namespace Gorgon.Graphics
             catch (Exception ex)
             {
 #if DEBUG
-                GorgonException.Catch(ex,
-                                      _ =>
-                                      GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
-																null,
-                                                                _), true);
+	            ex.Catch(_ =>
+	                     GorgonDialogs.ErrorBox(_parentForm,
+	                                            string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
+	                                            null,
+	                                            _),
+	                     true);
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
 				GorgonApplication.Quit();
@@ -468,12 +468,11 @@ namespace Gorgon.Graphics
             catch (Exception ex)
             {
 #if DEBUG
-                GorgonException.Catch(ex,
-                                      _ =>
-                                      GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
-																null,
-                                                                _));
+	            ex.Catch(_ =>
+	                     GorgonDialogs.ErrorBox(_parentForm,
+	                                            string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
+	                                            null,
+	                                            _));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
 				GorgonApplication.Quit();
@@ -554,12 +553,11 @@ namespace Gorgon.Graphics
 		    catch (Exception ex)
 		    {
 #if DEBUG
-                GorgonException.Catch(ex,
-                                      _ =>
-                                      GorgonDialogs.ErrorBox(_parentForm,
-                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
-																null,
-                                                                _), true);
+                ex.Catch(_ =>
+                        GorgonDialogs.ErrorBox(_parentForm,
+                                               string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, GorgonApplication.Log.LogPath),
+                                               null,
+                                               _), true);
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
 				GorgonApplication.Quit();

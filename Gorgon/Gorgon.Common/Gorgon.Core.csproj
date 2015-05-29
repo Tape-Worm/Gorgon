@@ -143,6 +143,7 @@
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />
     <Compile Include="Events\GorgonHandledEventArgs.cs" />
+    <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />

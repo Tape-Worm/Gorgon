@@ -131,7 +131,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex,
+				GorgonExceptionExtensions.Catch(ex,
 									  () =>
 									  GorgonDialogs.ErrorBox(_splash,
 															 string.Format(Resources.GOREDIT_ERR_OPEN_PACK_FILE, _settings.LastEditorFile.Ellipses(80, true)),
@@ -241,7 +241,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox((Form)this, _), true);
 
 				if ((MainForm != null) && (!MainForm.IsDisposed))
 				{

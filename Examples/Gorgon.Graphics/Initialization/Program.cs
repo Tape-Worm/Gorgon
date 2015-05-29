@@ -161,7 +161,7 @@ namespace Gorgon.Graphics.Example
 			// Create our form and center on the primary monitor.
 			_mainForm = new formMain
 			{
-				ClientSize = new Size(640, 480),
+				ClientSize = new Size(640, 480)
 			};
 
 			_mainForm.Location = new Point(Screen.PrimaryScreen.WorkingArea.Width / 2 - _mainForm.Width / 2,
@@ -185,7 +185,7 @@ namespace Gorgon.Graphics.Example
 			// Create a swap chain as our graphics output to the window.
 			_swap = Graphics.Output.CreateSwapChain("Main", new GorgonSwapChainSettings
 			{
-				Window = _mainForm,										// Assign to our form.
+				Window = _mainForm										// Assign to our form.
 			});
 		}
 		#endregion
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), true);
 			}
 			finally
 			{

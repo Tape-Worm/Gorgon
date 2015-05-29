@@ -32,7 +32,7 @@ namespace Gorgon.Animation
 	/// An attribute to define a property on an animated object as being animated.
 	/// </summary>
     /// <remarks>Assign this attribute to any property that should be animated.</remarks>
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Property)]
 	public class AnimatedPropertyAttribute
 		: Attribute
 	{

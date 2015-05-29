@@ -167,7 +167,7 @@ namespace Gorgon.Renderers
 			TransformBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
 																				 new GorgonConstantBufferSettings
 																				 {
-																					 SizeInBytes = Matrix.SizeInBytes,
+																					 SizeInBytes = Matrix.SizeInBytes
 																				 });
 		}
 		#endregion

@@ -316,10 +316,7 @@ namespace Gorgon.Graphics
 		private string ProcessSource(string sourceCode)
 		{
 			var result = new StringBuilder();
-			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new[]
-		    {
-		        '\n'
-		    });
+			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split('\n');
 			int i = 0;
 
 			while (i < lines.Count)

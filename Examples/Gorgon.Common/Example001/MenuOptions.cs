@@ -59,7 +59,7 @@ namespace Gorgon.Examples
 		/// <param name="inner">Inner exception.</param>
 		private static void OuterException(Exception inner)
 		{
-			throw GorgonException.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.", inner);
+			throw inner.Repackage("This will be the outer exception.\n\nLook at the 'Details' to see the full exception stack.");
 		}
 
 		/// <summary>

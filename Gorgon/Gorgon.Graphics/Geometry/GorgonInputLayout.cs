@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 				},
 				{
 					typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
-				},
+				}
 			};
 		#endregion
 

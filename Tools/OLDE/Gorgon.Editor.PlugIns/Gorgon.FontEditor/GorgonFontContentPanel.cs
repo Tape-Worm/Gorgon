@@ -308,7 +308,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 				_glyphClipper = new Clipper(_content.Renderer, panelTextures)
 				                {
-					                DefaultCursor = Cursors.Cross,
+					                DefaultCursor = Cursors.Cross
 				                };
 
 				// Default scrolling to off.

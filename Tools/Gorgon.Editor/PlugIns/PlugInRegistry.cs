@@ -117,7 +117,7 @@ namespace Gorgon.Editor
 				// Don't let an errant plug-in break our application, so just log the exception and tell the user 
 				// that we can't load the plug-in assembly for whatever reason.
 				_log.Print("PlugInRegistry: The file '{0}' was not loaded due to an exception.", LoggingLevel.Simple, currentAssembly);
-				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(splash, string.Format(Resources.GOREDIT_ERR_ERROR_LOADING_PLUGIN, currentAssembly), null, ex));
+				GorgonExceptionExtensions.Catch(ex, () => GorgonDialogs.ErrorBox(splash, string.Format(Resources.GOREDIT_ERR_ERROR_LOADING_PLUGIN, currentAssembly), null, ex));
 			}
 			return result;
 		}

@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Shader model 5.0.
 		/// </summary>
-		SM5 = 3,
+		SM5 = 3
 	}
 	// ReSharper restore InconsistentNaming
 

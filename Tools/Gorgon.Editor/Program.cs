@@ -179,7 +179,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox((Form)this, _), true);
 			}
 			finally
 			{

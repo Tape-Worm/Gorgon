@@ -142,7 +142,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 				splitFileSystem.Panel2.Controls.Add(_instructions);
 			}
 		}
@@ -168,7 +168,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -191,7 +191,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -361,7 +361,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 		}
 
@@ -413,7 +413,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 				Application.Exit();
 			}
 		}

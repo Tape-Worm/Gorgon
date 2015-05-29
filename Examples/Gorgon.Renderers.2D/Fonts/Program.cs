@@ -125,7 +125,7 @@ namespace Fonts
 									new Vector2(0, 8),
 									new Vector2(8, 0),
 									new Vector2(16, 8),
-									new Vector2(8, 16),
+									new Vector2(8, 16)
 								},
 								CenterPoint = new Vector2(8, 8),
 								Interpolation = 
@@ -225,7 +225,7 @@ namespace Fonts
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), true);
 			}
 			finally
 			{

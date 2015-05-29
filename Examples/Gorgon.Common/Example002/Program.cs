@@ -109,7 +109,7 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), true);
 			}
 		}
 		#endregion

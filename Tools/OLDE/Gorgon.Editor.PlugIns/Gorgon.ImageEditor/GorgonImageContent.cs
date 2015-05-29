@@ -162,7 +162,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		                                                                     {
 			                                                                     BufferFormat.BC7_UIntNormal_sRGB,
 			                                                                     "BC7_UNORM_SRGB"
-		                                                                     },
+		                                                                     }
 	                                                                     };
 
 		// List of D3D formats for use with texconv.exe.

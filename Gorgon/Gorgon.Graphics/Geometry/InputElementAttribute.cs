@@ -37,7 +37,7 @@ namespace Gorgon.Graphics
 	/// about the type it chooses.  This will only work on primitive types such as byte, (u)short, (u)int, float and double or the GorgonVector2/3/4D types.  Furthermore, it can only
 	/// deduce the format from the type given, so expecting to use a float x,y,z will result in only x getting the attribute.  That is, it is not smart enough to deduce context.</para>
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 	public class InputElementAttribute
 		: Attribute
 	{

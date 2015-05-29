@@ -141,7 +141,7 @@ namespace Gorgon.Graphics
 						MipSlice = MipSlice,
 						FirstArraySlice = FirstArrayIndex,
 						ArraySize = ArrayCount
-					},
+					}
 				};
 			}
 

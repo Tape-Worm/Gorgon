@@ -532,7 +532,7 @@ namespace Gorgon.Renderers
 		               Position = position,
 		               Size = size,
 		               Color = color,
-		               IsFilled = isFilled,
+		               IsFilled = isFilled
 		           };
 		}
 

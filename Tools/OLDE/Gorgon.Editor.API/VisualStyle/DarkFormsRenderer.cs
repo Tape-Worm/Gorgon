@@ -176,7 +176,7 @@ namespace Gorgon.Editor
 		{
 			if (!(e.Item is ToolStripMenuItem))
 			{
-				base.OnRenderItemBackground(e);
+				OnRenderItemBackground(e);
 				return;
 			}
 

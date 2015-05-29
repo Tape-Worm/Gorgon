@@ -129,7 +129,7 @@ namespace Gorgon.Graphics
 		/// Anisotropic filtering with comparison.
 		/// </summary>
 		/// <remarks>This flag is mutually exclusive and applies to minification, magnification and mip mapping.</remarks>
-		CompareAnisotropic = 131072,
+		CompareAnisotropic = 131072
 	}
 
 	/// <summary>

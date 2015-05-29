@@ -108,7 +108,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn.Controls
 	                                                               {
 	                                                                   ImageFilter.Fant,
 	                                                                   Resources.GORIMG_TEXT_FILTER_FANT
-	                                                               },
+	                                                               }
 	                                                           };
 		#endregion
 

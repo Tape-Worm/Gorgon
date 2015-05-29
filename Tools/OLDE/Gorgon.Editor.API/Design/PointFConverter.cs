@@ -103,7 +103,7 @@ namespace Gorgon.Editor.Design
 			char ch = culture.TextInfo.ListSeparator[0];
 
 			// Get the individual values.
-			string[] xy = text.Split(new[] { ch });
+			string[] xy = text.Split(ch);
 
 			if ((xy.Length != 2)
 				|| (string.IsNullOrWhiteSpace(xy[0]))

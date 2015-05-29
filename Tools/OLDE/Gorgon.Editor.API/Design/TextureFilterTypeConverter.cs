@@ -46,7 +46,7 @@ namespace Gorgon.Editor.Design
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
 		    return
-		        new StandardValuesCollection(new TextureFilter[]
+		        new StandardValuesCollection(new[]
 		                                     {
 		                                         TextureFilter.None,
 		                                         TextureFilter.Point,

@@ -42,15 +42,15 @@ namespace Gorgon.Input.Raw
 		/// <summary>
 		/// Event fired when a raw input keyboard event occours.
 		/// </summary>
-		public event EventHandler<RawInputKeyboardEventArgs> RawInputKeyboardData = null;
+		public event EventHandler<RawInputKeyboardEventArgs> RawInputKeyboardData;
 		/// <summary>
 		/// Event fired when a pointing device event occurs.
 		/// </summary>
-		public event EventHandler<RawInputPointingDeviceEventArgs> RawInputPointingDeviceData = null;
+		public event EventHandler<RawInputPointingDeviceEventArgs> RawInputPointingDeviceData;
 		/// <summary>
 		/// Event fired when an HID event occurs.
 		/// </summary>
-		public event EventHandler<RawInputHIDEventArgs> RawInputHIDData = null;
+		public event EventHandler<RawInputHIDEventArgs> RawInputHIDData;
 		#endregion
 
 		#region Variables.

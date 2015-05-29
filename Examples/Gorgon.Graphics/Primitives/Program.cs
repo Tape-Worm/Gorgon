@@ -480,7 +480,7 @@ namespace Gorgon.Graphics.Example
 				                                                                               0,
 				                                                                               0,
 				                                                                               false,
-				                                                                               0),
+				                                                                               0)
 			                                                        },
 			                                                        _normalVertexShader);
 
@@ -711,7 +711,7 @@ namespace Gorgon.Graphics.Example
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(null, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(null, _), true);
 			}
 			finally
 			{

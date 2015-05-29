@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Example
     {
         #region Variables.
         // Flag to indicate that the object was disposed.
-        private bool _disposed = false;
+        private bool _disposed;
         #endregion
 
         #region Properties.

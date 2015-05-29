@@ -617,7 +617,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// HDI_FORMAT
 		/// </summary>
-		Format = 0x4,       
+		Format = 0x4       
 	};
 
 	/// <summary>
@@ -633,7 +633,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// HDF_SORTUP
 		/// </summary>
-		SortUp = 0x400,     
+		SortUp = 0x400     
 	};
 	#endregion
     // ReSharper restore InconsistentNaming

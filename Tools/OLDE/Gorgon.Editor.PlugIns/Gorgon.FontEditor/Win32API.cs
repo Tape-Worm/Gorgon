@@ -113,7 +113,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			// Break out the lines.
 			foreach (var line in rangeLines)
 			{
-				IList<string> items = line.Split(new[] { ';' });
+				IList<string> items = line.Split(';');
 
 				// Get range.
 				if ((string.IsNullOrEmpty(items[0])) || (string.IsNullOrEmpty(items[1])))
@@ -186,7 +186,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 				_codePointNames = new Dictionary<int, string>();
 
-				foreach (string[] fields in lines.Select(line => line.Split(new[] { ';' })))
+				foreach (string[] fields in lines.Select(line => line.Split(';')))
 				{
 					_codePointNames.Add(Int32.Parse(fields[0], NumberStyles.HexNumber),
 					                    string.IsNullOrEmpty(fields[10]) ? fields[1] : fields[10]);

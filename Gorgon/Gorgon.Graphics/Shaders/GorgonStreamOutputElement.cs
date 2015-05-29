@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 					SemanticIndex = Index,
 					StartComponent = (byte)StartComponent,
 					ComponentCount = (byte)ComponentCount,
-					OutputSlot = (byte)Slot,
+					OutputSlot = (byte)Slot
 				};
 		}
 

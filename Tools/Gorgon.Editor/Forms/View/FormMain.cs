@@ -101,7 +101,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 
 				if (CreateNewFile != null)
 				{
@@ -134,7 +134,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 			}
 			finally
 			{
@@ -342,7 +342,7 @@ namespace Gorgon.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => GorgonDialogs.ErrorBox(this, _), true);
+				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), true);
 				GorgonApplication.Quit();
 			}
 		}

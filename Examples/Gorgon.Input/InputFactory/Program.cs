@@ -248,10 +248,10 @@ namespace Gorgon.Examples
 			}
 			catch (Exception ex)
 			{
-				GorgonException.Catch(ex, _ => {
-					Console.Clear();
-					Console.ForegroundColor = ConsoleColor.Red;
-					Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);					
+				ex.Catch(_ => {
+					             Console.Clear();
+					             Console.ForegroundColor = ConsoleColor.Red;
+					             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);					
 				});
 				Console.ResetColor();
 #if DEBUG

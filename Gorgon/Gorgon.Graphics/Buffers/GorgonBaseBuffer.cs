@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Buffer holds structured data.
         /// </summary>
-        Structured = 4,
+        Structured = 4
     }
 
     /// <summary>

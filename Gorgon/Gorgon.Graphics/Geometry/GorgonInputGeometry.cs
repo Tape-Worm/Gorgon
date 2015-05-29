@@ -210,7 +210,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// A patch list with 32 control points.
 		/// </summary>
-		PatchListWith32ControlPoints = 64,
+		PatchListWith32ControlPoints = 64
 	}
     #endregion
 
