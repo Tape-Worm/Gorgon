@@ -1131,7 +1131,7 @@
   <data name="WINERR_REGDB_E_CLASSNOTREG" xml:space="preserve">
     <value> Class not registered</value>
   </data>
-  <data name="WINERR_S_<c>false</c>" xml:space="preserve">
+  <data name="WINERR_S_FALSE" xml:space="preserve">
     <value>Call successful	 but returned <c>false</c></value>
   </data>
   <data name="WINERR_S_NOT_RESIDENT" xml:space="preserve">

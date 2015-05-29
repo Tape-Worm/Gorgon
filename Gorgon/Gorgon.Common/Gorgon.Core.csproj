@@ -150,6 +150,7 @@
     <Compile Include="Extensions\GorgonListViewExtensions.cs" />
     <Compile Include="Extensions\GorgonMathExtensions.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
+    <Compile Include="Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon.cs" />

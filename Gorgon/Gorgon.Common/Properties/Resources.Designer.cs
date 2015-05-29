@@ -373,11 +373,74 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type [{0}] is not the same as the generic type [{1}]..
+        /// </summary>
+        internal static string GOR_ERR_ACTIVATOR_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_TYPE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot dispose the log object from a thread that did not create the object..
         /// </summary>
         internal static string GOR_ERR_CANNOT_DISPOSE_LOG_FROM_OTHER_THREAD {
             get {
                 return ResourceManager.GetString("GOR_ERR_CANNOT_DISPOSE_LOG_FROM_OTHER_THREAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find an applicable constructor on type [{0}] with the specified parameter types..
+        /// </summary>
+        internal static string GOR_ERR_CANNOT_FIND_CONSTRUCTOR {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CANNOT_FIND_CONSTRUCTOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; on type [{1}] does not have a property getter..
+        /// </summary>
+        internal static string GOR_ERR_PROP_GET_NOT_IMPLEMENTED {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PROP_GET_NOT_IMPLEMENTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; on type [{1}] does not have a property setter..
+        /// </summary>
+        internal static string GOR_ERR_PROP_SET_NOT_IMPLEMENTED {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PROP_SET_NOT_IMPLEMENTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; is declared on type [{1}] and is not the same as the generic type [{2}]..
+        /// </summary>
+        internal static string GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; has no declaring type..
+        /// </summary>
+        internal static string GOR_ERR_PROPERTY_NO_DECLARING_TYPE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PROPERTY_NO_DECLARING_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The property &apos;{0}&apos; has a type of [{1}], which is not the same as the generic [{2}]..
+        /// </summary>
+        internal static string GOR_ERR_PROPERTY_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PROPERTY_TYPE_MISMATCH", resourceCulture);
             }
         }
         

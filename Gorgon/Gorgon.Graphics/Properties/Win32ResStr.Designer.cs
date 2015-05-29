@@ -3085,11 +3085,11 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Call successful	 but returned <c>false</c>.
+        ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string WINERR_S_<c>false</c> {
+        internal static string WINERR_S_FALSE {
             get {
-                return ResourceManager.GetString("WINERR_S_<c>false</c>", resourceCulture);
+                return ResourceManager.GetString("WINERR_S_FALSE", resourceCulture);
             }
         }
         

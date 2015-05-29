@@ -921,4 +921,25 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CANNOT_DISPOSE_LOG_FROM_OTHER_THREAD" xml:space="preserve">
     <value>Cannot dispose the log object from a thread that did not create the object.</value>
   </data>
+  <data name="GOR_ERR_ACTIVATOR_TYPE_MISMATCH" xml:space="preserve">
+    <value>The type [{0}] is not the same as the generic type [{1}].</value>
+  </data>
+  <data name="GOR_ERR_CANNOT_FIND_CONSTRUCTOR" xml:space="preserve">
+    <value>Could not find an applicable constructor on type [{0}] with the specified parameter types.</value>
+  </data>
+  <data name="GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH" xml:space="preserve">
+    <value>The property '{0}' is declared on type [{1}] and is not the same as the generic type [{2}].</value>
+  </data>
+  <data name="GOR_ERR_PROPERTY_NO_DECLARING_TYPE" xml:space="preserve">
+    <value>The property '{0}' has no declaring type.</value>
+  </data>
+  <data name="GOR_ERR_PROPERTY_TYPE_MISMATCH" xml:space="preserve">
+    <value>The property '{0}' has a type of [{1}], which is not the same as the generic [{2}].</value>
+  </data>
+  <data name="GOR_ERR_PROP_GET_NOT_IMPLEMENTED" xml:space="preserve">
+    <value>The property '{0}' on type [{1}] does not have a property getter.</value>
+  </data>
+  <data name="GOR_ERR_PROP_SET_NOT_IMPLEMENTED" xml:space="preserve">
+    <value>The property '{0}' on type [{1}] does not have a property setter.</value>
+  </data>
 </root>
