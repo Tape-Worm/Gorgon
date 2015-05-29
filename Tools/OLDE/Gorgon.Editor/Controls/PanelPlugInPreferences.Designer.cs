@@ -25,6 +25,8 @@
 #endregion
 
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace Gorgon.Editor
 {
@@ -33,7 +35,7 @@ namespace Gorgon.Editor
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -158,10 +160,10 @@ namespace Gorgon.Editor
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer splitPluginPrefs;
-        private System.Windows.Forms.ListBox listPlugIns;
-        private System.Windows.Forms.Label labelPlugIns;
-        private System.Windows.Forms.Panel panelPlugInPrefs;
-        private System.Windows.Forms.Panel panel1;
+        private SplitContainer splitPluginPrefs;
+        private ListBox listPlugIns;
+        private Label labelPlugIns;
+        private Panel panelPlugInPrefs;
+        private Panel panel1;
     }
 }

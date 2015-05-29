@@ -26,6 +26,7 @@
 
 using System;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor

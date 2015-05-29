@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Threading;
+using Gorgon.Core;
 using Gorgon.Design;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;

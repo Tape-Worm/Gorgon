@@ -33,7 +33,7 @@ namespace Gorgon.Math
     /// <summary>
     /// Used to return spline interpolated values across a set of points.
     /// </summary>
-    /// <remarks>When adding or removing <see cref="P:GorgonLibrary.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateTangents">UpdateTangents</see> to recalculate the tangents.</remarks>
+    /// <remarks>When adding or removing <see cref="Gorgon.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateTangents">UpdateTangents</see> to recalculate the tangents.</remarks>
     public class GorgonSpline
     {
         #region Variables.

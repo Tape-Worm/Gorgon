@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.ImageEditorPlugIn
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	partial class FormResizeCrop
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -483,30 +486,30 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel3;
-		private System.Windows.Forms.RadioButton radioCrop;
-		private System.Windows.Forms.Label labelDesc;
-		private System.Windows.Forms.Label labelDestDimensions;
-		private System.Windows.Forms.Label labelSourceDimensions;
-		private System.Windows.Forms.Label labelFilePath;
-		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.RadioButton radioResize;
-		private System.Windows.Forms.Label labelFilter;
-		private System.Windows.Forms.ComboBox comboFilter;
-		private System.Windows.Forms.CheckBox checkPreserveAspect;
-		private System.Windows.Forms.Label labelAnchor;
-		private System.Windows.Forms.Panel panelAnchor;
-		private System.Windows.Forms.RadioButton radioBottomRight;
-		private System.Windows.Forms.RadioButton radioBottomCenter;
-		private System.Windows.Forms.RadioButton radioBottomLeft;
-		private System.Windows.Forms.RadioButton radioMiddleRight;
-		private System.Windows.Forms.RadioButton radioCenter;
-		private System.Windows.Forms.RadioButton radioMiddleLeft;
-		private System.Windows.Forms.RadioButton radioTopRight;
-		private System.Windows.Forms.RadioButton radioTopCenter;
-		private System.Windows.Forms.RadioButton radioTopLeft;
+		private Button buttonCancel;
+		private Button buttonOK;
+		private Panel panel1;
+		private Panel panel3;
+		private RadioButton radioCrop;
+		private Label labelDesc;
+		private Label labelDestDimensions;
+		private Label labelSourceDimensions;
+		private Label labelFilePath;
+		private TableLayoutPanel tableLayoutPanel1;
+		private RadioButton radioResize;
+		private Label labelFilter;
+		private ComboBox comboFilter;
+		private CheckBox checkPreserveAspect;
+		private Label labelAnchor;
+		private Panel panelAnchor;
+		private RadioButton radioBottomRight;
+		private RadioButton radioBottomCenter;
+		private RadioButton radioBottomLeft;
+		private RadioButton radioMiddleRight;
+		private RadioButton radioCenter;
+		private RadioButton radioMiddleLeft;
+		private RadioButton radioTopRight;
+		private RadioButton radioTopCenter;
+		private RadioButton radioTopLeft;
 	}
 }

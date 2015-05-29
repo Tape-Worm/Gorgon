@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Diagnostics;
 using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using SlimMath;
 using D3D = SharpDX.Direct3D11;
-using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
 {

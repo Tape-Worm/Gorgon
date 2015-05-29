@@ -31,8 +31,8 @@ using System.Drawing.Imaging;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Math;
 using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 using Bitmap = SharpDX.WIC.Bitmap;
 
 namespace Gorgon.IO

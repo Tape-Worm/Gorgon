@@ -55,14 +55,14 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Gorgon.Core;
-using SharpDX.WIC;
-using DX = SharpDX;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
-using Gorgon.Graphics.Properties;
+using SharpDX.WIC;
 using Bitmap = SharpDX.WIC.Bitmap;
+using DX = SharpDX;
 
 namespace Gorgon.Graphics
 {

@@ -32,7 +32,6 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input;
-using Gorgon.Math;
 using Gorgon.UI;
 
 namespace Gorgon.Examples

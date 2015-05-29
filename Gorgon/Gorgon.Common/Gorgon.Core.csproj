@@ -148,7 +148,7 @@
     <Compile Include="Diagnostics\GorgonDebug.cs" />
     <Compile Include="Extensions\GorgonIOExtensions.cs" />
     <Compile Include="Extensions\GorgonListViewExtensions.cs" />
-    <Compile Include="Extensions\GorgonMathExtensions.cs" />
+    <Compile Include="Math\GorgonMathExtensions.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
     <Compile Include="Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="Extensions\GorgonStringFormatting.cs" />
@@ -174,7 +174,7 @@
     <Compile Include="IO\GorgonChunkWriter.cs" />
     <Compile Include="IO\GorgonDataStream.cs" />
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
-    <Compile Include="Math\GorgonRandom.cs" />
+    <Compile Include="GorgonRandom.cs" />
     <Compile Include="Math\GorgonSpline.cs" />
     <Compile Include="Native\Win32API.cs">
       <SubType>Code</SubType>

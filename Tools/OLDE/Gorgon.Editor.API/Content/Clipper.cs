@@ -31,7 +31,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Renderers;
-using SlimMath;
 
 namespace Gorgon.Editor
 {

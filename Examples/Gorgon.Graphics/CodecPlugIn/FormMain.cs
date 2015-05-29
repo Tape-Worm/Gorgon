@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Gorgon;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Example.Properties;

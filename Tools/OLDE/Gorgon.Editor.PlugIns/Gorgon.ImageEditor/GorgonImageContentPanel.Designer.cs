@@ -1,11 +1,15 @@
-﻿namespace Gorgon.Editor.ImageEditorPlugIn
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.UI;
+
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
     partial class GorgonImageContentPanel
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -478,39 +482,39 @@
         #endregion
 
 		private EditorFileDialog imageFileBrowser;
-		internal Gorgon.UI.GorgonSelectablePanel panelTextureDisplay;
-        private System.Windows.Forms.ToolStrip stripImageEditor;
-        private System.Windows.Forms.ToolStripLabel labelMipLevel;
-        private System.Windows.Forms.ToolStripButton buttonPrevMipLevel;
-        private System.Windows.Forms.ToolStripButton buttonNextMipLevel;
-        private System.Windows.Forms.ToolStripSeparator sepArray;
-        private System.Windows.Forms.ToolStripButton buttonPrevArrayIndex;
-        private System.Windows.Forms.ToolStripLabel labelArrayIndex;
-        private System.Windows.Forms.ToolStripButton buttonNextArrayIndex;
-		private System.Windows.Forms.ToolStripLabel labelImageInfo;
-		private System.Windows.Forms.ToolStripSeparator sepMip;
-		private System.Windows.Forms.ToolStripButton buttonPrevDepthSlice;
-		private System.Windows.Forms.ToolStripLabel labelDepthSlice;
-		private System.Windows.Forms.ToolStripButton buttonNextDepthSlice;
-		private System.Windows.Forms.ToolStrip stripTexture;
-		private System.Windows.Forms.ToolStripButton buttonEditFileExternal;
-		private System.Windows.Forms.ToolStripButton buttonRevert;
-		private System.Windows.Forms.ToolStripButton buttonSave;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripDropDownButton buttonImport;
-		private System.Windows.Forms.ToolStripMenuItem itemImportFileDisk;
-		private System.Windows.Forms.ToolStripMenuItem itemImportFileSystem;
-		private System.Windows.Forms.OpenFileDialog dialogOpenImage;
+		internal GorgonSelectablePanel panelTextureDisplay;
+        private ToolStrip stripImageEditor;
+        private ToolStripLabel labelMipLevel;
+        private ToolStripButton buttonPrevMipLevel;
+        private ToolStripButton buttonNextMipLevel;
+        private ToolStripSeparator sepArray;
+        private ToolStripButton buttonPrevArrayIndex;
+        private ToolStripLabel labelArrayIndex;
+        private ToolStripButton buttonNextArrayIndex;
+		private ToolStripLabel labelImageInfo;
+		private ToolStripSeparator sepMip;
+		private ToolStripButton buttonPrevDepthSlice;
+		private ToolStripLabel labelDepthSlice;
+		private ToolStripButton buttonNextDepthSlice;
+		private ToolStrip stripTexture;
+		private ToolStripButton buttonEditFileExternal;
+		private ToolStripButton buttonRevert;
+		private ToolStripButton buttonSave;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripDropDownButton buttonImport;
+		private ToolStripMenuItem itemImportFileDisk;
+		private ToolStripMenuItem itemImportFileSystem;
+		private OpenFileDialog dialogOpenImage;
 		private EditorFileDialog dialogImportImage;
-		private System.Windows.Forms.ToolStripButton buttonGenerateMips;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton buttonActualSize;
-        private System.Windows.Forms.Panel panelTextureArea;
-        private System.Windows.Forms.HScrollBar scrollHorz;
-        private System.Windows.Forms.VScrollBar scrollVert;
-        private System.Windows.Forms.Panel panelHorzScroll;
-        private System.Windows.Forms.Panel panelVertScroll;
+		private ToolStripButton buttonGenerateMips;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton buttonActualSize;
+        private Panel panelTextureArea;
+        private HScrollBar scrollHorz;
+        private VScrollBar scrollVert;
+        private Panel panelHorzScroll;
+        private Panel panelVertScroll;
 
     }
 }

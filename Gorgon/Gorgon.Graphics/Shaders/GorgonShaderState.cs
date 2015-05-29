@@ -30,10 +30,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Gorgon.Core;
-using SharpDX;
-using D3D = SharpDX.Direct3D11;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
+using SharpDX;
+using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {

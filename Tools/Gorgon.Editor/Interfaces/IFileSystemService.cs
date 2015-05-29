@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
 namespace Gorgon.Editor
 {
@@ -132,7 +133,7 @@ namespace Gorgon.Editor
 		/// <param name="path">Path to the file to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
+		/// <exception cref="GorgonException">Thrown when the file could not be read by any of the known providers.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> could not be found.</exception>
 		/// <returns>A file system object for the loaded file.</returns>
 		IEditorFileSystem LoadFile(string path);

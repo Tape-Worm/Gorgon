@@ -30,7 +30,6 @@ using System.Windows.Forms;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn
 {

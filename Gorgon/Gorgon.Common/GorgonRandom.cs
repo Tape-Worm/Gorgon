@@ -29,9 +29,10 @@
 
 using System;
 using System.Collections.Generic;
+using Gorgon.Math;
 using SlimMath;
 
-namespace Gorgon.Math
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// A random number generator for floating point and integer values.

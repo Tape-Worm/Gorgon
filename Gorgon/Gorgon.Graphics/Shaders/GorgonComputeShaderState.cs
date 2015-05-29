@@ -26,8 +26,8 @@
 
 using System;
 using System.Collections;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;

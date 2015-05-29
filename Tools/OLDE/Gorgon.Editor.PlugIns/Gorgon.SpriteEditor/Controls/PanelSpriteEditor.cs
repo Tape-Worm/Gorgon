@@ -25,19 +25,17 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
-using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 {

@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Editor.FontEditorPlugIn
 {
 	partial class FormEditPreviewText
@@ -31,7 +34,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -152,8 +155,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.TextBox textPreview;
+		private Button buttonCancel;
+		private Button buttonOK;
+		private TextBox textPreview;
 	}
 }

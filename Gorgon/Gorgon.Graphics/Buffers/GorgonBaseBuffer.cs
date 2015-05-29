@@ -26,12 +26,12 @@
 
 using System;
 using Gorgon.Core;
-using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
-using Gorgon.IO;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 using Gorgon.Native;
+using DX = SharpDX;
+using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {

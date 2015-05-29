@@ -29,7 +29,6 @@ using System.Drawing;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
-using SlimMath;
 
 namespace Gorgon.Editor
 {

@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
     partial class PreferencePanel
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -58,7 +61,7 @@
 		/// <summary>
 		/// Tool tip for controls on the panel.
 		/// </summary>
-        protected System.Windows.Forms.ToolTip toolHelp;
+        protected ToolTip toolHelp;
 
     }
 }

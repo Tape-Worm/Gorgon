@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;

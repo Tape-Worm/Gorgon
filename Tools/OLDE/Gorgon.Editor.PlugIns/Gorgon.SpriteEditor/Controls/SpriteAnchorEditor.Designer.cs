@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
 	partial class SpriteAnchorEditor
@@ -31,7 +34,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -252,15 +255,15 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelAnchor;
-		private System.Windows.Forms.RadioButton radioBottomRight;
-		private System.Windows.Forms.RadioButton radioBottomCenter;
-		private System.Windows.Forms.RadioButton radioBottomLeft;
-		private System.Windows.Forms.RadioButton radioMiddleRight;
-		private System.Windows.Forms.RadioButton radioCenter;
-		private System.Windows.Forms.RadioButton radioMiddleLeft;
-		private System.Windows.Forms.RadioButton radioTopRight;
-		private System.Windows.Forms.RadioButton radioTopCenter;
-		private System.Windows.Forms.RadioButton radioTopLeft;
+		private Panel panelAnchor;
+		private RadioButton radioBottomRight;
+		private RadioButton radioBottomCenter;
+		private RadioButton radioBottomLeft;
+		private RadioButton radioMiddleRight;
+		private RadioButton radioCenter;
+		private RadioButton radioMiddleLeft;
+		private RadioButton radioTopRight;
+		private RadioButton radioTopCenter;
+		private RadioButton radioTopLeft;
 	}
 }

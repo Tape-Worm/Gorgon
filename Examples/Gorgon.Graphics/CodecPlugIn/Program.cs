@@ -26,7 +26,6 @@
 
 using System;
 using System.Windows.Forms;
-using Gorgon;
 using Gorgon.Core;
 using Gorgon.UI;
 

@@ -33,9 +33,9 @@ using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Core.Collections.Specialized;
-using Shaders = SharpDX.D3DCompiler;
-using Gorgon.IO;
 using Gorgon.Graphics.Properties;
+using Gorgon.IO;
+using Shaders = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics
 {

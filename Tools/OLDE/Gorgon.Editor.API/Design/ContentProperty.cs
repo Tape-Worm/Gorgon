@@ -29,9 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using Gorgon.Core;
 using Gorgon.Graphics;
 

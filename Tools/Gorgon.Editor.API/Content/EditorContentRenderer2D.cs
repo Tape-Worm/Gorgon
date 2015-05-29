@@ -26,6 +26,7 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.Math;

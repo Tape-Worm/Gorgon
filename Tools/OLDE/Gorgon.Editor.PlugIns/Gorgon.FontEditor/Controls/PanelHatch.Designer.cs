@@ -1,11 +1,15 @@
-﻿namespace Gorgon.Editor.FontEditorPlugIn.Controls
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.UI;
+
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	partial class PanelHatch
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -214,16 +218,16 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelPreview;
-		private System.Windows.Forms.Label labelPatternType;
+		private Panel panelPreview;
+		private Label labelPatternType;
 		private ComboPatterns comboHatch;
-		private System.Windows.Forms.Label labelForegroundColor;
-		private UI.GorgonSelectablePanel panelForegroundColor;
-		private UI.GorgonSelectablePanel panelBackgroundColor;
-		private System.Windows.Forms.Label labelBackgroundColor;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel4;
-		private System.Windows.Forms.Label labelPreview;
-		private System.Windows.Forms.Panel panel3;
+		private Label labelForegroundColor;
+		private GorgonSelectablePanel panelForegroundColor;
+		private GorgonSelectablePanel panelBackgroundColor;
+		private Label labelBackgroundColor;
+		private Panel panel1;
+		private Panel panel4;
+		private Label labelPreview;
+		private Panel panel3;
 	}
 }

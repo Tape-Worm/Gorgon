@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
 	partial class ValueComponentDialog
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -230,15 +233,15 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Label labelValueCaption;
-		private System.Windows.Forms.NumericUpDown numericUpDown1;
-		private System.Windows.Forms.Label labelComma1;
-		private System.Windows.Forms.NumericUpDown numericUpDown2;
-		private System.Windows.Forms.NumericUpDown numericUpDown3;
-		private System.Windows.Forms.Label labelComma2;
-		private System.Windows.Forms.NumericUpDown numericUpDown4;
-		private System.Windows.Forms.Label labelComma3;
+		private Button buttonCancel;
+		private Button buttonOK;
+		private Label labelValueCaption;
+		private NumericUpDown numericUpDown1;
+		private Label labelComma1;
+		private NumericUpDown numericUpDown2;
+		private NumericUpDown numericUpDown3;
+		private Label labelComma2;
+		private NumericUpDown numericUpDown4;
+		private Label labelComma3;
 	}
 }

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using Gorgon.Core;
 
 namespace Gorgon.Editor
 {

@@ -802,7 +802,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -821,7 +821,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
         /// </exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -841,7 +841,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
         /// </exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -855,7 +855,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <exception cref="Gorgon.GorgonException">
+		/// <exception cref="GorgonException">
         /// Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.
 		///   <para>-or-</para>
 		///   <para>The width and height are not valid for the render target.</para>
@@ -877,7 +877,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// </exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the video output could not be determined from the window.
+		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// </exception>
@@ -923,7 +923,7 @@ namespace Gorgon.Graphics
 		/// <para>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4.</exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		/// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Flip(int interval)
 		{
 			var flags = GI.PresentFlags.None;
@@ -967,7 +967,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover (i.e. turn off stand by) once the device is ready for rendering again.
 		/// </remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+		/// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Flip()
 		{
 			Flip(0);

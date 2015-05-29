@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.FontEditorPlugIn.Controls
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
 	partial class PanelTexture
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -287,21 +290,21 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label labelInfo;
-		private System.Windows.Forms.Button buttonOpen;
-		private System.Windows.Forms.Panel panelTextureDisplay;
-		private System.Windows.Forms.ComboBox comboWrapMode;
-		private System.Windows.Forms.NumericUpDown numericHeight;
-		private System.Windows.Forms.NumericUpDown numericWidth;
-		private System.Windows.Forms.NumericUpDown numericY;
-		private System.Windows.Forms.NumericUpDown numericX;
-		private System.Windows.Forms.Label labelWrapMode;
-		private System.Windows.Forms.Label labelTexHeight;
-		private System.Windows.Forms.Label labelTexWidth;
-		private System.Windows.Forms.Label labelTexTop;
-		private System.Windows.Forms.Label labelTexLeft;
+		private Label labelInfo;
+		private Button buttonOpen;
+		private Panel panelTextureDisplay;
+		private ComboBox comboWrapMode;
+		private NumericUpDown numericHeight;
+		private NumericUpDown numericWidth;
+		private NumericUpDown numericY;
+		private NumericUpDown numericX;
+		private Label labelWrapMode;
+		private Label labelTexHeight;
+		private Label labelTexWidth;
+		private Label labelTexTop;
+		private Label labelTexLeft;
 		private EditorFileDialog imageFileBrowser;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel2;
+		private Panel panel1;
+		private Panel panel2;
 	}
 }

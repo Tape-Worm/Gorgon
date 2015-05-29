@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.ImageEditorPlugIn.Controls
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.ImageEditorPlugIn.Controls
 {
 	partial class PanelImagePreferences
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -381,33 +384,33 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panel5;
-		private System.Windows.Forms.Panel panel6;
-		private System.Windows.Forms.CheckBox checkShowAnimations;
-		private System.Windows.Forms.Label labelImageEditorSettings;
-		private System.Windows.Forms.CheckBox checkShowActualSize;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel2;
-		private System.Windows.Forms.Label labelImageCodecs;
-		private System.Windows.Forms.ToolStripContainer containerCodecs;
-		private System.Windows.Forms.ListView listCodecs;
-		private System.Windows.Forms.ColumnHeader columnName;
-		private System.Windows.Forms.ColumnHeader columnDesc;
-		private System.Windows.Forms.ColumnHeader columnPath;
-		private System.Windows.Forms.ToolStrip stripCodecs;
-		private System.Windows.Forms.ToolStripButton buttonAddCodec;
-		private System.Windows.Forms.ToolStripButton buttonRemoveCodec;
-		private System.Windows.Forms.OpenFileDialog dialogOpen;
-		private System.Windows.Forms.Panel panelCannotEdit;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.Label labelCannotEdit;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label labelScalingFilters;
-        private System.Windows.Forms.Label labelScaleFilter;
-        private System.Windows.Forms.Label labelMipMapFilter;
-        private System.Windows.Forms.ComboBox comboResizeFilter;
-        private System.Windows.Forms.ComboBox comboMipMapFilter;
+		private Panel panel5;
+		private Panel panel6;
+		private CheckBox checkShowAnimations;
+		private Label labelImageEditorSettings;
+		private CheckBox checkShowActualSize;
+		private Panel panel1;
+		private Panel panel2;
+		private Label labelImageCodecs;
+		private ToolStripContainer containerCodecs;
+		private ListView listCodecs;
+		private ColumnHeader columnName;
+		private ColumnHeader columnDesc;
+		private ColumnHeader columnPath;
+		private ToolStrip stripCodecs;
+		private ToolStripButton buttonAddCodec;
+		private ToolStripButton buttonRemoveCodec;
+		private OpenFileDialog dialogOpen;
+		private Panel panelCannotEdit;
+		private PictureBox pictureBox1;
+		private Label labelCannotEdit;
+        private Panel panel3;
+        private Panel panel4;
+        private Label labelScalingFilters;
+        private Label labelScaleFilter;
+        private Label labelMipMapFilter;
+        private ComboBox comboResizeFilter;
+        private ComboBox comboMipMapFilter;
 
 	}
 }

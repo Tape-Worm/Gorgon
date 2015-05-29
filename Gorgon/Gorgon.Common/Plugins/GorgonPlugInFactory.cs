@@ -31,11 +31,9 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
 using System.Text;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
-using Gorgon.Collections;
-using Gorgon.Collections.Specialized;
-using Gorgon.Core.Collections;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.PlugIns
@@ -66,7 +64,7 @@ namespace Gorgon.PlugIns
 	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.GorgonApplication.PlugIns">PlugIns</see> parameter on the primary 
 	/// <seealso cref="Gorgon">Gorgon</seealso> object and cannot be created by the user.
 	/// <para>In some cases, a plug-in assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
-	/// use the <see cref="GorgonApplication.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
+	/// use the <see cref="GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
 	/// assemblies.</para></remarks>
 	public class GorgonPlugInFactory
 		: GorgonBaseNamedObjectDictionary<GorgonPlugIn>
@@ -305,7 +303,7 @@ namespace Gorgon.PlugIns
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
 		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonApplication.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <returns>One of the values in the <seealso cref="PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey = null)
 		{
@@ -354,7 +352,7 @@ namespace Gorgon.PlugIns
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
 		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="GorgonApplication.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
+		/// <returns>One of the values in the <seealso cref="PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>

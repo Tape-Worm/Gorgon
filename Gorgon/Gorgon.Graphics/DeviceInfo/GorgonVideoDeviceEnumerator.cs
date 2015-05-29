@@ -25,22 +25,19 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Collections;
+using Gorgon.Core;
+using Gorgon.Core.Collections;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using SharpDX.DXGI;
 using DX = SharpDX;
 using D3DCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
-using Gorgon.Collections.Specialized;
-using Gorgon.Core;
-using Gorgon.Core.Collections;
-using Gorgon.Core.Collections.Specialized;
-using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
 {

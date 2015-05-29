@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
     partial class FormPreferences
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -157,9 +160,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button buttonOK;
-        private System.Windows.Forms.Panel panel1;
+        private Button buttonCancel;
+        private Button buttonOK;
+        private Panel panel1;
         private KRBTabControl.KRBTabControl tabPrefs;
     }
 }

@@ -29,9 +29,9 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.IO;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 using Gorgon.Native;
 using D3D = SharpDX.Direct3D11;
 

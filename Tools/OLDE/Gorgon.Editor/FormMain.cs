@@ -35,6 +35,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.Math;

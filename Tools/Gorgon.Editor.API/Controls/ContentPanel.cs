@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using Gorgon.Design;
 using Gorgon.Editor.Properties;
@@ -47,7 +48,7 @@ namespace Gorgon.Editor
 		// Control used to receive rendering.
 		private Control _renderControl;
 		// The panel where content will be placed.
-		[System.Runtime.CompilerServices.AccessedThroughProperty("PanelDisplay")]
+		[AccessedThroughProperty("PanelDisplay")]
 		private Panel _panelContentDisplay;
 		#endregion
 

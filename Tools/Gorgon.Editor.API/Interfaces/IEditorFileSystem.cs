@@ -1,4 +1,6 @@
-﻿namespace Gorgon.Editor
+﻿using Gorgon.Core;
+
+namespace Gorgon.Editor
 {
 	/// <summary>
 	/// A representation of a packed editor file in the application.

@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Drawing;
+using Gorgon.Core;
 using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.Math;

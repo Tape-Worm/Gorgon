@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
 	partial class ControlColorPicker
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -118,8 +121,8 @@
 		private Fetze.WinFormsColor.ColorPanel panelColor;
 		private Fetze.WinFormsColor.ColorSlider sliderColor;
 		private Fetze.WinFormsColor.ColorSlider sliderAlpha;
-		private System.Windows.Forms.Label labelColorInfo;
-		private System.Windows.Forms.Button buttonExpando;
-		private System.Windows.Forms.ToolTip tipControls;
+		private Label labelColorInfo;
+		private Button buttonExpando;
+		private ToolTip tipControls;
 	}
 }

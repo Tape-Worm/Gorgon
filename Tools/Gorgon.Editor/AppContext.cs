@@ -29,6 +29,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;

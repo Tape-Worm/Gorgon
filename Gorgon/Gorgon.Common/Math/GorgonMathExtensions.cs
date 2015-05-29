@@ -331,7 +331,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">Value to round.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static float Round(this float value)
 		{
 			return Round(value, 0, MidpointRounding.ToEven);
@@ -343,7 +343,7 @@ namespace Gorgon.Math
 		/// <param name="value">Value to round.</param>
 		/// <param name="decimalCount">Number of decimal places to return.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static float Round(this float value, int decimalCount)
 		{
 			return Round(value, decimalCount, MidpointRounding.ToEven);
@@ -366,7 +366,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">Value to round.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static decimal Round(this decimal value)
 		{
 			return Round(value, 0, MidpointRounding.ToEven);
@@ -378,7 +378,7 @@ namespace Gorgon.Math
 		/// <param name="value">Value to round.</param>
 		/// <param name="decimalCount">Number of decimal places to return.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static decimal Round(this decimal value, int decimalCount)
 		{
 			return Round(value, decimalCount, MidpointRounding.ToEven);
@@ -401,7 +401,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="value">Value to round.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static double Round(this double value)
 		{
 			return Round(value, 0, MidpointRounding.ToEven);
@@ -413,7 +413,7 @@ namespace Gorgon.Math
 		/// <param name="value">Value to round.</param>
 		/// <param name="decimalCount">Number of decimal places to return.</param>
 		/// <returns>The rounded floating point value.</returns>
-		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.Math.Round method.</remarks>
+		/// <remarks>This uses MidpointRounding.ToEven (Bankers rounding) as the default for consistency with the System.System.Math.Round method.</remarks>
 		public static double Round(this double value, int decimalCount)
 		{
 			return Round(value, decimalCount, MidpointRounding.ToEven);

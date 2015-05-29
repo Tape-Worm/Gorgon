@@ -24,21 +24,15 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Design;
 using Gorgon.Editor.Design;
 using Gorgon.Editor.SpriteEditorPlugIn.Design;
 using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.Renderers;
-using SlimMath;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn
 {

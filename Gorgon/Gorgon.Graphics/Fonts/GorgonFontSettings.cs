@@ -30,7 +30,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using Gorgon.Core;
-using Color = System.Drawing.Color;
 
 namespace Gorgon.Graphics
 {

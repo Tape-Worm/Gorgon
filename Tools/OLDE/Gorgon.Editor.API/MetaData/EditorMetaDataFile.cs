@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
@@ -187,7 +188,7 @@ namespace Gorgon.Editor
 		/// Function to load in the meta data.
 		/// </summary>
 		/// <remarks>Use this method to retrieve any stored meta data.  If no meta data exists, then this function will do nothing.</remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the meta data is corrupted.</exception>
+		/// <exception cref="GorgonException">Thrown when the meta data is corrupted.</exception>
 		public static void Load()
 		{
 			_metaDataFile = ScratchArea.ScratchFiles.GetFile(_path);

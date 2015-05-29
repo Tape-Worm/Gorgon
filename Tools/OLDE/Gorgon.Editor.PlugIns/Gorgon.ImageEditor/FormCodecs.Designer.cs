@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.ImageEditorPlugIn
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.ImageEditorPlugIn
 {
 	partial class FormCodecs
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -212,16 +215,16 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.ToolStripContainer containerCodecs;
-		private System.Windows.Forms.ToolStrip stripCodecs;
-		private System.Windows.Forms.ToolStripButton buttonAddCodec;
-		private System.Windows.Forms.ToolStripButton buttonRemoveCodec;
-		private System.Windows.Forms.ListView listCodecs;
-		private System.Windows.Forms.ColumnHeader columnName;
-		private System.Windows.Forms.ColumnHeader columnDesc;
-		private System.Windows.Forms.ColumnHeader columnPath;
+		private Panel panel1;
+		private Button buttonOK;
+		private Button buttonCancel;
+		private ToolStripContainer containerCodecs;
+		private ToolStrip stripCodecs;
+		private ToolStripButton buttonAddCodec;
+		private ToolStripButton buttonRemoveCodec;
+		private ListView listCodecs;
+		private ColumnHeader columnName;
+		private ColumnHeader columnDesc;
+		private ColumnHeader columnPath;
 	}
 }

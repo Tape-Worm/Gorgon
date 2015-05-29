@@ -32,9 +32,9 @@ using Gorgon.Core;
 using Gorgon.Core.Extensions;
 using Gorgon.Graphics.Properties;
 using SharpDX;
-using Vector4 = SlimMath.Vector4;
-using Vector3 = SlimMath.Vector3;
 using Color = System.Drawing.Color;
+using Vector3 = SlimMath.Vector3;
+using Vector4 = SlimMath.Vector4;
 
 namespace Gorgon.Graphics
 {

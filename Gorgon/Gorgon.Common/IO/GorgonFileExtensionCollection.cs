@@ -26,8 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using Gorgon.Core.Properties;
 using Gorgon.Collections;
+using Gorgon.Core.Properties;
 
 namespace Gorgon.IO
 {

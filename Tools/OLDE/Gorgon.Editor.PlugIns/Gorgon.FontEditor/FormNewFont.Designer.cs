@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.FontEditorPlugIn
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.FontEditorPlugIn
 {
 	partial class FormNewFont
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -530,29 +533,29 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label label1;
+		private Label label1;
 		private ComboFonts comboFonts;
-		private System.Windows.Forms.CheckBox checkBold;
-		private System.Windows.Forms.CheckBox checkItalic;
-		private System.Windows.Forms.CheckBox checkUnderline;
-		private System.Windows.Forms.CheckBox checkStrikeThrough;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.NumericUpDown numericSize;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.TextBox textName;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Label labelPreview;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.ComboBox comboAA;
-		private System.Windows.Forms.NumericUpDown numericTextureWidth;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.NumericUpDown numericTextureHeight;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.ComboBox comboSizeType;
-		private System.Windows.Forms.Label label7;
-		private System.Windows.Forms.ToolTip tipInfo;
-		private System.Windows.Forms.Button buttonCharacterList;
+		private CheckBox checkBold;
+		private CheckBox checkItalic;
+		private CheckBox checkUnderline;
+		private CheckBox checkStrikeThrough;
+		private Label label2;
+		private NumericUpDown numericSize;
+		private Label label3;
+		private TextBox textName;
+		private Panel panel1;
+		private Label labelPreview;
+		private Button buttonOK;
+		private Button buttonCancel;
+		private Label label4;
+		private ComboBox comboAA;
+		private NumericUpDown numericTextureWidth;
+		private Label label5;
+		private NumericUpDown numericTextureHeight;
+		private Label label6;
+		private ComboBox comboSizeType;
+		private Label label7;
+		private ToolTip tipInfo;
+		private Button buttonCharacterList;
 	}
 }

@@ -1,4 +1,6 @@
-﻿using Gorgon.Editor.FontEditorPlugIn.Controls;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.Editor.FontEditorPlugIn.Controls;
 
 namespace Gorgon.Editor.FontEditorPlugIn
 {
@@ -7,7 +9,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -323,22 +325,22 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
         #endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.Button buttonOK;
+		private Button buttonCancel;
+        private Button buttonOK;
         private KRBTabControl.KRBTabControl tabBrushEditor;
         private KRBTabControl.TabPageEx pageSolid;
         private KRBTabControl.TabPageEx pageTexture;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel2;
-		private System.Windows.Forms.ComboBox comboBrushType;
-        private System.Windows.Forms.Label labelBrushType;
+		private Panel panel1;
+		private Panel panel2;
+		private ComboBox comboBrushType;
+        private Label labelBrushType;
         private Fetze.WinFormsColor.ColorPickerPanel colorSolidBrush;
 		private EditorFileDialog imageFileBrowser;
-		private System.Windows.Forms.Label labelInfo;
+		private Label labelInfo;
 		private KRBTabControl.TabPageEx pageGradient;
-		private Controls.PanelGradient panelGradEditor;
+		private PanelGradient panelGradEditor;
 		private KRBTabControl.TabPageEx pagePattern;
-		private Controls.PanelHatch panelHatchEditor;
+		private PanelHatch panelHatchEditor;
 		private PanelTexture panelTextureEditor;
     }
 }

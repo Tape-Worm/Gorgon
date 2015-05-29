@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Examples
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Examples
 {
 	partial class formMain
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -244,20 +247,20 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelDisplay;
-		private System.Windows.Forms.Panel panelControllers;
-		private System.Windows.Forms.Label labelController0;
-		private System.Windows.Forms.Panel panelController0;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.Panel panelController1;
-		private System.Windows.Forms.Label labelController1;
-		private System.Windows.Forms.PictureBox pictureBox2;
-		private System.Windows.Forms.Panel panelController2;
-		private System.Windows.Forms.Label labelController2;
-		private System.Windows.Forms.PictureBox pictureBox3;
-		private System.Windows.Forms.Panel panelController3;
-		private System.Windows.Forms.Label labelController3;
-		private System.Windows.Forms.PictureBox pictureBox4;
+		private Panel panelDisplay;
+		private Panel panelControllers;
+		private Label labelController0;
+		private Panel panelController0;
+		private PictureBox pictureBox1;
+		private Panel panelController1;
+		private Label labelController1;
+		private PictureBox pictureBox2;
+		private Panel panelController2;
+		private Label labelController2;
+		private PictureBox pictureBox3;
+		private Panel panelController3;
+		private Label labelController3;
+		private PictureBox pictureBox4;
 
     }
 }

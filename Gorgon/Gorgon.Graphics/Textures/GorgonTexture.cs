@@ -28,10 +28,10 @@ using System;
 using System.Drawing;
 using System.IO;
 using Gorgon.Core;
-using Gorgon.Math;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
+using Gorgon.Math;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 

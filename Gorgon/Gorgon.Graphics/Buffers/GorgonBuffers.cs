@@ -26,9 +26,9 @@
 
 using System;
 using Gorgon.Core;
+using Gorgon.Graphics.Properties;
 using Gorgon.IO;
 using Gorgon.Native;
-using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
 {

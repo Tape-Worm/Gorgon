@@ -1,4 +1,6 @@
-﻿using Gorgon.UI;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 {
@@ -7,7 +9,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -571,39 +573,39 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 		#endregion
 
 		internal GorgonSelectablePanel panelSprite;
-		private System.Windows.Forms.ToolStripContainer containerSprite;
-		private System.Windows.Forms.ToolStrip stripSprite;
-		private System.Windows.Forms.ToolStripButton buttonSave;
-		private System.Windows.Forms.ToolStripButton buttonRevert;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.Panel panelOuter;
-		private System.Windows.Forms.Panel panelHScroll;
-		private System.Windows.Forms.Panel panelVScroll;
-		private System.Windows.Forms.HScrollBar scrollHorizontal;
-		private System.Windows.Forms.VScrollBar scrollVertical;
-		private System.Windows.Forms.ToolStrip stripUIOptions;
-		private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
-		private System.Windows.Forms.ToolStripMenuItem menuItem1600;
-		private System.Windows.Forms.ToolStripMenuItem menuItem800;
-		private System.Windows.Forms.ToolStripMenuItem menuItem400;
-		private System.Windows.Forms.ToolStripMenuItem menuItem200;
-		private System.Windows.Forms.ToolStripMenuItem menuItem100;
-		private System.Windows.Forms.ToolStripMenuItem menuItem75;
-		private System.Windows.Forms.ToolStripMenuItem menuItem50;
-		private System.Windows.Forms.ToolStripMenuItem menuItem25;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
-		private System.Windows.Forms.Button buttonCenter;
-		private System.Windows.Forms.ToolStripButton buttonClip;
-		private System.Windows.Forms.Panel panelZoomControls;
-		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-		private System.Windows.Forms.Label labelZoomAmount;
-		private System.Windows.Forms.NumericUpDown numericZoomAmount;
-		private System.Windows.Forms.Label labelZoomSize;
-		private System.Windows.Forms.NumericUpDown numericZoomWindowSize;
-		private System.Windows.Forms.CheckBox checkZoomSnap;
-		private System.Windows.Forms.ToolStripLabel labelMouseInfo;
-		private System.Windows.Forms.ToolStripButton buttonAutoClip;
+		private ToolStripContainer containerSprite;
+		private ToolStrip stripSprite;
+		private ToolStripButton buttonSave;
+		private ToolStripButton buttonRevert;
+		private ToolStripSeparator toolStripSeparator1;
+		private Panel panelOuter;
+		private Panel panelHScroll;
+		private Panel panelVScroll;
+		private HScrollBar scrollHorizontal;
+		private VScrollBar scrollVertical;
+		private ToolStrip stripUIOptions;
+		private ToolStripDropDownButton dropDownZoom;
+		private ToolStripMenuItem menuItem1600;
+		private ToolStripMenuItem menuItem800;
+		private ToolStripMenuItem menuItem400;
+		private ToolStripMenuItem menuItem200;
+		private ToolStripMenuItem menuItem100;
+		private ToolStripMenuItem menuItem75;
+		private ToolStripMenuItem menuItem50;
+		private ToolStripMenuItem menuItem25;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripMenuItem menuItemToWindow;
+		private Button buttonCenter;
+		private ToolStripButton buttonClip;
+		private Panel panelZoomControls;
+		private FlowLayoutPanel flowLayoutPanel1;
+		private Label labelZoomAmount;
+		private NumericUpDown numericZoomAmount;
+		private Label labelZoomSize;
+		private NumericUpDown numericZoomWindowSize;
+		private CheckBox checkZoomSnap;
+		private ToolStripLabel labelMouseInfo;
+		private ToolStripButton buttonAutoClip;
 
 	}
 }

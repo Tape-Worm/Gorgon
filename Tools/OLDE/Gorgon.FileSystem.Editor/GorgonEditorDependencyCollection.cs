@@ -29,6 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Gorgon.Core.Extensions;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO

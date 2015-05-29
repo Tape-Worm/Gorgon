@@ -26,10 +26,10 @@
 
 using System;
 using Gorgon.Core;
-using D3D = SharpDX.Direct3D11;
-using GI = SharpDX.DXGI;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using D3D = SharpDX.Direct3D11;
+using GI = SharpDX.DXGI;
 
 
 namespace Gorgon.Graphics

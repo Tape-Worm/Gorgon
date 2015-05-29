@@ -1,4 +1,6 @@
-﻿using Gorgon.UI;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {
@@ -7,7 +9,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -416,32 +418,32 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelBrushGradient;
-		private System.Windows.Forms.Label labelAngle;
-		private System.Windows.Forms.NumericUpDown numericAngle;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.CheckBox checkScaleAngle;
-		private System.Windows.Forms.CheckBox checkUseGamma;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panelGradientDisplay;
-		private System.Windows.Forms.Panel panelGradControls;
-		private System.Windows.Forms.Label labelSelectedColor;
-		private System.Windows.Forms.NumericUpDown numericSelectedWeight;
-		private System.Windows.Forms.Label labelSelectedWeight;
-		private System.Windows.Forms.Panel panelPreview;
-		private System.Windows.Forms.Label labelPreview;
-		private System.Windows.Forms.ContextMenuStrip popupNodeEdit;
-		private System.Windows.Forms.ToolStripMenuItem itemDuplicateNode;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem itemRemoveNode;
-        private System.Windows.Forms.ToolStripMenuItem itemAddNode;
-		private System.Windows.Forms.ToolStrip stripCommands;
-		private System.Windows.Forms.ToolStripButton buttonAddNode;
-		private System.Windows.Forms.ToolStripButton buttonRemoveNode;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton buttonDuplicateNode;
+		private Panel panelBrushGradient;
+		private Label labelAngle;
+		private NumericUpDown numericAngle;
+		private Label label1;
+		private CheckBox checkScaleAngle;
+		private CheckBox checkUseGamma;
+		private Panel panel1;
+		private Panel panelGradientDisplay;
+		private Panel panelGradControls;
+		private Label labelSelectedColor;
+		private NumericUpDown numericSelectedWeight;
+		private Label labelSelectedWeight;
+		private Panel panelPreview;
+		private Label labelPreview;
+		private ContextMenuStrip popupNodeEdit;
+		private ToolStripMenuItem itemDuplicateNode;
+		private ToolStripSeparator toolStripMenuItem1;
+		private ToolStripMenuItem itemRemoveNode;
+        private ToolStripMenuItem itemAddNode;
+		private ToolStrip stripCommands;
+		private ToolStripButton buttonAddNode;
+		private ToolStripButton buttonRemoveNode;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripButton buttonDuplicateNode;
 		private GorgonSelectablePanel panelSelectedColor;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-		private System.Windows.Forms.ToolStripButton buttonClearNodes;
+		private ToolStripSeparator toolStripSeparator2;
+		private ToolStripButton buttonClearNodes;
 	}
 }

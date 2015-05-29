@@ -26,18 +26,18 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Drawing;
 using Gorgon.Animation;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Diagnostics;
 using Gorgon.Renderers.Properties;
 using SlimMath;
-using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {

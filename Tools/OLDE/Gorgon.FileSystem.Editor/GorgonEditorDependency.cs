@@ -25,6 +25,7 @@
 #endregion
 
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO

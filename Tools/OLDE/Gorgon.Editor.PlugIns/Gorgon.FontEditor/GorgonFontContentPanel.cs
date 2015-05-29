@@ -32,8 +32,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Fetze.WinFormsColor;
 using Gorgon.Animation;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.Graphics;
@@ -42,7 +42,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace Gorgon.Editor.FontEditorPlugIn
 {

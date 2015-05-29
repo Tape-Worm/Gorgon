@@ -28,6 +28,7 @@ using System;
 using System.Globalization;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
+using Gorgon.Math;
 
 namespace Gorgon.Core
 {
@@ -65,7 +66,7 @@ namespace Gorgon.Core
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this short amount)
 		{
-		    double scale = System.Math.Abs(amount) / 1024.0;
+		    double scale = amount.Abs() / 1024.0;
 
 		    return GetCultureString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
@@ -89,7 +90,7 @@ namespace Gorgon.Core
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this int amount)
 		{
-		    double scale = System.Math.Abs(amount) / 1073741824.0;
+		    double scale = amount.Abs() / 1073741824.0;
 
 		    if (scale >= 1.0)
 		    {
@@ -141,7 +142,7 @@ namespace Gorgon.Core
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this long amount)
 		{
-		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
+		    double scale = amount.Abs() / 1125899906842624.0;
 
 		    if (scale >= 1.0)
 		    {
@@ -221,7 +222,7 @@ namespace Gorgon.Core
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this float amount)
 		{
-		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
+		    double scale = amount.Abs() / 1125899906842624.0;
 
             if (scale >= 1.0)
             {
@@ -261,7 +262,7 @@ namespace Gorgon.Core
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this double amount)
 		{
-		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
+		    double scale = amount.Abs() / 1125899906842624.0;
 
             if (scale >= 1.0)
             {

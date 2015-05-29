@@ -28,9 +28,9 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Text;
-using Gorgon.Math;
-using Gorgon.Native;
+using Gorgon.Core;
 using Gorgon.Graphics;
+using Gorgon.Native;
 using Gorgon.Renderers.Properties;
 using SlimMath;
 

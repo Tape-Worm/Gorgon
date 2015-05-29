@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Core.Collections;
 using Gorgon.Core.Collections.Specialized;

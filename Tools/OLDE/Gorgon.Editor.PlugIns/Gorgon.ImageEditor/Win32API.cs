@@ -29,6 +29,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.Editor.ImageEditorPlugIn.Properties;
 
 namespace Gorgon.Editor

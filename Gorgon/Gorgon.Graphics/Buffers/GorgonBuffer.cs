@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics
 {
 	/// <summary>
@@ -100,7 +102,7 @@ namespace Gorgon.Graphics
         /// unordered access view can be bound to the pipeline at any given time.
         /// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// </remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         public virtual GorgonBufferUnorderedAccessView GetUnorderedAccessView(BufferFormat format, int start, int count, bool useRaw)
@@ -116,7 +118,7 @@ namespace Gorgon.Graphics
         /// <param name="count">Element count.</param>
         /// <param name="useRaw"><c>true</c> to use a raw view, <c>false</c> to use a standard view.</param>
         /// <returns>A shader view for the buffer.</returns>
-        /// <exception cref="Gorgon.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+        /// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.

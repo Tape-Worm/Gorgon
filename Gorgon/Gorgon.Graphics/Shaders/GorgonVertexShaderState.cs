@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -59,7 +60,7 @@ namespace Gorgon.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
+		/// <exception cref="GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetResources(int slot, int count, ShaderResourceView[] resources)
 		{
 		    if (count == 1)
@@ -78,7 +79,7 @@ namespace Gorgon.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-        /// <exception cref="Gorgon.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
+        /// <exception cref="GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetSamplers(int slot, int count, SamplerState[] samplers)
 		{
 		    if (count == 1)

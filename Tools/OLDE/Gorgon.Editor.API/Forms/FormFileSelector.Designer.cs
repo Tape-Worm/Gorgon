@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Editor
 {
 	partial class FormEditorFileSelector
@@ -31,7 +34,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -620,42 +623,42 @@ namespace Gorgon.Editor
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.SplitContainer splitMainPanes;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.SplitContainer splitFiles;
+		private Button buttonCancel;
+		private Button buttonOK;
+		private SplitContainer splitMainPanes;
+		private Label label1;
+		private SplitContainer splitFiles;
 		private EditorTreeView treeDirectories;
-		private System.Windows.Forms.ListView listFiles;
-		private System.Windows.Forms.ToolStrip stripFileFunctions;
-		private System.Windows.Forms.Panel panelTopControls;
-		private System.Windows.Forms.Panel panelTools;
-		private System.Windows.Forms.Panel panelSearch;
-		private System.Windows.Forms.Button buttonSearch;
-		private Gorgon.Editor.FormEditorFileSelector.CuedTextBox textSearch;
-		private System.Windows.Forms.ComboBox comboFile;
-		private System.Windows.Forms.ColumnHeader columnFileName;
-		private System.Windows.Forms.ColumnHeader columnDate;
-		private System.Windows.Forms.ColumnHeader columnSize;
-		private System.Windows.Forms.Panel panelFilters;
-		private System.Windows.Forms.ComboBox comboFilters;
-		private System.Windows.Forms.Panel panel2;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.ImageList imagesFilesSmall;
-		private System.Windows.Forms.ImageList imagesFilesLarge;
-		private System.Windows.Forms.ToolStripDropDownButton buttonView;
-		private System.Windows.Forms.ToolStripMenuItem itemViewDetails;
-		private System.Windows.Forms.ToolStripMenuItem itemViewLarge;
-		private System.Windows.Forms.ToolStripButton buttonGoUp;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripButton buttonBack;
-		private System.Windows.Forms.ToolStripButton buttonForward;
-        private System.Windows.Forms.Panel panelSearchLabel;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Label labelSearchBanner;
-        private System.Windows.Forms.Button buttonCloseSearch;
-        private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.Label labelNoFilesFound;
+		private ListView listFiles;
+		private ToolStrip stripFileFunctions;
+		private Panel panelTopControls;
+		private Panel panelTools;
+		private Panel panelSearch;
+		private Button buttonSearch;
+		private CuedTextBox textSearch;
+		private ComboBox comboFile;
+		private ColumnHeader columnFileName;
+		private ColumnHeader columnDate;
+		private ColumnHeader columnSize;
+		private Panel panelFilters;
+		private ComboBox comboFilters;
+		private Panel panel2;
+		private Panel panel1;
+		private ImageList imagesFilesSmall;
+		private ImageList imagesFilesLarge;
+		private ToolStripDropDownButton buttonView;
+		private ToolStripMenuItem itemViewDetails;
+		private ToolStripMenuItem itemViewLarge;
+		private ToolStripButton buttonGoUp;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripButton buttonBack;
+		private ToolStripButton buttonForward;
+        private Panel panelSearchLabel;
+        private Panel panel4;
+        private Label labelSearchBanner;
+        private Button buttonCloseSearch;
+        private PictureBox pictureBox1;
+		private Label labelNoFilesFound;
 
 	}
 }

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.Native;

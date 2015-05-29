@@ -33,15 +33,14 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Design;
 using Gorgon.Editor.ImageEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Native;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace Gorgon.Editor.ImageEditorPlugIn
 {

@@ -39,7 +39,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using SlimMath;
 
 namespace Gorgon.Editor.ImageEditorPlugIn
 {

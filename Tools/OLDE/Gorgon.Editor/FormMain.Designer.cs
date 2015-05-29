@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Editor
 {
 	partial class FormMain
@@ -31,7 +34,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -839,73 +842,73 @@ namespace Gorgon.Editor
 
 		#endregion
 
-		private System.Windows.Forms.PropertyGrid propertyItem;
-		private System.Windows.Forms.MenuStrip menuMain;
-		private System.Windows.Forms.ContextMenuStrip popupProperties;
-		private System.Windows.Forms.ToolStripMenuItem itemResetValue;
-		private System.Windows.Forms.ToolStripMenuItem menuFile;
-		private System.Windows.Forms.ToolStripMenuItem itemNew;
-		private System.Windows.Forms.ToolStripMenuItem itemOpen;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripMenuItem itemSave;
-		private System.Windows.Forms.ToolStripMenuItem itemSaveAs;
-		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem5;
-		private System.Windows.Forms.ToolStripMenuItem itemExit;
+		private PropertyGrid propertyItem;
+		private MenuStrip menuMain;
+		private ContextMenuStrip popupProperties;
+		private ToolStripMenuItem itemResetValue;
+		private ToolStripMenuItem menuFile;
+		private ToolStripMenuItem itemNew;
+		private ToolStripMenuItem itemOpen;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripMenuItem itemSave;
+		private ToolStripMenuItem itemSaveAs;
+		private ToolStripSeparator toolStripMenuItem5;
+		private ToolStripMenuItem itemExit;
 		private KRBTabControl.KRBTabControl tabDocumentManager;
 		private KRBTabControl.TabPageEx pageProperties;
 		private KRBTabControl.TabPageEx pageItems;
-		private System.Windows.Forms.ToolStripContainer containerFiles;
-		private System.Windows.Forms.ToolStripMenuItem itemImport;
-		private System.Windows.Forms.ToolStripMenuItem itemExport;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.Panel panelEditor;
-		private System.Windows.Forms.StatusStrip stripStatus;
-		private System.Windows.Forms.ToolStripMenuItem itemAddContent;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-		private System.Windows.Forms.ContextMenuStrip popupFileSystem;
-		private System.Windows.Forms.ToolStripMenuItem popupItemAddContent;
-		private System.Windows.Forms.ToolStrip stripContent;
-		private System.Windows.Forms.ToolStripDropDownButton dropNewContent;
-		private System.Windows.Forms.ToolStripSeparator toolStripButton1;
-		private System.Windows.Forms.ToolStripButton buttonEditContent;
-		private System.Windows.Forms.ToolStripButton buttonDeleteContent;
-		private System.Windows.Forms.ContextMenuStrip popupAddContentMenu;
-		private System.Windows.Forms.ToolStripMenuItem popupItemEdit;
-        private System.Windows.Forms.ToolStripMenuItem popupItemDelete;
-        private System.Windows.Forms.ToolStripMenuItem popupItemCreateFolder;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripMenuItem popupItemRename;
-		private System.Windows.Forms.Panel splitPanelContainer;
-		private System.Windows.Forms.Panel splitPanel1;
-		private System.Windows.Forms.Splitter splitEditor;
-		private System.Windows.Forms.Panel splitPanel2;
+		private ToolStripContainer containerFiles;
+		private ToolStripMenuItem itemImport;
+		private ToolStripMenuItem itemExport;
+        private ToolStripSeparator toolStripSeparator2;
+        private Panel panelEditor;
+		private StatusStrip stripStatus;
+		private ToolStripMenuItem itemAddContent;
+		private ToolStripSeparator toolStripSeparator3;
+		private ContextMenuStrip popupFileSystem;
+		private ToolStripMenuItem popupItemAddContent;
+		private ToolStrip stripContent;
+		private ToolStripDropDownButton dropNewContent;
+		private ToolStripSeparator toolStripButton1;
+		private ToolStripButton buttonEditContent;
+		private ToolStripButton buttonDeleteContent;
+		private ContextMenuStrip popupAddContentMenu;
+		private ToolStripMenuItem popupItemEdit;
+        private ToolStripMenuItem popupItemDelete;
+        private ToolStripMenuItem popupItemCreateFolder;
+		private ToolStripSeparator toolStripSeparator4;
+        private ToolStripMenuItem popupItemRename;
+		private Panel splitPanelContainer;
+		private Panel splitPanel1;
+		private Splitter splitEditor;
+		private Panel splitPanel2;
 		private EditorTreeView treeFiles;
-        private System.Windows.Forms.OpenFileDialog dialogOpenFile;
-		private System.Windows.Forms.SaveFileDialog dialogSaveFile;
-        private System.Windows.Forms.ToolStripMenuItem menuEdit;
-        private System.Windows.Forms.ToolStripMenuItem itemCut;
-        private System.Windows.Forms.ToolStripMenuItem itemCopy;
-        private System.Windows.Forms.ToolStripMenuItem itemPaste;
-        private System.Windows.Forms.ToolStripMenuItem popupItemCut;
-        private System.Windows.Forms.ToolStripMenuItem popupItemCopy;
-        private System.Windows.Forms.ToolStripMenuItem popupItemPaste;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-		private System.Windows.Forms.ToolStripMenuItem itemDelete;
-        private System.Windows.Forms.OpenFileDialog dialogImport;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripMenuItem itemPreferences;
-        private System.Windows.Forms.ToolStripMenuItem menuRecentFiles;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
-        private System.Windows.Forms.FolderBrowserDialog dialogExport;
-		private System.Windows.Forms.ToolStripMenuItem itemCreateFolder;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
-		private System.Windows.Forms.ToolStripButton buttonShowAll;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
-		private System.Windows.Forms.ToolStripMenuItem popupItemInclude;
-		private System.Windows.Forms.ToolStripMenuItem popupItemExclude;
-        private System.Windows.Forms.ToolStripMenuItem popupItemIncludeAll;
-		private System.Windows.Forms.ToolStripMenuItem popupItemExcludeAll;
+        private OpenFileDialog dialogOpenFile;
+		private SaveFileDialog dialogSaveFile;
+        private ToolStripMenuItem menuEdit;
+        private ToolStripMenuItem itemCut;
+        private ToolStripMenuItem itemCopy;
+        private ToolStripMenuItem itemPaste;
+        private ToolStripMenuItem popupItemCut;
+        private ToolStripMenuItem popupItemCopy;
+        private ToolStripMenuItem popupItemPaste;
+        private ToolStripSeparator toolStripSeparator5;
+		private ToolStripMenuItem itemDelete;
+        private OpenFileDialog dialogImport;
+        private ToolStripSeparator toolStripSeparator6;
+        private ToolStripSeparator toolStripSeparator7;
+        private ToolStripMenuItem itemPreferences;
+        private ToolStripMenuItem menuRecentFiles;
+		private ToolStripSeparator toolStripSeparator8;
+        private FolderBrowserDialog dialogExport;
+		private ToolStripMenuItem itemCreateFolder;
+		private ToolStripSeparator toolStripSeparator9;
+		private ToolStripButton buttonShowAll;
+		private ToolStripSeparator toolStripSeparator10;
+		private ToolStripMenuItem popupItemInclude;
+		private ToolStripMenuItem popupItemExclude;
+        private ToolStripMenuItem popupItemIncludeAll;
+		private ToolStripMenuItem popupItemExcludeAll;
 	}
 }
 

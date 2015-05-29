@@ -28,9 +28,9 @@ using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.IO;
 using Gorgon.Native;
 using DX = SharpDX;
-using Gorgon.IO;
 
 namespace Gorgon.Graphics
 {

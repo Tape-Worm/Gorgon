@@ -24,6 +24,10 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+using Gorgon.UI;
+
 namespace Gorgon.Editor.FontEditorPlugIn
 {
     partial class PanelFontPreferences
@@ -31,7 +35,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -553,38 +557,38 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
         #endregion
 
-        private System.Windows.Forms.Label labelGlyphEdit;
-        private System.Windows.Forms.Label labelZoomWindowSize;
-        private System.Windows.Forms.NumericUpDown numericZoomWindowSize;
-        private System.Windows.Forms.Label labelZoomAmount;
-        private System.Windows.Forms.NumericUpDown numericZoomAmount;
-        private System.Windows.Forms.CheckBox checkZoomSnap;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel flowLayoutPanel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label labelPreview;
-        private System.Windows.Forms.Panel flowLayoutPanel3;
-        private System.Windows.Forms.CheckBox checkShadowEnabled;
-        private System.Windows.Forms.Label labelShadowOffset;
-        private System.Windows.Forms.Label labelShadowOpacity;
-        private UI.GorgonSelectablePanel panelShadowOpacity;
-        private System.Windows.Forms.Label labelTextColor;
-        private UI.GorgonSelectablePanel panelTextColor;
-        private System.Windows.Forms.Label labelBackgroundColor;
-        private UI.GorgonSelectablePanel panelBackColor;
-        private System.Windows.Forms.NumericUpDown numericShadowOffsetX;
-        private System.Windows.Forms.Label labelSep;
-        private System.Windows.Forms.NumericUpDown numericShadowOffsetY;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.TextBox textPreviewText;
-        private System.Windows.Forms.Label labelPreviewText;
-        private System.Windows.Forms.Panel panel4;
-		private System.Windows.Forms.Panel panel5;
-		private System.Windows.Forms.Panel panel6;
-		private System.Windows.Forms.CheckBox checkShowAnimations;
-		private System.Windows.Forms.Label labelFontEditorSettings;
-		private System.Windows.Forms.ComboBox comboBlendMode;
-		private System.Windows.Forms.Label labelBlendMode;
+        private Label labelGlyphEdit;
+        private Label labelZoomWindowSize;
+        private NumericUpDown numericZoomWindowSize;
+        private Label labelZoomAmount;
+        private NumericUpDown numericZoomAmount;
+        private CheckBox checkZoomSnap;
+        private Panel panel1;
+        private Panel flowLayoutPanel1;
+        private Panel panel2;
+        private Label labelPreview;
+        private Panel flowLayoutPanel3;
+        private CheckBox checkShadowEnabled;
+        private Label labelShadowOffset;
+        private Label labelShadowOpacity;
+        private GorgonSelectablePanel panelShadowOpacity;
+        private Label labelTextColor;
+        private GorgonSelectablePanel panelTextColor;
+        private Label labelBackgroundColor;
+        private GorgonSelectablePanel panelBackColor;
+        private NumericUpDown numericShadowOffsetX;
+        private Label labelSep;
+        private NumericUpDown numericShadowOffsetY;
+        private Panel panel3;
+        private TextBox textPreviewText;
+        private Label labelPreviewText;
+        private Panel panel4;
+		private Panel panel5;
+		private Panel panel6;
+		private CheckBox checkShowAnimations;
+		private Label labelFontEditorSettings;
+		private ComboBox comboBlendMode;
+		private Label labelBlendMode;
 
     }
 }

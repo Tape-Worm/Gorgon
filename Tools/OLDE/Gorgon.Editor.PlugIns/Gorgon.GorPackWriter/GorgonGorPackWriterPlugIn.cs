@@ -31,9 +31,9 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.Editor.GorPackWriterPlugIn.Properties;
 using Gorgon.IO;
-using ICSharpCode.SharpZipLib.BZip2;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn
 {

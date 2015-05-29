@@ -27,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;

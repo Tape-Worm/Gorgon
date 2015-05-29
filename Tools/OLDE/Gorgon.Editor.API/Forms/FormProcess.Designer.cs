@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
 	partial class FormProcess
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -109,9 +112,9 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Label labelStatus;
-		private System.Windows.Forms.ProgressBar progressMeter;
+		private Button buttonCancel;
+		private Label labelStatus;
+		private ProgressBar progressMeter;
 
 	}
 }

@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
 	partial class AlphaChannelDialog
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -189,12 +192,12 @@
 		#endregion
 
 		private Fetze.WinFormsColor.ColorSlider sliderAlpha;
-		private System.Windows.Forms.Label labelAlpha;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.NumericUpDown numericAlphaValue;
+		private Label labelAlpha;
+		private Button buttonOK;
+		private Button buttonCancel;
+		private NumericUpDown numericAlphaValue;
 		private Fetze.WinFormsColor.ColorShowBox colorPreview;
-		private System.Windows.Forms.Label labelOldAlpha;
-		private System.Windows.Forms.Label labelNewAlpha;
+		private Label labelOldAlpha;
+		private Label labelNewAlpha;
 	}
 }

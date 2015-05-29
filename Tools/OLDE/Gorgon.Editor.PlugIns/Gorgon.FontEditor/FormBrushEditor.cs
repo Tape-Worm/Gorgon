@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Fetze.WinFormsColor;
+using Gorgon.Core;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;

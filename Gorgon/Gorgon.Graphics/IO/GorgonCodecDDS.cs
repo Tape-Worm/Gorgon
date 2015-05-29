@@ -108,9 +108,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using Gorgon.Graphics.Properties;
 
 namespace Gorgon.IO
 {

@@ -32,7 +32,6 @@ using System.Windows.Forms;
 using Gorgon.Editor.Controls;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
-using KRBTabControl;
 
 namespace Gorgon.Editor
 {

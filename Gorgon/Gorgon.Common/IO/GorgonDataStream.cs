@@ -32,8 +32,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.Native;
 using Gorgon.Diagnostics;
+using Gorgon.Native;
 
 namespace Gorgon.IO
 {

@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Examples
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Examples
 {
 	partial class formMain
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -303,26 +306,26 @@
 
 		#endregion
 
-        private System.Windows.Forms.ImageList imageTree;
-		private System.Windows.Forms.TextBox textDisplay;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panelWriteLocation;
-		private System.Windows.Forms.Label labelWriteLocation;
-		private System.Windows.Forms.Panel panel3;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.ToolStrip stripCommands;
-		private System.Windows.Forms.ToolStripButton buttonSave;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
-		private System.Windows.Forms.ToolStripDropDownButton buttonReload;
-		private System.Windows.Forms.ToolStripMenuItem itemLoadChanged;
-		private System.Windows.Forms.ToolStripMenuItem itemLoadOriginal;
-		private System.Windows.Forms.Panel panel4;
-		private System.Windows.Forms.PictureBox pictureBox2;
-		private System.Windows.Forms.Label labelInfo;
-		private System.Windows.Forms.Panel panelFileSystem;
-		private System.Windows.Forms.Label labelFileSystem;
-		private System.Windows.Forms.PictureBox pictureBox3;
+        private ImageList imageTree;
+		private TextBox textDisplay;
+		private Panel panel1;
+		private Panel panelWriteLocation;
+		private Label labelWriteLocation;
+		private Panel panel3;
+		private PictureBox pictureBox1;
+		private ToolStrip stripCommands;
+		private ToolStripButton buttonSave;
+		private ToolStripSeparator toolStripSeparator1;
+		private ToolStripLabel toolStripLabel1;
+		private ToolStripDropDownButton buttonReload;
+		private ToolStripMenuItem itemLoadChanged;
+		private ToolStripMenuItem itemLoadOriginal;
+		private Panel panel4;
+		private PictureBox pictureBox2;
+		private Label labelInfo;
+		private Panel panelFileSystem;
+		private Label labelFileSystem;
+		private PictureBox pictureBox3;
 	}
 }
 

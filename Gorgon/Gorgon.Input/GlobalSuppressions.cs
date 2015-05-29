@@ -10,6 +10,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Gorgon.Input.GorgonJoystick+JoystickCapabilities.#VibrationMotorRanges")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags", Scope = "type", Target = "Gorgon.Input.KeyboardKeys")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Gorgon.Input.GorgonPointingDevice.ShowCursor(System.Boolean)", Scope = "member", Target = "Gorgon.Input.GorgonPointingDevice.#ResetCursor()")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly", Scope = "member", Target = "Gorgon.Input.GorgonJoystick+JoystickCapabilities.#VibrationMotorRanges")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags", Scope = "type", Target = "Gorgon.Input.KeyboardKeys")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Gorgon.Input.GorgonPointingDevice.ShowCursor(System.Boolean)", Scope = "member", Target = "Gorgon.Input.GorgonPointingDevice.#ResetCursor()")]

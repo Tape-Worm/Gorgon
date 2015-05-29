@@ -25,11 +25,13 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
@@ -58,7 +60,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 		/// <returns>
 		/// A <see cref="T:System.Drawing.Design.UITypeEditorEditStyle" /> value that indicates the style of editor used by the <see cref="M:System.Drawing.Design.UITypeEditor.EditValue(System.IServiceProvider,System.Object)" /> method. If the <see cref="T:System.Drawing.Design.UITypeEditor" /> does not support this method, then <see cref="M:System.Drawing.Design.UITypeEditor.GetEditStyle" /> will return <see cref="F:System.Drawing.Design.UITypeEditorEditStyle.None" />.
 		/// </returns>
-		public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
 			return UITypeEditorEditStyle.Modal;
 		}
@@ -70,7 +72,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 		/// <returns>
 		/// true if <see cref="M:System.Drawing.Design.UITypeEditor.PaintValue(System.Object,System.Drawing.Graphics,System.Drawing.Rectangle)" /> is implemented; otherwise, false.
 		/// </returns>
-		public override bool GetPaintValueSupported(System.ComponentModel.ITypeDescriptorContext context)
+		public override bool GetPaintValueSupported(ITypeDescriptorContext context)
 		{
 			return true;
 		}
@@ -125,7 +127,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 		/// <returns>
 		/// The new value of the object. If the value of the object has not changed, this should return the same object it was passed.
 		/// </returns>
-		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			var sprite = (GorgonSpriteContent)((ContentTypeDescriptor)context.Instance).Content;
 			GorgonTexture2D currentTexture = sprite.Texture;

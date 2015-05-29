@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;

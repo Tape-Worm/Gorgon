@@ -26,9 +26,9 @@
 
 using Gorgon.Core;
 using Gorgon.Core.Extensions;
+using Gorgon.Graphics;
 using Gorgon.Renderers.Properties;
 using SlimMath;
-using Gorgon.Graphics;
 
 namespace Gorgon.Renderers
 {

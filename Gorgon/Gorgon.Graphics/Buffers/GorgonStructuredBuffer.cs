@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics
 {
 	/// <summary>
@@ -95,13 +97,13 @@ namespace Gorgon.Graphics
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
         /// <returns>A shader view for the buffer.</returns>
-        /// <exception cref="Gorgon.GorgonException">Thrown when the usage for this buffer is set to Staging.
+        /// <exception cref="GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
         /// <para>Thrown when the view could not be created.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
 		/// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -121,7 +123,7 @@ namespace Gorgon.Graphics
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
 		public GorgonStructuredBufferUnorderedAccessView GetUnorderedAccessView(int start, int count, UnorderedAccessViewType viewType)

@@ -26,11 +26,11 @@
 
 using System;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Properties;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
-using Gorgon.Graphics.Properties;
-using Gorgon.Diagnostics;
 
 namespace Gorgon.Graphics
 {

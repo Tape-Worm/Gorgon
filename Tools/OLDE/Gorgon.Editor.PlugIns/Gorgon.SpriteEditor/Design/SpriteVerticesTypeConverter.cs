@@ -29,8 +29,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn.Design
 {
@@ -62,7 +60,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Design
         /// <returns>
         /// An <see cref="T:System.Object" /> that represents the converted value.
         /// </returns>
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             return false;
         }

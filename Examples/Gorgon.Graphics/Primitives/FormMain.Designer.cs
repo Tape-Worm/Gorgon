@@ -1,11 +1,13 @@
-﻿namespace Gorgon.Graphics.Example
+﻿using System.ComponentModel;
+
+namespace Gorgon.Graphics.Example
 {
 	partial class FormMain
 	{
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.

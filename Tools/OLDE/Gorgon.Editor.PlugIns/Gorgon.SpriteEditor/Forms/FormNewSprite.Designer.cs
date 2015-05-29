@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.ComponentModel;
+using System.Windows.Forms;
+
 namespace Gorgon.Editor.SpriteEditorPlugIn
 {
 	partial class FormNewSprite
@@ -31,7 +34,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -218,13 +221,13 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 
 		#endregion
 
-		private System.Windows.Forms.TextBox textName;
-		private System.Windows.Forms.Label labelName;
-		private System.Windows.Forms.Button buttonCancel;
-		private System.Windows.Forms.Button buttonOK;
-		private System.Windows.Forms.Label labelTexture;
-		private System.Windows.Forms.Label labelTexturePath;
-		private System.Windows.Forms.Button buttonSelectTexture;
-		private System.Windows.Forms.ToolTip tipInfo;
+		private TextBox textName;
+		private Label labelName;
+		private Button buttonCancel;
+		private Button buttonOK;
+		private Label labelTexture;
+		private Label labelTexturePath;
+		private Button buttonSelectTexture;
+		private ToolTip tipInfo;
 	}
 }

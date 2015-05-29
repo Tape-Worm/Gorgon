@@ -30,8 +30,8 @@ using System.Collections.Generic;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
-using Gorgon.IO;
 using Gorgon.Diagnostics;
+using Gorgon.IO;
 
 namespace Gorgon.PlugIns
 {

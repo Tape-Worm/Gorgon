@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
 

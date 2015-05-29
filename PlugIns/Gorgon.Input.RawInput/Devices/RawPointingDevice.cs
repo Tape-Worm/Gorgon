@@ -49,7 +49,7 @@ namespace Gorgon.Input.Raw
 		private int _clickCount;							    // Click counter.		
 		private PointF _doubleClickPosition;				    // Double click position.
 		private PointingDeviceButtons _doubleClickButton;	    // Button that was double clicked.
-		private readonly IntPtr _deviceHandle = IntPtr.Zero;    // Device handle.
+		private readonly IntPtr _deviceHandle;					// Device handle.
 		private bool _isExclusive;								// Flag to indicate that the pointing device is placed in exclusive mode.
 		private bool _isBound;									// Flag to indicate that the device is bound.
 		private PointF _lastPosition;							// The last position of the cursor before it was put into exclusive mode.

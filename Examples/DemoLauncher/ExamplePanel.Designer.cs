@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Examples
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Examples
 {
 	partial class ExamplePanel
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -146,11 +149,11 @@
 
 		#endregion
 
-		private System.Windows.Forms.PictureBox pictureIcon;
-		private System.Windows.Forms.Panel panelText;
-		private System.Windows.Forms.Label labelText;
-		private System.Windows.Forms.Label labelCaption;
-		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Panel panel2;
+		private PictureBox pictureIcon;
+		private Panel panelText;
+		private Label labelText;
+		private Label labelCaption;
+		private Panel panel1;
+		private Panel panel2;
 	}
 }

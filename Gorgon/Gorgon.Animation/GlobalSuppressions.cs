@@ -10,6 +10,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimatedProperty.#Property")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimationTrack`1+NearestKeys.#PreviousKey")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimationTrack`1+NearestKeys.#NextKey")]
+[assembly: SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimatedProperty.#Property")]
+[assembly: SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimationTrack`1+NearestKeys.#PreviousKey")]
+[assembly: SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Scope = "member", Target = "Gorgon.Animation.GorgonAnimationTrack`1+NearestKeys.#NextKey")]

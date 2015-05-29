@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Core;
 using SharpDX.DXGI;
 using SlimMath;
 using DX = SharpDX;
@@ -174,7 +175,7 @@ namespace Gorgon.Graphics
         /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
         /// <para>Textures that have a usage of staging cannot create shader views.</para>
         /// </remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
         public GorgonTextureShaderView GetShaderView(BufferFormat format, int mipStart = 0, int mipCount = 1)
         {
@@ -194,7 +195,7 @@ namespace Gorgon.Graphics
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// <para>Textures that have a usage of staging cannot create unordered views.</para>
 		/// </remarks>
-		/// <exception cref="Gorgon.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+		/// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
 		public GorgonTextureUnorderedAccessView GetUnorderedAccessView(BufferFormat format, int mipStart = 0, int depthStart = 0,
 																			 int depthCount = int.MaxValue)
 		{

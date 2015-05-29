@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor.Controls
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor.Controls
 {
     partial class PanelPlugIns
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -234,20 +237,20 @@
 
         private KRBTabControl.KRBTabControl tabPlugIns;
         private KRBTabControl.TabPageEx pagePlugIns;
-        private System.Windows.Forms.Panel panelContentPlugIns;
-        private System.Windows.Forms.ListView listContentPlugIns;
-        private System.Windows.Forms.ColumnHeader columnDesc;
-        private System.Windows.Forms.ColumnHeader columnType;
-        private System.Windows.Forms.ColumnHeader columnPath;
+        private Panel panelContentPlugIns;
+        private ListView listContentPlugIns;
+        private ColumnHeader columnDesc;
+        private ColumnHeader columnType;
+        private ColumnHeader columnPath;
         private KRBTabControl.TabPageEx pageDisabled;
-        private System.Windows.Forms.ListView listDisabledPlugIns;
-        private System.Windows.Forms.ColumnHeader columnDisabledDescription;
-        private System.Windows.Forms.ColumnHeader columnDisabledReason;
-        private System.Windows.Forms.ColumnHeader columnDisablePath;
-		private System.Windows.Forms.ContextMenuStrip popupPlugIns;
-		private System.Windows.Forms.ToolStripMenuItem itemDisablePlugIn;
-		private System.Windows.Forms.ToolStripMenuItem itemEnablePlugIn;
-		private System.Windows.Forms.PictureBox imagePlugInHelp;
+        private ListView listDisabledPlugIns;
+        private ColumnHeader columnDisabledDescription;
+        private ColumnHeader columnDisabledReason;
+        private ColumnHeader columnDisablePath;
+		private ContextMenuStrip popupPlugIns;
+		private ToolStripMenuItem itemDisablePlugIn;
+		private ToolStripMenuItem itemEnablePlugIn;
+		private PictureBox imagePlugInHelp;
 
     }
 }

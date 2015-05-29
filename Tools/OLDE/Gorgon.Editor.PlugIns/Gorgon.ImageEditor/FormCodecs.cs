@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.UI;
 

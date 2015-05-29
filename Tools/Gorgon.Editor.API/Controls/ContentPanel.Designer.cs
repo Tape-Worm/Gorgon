@@ -1,11 +1,14 @@
-﻿namespace Gorgon.Editor
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Gorgon.Editor
 {
 	partial class ContentPanel
 	{
 		/// <summary> 
 		/// Required designer variable.
 		/// </summary>
-		private System.ComponentModel.IContainer components = null;
+		private IContainer components = null;
 
 		/// <summary> 
 		/// Clean up any resources being used.
@@ -88,8 +91,8 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panelCaption;
-		private System.Windows.Forms.Label labelCaption;
-		private System.Windows.Forms.Label labelClose;
+		private Panel panelCaption;
+		private Label labelCaption;
+		private Label labelClose;
 	}
 }

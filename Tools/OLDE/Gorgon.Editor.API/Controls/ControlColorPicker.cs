@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using Fetze.WinFormsColor;
 using Gorgon.UI;
 
 namespace Gorgon.Editor

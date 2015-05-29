@@ -146,7 +146,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Editor.API", "..\Too
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5B52FB0A-CA5A-4F61-86E7-13F822514F77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Common.Test", "..\Test\Gorgon.Common.Test\Gorgon.Common.Test.csproj", "{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core.Test", "..\Test\Gorgon.Core.Test\Gorgon.Core.Test.csproj", "{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.ImageEditorPlugIn.Properties;
 using Gorgon.IO;
 using Gorgon.UI;

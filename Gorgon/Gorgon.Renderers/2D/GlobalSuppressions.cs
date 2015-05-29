@@ -10,7 +10,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.GorgonRenderable.#Vertices")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Scope = "member", Target = "Gorgon.Renderers.GorgonSprite.#Gorgon.Renderers.IPersistedRenderable.Load(System.IO.Stream)")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.I2DCollisionObject.#Vertices")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.IRenderable.#Vertices")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.GorgonRenderable.#Vertices")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Scope = "member", Target = "Gorgon.Renderers.GorgonSprite.#Gorgon.Renderers.IPersistedRenderable.Load(System.IO.Stream)")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.I2DCollisionObject.#Vertices")]
+[assembly: SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "Gorgon.Renderers.IRenderable.#Vertices")]

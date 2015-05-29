@@ -29,7 +29,6 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.IO;
 using Gorgon.Native;
 
 namespace Gorgon.IO

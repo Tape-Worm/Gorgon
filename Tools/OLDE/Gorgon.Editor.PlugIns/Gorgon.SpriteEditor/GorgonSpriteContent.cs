@@ -37,7 +37,6 @@ using Gorgon.Editor.SpriteEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using SlimMath;
 
 namespace Gorgon.Editor.SpriteEditorPlugIn
 {
