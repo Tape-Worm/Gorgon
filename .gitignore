@@ -15,7 +15,8 @@ x64/
 x86/
 build/
 bld/
-Test/
+Test/*
+!Test/Gorgon.Core.Test/
 
 # Roslyn cache directories
 *.ide/
