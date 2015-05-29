@@ -26,7 +26,6 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Core.Extensions;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.IO

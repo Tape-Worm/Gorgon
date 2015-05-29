@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using SlimMath;
 

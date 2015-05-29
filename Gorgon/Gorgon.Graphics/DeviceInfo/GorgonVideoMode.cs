@@ -26,7 +26,7 @@
 
 using System;
 using System.Drawing;
-using Gorgon.Core.Extensions;
+using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 

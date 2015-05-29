@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Gorgon.Core.Extensions;
+using Gorgon.Core;
 
 namespace Gorgon.Renderers
 {

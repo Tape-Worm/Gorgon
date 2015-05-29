@@ -26,7 +26,7 @@
 
 using System;
 using System.Drawing.Drawing2D;
-using Gorgon.Core.Extensions;
+using Gorgon.Core;
 
 namespace Gorgon.Editor.FontEditorPlugIn.Controls
 {

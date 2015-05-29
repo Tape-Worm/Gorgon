@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Gorgon.Core.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Core.Test

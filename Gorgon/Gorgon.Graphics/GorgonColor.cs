@@ -29,7 +29,6 @@
 
 using System.Runtime.InteropServices;
 using Gorgon.Core;
-using Gorgon.Core.Extensions;
 using Gorgon.Graphics.Properties;
 using SharpDX;
 using Color = System.Drawing.Color;

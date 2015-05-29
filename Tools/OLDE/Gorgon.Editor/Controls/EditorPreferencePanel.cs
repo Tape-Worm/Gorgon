@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Core.Extensions;
+using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.Math;

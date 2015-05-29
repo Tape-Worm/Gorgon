@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using Gorgon.Core.Extensions;
+using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.Math;
 

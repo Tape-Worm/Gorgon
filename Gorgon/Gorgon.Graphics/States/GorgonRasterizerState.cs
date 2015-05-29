@@ -26,7 +26,6 @@
 
 using System.Drawing;
 using Gorgon.Core;
-using Gorgon.Core.Extensions;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 

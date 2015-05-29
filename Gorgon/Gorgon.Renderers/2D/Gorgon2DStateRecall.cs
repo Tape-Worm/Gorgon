@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using Gorgon.Core;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers

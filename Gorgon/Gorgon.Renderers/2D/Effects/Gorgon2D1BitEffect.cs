@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Native;
 

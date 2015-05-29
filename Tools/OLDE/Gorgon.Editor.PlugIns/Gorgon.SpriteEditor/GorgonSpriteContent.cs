@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
+using Gorgon.Core;
 using Gorgon.Design;
 using Gorgon.Editor.Design;
 using Gorgon.Editor.SpriteEditorPlugIn.Controls;

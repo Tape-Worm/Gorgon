@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Gorgon.Core;
-using Gorgon.Core.Extensions;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor
