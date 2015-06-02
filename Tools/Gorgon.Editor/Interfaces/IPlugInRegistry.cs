@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Gorgon.IO;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor
 {

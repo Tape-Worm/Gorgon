@@ -33,7 +33,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Controls

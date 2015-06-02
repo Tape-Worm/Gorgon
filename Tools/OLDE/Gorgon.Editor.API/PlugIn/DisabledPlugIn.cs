@@ -26,7 +26,7 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor
 {

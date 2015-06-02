@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.IO
 {

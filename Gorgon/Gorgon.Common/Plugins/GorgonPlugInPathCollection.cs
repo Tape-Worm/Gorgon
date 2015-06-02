@@ -27,19 +27,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using Gorgon.Core;
+using System.Linq;
+using System.Reflection;
 using Gorgon.Core.Properties;
-using Gorgon.Diagnostics;
 using Gorgon.IO;
 
-namespace Gorgon.PlugIns
+namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// Collection to hold search paths for plug-ins.
+	/// Collection to hold search paths for plugin assemblies.
 	/// </summary>
-	/// <remarks>By default, this object is initialized with multiple search paths, in order of preference.  These search paths are:
+	/// <remarks>
 	/// <para>
+	/// By default, this object is initialized with multiple search paths, in order of preference.  These search paths are:
 	/// <list type="number">
 	/// <item><description>The directory of the executable.</description></item>
 	/// <item><description>The working directory of the executable.</description></item>
@@ -47,14 +49,19 @@ namespace Gorgon.PlugIns
 	/// <item><description>The directories listed in the PATH environment variable.</description></item>
 	/// </list>
 	/// </para>
-	/// <para>Calling the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInPathCollection.Clear">Clear</see> method will remove these paths and give an empty collection.  
-	/// Call the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInPathCollection.GetDefaultPaths">GetDefaultPaths</see> method to restore these paths.</para>
+	/// <para>
+	/// Users are free to add and remove paths from this list as they see fit, but that calling the <see cref="Clear"/> method will remove these paths.  In order to refresh these paths, call <see cref="GetDefaultPaths"/>.
+	/// </para>
+	/// <para>
+	/// This collection is -not- thread safe.
+	/// </para>
 	/// </remarks>
-	public class GorgonPlugInPathCollection
-		: IList<string>
-    {
+	public class GorgonPluginPathCollection
+		: IList<string>, IReadOnlyList<string>
+	{
         #region Variables.
-        private readonly List<string> _paths;
+		// The list of paths.
+        private readonly List<string> _paths = new List<string>();
 		#endregion
 
 		#region Methods.
@@ -79,14 +86,24 @@ namespace Gorgon.PlugIns
 		}
 
 		/// <summary>
-		/// Function to remove a path entry.
+		/// Function to remove a path entry from the collection.
 		/// </summary>
-		/// <param name="item">Item to remove</param>
-		public void Remove(string item)
+		/// <param name="path">The path to remove from the list.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		/// <exception cref="DirectoryNotFoundException">Thrown when the <paramref name="path"/> specified is not in the collection.</exception>
+		public void Remove(string path)
 		{
-			GorgonDebug.AssertParamString(item, "item");
+			path = ValidatePath(path);
 
-			_paths.Remove(item);
+			int index = IndexOf(path);
+
+			if (index == -1)
+			{
+				throw new DirectoryNotFoundException(string.Format(Resources.GOR_ERR_PATH_NOT_FOUND, path));
+			}
+
+			_paths.RemoveAt(index);
 		}
 
 		/// <summary>
@@ -101,11 +118,45 @@ namespace Gorgon.PlugIns
 		/// <summary>
 		/// Function to append the default paths to the collection.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will add a list of paths to the collection. The paths retrieved are (in order):
+		/// <list type="number">
+		/// <item><description>The directory of the application executable.</description></item>
+		/// <item><description>The working directory of the executable.</description></item>
+		/// <item><description>The system directory.</description></item>
+		/// <item><description>The directories listed in the PATH environment variable.</description></item>
+		/// </list>
+		/// The first item in the list will only work in assemblies that are not called from unmanaged code, or from web applications. Gorgon will attempt to use the directory of the assembly 
+		/// that called this method in those cases, but that path may not be accurate.
+		/// </para>
+		/// <para>
+		/// If any of the paths are already present in the collection, they will not be added a second time.
+		/// </para>
+		/// </remarks>
 		public void GetDefaultPaths()
 		{
+			// Attempt to get the executable directory. If we can't find that, then try to get the assembly that called this method.
+			Assembly currentAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+
+			// This should never be the case.
+			Debug.Assert(currentAssembly != null, "Current assembly is NULL!!");
+
+			Uri assemblyUri = new Uri(currentAssembly.CodeBase);
+			
 			// Add default paths:
-			// 1. Local directory.
-			Add(GorgonApplication.ApplicationDirectory);
+			// 1. Application directory.
+			if (!string.IsNullOrWhiteSpace(assemblyUri.AbsolutePath))
+			{
+				string assemblyPath = Uri.UnescapeDataString(assemblyUri.AbsolutePath);
+				assemblyPath = Path.GetDirectoryName(assemblyPath).FormatDirectory(Path.DirectorySeparatorChar);
+
+				if (!string.IsNullOrWhiteSpace(assemblyPath))
+				{
+					Add(assemblyPath);
+				}
+			}
+
 			// 2. Working directory.
 			Add(Environment.CurrentDirectory);
 			// 3. System directory.
@@ -114,40 +165,43 @@ namespace Gorgon.PlugIns
 			Add(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86));
 			// 5. PATH.
 			var variables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+
 		    if (!variables.Contains("Path"))
 		    {
 		        return;
 		    }
 
-		    var path = variables["Path"].ToString().Split(new[]
-		        {
-		            ';'
-		        }, StringSplitOptions.RemoveEmptyEntries);
+			IEnumerable<string> paths = from envPath in variables["Path"].ToString().Split(new[]
+			                                                                               {
+				                                                                               ';'
+			                                                                               },
+			                                                                               StringSplitOptions.RemoveEmptyEntries)
+			                            where !string.IsNullOrWhiteSpace(envPath)
+			                            let formattedPath = ValidatePath(envPath)
+			                            where !string.IsNullOrWhiteSpace(envPath)
+			                            select formattedPath;
 
-		    foreach (var pathEntry in path)
-		    {
-		        Add(pathEntry);
-		    }
+			foreach (string path in paths)
+			{
+				Add(path);
+			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugInPathCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPluginPathCollection"/> class.
 		/// </summary>
-		internal GorgonPlugInPathCollection()
+		internal GorgonPluginPathCollection()
 		{
-			_paths = new List<string>();
-			GetDefaultPaths();
 		}
 		#endregion
 
 		#region IList<string> Members
 		#region Properties.
 		/// <summary>
-		/// Gets or sets the <see cref="System.String"/> at the specified index.
+		/// Gets or sets the path at the specified index.
 		/// </summary>
-		/// <value></value>
 		public string this[int index]
 		{
 			get
@@ -156,41 +210,68 @@ namespace Gorgon.PlugIns
 			}
 			set
 			{
-				_paths[index] = ValidatePath(value);
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					return;
+				}
+
+				value = ValidatePath(value);
+
+				if ((IndexOf(value) != -1)
+					|| (string.IsNullOrWhiteSpace(value)))
+				{
+					return;
+				}
+
+				_paths[index] = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Indexes the of.
+		/// Determines the index of a specific item in the collection.
 		/// </summary>
-		/// <param name="item">The item.</param>
-		/// <returns></returns>
-		public int IndexOf(string item)
+		/// <param name="path">The object to locate in the collection.</param>
+		/// <returns>
+		/// The index of <paramref name="path" /> if found in the list; otherwise, -1.
+		/// </returns>
+		public int IndexOf(string path)
 		{
-			return _paths.IndexOf(item);
+			if (string.IsNullOrWhiteSpace(path))
+			{
+				return -1;
+			}
+
+			path = ValidatePath(path);
+
+			return _paths.FindIndex(_ => string.Equals(path, _, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>
-		/// Inserts the specified index.
+		/// Inserts an item to the collection at the specified index.
 		/// </summary>
-		/// <param name="index">The index.</param>
-		/// <param name="item">The item.</param>
-		public void Insert(int index, string item)
+		/// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
+		/// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
+		public void Insert(int index, string path)
 		{
-			GorgonDebug.AssertParamString(item, "item");
+			path = ValidatePath(path);
 
-			if (Contains(ValidatePath(item)))
+			if ((IndexOf(path) != -1)
+				|| (string.IsNullOrWhiteSpace(path)))
+			{
 				return;
+			}
 
-			_paths.Insert(index, item);
+			_paths.Insert(index, path);
 		}
 
 		/// <summary>
-		/// Removes at.
+		/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
 		/// </summary>
-		/// <param name="index">The index.</param>
+		/// <param name="index">The zero-based index of the item to remove.</param>
 		void IList<string>.RemoveAt(int index)
 		{
 			Remove(index);
@@ -239,42 +320,67 @@ namespace Gorgon.PlugIns
 		/// </returns>
 	    bool ICollection<string>.Remove(string item)
 		{
-			Remove(item);
-	        return true;
+			if (string.IsNullOrWhiteSpace(item))
+			{
+				return false;
+			}
+
+			int index = IndexOf(ValidatePath(item));
+
+			if (index == -1)
+			{
+				return false;
+			}
+
+			_paths.RemoveAt(index);
+			return true;
 		}
 
 		/// <summary>
 		/// Function add a new path to the collection.
 		/// </summary>
-		/// <param name="item">The item.</param>
+		/// <param name="path">The path to add to the collection.</param>
 		/// <remarks>If the path is already in the collection, it will not be added again.</remarks>
-		public void Add(string item)
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		public void Add(string path)
 		{
-			if (Contains(ValidatePath(item)))
-				return;
+			path = ValidatePath(path);
 
-			_paths.Add(ValidatePath(item));
+			if (IndexOf(path) == -1)
+			{
+				return;
+			}
+
+			_paths.Add(path);
 		}
 
 		/// <summary>
 		/// Function to clear the collection.
 		/// </summary>
-		/// <remarks>Note that this will not restore the default search paths.  Call <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInPathCollection.GetDefaultPaths">GetDefaultPaths</see> method to restore those paths.</remarks>
+		/// <remarks>Note that this will not restore the default search paths.  Call <see cref="GetDefaultPaths"/> method to restore those paths.</remarks>
 		public void Clear()
 		{
 			_paths.Clear();
 		}
 
 		/// <summary>
-		/// Determines whether [contains] [the specified item].
+		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
 		/// </summary>
-		/// <param name="item">The item.</param>
+		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <returns>
-		/// 	<c>true</c> if [contains] [the specified item]; otherwise, <c>false</c>.
+		/// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
 		/// </returns>
 		public bool Contains(string item)
 		{
-			return _paths.Contains(item);
+			if (string.IsNullOrWhiteSpace(item))
+			{
+				return false;
+			}
+
+			item = ValidatePath(item);
+
+			return IndexOf(item) != -1;
 		}
 
 		/// <summary>

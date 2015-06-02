@@ -27,7 +27,7 @@
 using System.Reflection;
 using Gorgon.Core;
 
-namespace Gorgon.PlugIns
+namespace Gorgon.Plugins
 {
 	/// <summary>
 	/// A base plug-in entry point object.

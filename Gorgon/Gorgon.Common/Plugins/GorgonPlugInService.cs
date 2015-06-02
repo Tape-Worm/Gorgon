@@ -33,6 +33,7 @@ using System.Security.Policy;
 using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 
@@ -59,63 +60,32 @@ namespace Gorgon.Plugins
 	}
 
 	/// <summary>
-	/// A factory to load, unload and keep track of plug-in interfaces.
+	/// A service to create <see cref="GorgonPlugIn"/> instances.
 	/// </summary>
-	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.GorgonApplication.PlugIns">PlugIns</see> parameter on the primary 
-	/// <seealso cref="Gorgon">Gorgon</seealso> object and cannot be created by the user.
-	/// <para>In some cases, a plug-in assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
-	/// use the <see cref="GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
-	/// assemblies.</para></remarks>
-	public class GorgonPlugInFactory
-		: GorgonBaseNamedObjectDictionary<GorgonPlugIn>
+	/// <remarks>
+	/// <para>
+	/// Use this object to control loading and unloading of plugins.
+	/// </para>
+	/// <para>
+	/// In some cases, a plugin assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
+	/// use the <see cref="GorgonPlugInService.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
+	/// assemblies.
+	/// </para>
+	/// </remarks>
+	public class GorgonPlugInService
 	{
 		#region Variables.
-		private GorgonPluginPathCollection _paths;	// Search paths for the plug-in assemblies.
-		private AppDomain _discoveryDomain;			// An application domain used for plug-in information discovery.
-		private GorgonPlugInVerifier _verifier;		// Plug-in verifier.
+		// The list of plug-ins previously created.
+		private GorgonNamedObjectDictionary<GorgonPlugIn> _plugins = new GorgonNamedObjectDictionary<GorgonPlugIn>(false);
+		// The application log file.
+		private IGorgonLog _log = new GorgonLogDummy();
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of search paths to use.
+		/// Property to return a plugin by its name.
 		/// </summary>
-		/// <remarks>The plug-in factory uses these paths to search for the plug-in when the plug-in cannot be found.
-		/// <para>By default, the plug-in factory checks (in order):
-		/// <list type="number">
-		/// <item><description>The directory of the executable.</description></item>
-		/// <item><description>The working directory of the executable.</description></item>
-		/// <item><description>The system directory.</description></item>
-		/// <item><description>The directories listed in the PATH environment variable.</description></item>
-		/// </list>
-		/// </para>
-		/// </remarks>
-		public GorgonPluginPathCollection SearchPaths
-		{
-			get
-			{
-			    return _paths ?? (_paths = new GorgonPluginPathCollection());
-			}
-		}
-
-        /// <summary>
-        /// Property to set or return a fucntion that will be used to resolve plug-in assembly dependencies.
-        /// </summary>
-        /// <remarks>This property will intercept an event on the current application domain to resolve assembly dependencies as 
-        /// they are loaded.  This is necessary to handle issues where types won't load or instantiate in an assembly at run time.  
-        /// <para>This property must be set before any of the <c>Run</c> methods are called.</para>
-        /// <para>For example, if a custom type converter attribute is specified in a plug-in assembly, it may not instantiate unless  
-        /// some assemblies are resolved at load time.  Setting this property with a method that will look up assemblies in the 
-        /// current application domain will correct the issue.</para></remarks>
-        public Func<AppDomain, ResolveEventArgs, Assembly> AssemblyResolver
-        {
-            get;
-            set;
-        }
-
-		/// <summary>
-		/// Property to return a plug-in by its name.
-		/// </summary>
-		/// <param name="name">The friendly name of the plug-in or the fully qualified type name of the plug-in.</param>
+		/// <param name="name">The friendly name of the plugin or the fully qualified type name of the plugin.</param>
 		public GorgonPlugIn this[string name]
 		{
 			get
@@ -126,73 +96,11 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to find a plug-in assembly on a given path.
-        /// </summary>
-        /// <param name="plugInPath">Initial path to the plug-in</param>
-        /// <returns>The assembly name for the plug-in assembly.</returns>
-        private AssemblyName FindPlugInAssembly(string plugInPath)
-        {
-            if (plugInPath == null)
-            {
-                throw new ArgumentNullException("plugInPath");
-            }
-
-            if (string.IsNullOrWhiteSpace(plugInPath))
-            {
-                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "plugInPath");
-            }
-
-            plugInPath = Path.GetFullPath(plugInPath);
-
-            if (string.IsNullOrWhiteSpace(plugInPath))
-            {
-                throw new FileNotFoundException();
-            }
-
-            // We can't find the plug-in assembly on the initial path, so check the path list.
-	        if (File.Exists(plugInPath))
-	        {
-		        return AssemblyName.GetAssemblyName(plugInPath);
-	        }
-
-	        var assemblyFile = Path.GetFileName(plugInPath);
-
-	        plugInPath = SearchPaths.FirstOrDefault(path => File.Exists(path + assemblyFile));
-
-	        if (string.IsNullOrWhiteSpace(plugInPath))
-	        {
-		        throw new FileNotFoundException(string.Format(Resources.GOR_PLUGIN_CANNOT_FIND_FILE,
-			        assemblyFile));
-	        }
-
-	        plugInPath += assemblyFile;
-
-	        return AssemblyName.GetAssemblyName(plugInPath);
-        }
 
         
-        /// <summary>
-		/// Function to create any additional application domains we may need.
-		/// </summary>
-		private void CreateAppDomains()
-		{
-		    if (_discoveryDomain != null)
-			{
-				return;
-			}
-
-			Evidence evidence = AppDomain.CurrentDomain.Evidence;
-			AppDomainSetup setup = AppDomain.CurrentDomain.SetupInformation;
-
-			// Create our domain.
-			_discoveryDomain = AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
-			Type verifierType = typeof(GorgonPlugInVerifier);
-			_verifier = (GorgonPlugInVerifier)(_discoveryDomain.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
-		}
 
 		/// <summary>
-		/// Function to determine if a plug-in implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
+		/// Function to determine if a plugin implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to check and dispose.</param>
 		private static void CheckDisposable(GorgonPlugIn plugIn)
@@ -206,31 +114,12 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to enumerate all the plug-in names from an assembly.
-		/// </summary>
-		/// <param name="assemblyFile">File containing the plug-ins.</param>
-		/// <returns></returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
-		/// <remarks>Unlike the overload of this method, this method will check only the file pointed at by <c>assemblyFile</c>.</remarks>
-		public IList<string> EnumeratePlugIns(string assemblyFile)
-		{
-			GorgonDebug.AssertParamString(assemblyFile, assemblyFile);
-
-			CreateAppDomains();
-
-			// Function to load a list of type names from an assembly.
-			return _verifier.GetPlugInTypes(FindPlugInAssembly(assemblyFile));
-		}
-
-		/// <summary>
-		/// Function to retrieve the list of plug-ins associated with a specific assembly.
+		/// Function to retrieve the list of plugins associated with a specific assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to filter.</param>
-		/// <returns>A read-only list of plug-ins.</returns>
+		/// <returns>A read-only list of plugins.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
+		/// <remarks>Unlike the overload of this method, this method only enumerates plugins from assemblies that are already loaded into memory.</remarks>
 		public IReadOnlyList<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
 		{
 			GorgonDebug.AssertNull(assemblyName, "assemblyName");
@@ -239,23 +128,7 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to purge any information gathered about plug-ins and plug-in assemblies before they were loaded.
-		/// </summary>
-		/// <remarks>Gorgon uses a separate application domain to load information about a plug-in assembly.  This can consume 
-		/// quite a bit of memory over time, so this method will purge that application domain.</remarks>
-		public void PurgeCachedPlugInInfo()
-		{
-			if (_discoveryDomain == null)
-			{
-				return;
-			}
-
-			AppDomain.Unload(_discoveryDomain);
-			_discoveryDomain = null;
-		}
-
-		/// <summary>
-		/// Function to unload all the plug-ins.
+		/// Function to unload all the plugins.
 		/// </summary>
 		public void UnloadAll()
 		{
@@ -271,9 +144,9 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to remove a plug-in by index.
+		/// Function to remove a plugin by index.
 		/// </summary>
-		/// <param name="name">Name of the plug-in to remove.</param>
+		/// <param name="name">Name of the plugin to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
 		public void Unload(string name)
@@ -284,7 +157,7 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to remove a plug-in.
+		/// Function to remove a plugin.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
@@ -362,14 +235,14 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to load a plug-in assembly.
+		/// Function to load a plugin assembly.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly.</param>
 		/// <remarks>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
-		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
+		/// <exception cref="GorgonException">The assembly contains a plugin type that was already loaded by another assembly.</exception>
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
 		public AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
@@ -380,81 +253,13 @@ namespace Gorgon.Plugins
 			return plugInAssemblyName;
 		}
 
-		/// <summary>
-		/// Function to determine if an assembly is a plug-in assembly.
-		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly file.</param>
-		/// <returns><c>true</c> if this is a plug-in assembly, <c>false</c> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
-		public bool IsPlugInAssembly(string assemblyPath)
-		{
-			if (assemblyPath == null)
-			{
-				throw new ArgumentNullException("assemblyPath");
-			}
-
-			if (string.IsNullOrEmpty(assemblyPath))
-			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
-			}
-
-			AssemblyName assemblyName;
-
-			try
-			{
-				assemblyName = FindPlugInAssembly(assemblyPath);
-			}
-			catch (BadImageFormatException)
-			{
-                // If a DLL/EXE is not a .NET assembly, then it will throw BadImageFormatException.
-                // Catch it here and assume it's not going to load.
-				return false;
-			}
-
-			return IsPlugInAssembly(assemblyName);
-		}
 
 		/// <summary>
-		/// Function to determine if an assembly is a plug-in assembly.
-		/// </summary>
-		/// <param name="assemblyName">Name of the assembly.</param>
-		/// <returns><c>true</c> if this is a plug-in assembly, <c>false</c> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public bool IsPlugInAssembly(AssemblyName assemblyName)
-		{
-			bool result = false;
-
-			if (assemblyName == null)
-			{
-				throw new ArgumentNullException("assemblyName");
-			}
-
-			try
-			{
-				CreateAppDomains();
-
-				result = _verifier.IsPlugInAssembly(assemblyName);
-			}
-			catch (ReflectionTypeLoadException rex)
-			{
-				// In this case, we'll just return false and log the message.				
-				GorgonApplication.Log.Print("Exception while determining if assembly is a plug-in assembly:", LoggingLevel.Verbose);
-				foreach (Exception loaderEx in rex.LoaderExceptions)
-				{
-					GorgonApplication.Log.Print("{0}", LoggingLevel.Verbose, loaderEx.Message);
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to load a plug-in assembly.
+		/// Function to load a plugin assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
+		/// <exception cref="GorgonException">The assembly contains a plugin type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
 			if (assemblyName == null)
@@ -467,7 +272,7 @@ namespace Gorgon.Plugins
 			try
 			{
 
-				// Get all plug-in types from the assembly.
+				// Get all plugin types from the assembly.
 				var plugInTypes = (from plugInType in plugInAssembly.GetTypes()
 				                   where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
 				                   select plugInType).ToArray();
@@ -478,7 +283,7 @@ namespace Gorgon.Plugins
 					                            "assemblyName");
 				}
 
-				// Create an instance of each plug-in object.
+				// Create an instance of each plugin object.
 				foreach (Type plugInType in plugInTypes)
 				{
 					var plugIn =
@@ -539,7 +344,7 @@ namespace Gorgon.Plugins
 		public GorgonPlugInFactory()
 			: base(false)
 		{
-			_paths = new GorgonPluginPathCollection();
+			_paths = new GorgonPlugInPathCollection();
 		}
 		#endregion
 	}

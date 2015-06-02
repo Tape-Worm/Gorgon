@@ -34,7 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor
 {

@@ -37,7 +37,7 @@ using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Core
 {
