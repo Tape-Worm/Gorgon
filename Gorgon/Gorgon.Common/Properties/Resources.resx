@@ -945,4 +945,13 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_PATH_NOT_FOUND" xml:space="preserve">
     <value>The path '{0}' was not found in this collection.</value>
   </data>
+  <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT" xml:space="preserve">
+    <value>The type [{0}] is abstract and cannot be created directly.</value>
+  </data>
+  <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE" xml:space="preserve">
+    <value>The type [{0}] is an interface. There is no constructor for this type.</value>
+  </data>
+  <data name="GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND" xml:space="preserve">
+    <value>Could not find a plugin assembly named '{0}'.</value>
+  </data>
 </root>

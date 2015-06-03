@@ -39,7 +39,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the plug-in that was disabled.
 		/// </summary>
-		public GorgonPlugIn PlugIn
+		public GorgonPlugin PlugIn
 		{
 			get;
 			private set;
@@ -51,7 +51,7 @@ namespace Gorgon.Editor
 		/// Initializes a new instance of the <see cref="PlugInDisabledEventArgs"/> class.
 		/// </summary>
 		/// <param name="plugIn">The plug in that was disabled.</param>
-		public PlugInDisabledEventArgs(GorgonPlugIn plugIn)
+		public PlugInDisabledEventArgs(GorgonPlugin plugIn)
 		{
 			PlugIn = plugIn;
 		}

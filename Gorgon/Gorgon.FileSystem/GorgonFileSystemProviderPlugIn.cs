@@ -32,7 +32,7 @@ namespace Gorgon.IO
 	/// The base entry point for an Gorgon file system provider plug-in.
 	/// </summary>
 	public abstract class GorgonFileSystemProviderPlugIn
-		: GorgonPlugIn
+		: GorgonPlugin
     {
         #region Variables.
 	    private GorgonFileSystemProvider _provider;         // Cached provider instance.

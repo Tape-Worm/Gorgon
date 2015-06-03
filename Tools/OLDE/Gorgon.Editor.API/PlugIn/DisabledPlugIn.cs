@@ -40,7 +40,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Plug-in that was disabled.
 		/// </summary>
-		public readonly GorgonPlugIn PlugIn;
+		public readonly GorgonPlugin PlugIn;
 		/// <summary>
 		/// Reason for disabling the plug-in.
 		/// </summary>
@@ -116,7 +116,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="plugIn">The plug in.</param>
 		/// <param name="reason">The reason.</param>
-		public DisabledPlugIn(GorgonPlugIn plugIn, string reason)
+		public DisabledPlugIn(GorgonPlugin plugIn, string reason)
 		{
 			PlugIn = plugIn;
 		    if (reason == null)

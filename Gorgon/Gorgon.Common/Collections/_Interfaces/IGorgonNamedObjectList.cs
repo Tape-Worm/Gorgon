@@ -93,7 +93,7 @@ namespace Gorgon.Core.Collections
 		/// Function to remove an item by its index.
 		/// </summary>
 		/// <param name="index">The index of the item to remove.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to the <see cref="IList{T}.Count"/></exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to the <see cref="IList{INamedObject}.Count"/></exception>
 		void Remove(int index);
 
 		/// <summary>

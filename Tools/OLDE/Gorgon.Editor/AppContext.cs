@@ -174,7 +174,7 @@ namespace Gorgon.Editor
 						  && PlugIns.UserDisabledPlugIns.All(name => !string.Equals(name, plugIn.Name, StringComparison.OrdinalIgnoreCase))
 						  select plugIn;
 
-	        foreach (GorgonPlugIn plugIn in plugIns)
+	        foreach (GorgonPlugin plugIn in plugIns)
 	        {
 		        ScratchArea.ScratchFiles.Providers.LoadProvider(plugIn.Name);
 	        }

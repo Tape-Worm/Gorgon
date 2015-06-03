@@ -240,8 +240,13 @@ namespace Gorgon.Core
 		/// Property to set return the library log file interface.
 		/// </summary>
 		/// <remarks>
+		/// <para>
 		/// Setting this value to <c>null</c> will turn off logging for the application, but will not set the value to <c>null</c>. A dummy 
 		/// version of the log, that does no actual logging, will be used instead.
+		/// </para>
+		/// <para>
+		/// Ensure that the log being assigned to this property was created on the same thread as the application, otherwise an exception may be thrown.
+		/// </para>
 		/// </remarks>
 		public static IGorgonLog Log
 		{
@@ -253,6 +258,11 @@ namespace Gorgon.Core
 			{
 				lock (_syncLock)
 				{
+					if (_log != null)
+					{
+						_log.Close();
+					}
+
 					if (value == null)
 					{
 						_log = _dummyLog;
@@ -260,9 +270,10 @@ namespace Gorgon.Core
 					}
 
 					_log = value;
+
+					InitializeLogger();
 				}
 			}
-
 		}
 
 		/// <summary>
@@ -318,17 +329,16 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Function to initialize the main form and idle loop..
+		/// Function to perform initialization of the logger interface.
 		/// </summary>
-		/// <returns><c>true</c> if the application has signalled to quit before it starts running, <c>false</c> to continue.</returns>
-		private static bool Initialize()
+		private static void InitializeLogger()
 		{
-			// Re-open the log if it's closed.
 			if (Log.IsClosed)
 			{
+				// Open the log if it's closed so we can begin logging.
 				try
 				{
-					Log.Open();
+					_log.Open();
 				}
 				catch (Exception ex)
 				{
@@ -337,13 +347,22 @@ namespace Gorgon.Core
 				}
 			}
 
-			Log.Print("Initializing...", LoggingLevel.All);
+			// Display information
+			Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
 			Log.Print("Architecture: {0}", LoggingLevel.Verbose, GorgonComputerInfo.PlatformArchitecture);
 			Log.Print("Processor count: {0}", LoggingLevel.Verbose, GorgonComputerInfo.ProcessorCount);
 			Log.Print("Installed Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.TotalPhysicalRAM.FormatMemory());
 			Log.Print("Available Memory: {0}", LoggingLevel.Verbose, GorgonComputerInfo.AvailablePhysicalRAM.FormatMemory());
 			Log.Print("Operating System: {0} ({1})", LoggingLevel.Verbose, GorgonComputerInfo.OperatingSystemVersionText, GorgonComputerInfo.OperatingSystemArchitecture); 
+			Log.Print(string.Empty, LoggingLevel.Verbose);
+		}
 
+		/// <summary>
+		/// Function to initialize the main form and idle loop..
+		/// </summary>
+		/// <returns><c>true</c> if the application has signalled to quit before it starts running, <c>false</c> to continue.</returns>
+		private static bool Initialize()
+		{
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
 		    AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
@@ -718,11 +737,7 @@ namespace Gorgon.Core
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 
 			PlugIns = new GorgonPlugInFactory();
-#if DEBUG
 			Log = new GorgonLogFile(LogFile, "Tape_Worm");
-#else
-			Log = null;
-#endif
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.
 			UnfocusedSleepTime = 10;

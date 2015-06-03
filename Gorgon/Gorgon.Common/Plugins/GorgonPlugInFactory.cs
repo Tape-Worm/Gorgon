@@ -39,26 +39,6 @@ using Gorgon.Diagnostics;
 namespace Gorgon.Plugins
 {
 	/// <summary>
-    /// The return values for the <see cref="GorgonPlugInFactory.IsAssemblySigned(System.Reflection.AssemblyName,byte[])">IsAssemblySigned</see> method.
-	/// </summary>
-	[Flags]
-	public enum PlugInSigningResult
-	{
-		/// <summary>
-		/// Assembly is not signed.  This flag is mutally exclusive.
-		/// </summary>
-		NotSigned = 1,
-		/// <summary>
-		/// Assembly is signed, and if it was requested, the key matches.
-		/// </summary>
-		Signed = 2,
-		/// <summary>
-		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
-		/// </summary>
-		KeyMismatch = 4
-	}
-
-	/// <summary>
 	/// A factory to load, unload and keep track of plug-in interfaces.
 	/// </summary>
 	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.GorgonApplication.PlugIns">PlugIns</see> parameter on the primary 
@@ -67,12 +47,13 @@ namespace Gorgon.Plugins
 	/// use the <see cref="GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
 	/// assemblies.</para></remarks>
 	public class GorgonPlugInFactory
-		: GorgonBaseNamedObjectDictionary<GorgonPlugIn>
+		: GorgonBaseNamedObjectDictionary<GorgonPlugin>
 	{
 		#region Variables.
 		private GorgonPluginPathCollection _paths;	// Search paths for the plug-in assemblies.
 		private AppDomain _discoveryDomain;			// An application domain used for plug-in information discovery.
-		private GorgonPlugInVerifier _verifier;		// Plug-in verifier.
+		private GorgonPluginVerifier _verifier;		// Plug-in verifier.
+		private readonly GorgonPluginAssemblyCache _cache;
 		#endregion
 
 		#region Properties.
@@ -116,7 +97,7 @@ namespace Gorgon.Plugins
 		/// Property to return a plug-in by its name.
 		/// </summary>
 		/// <param name="name">The friendly name of the plug-in or the fully qualified type name of the plug-in.</param>
-		public GorgonPlugIn this[string name]
+		public GorgonPlugin this[string name]
 		{
 			get
 			{
@@ -187,15 +168,15 @@ namespace Gorgon.Plugins
 
 			// Create our domain.
 			_discoveryDomain = AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
-			Type verifierType = typeof(GorgonPlugInVerifier);
-			_verifier = (GorgonPlugInVerifier)(_discoveryDomain.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
+			Type verifierType = typeof(GorgonPluginVerifier);
+			_verifier = (GorgonPluginVerifier)(_discoveryDomain.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
 		}
 
 		/// <summary>
 		/// Function to determine if a plug-in implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to check and dispose.</param>
-		private static void CheckDisposable(GorgonPlugIn plugIn)
+		private static void CheckDisposable(GorgonPlugin plugIn)
 		{
 			var disposer = plugIn as IDisposable;
 
@@ -231,7 +212,7 @@ namespace Gorgon.Plugins
 		/// <returns>A read-only list of plug-ins.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
-		public IReadOnlyList<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
+		public IReadOnlyList<GorgonPlugin> EnumeratePlugIns(AssemblyName assemblyName)
 		{
 			GorgonDebug.AssertNull(assemblyName, "assemblyName");
 
@@ -288,7 +269,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="plugIn">Plug-in to remove.</param>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
-		public void Unload(GorgonPlugIn plugIn)
+		public void Unload(GorgonPlugin plugIn)
 		{
 		    if (plugIn == null)
 		    {
@@ -462,14 +443,16 @@ namespace Gorgon.Plugins
 		        throw new ArgumentNullException("assemblyName");
 		    }
 			
-			Assembly plugInAssembly = GorgonPluginAssemblyCache.Load(assemblyName);
+			_cache.Load(assemblyName);
+
+			Assembly plugInAssembly = _cache.PluginAssemblies[assemblyName.FullName];
 
 			try
 			{
 
 				// Get all plug-in types from the assembly.
 				var plugInTypes = (from plugInType in plugInAssembly.GetTypes()
-				                   where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
+				                   where (plugInType.IsSubclassOf(typeof(GorgonPlugin)) && (!plugInType.IsAbstract))
 				                   select plugInType).ToArray();
 
 				if (plugInTypes.Length == 0)
@@ -482,7 +465,7 @@ namespace Gorgon.Plugins
 				foreach (Type plugInType in plugInTypes)
 				{
 					var plugIn =
-						(GorgonPlugIn)
+						(GorgonPlugin)
 						plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null);
 
 					if (plugIn == null)
@@ -540,6 +523,7 @@ namespace Gorgon.Plugins
 			: base(false)
 		{
 			_paths = new GorgonPluginPathCollection();
+			_cache = new GorgonPluginAssemblyCache();
 		}
 		#endregion
 	}

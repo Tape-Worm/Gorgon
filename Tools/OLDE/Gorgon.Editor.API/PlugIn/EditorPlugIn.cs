@@ -48,7 +48,7 @@ namespace Gorgon.Editor
 	/// An interface for editor plug-ins.
 	/// </summary>
 	public abstract class EditorPlugIn
-		: GorgonPlugIn
+		: GorgonPlugin
     {
         #region Properties.
 		/// <summary>

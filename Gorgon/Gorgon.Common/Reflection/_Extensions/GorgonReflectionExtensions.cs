@@ -55,6 +55,7 @@ namespace Gorgon.Reflection
 	/// <typeparam name="T">The type of object that hosts the property.</typeparam>
 	/// <typeparam name="TP">Type of value set by the property setter.</typeparam>
 	/// <param name="instance">The instance of the object that contains the property to set.</param>
+	/// <param name="value">The value to assign to the property.</param>
 	public delegate void PropertySetter<in T, in TP>(T instance, TP value);
 
 	/// <summary>
@@ -273,9 +274,24 @@ namespace Gorgon.Reflection
 				throw new ArgumentNullException("type");
 			}
 
-			if ((type != typeof(T)) && (typeof(T) != typeof(object)))
+			if (type.IsInterface)
 			{
-				throw new InvalidCastException(string.Format(Resources.GOR_ERR_ACTIVATOR_TYPE_MISMATCH, type.FullName, typeof(T).FullName));
+				throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE, type.FullName));
+			}
+
+			if (type.IsAbstract)
+			{
+				throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT, type.FullName));
+			}
+
+			Type typeT = typeof(T);
+
+			bool isSubClass = type != typeT && type.IsSubclassOf(typeT);
+			bool isInterfaceOf = type != typeT && typeT.IsInterface && typeT.IsAssignableFrom(type);
+
+			if ((type != typeT) && (!isSubClass) && (!isInterfaceOf))
+			{
+				throw new InvalidCastException(string.Format(Resources.GOR_ERR_ACTIVATOR_TYPE_MISMATCH, type.FullName, typeT.FullName));
 			}
 
 			if (paramTypes == null)

@@ -67,7 +67,7 @@ namespace Gorgon.Editor.Controls
 					return;
 				}
 
-				var plugIn = (GorgonPlugIn)listContentPlugIns.SelectedItems[0].Tag;
+				var plugIn = (GorgonPlugin)listContentPlugIns.SelectedItems[0].Tag;
 
 				if (!_pendingDisabled.Contains(plugIn.Name))
 				{
@@ -135,7 +135,7 @@ namespace Gorgon.Editor.Controls
 
 				foreach (var plugIn in
 					listView.SelectedItems.Cast<ListViewItem>()
-					        .Select(item => (GorgonPlugIn)item.Tag)
+					        .Select(item => (GorgonPlugin)item.Tag)
 					        .Where(plugIn => _pendingDisabled.Contains(plugIn.Name)))
 				{
 					_pendingDisabled.Remove(plugIn.Name);
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.Controls
 
 				foreach (ListViewItem item in listContentPlugIns.SelectedItems)
 				{
-					var plugIn = (GorgonPlugIn)item.Tag;
+					var plugIn = (GorgonPlugin)item.Tag;
 
 					if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
 					{

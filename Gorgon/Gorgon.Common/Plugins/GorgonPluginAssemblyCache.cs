@@ -33,14 +33,53 @@ using System.Reflection.Emit;
 using System.Security.Policy;
 using System.Text;
 using System.Threading;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Plugins
 {
 	/// <summary>
+	/// The return values for the <see cref="GorgonPlugInFactory.IsAssemblySigned(System.Reflection.AssemblyName,byte[])">IsAssemblySigned</see> method.
+	/// </summary>
+	[Flags]
+	public enum PlugInSigningResult
+	{
+		/// <summary>
+		/// Assembly is not signed.  This flag is mutally exclusive.
+		/// </summary>
+		NotSigned = 1,
+		/// <summary>
+		/// Assembly is signed, and if it was requested, the key matches.
+		/// </summary>
+		Signed = 2,
+		/// <summary>
+		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
+		/// </summary>
+		KeyMismatch = 4
+	}
+
+	/// <summary>
 	/// A cache to hold plugin assemblies.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugin"/> type and is 
+	/// meant to be used in conjunction with the <see cref="GorgonPluginService"/> type.
+	/// </para>
+	/// <para>
+	/// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
+	/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
+	/// </para>
+	/// <para>
+	/// This object may use a separate app domain to interrogate a potential plugin assembly, and because of this, it is essential to call the <see cref="Dispose()"/> 
+	/// method when shutting down this object.
+	/// </para>
+	/// <para>
+	/// In some cases, a plugin assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. 
+	/// In these cases use the <see cref="AssemblyResolver"/> property to assign a method that will attempt to resolve any dependency assemblies.
+	/// </para>
+	/// </remarks>
 	public class GorgonPluginAssemblyCache
 		: IDisposable
 	{
@@ -74,33 +113,10 @@ namespace Gorgon.Plugins
 		// An application domain used for plugin information discovery.
 		private Lazy<AppDomain> _discoveryDomain;
 		// Plug-in verifier.
-		private Lazy<GorgonPlugInVerifier> _verifier;
+		private Lazy<GorgonPluginVerifier> _verifier;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Function to create any additional application domains we may need.
-		/// </summary>
-		/// <returns>The application domain.</returns>
-		private static AppDomain CreateAppDomain()
-		{
-			Evidence evidence = AppDomain.CurrentDomain.Evidence;
-			AppDomainSetup setup = AppDomain.CurrentDomain.SetupInformation;
-
-			// Create our domain.
-			return AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
-		}
-
-		/// <summary>
-		/// Function to create the verification type from the application domain.
-		/// </summary>
-		/// <returns>The plugin verification object.</returns>
-		private GorgonPlugInVerifier GetVerifier()
-		{
-			Type verifierType = typeof(GorgonPlugInVerifier);
-			return (GorgonPlugInVerifier)(_discoveryDomain.Value.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
-		}
-
 		/// <summary>
 		/// Property to return the list of search paths to use.
 		/// </summary>
@@ -161,9 +177,43 @@ namespace Gorgon.Plugins
 				AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolveEvent;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the list of cached plugin assemblies.
+		/// </summary>
+		public IReadOnlyDictionary<string, Assembly> PluginAssemblies
+		{
+			get
+			{
+				return _assemblies.Value;
+			}
+		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to create any additional application domains we may need.
+		/// </summary>
+		/// <returns>The application domain.</returns>
+		private static AppDomain CreateAppDomain()
+		{
+			Evidence evidence = AppDomain.CurrentDomain.Evidence;
+			AppDomainSetup setup = AppDomain.CurrentDomain.SetupInformation;
+
+			// Create our domain.
+			return AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
+		}
+
+		/// <summary>
+		/// Function to create the verification type from the application domain.
+		/// </summary>
+		/// <returns>The plugin verification object.</returns>
+		private GorgonPluginVerifier GetVerifier()
+		{
+			Type verifierType = typeof(GorgonPluginVerifier);
+			return (GorgonPluginVerifier)(_discoveryDomain.Value.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
+		}
+
 		/// <summary>
 		/// Handles the AssemblyResolveEvent event of the CurrentDomain control.
 		/// </summary>
@@ -182,7 +232,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
 		/// <param name="added"><c>true</c> if the assembly was added, <c>false</c> if not.</param>
-		/// <returns>The assembly that was loaded.</returns>
+		/// <returns>The assembly that was loaded, or <c>null</c> if that assembly does not contain any plugin types.</returns>
 		private Assembly GetOrAddAssembly(AssemblyName assemblyName, out bool added)
 		{
 			added = false;
@@ -197,7 +247,7 @@ namespace Gorgon.Plugins
 
 				if (_assemblies.Value.TryGetValue(assemblyName.FullName, out result))
 				{
-					return result;
+					return !HasPluginTypes(result) ? null : result;
 				}
 
 				try
@@ -206,7 +256,14 @@ namespace Gorgon.Plugins
 					{
 						_log.Print("Loading plugin assembly '{0}' from {1}", LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
 
-						_assemblies.Value[assemblyName.FullName] = result = Assembly.Load(assemblyName);
+						result = Assembly.Load(assemblyName);
+
+						if (!HasPluginTypes(result))
+						{
+							return null;
+						}
+
+						_assemblies.Value.Add(assemblyName.FullName, result);
 						added = true;
 
 						return result;
@@ -217,6 +274,21 @@ namespace Gorgon.Plugins
 					Interlocked.Decrement(ref _getOrAddSync);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to determine if an assembly has any plugin types available.
+		/// </summary>
+		/// <param name="assembly">The assembly to evaluate.</param>
+		/// <returns><c>true</c> if plugin types were found, <c>false</c> if not.</returns>
+		private static bool HasPluginTypes(Assembly assembly)
+		{
+			Type plugInType = typeof(GorgonPlugin);
+			Type[] types = assembly.GetTypes();
+
+			return (from type in types
+					where !type.IsPrimitive && !type.IsValueType && !type.IsAbstract && type.IsSubclassOf(plugInType)
+					select type.FullName).Any();
 		}
 
 		/// <summary>
@@ -232,6 +304,8 @@ namespace Gorgon.Plugins
 																		StringComparison.OrdinalIgnoreCase))
 											   select assembly;
 
+			var checkedAssembly = new HashSet<string>(StringComparer.OrdinalIgnoreCase);  
+
 			foreach (Assembly assembly in assemblies)
 			{
 				// Ensure that multiple threads do not trample our static dictionary cache.
@@ -246,11 +320,25 @@ namespace Gorgon.Plugins
 						break;
 					}
 
+					if (checkedAssembly.Contains(assembly.FullName))
+					{
+						break;
+					}
+
 					try
 					{
 						if (Interlocked.Increment(ref _enumSync) == 1)
 						{
-							_assemblies.Value.Add(assembly.FullName, assembly);
+							// We've already scanned this guy, so we're done.
+							if (!checkedAssembly.Contains(assembly.FullName))
+							{
+								checkedAssembly.Add(assembly.FullName);
+							}
+
+							if (HasPluginTypes(assembly))
+							{
+								_assemblies.Value.Add(assembly.FullName, assembly);
+							}
 							break;
 						}
 					}
@@ -322,21 +410,60 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Function to enumerate all the plugin names from an assembly.
 		/// </summary>
-		/// <param name="assemblyFile">Path to the file containing the plugins.</param>
+		/// <param name="assemblyName">The name of the assembly to enumerate from.</param>
 		/// <returns>A read-only list of plugin names.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <remarks>
 		/// <para>
-		/// If the file pointed at by <see cref="assemblyFile"/> contains <see cref="GorgonPlugIn"/> types, then this method will retrieve a list of plugin names from that assembly. This method 
+		/// If the file pointed at by <paramref name="assemblyName"/> contains <see cref="GorgonPlugin"/> types, then this method will retrieve a list of plugin names from that assembly. This method 
 		/// can and should be used to determine if the plugin assembly actually contains any plugins, or to retrieve a catalog of available plugins.
 		/// </para>
 		/// <para>
 		/// The assembly being enumerated is not loaded into the current application domain, and as such, is not cached. 
 		/// </para>
 		/// <para>
-		/// If the file pointed by the <see cref="assemblyFile"/> parameter is not a .NET assembly, then an exception will be raised.
+		/// Users should call <see cref="IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
+		/// can be loaded or not.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyList<string> EnumeratePlugins(AssemblyName assemblyName)
+		{
+			if (assemblyName == null)
+			{
+				throw new ArgumentNullException("assemblyName");
+			}
+
+			// Function to load a list of type names from an assembly.
+			return _verifier.Value.GetPlugInTypes(assemblyName);
+		}
+
+		/// <summary>
+		/// Function to enumerate all the plugin names from an assembly.
+		/// </summary>
+		/// <param name="assemblyFile">Path to the file containing the plugins.</param>
+		/// <returns>A read-only list of plugin names.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
+		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
+		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyFile"/> is not a valid .NET assembly.</exception>
+		/// <remarks>
+		/// <para>
+		/// If the file pointed at by <paramref name="assemblyFile"/> contains <see cref="GorgonPlugin"/> types, then this method will retrieve a list of plugin names from that assembly. This method 
+		/// can and should be used to determine if the plugin assembly actually contains any plugins, or to retrieve a catalog of available plugins.
+		/// </para>
+		/// <para>
+		/// The assembly being enumerated is not loaded into the current application domain, and as such, is not cached. 
+		/// </para>
+		/// <para>
+		/// If the file pointed by the <paramref name="assemblyFile"/> parameter is not a .NET assembly, then an exception will be raised.
+		/// </para>
+		/// <para>
+		/// Since this method takes a path to an assembly, the <see cref="SearchPaths"/> property will be used if the assembly could not be found 
+		/// on the path specified.
+		/// </para>
+		/// <para>
+		/// Users should call <see cref="IsPluginAssembly(System.String)"/> prior to this method in order to determine whether the assembly 
+		/// can be loaded or not.
 		/// </para>
 		/// </remarks>
 		public IReadOnlyList<string> EnumeratePlugins(string assemblyFile)
@@ -351,8 +478,7 @@ namespace Gorgon.Plugins
 				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyFile");
 			}
 
-			// Function to load a list of type names from an assembly.
-			return _verifier.Value.GetPlugInTypes(FindPluginAssembly(assemblyFile));
+			return EnumeratePlugins(FindPluginAssembly(assemblyFile));
 		}
 
 		/// <summary>
@@ -361,6 +487,20 @@ namespace Gorgon.Plugins
 		/// <param name="assemblyName">Name of the assembly.</param>
 		/// <returns><c>true</c> if this is a plugin assembly, <c>false</c> if it is not.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will load the assembly into a separate <see cref="AppDomain"/> and will determine if it contains any types that inherit from 
+		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <c>false</c>, otherwise it will 
+		/// return <c>true</c>.
+		/// </para>
+		/// <para>
+		/// Users should call this method before calling <see cref="Load(System.Reflection.AssemblyName)"/> to determine whether or not a plugin assembly should be loaded into the 
+		/// application.
+		/// </para>
+		/// <para>
+		/// Because this method loads the assembly into a separate application domain, the assembly will not be cached.
+		/// </para>
+		/// </remarks>
 		public bool IsPluginAssembly(AssemblyName assemblyName)
 		{
 			bool result = false;
@@ -394,6 +534,28 @@ namespace Gorgon.Plugins
 		/// <returns><c>true</c> if this is a plugin assembly, <c>false</c> if it is not.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will load the assembly into a separate <see cref="AppDomain"/> and will determine if it contains any types that inherit from 
+		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <c>false</c>, otherwise it will 
+		/// return <c>true</c>. 
+		/// </para>
+		/// <para>
+		/// This method will also check to determine if the assembly is a valid .NET assembly. If it is not, then the method will return <c>false</c>, 
+		/// otherwise it will return <c>true</c>.
+		/// </para>
+		/// <para>
+		/// Users should call this method before calling <see cref="Load(System.String)"/> to determine whether or not a plugin assembly should be loaded into the 
+		/// application.
+		/// </para>
+		/// <para>
+		/// Because this method loads the assembly into a separate application domain, the assembly will not be cached.
+		/// </para>
+		/// <para>
+		/// Since this method takes a path to an assembly, the <see cref="SearchPaths"/> property will be used if the assembly could not be found 
+		/// on the path specified.
+		/// </para>
+		/// </remarks>
 		public bool IsPluginAssembly(string assemblyPath)
 		{
 			if (assemblyPath == null)
@@ -424,12 +586,22 @@ namespace Gorgon.Plugins
 
 
 		/// <summary>
-		/// Function to load an assembly holding plugins.
+		/// Function to load an assembly that contains <see cref="GorgonPlugin"/> types.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <returns>The loaded assembly.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
-		public Assembly Load(AssemblyName assemblyName)
+		/// <exception cref="GorgonException">Thrown when the assembly does not contain any types that inherit from <see cref="GorgonPlugin"/>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will load an assembly that contains <see cref="GorgonPlugin"/> types. If the assembly does not contain any types that inherit from 
+		/// <see cref="GorgonPlugin"/>, then an exception will be raised.
+		/// </para>
+		/// <para>
+		/// Users should call <see cref="IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
+		/// can be loaded or not.
+		/// </para>
+		/// </remarks>
+		public void Load(AssemblyName assemblyName)
 		{
 			if (assemblyName == null)
 			{
@@ -445,6 +617,11 @@ namespace Gorgon.Plugins
 			bool newAssembly;
 			Assembly assembly = GetOrAddAssembly(assemblyName, out newAssembly);
 
+			if (assembly == null)
+			{
+				throw new GorgonException(GorgonResult.InvalidFileFormat, string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName));
+			}
+
 			if (!newAssembly)
 			{
 				_log.Print("Plug-in assembly '{0}' from {1} is already loaded.",
@@ -458,10 +635,45 @@ namespace Gorgon.Plugins
 				           LoggingLevel.Simple,
 				           assemblyName.FullName);
 			}
+		}
 
-#error Finish this method.  Comment this file properly.  Add appropriate overload for this method.  We don't need a return type here.
+		/// <summary>
+		/// Function to load an assembly that contains <see cref="GorgonPlugin"/> types.
+		/// </summary>
+		/// <param name="assemblyPath">Name of the assembly to load.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> is empty.</exception>
+		/// <exception cref="GorgonException">Thrown when the assembly does not contain any types that inherit from <see cref="GorgonPlugin"/>.</exception>
+		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyPath"/> is not a valid .NET assembly.</exception>
+		/// <exception cref="FileNotFoundException">Thrown when the assembly file could not be found.</exception>
+		/// <returns>A <see cref="System.Reflection.AssemblyName"/> type containing the qualified name of the assembly that was loaded.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will load an assembly that contains <see cref="GorgonPlugin"/> types. If the assembly does not contain any types that inherit from 
+		/// <see cref="GorgonPlugin"/>, then an exception will be raised.
+		/// </para>
+		/// <para>
+		/// Users should call <see cref="IsPluginAssembly(System.String)"/> prior to this method in order to determine whether the assembly 
+		/// can be loaded or not.
+		/// </para>
+		/// </remarks>
+		public AssemblyName Load(string assemblyPath)
+		{
+			if (assemblyPath == null)
+			{
+				throw new ArgumentNullException("assemblyPath");
+			}
 
-			return assembly;
+			if (string.IsNullOrWhiteSpace(assemblyPath))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
+			}
+
+			AssemblyName assemblyName = FindPluginAssembly(assemblyPath);
+
+			Load(assemblyName);
+
+			return assemblyName;
 		}
 		#endregion
 
@@ -478,7 +690,7 @@ namespace Gorgon.Plugins
 			}
 
 			_discoveryDomain = new Lazy<AppDomain>(CreateAppDomain);
-			_verifier = new Lazy<GorgonPlugInVerifier>(GetVerifier);
+			_verifier = new Lazy<GorgonPluginVerifier>(GetVerifier);
 		}
 
 		/// <summary>

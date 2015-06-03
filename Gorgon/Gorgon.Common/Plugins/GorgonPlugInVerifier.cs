@@ -34,12 +34,14 @@ namespace Gorgon.Plugins
 	/// <summary>
 	/// Plug-in verification object.
 	/// </summary>
-	class GorgonPlugInVerifier
+	class GorgonPluginVerifier
 		: MarshalByRefObject
 	{
 		#region Variables.
-	    private Assembly _assembly;             // The assembly for this type.
-		private Type _plugInType;				// Type info for the Gorgon Plug-In type.
+		// The assembly for this type.
+	    private Assembly _assembly;
+		// Type info for the Gorgon Plug-In type.
+		private Type _plugInType;				
 		#endregion
 
 		#region Methods.
@@ -55,11 +57,11 @@ namespace Gorgon.Plugins
 				return;
 			}
 
-			AssemblyName gorgonAssemblyName = typeof(GorgonPlugInVerifier).Assembly.GetName();
+			AssemblyName gorgonAssemblyName = typeof(GorgonPluginVerifier).Assembly.GetName();
 			Assembly gorgonReflection = Assembly.ReflectionOnlyLoad(gorgonAssemblyName.FullName);
 
 			// Get the Gorgon reflection only plug-in type.
-			_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugIn).FullName == item.FullName);
+			_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugin).FullName == item.FullName);
 
 			_assembly = _plugInType.Assembly;
 		}
@@ -153,9 +155,9 @@ namespace Gorgon.Plugins
 
             try
             {
-                GetGorgonPlugInType();
+		        GetGorgonPlugInType();
 
-                var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
+	            var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
                 var types = assembly.GetTypes();
 
                 return (from type in types

@@ -33,7 +33,7 @@ namespace Gorgon.Plugins
 	/// A base plug-in entry point object.
 	/// </summary>
 	/// <remarks>Plug-ins must implement this object as a proxy to create the actual concrete implementation object.</remarks>
-	public abstract class GorgonPlugIn
+	public abstract class GorgonPlugin
 		: INamedObject
 	{
 		#region Properties.
@@ -67,11 +67,11 @@ namespace Gorgon.Plugins
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPlugin"/> class.
 		/// </summary>
 		/// <param name="description">Optional description of the plug-in.</param>
 		/// <remarks>Objects that implement this base class should pass in a hard coded description on the base constructor.</remarks>
-		protected GorgonPlugIn(string description)
+		protected GorgonPlugin(string description)
 		{
 			Description = description ?? string.Empty;
 

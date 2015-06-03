@@ -129,9 +129,9 @@ namespace Gorgon.Editor
 		/// <param name="plugInDirectory">Plug-in directory that contains the assemblies.</param>
 		/// <param name="callback">The function to call back to when loading the assembly.</param>
 		/// <returns>The list of plug-ins loaded.</returns>
-		private static IList<GorgonPlugIn> LoadAssemblies(DirectoryInfo plugInDirectory, Action<string> callback)
+		private static IList<GorgonPlugin> LoadAssemblies(DirectoryInfo plugInDirectory, Action<string> callback)
 		{
-			var results = new List<GorgonPlugIn>();
+			var results = new List<GorgonPlugin>();
 			IEnumerable<FileInfo> assemblies = plugInDirectory.GetFiles("*.dll", SearchOption.AllDirectories);
 
 			foreach (var assembly in assemblies)
@@ -151,7 +151,7 @@ namespace Gorgon.Editor
 
 				// Load the DLL and return the list of plugins from it.
 				AssemblyName name = GorgonApplication.PlugIns.LoadPlugInAssembly(assembly.FullName);
-				IEnumerable<GorgonPlugIn> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
+				IEnumerable<GorgonPlugin> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
 				
 				results.AddRange(plugIns.Where(item => item is EditorPlugIn || item is GorgonFileSystemProviderPlugIn));
 			}
@@ -164,7 +164,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="plugIn">Plug-in to check.</param>
         /// <returns><c>true</c> if the plug-in has been disabled, <c>false</c> if not.</returns>
-	    public static bool IsDisabled(GorgonPlugIn plugIn)
+	    public static bool IsDisabled(GorgonPlugin plugIn)
         {
             return _disabled.Contains(new DisabledPlugIn(plugIn, String.Empty));
         }
@@ -174,7 +174,7 @@ namespace Gorgon.Editor
         /// </summary>
         /// <param name="plugIn">Plug-in to look up.</param>
         /// <returns>A string containing the reason that a plug-in was disabled.</returns>
-	    public static string GetDisabledReason(GorgonPlugIn plugIn)
+	    public static string GetDisabledReason(GorgonPlugin plugIn)
         {
             var disabled = new DisabledPlugIn(plugIn, String.Empty);
             int index = _disabled.IndexOf(disabled);
@@ -196,7 +196,7 @@ namespace Gorgon.Editor
 				plugInDirectory.Create();
 			}
 
-			IList<GorgonPlugIn> plugIns = LoadAssemblies(plugInDirectory, callback);
+			IList<GorgonPlugin> plugIns = LoadAssemblies(plugInDirectory, callback);
 
 			if (plugIns.Count == 0)
 			{

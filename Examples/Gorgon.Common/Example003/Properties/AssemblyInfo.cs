@@ -32,21 +32,15 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
+[assembly: AssemblyTitle("Gorgon Core Objects Example #3")]
+[assembly: AssemblyDescription("Example application #3.")]
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Common Objects Example #3 [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Example application #3 [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Common Objects Example #3")]
-[assembly: AssemblyDescription("Example application #3.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
-#if DEBUG
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
-#else
 [assembly: AssemblyProduct("Gorgon")]
-#endif
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
 [assembly: AssemblyTrademark("")]
 

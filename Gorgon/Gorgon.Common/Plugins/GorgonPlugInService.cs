@@ -25,296 +25,161 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using System.Text;
-using Gorgon.Collections;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Core.Collections.Specialized;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
+using Gorgon.Reflection;
 
 namespace Gorgon.Plugins
 {
 	/// <summary>
-    /// The return values for the <see cref="GorgonPlugInFactory.IsAssemblySigned(System.Reflection.AssemblyName,byte[])">IsAssemblySigned</see> method.
-	/// </summary>
-	[Flags]
-	public enum PlugInSigningResult
-	{
-		/// <summary>
-		/// Assembly is not signed.  This flag is mutally exclusive.
-		/// </summary>
-		NotSigned = 1,
-		/// <summary>
-		/// Assembly is signed, and if it was requested, the key matches.
-		/// </summary>
-		Signed = 2,
-		/// <summary>
-		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
-		/// </summary>
-		KeyMismatch = 4
-	}
-
-	/// <summary>
-	/// A service to create <see cref="GorgonPlugIn"/> instances.
+	/// A service to create, cache and return <see cref="GorgonPlugin"/> instances.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Use this object to control loading and unloading of plugins.
-	/// </para>
-	/// <para>
-	/// In some cases, a plugin assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
-	/// use the <see cref="GorgonPlugInService.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
-	/// assemblies.
+	/// TODO: something something something about plugins.
 	/// </para>
 	/// </remarks>
-	public class GorgonPlugInService
+	public class GorgonPluginService
 	{
 		#region Variables.
-		// The list of plug-ins previously created.
-		private GorgonNamedObjectDictionary<GorgonPlugIn> _plugins = new GorgonNamedObjectDictionary<GorgonPlugIn>(false);
+		// List of previously loaded plugins.
+		private readonly Lazy<GorgonNamedObjectDictionary<GorgonPlugin>> _loadedPlugins;
+		// List of plugin constructors.
+		private readonly Lazy<ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>> _constructors;
 		// The application log file.
-		private IGorgonLog _log = new GorgonLogDummy();
+		private readonly IGorgonLog _log = new GorgonLogDummy();
+		// Plugin assembly cache.
+		private readonly GorgonPluginAssemblyCache _cache;
+		// Thread synchronization for the plugin dictionary.
+		private int _pluginSync;
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return a plugin by its name.
+		/// Property to return the number of plugins that are currently loaded in this service.
 		/// </summary>
-		/// <param name="name">The friendly name of the plugin or the fully qualified type name of the plugin.</param>
-		public GorgonPlugIn this[string name]
+		public int LoadedPluginCount
 		{
 			get
 			{
-				return Items[name];
+				return !_loadedPlugins.IsValueCreated ? 0 : _loadedPlugins.Value.Count;
 			}
 		}
 		#endregion
 
 		#region Methods.
-
-        
-
 		/// <summary>
-		/// Function to determine if a plugin implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
+		/// Function to retrieve a plugin by its fully qualified type name.
 		/// </summary>
-		/// <param name="plugIn">Plug-in to check and dispose.</param>
-		private static void CheckDisposable(GorgonPlugIn plugIn)
+		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugin"/>.</typeparam>
+		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
+		/// <returns>The plugin, if found, or <c>null</c> (Nothing in VB.Net) if not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
+		public T GetPlugin<T>(string pluginName)
+			where T : GorgonPlugin
 		{
-			var disposer = plugIn as IDisposable;
-
-			if (disposer != null)
+			if (pluginName == null)
 			{
-				disposer.Dispose();
+				throw new ArgumentNullException("pluginName");
 			}
-		}
 
-		/// <summary>
-		/// Function to retrieve the list of plugins associated with a specific assembly.
-		/// </summary>
-		/// <param name="assemblyName">Name of the assembly to filter.</param>
-		/// <returns>A read-only list of plugins.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>Unlike the overload of this method, this method only enumerates plugins from assemblies that are already loaded into memory.</remarks>
-		public IReadOnlyList<GorgonPlugIn> EnumeratePlugIns(AssemblyName assemblyName)
-		{
-			GorgonDebug.AssertNull(assemblyName, "assemblyName");
-
-			return this.Where(item => AssemblyName.ReferenceMatchesDefinition(item.Assembly, assemblyName)).ToArray();
-		}
-
-		/// <summary>
-		/// Function to unload all the plugins.
-		/// </summary>
-		public void UnloadAll()
-		{
-			// Unload our discovery domain.
-			PurgeCachedPlugInInfo();
-
-			foreach (var item in Items)
+			if (string.IsNullOrWhiteSpace(pluginName))
 			{
-				CheckDisposable(item.Value);
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginName");
+			}
+
+			if (!_constructors.IsValueCreated)
+			{
+				ScanPlugins();
 			}
 			
-			Items.Clear();
-		}
-
-		/// <summary>
-		/// Function to remove a plugin by index.
-		/// </summary>
-		/// <param name="name">Name of the plugin to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
-		public void Unload(string name)
-		{
-			GorgonDebug.AssertParamString(name, "name");
-
-			Items.Remove(name);
-		}
-
-		/// <summary>
-		/// Function to remove a plugin.
-		/// </summary>
-		/// <param name="plugIn">Plug-in to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
-		public void Unload(GorgonPlugIn plugIn)
-		{
-		    if (plugIn == null)
-		    {
-		        throw new ArgumentNullException("plugIn");
-		    }
-
-		    RemoveItem(plugIn);
-		}
-
-		/// <summary>
-		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
-		/// </summary>
-		/// <param name="assemblyName">Name of the assembly to check.</param>
-		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey = null)
-		{
-		    var result = PlugInSigningResult.Signed;
-
-		    if (assemblyName == null)
-		    {
-		        throw new ArgumentNullException("assemblyName");
-		    }
-
-		    byte[] plugInPublicKey = assemblyName.GetPublicKey();
-
-		    if ((plugInPublicKey == null) || (plugInPublicKey.Length < 1))
-		    {
-		        return PlugInSigningResult.NotSigned;
-		    }
-
-			if (publicKey == null)
+			while (true)
 			{
-				return result;
-			}
+				GorgonPlugin plugin;
 
-			if (publicKey.Length != plugInPublicKey.Length)
-			{
-				result |= PlugInSigningResult.KeyMismatch;
-			}
-			else
-			{
-				for (int i = 0; i < publicKey.Length - 1; i++)
+				// We haven't created this plugin yet, so create it.
+				if (_loadedPlugins.Value.TryGetValue(pluginName, out plugin))
 				{
-					if (publicKey[i] == plugInPublicKey[i])
+					_log.Print("Found existing plugin '{0}'.", LoggingLevel.Simple, pluginName);
+					return (T)plugin;
+				}
+
+				try
+				{
+					if (Interlocked.Increment(ref _pluginSync) > 1)
 					{
 						continue;
 					}
 
-					result |= PlugInSigningResult.KeyMismatch;
-					break;
+					_log.Print("Creating plugin '{0}'.", LoggingLevel.Simple, pluginName);
+
+					ObjectActivator<GorgonPlugin> constructor;
+
+					if (!_constructors.Value.TryGetValue(pluginName, out constructor))
+					{
+						_log.Print("Plugin '{0}' does not exist.", LoggingLevel.Simple, pluginName);
+						return null;
+					}
+					
+					T typedPlugin = (T)constructor();
+					
+					_loadedPlugins.Value.Add(typedPlugin);
+
+					_log.Print("Plugin '{0}' instance added to registry.", LoggingLevel.Simple, pluginName);
+					return typedPlugin;
+				}
+				finally
+				{
+					Interlocked.Decrement(ref _pluginSync);
 				}
 			}
-
-			return result;
 		}
 
 		/// <summary>
-		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
+		/// Function to retrieve a list of names for available plugins.
 		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly to check.</param>
-		/// <param name="publicKey">[Optional] Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
-		/// <returns>One of the values in the <seealso cref="PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public PlugInSigningResult IsAssemblySigned(string assemblyPath, byte[] publicKey = null)
+		/// <param name="assemblyName">[Optional] Name of the assembly containing the plugins.</param>
+		/// <returns>A list of names for the available plugins.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will retrieve a list of fully qualified type names for plugins contained within the <see cref="GorgonPluginAssemblyCache"/> passed to this object. This list is 
+		/// not indicative of whether the type has been created or not.
+		/// </para>
+		/// <para>
+		/// The <paramref name="assemblyName"/> parameter, when not <c>null</c> (Nothing in VB.Net), will return only plugin names belonging to that assembly. 
+		/// If the assembly is not loaded, then an exception is thrown.
+		/// </para>
+		/// </remarks>
+		public IReadOnlyList<string> GetPluginNames(AssemblyName assemblyName = null)
 		{
-			return IsAssemblySigned(FindPlugInAssembly(assemblyPath), publicKey);
-		}
-
-		/// <summary>
-		/// Function to load a plugin assembly.
-		/// </summary>
-		/// <param name="assemblyPath">Path to the assembly.</param>
-		/// <remarks>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
-		/// <exception cref="GorgonException">The assembly contains a plugin type that was already loaded by another assembly.</exception>
-		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
-		public AssemblyName LoadPlugInAssembly(string assemblyPath)
-		{
-		    AssemblyName plugInAssemblyName = FindPlugInAssembly(assemblyPath);
-
-			LoadPlugInAssembly(plugInAssemblyName);
-
-			return plugInAssemblyName;
-		}
-
-
-		/// <summary>
-		/// Function to load a plugin assembly.
-		/// </summary>
-		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="GorgonException">The assembly contains a plugin type that was already loaded by another assembly.</exception>
-		public void LoadPlugInAssembly(AssemblyName assemblyName)
-		{
-			if (assemblyName == null)
-		    {
-		        throw new ArgumentNullException("assemblyName");
-		    }
-			
-			Assembly plugInAssembly = GorgonPluginAssemblyCache.Load(assemblyName);
-
 			try
 			{
-
-				// Get all plugin types from the assembly.
-				var plugInTypes = (from plugInType in plugInAssembly.GetTypes()
-				                   where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
-				                   select plugInType).ToArray();
-
-				if (plugInTypes.Length == 0)
+				if (assemblyName == null)
 				{
-					throw new ArgumentException(string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName),
-					                            "assemblyName");
+					return (from typeItem in _cache.PluginAssemblies.SelectMany(item => item.Value.GetTypes())
+					        where !typeItem.IsAbstract && typeItem.IsSubclassOf(typeof(GorgonPlugin))
+					        select typeItem.FullName).ToArray();
 				}
 
-				// Create an instance of each plugin object.
-				foreach (Type plugInType in plugInTypes)
+				Assembly assembly;
+
+				if (!_cache.PluginAssemblies.TryGetValue(assemblyName.FullName, out assembly))
 				{
-					var plugIn =
-						(GorgonPlugIn)
-						plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null);
-
-					if (plugIn == null)
-					{
-						throw new GorgonException(GorgonResult.CannotCreate,
-						                          string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, plugInType.FullName,
-						                                        plugInType.Assembly.FullName));
-					}
-
-					if (!Contains(plugIn.Name))
-					{
-						GorgonApplication.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
-						Items.Add(plugIn.Name, plugIn);
-					}
-					else
-					{
-						if (plugInType != this[plugIn.Name].GetType())
-						{
-							throw new GorgonException(GorgonResult.CannotCreate,
-							                          string.Format(Resources.GOR_PLUGIN_CONFLICT, plugIn.Name,
-							                                        plugInType.Assembly.FullName,
-							                                        this[plugIn.Name].GetType().Assembly.FullName));
-						}
-
-						GorgonApplication.Log.Print("Plug-in '{0}' already created.  Using this instance.", LoggingLevel.Simple, plugIn.Name);
-					}
+					throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND, assemblyName.FullName));
 				}
+
+				return (from typeItem in assembly.GetTypes()
+				        where !typeItem.IsAbstract && typeItem.IsSubclassOf(typeof(GorgonPlugin))
+				        select typeItem.FullName).ToArray();
 			}
 			catch (ReflectionTypeLoadException ex)
 			{
@@ -330,21 +195,186 @@ namespace Gorgon.Plugins
 					errorMessage.Append(loadEx.Message);
 				}
 
-				throw new GorgonException(GorgonResult.CannotRead,
-				                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE, plugInAssembly.FullName,
+				throw new GorgonException(GorgonResult.CannotEnumerate,
+				                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE,
+				                                        assemblyName == null ? "All" : assemblyName.FullName,
 				                                        errorMessage));
+			}
+		}
+
+		/// <summary>
+		/// Function to scan for plugins in the loaded plugin assemblies that are cached in the <see cref="GorgonPluginAssemblyCache"/> passed to this object.
+		/// </summary>
+		/// <remarks>
+		/// This method will unload any active plugins, and, if implemented, call the dispose method for any plugin.
+		/// </remarks>
+		public void ScanPlugins()
+		{
+			// Get rid of any plugins that are instanced.
+			UnloadAll();
+
+			// Clear out our type constructors.
+			_constructors.Value.Clear();
+
+			_log.Print("Scanning for plugins...", LoggingLevel.Simple);
+
+			if (_cache.PluginAssemblies.Count == 0)
+			{
+				_log.Print("0 plugins found in the assembly cache.", LoggingLevel.Simple);
+				return;
+			}
+
+			foreach (KeyValuePair<string, Assembly> assemblyItem in _cache.PluginAssemblies)
+			{
+				try
+				{
+					IEnumerable<Type> types = from type in assemblyItem.Value.GetTypes()
+					                          where type.IsSubclassOf(typeof(GorgonPlugin))
+					                                && !type.IsAbstract
+					                          select type;
+
+					foreach (Type pluginType in types)
+					{
+						ObjectActivator<GorgonPlugin> activator = pluginType.CreateActivator<GorgonPlugin>(null);
+
+						if (activator == null)
+						{
+							throw new GorgonException(GorgonResult.CannotCreate,
+							                          string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, pluginType.FullName, pluginType.Assembly.FullName));
+						}
+
+						_log.Print("Found plugin '{0}' in the assembly '{1}'.", LoggingLevel.Verbose, pluginType.FullName, assemblyItem.Value.FullName);
+						_constructors.Value.TryAdd(pluginType.FullName, activator);
+					}
+				}
+				catch (ReflectionTypeLoadException ex)
+				{
+					var errorMessage = new StringBuilder(512);
+
+					foreach (Exception loadEx in ex.LoaderExceptions)
+					{
+						if (errorMessage.Length > 0)
+						{
+							errorMessage.Append("\n\r");
+						}
+
+						errorMessage.Append(loadEx.Message);
+					}
+
+					throw new GorgonException(GorgonResult.CannotEnumerate,
+					                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE,
+					                                        assemblyItem.Key,
+					                                        errorMessage));
+				}
+			}
+
+			_log.Print("{0} plugins found in the assembly cache.", LoggingLevel.Simple, _constructors.Value.Count);
+		}
+
+		/// <summary>
+		/// Function to unload all the plugins.
+		/// </summary>
+		public void UnloadAll()
+		{
+			if ((!_loadedPlugins.IsValueCreated) || (_loadedPlugins.Value.Count == 0))
+			{
+				return;
+			}
+
+			_log.Print("Unloading all plugins.", LoggingLevel.Simple);
+
+			IEnumerable<IDisposable> disposable = from plugin in _loadedPlugins.Value
+			                                      let disposer = plugin as IDisposable
+			                                      where disposer != null
+			                                      select disposer;
+
+			foreach (IDisposable disposedPlugin in disposable)
+			{
+				disposedPlugin.Dispose();	
+			}
+
+			_loadedPlugins.Value.Clear();
+		}
+
+		/// <summary>
+		/// Function to remove a plugin by index.
+		/// </summary>
+		/// <param name="name">Name of the plugin to remove.</param>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
+		public bool Unload(string name)
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			while (true)
+			{
+				GorgonPlugin plugin;
+
+				if (!_loadedPlugins.Value.TryGetValue(name, out plugin))
+				{
+					_log.Print("Plugin '{0}' was not found, it may not have been created yet.", LoggingLevel.Simple, name);
+					return false;
+				}
+
+				try
+				{
+					if (Interlocked.Increment(ref _pluginSync) > 1)
+					{
+						continue;
+					}
+
+					var disposer = plugin as IDisposable;
+
+					if (disposer != null)
+					{
+						disposer.Dispose();
+					}
+
+					_loadedPlugins.Value.Remove(plugin);
+
+					_log.Print("Plugin '{0}' removed from the active plugin registry.", LoggingLevel.Simple, name);
+					return true;
+				}
+				finally
+				{
+					Interlocked.Decrement(ref _pluginSync);
+				}
 			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPlugInFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPluginService"/> class.
 		/// </summary>
-		public GorgonPlugInFactory()
-			: base(false)
+		/// <param name="assemblyCache">A <see cref="GorgonPluginAssemblyCache"/> that will contain assemblies with plugin types.</param>
+		/// <param name="log">[Optional] The application log file.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyCache"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		public GorgonPluginService(GorgonPluginAssemblyCache assemblyCache, IGorgonLog log = null)
 		{
-			_paths = new GorgonPlugInPathCollection();
+			if (assemblyCache == null)
+			{
+				throw new ArgumentNullException("assemblyCache");
+			}
+
+			_cache = assemblyCache;
+
+			if (log != null)
+			{
+				_log = log;
+			}
+
+			_loadedPlugins = new Lazy<GorgonNamedObjectDictionary<GorgonPlugin>>(() => new GorgonNamedObjectDictionary<GorgonPlugin>(false));
+			_constructors = new Lazy<ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>>(
+				() => new ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>(StringComparer.OrdinalIgnoreCase));
 		}
 		#endregion
 	}

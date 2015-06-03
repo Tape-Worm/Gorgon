@@ -32,7 +32,7 @@ namespace Gorgon.Input
 	/// Plug-in interface for an input device factory plug-in.
 	/// </summary>
 	public abstract class GorgonInputPlugIn
-		: GorgonPlugIn
+		: GorgonPlugin
 	{
 		#region Methods.
 		/// <summary>

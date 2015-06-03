@@ -32,7 +32,7 @@ namespace Gorgon.IO
     /// A plug-in to allow for loading of custom image codecs.
     /// </summary>
     public abstract class GorgonCodecPlugIn
-        : GorgonPlugIn
+        : GorgonPlugin
     {
         #region Methods.
         /// <summary>

@@ -146,7 +146,7 @@
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />
     <Compile Include="Events\GorgonHandledEventArgs.cs" />
-    <Compile Include="Plugins\GorgonPlugInService.cs" />
+    <Compile Include="Plugins\GorgonPluginService.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
@@ -188,7 +188,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
-    <Compile Include="Plugins\GorgonPlugIn.cs" />
+    <Compile Include="Plugins\GorgonPlugin.cs" />
     <Compile Include="Plugins\GorgonPlugInFactory.cs" />
     <Compile Include="Plugins\GorgonPluginPathCollection.cs" />
     <Compile Include="Plugins\GorgonPlugInVerifier.cs" />

@@ -373,6 +373,24 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type [{0}] is abstract and cannot be created directly..
+        /// </summary>
+        internal static string GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type [{0}] is an interface. There is no constructor for this type..
+        /// </summary>
+        internal static string GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type [{0}] is not the same as the generic type [{1}]..
         /// </summary>
         internal static string GOR_ERR_ACTIVATOR_TYPE_MISMATCH {
@@ -405,6 +423,15 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_ERR_PATH_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_ERR_PATH_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find a plugin assembly named &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND", resourceCulture);
             }
         }
         

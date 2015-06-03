@@ -78,9 +78,9 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="splash">The splash form used to display status to the user.</param>
 		/// <returns>A list of plug-ins that were successfully loaded.</returns>
-		private IList<GorgonPlugIn> LoadPlugInAssemblies(FormSplash splash)
+		private IList<GorgonPlugin> LoadPlugInAssemblies(FormSplash splash)
 		{
-			var result = new List<GorgonPlugIn>();
+			var result = new List<GorgonPlugin>();
 			var currentAssembly = string.Empty;
 
 			// We keep this outside of the try-catch because if we have a file system error (security, etc...)
@@ -104,7 +104,7 @@ namespace Gorgon.Editor
 					splash.InfoText = string.Format(Resources.GOREDIT_TEXT_PLUG_IN, Path.GetFileNameWithoutExtension(assemblyFile.FullName).Ellipses(40, true));
 
 					AssemblyName name = GorgonApplication.PlugIns.LoadPlugInAssembly(assemblyFile.FullName);
-					IEnumerable<GorgonPlugIn> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
+					IEnumerable<GorgonPlugin> plugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name);
 
 					_log.Print("PlugInRegistry: Plug-in assembly '{0}' loaded from {1}.", LoggingLevel.Verbose, name.FullName, assemblyFile.FullName);
 
@@ -135,7 +135,7 @@ namespace Gorgon.Editor
 			// Unload the plug-in if it's disabled, just so there's no conflicts or attempts to use it.
 			foreach (DisabledPlugIn disabledPlugIn in DisabledPlugIns)
 			{
-				GorgonPlugIn plugIn = GorgonApplication.PlugIns.FirstOrDefault(item => string.Equals(disabledPlugIn.Name, item.Name, StringComparison.OrdinalIgnoreCase)
+				GorgonPlugin plugIn = GorgonApplication.PlugIns.FirstOrDefault(item => string.Equals(disabledPlugIn.Name, item.Name, StringComparison.OrdinalIgnoreCase)
 																			&& string.Equals(disabledPlugIn.Path, item.PlugInPath, StringComparison.OrdinalIgnoreCase));
 
 				if (plugIn == null)
@@ -203,7 +203,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="plugIn">The plug-in to query.</param>
 		/// <returns><c>true</c> if disabled, <c>false</c> if not.</returns>
-		public bool IsDisabled(GorgonPlugIn plugIn)
+		public bool IsDisabled(GorgonPlugin plugIn)
 		{
 			if (plugIn == null)
 			{
@@ -220,7 +220,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="plugIn">Plug-in to disable.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugIn"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void DisablePlugIn(GorgonPlugIn plugIn)
+		public void DisablePlugIn(GorgonPlugin plugIn)
 		{
 			if (plugIn == null)
 			{
@@ -264,7 +264,7 @@ namespace Gorgon.Editor
 			splash.InfoText = Resources.GOREDIT_TEXT_LOADING_PLUGINS;
 
 			// Load and register.
-			IList<GorgonPlugIn> plugIns = LoadPlugInAssemblies(splash);
+			IList<GorgonPlugin> plugIns = LoadPlugInAssemblies(splash);
 
 			if (plugIns.Count == 0)
 			{
@@ -272,7 +272,7 @@ namespace Gorgon.Editor
 				return;
 			}
 
-			foreach (GorgonPlugIn plugIn in plugIns)
+			foreach (GorgonPlugin plugIn in plugIns)
 			{
 				_log.Print("PlugInRegistry: Found plug-in '{0}' of type [{1}] in assembly '{2}'.", LoggingLevel.Verbose, plugIn.Description, plugIn.Name, plugIn.PlugInPath);
 

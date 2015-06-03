@@ -40,7 +40,7 @@ namespace Gorgon.Examples
 	/// plug-in assemblies.
 	/// </summary>	
 	public abstract class TextColorPlugIn
-		: GorgonPlugIn
+		: GorgonPlugin
 	{
 		#region Methods.
 		/// <summary>
