@@ -195,12 +195,13 @@ namespace Gorgon.Plugins
 		/// Function to create any additional application domains we may need.
 		/// </summary>
 		/// <returns>The application domain.</returns>
-		private static AppDomain CreateAppDomain()
+		private AppDomain CreateAppDomain()
 		{
 			Evidence evidence = AppDomain.CurrentDomain.Evidence;
 			AppDomainSetup setup = AppDomain.CurrentDomain.SetupInformation;
 
 			// Create our domain.
+			_log.Print("Creating temporary application domain.", LoggingLevel.Intermediate);
 			return AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
 		}
 
@@ -211,6 +212,7 @@ namespace Gorgon.Plugins
 		private GorgonPluginVerifier GetVerifier()
 		{
 			Type verifierType = typeof(GorgonPluginVerifier);
+			_log.Print("Creating plugin verifier...", LoggingLevel.Verbose);
 			return (GorgonPluginVerifier)(_discoveryDomain.Value.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
 		}
 
@@ -722,6 +724,7 @@ namespace Gorgon.Plugins
 
 				if ((_discoveryDomain != null) && (_discoveryDomain.IsValueCreated))
 				{
+					_log.Print("Unloading temporary application domain.", LoggingLevel.Intermediate);
 					AppDomain.Unload(_discoveryDomain.Value);
 				}
 			}
