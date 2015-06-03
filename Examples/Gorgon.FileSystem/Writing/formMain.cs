@@ -196,7 +196,7 @@ namespace Gorgon.Examples
 				_writePath = Path.GetDirectoryName(logFile.LogPath) + @"\Examples\FileSystem.Writing\";
 
 				// Create our virtual file system.
-				_fileSystem = new GorgonFileSystem();
+				_fileSystem = new GorgonFileSystem(GorgonApplication.Log);
 
 				LoadText();
 

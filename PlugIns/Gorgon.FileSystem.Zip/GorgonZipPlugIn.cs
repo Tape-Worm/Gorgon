@@ -33,7 +33,7 @@ namespace Gorgon.IO
     /// <summary>
     /// Plug-in entry point for the zip file file system provider plug-in.
     /// </summary>
-    public class GorgonZipPlugIn
+    public class GorgonZipPlugin
         : GorgonFileSystemProviderPlugIn
     {
         /// <summary>
@@ -51,9 +51,9 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonZipPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonZipPlugin"/> class.
 		/// </summary>
-		public GorgonZipPlugIn()
+		public GorgonZipPlugin()
             : base(Resources.GORFS_PLUGIN_DESC)
 		{
 		}

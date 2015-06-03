@@ -150,7 +150,7 @@ namespace Gorgon.Editor
         public static void InitializeFileTypes()
         {
             // Get reader extensions
-            foreach (var readerProvider in ScratchArea.ScratchFiles.Providers)
+            foreach (var readerProvider in ScratchArea.ScratchFiles.YeOldeProviders)
             {
                 GetReaderFileTypes(readerProvider);
             }
@@ -308,7 +308,7 @@ namespace Gorgon.Editor
         /// <param name="path">Path to the editor file.</param>
         public static void Open(string path)
         {
-            var packFileSystem = new GorgonFileSystem();
+            var packFileSystem = new GorgonFileSystem(GorgonApplication.Log);
 
             FileChanged = false;
 
@@ -320,10 +320,10 @@ namespace Gorgon.Editor
 
 	        foreach (var plugIn in plugIns)
 	        {
-		        packFileSystem.Providers.LoadProvider(plugIn.Name);
+		        packFileSystem.YeOldeProviders.LoadProvider(plugIn.Name);
 	        }
 
-	        if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
+	        if (!packFileSystem.YeOldeProviders.Any(item => item.CanReadFile(path)))
             {
                 throw new FileLoadException(string.Format(APIResources.GOREDIT_ERR_NO_READ_PROVIDERS,
                                                           Path.GetFileName(path)));

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Plugins;
 
 namespace Gorgon.IO
@@ -35,7 +36,8 @@ namespace Gorgon.IO
 		: GorgonPlugin
     {
         #region Variables.
-	    private GorgonFileSystemProvider _provider;         // Cached provider instance.
+		// Cached provider instance.
+	    private readonly Lazy<GorgonFileSystemProvider> _provider;
         #endregion
 
         #region Methods.
@@ -51,7 +53,7 @@ namespace Gorgon.IO
         /// <returns>The file system provider.</returns>
         internal GorgonFileSystemProvider CreateProvider()
         {
-            return _provider ?? (_provider = OnCreateProvider());
+	        return _provider.Value;
         }
 	    #endregion
 
@@ -64,6 +66,7 @@ namespace Gorgon.IO
 		protected GorgonFileSystemProviderPlugIn(string description)
 			: base(description)
 		{
+			_provider = new Lazy<GorgonFileSystemProvider>(OnCreateProvider);
 		}
 		#endregion
 	}

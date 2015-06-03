@@ -40,23 +40,27 @@ namespace Gorgon.Examples
 	/// This example will show how to load a plugin and how to build a simple plugin.
 	/// 
 	/// The plugin in composed of 2 parts:
-	/// 1.  The plugin entry point object.
-	/// 2.  The plugin interface.
+	/// 1.  The plugin entry point object, which inherits from GorgonPlugin.
+	/// 2.  The object that will be created by this entry point.
 	/// 
-	/// The entry point object is responsible for creating the concrete classes based on an abstract class
-	/// in the host application.  It should have a method that will create the plugin interface.  An assembly
-	/// (DLL, EXE, etc...) may contain multiple plugin entry points to allow for returning multiple interfaces
-	/// or could have some form of input to allow the developer to determine which type of interface is 
-	/// returned.  The entry point should be an abstract object in the host application that is implemented
-	/// one or more times in the plugin assembly.
+	/// This is a factory pattern that allows the plugin to create instances of objects whose functionality we 
+	/// wish to override and/or implement. It is these objects that can be used and swapped in and out of an 
+	/// application.
+	/// 
+	/// The entry point object will be responsible for creating the concrete classes based on an abstract class
+	/// in the host application (this abstract class must implement GorgonPlugin at minimum).  From there this 
+	/// class should have a method that will create the object that we wish to use. An assembly (DLL, EXE, etc...) 
+	/// may contain multiple plugin entry points to allow for returning multiple interfaces or could have some 
+	/// form of input to allow the developer to determine which type of interface is returned. The entry point 
+	/// should be an abstract object in the host application that is implemented one or more times in the plugin 
+	/// assembly.
 	/// 
 	/// The plugin interface is the actual interface for the functionality.  It should be an interface or class
 	/// that is inherited in the plugin assembly and will implement specific functionality for that plugin.
 	/// 
-	/// To load a plugin, the user should first load the assembly using the GorgonApplication.Plugins.LoadPluginAssembly 
-	/// method.  This will load all the plugin entry point object types from that assembly.  The developer can
-	/// then look up the plugin entry point by the fully qualified type name of the plugin and create an instance
-	/// of the plugin interface.
+	/// To load a plugin, the user should first load the assembly using the GorgonPluginAssemblyCache object. 
+	/// This will load the assembly with the plugins that we want. Then a GorgonPluginService object should be created 
+	/// to create an instance of the plugin interface by using the fully qualified type name of the plugin type.
 	/// </remarks>
 	static class Program
 	{
@@ -185,6 +189,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
+				// Always call dispose so we can unload our temporary application domain.
 				pluginAssemblies.Dispose();
 				GorgonApplication.Log.Close();
 			}

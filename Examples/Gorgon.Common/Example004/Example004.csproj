@@ -8,7 +8,7 @@
     <ProjectGuid>{7E9E7C1E-AE39-4474-833F-A85EC045C74F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>Example004</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>

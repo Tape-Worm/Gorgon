@@ -176,7 +176,7 @@ namespace Gorgon.Editor
 
 	        foreach (GorgonPlugin plugIn in plugIns)
 	        {
-		        ScratchArea.ScratchFiles.Providers.LoadProvider(plugIn.Name);
+		        ScratchArea.ScratchFiles.YeOldeProviders.LoadProvider(plugIn.Name);
 	        }
 	    }
 
@@ -187,7 +187,7 @@ namespace Gorgon.Editor
 	    {
             try
             {
-                if (!ScratchArea.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
+                if (!ScratchArea.ScratchFiles.YeOldeProviders.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
                 {
                     return;
                 }

@@ -34,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using SlimMath;
@@ -151,6 +152,32 @@ namespace Gorgon.Examples
             return true;
         }
 
+		/// <summary>
+		/// Function to load the Gorgon pack file provider plugin.
+		/// </summary>
+	    private void LoadGorPackProvider()
+	    {
+			// The path to the Gorgon packed file provider.
+		    string gorPackPath = Program.PlugInPath + "Gorgon.FileSystem.GorPack.dll";
+			// The name of the Gorgon packed file plugin.
+		    const string gorPackPluginName = "Gorgon.IO.GorgonGorPackPlugIn";
+
+			// Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
+			// and get rid of the plugin stuff since we won't need it again.
+		    using (var pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+		    {
+			    pluginAssemblies.Load(gorPackPath);
+
+			    _fileSystem =
+				    new GorgonFileSystem(
+					    new GorgonFileSystemProviderFactory(
+						    new GorgonPluginService(pluginAssemblies, GorgonApplication.Log),
+						    GorgonApplication.Log)
+						    .CreateProvider(gorPackPluginName),
+					    GorgonApplication.Log);
+		    }
+	    }
+
         /// <summary>
         /// Function called to initialize the application.
         /// </summary>
@@ -189,14 +216,8 @@ namespace Gorgon.Examples
                 FontHeightMode = FontHeightMode.Points
             });
 
-            // Load the Gorgon BZip packed file provider plug-in assembly.
-            GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.FileSystem.GorPack.dll");            
-
-            // Create our file system and mount the resources.
-            _fileSystem = new GorgonFileSystem();
-            
-            // Add the Gorgon BZip packed file provider to the file system.
-            _fileSystem.Providers.LoadProvider("Gorgon.IO.GorgonGorPackPlugIn");
+            // Get the Gorgon BZip packed file provider and create a file system that we can use it with.
+			LoadGorPackProvider();			
 
             // Mount the packed file.
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));

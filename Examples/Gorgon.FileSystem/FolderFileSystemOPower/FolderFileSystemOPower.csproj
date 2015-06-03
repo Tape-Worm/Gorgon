@@ -8,7 +8,7 @@
     <ProjectGuid>{1D07F29F-4930-42E7-BAF0-8D246300CF67}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>FolderFileSystemOPower</AssemblyName>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <StartupObject>Gorgon.Examples.Program</StartupObject>

@@ -127,10 +127,14 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
 		/// </summary>
 		/// <param name="physicalPath">The physical path.</param>
-		/// <param name="mountLocation">The mount location.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.</exception>
-		public GorgonFileSystemMountPoint(string physicalPath, string mountLocation)
+		/// <param name="mountLocation">[Optional] The mount location.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
+		/// <remarks>
+		/// The <paramref name="mountLocation"/> is optional, if omitted then the phsyical file system object will be mounted under the root directory of the virtual file system. Passing <c>null</c> (Nothing in VB.Net) 
+		/// or an empty string to this parameter will default the mount location to the root.
+		/// </remarks>
+		public GorgonFileSystemMountPoint(string physicalPath, string mountLocation = null)
 		{
 			if (physicalPath == null)
 			{
@@ -142,14 +146,9 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "physicalPath");
 			}
 
-			if (mountLocation == null)
-			{
-				throw new ArgumentNullException("mountLocation");
-			}
-
 			if (string.IsNullOrWhiteSpace(mountLocation))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "mountLocation");
+				mountLocation = "/";
 			}
 			
 			PhysicalPath = physicalPath;

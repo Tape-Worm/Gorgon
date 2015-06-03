@@ -59,7 +59,7 @@ namespace Gorgon.Diagnostics
 	/// <remarks>
 	/// This is a concrete implementation of the <see cref="IGorgonLog"/> interface.
 	/// </remarks>
-	public class GorgonLogFile : 
+	sealed public class GorgonLogFile : 
 		IGorgonThreadedLog
 	{
 		#region Variables.

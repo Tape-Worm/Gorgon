@@ -183,7 +183,7 @@ namespace Gorgon.Examples
 			});
 
 			// Create our file system and mount the resources.
-			_fileSystem = new GorgonFileSystem();
+			_fileSystem = new GorgonFileSystem(GorgonApplication.Log);
 			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
 
 			// Get the sprite image.            

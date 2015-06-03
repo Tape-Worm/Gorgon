@@ -54,15 +54,24 @@ namespace Gorgon.Plugins
 		private readonly Lazy<GorgonNamedObjectDictionary<GorgonPlugin>> _loadedPlugins;
 		// List of plugin constructors.
 		private readonly Lazy<ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>> _constructors;
+		// List of constructors from a specific assembly.
+		private readonly Lazy<ConcurrentDictionary<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>>> _assemblyConstructors;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
-		// Plugin assembly cache.
-		private readonly GorgonPluginAssemblyCache _cache;
 		// Thread synchronization for the plugin dictionary.
 		private int _pluginSync;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the plugin assembly cache this service is using.
+		/// </summary>
+		public GorgonPluginAssemblyCache PluginAssemblyCache
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the number of plugins that are currently loaded in this service.
 		/// </summary>
@@ -76,6 +85,83 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the list of plugins from a given assembly.
+		/// </summary>
+		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugin"/>.</typeparam>
+		/// <param name="assemblyName">The name of the assembly associated with the plugins.</param>
+		/// <returns>A list of plugins from the assembly.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <remarks>
+		/// This will retrieve instances of all the plugins of the specified type from the given assembly. 
+		/// </remarks>
+		public IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName)
+			where T : GorgonPlugin
+		{
+			if (assemblyName == null)
+			{
+				throw new ArgumentNullException("assemblyName");
+			}
+
+			if (!_assemblyConstructors.IsValueCreated)
+			{
+				ScanPlugins();
+			}
+
+			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
+
+			if (!_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors))
+			{
+				return new T[0];
+			}
+
+			Type typeT = typeof(T);
+			var result = new ConcurrentBag<GorgonPlugin>();
+
+			// Match the types with our generic type. The type in the plugin must be an exact match with T, or a subclass of T.
+			foreach (KeyValuePair<Type, ObjectActivator<GorgonPlugin>> constructor in pluginConstructors.Value.Where(item => typeT == item.Key || item.Key.IsSubclassOf(typeT)))
+			{
+				GorgonPlugin plugin;
+
+				while (true)
+				{
+					if (_loadedPlugins.Value.TryGetValue(constructor.Key.FullName, out plugin))
+					{
+						_log.Print("Found existing plugin '{0}'.", LoggingLevel.Simple, constructor.Key.FullName);
+						break;
+					}
+
+					try
+					{
+						if (Interlocked.Increment(ref _pluginSync) > 1)
+						{
+							continue;
+						}
+
+						_log.Print("Creating plugin '{0}'.", LoggingLevel.Simple, constructor.Key.FullName);
+
+						plugin = constructor.Value();
+
+						_loadedPlugins.Value.Add(plugin);
+
+						_log.Print("Plugin '{0}' instance added to registry.", LoggingLevel.Simple, constructor.Key.FullName);
+						break;
+					}
+					finally
+					{
+						Interlocked.Decrement(ref _pluginSync);
+					}
+				}
+
+				if (plugin != null)
+				{
+					result.Add(plugin);
+				}
+			}
+
+			return result.Cast<T>().ToArray();
+		}
+
 		/// <summary>
 		/// Function to retrieve a plugin by its fully qualified type name.
 		/// </summary>
@@ -161,45 +247,24 @@ namespace Gorgon.Plugins
 		/// </remarks>
 		public IReadOnlyList<string> GetPluginNames(AssemblyName assemblyName = null)
 		{
-			try
+			if ((!_constructors.IsValueCreated) || (!_assemblyConstructors.IsValueCreated))
 			{
-				if (assemblyName == null)
-				{
-					return (from typeItem in _cache.PluginAssemblies.SelectMany(item => item.Value.GetTypes())
-					        where !typeItem.IsAbstract && typeItem.IsSubclassOf(typeof(GorgonPlugin))
-					        select typeItem.FullName).ToArray();
-				}
-
-				Assembly assembly;
-
-				if (!_cache.PluginAssemblies.TryGetValue(assemblyName.FullName, out assembly))
-				{
-					throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND, assemblyName.FullName));
-				}
-
-				return (from typeItem in assembly.GetTypes()
-				        where !typeItem.IsAbstract && typeItem.IsSubclassOf(typeof(GorgonPlugin))
-				        select typeItem.FullName).ToArray();
+				ScanPlugins();
 			}
-			catch (ReflectionTypeLoadException ex)
+
+			if (assemblyName == null)
 			{
-				var errorMessage = new StringBuilder(512);
-
-				foreach (Exception loadEx in ex.LoaderExceptions)
-				{
-					if (errorMessage.Length > 0)
-					{
-						errorMessage.Append("\n\r");
-					}
-
-					errorMessage.Append(loadEx.Message);
-				}
-
-				throw new GorgonException(GorgonResult.CannotEnumerate,
-				                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE,
-				                                        assemblyName == null ? "All" : assemblyName.FullName,
-				                                        errorMessage));
+				return _constructors.Value.Keys.ToArray();
 			}
+
+			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
+
+			if (!_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors))
+			{
+				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND, assemblyName.FullName));
+			}
+
+			return pluginConstructors.Value.Keys.Select(item => item.FullName).ToArray();
 		}
 
 		/// <summary>
@@ -215,23 +280,29 @@ namespace Gorgon.Plugins
 
 			// Clear out our type constructors.
 			_constructors.Value.Clear();
+			_assemblyConstructors.Value.Clear();
 
 			_log.Print("Scanning for plugins...", LoggingLevel.Simple);
 
-			if (_cache.PluginAssemblies.Count == 0)
+			if (PluginAssemblyCache.PluginAssemblies.Count == 0)
 			{
 				_log.Print("0 plugins found in the assembly cache.", LoggingLevel.Simple);
 				return;
 			}
 
-			foreach (KeyValuePair<string, Assembly> assemblyItem in _cache.PluginAssemblies)
+			foreach (KeyValuePair<string, Assembly> assemblyItem in PluginAssemblyCache.PluginAssemblies)
 			{
 				try
 				{
 					IEnumerable<Type> types = from type in assemblyItem.Value.GetTypes()
 					                          where type.IsSubclassOf(typeof(GorgonPlugin))
-					                                && !type.IsAbstract
+					                                && !type.IsAbstract && !type.IsPrimitive && !type.IsValueType
 					                          select type;
+
+					// Build another view of the constructor list that allows us to segregate by assembly.
+					var assemblyConstructors = _assemblyConstructors.Value.GetOrAdd(assemblyItem.Value.GetName().FullName,
+					                                                                new Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>(
+						                                                                () => new ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>()));
 
 					foreach (Type pluginType in types)
 					{
@@ -245,6 +316,7 @@ namespace Gorgon.Plugins
 
 						_log.Print("Found plugin '{0}' in the assembly '{1}'.", LoggingLevel.Verbose, pluginType.FullName, assemblyItem.Value.FullName);
 						_constructors.Value.TryAdd(pluginType.FullName, activator);
+						assemblyConstructors.Value.TryAdd(pluginType, activator);
 					}
 				}
 				catch (ReflectionTypeLoadException ex)
@@ -365,7 +437,7 @@ namespace Gorgon.Plugins
 				throw new ArgumentNullException("assemblyCache");
 			}
 
-			_cache = assemblyCache;
+			PluginAssemblyCache = assemblyCache;
 
 			if (log != null)
 			{
@@ -375,6 +447,8 @@ namespace Gorgon.Plugins
 			_loadedPlugins = new Lazy<GorgonNamedObjectDictionary<GorgonPlugin>>(() => new GorgonNamedObjectDictionary<GorgonPlugin>(false));
 			_constructors = new Lazy<ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>>(
 				() => new ConcurrentDictionary<string, ObjectActivator<GorgonPlugin>>(StringComparer.OrdinalIgnoreCase));
+			_assemblyConstructors = new Lazy<ConcurrentDictionary<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>>>(
+				() => new ConcurrentDictionary<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>>());
 		}
 		#endregion
 	}

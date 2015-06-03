@@ -28,12 +28,12 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.UI;
+using Gorgon.Plugins;
 
 namespace Gorgon.Examples
 {
@@ -55,7 +55,7 @@ namespace Gorgon.Examples
     /// the virtual root as "/filename.txt" and we mount a zip file that has filename.txt in the root of the zip file,
     /// then when we open filename.txt from the virtual file system we will be opening the file from the zip file.
     /// 
-    /// We begin the example by loading the file system provider for zip files, and then mounting the physical folder
+    /// We begin the example by loading the file system provider for zip files, and then mounting a physical folder
     /// and then the zip file into a virtual subdirectory.  From there we enumerate the files and virtual sub directories
     /// into the tree view.  Opening a file can be done either from the file entry as shown in the example, or it can be
     /// opened via the file system interface (allowing the user to pass a full path to the file).  Files can be returned
@@ -65,12 +65,18 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonFileSystem _fileSystem;			// Our file system.
-		private PictureBox _picture;					// Our picture box.
-		private Image _image;							// Loaded image.
-		private TextBox _textDisplay;					// Loaded text/binary info.
-		private Font _textFont;							// Textbox font.
-		private Label _instructions;					// Instructions label.
+		// Our file system.
+		private GorgonFileSystem _fileSystem;
+		// Our picture box.
+		private PictureBox _picture;
+		// Loaded image.
+		private Image _image;
+		// Loaded text/binary info.
+		private TextBox _textDisplay;
+		// Textbox font.
+		private Font _textFont;
+		// Instructions label.
+		private Label _instructions;
 		#endregion
 
 		#region Methods.
@@ -200,13 +206,24 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void LoadZipFileSystemProvider()
 		{
-			AssemblyName plugInAssembly = AssemblyName.GetAssemblyName(Program.PlugInPath + @"\Gorgon.FileSystem.Zip.DLL");
+			// Location of our zip file provider assembly.
+			string zipProviderDLL = Program.PlugInPath + @"\Gorgon.FileSystem.Zip.DLL";
+			// Name of our zip provider plugin.
+			const string zipProviderPluginName = "Gorgon.IO.GorgonZipPlugin";
 
-			// Load our plug-in assembly.
-			GorgonApplication.PlugIns.LoadPlugInAssembly(plugInAssembly);
+			// We can load the objects we need and discard the plugin system after.
+			// This works because we keep the references to the objects that our 
+			// plugin creates, even after the plugin is gone.
+			using (var pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			{
+				pluginAssemblies.Load(zipProviderDLL);
 
-			// Add the zip file provider.
-			_fileSystem.Providers.LoadProvider("Gorgon.IO.GorgonZipPlugIn");
+				var providerFactory = new GorgonFileSystemProviderFactory(
+					new GorgonPluginService(pluginAssemblies, GorgonApplication.Log),
+					GorgonApplication.Log);
+
+				_fileSystem = new GorgonFileSystem(providerFactory.CreateProvider(zipProviderPluginName), GorgonApplication.Log);
+			}
 		}
 
 		/// <summary>
@@ -395,9 +412,6 @@ namespace Gorgon.Examples
 
 			    // Add the instructions.
 				splitFileSystem.Panel2.Controls.Add(_instructions);
-
-				// Create the file system.
-				_fileSystem = new GorgonFileSystem();
 
 				// Get the zip file provider.
 				LoadZipFileSystemProvider();

@@ -30,17 +30,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if DEBUG
-[assembly: AssemblyTitle("Gorgon File System Example [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example showing how to write data with the virtual file system. [DEBUG VERSION]")]
-[assembly: AssemblyConfiguration("DEBUG")]
-[assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
-#else
 [assembly: AssemblyTitle("Gorgon File System Example")]
 [assembly: AssemblyDescription("An example showing how to write data with the virtual file system.")]
+#if DEBUG
+[assembly: AssemblyConfiguration("DEBUG")]
+#else
 [assembly: AssemblyConfiguration("RELEASE")]
-[assembly: AssemblyProduct("Gorgon")]
 #endif
+[assembly: AssemblyProduct("Gorgon")]
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
 [assembly: AssemblyTrademark("")]

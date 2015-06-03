@@ -149,7 +149,7 @@ namespace Gorgon.IO.Zip
 				stream.Read(headerBytes, 0, headerBytes.Length);
 			}
 
-		    return headerBytes.SequenceEqual(GorgonZipPlugIn.ZipHeader);
+		    return headerBytes.SequenceEqual(GorgonZipPlugin.ZipHeader);
 		}
 		#endregion
 

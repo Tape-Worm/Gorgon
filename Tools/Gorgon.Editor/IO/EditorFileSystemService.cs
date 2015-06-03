@@ -441,18 +441,18 @@ namespace Gorgon.Editor
 			// Retrieve all of our file system providers for this file system.
 			_providers.Clear();
 			_packedFileSystem.Clear();
-			_packedFileSystem.Providers.UnloadAll();
+			_packedFileSystem.YeOldeProviders.UnloadAll();
 
 			// Load only those providers in our plug-in list (disabled plug-ins will not be in here).
 			foreach (var plugIn in _plugInRegistry.FileSystemPlugIns)
 			{
-				_packedFileSystem.Providers.LoadProvider(plugIn.Value.Name);
+				_packedFileSystem.YeOldeProviders.LoadProvider(plugIn.Value.Name);
 			}
 
 			_log.Print("FileSystemService: Building file system provider list...", LoggingLevel.Verbose);
 
 			// Build the list of providers associated to a file extension.
-			foreach (var provider in _packedFileSystem.Providers)
+			foreach (var provider in _packedFileSystem.YeOldeProviders)
 			{
 				foreach (var extension in provider.PreferredExtensions)
 				{

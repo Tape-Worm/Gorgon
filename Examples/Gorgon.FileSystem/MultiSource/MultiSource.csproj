@@ -7,7 +7,7 @@
     <ProjectGuid>{5AFB65B6-A077-4EB5-A363-D9A5246ADD78}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>MultiSource</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

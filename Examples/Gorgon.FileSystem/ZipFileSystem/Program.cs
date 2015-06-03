@@ -30,8 +30,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Gorgon.Core;
-using Gorgon.Examples.Properties;
 using Gorgon.IO;
+using Gorgon.Plugins;
+using Gorgon.Examples.Properties;
 
 namespace Gorgon.Examples
 {
@@ -59,22 +60,27 @@ namespace Gorgon.Examples
 	static class Program
     {
         #region Constants.
-        private const string PlugInName = "Gorgon.IO.GorgonZipPlugIn";
+        private const string PluginName = "Gorgon.IO.GorgonZipPlugin";
         #endregion
 
         #region Variables.
-        private static GorgonFileSystem _fileSystem;         // File system.
+		// The plugin assemblies.
+		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		// The plugin service.
+		private static GorgonPluginService _pluginService;
+		// File system.
+        private static GorgonFileSystem _fileSystem;
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to return the path to the plug-ins.
+        /// Property to return the path to the plugins.
         /// </summary>
-        public static string PlugInPath
+        public static string PluginPath
         {
             get
             {
-                string path = Settings.Default.PlugInLocation;
+                string path = Settings.Default.PluginLocation;
 
                 if (path.Contains("{0}"))
                 {
@@ -133,17 +139,18 @@ namespace Gorgon.Examples
 		}
 
         /// <summary>
-        /// Function to load the zip file provider plug-in.
+        /// Function to load the zip file provider plugin.
         /// </summary>
         /// <returns><c>true</c> if successfully loaded, <c>false</c> if not.</returns>
-        static bool LoadZipProviderPlugIn()
+        static bool LoadZipProviderPlugin()
         {
-            string zipProviderPath = PlugInPath + "Gorgon.FileSystem.Zip.dll";
+            string zipProviderPath = PluginPath + "Gorgon.FileSystem.Zip.dll";
 
+			// Check to see if the file exists.
             if (!File.Exists(zipProviderPath))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Could not find the plug-in assembly file:\n'{0}'.", zipProviderPath);
+                Console.WriteLine("Could not find the plugin assembly file:\n'{0}'.", zipProviderPath);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();
@@ -151,37 +158,32 @@ namespace Gorgon.Examples
                 return false;
             }
 
-            // Load the plug-in assembly.
-            AssemblyName assembly = AssemblyName.GetAssemblyName(zipProviderPath);
-            GorgonApplication.PlugIns.LoadPlugInAssembly(assembly);
+            // Load the plugin assembly.
+	        AssemblyName assemblyName = AssemblyName.GetAssemblyName(zipProviderPath);
+	        _pluginAssemblies.Load(assemblyName);
 
-            // Add the provider.
-            if (!GorgonApplication.PlugIns.Contains(PlugInName))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("The plug-in assembly file:\n'{0}' does not contain a file system plug in named '{1}'.", zipProviderPath, PlugInName);
-                Console.ResetColor();
+			// Create our file system provider factory so we can retrieve the zip file provider.
+	        var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
+
+			// Get our zip file provider.
+	        GorgonFileSystemProvider provider;
+
+	        try
+	        {
+		        provider = providerFactory.CreateProvider(PluginName);
+	        }
+	        catch (GorgonException gEx)
+	        {
+			    Console.ForegroundColor = ConsoleColor.Red;
+			    Console.WriteLine(gEx.Message);
+			    Console.ResetColor();
 #if DEBUG
-                Console.ReadKey();
+			    Console.ReadKey();
 #endif
-                return false;
-            }
+			    return false;
+	        }
 
-            // Ensure this plug in is a file system provider.
-            var plugIn = GorgonApplication.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
-
-            if (plugIn == null)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("The plug in: '{0}'\nis not a file system provider plug-in.", PlugInName);
-                Console.ResetColor();
-#if DEBUG
-                Console.ReadKey();
-#endif
-                return false;
-            }
-
-            _fileSystem.Providers.LoadProvider(PlugInName);
+	        _fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
 
             Console.WriteLine("\nThe zip file file system provider was loaded successfully.");
             return true;
@@ -192,101 +194,108 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    static void Main()
 		{
-            try
-            {
-                Console.WindowHeight = 28;
-                Console.BufferHeight = Console.WindowHeight;                
+			// Create the plugin assembly cache.
+			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			// Create the plugin service.
+			_pluginService = new GorgonPluginService(_pluginAssemblies, GorgonApplication.Log);
 
-                // Create a new file system.
-                _fileSystem = new GorgonFileSystem();               
+		    try
+		    {
+			    Console.WindowHeight = 28;
+			    Console.BufferHeight = Console.WindowHeight;
 
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("This example will mount a zip file as the root of a virtual file system.  The");
-                Console.WriteLine("virtual file system is capable of mounting various types of data such as a zip,");
-                Console.WriteLine("a file system folder, etc... as the root or a sub directory.  You can even");
-                Console.WriteLine("mount a zip file as the root, and a physical file system directory as a virtual");
-                Console.WriteLine("sub directory in the same virtual file system and access them as a single");
-                Console.WriteLine("unified file system.");
+			    Console.ForegroundColor = ConsoleColor.White;
+			    Console.WriteLine("This example will mount a zip file as the root of a virtual file system.  The");
+			    Console.WriteLine("virtual file system is capable of mounting various types of data such as a zip,");
+			    Console.WriteLine("a file system folder, etc... as the root or a sub directory.  You can even");
+			    Console.WriteLine("mount a zip file as the root, and a physical file system directory as a virtual");
+			    Console.WriteLine("sub directory in the same virtual file system and access them as a single");
+			    Console.WriteLine("unified file system.");
 
-                // Unlike the folder file system example, we need to load
-                // a provider to handle zip files before trying to mount
-                // one.
-                if (!LoadZipProviderPlugIn())
-                {
-                    return;                    
-                }               
+			    // Unlike the folder file system example, we need to load
+			    // a provider to handle zip files before trying to mount
+			    // one.
+			    if (!LoadZipProviderPlugin())
+			    {
+				    return;
+			    }
 
-                // Set the following zip file as root on the virtual file system.
-                //
-                // If we wanted to, we could mount a zip file as a sub directory of
-                // the root of the virtual file system.  For example, mounting the
-                // directory D:\Dir\zipFile.zip with Mount(@"D:\Dir", "/VFSDir"); would mount 
-                // the contents of the D:\Dir\zipFile.zip directory under /VFSDir.
-                //
-                // It's also important to point out that the old Gorgon "file system"
-                // would load files from the system into memory when mounting a 
-                // directory.  While this version only loads directory and file 
-                // information when mounting.  This is considerably more efficient.
-                var physicalPath = GetResourcePath(@"FileSystem.zip");
-                _fileSystem.Mount(physicalPath);                
-                                
-                Console.Write("\nMounted: ");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.Write("'{0}'", physicalPath.Ellipses(Console.WindowWidth - 20, true));
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write(" as ");
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("'/'\n");
-                Console.ForegroundColor = ConsoleColor.White;
+			    // Set the following zip file as root on the virtual file system.
+			    //
+			    // If we wanted to, we could mount a zip file as a sub directory of
+			    // the root of the virtual file system.  For example, mounting the
+			    // directory D:\Dir\zipFile.zip with Mount(@"D:\Dir", "/VFSDir"); would mount 
+			    // the contents of the D:\Dir\zipFile.zip directory under /VFSDir.
+			    //
+			    // It's also important to point out that the old Gorgon "file system"
+			    // would load files from the system into memory when mounting a 
+			    // directory.  While this version only loads directory and file 
+			    // information when mounting.  This is considerably more efficient.
+			    var physicalPath = GetResourcePath(@"FileSystem.zip");
+			    _fileSystem.Mount(physicalPath);
 
-                // Get a count of all sub directories and files under the root directory.
-                var directoryList = _fileSystem.FindDirectories("*", true).ToArray();
+			    Console.Write("\nMounted: ");
+			    Console.ForegroundColor = ConsoleColor.Cyan;
+			    Console.Write("'{0}'", physicalPath.Ellipses(Console.WindowWidth - 20, true));
+			    Console.ForegroundColor = ConsoleColor.White;
+			    Console.Write(" as ");
+			    Console.ForegroundColor = ConsoleColor.Cyan;
+			    Console.WriteLine("'/'\n");
+			    Console.ForegroundColor = ConsoleColor.White;
 
-                // Display directories.
-                Console.WriteLine("Virtual file system contents:");                
+			    // Get a count of all sub directories and files under the root directory.
+			    var directoryList = _fileSystem.FindDirectories("*", true).ToArray();
 
-                for (int i = -1; i < directoryList.Length; i++)
-                {
-                    GorgonFileSystemDirectory directory = _fileSystem.RootDirectory;
-                    
-                    // Go into the sub directories under root.
-                    if (i > -1)
-                    {
-                        directory = directoryList[i];
-                    }
+			    // Display directories.
+			    Console.WriteLine("Virtual file system contents:");
 
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("{0}", directory.FullPath);
-                    
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+			    for (int i = -1; i < directoryList.Length; i++)
+			    {
+				    GorgonFileSystemDirectory directory = _fileSystem.RootDirectory;
 
-                    foreach (var file in directory.Files)
-                    {
-	                    Console.Write("   {0}", file.Name);
-	                    // Align the size to the same place.
-	                    Console.CursorLeft = 65;
-	                    Console.WriteLine("{0}", file.Size.FormatMemory());
-                    }
-                }
+				    // Go into the sub directories under root.
+				    if (i > -1)
+				    {
+					    directory = directoryList[i];
+				    }
 
-				Console.ResetColor();
-				Console.WriteLine("\nPress any key to close.");
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                ex.Catch(_ =>
-                        {
-	                        Console.Clear();
-	                        Console.ForegroundColor = ConsoleColor.Red;
-	                        Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+				    Console.ForegroundColor = ConsoleColor.Cyan;
+				    Console.WriteLine("{0}", directory.FullPath);
 
-	                        Console.ResetColor();
+				    Console.ForegroundColor = ConsoleColor.Yellow;
+
+				    foreach (var file in directory.Files)
+				    {
+					    Console.Write("   {0}", file.Name);
+					    // Align the size to the same place.
+					    Console.CursorLeft = 65;
+					    Console.WriteLine("{0}", file.Size.FormatMemory());
+				    }
+			    }
+
+			    Console.ResetColor();
+			    Console.WriteLine("\nPress any key to close.");
+			    Console.ReadKey();
+		    }
+		    catch (Exception ex)
+		    {
+			    ex.Catch(_ =>
+			             {
+				             Console.Clear();
+				             Console.ForegroundColor = ConsoleColor.Red;
+				             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+
+				             Console.ResetColor();
 #if DEBUG
-	                        Console.ReadKey();
+				             Console.ReadKey();
 #endif
-                        });
-            }
+			             });
+		    }
+		    finally
+		    {
+				// Always dispose the cache to clean up the temporary app domain it creates.
+			    _pluginAssemblies.Dispose();
+		    }
         }
         #endregion
     }

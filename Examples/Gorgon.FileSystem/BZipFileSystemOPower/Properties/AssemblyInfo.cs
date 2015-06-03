@@ -30,17 +30,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if DEBUG
-[assembly: AssemblyTitle("BZip FileSystem of Power. [DEBUG VERSION]")]
-[assembly: AssemblyDescription("Example showing how to use the virtual file system.  This was a version 1.x example, converted to version 2.x of Gorgon. [DEBUG VERSION]")]
-[assembly: AssemblyConfiguration("DEBUG")]
-[assembly: AssemblyProduct("Version 1.x Gorgon Example. [DEBUG VERSION]")]
-#else
 [assembly: AssemblyTitle("BZip FileSystem of Power.")]
 [assembly: AssemblyDescription("Example showing how to use the virtual file system.  This was a version 1.x example, converted to version 2.x of Gorgon.")]
+#if DEBUG
+[assembly: AssemblyConfiguration("DEBUG")]
+#else
 [assembly: AssemblyConfiguration("RELEASE")]
-[assembly: AssemblyProduct("Version 1.x Gorgon Example.")]
 #endif
+[assembly: AssemblyProduct("Version 1.x Gorgon Example.")]
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor")]
 [assembly: AssemblyTrademark("")]

@@ -25,18 +25,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Gorgon.Diagnostics
 {
 	/// <summary>
 	/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
 	/// </summary>
-	class GorgonLogDummy
+	sealed public class GorgonLogDummy
 		: IGorgonThreadedLog
 	{
 		#region Constructor.

@@ -109,7 +109,7 @@ namespace Gorgon.Examples
                 Console.BufferHeight = Console.WindowHeight;
 
                 // Create a new file system.
-                _fileSystem = new GorgonFileSystem();
+                _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
 
 				// Set the following directory as root on the virtual file system.
 				// To mount a directory we need to put in the trailing slash.  

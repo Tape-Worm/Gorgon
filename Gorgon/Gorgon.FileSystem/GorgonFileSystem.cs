@@ -52,7 +52,7 @@ namespace Gorgon.IO
 	/// Accessing a file is handled like this:  GorgonFileSystem.ReadFile("/MyFile.txt");  It won't matter where MyFile.txt is stored on the physical file system, the system will know where to find it.
 	/// </para>
 	/// <para>
-	/// Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocaton</see> property.  
+	/// Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="WriteLocation">WriteLocaton</see> property.  
 	/// For example, if the user sets the WriteLocation to C:\MyWriteDirectory, and proceeds to create a new file called "SomeText.txt" in the root of the virtual file system, then the file will be sent to 
 	/// "C:\MyWriteDirectory\SomeText.txt".  Likewise, if a file, /SubDir1/SomeText.txt is in a sub directory on the virtual file system, the file will be rerouted to "C:\MyWriteDirectory\SubDir1\SomeText.txt".
 	/// </para>
@@ -63,9 +63,9 @@ namespace Gorgon.IO
 	/// </para>
     /// <para>
     /// By default, a new file system instance will only have access to the folders and files of the hard drive via a folder file system.  File systems that are in packed files (e.g. WinZip files) can be loaded into the 
-    /// file system by way of a <see cref="Gorgon.IO.GorgonFileSystemProvider">provider</see>.  Providers are plug-in objects that are loaded into the file system.  Once a provider plug-in is loaded, then the 
-    /// contents of that file system can be mounted like a standard directory.  For example, if the zip file provider plug-in is loaded, then the file system may be mounted into the root by: 
-    /// <code>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</code>.
+    /// file system by way of a <see cref="GorgonFileSystemProvider"/>.  Providers are plug-in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  Once a provider plug-in 
+    /// is loaded, then the contents of that file system can be mounted like a standard directory.  For example, if the zip file provider plug-in is loaded, then the file system may be mounted into the root by: 
+    /// <c>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</c>.
     /// </para>
 	/// </remarks>
 	public class GorgonFileSystem
@@ -76,13 +76,24 @@ namespace Gorgon.IO
 		/// </summary>
 	    internal static readonly string PhysicalDirSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
-		private bool _mountListChanged;												// Flag to indicate that the mount point list was changed.
-		private static readonly object _syncLock = new object();					// Synchronization object.
-		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList;		// The list of mount points to expose to the user.
-		private readonly List<GorgonFileSystemMountPoint> _mountPoints;				// Mount points.
-		private string _writeLocation = string.Empty;								// The area on the physical file system that we can write into.
-		private readonly GorgonFileSystemProvider _defaultProvider;					// The default file system provider.
-	    private int _refreshSemaphore;                                              // Interlock increment variable.
+		// Flag to indicate that the mount point list was changed.
+		private bool _mountListChanged;
+		// Synchronization object.
+		private static readonly object _syncLock = new object();
+		// The list of mount points to expose to the user.
+		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList;
+		// Mount points.
+		private readonly List<GorgonFileSystemMountPoint> _mountPoints;
+		// The area on the physical file system that we can write into.
+		private string _writeLocation = string.Empty;
+		// The default file system provider.
+		private readonly GorgonFileSystemProvider _defaultProvider = new GorgonFileSystemProvider();
+		// Interlock increment variable.
+	    private int _refreshSemaphore;
+		// The list of providers available to the file system.
+		private readonly Dictionary<string, GorgonFileSystemProvider> _providers;
+		// The log file for the application.
+		private IGorgonLog _log = new GorgonLogDummy();
 		#endregion
 
 		#region Properties.
@@ -128,7 +139,10 @@ namespace Gorgon.IO
 			set
 			{
 				if (value == null)
+				{
 					value = string.Empty;
+				}
+
 				_writeLocation = value;
 
 				if (!string.IsNullOrWhiteSpace(_writeLocation))
@@ -157,31 +171,18 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Property to return the list of loaded providers.
+		/// Property to return the list of providers available to this file system.
 		/// </summary>
-		public GorgonFileSystemProviderCollection Providers
+		public IReadOnlyDictionary<string, GorgonFileSystemProvider> Providers
 		{
-			get;
-			private set;
+			get
+			{
+				return _providers;
+			}
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Handles the UnloadedEvent event for a file system provider.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonFileSystemProviderUnloadedEventArgs"/> instance containing the event data.</param>
-		private void Provider_UnloadedEvent(object sender, GorgonFileSystemProviderUnloadedEventArgs e)
-		{
-			IEnumerable<GorgonFileSystemFileEntry> files = FindFiles("*", true).Where(item => item.Provider == e.Provider);
-
-			foreach (GorgonFileSystemFileEntry file in files)
-			{
-				((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)file.Directory.Files).Remove(file);
-			}
-		}
-
         /// <summary>
         /// Function to retrieve the file system objects from the physical file system.
         /// </summary>
@@ -207,7 +208,7 @@ namespace Gorgon.IO
             // Find existing mount point.
             GorgonFileSystemDirectory mountDirectory = GetDirectory(mountPath) ?? AddDirectoryEntry(mountPath);
 
-            GorgonApplication.Log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Verbose, physicalPath, mountPath);
+            _log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Simple, physicalPath, mountPath);
 
             provider.Enumerate(physicalPath, mountDirectory, out physicalDirectories, out physicalFiles);
 
@@ -228,7 +229,7 @@ namespace Gorgon.IO
                 AddFileEntry(provider, file.VirtualPath, physicalPath, file.FullPath, file.Length, file.Offset, file.CreateDate);
             }
 
-            GorgonApplication.Log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Verbose, physicalDirectories.Length, physicalFiles.Length);
+            _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, physicalDirectories.Length, physicalFiles.Length);
         }
 
         /// <summary>
@@ -1258,26 +1259,18 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to mount a physical file system into the virtual file system.
 		/// </summary>
-		/// <param name="source">Path to the directory or file that contains the files/directories to enumerate.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="source"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="source"/> parameter is an empty string.
-		/// <para>-or-</para><para>Thrown when the path in the <paramref name="source"/> parameter is not valid.</para>
-		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
-		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
-		public GorgonFileSystemMountPoint Mount(string source)
-		{
-			return Mount(source, "/");
-		}
-
-		/// <summary>
-		/// Function to mount a physical file system into the virtual file system.
-		/// </summary>
 		/// <param name="mountPoint">The mount point containing the physical path and the virtual file system location.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the physical path in the <paramref name="mountPoint"/> parameter is not valid.
 		/// <para>-or-</para><para>Thrown when the file in the mountPoint parameter cannot be read by any of the file system providers.</para>
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method is used to mount the contents of a physical file system object (such as a folder, or a zip file if the appropriate provider is installed) into a virtual folder in the 
+		/// file system. All folders and files in the physical file system object will be made available under the virtual folder specified by the <see cref="GorgonFileSystemMountPoint.MountLocation"/> 
+		/// property of the <paramref name="mountPoint"/> parameter..
+		/// </para>
+		/// </remarks>
 		public void Mount(GorgonFileSystemMountPoint mountPoint)
 		{
 			Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
@@ -1287,33 +1280,38 @@ namespace Gorgon.IO
 		/// Function to mount a physical file system into the virtual file system.
 		/// </summary>
 		/// <param name="physicalPath">Path to the directory or file that contains the files/directories to enumerate.</param>
-		/// <param name="mountPath">Folder path to mount into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountPath"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountPath"/> parameter is an empty string.</exception>
+		/// <param name="mountPath">[Optional] Folder path to mount into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory specified by <paramref name="physicalPath"/> was not found.</exception>
         /// <exception cref="System.IO.FileNotFoundException">Thrown if a file was specified by <paramref name="physicalPath"/> and was not found.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
 		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
-		public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath)
+		/// <remarks>
+		/// <para>
+		/// This method is used to mount the contents of a physical file system object (such as a folder, or a zip file if the appropriate provider is installed) into a virtual folder in the 
+		/// file system. All folders and files in the physical file system object will be made available under the virtual folder specified by the <paramref name="mountPath"/> parameter.
+		/// </para>
+		/// <para>
+		/// The <paramref name="mountPath"/> parameter is optional, and if omitted, the contents of the physical file system object will be mounted into the root of the virtual file system. If the 
+		/// <paramref name="mountPath"/> parameter is <c>null</c> (Nothing in VB.Net) or empty, then the mount point will be at the root.
+		/// </para>
+		/// </remarks>
+		public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null)
 		{
 			if (physicalPath == null)
             {
                 throw new ArgumentNullException("physicalPath");
             }
 
-            if (mountPath == null)
+            if (string.IsNullOrWhiteSpace(mountPath))
             {
-                throw new ArgumentNullException("mountPath");
+	            mountPath = "/";
             }
 
             if (string.IsNullOrWhiteSpace(physicalPath))
             {
                 throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "physicalPath");
-            }
-
-            if (string.IsNullOrWhiteSpace(mountPath))
-            {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "mountPath");
             }
 
 			lock(_syncLock)
@@ -1377,12 +1375,11 @@ namespace Gorgon.IO
 					throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, fileName));
 				}
 
-				// Find the file system provider that can read this file type.
-				var provider = Providers.FirstOrDefault(item => item.CanReadFile(fileName));
+				GorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFile(fileName)).Value;
 
 				if (provider == null)
 				{
-					throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, fileName));	
+					throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, fileName));
 				}
 
 				GetFileSystemObjects(provider, physicalPath, mountPath);
@@ -1402,20 +1399,82 @@ namespace Gorgon.IO
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes the <see cref="GorgonFileSystem"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
 		/// </summary>
-		public GorgonFileSystem()
+		/// <param name="provider">A single file system provider to assign to this file system.</param>
+		/// <param name="log">[Optional] The application log file.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <remarks>
+		/// <para>
+		/// To mount other file system object types (e.g. zip files), a <see cref="GorgonFileSystemProvider"/> is necessary and must be passed into this constructor. 
+		/// </para> 
+		/// <para>
+		/// To retrieve a provider, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
+		/// </para>
+		/// </remarks>
+		public GorgonFileSystem(GorgonFileSystemProvider provider, IGorgonLog log = null)
+			: this(new GorgonFileSystemProvider[0], log)
 		{
+			if (provider == null)
+			{
+				throw new ArgumentNullException("provider");
+			}
+
+			_providers[provider.Name] = provider;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
+		/// </summary>
+		/// <param name="providers">[Optional] The providers available to this file system.</param>
+		/// <param name="log">[Optional] The application log file.</param>
+		/// <remarks>
+		/// <para>
+		/// To mount other file system object types (e.g. zip files), a <see cref="GorgonFileSystemProvider"/> is necessary and must be passed into this constructor. 
+		/// </para>
+		/// <para>
+		/// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		public GorgonFileSystem(IEnumerable<GorgonFileSystemProvider> providers, IGorgonLog log = null)
+		{
+			if (providers == null)
+			{
+				throw new ArgumentNullException("providers");
+			}
+
+			if (log != null)
+			{
+				_log = log;
+			}
+
+			_mountListChanged = true;
 			_mountPoints = new List<GorgonFileSystemMountPoint>();
 			_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
-
-			_defaultProvider = new GorgonFileSystemProvider();
-			Providers = new GorgonFileSystemProviderCollection();
-			Providers.ProviderUnloaded += Provider_UnloadedEvent;
+			_providers = new Dictionary<string, GorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
 
 			RootDirectory = new GorgonFileSystemDirectory(this, "/", null);
-			Clear();
+
 			WriteLocation = string.Empty;
+
+			// Get all the providers in the parameter.
+			foreach (GorgonFileSystemProvider provider in providers)
+			{
+				_providers[provider.Name] = provider;
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
+		/// </summary>
+		/// <param name="log">[Optional] The application log file.</param>
+		/// <remarks>
+		/// This will create a file system without any providers. Because of this, the only physical file system objects that can be mounted are folders.
+		/// </remarks>
+		public GorgonFileSystem(IGorgonLog log = null)
+			: this(new GorgonFileSystemProvider[0], log)
+		{
 		}
 		#endregion
 	}

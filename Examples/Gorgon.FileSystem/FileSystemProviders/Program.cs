@@ -27,10 +27,10 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
+using Gorgon.Plugins;
 
 namespace Gorgon.Examples
 {
@@ -57,12 +57,17 @@ namespace Gorgon.Examples
 	/// files.  A provider plug-in can be written to pull data from a SQL server, or a network stream or any access point that can
 	/// stream data.
 	/// 
-	/// In this example, we'll show how to load some of these providers into a file system object.
+	/// In this example, we'll show how to load some of these providers.
 	/// </remarks>
 	static class Program
     {
         #region Variables.
-        private static GorgonFileSystem _fileSystem;         // File system.
+		// The providers that were loaded.
+		private static GorgonFileSystemProvider[] _providers;
+		// The cache that will hold the assemblies where our plugins will live.
+		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		// The plugin service.
+		private static GorgonPluginService _pluginService;
         #endregion
 
         #region Properties.
@@ -101,65 +106,34 @@ namespace Gorgon.Examples
         /// <returns>The number of file system provider plug-ins.</returns>
         private static int LoadFileSystemProviders()
         {
-            int result = 0;
             var files = Directory.GetFiles(PlugInPath, "*.dll", SearchOption.TopDirectoryOnly);
             
             // Load each assembly.
-            foreach (var file in files)
-            {
-                // Get the assembly name.  
-                // This is the preferred method of loading a plug-in assembly.
-                // It keeps us from going into DLL hell because it'll contain
-                // version information, public key info, etc...  
-                // We wrap this in this exception handler because if a DLL is
-                // a native DLL, then it'll throw an exception.  And since
-                // we can't load native DLLs as our plug-in, then we should
-                // skip it.
-                AssemblyName name;
-                try
-                {
-                    name = AssemblyName.GetAssemblyName(file);
-                }
-                catch (BadImageFormatException)
-                {
-                    // This happens if we try and load a DLL that's not a .NET assembly.
-                    continue;
-                }
+	        foreach (var file in files)
+	        {
+		        // Determine if this file is a plugin assembly.
+		        // We use this to ensure that the file is a valid .NET assembly and that it has plugins to load.
+		        if (!_pluginAssemblies.IsPluginAssembly(file))
+		        {
+			        continue;
+		        }
 
-                // Skip assemblies that aren't a plug-in.
-                if (!GorgonApplication.PlugIns.IsPlugInAssembly(name))
-                {
-                    continue;
-                }
+		        // Load the assembly DLL.
+		        // This will load the assembly DLL into the application domain (if it's not already loaded). If 
+				// we did not perform the IsPluginAssembly check above, this method would throw an exception if 
+				// the file was not a valid .NET assembly or did not contain any plugins.
+		        _pluginAssemblies.Load(file);
+	        }
+			
+			// Get the file system provider factory so we can retrieve our newly loaded providers.
+			var providerFactory = new GorgonFileSystemProviderFactory(_pluginService, GorgonApplication.Log);
 
-                // Load the assembly DLL.
-                // This will not only load the assembly DLL into the application
-                // domain (if it's not already loaded), but will also enumerate
-                // the plug-in types.  If there are none, an exception will be
-                // thrown.  This is why we do a check with IsPlugInAssembly before
-                // we load the assembly.
-                GorgonApplication.PlugIns.LoadPlugInAssembly(name);
+			// Get all the providers.
+			// We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
+			// this example, we'll get everything we've got.
+	        _providers = providerFactory.CreateProviders().ToArray();
 
-                // Now try to retrieve our file system provider plug-ins.
-                // Retrieve the list of plug-ins from the assembly.  Once we have
-                // the list we look for any plug-ins that are GorgonFileSystemProviderPlugIn
-                // types and retrieve their type information.
-                var providerPlugIns = GorgonApplication.PlugIns.EnumeratePlugIns(name)
-                                    .Where(item => item is GorgonFileSystemProviderPlugIn)
-                                    .Select(item => item.GetType()).ToArray();
-
-                // Add each file system provider and plug-in to our list.                
-                foreach (var providerPlugIn in providerPlugIns)
-                {
-                    // Here we actually create the file system provider from the plug-in
-                    // by passing the file system provider plug-in type.  
-                    _fileSystem.Providers.LoadProvider(providerPlugIn.FullName);
-                }
-
-                result += providerPlugIns.Length;
-            }
-
-            return result;
+	        return _providers.Length;
         }
 
 	    /// <summary>
@@ -167,76 +141,79 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    static void Main()
 		{
-            try
-            {
-                // Create a new file system.
-				// The file system must be created first and given access to the various
-				// data sources via the provider plug-ins.
-				// For example, this will allow us to create a file system that can read
-				// a RAR file, while another file system would only cater to Zip files.
-				// By default, every file system comes with a folder file system provider
-				// that can mount a directory from the hard drive as a VFS root.
-                _fileSystem = new GorgonFileSystem();
+			// Create a plugin assembly cache to hold our plugin assemblies.
+			_pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			// Create the plugin service.
+			_pluginService = new GorgonPluginService(_pluginAssemblies, GorgonApplication.Log);
 
-				Console.WriteLine("Gorgon is capable of mounting virtual file systems for file access.  A virtual");
-				Console.WriteLine("filesystem root can be a folder on a harddrive, a zip file, or any data store");
-				Console.WriteLine("(assuming there's a provider for it).\n");
-				Console.WriteLine("In Gorgon, the types of data that can be mounted as a virtual file system is");
-				Console.WriteLine("managed by plug-ins called providers. By default, the file system has a folder");
-				Console.WriteLine("provider.  This allows a folder to be mounted as the root of a virtual file\nsystem.\n");
-				Console.WriteLine("This example will show how to load extra providers into a file system.\n");
-				
-				Console.ForegroundColor = ConsoleColor.White;
+		    try
+		    {
+			    Console.WriteLine("Gorgon is capable of mounting virtual file systems for file access.  A virtual");
+			    Console.WriteLine("filesystem root can be a folder on a harddrive, a zip file, or any data store");
+			    Console.WriteLine("(assuming there's a provider for it).\n");
+			    Console.WriteLine("In Gorgon, the types of data that can be mounted as a virtual file system are");
+			    Console.WriteLine("managed by objects called providers. By default, the file system has a folder");
+			    Console.WriteLine("provider.  This allows a folder to be mounted as the root of a virtual file\nsystem.\n");
+			    Console.WriteLine("This example will show how to load extra providers that can be used in a file\nsystem.\n");
 
-                // Get our file system providers.                
-                Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders());
+			    Console.ForegroundColor = ConsoleColor.White;
 
-                // Loop through each provider and print some info.
-                foreach(var provider in _fileSystem.Providers.Select((item, index) => new {Provider = item, Index = index}))
-                {
-                    // Print some info about the file system provider.
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("{0}. {1}", (provider.Index + 1), provider.Provider.Name);
+			    // Get our file system providers.                
+			    Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders());
 
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine("    Description: {0}", provider.Provider.Description);
-                    
-                    // Gather the preferred extensions.
-					// File system providers that use a file (like a Zip file) as its root
-					// have a list of file extensions that are preferred.  For example, the
-					// Zip provider, expects to find *.zip files.  These are merely here 
-					// for the convenience of the developer and are formatted like a common
-					// dialog file mask so they can be easily dropped into that control.
-					// In this case, we're going to just strip out the relevant part and 
-					// concatenate each preferred extension description into a single string.  
-					//
-					// Note that a provider may have multiple preferred extensions.
-	                var extensionList = (from preferred in provider.Provider.PreferredExtensions
-	                                     select string.Format("*.{0}", preferred.Extension)).ToArray();
+			    // Loop through each provider and print some info.
+			    for (int i = 0; i < _providers.Length; ++i)
+			    {
+				    // Print some info about the file system provider.
+				    Console.ForegroundColor = ConsoleColor.Cyan;
+				    Console.WriteLine("{0}. {1}", i + 1, _providers[i].Name);
 
-                    if (extensionList.Length > 0)
-                    {
-                        Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensionList));
-                    }
-                }
+				    Console.ForegroundColor = ConsoleColor.Gray;
+					Console.WriteLine("    Description: {0}", _providers[i].Description);
 
-				Console.ResetColor();
-				Console.WriteLine("\nPress any key to close.");
-                Console.ReadKey();
-            }
-            catch (Exception ex)
-            {
-                ex.Catch(_ =>
-                        {
-	                        Console.Clear();
-	                        Console.ForegroundColor = ConsoleColor.Red;
-	                        Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
-						}, GorgonApplication.Log);
-                Console.ResetColor();
+				    // Gather the preferred extensions.
+				    // File system providers that use a file (like a Zip file) as its root
+				    // have a list of file extensions that are preferred.  For example, the
+				    // Zip provider, expects to find *.zip files.  These are merely here 
+				    // for the convenience of the developer and are formatted like a common
+				    // dialog file mask so they can be easily dropped into that control.
+				    // In this case, we're going to just strip out the relevant part and 
+				    // concatenate each preferred extension description into a single string.  
+				    //
+				    // Note that a provider may have multiple preferred extensions.
+					var extensionList = (from preferred in _providers[i].PreferredExtensions
+				                         select string.Format("*.{0}", preferred.Extension)).ToArray();
+
+				    if (extensionList.Length > 0)
+				    {
+					    Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensionList));
+				    }
+			    }
+
+			    Console.ResetColor();
+			    Console.WriteLine("\nPress any key to close.");
+			    Console.ReadKey();
+		    }
+		    catch (Exception ex)
+		    {
+			    ex.Catch(_ =>
+			             {
+				             Console.Clear();
+				             Console.ForegroundColor = ConsoleColor.Red;
+				             Console.WriteLine("Exception:\n{0}\n\nStack Trace:{1}", _.Message, _.StackTrace);
+			             },
+			             GorgonApplication.Log);
+			    Console.ResetColor();
 #if DEBUG
-                Console.ReadKey();
+			    Console.ReadKey();
 #endif
-            }
+		    }
+		    finally
+		    {
+				// Always call dispose so we can unload our temporary application domain.
+			    _pluginAssemblies.Dispose();
+				GorgonApplication.Log.Close();
+		    }
         }
         #endregion
     }
