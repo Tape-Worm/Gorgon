@@ -144,7 +144,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// </summary>
 		/// <param name="c">The character to check.</param>
 		/// <param name="hDc">Device context.</param>
-		/// <returns><c>true</c> if supported, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if supported, <b>false</b> if not.</returns>
 		public static bool IsGlyphSupported(char c, IntPtr hDc)
 		{
 			var indices = new ushort[1];

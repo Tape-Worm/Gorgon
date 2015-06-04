@@ -347,10 +347,10 @@ namespace Gorgon.IO
         /// <summary>
 		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.
 		/// </summary>
-		/// <remarks>Setting this to <c>true</c> will set all alpha values to an opaque value if the image does not contain an alpha value greater than 0 for any pixel.
+		/// <remarks>Setting this to <b>true</b> will set all alpha values to an opaque value if the image does not contain an alpha value greater than 0 for any pixel.
 		/// <para>This property only applied to images that are being read.</para>
 		/// <para>If the image format does not contain alpha, then this setting is ignored.</para>
-		/// <para>The default value is <c>true</c>.</para>
+		/// <para>The default value is <b>true</b>.</para>
 		/// </remarks>
 		public bool SetOpaqueIfZeroAlpha
 		{
@@ -1259,7 +1259,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="stream">Stream used to read the file information.</param>
 		/// <returns>
-		/// <c>true</c> if the codec can read the file, <c>false</c> if not.
+		/// <b>true</b> if the codec can read the file, <b>false</b> if not.
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>

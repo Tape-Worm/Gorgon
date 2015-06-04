@@ -126,7 +126,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return the source code for the shader.
 		/// </summary>
-		/// <remarks>This value will be empty or NULL (Nothing in VB.Net) if the shader has no source code (i.e. it's loaded from a binary shader).
+		/// <remarks>This value will be empty or NULL (<i>Nothing</i> in VB.Net) if the shader has no source code (i.e. it's loaded from a binary shader).
 		/// <para>After changing this property, use the <see cref="Gorgon.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
 		/// </remarks>
 		public string SourceCode
@@ -225,7 +225,7 @@ namespace Gorgon.Graphics
 		/// Function to retrieve the include line.
 		/// </summary>
 		/// <param name="includeLine">Include line.</param>
-		/// <param name="checkFileExists"><c>true</c> to check if the file exists, <c>false</c> to skip the check.</param>
+		/// <param name="checkFileExists"><b>true</b> to check if the file exists, <b>false</b> to skip the check.</param>
 		/// <returns>A path to the include file.</returns>
 		private static GorgonShaderInclude ParseIncludeLine(string includeLine, bool checkFileExists)
 		{
@@ -373,7 +373,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
-		/// <param name="includeDebugInfo"><c>true</c> to include debug information, <c>false</c> to exclude it.</param>
+		/// <param name="includeDebugInfo"><b>true</b> to include debug information, <b>false</b> to exclude it.</param>
 		/// <returns>The compiled shader byte code.</returns>
 		private Shaders.ShaderBytecode CompileFromSource(bool includeDebugInfo)
 		{
@@ -429,7 +429,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="macros">[Optional] A list of conditional compilation macro defintions to send to the shader.</param>
 		/// <remarks>Whenever a shader is changed (i.e. its <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is modified), this method should be called to build the shader.
-		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (<i>Nothing</i> in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
 		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the <see cref="SourceCode"/> property is not NULL or empty.</para>
 		/// </remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
@@ -463,11 +463,11 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to save the shader to a stream.
         /// </summary>
-        /// <param name="binary"><c>true</c> to save the binary version of the shader, <c>false</c> to save the source.</param>
-        /// <param name="saveDebug"><c>true</c> to save the debug information, <c>false</c> to exclude it.</param>
+        /// <param name="binary"><b>true</b> to save the binary version of the shader, <b>false</b> to save the source.</param>
+        /// <param name="saveDebug"><b>true</b> to save the debug information, <b>false</b> to exclude it.</param>
         /// <returns>An array of bytes.</returns>
-        /// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <c>true</c>.</remarks>
-        /// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</exception>
+        /// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
+        /// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
         /// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
         public byte[] Save(bool binary, bool saveDebug)
         {
@@ -484,11 +484,11 @@ namespace Gorgon.Graphics
 		/// Function to save the shader to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write into.</param>
-		/// <param name="binary">[Optional] <c>true</c> to save the binary version of the shader, <c>false</c> to save the source.</param>
-		/// <param name="saveDebug">[Optional] <c>true</c> to save the debug information, <c>false</c> to exclude it.</param>
-		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <c>true</c>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</exception>
+		/// <param name="binary">[Optional] <b>true</b> to save the binary version of the shader, <b>false</b> to save the source.</param>
+		/// <param name="saveDebug">[Optional] <b>true</b> to save the debug information, <b>false</b> to exclude it.</param>
+		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
 		public void Save(Stream stream, bool binary = false, bool saveDebug = false)
 		{
@@ -528,13 +528,13 @@ namespace Gorgon.Graphics
 		/// Function to save the shader to a file.
 		/// </summary>
 		/// <param name="fileName">File name and path for the shader file.</param>
-		/// <param name="binary">[Optional] <c>true</c> if saving as a binary version of the shader, <c>false</c> if not.</param>
-		/// <param name="saveDebug">[Optional] <c>true</c> to save debug information with the shader, <c>false</c> to exclude it.</param>
-		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <c>true</c>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <param name="binary">[Optional] <b>true</b> if saving as a binary version of the shader, <b>false</b> if not.</param>
+		/// <param name="saveDebug">[Optional] <b>true</b> to save debug information with the shader, <b>false</b> to exclude it.</param>
+		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to <b>true</b>.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown is the fileName parameter is an empty string.
 		/// <para>-or-</para>
-		/// <para>Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</para>
+		/// <para>Thrown when the shader is being saved as source code and the <see cref="Gorgon.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the shader fails to compile.</exception>
 		public void Save(string fileName, bool binary = false, bool saveDebug = false)
@@ -566,7 +566,7 @@ namespace Gorgon.Graphics
 		/// <param name="name">The name of the shader.</param>
 		/// <param name="type">Type of the shader.</param>
 		/// <param name="entryPoint">The entry point method for the shader.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonShader(GorgonGraphics graphics, string name, ShaderType type, string entryPoint)
 			: base(name)
@@ -605,7 +605,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 		    if (_disposed)

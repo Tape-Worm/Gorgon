@@ -94,7 +94,7 @@ namespace Gorgon.Input.Raw
 		/// Function to return whether a pointing device click is a double click or not.
 		/// </summary>
 		/// <param name="button">Button used for double click.</param>
-		/// <returns><c>true</c> if it is a double click, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if it is a double click, <b>false</b> if not.</returns>
 		private bool IsDoubleClick(PointingDeviceButtons button)
 		{
 		    if ((button != _doubleClickButton)

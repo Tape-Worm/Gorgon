@@ -474,7 +474,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function called when the content is reverted back to its original state.
         /// </summary>
-        /// <returns><c>true</c> if reverted, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if reverted, <b>false</b> if not.</returns>
         protected virtual bool OnRevert()
         {
             return false;
@@ -583,8 +583,8 @@ namespace Gorgon.Editor
         /// Function to determine if a content property is available to the UI.
         /// </summary>
         /// <param name="propertyName">The name of the property to look up.</param>
-        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
         public bool HasProperty(string propertyName)
         {
@@ -605,7 +605,7 @@ namespace Gorgon.Editor
 		/// Function to refresh a property in the property grid.
 		/// </summary>
 		/// <param name="propertyName">Name of the property to refresh.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="propertyName"/> does not exist as a property for this content.</exception>
 		public void RefreshProperty(string propertyName)
@@ -638,8 +638,8 @@ namespace Gorgon.Editor
         /// Function to set a property as disabled.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <param name="disabled"><c>true</c> if disabled, <c>false</c> if not.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <param name="disabled"><b>true</b> if disabled, <b>false</b> if not.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="propertyName"/> is empty.</exception>
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="propertyName"/> does not exist as a property for this content.</exception>
         public void DisableProperty(string propertyName, bool disabled)
@@ -811,7 +811,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)

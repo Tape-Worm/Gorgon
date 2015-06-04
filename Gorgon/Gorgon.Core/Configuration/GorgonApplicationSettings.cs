@@ -94,7 +94,7 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Property to set or return the application settings version.
 		/// </summary>
-		/// <remarks>Assigning NULL (Nothing in VB.Net) will bypass version checking.</remarks>
+		/// <remarks>Assigning NULL (<i>Nothing</i> in VB.Net) will bypass version checking.</remarks>
 		public Version Version
 		{
 			get;
@@ -428,7 +428,7 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Function to compare version numbers.
 		/// </summary>
-		/// <returns><c>true</c> if the versions match, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the versions match, <b>false</b> if not.</returns>
 		private bool CheckVersion()
 		{
 			XElement rootElement = _xmlSettings.Element("ApplicationSettings");
@@ -483,7 +483,7 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="section">Section that will contain the new section.</param>
 		/// <param name="name">Name of the section.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter was NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
@@ -501,7 +501,7 @@ namespace Gorgon.Configuration
 		/// <param name="settingName">Name of the setting.</param>
 		/// <param name="valueType">The value type.</param>
 		/// <returns>The value in the setting.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settingName"/> parameter was NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settingName"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> or the <paramref name="settingName"/> could not be found.</exception>
 		private object GetSetting(string section, string settingName, Type valueType)
 		{
@@ -532,7 +532,7 @@ namespace Gorgon.Configuration
 	    /// <summary>
 		/// Function to save the settings to a file.
 		/// </summary>
-		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (Nothing in VB.Net).</remarks>
+		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (<i>Nothing</i> in VB.Net).</remarks>
 		/// <exception cref="GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
 		public void Save()
 		{
@@ -612,8 +612,8 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="applicationName">Name of the application.</param>
 		/// <param name="settingsVersion">The version of the settings file.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="settingsVersion"/> parameter will bypass version checking for the settings.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was NULL (Nothing in VB.Net).</exception>
+		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="settingsVersion"/> parameter will bypass version checking for the settings.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty.</exception>
 		protected GorgonApplicationSettings(string applicationName, Version settingsVersion)
 		{

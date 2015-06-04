@@ -30,7 +30,7 @@ using Gorgon.Core;
 namespace Gorgon.Collections
 {
 	/// <summary>
-	/// A generic interface for a read only list of named objects that can be indexed by key and index.
+	/// A generic interface for a read only list of named objects that can be indexed by name and numeric index.
 	/// </summary>
 	/// <typeparam name="T">The type of object stored in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectReadOnlyList<T>
@@ -60,7 +60,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		bool Contains(string name);
 
 		/// <summary>

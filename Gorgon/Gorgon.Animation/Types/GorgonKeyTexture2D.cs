@@ -64,7 +64,7 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Function to retrieve the texture if it's not assigned.
 		/// </summary>
-		/// <returns><c>true</c> if the texture was found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the texture was found, <b>false</b> if not.</returns>
 		internal bool GetTexture()
 		{
 			if (!string.IsNullOrEmpty(_textureName))

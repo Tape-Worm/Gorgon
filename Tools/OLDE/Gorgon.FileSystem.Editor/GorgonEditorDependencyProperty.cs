@@ -82,7 +82,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonEditorDependencyProperty left, ref GorgonEditorDependencyProperty right)
 		{
 			return string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase);
@@ -93,7 +93,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -121,7 +121,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left property to compare.</param>
 		/// <param name="right">Right property to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonEditorDependencyProperty left, GorgonEditorDependencyProperty right)
 		{
 			return Equals(ref left, ref right);
@@ -132,7 +132,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left property to compare.</param>
 		/// <param name="right">Right property to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator !=(GorgonEditorDependencyProperty left, GorgonEditorDependencyProperty right)
 		{
 			return !Equals(ref left, ref right);
@@ -145,7 +145,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="name">The name of the property.</param>
 		/// <param name="value">The value for the property.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonEditorDependencyProperty(string name, string value = null)
 		{

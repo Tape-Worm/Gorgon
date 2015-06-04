@@ -37,7 +37,7 @@ namespace Gorgon.Diagnostics
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to throw an exception if a string is NULL (Nothing in VB.Net) or empty.
+		/// Function to throw an exception if a string is NULL (<i>Nothing</i> in VB.Net) or empty.
 		/// </summary>
 		/// <param name="value">The value being passed.</param>
 		/// <param name="paramName">The name of the parameter.</param>
@@ -62,8 +62,8 @@ namespace Gorgon.Diagnostics
 		/// <param name="value">Value to compare.</param>
 		/// <param name="min">Minimum value.</param>
 		/// <param name="max">Maximum value.</param>
-		/// <param name="minInclusive"><c>true</c> if the minimum is inclusive in the range (i.e. value &lt; min).</param>
-		/// <param name="maxInclusive"><c>true</c> if the maximum is inclusive in the range (i.e. value &gt; max).</param>
+		/// <param name="minInclusive"><b>true</b> if the minimum is inclusive in the range (i.e. value &lt; min).</param>
+		/// <param name="maxInclusive"><b>true</b> if the maximum is inclusive in the range (i.e. value &gt; max).</param>
 		/// <param name="paramName">Name of the parameter.</param>
         [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamRange(int value, int min, int max, bool minInclusive, bool maxInclusive, string paramName)
@@ -108,7 +108,7 @@ namespace Gorgon.Diagnostics
 		}
 
 		/// <summary>
-		/// Function to throw an exception if an object is NULL (Nothing in VB.Net).
+		/// Function to throw an exception if an object is NULL (<i>Nothing</i> in VB.Net).
 		/// </summary>
 		/// <typeparam name="T">A reference type to evaluate.</typeparam>
 		/// <param name="value">Value to evaluate.</param>

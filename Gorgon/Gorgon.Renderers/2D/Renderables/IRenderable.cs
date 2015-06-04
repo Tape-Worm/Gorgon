@@ -190,7 +190,7 @@ namespace Gorgon.Renderers
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
 		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <c>true</c>.</para>
+		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>

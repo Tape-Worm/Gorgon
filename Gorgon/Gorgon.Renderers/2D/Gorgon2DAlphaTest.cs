@@ -77,7 +77,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -105,7 +105,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DAlphaTest"/> struct.
 		/// </summary>
-		/// <param name="isEnabled"><c>true</c> to enable alpha testing, <c>false</c> to disable.</param>
+		/// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
 		/// <param name="alphaRange">The alpha range to clip.</param>
 		public Gorgon2DAlphaTest(bool isEnabled, GorgonRangeF alphaRange)
 		{

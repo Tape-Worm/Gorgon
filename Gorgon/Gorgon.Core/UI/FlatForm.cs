@@ -296,7 +296,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the size of the border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <c>true</c>.</remarks>
+		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <b>true</b>.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
@@ -331,7 +331,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <c>true</c>.</remarks>
+		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <b>true</b>.</remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
@@ -1514,7 +1514,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Function to inform the designer that the theme property needs to be serialized.
 		/// </summary>
-		/// <returns><c>true</c>.</returns>
+		/// <returns><b>true</b>.</returns>
 		private bool ShouldSerializeTheme()
 		{
 			return true;

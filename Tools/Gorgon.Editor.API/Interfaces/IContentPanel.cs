@@ -108,7 +108,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the control that will receive rendering.
 		/// </summary>
-		/// <remarks>When this property is set to NULL (Nothing in VB.Net), then the content area of this control will be used for rendering.</remarks>
+		/// <remarks>When this property is set to NULL (<i>Nothing</i> in VB.Net), then the content area of this control will be used for rendering.</remarks>
 		Control RenderControl
 		{
 			get;

@@ -137,7 +137,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="file">The file that has the dependency.</param>
 		/// <param name="type">The type of dependency.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
 		/// </exception>

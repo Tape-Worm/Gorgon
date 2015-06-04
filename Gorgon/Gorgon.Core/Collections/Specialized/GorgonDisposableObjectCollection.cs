@@ -32,28 +32,34 @@ using System.Linq;
 namespace Gorgon.Collections.Specialized
 {
 	/// <summary>
-	/// A collection of custom objects that are managed by the another interface.
+	/// A collection of objects that are implement the <see cref="IDisposable"/> interface.
 	/// </summary>
-	/// <remarks>This collection is intended for use by objects that manage the lifetimes of any child objects created from it.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This collection should be used by factory objects that manage the lifetimes of new objects that are created from those factory objects.
+	/// </para>
+	/// <para>
+	/// This collection is <b><i>not</i></b> thread safe.
+	/// </para>
+	/// </remarks>
 	public class GorgonDisposableObjectCollection
 		: IList<IDisposable>
 	{
 		#region Variables.
-		private readonly IList<IDisposable> _objects;			// List of tracked objects.
+		// List of tracked objects.
+		private readonly IList<IDisposable> _objects;			
 		#endregion
 
-		#region Methods.
+		#region Properties.
 		/// <summary>
-		/// Function to clean up all objects in the collection.
+		/// Property to return an object by its index.
 		/// </summary>
-		public void ReleaseAll()
+		public IDisposable this[int index]
 		{
-			var items = _objects.ToArray();
-
-			foreach (var item in items)
-				item.Dispose();
-
-			_objects.Clear();
+			get
+			{
+				return _objects[index];
+			}
 		}
 		#endregion
 
@@ -74,19 +80,14 @@ namespace Gorgon.Collections.Specialized
 		/// </summary>
 		/// <returns>
 		/// The element at the specified index.
-		///   </returns>
-		///   
-		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		///   </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">
-		/// The property is set and the <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		///   </exception>
-		public IDisposable this[int index]
+		/// </returns>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the collection.</exception>
+		/// <exception cref="T:System.NotSupportedException">The property setter is not supported on this type.</exception>
+		IDisposable IList<IDisposable>.this[int index]
 		{
 			get
 			{
-				return _objects[index];
+				return this[index];
 			}
 			set
 			{
@@ -97,9 +98,9 @@ namespace Gorgon.Collections.Specialized
 
 		#region Methods.
 		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// Determines the index of a specific item in the collection.
 		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+		/// <param name="item">The object to locate in the collection.</param>
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
@@ -109,31 +110,23 @@ namespace Gorgon.Collections.Specialized
 		}
 
 		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+		/// Inserts an item to the collection at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		///   </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		///   </exception>
+		/// <param name="item">The object to insert into the collection.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the collection.</exception>
+		/// <exception cref="T:System.NotSupportedException">This method is not supported on this type.</exception>
 		void IList<IDisposable>.Insert(int index, IDisposable item)
 		{
 			throw new NotSupportedException();
 		}
 
 		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+		/// Removes the collection item at the specified index.
 		/// </summary>
 		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		///   </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		///   </exception>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in the collection.</exception>
+		/// <exception cref="T:System.NotSupportedException">This method is not supported on this type.</exception>
 		void IList<IDisposable>.RemoveAt(int index)
 		{
 			throw new NotSupportedException();
@@ -144,10 +137,10 @@ namespace Gorgon.Collections.Specialized
 		#region ICollection<IDisposable> Members
 		#region Properties.
 		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Gets the number of elements contained in the collection.
 		/// </summary>
 		/// <returns>
-		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// The number of elements contained in the collection.
 		///   </returns>
 		public int Count
 		{
@@ -158,11 +151,10 @@ namespace Gorgon.Collections.Specialized
 		}
 
 		/// <summary>
-		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+		/// Gets a value indicating whether the collection is read-only.
 		/// </summary>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
-		///   </returns>
-		public bool IsReadOnly
+		/// <returns>true if the collection is read-only; otherwise, false.</returns>
+		bool ICollection<IDisposable>.IsReadOnly
 		{
 			get
 			{
@@ -173,35 +165,45 @@ namespace Gorgon.Collections.Specialized
 
 		#region Methods.
 		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Adds an item to the collection.
 		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		///   </exception>
+		/// <param name="item">The object to add to the collection.</param>
 		public void Add(IDisposable item)
 		{
-			if (!_objects.Contains(item))
-				_objects.Add(item);
+			if (_objects.Contains(item))
+			{
+				return;
+			}
+
+			_objects.Add(item);
 		}
 
 		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Function to clear all the objects from this collection.
 		/// </summary>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		///   </exception>
-		void ICollection<IDisposable>.Clear()
+		/// <remarks>
+		/// This will not only clear the collection, but will call the dispose method for each object in the collection.
+		/// </remarks>
+		public void Clear()
 		{
-			throw new NotSupportedException();
+			// Clone the object references so that we don't run into trouble if the 
+			// object removes itself in their dispose method.
+			var items = _objects.ToArray();
+
+			_objects.Clear();
+
+			foreach (var item in items)
+			{
+				item.Dispose();
+			}
 		}
 
 		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+		/// Determines whether the collection contains a specific value.
 		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <param name="item">The object to locate in the collection.</param>
 		/// <returns>
-		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+		/// true if <paramref name="item"/> is found in the collection; otherwise, false.
 		/// </returns>
 		public bool Contains(IDisposable item)
 		{
@@ -215,24 +217,20 @@ namespace Gorgon.Collections.Specialized
 		/// <param name="arrayIndex">Index of the array.</param>
 		void ICollection<IDisposable>.CopyTo(IDisposable[] array, int arrayIndex)
 		{
-			throw new NotSupportedException();
+			_objects.CopyTo(array, arrayIndex);
 		}
 
 		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Removes the first occurrence of a specific object from the collection.
 		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <param name="item">The object to remove from the collection.</param>
 		/// <returns>
-		/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// true if <paramref name="item"/> was successfully removed from the collection; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original collection.
 		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		///   </exception>
 		public bool Remove(IDisposable item)
 		{
-			return _objects.Contains(item) && _objects.Remove(item);
+			return _objects.Remove(item);
 		}
-
 		#endregion
 		#endregion
 

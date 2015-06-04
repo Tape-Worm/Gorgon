@@ -421,7 +421,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the current camera.
 		/// </summary>
-		/// <remarks>Set this value to NULL (Nothing in VB.Net) to use the default camera.</remarks>
+		/// <remarks>Set this value to NULL (<i>Nothing</i> in VB.Net) to use the default camera.</remarks>
 		public I2DCamera Camera
 		{
 			get
@@ -839,7 +839,7 @@ namespace Gorgon.Renderers
         /// Function to end 2D rendering and restore the state of the graphics interface.
         /// </summary>
         /// <param name="state">[Optional] The state object that contains the states returned by the <see cref="Begin2D"/> method.</param>
-        /// <remarks>This method is used to end 2D rendering and restore the state of the graphics API to the state recorded by the <paramref name="state"/> parameter.  If NULL (Nothing in VB.Net) 
+        /// <remarks>This method is used to end 2D rendering and restore the state of the graphics API to the state recorded by the <paramref name="state"/> parameter.  If NULL (<i>Nothing</i> in VB.Net) 
         /// is passed for the <paramref name="state"/> parameter, then the state will be reset to the state of the graphics interface before this renderer was created.
         /// </remarks>
 	    public void End2D(Gorgon2DStateRecall state = null)
@@ -871,7 +871,7 @@ namespace Gorgon.Renderers
 		/// <param name="parameters">Parameters used to initialize the effect.</param>
 		/// <returns>The new effect object.</returns>
 		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         public T Create2DEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : Gorgon2DEffect
@@ -965,13 +965,13 @@ namespace Gorgon.Renderers
 		/// <param name="minDepth">Minimum depth value of the camera.</param>
 		/// <param name="maxDepth">Maximum depth value of the camera.</param>
 		/// <returns>A new camera.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <remarks>This will create a camera object which allows the user to pan, rotate and scale the entire scene. 
 		/// <para>The <paramref name="viewDimensions"/> allows the camera to change the coordinate system used by the various objects in Gorgon.  For example, passing a value of (-1, -1) - (1, 1) 
 		/// will change the coordinate system to use -1, -1 as the upper left most corner and 1,1 as the right most corner.  Please note that changing the coordinate system affects the size of 
 		/// objects created by Gorgon.  For example, if using the aforementioned coordinate system and you have a sprite sized at 32, 32, that sprite will now be much larger because the view space 
-		/// is confined to -1, -1 x 1, 1.  Pass NULL (Nothing in VB.Net) to the <paramref name="viewDimensions"/> parameter to use the current render target dimensions.</para> 
+		/// is confined to -1, -1 x 1, 1.  Pass NULL (<i>Nothing</i> in VB.Net) to the <paramref name="viewDimensions"/> parameter to use the current render target dimensions.</para> 
 		/// </remarks>
 		public T CreateCamera<T>(string name, RectangleF? viewDimensions, float minDepth, float maxDepth)
             where T : I2DCamera
@@ -1077,7 +1077,7 @@ namespace Gorgon.Renderers
 		/// property. If the number of <paramref name="targets"/> passed to this method exceeds this value, then an exception will be thrown.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="targets"/> parameter is set to NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="targets"/> parameter is set to NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="targets"/> parameter is empty.</exception>
 		public void SetMultipleRenderTargets(GorgonRenderTargetView[] targets, GorgonDepthStencilView depthStencil = null)
 		{
@@ -1112,7 +1112,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
 		/// <param name="vertexCacheSize">The number of vertices that can be placed in vertex cache.</param>
-		/// <param name="autoCreatedTarget"><c>true</c> if Gorgon created the target, <c>false</c> if the user created the target.</param>
+		/// <param name="autoCreatedTarget"><b>true</b> if Gorgon created the target, <b>false</b> if the user created the target.</param>
 		internal Gorgon2D(GorgonRenderTargetView target, int vertexCacheSize, bool autoCreatedTarget)
 		{
 			_systemCreatedTarget = autoCreatedTarget;
@@ -1155,7 +1155,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -1174,7 +1174,7 @@ namespace Gorgon.Renderers
                     _initialState = null;
                 }
 
-                TrackedObjects.ReleaseAll();
+                TrackedObjects.Clear();
 
                 if (Effects != null)
                 {

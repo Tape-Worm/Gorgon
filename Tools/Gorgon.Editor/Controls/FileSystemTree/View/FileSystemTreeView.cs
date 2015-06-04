@@ -639,7 +639,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="g">Graphics interface.</param>
 		/// <param name="node">The node that has the icon.</param>
-		/// <param name="drawText"><c>true</c> to draw the text, <c>false</c> to skip.</param>
+		/// <param name="drawText"><b>true</b> to draw the text, <b>false</b> to skip.</param>
 		/// <param name="position">Horizontal position of the icon.</param>
 		private void DrawNodeIconAndText(System.Drawing.Graphics g, FileSystemTreeNode node, bool drawText, ref Point position)
 		{
@@ -936,7 +936,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to hide the rename box.
 		/// </summary>
-		/// <param name="canceled"><c>true</c> if the edit was canceled, <c>false</c> if not.</param>
+		/// <param name="canceled"><b>true</b> if the edit was canceled, <b>false</b> if not.</param>
 		public void HideRenameBox(bool canceled)
 		{
 			if (_renameBox == null)

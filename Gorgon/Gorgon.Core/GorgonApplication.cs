@@ -47,7 +47,7 @@ namespace Gorgon.Core
 	/// <remarks>Use this to replace the Application.Run(new Form()) method in the startup function.
 	/// <para>The application uses an <see cref="GorgonApplication.ApplicationIdleLoopMethod">idle loop method</see> to call the users code when it is running.  <see cref="GorgonApplication.ApplicationForm">A form</see> may also be assigned as the primary form for the application.</para>
 	/// <para>An application is started by calling its <see cref="GorgonApplication.Run(System.Windows.Forms.Form, Func{bool})">Run method</see>.  An application can be shut down by calling its <see cref="M:GorgonLibrary.Gorgon.Quit">Quit</see> method.  Applications with a main form will end when the form is closed.  
-	/// Alternatively, the application can be terminated by returning <c>false</c> from the idle loop method.</para>
+	/// Alternatively, the application can be terminated by returning <b>false</b> from the idle loop method.</para>
 	/// <para>Any objects created in Gorgon, such as the Graphics interface, will be destroyed when the application ends.</para>
 	/// </remarks>
 	public static class GorgonApplication
@@ -121,7 +121,7 @@ namespace Gorgon.Core
 		/// Set this value to 0 to use all CPU time when the application is not focused.  The default is 10 milliseconds.
 		/// <para>This is handy in situations when the application is in the background and processing does not need to continue.  For laptops this means battery savings when the application is not focused.
 		/// </para>
-		/// <para>This property is ignore when <see cref="P:GorgonLibrary.Gorgon.AllowBackground">AllowBackground</see> is set to <c>false</c>.</para>
+		/// <para>This property is ignore when <see cref="P:GorgonLibrary.Gorgon.AllowBackground">AllowBackground</see> is set to <b>false</b>.</para>
 		/// </remarks>
 		public static int UnfocusedSleepTime
 		{
@@ -132,7 +132,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to allow the idle loop to continue running while the window is not focused or minimized.
 		/// </summary>
-		/// <remarks>This is set to <c>true</c> by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is <c>false</c>, the application will suspend until it regains focus.
+		/// <remarks>This is set to <b>true</b> by default, and this means that the code in the idle loop will continue to execute when the window is not focused or minimized.  When it is <b>false</b>, the application will suspend until it regains focus.
 		/// <para>There will be a delay for code that is executing in the background when the <see cref="P:GorgonLibrary.Gorgon.UnfocusedSleepTime">UnfocusedSleepTime</see> property is set greater than 0.</para>
 		/// </remarks>
 		public static bool AllowBackground
@@ -208,8 +208,8 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return if the app is in a running state or not.
 		/// </summary>
-		/// <remarks>This flag is set to <c>true</c> when the application is in a running state and <c>false</c> when it is not.</remarks>
-		/// <value><c>true</c> if the application is running, and <c>false</c> if not.</value>
+		/// <remarks>This flag is set to <b>true</b> when the application is in a running state and <b>false</b> when it is not.</remarks>
+		/// <value><b>true</b> if the application is running, and <b>false</b> if not.</value>
 		public static bool IsRunning
 		{
 			get;
@@ -241,7 +241,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Setting this value to <c>null</c> will turn off logging for the application, but will not set the value to <c>null</c>. A dummy 
+		/// Setting this value to <b>null</b> will turn off logging for the application, but will not set the value to <b>null</b>. A dummy 
 		/// version of the log, that does no actual logging, will be used instead.
 		/// </para>
 		/// <para>
@@ -360,7 +360,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to initialize the main form and idle loop..
 		/// </summary>
-		/// <returns><c>true</c> if the application has signalled to quit before it starts running, <c>false</c> to continue.</returns>
+		/// <returns><b>true</b> if the application has signalled to quit before it starts running, <b>false</b> to continue.</returns>
 		private static bool Initialize()
 		{
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
@@ -433,7 +433,7 @@ namespace Gorgon.Core
 
 			if (_trackedObjects != null)
 			{
-				_trackedObjects.ReleaseAll();
+				_trackedObjects.Clear();
 			}
 
 			PlugIns.UnloadAll();
@@ -501,7 +501,7 @@ namespace Gorgon.Core
 		/// <param name="context">Application context to use.</param>
 		/// <param name="loop">[Optional] Idle loop method for the application.</param>
 		/// <remarks>This method requires an application context, but the <paramref name="loop"/> parameter is optional.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(ApplicationContext context, Func<bool> loop = null)
 		{
@@ -550,7 +550,7 @@ namespace Gorgon.Core
 		/// <param name="mainForm">Form to use as the main form for the application.</param>
 		/// <param name="loop">[Optional] Idle loop method for the application.</param>
 		/// <remarks>A form is required to use this method, but the <paramref name="loop"/> parameter is optional.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(Form mainForm, Func<bool> loop = null)
 		{
@@ -597,7 +597,7 @@ namespace Gorgon.Core
 		/// Function to run a Gorgon application.
 		/// </summary>
 		/// <param name="loop">Idle loop method for the application.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(Func<bool> loop)
 		{
@@ -639,7 +639,7 @@ namespace Gorgon.Core
 		/// Function to add an object for tracking by the main Gorgon interface.
 		/// </summary>
 		/// <param name="trackedObject">Object to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
 		public static void AddTrackedObject(IDisposable trackedObject)
 		{
@@ -655,7 +655,7 @@ namespace Gorgon.Core
 		/// Function to remove a tracked object from the Gorgon interface.
 		/// </summary>
 		/// <param name="trackedObject">Object to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>This will -not- destroy the tracked object.</remarks>
 		public static void RemoveTrackedObject(IDisposable trackedObject)
 		{
@@ -672,7 +672,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a container control.</param>
 		/// <returns>The container control that contains the control, or the control pointed at by <paramref name="childControl"/> if the control has no parent.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public static Control GetTopLevelControl(Control childControl)
 		{
 			if (childControl == null)
@@ -694,9 +694,9 @@ namespace Gorgon.Core
 		/// Function to return the top level form that contains the child control.
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a base windows form.</param>
-		/// <returns>The windows form that contains the control, or NULL (Nothing in VB.Net) if the control is not embedded on a form at some level.</returns>
+		/// <returns>The windows form that contains the control, or NULL (<i>Nothing</i> in VB.Net) if the control is not embedded on a form at some level.</returns>
 		/// <remarks>If the childControl is a form, then the method will return the childControl instance.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public static Form GetTopLevelForm(Control childControl)
 		{
 		    if (childControl == null)

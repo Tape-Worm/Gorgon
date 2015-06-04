@@ -56,7 +56,7 @@ namespace Gorgon.Animation
 		/// <param name="displayName">The display name used to override the property name.</param>
 		/// <param name="dataType">Type of the data used to override the property type.</param>
 		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/>, <paramref name="dataType"/>, or <paramref name="propertyInfo"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/>, <paramref name="dataType"/>, or <paramref name="propertyInfo"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the displayName parameter is an empty string.</exception>
 		public GorgonAnimatedProperty(string displayName, Type dataType, PropertyInfo propertyInfo)
 		{
@@ -74,7 +74,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="displayName">The display name used to override the property name.</param>
 		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/> or <paramref name="propertyInfo"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/> or <paramref name="propertyInfo"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the displayName parameter is an empty string.</exception>
 		public GorgonAnimatedProperty(string displayName, PropertyInfo propertyInfo)
 		{
@@ -90,7 +90,7 @@ namespace Gorgon.Animation
 		/// Initializes a new instance of the <see cref="GorgonAnimatedProperty" /> struct.
 		/// </summary>
 		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public GorgonAnimatedProperty(PropertyInfo propertyInfo)
 		{
 			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");

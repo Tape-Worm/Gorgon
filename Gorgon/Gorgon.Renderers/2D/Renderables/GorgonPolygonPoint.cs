@@ -111,7 +111,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public static bool Equals(ref GorgonPolygonPoint left, ref GorgonPolygonPoint right)
         {
 	        // ReSharper disable CompareOfFloatsByEqualityOperator
@@ -127,7 +127,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
         public override bool Equals(object obj)
         {
@@ -174,7 +174,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public static bool operator ==(GorgonPolygonPoint left, GorgonPolygonPoint right)
         {
             return Equals(ref left, ref right);
@@ -185,7 +185,7 @@ namespace Gorgon.Renderers
         /// </summary>
         /// <param name="left">Left instance to compare.</param>
         /// <param name="right">Right instance to compare.</param>
-        /// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
         public static bool operator !=(GorgonPolygonPoint left, GorgonPolygonPoint right)
         {
             return !Equals(ref left, ref right);
@@ -232,7 +232,7 @@ namespace Gorgon.Renderers
         /// Function to determine if this instance is equal to another by reference.
         /// </summary>
         /// <param name="other">The other instance to compare against this one.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public bool Equals(ref GorgonPolygonPoint other)
         {
             return Equals(ref this, ref other);
@@ -244,7 +244,7 @@ namespace Gorgon.Renderers
         /// Function to determine if this instance is equal to another by value.
         /// </summary>
         /// <param name="other">The other instance to compare against this one.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public bool Equals(GorgonPolygonPoint other)
         {
             return Equals(ref this, ref other);

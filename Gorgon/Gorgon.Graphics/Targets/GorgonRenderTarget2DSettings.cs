@@ -114,7 +114,7 @@ namespace Gorgon.Graphics
 		/// then write-only access will be given to the UAV.</para>
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
 		/// Function to determine if the format is supported.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccessViews
 		{
@@ -126,8 +126,8 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether this render target has a cube texture for its backing store.
 		/// </summary>
 		/// <remarks>
-		/// When setting this value to <c>true</c>, ensure that the <see cref="Gorgon.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
-		/// <para>The default value is <c>false</c>.</para>
+		/// When setting this value to <b>true</b>, ensure that the <see cref="Gorgon.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool IsTextureCube
 		{

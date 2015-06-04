@@ -137,7 +137,7 @@ namespace Gorgon.Graphics
 		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of
 		/// marshalling will be required in order to copy structures with reference types.
 		/// <para>
-		/// If the <paramref name="deferred" /> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it
+		/// If the <paramref name="deferred" /> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it
 		/// will use the specified deferred context to clear the render target.
 		/// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.
 		/// Passing a separate deferred context will alleviate that.</para>

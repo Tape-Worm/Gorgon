@@ -347,7 +347,7 @@ namespace Gorgon.Graphics
         /// Function to retrieve a WIC equivalent format GUID based on the Gorgon buffer format.
         /// </summary>
         /// <param name="format">Format to look up.</param>
-        /// <returns>The GUID for the format, or NULL (Nothing in VB.Net) if not found.</returns>
+        /// <returns>The GUID for the format, or NULL (<i>Nothing</i> in VB.Net) if not found.</returns>
         public Guid GetGUID(BufferFormat format)
         {
             for (int i = 0; i < _wicGorgonFormats.Length; i++)
@@ -655,8 +655,8 @@ namespace Gorgon.Graphics
 		/// <param name="bitmapPalette">Palette for the bitmap.</param>
 		/// <param name="alphaValue">Value of pixel to consider transparent.</param>
 		/// <param name="buffer">Buffer holding the converted data.</param>
-		/// <param name="scale"><c>true</c> to scale when converting, <c>false</c> to keep at original size.</param>
-		/// <param name="clip"><c>true</c> to perform clipping, <c>false</c> to keep at original size.</param>
+		/// <param name="scale"><b>true</b> to scale when converting, <b>false</b> to keep at original size.</param>
+		/// <param name="clip"><b>true</b> to perform clipping, <b>false</b> to keep at original size.</param>
 		private void ConvertFormat(Guid sourceFormat, Guid destFormat, BitmapDitherType dithering, 
                                     BitmapInterpolationMode filter, BitmapSource bitmap, 
                                     Palette bitmapPalette, int alphaValue, 
@@ -742,8 +742,8 @@ namespace Gorgon.Graphics
 		/// <param name="bitmap">Bitmap to scale.</param>
 		/// <param name="filter">Filtering to apply to the scaled bitmap.</param>
 		/// <param name="buffer">Buffer to receive the scaled bitmap.</param>
-		/// <param name="clip"><c>true</c> to clip, <c>false</c> to scale.</param>
-		/// <returns><c>true</c> if clipping/scaling was performed, <c>false</c> if not.</returns>
+		/// <param name="clip"><b>true</b> to clip, <b>false</b> to scale.</param>
+		/// <returns><b>true</b> if clipping/scaling was performed, <b>false</b> if not.</returns>
 		private bool ResizeBitmap(BitmapSource bitmap, BitmapInterpolationMode filter, GorgonImageBuffer buffer, bool clip)
 		{
 			if (!clip)
@@ -788,7 +788,7 @@ namespace Gorgon.Graphics
 		/// <param name="filter">Filter used to scale the image.</param>
 		/// <param name="ditherFlags">Flags used to dither the image.</param>
 		/// <param name="buffer">Buffer for holding the image data.</param>
-		/// <param name="clip"><c>true</c> to clip the data, <c>false</c> to scale it.</param>
+		/// <param name="clip"><b>true</b> to clip the data, <b>false</b> to scale it.</param>
         public void AddWICBitmapToImageData(Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageBuffer buffer, bool clip)
         {
             Guid conversionFormat = GetGUID(buffer.Format);
@@ -830,11 +830,11 @@ namespace Gorgon.Graphics
         /// <param name="rowPitch">Number of bytes per row in the image.</param>
         /// <param name="slicePitch">Number of bytes in total for the image.</param>
         /// <param name="destFormat">Destination format for transformation.</param>
-        /// <param name="isSourcesRGB"><c>true</c> if the source format is sRGB.</param>
-        /// <param name="isDestsRGB"><c>true</c> if the destination format is sRGB.</param>
+        /// <param name="isSourcesRGB"><b>true</b> if the source format is sRGB.</param>
+        /// <param name="isDestsRGB"><b>true</b> if the destination format is sRGB.</param>
         /// <param name="dither">Dithering to apply to images that get converted to a lower bit depth.</param>
         /// <param name="destRect">Rectangle containing the area to scale or clip</param>
-        /// <param name="clip"><c>true</c> to perform clipping instead of scaling.</param>
+        /// <param name="clip"><b>true</b> to perform clipping instead of scaling.</param>
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
         public void TransformImageData(BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, bool isSourcesRGB, bool isDestsRGB, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
@@ -984,7 +984,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
 	        if (_disposed)

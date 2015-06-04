@@ -147,7 +147,7 @@ namespace Gorgon.Graphics
         /// <param name="values">Data used to initialize the buffer.</param>
         /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new generic buffer object populated with the data in <paramref name="values"/>.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="values"/> parameter is NULL.</para>
         /// </exception> 
@@ -192,16 +192,16 @@ namespace Gorgon.Graphics
         /// <param name="settings">The settings for the buffer.</param>
         /// <param name="stream">[Optional] Stream used to initialize the buffer.</param>
         /// <returns>A new generic buffer object.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <b>true</b> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net) or has no data.</para>
         /// </exception>
 		/// <remarks>The generic buffer is intended to be used with the [RW]Buffer&lt;&gt; HLSL type.
 		/// <para>Generic buffers are only available on video devices that are capable of SM4 or better.</para>
@@ -260,7 +260,7 @@ namespace Gorgon.Graphics
         /// <remarks>The size of the buffer must be a multiple of 16.
         /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
@@ -303,7 +303,7 @@ namespace Gorgon.Graphics
         /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new constant buffer.</returns>
         /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown when the buffer could not be created.</exception>
         public GorgonConstantBuffer CreateConstantBuffer<T>(string name, ref T value, BufferUsage usage)
@@ -360,9 +360,9 @@ namespace Gorgon.Graphics
         /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new structured buffer.</returns>
         /// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</para>
+        /// <para>Thrown when the <paramref name="values"/> parameter is NULL (<i>Nothing</i> in VB.Net).</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown when the buffer could not be created.</exception>
@@ -406,7 +406,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the ElementSize or ElementCount properties in the <paramref name="settings"/> parameter are not greater than 0.</para>
         /// </exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
@@ -414,7 +414,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonStructuredBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net) or has no data.</para>
         /// <para>-or-</para>
         /// <para>Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</para>
         /// </exception>
@@ -458,7 +458,7 @@ namespace Gorgon.Graphics
         /// <param name="usage">[Optional] Usage of the buffer.</param>
         /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
         /// <returns>A new vertex buffer.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
         /// </exception>
@@ -501,16 +501,16 @@ namespace Gorgon.Graphics
         /// <param name="initialData">[Optional] Initial data to populate the vertex buffer with.</param>
         /// <returns>A new vertex buffer.</returns>
         /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is <b>true</b> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 4.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (<i>Nothing</i> in VB.Net) or has no data.</para>
         /// </exception>
         public GorgonVertexBuffer CreateVertexBuffer(string name, GorgonBufferSettings settings, GorgonDataStream initialData = null)
         {
@@ -544,10 +544,10 @@ namespace Gorgon.Graphics
         /// <param name="name">The name of the buffer.</param>
         /// <param name="data">Data used to initialize the buffer.</param>
         /// <param name="usage">[Optional] Usage of the buffer.</param>
-        /// <param name="is32Bit">[Optional] <c>true</c> to indicate that we're using 32 bit indices, <c>false</c> to use 16 bit indices </param>
+        /// <param name="is32Bit">[Optional] <b>true</b> to indicate that we're using 32 bit indices, <b>false</b> to use 16 bit indices </param>
         /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
         /// <returns>A new index buffer.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
         /// </exception> 
@@ -591,16 +591,16 @@ namespace Gorgon.Graphics
         /// <param name="initialData">[Optional] Initial data to populate the index buffer with.</param>
         /// <returns>A new index buffer.</returns>
         /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.IsOutput">IsOutput</see> property is <c>true</c> and has a usage that is not Default.
+        /// <exception cref="GorgonException">Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.IsOutput">IsOutput</see> property is <b>true</b> and has a usage that is not Default.
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonIndexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (<i>Nothing</i> in VB.Net) or has no data.</para>
         /// </exception>
         public GorgonIndexBuffer CreateIndexBuffer(string name, GorgonIndexBufferSettings settings, GorgonDataStream initialData = null)
         {

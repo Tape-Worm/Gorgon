@@ -107,7 +107,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to determine if this preference panel should be added as a tab.
         /// </summary>
-        /// <returns><c>true</c> if the panel can be added as a tab, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the panel can be added as a tab, <b>false</b> if not.</returns>
         public virtual bool CanAddAsTab()
         {
             return true;
@@ -116,7 +116,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to validate any settings on this panel.
         /// </summary>
-        /// <returns><c>true</c> if the settings are valid, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the settings are valid, <b>false</b> if not.</returns>
         public virtual bool ValidateSettings()
         {
             return true;

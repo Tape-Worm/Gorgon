@@ -110,7 +110,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <param name="data">Point to the buffer holding the texture data.</param>
 		/// <param name="x">Horizontal position to sample.</param>
 		/// <param name="y">Vertical position to sample.</param>
-		/// <returns><c>true</c> if the mask value is the same, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the mask value is the same, <b>false</b> if not.</returns>
 		private unsafe bool IsMaskValue(byte* data, int x, int y)
 		{
 			byte* pixelPtr = (data + (y * _stride) + (x * _bytesPerPixel));

@@ -198,7 +198,7 @@ namespace Gorgon.Editor
 		/// Function to determine if this node is an ancestor of the parent node.
 		/// </summary>
 		/// <param name="parentNode">Parent node to evaluate for ancestry.</param>
-		/// <returns><c>true</c> if the child is ancestor of parent, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the child is ancestor of parent, <b>false</b> if not.</returns>
 		public bool IsAncestorOf(FileSystemTreeNode parentNode)
 		{
 			TreeNode node = Parent;
@@ -228,7 +228,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to end the edit process.
 		/// </summary>
-		/// <param name="cancel"><c>true</c> to cancel the edit, <c>false</c> to commit it.</param>
+		/// <param name="cancel"><b>true</b> to cancel the edit, <b>false</b> to commit it.</param>
 		public new void EndEdit(bool cancel)
 		{
 			((FileSystemTreeView)TreeView).HideRenameBox(!cancel);

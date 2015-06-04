@@ -199,7 +199,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Disabled blending settings.
         /// </summary>
-        /// <remarks>The IsBlending flag is still set to <c>true</c>, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
+        /// <remarks>The IsBlending flag is still set to <b>true</b>, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
         public static readonly GorgonRenderTargetBlendState NoBlending = new GorgonRenderTargetBlendState
         {
             IsBlendingEnabled = true,
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics
         /// <summary>
 		/// Is blending enabled for this render target or not.
 		/// </summary>
-		/// <remarks>The default value is <c>false</c>.</remarks>
+		/// <remarks>The default value is <b>false</b>.</remarks>
 		public bool IsBlendingEnabled;
 
 		/// <summary>
@@ -360,7 +360,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left render target state to compare.</param>
 		/// <param name="right">Right render target state to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonRenderTargetBlendState left, ref GorgonRenderTargetBlendState right)
 		{
 		    return ((left.AlphaOperation == right.AlphaOperation) && (left.BlendingOperation == right.BlendingOperation)
@@ -375,7 +375,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -456,7 +456,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(ref GorgonRenderTargetBlendState other)
 		{
 			return Equals(ref this, ref other);			
@@ -492,7 +492,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Disabled blending on the first render target.
         /// </summary>
-        /// <remarks>The IsBlending flag is still set to <c>true</c>, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
+        /// <remarks>The IsBlending flag is still set to <b>true</b>, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
         public static readonly GorgonBlendStates NoBlending = new GorgonBlendStates
             {
                 IsAlphaCoverageEnabled = false,
@@ -580,16 +580,16 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>This is a multisample techique that smooths out the transparent edges of polygons with alpha blending.
 		/// <para>Please note that this is only available for devices that have a feature level of SM_4 and above.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool IsAlphaCoverageEnabled;
 
 		/// <summary>
 		/// Is independent blending is enabled or not.
 		/// </summary>
-		/// <remarks>When this value is <c>true</c> This allows for each render target to have its own blending settings.  When it is set to <c>false</c>, it will only use the blending settings of the 
+		/// <remarks>When this value is <b>true</b> This allows for each render target to have its own blending settings.  When it is set to <b>false</b>, it will only use the blending settings of the 
 		/// first target in the array.
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>		
 		public bool IsIndependentBlendEnabled;
 
@@ -660,7 +660,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -743,7 +743,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(ref GorgonBlendStates other)
 		{
 			return Equals(ref this, ref other);		

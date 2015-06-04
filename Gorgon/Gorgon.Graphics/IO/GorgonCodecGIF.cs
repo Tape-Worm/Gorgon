@@ -73,7 +73,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to set or return the delays between each frame in 1/10 of a second.
 		/// </summary>
-		/// <remarks>This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (Nothing in VB.Net), then no frame delays 
+		/// <remarks>This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (<i>Nothing</i> in VB.Net), then no frame delays 
 		/// will be put in to the GIF file.  If the array has less elements than the number of frames available, then a delay of 0 will be used for remaining delays and if the array has more 
 		/// delays than frames, then any frame delays after the number of images will be discarded.
 		/// <para>This property is only used on image data with multiple array indices.</para>
@@ -103,7 +103,7 @@ namespace Gorgon.IO
 		/// <remarks>This property will encode or decode multiple frames from or into an array.  Note that this is only supported on codecs that support multiple frames (e.g. animated Gif).  
 		/// Images that do not support multiple frames will ignore this flag.
 		/// <para>This property applies to both encoding and decoding of image data.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool UseAllFrames
 		{
@@ -297,7 +297,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="filePath">Path to the animated GIF file.</param>
         /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thown when the filePath parameter is empty.</exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
         /// <para>-or-</para>
@@ -329,7 +329,7 @@ namespace Gorgon.IO
         /// <returns>
         /// An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
         /// <para>-or-</para>
         /// <para>The data in the stream could not be decoded as GIF file.</para>

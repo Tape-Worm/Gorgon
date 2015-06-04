@@ -383,7 +383,7 @@ namespace Gorgon.Graphics.Example
         /// </summary>
         /// <param name="stream">Stream used to read the file information.</param>
         /// <returns>
-        /// <c>true</c> if the codec can read the file, <c>false</c> if not.
+        /// <b>true</b> if the codec can read the file, <b>false</b> if not.
         /// </returns>
         /// <remarks>
         /// This is the method we'll use to determine if the data in the stream can actually be read by our codec.  Typically this is done by a "magic number" consisting of a set of bytes 
@@ -395,7 +395,7 @@ namespace Gorgon.Graphics.Example
         /// may cause undesirable results.
         /// </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public override bool IsReadable(Stream stream)
@@ -459,7 +459,7 @@ namespace Gorgon.Graphics.Example
         /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so
         /// may cause undesirable results.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public override IImageSettings GetMetaData(Stream stream)

@@ -202,7 +202,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a plug-in is disabled.
 		/// </summary>
 		/// <param name="plugIn">The plug-in to query.</param>
-		/// <returns><c>true</c> if disabled, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if disabled, <b>false</b> if not.</returns>
 		public bool IsDisabled(GorgonPlugin plugIn)
 		{
 			if (plugIn == null)
@@ -219,7 +219,7 @@ namespace Gorgon.Editor
 		/// Function to disable a plug-in.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to disable.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugIn"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugIn"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void DisablePlugIn(GorgonPlugin plugIn)
 		{
 			if (plugIn == null)

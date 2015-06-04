@@ -112,7 +112,7 @@ namespace Gorgon.Input.WinForms
 		/// Function to retrieve the pointing device data.
 		/// </summary>
 		/// <param name="e">Event arguments.</param>
-		/// <param name="doubleClick"><c>true</c> if the event is from a double click, <c>false</c> if not.</param>
+		/// <param name="doubleClick"><b>true</b> if the event is from a double click, <b>false</b> if not.</param>
 		/// <param name="state">The state for the button event.</param>
 		private void GetMouseData(MouseEventArgs e, bool doubleClick, ButtonState state)
 		{

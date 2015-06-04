@@ -71,7 +71,7 @@ namespace Gorgon.Reflection
 		/// </summary>
 		/// <param name="objectType">The type of object to evaluate.</param>
 		/// <param name="paramTypes">The parameter types on the constructor to find.</param>
-		/// <returns>The constructor info for the constructor that matches the parameter types, or <c>null</c> (Nothing in VB.Net) if no matching constructor is found.</returns>
+		/// <returns>The constructor info for the constructor that matches the parameter types, or <b>null</b> (<i>Nothing</i> in VB.Net) if no matching constructor is found.</returns>
 		private static Tuple<ConstructorInfo, ParameterInfo[]> GetConstructor(Type objectType, Type[] paramTypes)
 		{
 			if (paramTypes == null)
@@ -264,7 +264,7 @@ namespace Gorgon.Reflection
 		/// no parameter types are passed to this method, then a parameterless constructor is assumed.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="TypeLoadException">Thrown when the type does not contain a constructor with the specified <paramref name="paramTypes"/>.</exception>
 		/// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter (T) is not the same as the <paramref name="type"/> parameter.</exception>
 		public static ObjectActivator<T> CreateActivator<T>(this Type type, params Type[] paramTypes)

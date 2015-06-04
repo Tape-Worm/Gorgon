@@ -301,7 +301,7 @@ namespace Gorgon.Native
 		/// Function to return the amount of memory available on the machine.
 		/// </summary>
 		/// <param name="stat">Memory status data.</param>
-		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 		[DllImport("kernel32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);
@@ -311,11 +311,11 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
 		/// <param name="msg">Message block to retrieve.</param>
-		/// <param name="hwnd">Window to retrieve messages from, <c>false</c> for all.</param>
+		/// <param name="hwnd">Window to retrieve messages from, <b>false</b> for all.</param>
 		/// <param name="wFilterMin">Minimum message.</param>
 		/// <param name="wFilterMax">Maximum message.</param>
 		/// <param name="flags">Flags for the function.</param>
-		/// <returns><c>true</c> if messages are ready for processing, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if messages are ready for processing, <b>false</b> if not.</returns>
 		[return: MarshalAs(UnmanagedType.Bool)]
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]
 		public static extern bool PeekMessage(out MSG msg, IntPtr hwnd, uint wFilterMin, uint wFilterMax, PeekMessageFlags flags);
@@ -334,7 +334,7 @@ namespace Gorgon.Native
 		/// Function to translate windows messages.
 		/// </summary>
 		/// <param name="msg">Message to translate.</param>
-		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool TranslateMessage([In] ref MSG msg);
@@ -350,7 +350,7 @@ namespace Gorgon.Native
 		/// Function to dispatch windows messages.
 		/// </summary>
 		/// <param name="msg">Message to dispatch.</param>
-		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 		[DllImport("user32.dll")]
 		public static extern IntPtr DispatchMessage([In] ref MSG msg);
 
@@ -359,7 +359,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
 		/// <param name="PerformanceFrequency">Frequency of timer.</param>
-		/// <returns><c>true</c> if system supports high precision timing, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
 		[DllImport("kernel32", CharSet=CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
@@ -369,7 +369,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <remarks>See the MSDN documentation for a detailed description.</remarks>
 		/// <param name="PerformanceCount">Time from the timer.</param>
-		/// <returns><c>true</c> if system supports high precision timing, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if system supports high precision timing, <b>false</b> if not.</returns>
 		[DllImport("kernel32",CharSet=CharSet.Auto)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceCounter(out long PerformanceCount);

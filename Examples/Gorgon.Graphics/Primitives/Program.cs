@@ -137,7 +137,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Main application loop.
 		/// </summary>
-		/// <returns><c>true</c> to continue processing, <c>false</c> to stop.</returns>
+		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
 		private static bool Idle()
 		{
 			Matrix world;

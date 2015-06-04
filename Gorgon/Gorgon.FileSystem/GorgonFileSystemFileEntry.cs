@@ -220,7 +220,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Function to open a stream to the file on the physical file system.
         /// </summary>
-        /// <param name="writeable"><c>true</c> to write to the file, <c>false</c> to make read-only.</param>
+        /// <param name="writeable"><b>true</b> to write to the file, <b>false</b> to make read-only.</param>
         /// <returns>The open <see cref="GorgonFileSystemStream"/> file stream object.</returns>
         public GorgonFileSystemStream OpenStream(bool writeable)
         {

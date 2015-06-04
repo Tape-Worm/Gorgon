@@ -66,7 +66,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return a state to apply.
 		/// </summary>
-		/// <remarks>To set the default state, set this value to NULL (Nothing in VB.Net).</remarks>
+		/// <remarks>To set the default state, set this value to NULL (<i>Nothing</i> in VB.Net).</remarks>
 		public virtual T States
 		{
 			get

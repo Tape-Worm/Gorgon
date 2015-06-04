@@ -62,7 +62,7 @@ namespace Gorgon.Graphics
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="glyph">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph" /> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="glyph" /> parameter already exists in this collection.</exception>
 		internal void Add(GorgonGlyph glyph)
 		{
@@ -76,7 +76,7 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// true if <paramref name="glyph"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public bool Contains(GorgonGlyph glyph)
 		{
 			if (glyph == null)
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 		/// Function to return whether the character exists in this collection.
 		/// </summary>
 		/// <param name="character">The character to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(char character)
 		{
 			return _list.ContainsKey(character);
@@ -112,7 +112,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="glyph">Glyph to find.</param>
 		/// <returns>The index of the glyph if found, -1 if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="glyph"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public int IndexOf(GorgonGlyph glyph)
 		{
 			if (glyph == null)
@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="character">Character for the glyph.</param>
         /// <param name="glyph">The glyph in the list.</param>
-        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 	    public bool TryGetValue(char character, out GorgonGlyph glyph)
         {
             return _list.TryGetValue(character, out glyph);

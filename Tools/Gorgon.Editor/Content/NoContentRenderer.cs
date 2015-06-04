@@ -78,7 +78,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to switch the states for the logo animation blurring/fading.
 		/// </summary>
-		/// <param name="reverse"><c>true</c> to set the state to reverse animation, <c>false</c> to set to forward animation.</param>
+		/// <param name="reverse"><b>true</b> to set the state to reverse animation, <b>false</b> to set to forward animation.</param>
 		private void SwitchState(bool reverse)
 		{
 			RectangleF state1 = reverse ? _blurStates[1] : _blurStates[0];

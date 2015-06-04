@@ -62,7 +62,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -433,7 +433,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function called before rendering begins.
         /// </summary>
-        /// <returns><c>true</c> to continue rendering, <c>false</c> to stop.</returns>
+        /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         protected virtual bool OnBeforeRender()
         {
             return true;
@@ -450,7 +450,7 @@ namespace Gorgon.Graphics
         /// Function called before a pass is rendered.
         /// </summary>
         /// <param name="pass">Pass to render.</param>
-        /// <returns><c>true</c> to continue rendering, <c>false</c> to stop.</returns>
+        /// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
         protected abstract bool OnBeforePassRender(GorgonEffectPass pass);
 
         /// <summary>
@@ -613,7 +613,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)

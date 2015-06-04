@@ -201,7 +201,7 @@ namespace Gorgon.Editor
 		/// Function to save the file.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
-		/// <returns><c>true</c> if the file was saved successfully, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the file was saved successfully, <b>false</b> if not.</returns>
 		public bool Save(string path)
 		{
 			using (_processForm = new FormProcess(ProcessType.FileWriter))
@@ -243,7 +243,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 		}

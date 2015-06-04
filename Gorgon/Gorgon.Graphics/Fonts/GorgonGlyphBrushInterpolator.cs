@@ -64,7 +64,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonGlyphBrushInterpolator left, ref GorgonGlyphBrushInterpolator right)
 		{
 			return left.Weight.EqualsEpsilon(right.Weight);
@@ -102,7 +102,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -119,7 +119,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return Equals(ref left, ref right);
@@ -130,7 +130,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return !Equals(ref left, ref right);
@@ -141,7 +141,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if the left is less than the right, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the left is less than the right, <b>false</b> if not.</returns>
 		public static bool operator <(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return left.Weight < right.Weight;
@@ -152,7 +152,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if the left is greater than the right, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the left is greater than the right, <b>false</b> if not.</returns>
 		public static bool operator >(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return left.Weight > right.Weight;
@@ -163,7 +163,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if the left is less than or equal to the right, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the left is less than or equal to the right, <b>false</b> if not.</returns>
 		public static bool operator <=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return left.Weight < right.Weight || Equals(ref left, ref right);
@@ -174,7 +174,7 @@ namespace Gorgon.Graphics.Fonts
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if the left is greater than or equal to the right, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the left is greater than or equal to the right, <b>false</b> if not.</returns>
 		public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
 		{
 			return left.Weight > right.Weight || Equals(ref left, ref right);

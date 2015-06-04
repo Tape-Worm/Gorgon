@@ -45,7 +45,7 @@ namespace Gorgon.Editor
 		/// Initializes a new instance of the <see cref="ProxyObject{T}"/> class.
 		/// </summary>
 		/// <param name="sourceObject">The source object to proxy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="sourceObject"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="sourceObject"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public ProxyObject(Lazy<T> sourceObject)
 		{
 			if (sourceObject == null)

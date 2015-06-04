@@ -187,7 +187,7 @@ namespace Gorgon.Graphics
 		/// <typeparam name="T">Type of data to copy into the resource.  The data must be a value type.</typeparam>
 		/// <param name="guid">GUID to associate with the data.</param>
 		/// <param name="data">Data to set.</param>
-		/// <remarks>Set <paramref name="data"/> to NULL (Nothing in VB.Net) to remove the data from the resource.</remarks>
+		/// <remarks>Set <paramref name="data"/> to NULL (<i>Nothing</i> in VB.Net) to remove the data from the resource.</remarks>
 		public void SetApplicationData<T>(Guid guid, T? data)
 			where T : struct
 		{
@@ -272,7 +272,7 @@ namespace Gorgon.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
         /// <param name="name">Name of this resource.</param>
         /// <remarks>Names for the resource are required, but do not need to be unique.  Names provide a way to organize the objects and can be ignored.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception> 
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception> 
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         protected GorgonResource(GorgonGraphics graphics, string name)
             : base(name)
@@ -290,7 +290,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 		    if (_disposed)

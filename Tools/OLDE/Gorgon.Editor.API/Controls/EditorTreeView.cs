@@ -102,7 +102,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="nodes">Source collection.</param>
 		/// <param name="directory">Directory to add.</param>
-		/// <param name="autoExpand"><c>true</c> to expand the new node (if it has children) after it's been added, <c>false</c> to leave collapsed.</param>
+		/// <param name="autoExpand"><b>true</b> to expand the new node (if it has children) after it's been added, <b>false</b> to leave collapsed.</param>
 		/// <returns>The new node.</returns>
 		public static TreeNodeDirectory AddDirectory(this TreeNodeCollection nodes, GorgonFileSystemDirectory directory, bool autoExpand)
 		{
@@ -750,7 +750,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to hide the rename box.
 		/// </summary>
-		/// <param name="canceled"><c>true</c> if the edit was canceled, <c>false</c> if not.</param>
+		/// <param name="canceled"><b>true</b> if the edit was canceled, <b>false</b> if not.</param>
 		public void HideRenameBox(bool canceled)
 		{
 			if (_renameBox == null)

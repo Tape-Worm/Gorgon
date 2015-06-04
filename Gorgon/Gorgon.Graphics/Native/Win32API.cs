@@ -75,7 +75,7 @@ namespace Gorgon.Native
 		/// <param name="uFirstChar">The first character in the group of consecutive characters from the current font.</param>
 		/// <param name="uLastChar">The last character in the group of consecutive characters from the current font.</param>
 		/// <param name="lpABC">A pointer to an array of ABC structures that receives the character widths, in logical units. This array must contain at least as many ABC structures as there are characters in the range specified by the uFirstChar and uLastChar parameters.</param>
-		/// <returns><c>true</c> if successful, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 		[DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool GetCharABCWidthsW(IntPtr HDC, uint uFirstChar, uint uLastChar, ABC* lpABC);

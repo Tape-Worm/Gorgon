@@ -52,7 +52,7 @@ namespace Gorgon.Graphics.Example
 		public float Opacity;
 		/// <summary>Opacity of the ball.</summary>
 		public float OpacityDelta;
-		/// <summary><c>true</c> to use the checker ball, <c>false</c> to use the bubble.</summary>
+		/// <summary><b>true</b> to use the checker ball, <b>false</b> to use the bubble.</summary>
 		public bool Checkered;
 		#endregion
 	}

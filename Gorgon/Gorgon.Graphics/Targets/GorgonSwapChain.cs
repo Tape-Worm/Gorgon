@@ -109,7 +109,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBeforeStateTransitionEventArgs"/> class.
 		/// </summary>
-		/// <param name="wasWindowed"><c>true</c> if the swap chain was previously windowed, <c>false</c> if it was full screen.</param>
+		/// <param name="wasWindowed"><b>true</b> if the swap chain was previously windowed, <b>false</b> if it was full screen.</param>
 		public GorgonBeforeStateTransitionEventArgs(bool wasWindowed)
 			: base(false)
 		{
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics
 	/// </para>	
 	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
 	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
-	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is <c>false</c> in this scenario, then the behaviour when switching between applications will be undefined.  
+	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is <b>false</b> in this scenario, then the behaviour when switching between applications will be undefined.  
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
 	public sealed class GorgonSwapChain
@@ -718,7 +718,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default render target view. Any attached depth/stencil buffer will remain untouched.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -738,7 +738,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default render target view. Any stencil buffer will remain untouched.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -758,7 +758,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default render target view.  Any depth buffer will remain untouched.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -779,7 +779,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default render target view.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -794,7 +794,7 @@ namespace Gorgon.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
@@ -812,8 +812,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to update the settings for the swap chain.
 		/// </summary>
-		/// <param name="isWindowed"><c>true</c> to use windowed mode, <c>false</c> to use full screen mode.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <param name="isWindowed"><b>true</b> to use windowed mode, <b>false</b> to use full screen mode.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
@@ -832,8 +832,8 @@ namespace Gorgon.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
-		/// <param name="isWindowed"><c>true</c> to use windowed mode, <c>false</c> to use full screen mode.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <param name="isWindowed"><b>true</b> to use windowed mode, <b>false</b> to use full screen mode.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
@@ -868,10 +868,10 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <param name="isWindowed"><c>true</c> to switch to windowed mode, <c>false</c> to switch to full screen.</param>
+		/// <param name="isWindowed"><b>true</b> to switch to windowed mode, <b>false</b> to switch to full screen.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// </exception>
@@ -1043,7 +1043,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

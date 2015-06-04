@@ -154,7 +154,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
 		/// <returns>The animation in the stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the stream parameter does not contain a Gorgon animation file.
 		/// <para>-or-</para>
 		/// <para>Thrown when the name of the animation is already present in the controller animation collection.</para>
@@ -226,7 +226,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="fileName">Path and file name for the animation file.</param>
 		/// <returns>The loaded animation from the file.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream parameter does not contain a Gorgon animation file.</para>
@@ -277,7 +277,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Animation to play.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		public void Play(T animatedObject, GorgonAnimation<T> animation)
 		{
@@ -315,7 +315,7 @@ namespace Gorgon.Animation
 		/// </summary>
 		/// <param name="animatedObject">The object to apply the animation onto.</param>
 		/// <param name="animation">Name of the animation to start playing.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> or <paramref name="animatedObject"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		public void Play(T animatedObject, string animation)
@@ -349,7 +349,7 @@ namespace Gorgon.Animation
 		/// Function to add a list of animations to the collection.
 		/// </summary>
 		/// <param name="animations">Animations to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animations"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
 		public void AddRange(IEnumerable<GorgonAnimation<T>> animations)
 		{
@@ -368,7 +368,7 @@ namespace Gorgon.Animation
 		/// Function to add an animation to the collection.
 		/// </summary>
 		/// <param name="animation">Animation to add to the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
 		public void Add(GorgonAnimation<T> animation)
 		{
@@ -399,7 +399,7 @@ namespace Gorgon.Animation
 		/// <param name="name">Name of the animation to add.</param>
 		/// <param name="length">Length of the animation, in seconds.</param>
 		/// <returns>The newly created animation.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the animation already exists in this collection.</para></exception>
@@ -439,7 +439,7 @@ namespace Gorgon.Animation
 		/// Function to remove an animation from the collection.
 		/// </summary>
 		/// <param name="animation">Animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
 		public void Remove(GorgonAnimation<T> animation)
 		{
@@ -465,7 +465,7 @@ namespace Gorgon.Animation
 		/// Function to remove an animation from the collection.
 		/// </summary>
 		/// <param name="animation">Animation to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the animation parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
 		public void Remove(string animation)

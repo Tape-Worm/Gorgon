@@ -108,7 +108,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">The first instance to compare.</param>
 		/// <param name="right">The second instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonInputElement left, ref GorgonInputElement right)
 		{
 			return (string.Equals(left.Context, right.Context)) && (left.Format == right.Format) && (left.Index == right.Index) &&
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics
 		/// <param name="offset">The offset of the element within the vertex.</param>
 		/// <param name="index">The index of the element.</param>
 		/// <param name="slot">The vertex buffer slot for the element.</param>
-		/// <param name="instanced"><c>true</c> if using instanced data, <c>false</c> if not.</param>
+		/// <param name="instanced"><b>true</b> if using instanced data, <b>false</b> if not.</param>
 		/// <param name="instanceCount">Number of instances to use before moving to the next element.</param>
 		/// <remarks>The slot value must be between 0 and 15 (inclusive).  A value outside of this range will cause an exception to be thrown.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is not supported.</exception>

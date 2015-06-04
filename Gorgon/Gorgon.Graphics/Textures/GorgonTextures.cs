@@ -426,10 +426,10 @@ namespace Gorgon.Graphics
         /// <param name="options">[Optional] Settings for the conversion process.</param>
         /// <typeparam name="T">Type of texture.</typeparam>
         /// <returns>The clone of the GDI+ images contained within a new texture.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="images"/> parameters are NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="images"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
         /// <para>-or-</para>
-        /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
+        /// <para>Thrown when the images parameter is NULL (<i>Nothing</i> in VB.Net) or empty.</para>
         /// </exception>
         /// <exception cref="GorgonException">Thrown when the texture could not be created.</exception>
         /// <remarks>
@@ -497,19 +497,19 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
+        /// <term>UseClipping</term><description>Set to <b>true</b> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>The format for the default shader view applied to the texture.  If this value is set to Unknown, then the texture format will be used.  The default value is Unknown.</description>
         /// </item>
         /// <item>
-        /// <term>AllowUnorderedAccess</term><description><c>true</c> to allow unordered access views to be used with this texture, <c>false</c> to disallow.  The default value is <c>false</c>.</description>
+        /// <term>AllowUnorderedAccess</term><description><b>true</b> to allow unordered access views to be used with this texture, <b>false</b> to disallow.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <term>Multisampling</term><description>For 2D textures only and only if the <paramref name="images"/> parameter contains 1 image.  Multisampling values to apply to the texture.  The default is a count of 1 and a quality of 0 (no multisampling).</description>
         /// </item>
         /// </list>
-        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (<i>Nothing</i> in VB.Net) elements and all images must use
         /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
         /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
@@ -593,7 +593,7 @@ namespace Gorgon.Graphics
         /// <param name="image">GDI+ image to convert to a texture.</param>
         /// <param name="options">[Optional] Options for conversion.</param>
         /// <returns>A texture containing the same data as the GDI+ image.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="image"/> parameters are NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="image"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         /// <exception cref="GorgonException">Thrown when the texture could not be created.</exception>
         /// <remarks>
@@ -630,13 +630,13 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
+        /// <term>UseClipping</term><description>Set to <b>true</b> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <description>ViewFormat</description><description>The format for the default shader view applied to the texture.  If this value is set to Unknown, then the texture format will be used.  The default value is Unknown.</description>
         /// </item>
         /// <item>
-        /// <description>AllowUnorderedAccess</description><description><c>true</c> to allow unordered access views to be used with this texture, <c>false</c> to disallow.  The default value is <c>false</c>.</description>
+        /// <description>AllowUnorderedAccess</description><description><b>true</b> to allow unordered access views to be used with this texture, <b>false</b> to disallow.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <description>Multisampling</description><description>For 2D textures only.  Multisampling values to apply to the texture.  The default is a count of 1 and a quality of 0 (no multisampling).</description>
@@ -718,7 +718,7 @@ namespace Gorgon.Graphics
         /// codecs may be defined and used to load a texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="filePath "/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="filePath "/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
@@ -765,7 +765,7 @@ namespace Gorgon.Graphics
 		/// codecs may be defined and used to load a texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
 		/// <para>-or-</para>
@@ -810,7 +810,7 @@ namespace Gorgon.Graphics
         /// codecs may be defined and used to load a texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
         /// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="stream"/> parameter is NULL.</para>
 		/// <para>-or-</para>
@@ -886,7 +886,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new 2D texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -919,7 +919,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new 2D texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -952,7 +952,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new 1D texture.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -980,7 +980,7 @@ namespace Gorgon.Graphics
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
         /// <remarks>This method should not be called from a deferred graphics context.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -1034,7 +1034,7 @@ namespace Gorgon.Graphics
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
         /// <remarks>This method should not be called from a deferred graphics context.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -1088,7 +1088,7 @@ namespace Gorgon.Graphics
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
         /// <remarks>This method should not be called from a deferred graphics context.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage is set to immutable.</para>
@@ -1147,7 +1147,7 @@ namespace Gorgon.Graphics
 		/// <para>The texture settings width, height, depth, mip count, array count, and format will use the settings from the <paramref name="data"/> parameter.</para>
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameters are NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if there is no data to upload to the texture.</para>

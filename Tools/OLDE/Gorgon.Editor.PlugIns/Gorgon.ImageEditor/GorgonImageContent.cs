@@ -1027,7 +1027,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Function to return whether an image format can be block compressed.
         /// </summary>
-        /// <returns><c>true</c> if format can be block compressed, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if format can be block compressed, <b>false</b> if not.</returns>
         private bool FormatCanBlockCompress()
         {
             switch (ImageFormat)
@@ -1394,7 +1394,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// Function called when the content is reverted back to its original state.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if reverted, <c>false</c> if not.
+        /// <b>true</b> if reverted, <b>false</b> if not.
         /// </returns>
         protected override bool OnRevert()
         {
@@ -1417,7 +1417,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 	    protected override void Dispose(bool disposing)
 	    {
 		    if (!_disposed)
@@ -1794,7 +1794,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// Function to determine if the codec supports the current image information.
 		/// </summary>
 		/// <param name="codec">The codec to evaluate.</param>
-		/// <returns><c>true</c> if the codec supports the current image information, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the codec supports the current image information, <b>false</b> if not.</returns>
 	    public bool CodecSupportsImage(GorgonImageCodec codec)
 	    {
 			bool hasArray = (ArrayCount > 1 && codec.SupportsArray) || ArrayCount == 1;
@@ -1957,7 +1957,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to determine if the currently selected mip/array/depth buffer has data in it.
 		/// </summary>
-		/// <returns><c>true</c> if the buffer has data, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the buffer has data, <b>false</b> if not.</returns>
 	    public unsafe bool ImageBufferHasData()
 		{
 			var bufferPtr = (byte*)Buffer.Data.UnsafePointer;
@@ -1982,9 +1982,9 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// Function to convert the image to a format that's compatible with the image buffer currently selected.
 		/// </summary>
 		/// <param name="image">Image to convert.</param>
-		/// <param name="crop"><c>true</c> to crop the image instead of resize, <c>false</c> to resize.</param>
+		/// <param name="crop"><b>true</b> to crop the image instead of resize, <b>false</b> to resize.</param>
 		/// <param name="filter">The filter to apply when resizing.</param>
-		/// <param name="preserveAspect"><c>true</c> to preserve the aspect ratio of the source image, <c>false</c> to ignore it.</param>
+		/// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio of the source image, <b>false</b> to ignore it.</param>
 		/// <param name="imageAlign">Image alignment.</param>
 		public void ConvertImageToBuffer(GorgonImageData image, bool crop, ImageFilter filter, bool preserveAspect, ContentAlignment imageAlign)
 		{
@@ -2083,11 +2083,11 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// </summary>
 		/// <param name="editorFile">Editor file linked to the image.</param>
 		/// <param name="stream">Stream containing the image data.</param>
-		/// <param name="topLevelOnly"><c>true</c> to retrieve only the first mip map level and/or array index.</param>
+		/// <param name="topLevelOnly"><b>true</b> to retrieve only the first mip map level and/or array index.</param>
 		/// <returns>
 		/// An image data object containing the image.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="editorFile"/>, or the <paramref name="stream"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="editorFile"/>, or the <paramref name="stream"/> parameters are NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="GorgonException">Thrown when the no codec could be found for the image data.</exception>
 	    public GorgonImageData ReadFrom(EditorFile editorFile, Stream stream, bool topLevelOnly)
 	    {

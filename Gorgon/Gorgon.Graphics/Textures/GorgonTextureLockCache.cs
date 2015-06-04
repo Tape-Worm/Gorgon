@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="left">Left key to compare.</param>
             /// <param name="right">Right key to compare.</param>
-            /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+            /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
             private static bool Equals(ref LockCacheKey left, ref LockCacheKey right)
             {
                 return (left._keyValue1 == right._keyValue1) && (left._keyValue2 == right._keyValue2) && (left._context == right._context);
@@ -81,7 +81,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -243,7 +243,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
             if (_disposed)

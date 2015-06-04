@@ -200,7 +200,7 @@ namespace Gorgon.Editor
         /// Function to find a writer plug-in for a given file name extension.
         /// </summary>
         /// <param name="fileExtension">Full file name or extension of the file to write.</param>
-        /// <param name="skipMetaData"><c>true</c> to skip the metadata check, <c>false</c> to use it.</param>
+        /// <param name="skipMetaData"><b>true</b> to skip the metadata check, <b>false</b> to use it.</param>
         /// <returns>The plug-in used to write the file.</returns>
         public static FileWriterPlugIn GetWriterPlugIn(string fileExtension = null, bool skipMetaData = false)
         {

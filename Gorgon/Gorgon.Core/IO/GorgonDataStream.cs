@@ -306,7 +306,7 @@ namespace Gorgon.IO
 		/// Function to determine if marshalling is required.
 		/// </summary>
 		/// <param name="type">Type to examine.</param>
-		/// <returns><c>true</c> if the type requires marshalling, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the type requires marshalling, <b>false</b> if not.</returns>
 		private static bool UseMarshalling(Type type)
 		{
 			var members = type.GetMembers().Where(item => item.MemberType == MemberTypes.Property || item.MemberType == MemberTypes.Field);
@@ -1645,7 +1645,7 @@ namespace Gorgon.IO
 		/// <param name="value">String to write into the stream.</param>
 		/// <param name="encoding">Encoding to use.</param>
         /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> value is NULL (Nothing in VB.Net), then UTF-8 encoding will be used.</para>
+        /// <para>If the <paramref name="encoding"/> value is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
         /// </remarks>
 		public void WriteString(string value, Encoding encoding)
 		{
@@ -1773,9 +1773,9 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of data to marshal.</typeparam>
 		/// <param name="data">Data to marshal.</param>
-		/// <param name="deleteContents"><c>true</c> to remove any pre-allocated data within the data, <c>false</c> to leave alone.</param>
+		/// <param name="deleteContents"><b>true</b> to remove any pre-allocated data within the data, <b>false</b> to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
-		/// <para>Passing <c>false</c> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
+		/// <para>Passing <b>false</b> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
 		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr" /> method.</para>
 		/// </remarks>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
@@ -1854,7 +1854,7 @@ namespace Gorgon.IO
         /// <param name="index">Index inside of the source array to start reading from.</param>
         /// <param name="count">Number of elements to read.</param>
         /// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
         /// <para>-or-</para>
         /// Thrown when the index parameter is larger than the source array.
@@ -1902,7 +1902,7 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
 		/// <param name="data">The data used to initialize the stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>The array elements should all be of the same type, and value types.
 		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.  
 		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data"/> parameter array elements will be reflected 

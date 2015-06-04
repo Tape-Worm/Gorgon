@@ -209,7 +209,7 @@ namespace Gorgon.Graphics
 		/// <param name="format">The format of the view.</param>
 		/// <param name="firstElement">The first element in the buffer.</param>
 		/// <param name="elementCount">The number of elements to view.</param>
-		/// <param name="isRaw"><c>true</c> if the view should be a raw view, <c>false</c> if not.</param>
+		/// <param name="isRaw"><b>true</b> if the view should be a raw view, <b>false</b> if not.</param>
 		internal GorgonBufferUnorderedAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount, bool isRaw)
 			: base(resource, format)
 		{

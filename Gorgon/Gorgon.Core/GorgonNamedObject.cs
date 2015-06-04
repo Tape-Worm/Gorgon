@@ -68,7 +68,7 @@ namespace Gorgon.Core
 		/// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
 		/// </summary>
 		/// <param name="name">The name.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
 		{

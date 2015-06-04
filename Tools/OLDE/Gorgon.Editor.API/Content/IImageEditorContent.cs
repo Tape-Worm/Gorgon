@@ -66,7 +66,7 @@ namespace Gorgon.Editor
 		/// Function to load data into the image.
 		/// </summary>
 		/// <param name="stream">Stream containing the data to load.</param>
-		/// <remarks>This method is used by the editor to import images into various places.  The <see cref="Image"/> property will remain NULL (Nothing in VB.Net) until this method is called.</remarks>
+		/// <remarks>This method is used by the editor to import images into various places.  The <see cref="Image"/> property will remain NULL (<i>Nothing</i> in VB.Net) until this method is called.</remarks>
 		void Load(Stream stream);
 	}
 }

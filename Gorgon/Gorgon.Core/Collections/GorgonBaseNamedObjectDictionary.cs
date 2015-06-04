@@ -127,7 +127,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(string name)
 		{
 			return _list.ContainsKey(name);
@@ -137,7 +137,7 @@ namespace Gorgon.Collections
 		/// Function to return whether the specified object exists in the collection.
 		/// </summary>
 		/// <param name="value">The value to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(T value)
 		{
 			return _list.ContainsValue(value);
@@ -148,7 +148,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">The name of the item to look up.</param>
 		/// <param name="value">The item, if found, or the default value for the type if not.</param>
-		/// <returns><c>true</c> if the item was found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		public bool TryGetValue(string name, out T value)
 		{
 			return _list.TryGetValue(name, out value);
@@ -159,7 +159,7 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="caseSensitive"><c>true</c> if the key names are case sensitive, <c>false</c> if not.</param>
+		/// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
 		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
 		{
 		    _list = new Dictionary<string, T>(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
@@ -279,7 +279,7 @@ namespace Gorgon.Collections
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public bool IsReadOnly
@@ -325,7 +325,7 @@ namespace Gorgon.Collections
 		/// Function to remove an item by its name.
 		/// </summary>
 		/// <param name="name">The name of the object to remove.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
 		void IGorgonNamedObjectDictionary<T>.Remove(string name)

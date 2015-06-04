@@ -41,10 +41,10 @@ namespace Gorgon.Graphics
         /// Function to create a new 2D renderer interface.
         /// </summary>
         /// <param name="target">Default target for the renderer.</param>
-        /// <param name="systemCreatedSwap"><c>true</c> if the system generated the swap chain, <c>false</c> if not.</param>
+        /// <param name="systemCreatedSwap"><b>true</b> if the system generated the swap chain, <b>false</b> if not.</param>
         /// <param name="vertexCacheSize">The number of vertices that can be placed in the vertex cache.</param>
         /// <returns>A new 2D graphics interface.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         private static Gorgon2D Create2DRenderer(GorgonRenderTargetView target, bool systemCreatedSwap, int vertexCacheSize)
         {
 	        if (target == null)
@@ -66,7 +66,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new 2D graphics interface.</returns>
 		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(Gorgon.Graphics.GorgonOutputMerger,Gorgon.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -97,7 +97,7 @@ namespace Gorgon.Graphics
 		/// <param name="width">Width of the video mode used for rendering.</param>
 		/// <param name="height">Height of the video mode used for rendering.</param>
 		/// <param name="format">[Optional] Format of the video mode used for rendering.</param>
-		/// <param name="isWindowed">[Optional] <c>true</c> to use windowed mode, <c>false</c> to to use full screen mode.</param>
+		/// <param name="isWindowed">[Optional] <b>true</b> to use windowed mode, <b>false</b> to to use full screen mode.</param>
 		/// <param name="depthStencilFormat">[Optional] Depth/stencil buffer format.</param>
 		/// <param name="vertexCacheSize">[Optional] The number of vertices that the renderer will cache when drawing.</param>
 		/// <returns>A new 2D graphics interface.</returns>
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics
 		/// at a given time.  Any performance increase from this value depends upon multiple factors such as available RAM, video driver, video card, etc...</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="format"/> parameter cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// </exception>
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics
         /// provide a performance increase by rendering many objects at the same time.  Lower values means a smaller buffer and possibly reduced performance because not as many objects can be drawn 
         /// at a given time.  Any performance increase from this value depends upon multiple factors such as available RAM, video driver, video card, etc...</para>
         /// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTargetView target, int vertexCacheSize = 32768)
 		{
 			return Create2DRenderer(target, false, vertexCacheSize);

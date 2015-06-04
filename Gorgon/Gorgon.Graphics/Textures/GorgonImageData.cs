@@ -139,7 +139,7 @@ namespace Gorgon.Graphics
 		/// Function to initialize the image data.
 		/// </summary>
 		/// <param name="data">Pre-existing data to use.</param>
-		/// <param name="copy"><c>true</c> to copy the data, <c>false</c> to take ownership of the pointer.  Only applies when data is non-null.</param>
+		/// <param name="copy"><b>true</b> to copy the data, <b>false</b> to take ownership of the pointer.  Only applies when data is non-null.</param>
 		private unsafe void Initialize(void* data, bool copy)
         {
             // Create a buffer large enough to hold our data.
@@ -221,7 +221,7 @@ namespace Gorgon.Graphics
 		/// <para>Images and textures must be the same format, and share the same number of dimensions (i.e. 2D texture needs 2D image data, etc...).</para>
 		/// <para>The texture to update must not have usage type of Immutable.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the texture and the image data do not have the same format.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture and the image data do not share the same number dimensions.</para>
@@ -259,7 +259,7 @@ namespace Gorgon.Graphics
 		/// <para>Images and textures must be the same format, and share the same number of dimensions (i.e. 2D texture needs 2D image data, etc...).</para>
 		/// <para>The texture to update must not have usage type of Immutable.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the texture and the image data do not have the same format.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture and the image data do not share the same number dimensions.</para>
@@ -505,7 +505,7 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
+        /// <term>UseClipping</term><description>Set to <b>true</b> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
@@ -517,7 +517,7 @@ namespace Gorgon.Graphics
         /// <term>Multisampling</term><description>This value is ignored for image data.</description>
         /// </item>
         /// </list>
-        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (<i>Nothing</i> in VB.Net) elements and all images must use
         /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
         /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
@@ -566,7 +566,7 @@ namespace Gorgon.Graphics
         /// <returns>
         /// A new image data object containing a copy of the System.Drawing.Image data.
         /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
         /// <exception cref="GorgonException">Thrown when image could not be created.</exception>
         /// <remarks>
         /// This method will create a new <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image"/>. 
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics
         /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <term>UseClipping</term><description>Set to <c>true</c> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <c>false</c>.</description>
+        /// <term>UseClipping</term><description>Set to <b>true</b> to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is <b>false</b>.</description>
         /// </item>
         /// <item>
         /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
@@ -739,7 +739,7 @@ namespace Gorgon.Graphics
         /// <param name="mipLevel">Mip level to copy.</param>
         /// <param name="arrayIndex">[Optional] Index of the texture array to copy.</param>
         /// <returns>A new image data object containing the data from the texture.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> or <paramref name="mipLevel"/> parameters are greater than or equal to the number of array indices or mip map levels.</exception>
         /// <remarks>This will create a system memory clone of the <see cref="Gorgon.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
@@ -813,7 +813,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="texture">Texture used to create the image data.</param>
         /// <returns>A new image data object containing the data from the texture.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
         /// <remarks>This will create a system memory clone of the <see cref="Gorgon.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
@@ -1085,7 +1085,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="filePath">Path to the file.</param>
 		/// <param name="codec">Codec used to encode the file data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
@@ -1142,7 +1142,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="stream">Stream that will contain the image information.</param>
 		/// <param name="codec">Codec used to encode the stream data.</param>        
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>		
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
@@ -1200,7 +1200,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="codec">Codec used to encode the stream data.</param>        
 		/// <returns>A byte array containing the encoded image data.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>		
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
@@ -1268,7 +1268,7 @@ namespace Gorgon.Graphics
 		/// <param name="stream">Stream that will contain the raw image data.</param>
 		/// <remarks>This will write the contents of this image into a stream with no encoding.  Use this when there is a need to transfer the raw image data from one 
 		/// data structure to another.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is read only.</exception>
 		public unsafe void SaveRaw(Stream stream)
 		{
@@ -1298,7 +1298,7 @@ namespace Gorgon.Graphics
         /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
         /// codecs may be defined and used to load a texture.
         /// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
@@ -1330,7 +1330,7 @@ namespace Gorgon.Graphics
         /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
         /// codecs may be defined and used to load a texture.
         /// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
@@ -1419,7 +1419,7 @@ namespace Gorgon.Graphics
         /// Function to determine if this image format can be converted to another format.
         /// </summary>
         /// <param name="format">Format to convert to.</param>
-        /// <returns><c>true</c> if the the current format and the requested format can be converted, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the the current format and the requested format can be converted, <b>false</b> if not.</returns>
         public bool CanConvert(BufferFormat format)
         {
 	        return CanConvert(Settings.Format, format);
@@ -1430,7 +1430,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="sourceFormat">The source format to compare.</param>
 		/// <param name="destFormat">The destination format to compare.</param>
-		/// <returns><c>true</c> if the format can be converted, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format can be converted, <b>false</b> if not.</returns>
 	    public static bool CanConvert(BufferFormat sourceFormat, BufferFormat destFormat)
 	    {
 			using (var wic = new GorgonWICImage())
@@ -1510,7 +1510,7 @@ namespace Gorgon.Graphics
 	    /// </summary>
 	    /// <param name="sourceFormat">Source format to compare.</param>
 	    /// <param name="destFormat">List of destination formats to compare.</param>
-	    /// <returns><c>true</c> if the format can be converted, <c>false</c> if not.</returns>
+	    /// <returns><b>true</b> if the format can be converted, <b>false</b> if not.</returns>
 	    public static bool CanConvertToAll(BufferFormat sourceFormat, IEnumerable<BufferFormat> destFormat)
 	    {
 			if ((sourceFormat == BufferFormat.Unknown)
@@ -1711,11 +1711,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="width">New width of the image data.</param>
 		/// <param name="height">New height of the image data.</param>
-		/// <param name="clip"><c>true</c> to clip the image data, or <c>false</c> to scale the image data to the new size.</param>
+		/// <param name="clip"><b>true</b> to clip the image data, or <b>false</b> to scale the image data to the new size.</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
 		/// <remarks>
-		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <c>true</c>, then the image data will be clipped.  That is, it
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <b>true</b>, then the image data will be clipped.  That is, it
 		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
 		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
 		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
@@ -1733,16 +1733,16 @@ namespace Gorgon.Graphics
 		/// <param name="width">New width of the image data.</param>
 		/// <param name="height">New height of the image data.</param>
 		/// <param name="filter">Filtering to apply to the image if it was upscaled or downscaled.</param>
-		/// <param name="clip"><c>true</c> to clip the image data, or <c>false</c> to scale the image data to the new size.</param>
+		/// <param name="clip"><b>true</b> to clip the image data, or <b>false</b> to scale the image data to the new size.</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
 		/// <remarks>
-		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <c>true</c>, then the image data will be clipped.  That is, it
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to <b>true</b>, then the image data will be clipped.  That is, it
 		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
 		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
 		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
 		/// <para>If the image is in a format that is not supported, an exception will be thrown.</para>
-		/// <para>The <paramref name="filter"/> parameter will only be applied with <paramref name="clip"/> is set to <c>false</c>.  Otherwise it has no effect.</para>
+		/// <para>The <paramref name="filter"/> parameter will only be applied with <paramref name="clip"/> is set to <b>false</b>.  Otherwise it has no effect.</para>
 		/// </remarks>
 		public void Resize(int width, int height, bool clip, ImageFilter filter)
 		{
@@ -1952,7 +1952,7 @@ namespace Gorgon.Graphics
         /// <param name="settings">The settings to describe an image.</param>
         /// <param name="data">Pointer to pre-existing image data.</param>
         /// <param name="dataSize">Size of the data, in bytes.  This parameter is ignored if the data parameter is NULL.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
 		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
 		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
@@ -1994,7 +1994,7 @@ namespace Gorgon.Graphics
         /// <param name="settings">The settings to describe an image.</param>
         /// <param name="data">Pointer to pre-existing image data.</param>
         /// <param name="dataSize">Size of the data, in bytes.  This parameter is ignored if the data parameter is NULL.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
 		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
 		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
@@ -2014,7 +2014,7 @@ namespace Gorgon.Graphics
 		/// Initializes a new instance of the <see cref="GorgonImageData" /> class.
 		/// </summary>
 		/// <param name="settings">The settings to describe an image.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">Thrown when the image format is unknown or is unsupported.</exception>
 		/// <remarks>This overload takes a <paramref name="settings"/> value that implements the <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> interface.  
 		/// The GorgonTexture[n]DSettings (where n = <see cref="Gorgon.Graphics.GorgonTexture1DSettings">1</see>, <see cref="Gorgon.Graphics.GorgonTexture2DSettings">2</see>, 
@@ -2029,7 +2029,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
 	        if (_disposed)

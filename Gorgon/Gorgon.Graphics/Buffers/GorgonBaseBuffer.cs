@@ -457,7 +457,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the buffer.</param>
         /// <param name="start">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
-        /// <param name="isRaw"><c>true</c> if using a raw view to the buffer, <c>false</c> if not.</param>
+        /// <param name="isRaw"><b>true</b> if using a raw view to the buffer, <b>false</b> if not.</param>
         /// <param name="viewType">The type of view for a structured buffer.</param>
         /// <returns>An unordered access view for the buffer.</returns>
         /// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a Shader View, only one 
@@ -593,7 +593,7 @@ namespace Gorgon.Graphics
         /// <param name="format">The format of the view.</param>
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
-        /// <param name="isRaw"><c>true</c> if using a raw view of the buffer, <c>false</c> if not.</param>
+        /// <param name="isRaw"><b>true</b> if using a raw view of the buffer, <b>false</b> if not.</param>
         /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
@@ -602,7 +602,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to <c>true</c> in its settings.</para>
+        /// <para>Raw views require that the buffer be created with the <see cref="Gorgon.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to <b>true</b> in its settings.</para>
         /// <para>Raw views can only be used on SM5 video devices or better. </para>
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -690,7 +690,7 @@ namespace Gorgon.Graphics
         /// Function used to initialize the buffer with data.
         /// </summary>
         /// <param name="data">Data to write.</param>
-        /// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
+        /// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
         internal void Initialize(GorgonDataStream data)
         {
             GorgonApplication.Log.Print("Creating {0} Buffer '{1}'...", LoggingLevel.Verbose, BufferType, Name);
@@ -861,7 +861,7 @@ namespace Gorgon.Graphics
 		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
 		/// marshalling will be required in order to copy structures with reference types.  
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -899,14 +899,14 @@ namespace Gorgon.Graphics
 		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
 		/// marshalling will be required in order to copy structures with reference types.  
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
         /// </para>
         /// <para>This will only work on buffers created with a usage type of [Default].</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
 		public virtual void Update<T>(T[] data, GorgonGraphics deferred = null)
 			where T : struct
@@ -939,13 +939,13 @@ namespace Gorgon.Graphics
         /// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
         /// to 0.</para>
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
         /// </para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
         public void Update(GorgonDataStream stream, GorgonGraphics deferred = null)
         {
@@ -969,7 +969,7 @@ namespace Gorgon.Graphics
         /// Function to unlock a locked buffer.
         /// </summary>
         /// <param name="deferred">[Optional] The deferred context that was used to lock the buffer.</param>
-        /// <remarks>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate graphics context will be used to unlock the buffer.  Otherwise, the specified deferred context will be used 
+        /// <remarks>If <paramref name="deferred"/> is NULL (<i>Nothing</i> in VB.Net), then the immediate graphics context will be used to unlock the buffer.  Otherwise, the specified deferred context will be used 
         /// to unlock the buffer.
         /// <para>Ensure that the context used to lock the buffer is the same as the one passed to <paramref name="deferred"/>.</para>
         /// </remarks>
@@ -996,7 +996,7 @@ namespace Gorgon.Graphics
         /// is made to lock them.</para>
         /// <para>Some buffers may raise an exception with locking with certain <paramref name="lockFlags"/>.  This is dependant upon the type of buffer.</para>
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to lock the buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to lock the buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to lock the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>

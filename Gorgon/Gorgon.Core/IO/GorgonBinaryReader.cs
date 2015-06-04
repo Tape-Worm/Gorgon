@@ -166,7 +166,7 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
 		/// <para>-or-</para>
 		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -235,7 +235,7 @@ namespace Gorgon.IO
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="count">Number of array elements to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
@@ -250,7 +250,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
 		public void ReadRange<T>(T[] value)
 			where T : struct
@@ -286,7 +286,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="input">Input stream.</param>
 		/// <param name="encoder">Encoding for the binary reader.</param>
-		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
 		public GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamOpen = false)
 			: base(input, encoder, keepStreamOpen)
 		{
@@ -297,7 +297,7 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
 		/// </summary>
 		/// <param name="input">Input stream.</param>
-		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
 		public GorgonBinaryReader(Stream input, bool keepStreamOpen = false)
 			: this(input, Encoding.UTF8, keepStreamOpen)
 		{

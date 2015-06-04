@@ -89,7 +89,7 @@ namespace Gorgon.Plugins
 		/// Function to remove a path entry from the collection.
 		/// </summary>
 		/// <param name="path">The path to remove from the list.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the <paramref name="path"/> specified is not in the collection.</exception>
 		public void Remove(string path)
@@ -253,7 +253,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
 		/// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		public void Insert(int index, string path)
 		{
@@ -299,7 +299,7 @@ namespace Gorgon.Plugins
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		bool ICollection<string>.IsReadOnly
 		{
@@ -341,7 +341,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="path">The path to add to the collection.</param>
 		/// <remarks>If the path is already in the collection, it will not be added again.</remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
 		public void Add(string path)
 		{
@@ -397,9 +397,11 @@ namespace Gorgon.Plugins
 
 		#region IEnumerable<string> Members
 		/// <summary>
-		/// Gets the enumerator.
+		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>
+		/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+		/// </returns>
 		public IEnumerator<string> GetEnumerator()
 		{
 		    return _paths.GetEnumerator();

@@ -137,7 +137,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -227,7 +227,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function called when the attached swap chain is resized.
 		/// </summary>
-		/// <returns><c>true</c> if the swap chain was bound to slot 0, and needs to be rebound.</returns>
+		/// <returns><b>true</b> if the swap chain was bound to slot 0, and needs to be rebound.</returns>
 		internal bool OnSwapChainResize()
 		{
 			var currentTarget = Graphics.Output.GetRenderTarget(0);
@@ -332,7 +332,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default view for the render target.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -352,7 +352,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default view for the render target.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -379,7 +379,7 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// This will only clear the default view for the render target.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -408,7 +408,7 @@ namespace Gorgon.Graphics
 		/// <remarks>
         /// This will only clear the default view for the render target.
         /// <para>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>

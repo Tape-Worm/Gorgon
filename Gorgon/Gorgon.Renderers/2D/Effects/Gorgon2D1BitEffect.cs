@@ -100,9 +100,9 @@ namespace Gorgon.Renderers
 			/// Initializes a new instance of the <see cref="Settings"/> struct.
 			/// </summary>
 			/// <param name="range">The range.</param>
-			/// <param name="average">if set to <c>true</c> [average].</param>
-			/// <param name="invert">if set to <c>true</c> [invert].</param>
-			/// <param name="useAlpha">if set to <c>true</c> [use alpha].</param>
+			/// <param name="average">if set to <b>true</b> [average].</param>
+			/// <param name="invert">if set to <b>true</b> [invert].</param>
+			/// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
 			public Settings(GorgonRangeF range, bool average, bool invert, bool useAlpha)
 			{
 				WhiteRange = range;
@@ -249,7 +249,7 @@ namespace Gorgon.Renderers
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> to continue rendering, <c>false</c> to exit.
+		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
@@ -276,7 +276,7 @@ namespace Gorgon.Renderers
 	    /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed)

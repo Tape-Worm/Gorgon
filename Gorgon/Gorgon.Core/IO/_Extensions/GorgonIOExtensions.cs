@@ -71,7 +71,7 @@ namespace Gorgon.IO
         /// <param name="encoding">Encoding for the string.</param>
         /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
         /// string as a series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding will be used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
         /// </remarks>
         /// <returns>The number of bytes written to the stream.</returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
@@ -125,7 +125,7 @@ namespace Gorgon.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding is used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
         /// </remarks>
         public static void WriteString(this Stream stream, string value, Encoding encoding)
         {
@@ -171,7 +171,7 @@ namespace Gorgon.IO
         /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding is used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
         /// </remarks>
         public static string ReadString(this Stream stream, Encoding encoding)
         {

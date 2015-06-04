@@ -59,7 +59,7 @@ namespace Fonts
 		/// Property to return the path to the resources for the example.
 		/// </summary>
 		/// <param name="resourceItem">The directory or file to use as a resource.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
 		private static string GetResourcePath(string resourceItem)
 		{
 			string path = Settings.Default.ResourceLocation;
@@ -94,7 +94,7 @@ namespace Fonts
 		/// <summary>
 		/// Function to handle idle CPU time.
 		/// </summary>
-		/// <returns><c>true</c> to continue handling idle time, <c>false</c> to stop.</returns>
+		/// <returns><b>true</b> to continue handling idle time, <b>false</b> to stop.</returns>
 		private static bool Idle()
 		{
 			_renderer.Clear(Color.Blue);

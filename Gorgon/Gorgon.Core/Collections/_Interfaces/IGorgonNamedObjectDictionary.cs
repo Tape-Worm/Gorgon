@@ -32,7 +32,7 @@ using Gorgon.Core;
 namespace Gorgon.Collections
 {
 	/// <summary>
-	/// A generic interface for a dictionary of named objects that can be indexed by key.
+	/// A generic interface for a dictionary of named objects that can be indexed by name.
 	/// </summary>
 	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectDictionary<T> 
@@ -44,7 +44,7 @@ namespace Gorgon.Collections
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		new bool IsReadOnly
@@ -75,7 +75,7 @@ namespace Gorgon.Collections
 		/// Function to remove an item by its name.
 		/// </summary>
 		/// <param name="name">The name of the object to remove.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="KeyNotFoundException">Thrown when no item with the name specified could be found in the dictionary.</exception>
 		void Remove(string name);
@@ -84,7 +84,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns><c>true</c>if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b>if found, <b>false</b> if not.</returns>
 		bool Contains(string name);
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">The name of the item to look up.</param>
 		/// <param name="value">The item, if found, or the default value for the type if not.</param>
-		/// <returns><c>true</c> if the item was found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool TryGetValue(string name, out T value);
 		#endregion
 	}

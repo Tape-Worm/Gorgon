@@ -84,7 +84,7 @@ namespace Gorgon.Editor
             /// </summary>
             /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -311,7 +311,7 @@ namespace Gorgon.Editor
         /// Function to validate any settings on this panel.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if the settings are valid, <c>false</c> if not.
+        /// <b>true</b> if the settings are valid, <b>false</b> if not.
         /// </returns>
         public override bool ValidateSettings()
         {

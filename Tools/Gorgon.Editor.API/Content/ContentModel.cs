@@ -98,7 +98,7 @@ namespace Gorgon.Editor
 		/// Property to return the content view.
 		/// </summary>
 		/// <remarks>
-		/// If the content does not support views, then this value will be NULL (Nothing in VB.Net).
+		/// If the content does not support views, then this value will be NULL (<i>Nothing</i> in VB.Net).
 		/// </remarks>
 		public IContentPanel View
 		{
@@ -162,7 +162,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)

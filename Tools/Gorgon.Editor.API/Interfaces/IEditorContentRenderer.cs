@@ -66,7 +66,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the color to use when clearing the render surface.
 		/// </summary>
-		/// <remarks>Set this value to NULL (Nothing in VB.Net) to use the control background color.</remarks>
+		/// <remarks>Set this value to NULL (<i>Nothing</i> in VB.Net) to use the control background color.</remarks>
 		GorgonColor? ClearColor
 		{
 			get;

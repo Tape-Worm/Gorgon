@@ -257,7 +257,7 @@ namespace Gorgon.Graphics
         /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
         /// <remarks>
         /// This method will clear both the stencil and depth buffer.
-        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para></para>
@@ -290,7 +290,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="depthValue">Value to fill the depth buffer with.</param>
 		/// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
-		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -316,7 +316,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="stencilValue">Value to fill the stencil buffer with.</param>
         /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
-        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>

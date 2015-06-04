@@ -53,7 +53,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
 			return (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
@@ -65,7 +65,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -104,7 +104,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
 			return Equals(ref left, ref right);
@@ -115,7 +115,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
 			return !Equals(ref left, ref right);
@@ -128,10 +128,10 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="physicalPath">The physical path.</param>
 		/// <param name="mountLocation">[Optional] The mount location.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
 		/// <remarks>
-		/// The <paramref name="mountLocation"/> is optional, if omitted then the phsyical file system object will be mounted under the root directory of the virtual file system. Passing <c>null</c> (Nothing in VB.Net) 
+		/// The <paramref name="mountLocation"/> is optional, if omitted then the phsyical file system object will be mounted under the root directory of the virtual file system. Passing <b>null</b> (<i>Nothing</i> in VB.Net) 
 		/// or an empty string to this parameter will default the mount location to the root.
 		/// </remarks>
 		public GorgonFileSystemMountPoint(string physicalPath, string mountLocation = null)
@@ -161,7 +161,7 @@ namespace Gorgon.IO
 		/// Function to determine if this instance is equal to another instance.
 		/// </summary>
 		/// <param name="other">The other instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(GorgonFileSystemMountPoint other)
 		{
 			return Equals(ref this, ref other);

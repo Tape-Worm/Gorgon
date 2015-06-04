@@ -181,7 +181,7 @@ namespace Gorgon.Graphics
 	    /// <param name="format">Formatter for the string.</param>
 	    /// <param name="character">Character to write.</param>
 	    /// <param name="position">Position on the bitmap.</param>
-	    /// <param name="useDefaultBrush"><c>true</c> to use the default brush, <c>false</c> to use the font glyph brush.</param>
+	    /// <param name="useDefaultBrush"><b>true</b> to use the default brush, <b>false</b> to use the font glyph brush.</param>
 	    private void DrawGlyphCharacter(System.Drawing.Graphics graphics, Font font, StringFormat format, char character, Rectangle position, bool useDefaultBrush)
 	    {
 		    string charString = character.ToString(CultureInfo.CurrentCulture);
@@ -265,7 +265,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="pixels">Pixels to evaluate.</param>
 		/// <param name="x">Horizontal position.</param>
-		/// <returns><c>true</c> if empty, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if empty, <b>false</b> if not.</returns>
 		private static unsafe bool IsBitmapColumnEmpty(BitmapData pixels, int x)
 		{
 			int* pixel = (int *)pixels.Scan0.ToPointer() + x;
@@ -288,7 +288,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="pixels">Pixels to evaluate.</param>
 		/// <param name="y">Vertical position.</param>
-		/// <returns><c>true</c> if empty, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if empty, <b>false</b> if not.</returns>
 		private static unsafe bool IsBitmapRowEmpty(BitmapData pixels, int y)
 		{
 			var pixel = (int*)pixels.Scan0.ToPointer();
@@ -864,10 +864,10 @@ namespace Gorgon.Graphics
 		/// Function to save the font to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write into.</param>
-		/// <param name="externalTextures">[Optional] <c>true</c> to save the textures as external files, <c>false</c> to bundle them with the font.</param>
+		/// <param name="externalTextures">[Optional] <b>true</b> to save the textures as external files, <b>false</b> to bundle them with the font.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter does not allow for writing.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the externalTextures parameter is <c>true</c> and the stream is not a file stream.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the externalTextures parameter is <b>true</b> and the stream is not a file stream.</exception>
 		/// <remarks>The <paramref name="externalTextures"/> parameter will only work on file streams, if the stream is not a file stream, then an exception will be thrown.</remarks>
 		public void Save(Stream stream, bool externalTextures = false)
 		{
@@ -1100,11 +1100,11 @@ namespace Gorgon.Graphics
 		/// Function to save the font to a file.
 		/// </summary>
 		/// <param name="fileName">File name and path of the font to save.</param>
-		/// <param name="externalTextures">[Optional] <c>true</c> to save the textures external to the font file, <c>false</c> to bundle together with the font file.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <param name="externalTextures">[Optional] <b>true</b> to save the textures external to the font file, <b>false</b> to bundle together with the font file.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
-		/// <remarks>Saving the textures externally with the <paramref name="externalTextures"/> parameter set to <c>true</c> is good for altering the textures in an image 
-		/// editing application.  Ultimately, it is recommended that the textures be bundled with the font by setting externalTextures to <c>false</c>.</remarks>
+		/// <remarks>Saving the textures externally with the <paramref name="externalTextures"/> parameter set to <b>true</b> is good for altering the textures in an image 
+		/// editing application.  Ultimately, it is recommended that the textures be bundled with the font by setting externalTextures to <b>false</b>.</remarks>
 		public void Save(string fileName, bool externalTextures = false)
 		{
 			FileStream stream = null;
@@ -1196,7 +1196,7 @@ namespace Gorgon.Graphics
 		/// <para>Internal textures used by the glyph will be destroyed.  However, if there's a user defined texture or glyph using a user defined texture, then it will not be destroyed 
 		/// and clean up will be the responsibility of the user.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
 		/// <para>-or-</para>
 		/// <para>Thrown when the font family name is NULL or Empty.</para>
@@ -1562,7 +1562,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (IsDisposed)

@@ -265,8 +265,8 @@ namespace Gorgon.Animation
         /// </summary>
         /// <remarks>
         /// Assign a function to this property if you wish to override the keyframe animation code.  The override function should have 2 parameters: an object that matches the type 
-        /// T for the animation, and a float value that represents the current time in the animation.  The return value for the function should either return <c>false</c> to indicate that 
-        /// the animation updating for this object has been handled, or <c>true</c> if the animation should continue to update the object based on key frame information. 
+        /// T for the animation, and a float value that represents the current time in the animation.  The return value for the function should either return <b>false</b> to indicate that 
+        /// the animation updating for this object has been handled, or <b>true</b> if the animation should continue to update the object based on key frame information. 
         /// </remarks>
         public Func<T, float, bool> TimeUpdatedCallback
         {

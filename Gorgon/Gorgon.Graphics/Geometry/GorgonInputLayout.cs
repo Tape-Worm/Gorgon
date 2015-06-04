@@ -181,7 +181,7 @@ namespace Gorgon.Graphics
         /// <remarks>Use this to create an input element layout from a type.  Properties and fields in this type must be marked with the <see cref="Gorgon.Graphics.InputElementAttribute">GorgonInputElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
         /// <para>Fields/properties marked with the attribute must be either a (u)byte, (u)short, (u)int, (u)long, float or one of the Vector2/3/4D types.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="type"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="type"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="GorgonException">Thrown if a field/property type cannot be mapped to a <see cref="Gorgon.Graphics.BufferFormat">GorgonBufferFormat</see>.</exception>
         internal void InitializeFromType(Type type)
 		{
@@ -364,7 +364,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

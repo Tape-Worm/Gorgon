@@ -613,7 +613,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed)
@@ -702,7 +702,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// Function called when the content is reverted back to its original state.
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> if reverted, <c>false</c> if not.
+		/// <b>true</b> if reverted, <b>false</b> if not.
 		/// </returns>
 		protected override bool OnRevert()
 		{

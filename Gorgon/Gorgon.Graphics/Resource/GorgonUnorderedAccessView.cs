@@ -101,7 +101,7 @@ namespace Gorgon.Graphics
         /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
         /// <para>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the array</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
         public void Clear(int[] values)
         {
@@ -147,7 +147,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="values">Values used to clear.</param>
         /// <remarks>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the array.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
         public void Clear(float[] values)
         {

@@ -26,7 +26,7 @@
 
 using System;
 
-namespace Gorgon
+namespace Gorgon.Core
 {
 	/// <summary>
 	/// A base cancel event argument.
@@ -49,7 +49,7 @@ namespace Gorgon
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCancelEventArgs"/> class.
 		/// </summary>
-		/// <param name="cancel"><c>true</c> if the operation should be canceled, <c>false</c> if not.</param>
+		/// <param name="cancel"><b>true</b> if the operation should be canceled, <b>false</b> if not.</param>
 		public GorgonCancelEventArgs(bool cancel)
 		{
 			Cancel = cancel;

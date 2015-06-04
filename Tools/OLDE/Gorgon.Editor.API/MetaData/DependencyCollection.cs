@@ -65,7 +65,7 @@ namespace Gorgon.Editor
 			/// </summary>
 			/// <param name="left">Left instance to compare.</param>
 			/// <param name="right">Right instance to compare.</param>
-			/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+			/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 			public static bool Equals(ref DependencyKey left, ref DependencyKey right)
 			{
 				return ((left.File == right.File)
@@ -88,7 +88,7 @@ namespace Gorgon.Editor
 			/// </summary>
 			/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 			/// <returns>
-			///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+			///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 			/// </returns>
 			public override bool Equals(object obj)
 			{
@@ -200,7 +200,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return a dependency by name.
 		/// </summary>
-		/// <remarks>Setting a dependency to NULL (Nothing in VB.Net) will remove it from the collection.</remarks>
+		/// <remarks>Setting a dependency to NULL (<i>Nothing</i> in VB.Net) will remove it from the collection.</remarks>
 		public Dependency this[EditorFile file, string type]
 		{
 			get
@@ -302,9 +302,9 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="file">Editor file for the dependency.</param>
 		/// <param name="type">Type of dependency.</param>
-		/// <param name="value">The dependency, if found.  NULL (Nothing in VB.Net) if not.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> or the <paramref name="type"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <param name="value">The dependency, if found.  NULL (<i>Nothing</i> in VB.Net) if not.</param>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> or the <paramref name="type"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="type"/> parameter is empty.</exception>
 		public bool TryGetValue(EditorFile file, string type, out Dependency value)
 		{
@@ -331,7 +331,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="file">The dependency file.</param>
 		/// <param name="type">Type of the dependency.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(EditorFile file, string type = null)
 		{
 			return !string.IsNullOrWhiteSpace(type)

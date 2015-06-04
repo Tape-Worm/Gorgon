@@ -38,7 +38,7 @@ namespace Gorgon.Renderers
 		/// Function to save the renderable to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for writing data.</exception>
 		void Save(Stream stream);
 
@@ -46,7 +46,7 @@ namespace Gorgon.Renderers
 		/// Function to read the renderable data from a stream.
 		/// </summary>
 		/// <param name="stream">Open file stream containing the renderable data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
 		/// <exception cref="GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		void Load(Stream stream);

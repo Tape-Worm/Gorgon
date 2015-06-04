@@ -178,7 +178,7 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly contains plug-ins.
 		/// </summary>
 		/// <param name="name">Name of the assembly to check.</param>
-		/// <returns><c>true</c> if plug-ins are found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if plug-ins are found, <b>false</b> if not.</returns>
 		public bool IsPlugInAssembly(AssemblyName name)
 		{
             return GetPlugInTypes(name).Length > 0;

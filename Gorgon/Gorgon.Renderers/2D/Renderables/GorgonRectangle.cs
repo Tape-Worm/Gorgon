@@ -332,7 +332,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the rectangle.</param>
-		/// <param name="filled"><c>true</c> to draw a filled rectangle, <c>false</c> to draw an outline.</param>
+		/// <param name="filled"><b>true</b> to draw a filled rectangle, <b>false</b> to draw an outline.</param>
 		internal GorgonRectangle(Gorgon2D gorgon2D, string name, bool filled)
 			: base(gorgon2D, name)
 		{

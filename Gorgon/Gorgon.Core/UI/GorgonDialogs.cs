@@ -202,7 +202,7 @@ namespace Gorgon.UI
 		/// <param name="message">Supplementary error message.</param>
 		/// <param name="caption">Caption for the error box.</param>
 		/// <param name="innerException">Exception that was thrown.</param>
-		/// <param name="autoShowDetails">[Optional] <c>true</c> to open the details pane, <c>false</c> to leave it closed.</param>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane, <b>false</b> to leave it closed.</param>
 		public static void ErrorBox(Form owner, string message, string caption, Exception innerException, bool autoShowDetails = false)
 		{
 			if (string.IsNullOrWhiteSpace(message))
@@ -230,8 +230,8 @@ namespace Gorgon.UI
 		/// <param name="description">Error description.</param>
 		/// <param name="caption">[Optional] Caption for the error box.</param>
 		/// <param name="details">[Optional] Details for the error.</param>
-		/// <param name="autoShowDetails">[Optional] <c>true</c> to automatically open the details pane, <c>false</c> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is NULL (Nothing in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
+		/// <remarks>If the <paramref name="details"/> parameter is NULL (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
 		public static void ErrorBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			ErrorDialog errorDialog = null;
@@ -322,8 +322,8 @@ namespace Gorgon.UI
 		/// <param name="description">Error description.</param>
 		/// <param name="caption">[Optional] Caption for the error box.</param>
 		/// <param name="details">[Optional] Details for the error.</param>
-		/// <param name="autoShowDetails">[Optional] <c>true</c> to automatically open the details pane, <c>false</c> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is NULL (Nothing in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
+		/// <remarks>If the <paramref name="details"/> parameter is NULL (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
 		public static void WarningBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			if (string.IsNullOrEmpty(caption))
@@ -365,8 +365,8 @@ namespace Gorgon.UI
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="message">Message to display.</param>
 		/// <param name="caption">[Optional] Caption for the dialog.</param>
-		/// <param name="allowCancel">[Optional] <c>true</c> to show a Cancel button, <c>false</c> to hide.</param>
-		/// <param name="allowToAll">[Optional] <c>true</c> to show a 'To all' option, <c>false</c> to hide.</param>
+		/// <param name="allowCancel">[Optional] <b>true</b> to show a Cancel button, <b>false</b> to hide.</param>
+		/// <param name="allowToAll">[Optional] <b>true</b> to show a 'To all' option, <b>false</b> to hide.</param>
 		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
 		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption = "", bool allowCancel = false, bool allowToAll = false)
 		{

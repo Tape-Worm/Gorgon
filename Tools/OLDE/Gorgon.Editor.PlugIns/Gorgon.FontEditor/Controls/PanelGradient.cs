@@ -125,7 +125,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 			/// </summary>
 			/// <param name="mouseCursor">Cursor position in client space.</param>
 			/// <param name="region">The region containing the weight node.</param>
-			/// <returns><c>true</c> if over the node, <c>false</c> if not.</returns>
+			/// <returns><b>true</b> if over the node, <b>false</b> if not.</returns>
 			public bool HitTest(Point mouseCursor, Rectangle region)
 			{
 				float horizontalPosition = (region.Width - 1) * Weight;
@@ -150,8 +150,8 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 			/// </summary>
 			/// <param name="g">Graphics context.</param>
 			/// <param name="region">Region containing the weight node.</param>
-			/// <param name="isInteractive"><c>true</c> to draw as an interactive node, <c>false</c> to draw as a static node.</param>
-			/// <param name="isSelected"><c>true</c> to draw the node as selected, <c>false</c> to draw as unselected.</param>
+			/// <param name="isInteractive"><b>true</b> to draw as an interactive node, <b>false</b> to draw as a static node.</param>
+			/// <param name="isSelected"><b>true</b> to draw the node as selected, <b>false</b> to draw as unselected.</param>
 			public void Draw(System.Drawing.Graphics g, Rectangle region, bool isInteractive, bool isSelected)
 			{
 				float horizontalPosition = (region.Width - 1) * Weight;
@@ -1076,7 +1076,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 		/// Function to convert a Gorgon glyph brush into a GDI+ linear gradient brush.
 		/// </summary>
 		/// <param name="destRect">Destination rectangle.</param>
-		/// <param name="rotate"><c>true</c> to rotate the gradient, <c>false</c> to keep it oriented as is.</param>
+		/// <param name="rotate"><b>true</b> to rotate the gradient, <b>false</b> to keep it oriented as is.</param>
 		private Brush UpdateBrush(RectangleF destRect, bool rotate)
 		{
 			var linearBrush = new LinearGradientBrush(destRect,

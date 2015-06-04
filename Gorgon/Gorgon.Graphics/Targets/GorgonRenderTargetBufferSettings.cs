@@ -104,7 +104,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow unordered access to the buffer.
 		/// </summary>
 		/// <remarks>Unordered access views require a video device with SM5 capabilities.
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccessViews
 		{
@@ -115,7 +115,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to allow shader resource views for this buffer.
 		/// </summary>
-		/// <remarks>The default value is <c>false</c>.
+		/// <remarks>The default value is <b>false</b>.
 		/// </remarks>
 		public bool AllowShaderViews
 		{
@@ -140,8 +140,8 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether a buffer will allow raw views.
 		/// </summary>
 		/// <remarks>
-		/// This value must be set to <c>false</c> if <see cref="AllowShaderViews" /> or <see cref="AllowUnorderedAccessViews" /> is set to <c>false</c>.
-		/// <para>The default value is <c>false</c>.</para>
+		/// This value must be set to <b>false</b> if <see cref="AllowShaderViews" /> or <see cref="AllowUnorderedAccessViews" /> is set to <b>false</b>.
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowRawViews
 		{
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether the buffer will be used as an indirect argument buffer.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
-		/// <remarks>This value does not apply to render target buffers and will always return <c>false</c>.</remarks>
+		/// <remarks>This value does not apply to render target buffers and will always return <b>false</b>.</remarks>
 		bool IBufferSettings.AllowIndirectArguments
 		{
 			get
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
-		/// <remarks>This value does not apply to render target buffers and will always return <c>false</c>.</remarks>
+		/// <remarks>This value does not apply to render target buffers and will always return <b>false</b>.</remarks>
 		bool IBufferSettings.IsOutput
 		{
 			get

@@ -64,7 +64,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="name">The name.</param>
 		/// <param name="value">Value to pass to the property.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonCustomHIDProperty(string name, object value)
 			: base(name)

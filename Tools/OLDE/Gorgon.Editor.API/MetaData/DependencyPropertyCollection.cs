@@ -125,7 +125,7 @@ namespace Gorgon.Editor
 		/// Function to add a list of properties to the collection.
 		/// </summary>
 		/// <param name="properties">Properties to add to the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="properties"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="properties"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void AddRange(IEnumerable<DependencyProperty> properties)
 		{
 			if (properties == null)

@@ -186,7 +186,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="e">Event parameters passed to the event.</param>
 		/// <remarks>
-		/// The parameter specified by <paramref name="e"/> contains allows the user to cancel the close operation. If the Cancel flag is set to <c>true</c>, then the close operation will be cancelled.
+		/// The parameter specified by <paramref name="e"/> contains allows the user to cancel the close operation. If the Cancel flag is set to <b>true</b>, then the close operation will be cancelled.
 		/// </remarks>
 		protected virtual void OnContentClosing(GorgonCancelEventArgs e)
 		{
@@ -369,7 +369,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the control that will receive rendering.
 		/// </summary>
-		/// <remarks>When this property is set to NULL (Nothing in VB.Net), then the content area of this control will be used for rendering.</remarks>
+		/// <remarks>When this property is set to NULL (<i>Nothing</i> in VB.Net), then the content area of this control will be used for rendering.</remarks>
 		[Browsable(false)]
 		public Control RenderControl
 		{

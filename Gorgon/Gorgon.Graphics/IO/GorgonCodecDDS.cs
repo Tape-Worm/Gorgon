@@ -1925,7 +1925,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="stream">Stream used to read the file information.</param>
 		/// <returns>
-		/// <c>true</c> if the codec can read the file, <c>false</c> if not.
+		/// <b>true</b> if the codec can read the file, <b>false</b> if not.
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>

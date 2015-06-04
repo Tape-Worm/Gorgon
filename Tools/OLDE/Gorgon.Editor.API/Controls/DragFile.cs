@@ -61,7 +61,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Function to open a stream to the file.
         /// </summary>
-        /// <returns>A read-only stream to the file, or NULL (Nothing in VB.Net) if no file is attached to this drag node.</returns>
+        /// <returns>A read-only stream to the file, or NULL (<i>Nothing</i> in VB.Net) if no file is attached to this drag node.</returns>
 	    public Stream OpenFile()
 	    {
             if ((FileNode == null)

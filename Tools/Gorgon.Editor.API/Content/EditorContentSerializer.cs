@@ -50,7 +50,7 @@ namespace Gorgon.Editor
 		/// <param name="contentData">The content to be peristed to the stream.</param>
 		/// <param name="stream">The stream that will receive the flattened content data.</param>
 		/// <remarks>
-		/// Both the <paramref name="contentData"/> and <paramref name="stream"/> parameters are guaranteed to never be NULL (Nothing in VB.Net). 
+		/// Both the <paramref name="contentData"/> and <paramref name="stream"/> parameters are guaranteed to never be NULL (<i>Nothing</i> in VB.Net). 
 		/// And the <paramref name="stream"/> parameter will always be write-only.
 		/// </remarks>
 		protected abstract void OnSerialize(object contentData, Stream stream);
@@ -61,7 +61,7 @@ namespace Gorgon.Editor
 		/// <param name="stream">The stream that will receive the flattened content data.</param>
 		/// <returns>The content object data if successful, NULL if not.</returns>
 		/// <remarks>
-		/// The parameter is guaranteed to never be NULL (Nothing in VB.Net) and it will always be read-only.
+		/// The parameter is guaranteed to never be NULL (<i>Nothing</i> in VB.Net) and it will always be read-only.
 		/// </remarks>
 		protected abstract object OnDeserialize(Stream stream);
 		#endregion
@@ -95,9 +95,9 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="contentData">The content to be peristed to the stream.</param>
 		/// <param name="stream">The stream that will receive the flattened content data.</param>
-		/// <returns><c>true</c> if the content was serialized successfully, <c>false</c> if the content serialization was cancelled.</returns>
+		/// <returns><b>true</b> if the content was serialized successfully, <b>false</b> if the content serialization was cancelled.</returns>
 		/// <remarks>
-		/// Both the <paramref name="contentData"/> and <paramref name="stream"/> parameters are guaranteed to never be NULL (Nothing in VB.Net). 
+		/// Both the <paramref name="contentData"/> and <paramref name="stream"/> parameters are guaranteed to never be NULL (<i>Nothing</i> in VB.Net). 
 		/// And the <paramref name="stream"/> parameter will always be write-only.
 		/// </remarks>
 		public bool Serialize(object contentData, Stream stream)
@@ -131,7 +131,7 @@ namespace Gorgon.Editor
 		/// <param name="stream">The stream that will receive the flattened content data.</param>
 		/// <returns>The content object data if successful, NULL if the operation was cancelled.</returns>
 		/// <remarks>
-		/// The parameter is guaranteed to never be NULL (Nothing in VB.Net) and it will always be read-only.
+		/// The parameter is guaranteed to never be NULL (<i>Nothing</i> in VB.Net) and it will always be read-only.
 		/// </remarks>
 		public object Deserialize(Stream stream)
 		{

@@ -67,7 +67,7 @@ namespace Gorgon.Editor
 		/// Initializes a new instance of the <see cref="DependencyLoadResult"/> struct.
 		/// </summary>
 		/// <param name="state">The state of the result.</param>
-		/// <param name="errorMessage">The error message for the result.  Pass NULL (Nothing in VB.Net) for a successful result.</param>
+		/// <param name="errorMessage">The error message for the result.  Pass NULL (<i>Nothing</i> in VB.Net) for a successful result.</param>
 		public DependencyLoadResult(DependencyLoadState state, string errorMessage)
 		{
 			State = state;

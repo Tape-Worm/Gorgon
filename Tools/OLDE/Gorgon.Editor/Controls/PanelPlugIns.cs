@@ -331,7 +331,7 @@ namespace Gorgon.Editor.Controls
 		/// Function to validate any settings on this panel.
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> if the settings are valid, <c>false</c> if not.
+		/// <b>true</b> if the settings are valid, <b>false</b> if not.
 		/// </returns>
 	    public override bool ValidateSettings()
 	    {

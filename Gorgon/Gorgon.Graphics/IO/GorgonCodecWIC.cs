@@ -183,7 +183,7 @@ namespace Gorgon.IO
 		/// <remarks>This property will encode or decode multiple frames from or into an array.  Note that this is only supported on codecs that support multiple frames (e.g. animated Gif).  
 		/// Images that do not support multiple frames will ignore this flag.
 		/// <para>This property applies to both encoding and decoding of image data.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		protected bool CodecUseAllFrames
 		{
@@ -734,7 +734,7 @@ namespace Gorgon.IO
 		/// <returns>
 		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
@@ -807,9 +807,9 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="stream">Stream used to read the file information.</param>
 		/// <returns>
-		/// <c>true</c> if the codec can read the file, <c>false</c> if not.
+		/// <b>true</b> if the codec can read the file, <b>false</b> if not.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream cannot perform seek operations.</para>

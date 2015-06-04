@@ -408,7 +408,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format is supported for display.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if the format is supported for displaying on the video device, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format is supported for displaying on the video device, <b>false</b> if not.</returns>
 		public bool SupportsDisplayFormat(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -437,7 +437,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format is supported for a 3D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if the format is supported for the texture, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format is supported for the texture, <b>false</b> if not.</returns>
 		public bool Supports3DTextureFormat(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -466,8 +466,8 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format is supported for a render target.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <param name="isMultiSampled"><c>true</c> if using a multisampled render target, <c>false</c> if not.</param>
-		/// <returns><c>true</c> if the format is supported for the render target, <c>false</c> if not.</returns>
+		/// <param name="isMultiSampled"><b>true</b> if using a multisampled render target, <b>false</b> if not.</param>
+		/// <returns><b>true</b> if the format is supported for the render target, <b>false</b> if not.</returns>
 		public bool SupportsRenderTargetFormat(BufferFormat format, bool isMultiSampled)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -502,7 +502,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format is supported for a 2D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if the format is supported for the texture, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format is supported for the texture, <b>false</b> if not.</returns>
 		public bool Supports2DTextureFormat(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -531,7 +531,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format is supported for a 1D texture.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if the format is supported for the texture, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format is supported for the texture, <b>false</b> if not.</returns>
 		public bool Supports1DTextureFormat(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -560,7 +560,7 @@ namespace Gorgon.Graphics
         /// Function to determine if the device supports a given format for unordered access views.
         /// </summary>
         /// <param name="format">Format to evaluate.</param>
-        /// <returns><c>true</c> if the format is supported, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the format is supported, <b>false</b> if not.</returns>
         /// <remarks>This is meant for UAVs that are used with a texture/buffer.  For structured buffers only Unknown is supported and for raw buffers only R32 (typeless) is supported.</remarks>
         public bool SupportsUnorderedAccessViewFormat(BufferFormat format)
         {
@@ -593,7 +593,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to determine if a device supports using rendering commands from multiple threads.
         /// </summary>
-        /// <returns><c>true</c> if support is available, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
         public bool SupportsMultithreadedCommands()
         {
             if (SupportedFeatureLevel < DeviceFeatureLevel.SM5)
@@ -628,7 +628,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to determine if a device supports creating resources from multiple threads.
         /// </summary>
-        /// <returns><c>true</c> if support is available, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
         public bool SupportsMultithreadedCreation()
         {
             if (SupportedFeatureLevel < DeviceFeatureLevel.SM5)
@@ -664,7 +664,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified format supports mip maps.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if mipmaps are supported for the format, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if mipmaps are supported for the format, <b>false</b> if not.</returns>
 		public bool SupportsMipMaps(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
@@ -693,7 +693,7 @@ namespace Gorgon.Graphics
 		/// Function to determine if the specified depth buffer format is supported.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
-		/// <returns><c>true</c> if the format is supported as a depth/stencil buffer, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the format is supported as a depth/stencil buffer, <b>false</b> if not.</returns>
 		public bool SupportsDepthFormat(BufferFormat format)
 		{
 			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;

@@ -132,7 +132,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -189,7 +189,7 @@ namespace Gorgon.Editor
 		/// Property to return whether the content has pending changes that need saving.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="Serializer" /> property is NULL (Nothing in VB.Net), then this property will always return <c>false</c>.
+		/// If the <see cref="Serializer" /> property is NULL (<i>Nothing</i> in VB.Net), then this property will always return <b>false</b>.
 		/// </remarks>
 		[Browsable(false)]
 		public bool HasChanges

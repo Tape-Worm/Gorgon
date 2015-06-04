@@ -315,7 +315,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="name">Name of the vertex buffer.</param>
 			/// <returns>The index of the vertex buffer if found, -1 if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public int IndexOf(string name)
 			{
@@ -344,8 +344,8 @@ namespace Gorgon.Graphics
 			/// Function to determine if the list contains a buffer with the specified name.
 			/// </summary>
 			/// <param name="name">Name of the buffer.</param>
-			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public bool Contains(string name)
 			{
@@ -357,7 +357,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="buffer">Vertex buffer to find.</param>
 			/// <returns>The index of the buffer binding in the list, -1 if not found.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			public int IndexOf(GorgonVertexBuffer buffer)
 			{
 				if (buffer == null)
@@ -380,8 +380,8 @@ namespace Gorgon.Graphics
 			/// Function to return whether the vertex buffer specified has a binding in the list.
 			/// </summary>
 			/// <param name="buffer">The buffer to find.</param>
-			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			public bool Contains(GorgonVertexBuffer buffer)
 			{
 				return IndexOf(buffer) > -1;
@@ -392,7 +392,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="binding">Bindings to set.</param>
 			/// <param name="slot">Index to start writing at.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</remarks>
+			/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
 			/// <exception cref="GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonVertexBufferBinding[] binding)
@@ -556,7 +556,7 @@ namespace Gorgon.Graphics
 			/// Function to return whether an item exists within this collection.
 			/// </summary>
 			/// <param name="item">Item to scan for.</param>
-			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+			/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 			public bool Contains(GorgonVertexBufferBinding item)
 			{
 				return IndexOf(item) > -1;
@@ -567,7 +567,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="array">The array to copy into.</param>
 			/// <param name="arrayIndex">Index of the array to start writing at.</param>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
 			public void CopyTo(GorgonVertexBufferBinding[] array, int arrayIndex)
 			{
@@ -752,7 +752,7 @@ namespace Gorgon.Graphics
 		/// <param name="shader">The shader that holds the input layout signature.</param>
 		/// <returns>The input layout object to create.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when then <paramref name="name"/> parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
 		/// <para>-or-</para>
@@ -795,7 +795,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
         /// <para>Thrown when the <paramref name="elements"/> parameter is empty.</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="elements"/> parameter is NULL.</para>
 		/// <para>-or-</para>

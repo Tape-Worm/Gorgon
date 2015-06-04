@@ -182,7 +182,7 @@ namespace Gorgon.Examples
         /// <summary>
 		/// Function to process during application idle time.
 		/// </summary>
-		/// <returns><c>true</c> to continue processing, <c>false</c> to stop.</returns>
+		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
 		private bool Idle()
 		{
 			// If we're using a polling method, then we can retrieve all the mouse

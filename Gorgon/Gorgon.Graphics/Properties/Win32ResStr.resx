@@ -1132,7 +1132,7 @@
     <value> Class not registered</value>
   </data>
   <data name="WINERR_S_FALSE" xml:space="preserve">
-    <value>Call successful	 but returned <c>false</c></value>
+    <value>Call successful	 but returned <b>false</b></value>
   </data>
   <data name="WINERR_S_NOT_RESIDENT" xml:space="preserve">
     <value> Resource not resident in memory</value>

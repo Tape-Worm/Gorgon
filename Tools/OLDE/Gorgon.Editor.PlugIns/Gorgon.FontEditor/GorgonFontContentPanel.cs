@@ -69,7 +69,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			/// </summary>
 			/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 			/// <returns>
-			///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+			///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 			/// </returns>
 			public override bool Equals(object obj)
 			{
@@ -766,7 +766,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    /// <summary>
 		/// Function to enable or disable the clipper numeric control limits.
 		/// </summary>
-		/// <param name="enable"><c>true</c> to enable the control limits, <c>false</c> to turn off the limits.</param>
+		/// <param name="enable"><b>true</b> to enable the control limits, <b>false</b> to turn off the limits.</param>
 	    private void EnableClipNumericLimits(bool enable)
 	    {
 			if ((!enable)
@@ -3924,7 +3924,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    /// <summary>
 		/// Function to initialize the editor transition.
 		/// </summary>
-		/// <param name="editOn"><c>true</c> when editing a glyph, <c>false</c> when exiting the editor.</param>
+		/// <param name="editOn"><b>true</b> when editing a glyph, <b>false</b> when exiting the editor.</param>
 	    private void InitializeGlyphEditTransition(bool editOn)
 	    {
 			// Move back to the selected texture index.

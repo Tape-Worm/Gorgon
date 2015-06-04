@@ -264,7 +264,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 	    public static bool Equals(ref GorgonBox left, ref GorgonBox right)
 	    {
 	        return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
         /// </returns>
 	    public override bool Equals(object obj)
 	    {
@@ -293,7 +293,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 	    public static bool operator ==(GorgonBox left, GorgonBox right)
 	    {
 	        return Equals(ref left, ref right);
@@ -304,7 +304,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+        /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
         public static bool operator !=(GorgonBox left, GorgonBox right)
 	    {
 	        return !Equals(ref left, ref right);

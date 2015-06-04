@@ -142,7 +142,7 @@ namespace Gorgon.Graphics
 		/// <param name="offset">The <see cref="Offset"/> of the glyph.</param>
 		/// <param name="advance">Advancement width for the glyph.</param>
 		/// <remarks>The <paramref name="glyphCoordinates"/> parameter is in pixel coordinates (i.e. 0 .. Width/Height).</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// </exception>
 		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Point offset, int advance)
 		{

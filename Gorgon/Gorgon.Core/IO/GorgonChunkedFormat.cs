@@ -124,7 +124,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to validate the access mode.
 		/// </summary>
-		/// <param name="isWrite"><c>true</c> if writing, <c>false</c> if not.</param>
+		/// <param name="isWrite"><b>true</b> if writing, <b>false</b> if not.</param>
 		protected void ValidateAccess(bool isWrite)
 		{
 			if ((isWrite) && (Writer == null))
@@ -159,7 +159,7 @@ namespace Gorgon.IO
 		/// Function to begin reading/writing the chunk
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
@@ -300,7 +300,7 @@ namespace Gorgon.IO
         /// </summary>
 		/// <param name="stream">The stream to use to output the chunked data.</param>
 		/// <param name="accessMode">Stream access mode for the chunk object.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="accessMode"/> parameter is set to read, but the stream cannot be read.
 		/// <para>-or-</para>
 		/// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>
@@ -346,7 +346,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
 	        if (_disposed)

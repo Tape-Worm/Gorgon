@@ -270,12 +270,12 @@ namespace Gorgon.IO.GorPack
 		/// </summary>
 		/// <param name="physicalPath">Path to the file containing the file system.</param>
 		/// <returns>
-		/// <c>true</c> if the provider can read the packed file, <c>false</c> if not.
+		/// <b>true</b> if the provider can read the packed file, <b>false</b> if not.
 		/// </returns>
 		/// <remarks>This method is applicable to packed files only.
 		/// <para>Implementors must use this method to determine if a packed file can be read by reading the header of the file.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		public override bool CanReadFile(string physicalPath)
 		{

@@ -258,7 +258,7 @@ namespace Gorgon.Renderers
 		/// <param name="blitRegion">The position, and size of the blitted region.</param>
 		/// <param name="textureRegion">The region of the texture to blit.</param>
 		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion, RectangleF textureRegion)
 		{
 			GorgonDebug.AssertNull(texture, "texture");
@@ -271,7 +271,7 @@ namespace Gorgon.Renderers
 		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="blitRegion">The position, and size of the blitted region.</param>
 		/// <remarks>This is for very quickly copying a texture to a render target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion)
 		{
 			Blit(texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
@@ -283,7 +283,7 @@ namespace Gorgon.Renderers
 		/// <param name="texture">Texture to blit to the current render target.</param>
 		/// <param name="position">Position on the screen to blit onto.</param>
 		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, Vector2 position)
 		{
 			Blit(texture, new RectangleF(position, texture.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
@@ -414,7 +414,7 @@ namespace Gorgon.Renderers
 		/// <param name="text">Text to draw.</param>
 		/// <param name="position">Position of the text.</param>
 		/// <param name="color">Color of the text.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color)
 		{
 			DrawString(font, text, position, color, false, new Vector2(1), 0.25f);
@@ -427,10 +427,10 @@ namespace Gorgon.Renderers
 		/// <param name="text">Text to draw.</param>
 		/// <param name="position">Position of the text.</param>
 		/// <param name="color">Color of the text.</param>
-		/// <param name="useShadow"><c>true</c> to use a shadow, <c>false</c> to display normally.</param>
+		/// <param name="useShadow"><b>true</b> to use a shadow, <b>false</b> to display normally.</param>
 		/// <param name="shadowOffset">Offset of the shadow, in pixels.</param>
 		/// <param name="shadowOpacity">Opacity of the shadow.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color, bool useShadow, Vector2 shadowOffset, float shadowOpacity)
 		{
 			GorgonDebug.AssertNull(font, "font");
@@ -457,7 +457,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="font">Font to use when measuring.</param>
 		/// <param name="text">Text to measure.</param>
-		/// <param name="wordWrap"><c>true</c> if word wrapping should be used.</param>
+		/// <param name="wordWrap"><b>true</b> if word wrapping should be used.</param>
 		/// <param name="bounds">Boundaries for the size of the string.</param>
 		/// <returns>The size of the string.</returns>
 		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, SizeF bounds)

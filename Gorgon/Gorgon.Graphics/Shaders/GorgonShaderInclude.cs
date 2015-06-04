@@ -84,7 +84,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonShaderInclude left, ref GorgonShaderInclude right)
 		{
 			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -112,7 +112,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right)
 		{
 			return Equals(ref left, ref right);
@@ -123,7 +123,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right)
 		{
 			return !Equals(ref left, ref right);
@@ -136,8 +136,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="includeName">Name of the include file.</param>
 		/// <param name="includeSourceFile">The include source code file.</param>
-		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (Nothing in VB.Net) or empty if the include line is pointing to a file.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (<i>Nothing</i> in VB.Net) or empty if the include line is pointing to a file.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the includeName parameter is empty.</exception>
 		public GorgonShaderInclude(string includeName, string includeSourceFile)
 		{

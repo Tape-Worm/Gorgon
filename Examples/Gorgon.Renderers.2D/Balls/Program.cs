@@ -73,7 +73,7 @@ namespace Gorgon.Graphics.Example
 		/// Property to return the path to the resources for the example.
 		/// </summary>
 		/// <param name="resourceItem">The directory or file to use as a resource.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
 			string path = Settings.Default.ResourceLocation;
@@ -317,7 +317,7 @@ namespace Gorgon.Graphics.Example
 		/// Function for the main idle loop.
 		/// </summary>
 		/// <remarks>This is used as the main loop for the application.  All drawing and logic can go in here.</remarks>
-		/// <returns><c>true</c> to keep running, <c>false</c> to exit.</returns>
+		/// <returns><b>true</b> to keep running, <b>false</b> to exit.</returns>
 		private static bool Idle()
 		{
 			if (!_paused)

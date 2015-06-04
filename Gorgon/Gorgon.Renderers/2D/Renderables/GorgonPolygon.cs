@@ -556,7 +556,7 @@ namespace Gorgon.Renderers
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         public void SetVertexData(GorgonPolygonPoint[] vertices)
         {
             GorgonDebug.AssertNull(vertices, "vertices");
@@ -577,7 +577,7 @@ namespace Gorgon.Renderers
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices"/> parameter.</para>
@@ -603,7 +603,7 @@ namespace Gorgon.Renderers
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices"/> parameter.</para>
@@ -751,7 +751,7 @@ namespace Gorgon.Renderers
 		/// Function to save the sprite to a file.
 		/// </summary>
 		/// <param name="filePath">Path to the file to write the sprite information into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
 		public void Save(string filePath)
 		{
@@ -1139,7 +1139,7 @@ namespace Gorgon.Renderers
         /// Property to set or return the range of alpha values to reject on this renderable.
         /// </summary>
         /// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-        /// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <c>true</c>.</para>
+        /// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
         /// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
         /// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
         /// in order to take advantage of alpha testing.</para>
@@ -1425,7 +1425,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 	    private void Dispose(bool disposing)
 	    {
 			if (_disposed)

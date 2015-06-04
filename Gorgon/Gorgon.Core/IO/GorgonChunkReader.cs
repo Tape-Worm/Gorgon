@@ -48,7 +48,7 @@ namespace Gorgon.IO
         /// Function to determine if the next bytes indicate match the chunk ID.
         /// </summary>
         /// <param name="chunkName">Name of the chunk.</param>
-        /// <returns><c>true</c> if the next bytes are a the specified chunk ID, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the next bytes are a the specified chunk ID, <b>false</b> if not.</returns>
         /// <remarks>The <paramref name="chunkName"/> parameter must be at least 8 characters in length, if it is not, then an exception will be thrown. 
         /// If the chunkName parameter is longer than 8 characters, then it will be truncated to 8 characters.
         /// </remarks>
@@ -198,7 +198,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="encoding">The encoding to use.</param>
 		/// <returns>The string value in the stream.</returns>
-		/// <remarks>If the <paramref name="encoding"/> is NULL (Nothing in VB.Net), UTF-8 encoding will be used instead.</remarks>
+		/// <remarks>If the <paramref name="encoding"/> is NULL (<i>Nothing</i> in VB.Net), UTF-8 encoding will be used instead.</remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
 		public string ReadString(Encoding encoding)
 		{
@@ -258,7 +258,7 @@ namespace Gorgon.IO
         /// <param name="startIndex">Starting index in the array.</param>
         /// <param name="count">Number of bytes in the array to read.</param>
         /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -301,7 +301,7 @@ namespace Gorgon.IO
         /// <param name="value">Array of values to read.</param>
         /// <param name="startIndex">Starting index in the array.</param>
         /// <param name="count">Number of array elements to copy.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -369,7 +369,7 @@ namespace Gorgon.IO
         /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
         /// <param name="value">Array of values to read.</param>
         /// <param name="count">Number of array elements to copy.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
@@ -384,7 +384,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
         /// <param name="value">Array of values to read.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
         public void ReadRange<T>(T[] value)
             where T : struct

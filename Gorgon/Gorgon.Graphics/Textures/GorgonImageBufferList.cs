@@ -99,7 +99,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to clear the buffer list and associated data streams.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> when calling from a dispose method, <c>false</c> if not.</param>
+		/// <param name="disposing"><b>true</b> when calling from a dispose method, <b>false</b> if not.</param>
 		internal void ClearBuffers(bool disposing)
 		{
 			if (_buffers == null)

@@ -54,7 +54,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left kerning pair to compare.</param>
 		/// <param name="right">Right kerning pair to compare.</param>
-		/// <returns><c>true</c> if the same, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the same, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonKerningPair left, ref GorgonKerningPair right)
 		{
 			return ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
@@ -65,7 +65,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{

@@ -106,7 +106,7 @@ namespace Gorgon.Examples
 		/// Property to return the path to the resources for the example.
 		/// </summary>
 		/// <param name="resourceItem">The directory or file to use as a resource.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
 			string path = Settings.Default.ResourceLocation;
@@ -141,7 +141,7 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to load the zip file provider plugin.
         /// </summary>
-        /// <returns><c>true</c> if successfully loaded, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
         static bool LoadZipProviderPlugin()
         {
             string zipProviderPath = PluginPath + "Gorgon.FileSystem.Zip.dll";

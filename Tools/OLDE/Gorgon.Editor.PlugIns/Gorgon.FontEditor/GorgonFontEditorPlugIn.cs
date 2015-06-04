@@ -142,7 +142,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed)
@@ -176,7 +176,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// Function to determine if right-to-left rendering is required for text.
         /// </summary>
         /// <param name="control">Control to examine.</param>
-        /// <returns><c>true</c> if RTL text is required, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if RTL text is required, <b>false</b> if not.</returns>
         internal static bool IsRightToLeft(Control control)
         {
             switch (control.RightToLeft)

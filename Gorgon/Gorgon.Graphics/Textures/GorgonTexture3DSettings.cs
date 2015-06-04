@@ -68,7 +68,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 2D textures.  This value will always return <c>false</c>.</remarks>
+		/// <remarks>This only applies to 2D textures.  This value will always return <b>false</b>.</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		bool ITextureSettings.IsTextureCube
 		{
@@ -151,7 +151,7 @@ namespace Gorgon.Graphics
 		/// then write-only access will be given to the UAV.</para> 
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccessViews
 		{

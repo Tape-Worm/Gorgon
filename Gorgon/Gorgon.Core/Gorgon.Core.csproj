@@ -144,8 +144,8 @@
     <Compile Include="Diagnostics\GorgonLogDummy.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
-    <Compile Include="Events\GorgonCancelEventArgs.cs" />
-    <Compile Include="Events\GorgonHandledEventArgs.cs" />
+    <Compile Include="GorgonCancelEventArgs.cs" />
+    <Compile Include="GorgonHandledEventArgs.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />

@@ -603,7 +603,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// Function called when the content is reverted back to its original state.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if reverted, <c>false</c> if not.
+        /// <b>true</b> if reverted, <b>false</b> if not.
         /// </returns>
         protected override bool OnRevert()
         {
@@ -686,7 +686,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -915,7 +915,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// Function to update a font glyph advancement.
 		/// </summary>
 		/// <param name="advance">The advancement that was updated.</param>
-		/// <param name="resetFont"><c>true</c> to rebuild the font, <c>false</c> to leave alone.</param>
+		/// <param name="resetFont"><b>true</b> to rebuild the font, <b>false</b> to leave alone.</param>
 	    public void UpdateFontGlyphAdvance(int advance, bool resetFont)
 	    {
 			if (resetFont)
@@ -932,7 +932,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// Function to update a font glyph offset.
 		/// </summary>
 		/// <param name="offset">Offset to update.</param>
-		/// <param name="resetFont"><c>true</c> to rebuild the font, <c>false</c> to leave alone.</param>
+		/// <param name="resetFont"><b>true</b> to rebuild the font, <b>false</b> to leave alone.</param>
 	    public void UpdateFontGlyphOffset(Point offset, bool resetFont)
 	    {
 			if (resetFont)

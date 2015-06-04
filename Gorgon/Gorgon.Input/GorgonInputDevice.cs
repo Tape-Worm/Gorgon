@@ -376,8 +376,8 @@ namespace Gorgon.Input
 		/// Function to bind the device to a window.
 		/// </summary>
 		/// <param name="boundWindow">Window to bind with.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonApplication.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the boundWindow parameter and the Gorgon.ApplicationForm property are both NULL (Nothing in VB.Net).
+		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonApplication.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the boundWindow parameter and the Gorgon.ApplicationForm property are both NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the top level form cannot be determined.</para>
 		/// </exception>
@@ -443,7 +443,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)

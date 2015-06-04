@@ -52,7 +52,7 @@ namespace Gorgon.Editor
 		/// <param name="filePath">The path to the file.</param>
 		/// <param name="scratchArea">The location used for the scratch files.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="filePath"/> does not contain a file name.</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) or an empty string to the <paramref name="filePath"/> parameter to create an empty file.</remarks>
+		/// <remarks>Pass NULL (<i>Nothing</i> in VB.Net) or an empty string to the <paramref name="filePath"/> parameter to create an empty file.</remarks>
 		public EditorFileSystem(string filePath, IScratchArea scratchArea)
 		{
 			_scratchArea = scratchArea;

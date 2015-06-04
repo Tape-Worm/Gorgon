@@ -32,7 +32,7 @@ using Gorgon.Core;
 namespace Gorgon.Collections
 {
 	/// <summary>
-	/// A generic interface for a list of named objects that can be indexed by key and index.
+	/// A generic interface for a list of named objects that can be indexed by name and numeric index.
 	/// </summary>
 	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectList<T> 
@@ -44,7 +44,7 @@ namespace Gorgon.Collections
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// <c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		new bool IsReadOnly
@@ -94,18 +94,18 @@ namespace Gorgon.Collections
 		/// Function to remove an item by its index.
 		/// </summary>
 		/// <param name="index">The index of the item to remove.</param>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to the <see cref="IList{INamedObject}.Count"/></exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than/equal to the Count</exception>
 		void Remove(int index);
 
 		/// <summary>
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		bool Contains(string name);
 
 		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// Determines the index of a specific item in the list.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>

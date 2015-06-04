@@ -144,7 +144,7 @@ namespace Gorgon.Graphics
 		/// <param name="offset">Offset of the element in the structure.</param>
 		/// <param name="index">The index for the element.</param>
 		/// <param name="slot">The vertex buffer slot for the element.</param>
-		/// <param name="instanced"><c>true</c> if used for instanced data, <c>false</c> if not.</param>
+		/// <param name="instanced"><b>true</b> if used for instanced data, <b>false</b> if not.</param>
 		/// <param name="instanceCount">The number of instances allowed.</param>
 		public InputElementAttribute(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{

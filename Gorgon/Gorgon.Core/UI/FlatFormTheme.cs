@@ -865,7 +865,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
 		/// <returns>The flatform theme deserialized from XML.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the stream is write-only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the stream position cannot read beyond the stream length.</exception>
 		public static FlatFormTheme Load(Stream stream)
@@ -893,7 +893,7 @@ namespace Gorgon.UI
 		/// Function to save this theme as XML data into a stream.
 		/// </summary>
 		/// <param name="stream">Stream to fill with the data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the stream is read-only.</exception>
 		public void Save(Stream stream)
 		{
@@ -943,7 +943,7 @@ namespace Gorgon.UI
 
 		#region IXmlSerializable Members
 		/// <summary>
-		/// This method is reserved and should not be used. When implementing the IXmlSerializable interface, you should return null (Nothing in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute" /> to the class.
+		/// This method is reserved and should not be used. When implementing the IXmlSerializable interface, you should return null (<i>Nothing</i> in Visual Basic) from this method, and instead, if specifying a custom schema is required, apply the <see cref="T:System.Xml.Serialization.XmlSchemaProviderAttribute" /> to the class.
 		/// </summary>
 		/// <returns>
 		/// An <see cref="T:System.Xml.Schema.XmlSchema" /> that describes the XML representation of the object that is produced by the <see cref="M:System.Xml.Serialization.IXmlSerializable.WriteXml(System.Xml.XmlWriter)" /> method and consumed by the <see cref="M:System.Xml.Serialization.IXmlSerializable.ReadXml(System.Xml.XmlReader)" /> method.

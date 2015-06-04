@@ -134,13 +134,13 @@ namespace Gorgon.Graphics
 		/// <param name="sourceRegion">[Optional] The region in the source to copy.</param>
 		/// <param name="destX">[Optional] Horizontal offset in the destination buffer.</param>
 		/// <param name="destY">[Optional] Vertical offset in the destination buffer.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer" /> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer" /> is not the same format as this buffer.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the source region does not fit within the bounds of this buffer.</exception>
 		/// <remarks>
 		/// This method will copy the contents of this buffer into another buffer and will provide clipping to handle cases where the buffer or <paramref name="sourceRegion" /> is mismatched with the
 		/// destination size.
-		/// <para>Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter.  If NULL (Nothing in VB.Net) is passed to this parameter, then the
+		/// <para>Users may define an area on this buffer to copy by specifying the <paramref name="sourceRegion" /> parameter.  If NULL (<i>Nothing</i> in VB.Net) is passed to this parameter, then the
 		/// entire buffer will be copied to the destination.</para><para>An offset into the destination buffer may also be specified to relocate the data copied from this buffer into the destination.  Clipping will be applied if the offset pushes the
 		/// source data outside of the boundaries of the destination buffer.</para><para>The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.</para>
 		/// <para>The <paramref name="buffer"/> parameter must not be the same as the this buffer.  An exception will be thrown if an attempt to copy this buffer into itself is made.</para>

@@ -249,7 +249,7 @@ namespace Gorgon.Graphics
 		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics
 		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
@@ -313,7 +313,7 @@ namespace Gorgon.Graphics
 		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.</exception>
 		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode)
@@ -334,7 +334,7 @@ namespace Gorgon.Graphics
 		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
@@ -371,7 +371,7 @@ namespace Gorgon.Graphics
 		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or settings parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or settings parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.TextureSize">settings.TextureSize</see> width or height is larger than can be handled by the current feature level.</para>

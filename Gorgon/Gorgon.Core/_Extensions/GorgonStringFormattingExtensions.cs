@@ -208,7 +208,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
-        /// <param name="prefix"><c>true</c> to put the ellipses on the beginning of the string, or <c>false</c> to put on the end.</param>
+        /// <param name="prefix"><b>true</b> to put the ellipses on the beginning of the string, or <b>false</b> to put on the end.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
         /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
@@ -218,7 +218,7 @@ namespace Gorgon.Core
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying <c>true</c> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <c>false</c> will put it on the end.</para>
+        /// <para>Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end.</para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, bool prefix, params object[] values)
         {
@@ -231,7 +231,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
-        /// <param name="prefix"><c>true</c> to put the ellipses on the beginning of the string, or <c>false</c> to put on the end.</param>
+        /// <param name="prefix"><b>true</b> to put the ellipses on the beginning of the string, or <b>false</b> to put on the end.</param>
         /// <param name="tabSpaceCount">Number of spaces to insert for the tab character.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
@@ -242,7 +242,7 @@ namespace Gorgon.Core
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
         /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying <c>true</c> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <c>false</c> will put it on the end.</para>
+        /// <para>Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end.</para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, bool prefix, int tabSpaceCount, params object[] values)
         {
@@ -329,11 +329,11 @@ namespace Gorgon.Core
         /// Function to return the length of a string, in bytes, with the specified encoding.
         /// </summary>
         /// <param name="value">The string to measure.</param>
-        /// <param name="includeLength"><c>true</c> to include the number of bytes for the encoded length, <c>false</c> to exclude.</param>
+        /// <param name="includeLength"><b>true</b> to include the number of bytes for the encoded length, <b>false</b> to exclude.</param>
         /// <param name="encoding">[Optional] The encoding for the string.</param>
         /// <returns>The length of the string, in bytes.</returns>
         /// <remarks>
-        /// If the <paramref name="includeLength"/> parameter is <c>true</c>, then the return value will also include the number of 
+        /// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 
         /// 7-bit bytes required to encode the length of the string.
         /// <para>If the <paramref name="encoding"/> parameter is NULL, then UTF-8 encoding will be used.</para></remarks>
         public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)

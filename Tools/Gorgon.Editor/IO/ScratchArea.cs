@@ -127,7 +127,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the path is a root path or system location.
 		/// </summary>
 		/// <param name="path">Path to evaluate.</param>
-		/// <returns><c>true</c> if a system location or root directory.</returns>
+		/// <returns><b>true</b> if a system location or root directory.</returns>
 		private bool IsSystemLocation(string path)
 		{
 			var sysRoot = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
@@ -338,7 +338,7 @@ namespace Gorgon.Editor
 		/// the files and folders for the editor content. The directory specified must be writable by the current user and cannot 
 		/// be a system directory (e.g. C:\windows\system32\) and cannot be the root of the operating system drive.
 		/// </remarks>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
 		public ScratchAccessibility SetScratchDirectory(string directoryPath)
 		{
@@ -387,9 +387,9 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to clean up the scratch area data.
 		/// </summary>
-		/// <param name="cleanEverything">[Optional] <c>true</c> to remove this scratch area and stale scratch area IDs from the folder, <c>false</c> to clean up the current scratch area only.</param>
+		/// <param name="cleanEverything">[Optional] <b>true</b> to remove this scratch area and stale scratch area IDs from the folder, <b>false</b> to clean up the current scratch area only.</param>
 		/// <returns>
-		/// <c>true</c> if the call was successful and the data deleted.  <c>false</c> if not.
+		/// <b>true</b> if the call was successful and the data deleted.  <b>false</b> if not.
 		/// </returns>
 		/// <remarks>
 		/// This will delete the files and folders under the scratch area path, and will delete the scratch area folder (<see cref="ScratchDirectory" />\<see cref="ID" />).
@@ -442,7 +442,7 @@ namespace Gorgon.Editor
 		/// Function to copy the packed file system to the scratch area.
 		/// </summary>
 		/// <param name="fileSystem">File system to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void CopyFileSystem(GorgonFileSystem fileSystem)
 		{
 			if (fileSystem == null)

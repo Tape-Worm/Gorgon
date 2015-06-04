@@ -144,7 +144,7 @@ namespace Gorgon.Editor
 		/// Function to retrieve the applicable file system provider for the file being loaded.
 		/// </summary>
 		/// <param name="extension">The file extension to look up.</param>
-		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
+		/// <returns>The file system provider if found, NULL (<i>Nothing</i> in VB.Net) if not.</returns>
 		private GorgonFileSystemProvider GetProviderByExtension(string extension)
 		{
 			var fileExtension = new GorgonFileExtension(extension);
@@ -159,7 +159,7 @@ namespace Gorgon.Editor
 		/// Function to retrieve a provider based on the file in the path provided.
 		/// </summary>
 		/// <param name="path">Path to the packed file to load.</param>
-		/// <returns>The file system provider if found, NULL (Nothing in VB.Net) if not.</returns>
+		/// <returns>The file system provider if found, NULL (<i>Nothing</i> in VB.Net) if not.</returns>
 		private GorgonFileSystemProvider GetProvider(string path)
 		{
 			string extension = Path.GetExtension(path);
@@ -299,12 +299,12 @@ namespace Gorgon.Editor
 		/// Function to determine if the application can read the packed file or not.
 		/// </summary>
 		/// <param name="path">Path to the file.</param>
-		/// <returns><c>true</c> if the file can be read, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the file can be read, <b>false</b> if not.</returns>
 		/// <remarks>
 		/// This method will check against the internal list of file system providers to see if the extension is known. If the file cannot be located by extension, 
 		/// or the file could not be read, then all providers will be tested to determine if the file can be read.
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		public bool CanReadFile(string path)
 		{
@@ -371,7 +371,7 @@ namespace Gorgon.Editor
 		/// <returns>
 		/// A file system object for the loaded file.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path" /> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path" /> parameter is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path" /> could not be found.</exception>
 		/// <exception cref="GorgonException"></exception>

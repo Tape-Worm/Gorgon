@@ -131,7 +131,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonViewport left, ref GorgonViewport right)
 		{
 		    return ((left.Left.EqualsEpsilon(right.Left)) && (left.Top.EqualsEpsilon(right.Top))
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{

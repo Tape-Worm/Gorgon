@@ -207,7 +207,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
 		/// <param name="right">The right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonResult left, ref GorgonResult right)
 		{
 			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
@@ -259,7 +259,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="left">The left item to test.</param>
 		/// <param name="right">The right item to test.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonResult left, GorgonResult right)
 		{
 			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
@@ -270,7 +270,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="left">The left item to test.</param>
 		/// <param name="right">The right item to test.</param>
-		/// <returns><c>true</c> if not equal, <c>false</c> if the items are equal.</returns>
+		/// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
 		public static bool operator !=(GorgonResult left, GorgonResult right)
 		{
 			return ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));

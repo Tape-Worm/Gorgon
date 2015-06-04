@@ -289,7 +289,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Initializes the <see cref="GorgonEditorFile"/> class.
         /// </summary>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         public GorgonEditorFile(GorgonFileSystem fileSystem)
         {
             if (fileSystem == null)

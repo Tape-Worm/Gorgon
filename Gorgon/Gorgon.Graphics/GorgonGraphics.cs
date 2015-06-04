@@ -285,7 +285,7 @@ namespace Gorgon.Graphics
         /// Property to set or return whether object tracking is disabled.
         /// </summary>
         /// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
-        /// <para>The default value for DEBUG mode is <c>true</c>, and for RELEASE it is set to <c>false</c>.  Disabling object tracking will
+        /// <para>The default value for DEBUG mode is <b>true</b>, and for RELEASE it is set to <b>false</b>.  Disabling object tracking will
         /// give a slight performance increase.</para>
         /// </remarks>
         public bool IsObjectTrackingEnabled
@@ -304,9 +304,9 @@ namespace Gorgon.Graphics
         /// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
         /// </summary>
         /// <remarks>
-        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to <c>false</c>, and the window 
-        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to <c>true</c>, it will try to reacquire full screen mode.
-        /// <para>The default value for this is <c>true</c>.  However, for a full screen multimonitor scenario, this should be set to <c>false</c>.</para>
+        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to <b>false</b>, and the window 
+        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to <b>true</b>, it will try to reacquire full screen mode.
+        /// <para>The default value for this is <b>true</b>.  However, for a full screen multimonitor scenario, this should be set to <b>false</b>.</para>
         /// </remarks>
         public bool ResetFullscreenOnFocus
         {
@@ -404,7 +404,7 @@ namespace Gorgon.Graphics
         /// Function to add an object for tracking by the main Gorgon interface.
         /// </summary>
         /// <param name="trackedObject">Object to add.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="Gorgon.Gorgon.Quit">termination</see>.</remarks>
         public void AddTrackedObject(IDisposable trackedObject)
         {
@@ -420,7 +420,7 @@ namespace Gorgon.Graphics
         /// Function to remove a tracked object from the Gorgon interface.
         /// </summary>
         /// <param name="trackedObject">Object to remove.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <remarks>This will -not- destroy the tracked object.</remarks>
         public void RemoveTrackedObject(IDisposable trackedObject)
         {
@@ -503,7 +503,7 @@ namespace Gorgon.Graphics
         /// Function to execute rendering commands from a deferred context.
         /// </summary>
         /// <param name="commands">Commands to execute.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="commands"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="commands"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.NotSupportedException">Thrown when the current context is a deferred context.
         /// <para>-or-</para>
         /// <para>Thrown if the current video device does not have a feature level of SM5 or better.</para>
@@ -528,8 +528,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Function to clear the states for the graphics object.
         /// </summary>
-        /// <param name="flush">[Optional] <c>true</c> to flush the queued graphics object commands, <c>false</c> to leave as is.</param>
-        /// <remarks>If <paramref name="flush"/> is set to <c>true</c>, then a performance penalty is incurred.</remarks>
+        /// <param name="flush">[Optional] <b>true</b> to flush the queued graphics object commands, <b>false</b> to leave as is.</param>
+        /// <remarks>If <paramref name="flush"/> is set to <b>true</b>, then a performance penalty is incurred.</remarks>
         public void ClearState(bool flush = false)
         {
             if (flush)
@@ -562,7 +562,7 @@ namespace Gorgon.Graphics
 		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
 		/// </exception>
 		/// <remarks>
-		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (Nothing in VB.Net), then the primary device will be used. 
+		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (<i>Nothing</i> in VB.Net), then the primary device will be used. 
         /// To determine the devices on the system, check the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> class.  The primary device will be the first device in this collection. 
 		/// <para>The user may pass in a feature level to the featureLevel parameter to limit the feature levels available.  Note that the feature levels imply all feature levels up until the feature level passed in, for example, passing <c>DeviceFeatureLevel.SM4</c> will only allow functionality 
 		/// for both Shader Model 4, and Shader Model 2/3 capable video devices, while DeviceFeatureLevel.SM4_1 will include Shader Model 4 with a 4.1 profile and Shader model 2/3 video devices.</para>
@@ -688,7 +688,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
             if (_disposed)
@@ -702,7 +702,7 @@ namespace Gorgon.Graphics
 
                 if (!IsDeferred)
                 {
-                    _trackedObjects.ReleaseAll();
+                    _trackedObjects.Clear();
                 }
                 else
                 {

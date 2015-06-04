@@ -161,7 +161,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <typeparam name="T">Type name of the device.</typeparam>
 		/// <param name="name">Name of the device.</param>
-		/// <returns>The input device if it was previously created, NULL (Nothing in VB.Net) if not.</returns>
+		/// <returns>The input device if it was previously created, NULL (<i>Nothing</i> in VB.Net) if not.</returns>
 		private T GetInputDevice<T>(GorgonInputDeviceInfo name) where T : GorgonInputDevice
 		{
 		    Type devType = typeof(T);
@@ -289,7 +289,7 @@ namespace Gorgon.Input
 		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.Input.GorgonCustomHID.Data">Data</see> property.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>		
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a device with the <paramref name="hidName"/> could not be found.</exception>
 		public GorgonCustomHID CreateCustomHID(Control window, string hidName)
@@ -450,7 +450,7 @@ namespace Gorgon.Input
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="joystickName"/> is empty.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="joystickName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="joystickName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a joystick with the <paramref name="joystickName"/> could not be found.</exception>
 		public GorgonJoystick CreateJoystick(Control window, string joystickName)
 		{
@@ -517,7 +517,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="plugInType">Type name of the input device factory plug-in.</param>
 		/// <returns>The input device factory object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter was NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty.</exception>
 		/// <exception cref="System.InvalidCastException">Thrown when the input plug-in was not found or was not the correct type.</exception>
 		/// <exception cref="GorgonException">Thrown when the input factory could not be created.</exception>
@@ -564,7 +564,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="plugInType">Type of the input device factory plug-in.</param>
 		/// <returns>The input device factory object.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the input device factory plug-in type was not found.</para>
 		/// <para>-or-</para>
@@ -581,7 +581,7 @@ namespace Gorgon.Input
 		/// Initializes a new instance of the <see cref="GorgonInputFactory"/> class.
 		/// </summary>
 		/// <param name="name">The name of the device manager.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonInputFactory(string name)
 			: base(name)
@@ -596,7 +596,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposed)

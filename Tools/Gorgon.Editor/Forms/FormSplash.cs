@@ -106,7 +106,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to fade the splash screen in or out.
 		/// </summary>
-		/// <param name="fadeIn"><c>true</c> to fade in, <c>false</c> to fade out.</param>
+		/// <param name="fadeIn"><b>true</b> to fade in, <b>false</b> to fade out.</param>
 		/// <param name="time">Time, in milliseconds, for the fade.</param>
 		public void Fade(bool fadeIn, float time)
 		{

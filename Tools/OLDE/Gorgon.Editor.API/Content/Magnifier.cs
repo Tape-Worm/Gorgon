@@ -320,7 +320,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="renderer">The renderer to use for magnification.</param>
 		/// <param name="texture">The texture to zoom.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="renderer"/> or the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="renderer"/> or the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public ZoomWindow(Gorgon2D renderer, GorgonTexture2D texture)
 		{
 			if (renderer == null)

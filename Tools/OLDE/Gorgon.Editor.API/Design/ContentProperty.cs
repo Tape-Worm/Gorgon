@@ -319,7 +319,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="editorType">Type of the editor to set.</param>
 		/// <param name="editorBaseType">[Optional] Base type of the editor.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="editorBaseType"/> will default the base type to UITypeEditor.</remarks>
+		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="editorBaseType"/> will default the base type to UITypeEditor.</remarks>
 		public void SetTypeEditor(Type editorType, Type editorBaseType = null)
 		{
 			if (editorType == null)

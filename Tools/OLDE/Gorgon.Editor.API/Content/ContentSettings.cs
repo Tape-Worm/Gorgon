@@ -55,7 +55,7 @@ namespace Gorgon.Editor
         /// Property to return whether the content should be created.
         /// </summary>
         /// <remarks>
-        /// When set to <c>true</c> this property will determine if the content object creates content after the content object has been initialized.
+        /// When set to <b>true</b> this property will determine if the content object creates content after the content object has been initialized.
         /// </remarks>
         public bool CreateContent
         {
@@ -66,7 +66,7 @@ namespace Gorgon.Editor
 		/// <summary>
         /// Property to set or return the name of the content.
         /// </summary>
-        /// <remarks>This property will return NULL (Nothing in VB.Net) if the name is not valid.</remarks>
+        /// <remarks>This property will return NULL (<i>Nothing</i> in VB.Net) if the name is not valid.</remarks>
         public string Name
         {
             get
@@ -97,7 +97,7 @@ namespace Gorgon.Editor
 	    /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
-        /// <returns><c>true</c> if the object was set up, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if the object was set up, <b>false</b> if not.</returns>
         public abstract bool PerformSetup();
         #endregion
     }

@@ -244,7 +244,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="textureImage">The texture to use.</param>
 		/// <remarks>The texture format for the brush must be R8G8B8A8_UIntNormal, R8G8B8A8_UIntNormal_sRGB, B8G8R8A8_UIntNormal, or B8G8R8A8_UintNormal_sRGB.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="textureImage"/> parameter uses an unsupported format.</exception>
 		public GorgonGlyphTextureBrush(GorgonTexture2D textureImage)
 		{

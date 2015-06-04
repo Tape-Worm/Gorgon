@@ -116,7 +116,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 		/// <summary>
 		/// Function to retrieve a color for the hatch pattern.
 		/// </summary>
-		/// <returns>The selected color or NULL (Nothing in VB.Net) if canceled.</returns>
+		/// <returns>The selected color or NULL (<i>Nothing</i> in VB.Net) if canceled.</returns>
 		private GorgonColor? GetColor(GorgonColor oldColor)
 		{
 			ColorPickerDialog colorDialog = null;

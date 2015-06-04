@@ -435,7 +435,7 @@ namespace Gorgon.Editor
 		/// <param name="defaultDirectory">The default directory for the dialog.</param>
 		/// <param name="fileExtensions">The applicable file extensions for the dialog.</param>
 		/// <returns>
-		/// The path to the selected file to load, or NULL (Nothing in VB.Net) if Cancel was selected.
+		/// The path to the selected file to load, or NULL (<i>Nothing</i> in VB.Net) if Cancel was selected.
 		/// </returns>
 		public string LoadFileDialog(string defaultDirectory, string fileExtensions)
 		{
@@ -461,7 +461,7 @@ namespace Gorgon.Editor
 		/// Function to open the save file dialog.
 		/// </summary>
 		/// <returns>
-		/// The path to the file to save, or NULL (Nothing in VB.Net) if Cancel was selected.
+		/// The path to the file to save, or NULL (<i>Nothing</i> in VB.Net) if Cancel was selected.
 		/// </returns>
 		public string SaveFileDialog()
 		{
@@ -630,7 +630,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <typeparam name="T">Type of view to retrieve.</typeparam>
 		/// <returns>
-		/// The view, if found, NULL (Nothing in VB.Net) if not.
+		/// The view, if found, NULL (<i>Nothing</i> in VB.Net) if not.
 		/// </returns>
 		public T GetView<T>()
 		{

@@ -165,7 +165,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <remarks>This value will turn off scaling and instead crop the GDI+ image if it's too large to fit in the destination image.  If the image is smaller, then 
 		/// it will be left at its current size.
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool UseClipping
 		{
@@ -194,13 +194,13 @@ namespace Gorgon.IO
 		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
 		/// then write-only access will be given to the UAV.</para> 
-		/// <para>If this value is set to <c>true</c>, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
+		/// <para>If this value is set to <b>true</b>, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
 		/// used with typed texture resources.</para>
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
 		/// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture">textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccess
 		{

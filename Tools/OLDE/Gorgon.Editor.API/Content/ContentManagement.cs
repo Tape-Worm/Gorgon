@@ -236,7 +236,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function called during idle time for rendering.
 		/// </summary>
-		/// <returns><c>true</c> to continue rendering, <c>false</c> to stop.</returns>
+		/// <returns><b>true</b> to continue rendering, <b>false</b> to stop.</returns>
 	    private static bool IdleLoop()
 	    {
 		    if (_currentContentObject != null)
@@ -250,7 +250,7 @@ namespace Gorgon.Editor
 		/// Function to load the content and its related UI.
 		/// </summary>
 		/// <param name="contentObject">Content to load.</param>
-		/// <param name="isDefault"><c>true</c> if this is the default content, <c>false</c> if not.</param>
+		/// <param name="isDefault"><b>true</b> if this is the default content, <b>false</b> if not.</param>
 	    private static void LoadContent(ContentObject contentObject, bool isDefault)
 	    {
 			// Unload any content that's currently active.
@@ -303,7 +303,7 @@ namespace Gorgon.Editor
 		/// <param name="plugIn">The plug-in to use when creating the content.</param>
 		/// <param name="settings">Settings to pass to the content.</param>
 		/// <param name="editorFile">Editor file that holds the content.</param>
-		/// <param name="recordDefaults"><c>true</c> to record the default property values for the content, <c>false</c> to treat as new property values.</param>
+		/// <param name="recordDefaults"><b>true</b> to record the default property values for the content, <b>false</b> to treat as new property values.</param>
 		/// <returns>The new content object.</returns>
 	    private static ContentObject CreateContentObjectInstance(ContentPlugIn plugIn, ContentSettings settings, EditorFile editorFile, bool recordDefaults)
 	    {
@@ -464,7 +464,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a file can be opened for viewing/editing.
 		/// </summary>
 		/// <param name="file">File to evaluate.</param>
-		/// <returns><c>true</c> if the file can be opened, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the file can be opened, <b>false</b> if not.</returns>
 	    public static bool CanOpenContent(EditorFile file)
 	    {
 			if (file == null)
@@ -516,7 +516,7 @@ namespace Gorgon.Editor
 		/// Function to load a content object into the content pane in the interface.
 		/// </summary>
 		/// <param name="contentObject">Content object to load into the interface.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentObject"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentObject"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 	    public static void LoadContentPane(ContentObject contentObject)
 	    {
 			if (contentObject == null)
@@ -530,7 +530,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function load the default content pane into the interface.
 		/// </summary>
-		/// <exception cref="GorgonException">Thrown when the <see cref="DefaultContentType"/> property is set to NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="GorgonException">Thrown when the <see cref="DefaultContentType"/> property is set to NULL (<i>Nothing</i> in VB.Net).</exception>
 	    public static void LoadDefaultContentPane()
 	    {
 			if (DefaultContentType == null)
@@ -631,7 +631,7 @@ namespace Gorgon.Editor
 		/// <param name="editorFile">The editor file data.</param>
 		/// <param name="file">The file system file that contains the content data.</param>
 		/// <param name="plugIn">The plug-in used to open the file.</param>
-		/// <param name="reload"><c>true</c> to just reload the file, <c>false</c> to do a complete load of the content.</param>
+		/// <param name="reload"><b>true</b> to just reload the file, <b>false</b> to do a complete load of the content.</param>
 	    public static void Load(EditorFile editorFile, GorgonFileSystemFileEntry file, ContentPlugIn plugIn, bool reload = false)
 		{
 			ContentObject content;
@@ -704,7 +704,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to save the current content.
 		/// </summary>
-		/// <param name="persistMetaData">[Optional] <c>true</c> to persist the meta data for the file, <c>false</c> to leave it.</param>
+		/// <param name="persistMetaData">[Optional] <b>true</b> to persist the meta data for the file, <b>false</b> to leave it.</param>
 	    public static void Save(bool persistMetaData = true)
 	    {
 		    if ((Current == null)

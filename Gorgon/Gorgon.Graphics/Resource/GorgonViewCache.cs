@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -303,7 +303,7 @@ namespace Gorgon.Graphics
         /// <param name="arrayIndexElementCount">Array index for a texture, element count for a buffer.</param>
         /// <param name="arrayCount">Array count for a texture.</param>
         /// <param name="viewType">View type for structured buffers.</param>
-        /// <param name="isRaw"><c>true</c> for raw views, <c>false</c> for normal.</param>
+        /// <param name="isRaw"><b>true</b> for raw views, <b>false</b> for normal.</param>
         /// <returns>The cached unordered access view.</returns>
         public GorgonUnorderedAccessView GetUnorderedAccessView(BufferFormat format,
                                                                         int mipSliceElementStart,
@@ -460,7 +460,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the view.</param>
         /// <param name="start">Starting element for the view.</param>
         /// <param name="count">Number of elements for the view.</param>
-        /// <param name="isRaw"><c>true</c> for raw buffers, <c>false</c> for standard.</param>
+        /// <param name="isRaw"><b>true</b> for raw buffers, <b>false</b> for standard.</param>
         /// <returns>The cached buffer shader view.</returns>
         public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count, bool isRaw)
         {
@@ -505,7 +505,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

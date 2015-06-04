@@ -135,7 +135,7 @@ namespace Gorgon.Graphics
 		/// Function to return a stream output buffer bind to the pipeline.
 		/// </summary>
 		/// <param name="index">Index of the buffer.</param>
-		/// <returns>The output buffer if bound, NULL (Nothing in VB.Net) if not.</returns>
+		/// <returns>The output buffer if bound, NULL (<i>Nothing</i> in VB.Net) if not.</returns>
 		public GorgonOutputBufferBinding? GetOutputBuffer(int index)
 		{
 			if ((_bindings == null) || (index < 0) || (index >= _bindings.Length))

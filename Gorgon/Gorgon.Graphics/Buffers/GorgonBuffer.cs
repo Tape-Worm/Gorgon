@@ -96,7 +96,7 @@ namespace Gorgon.Graphics
         /// <param name="format">Format of the buffer.</param>
         /// <param name="start">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
-        /// <param name="useRaw"><c>true</c> to use a raw view, <c>false</c> to use a standard view.</param>
+        /// <param name="useRaw"><b>true</b> to use a raw view, <b>false</b> to use a standard view.</param>
         /// <returns>An unordered access view for the buffer.</returns>
         /// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="GetShaderView">Shader View</see>, only one 
         /// unordered access view can be bound to the pipeline at any given time.
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics
         /// <param name="format">The format of the view.</param>
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
-        /// <param name="useRaw"><c>true</c> to use a raw view, <c>false</c> to use a standard view.</param>
+        /// <param name="useRaw"><b>true</b> to use a raw view, <b>false</b> to use a standard view.</param>
         /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 

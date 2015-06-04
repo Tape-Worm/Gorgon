@@ -95,7 +95,7 @@ namespace Gorgon.IO
 		/// Function to remove a directory by its name.
 		/// </summary>
 		/// <param name="name">The name of the directory to remove.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when no directory with the <paramref name="name"/> could be found in the collection.</exception>
 		public void Remove(string name)
@@ -124,9 +124,9 @@ namespace Gorgon.IO
 		/// Function to return a directory by its name.
 		/// </summary>
 		/// <param name="name">The name of the item to look up.</param>
-		/// <param name="value">The directory, if found, or <c>null</c> if not.</param>
+		/// <param name="value">The directory, if found, or <b>null</b> if not.</param>
 		/// <returns>
-		///   <c>true</c> if the directory was found, <c>false</c> if not.
+		///   <b>true</b> if the directory was found, <b>false</b> if not.
 		/// </returns>
 		public bool TryGetValue(string name, out GorgonFileSystemDirectory value)
 		{
@@ -141,7 +141,7 @@ namespace Gorgon.IO
 		/// Function to return whether a directory with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the directory to find.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(string name)
 		{
 			name = name.RemoveIllegalPathChars();
@@ -204,7 +204,7 @@ namespace Gorgon.IO
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
 		public void Add(GorgonFileSystemDirectory item)
 		{

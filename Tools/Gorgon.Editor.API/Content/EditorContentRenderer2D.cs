@@ -193,7 +193,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the color to use when clearing the render surface.
 		/// </summary>
-		/// <remarks>Set this value to NULL (Nothing in VB.Net) to use the control background color.</remarks>
+		/// <remarks>Set this value to NULL (<i>Nothing</i> in VB.Net) to use the control background color.</remarks>
 		public GorgonColor? ClearColor
 		{
 			get;
@@ -321,7 +321,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

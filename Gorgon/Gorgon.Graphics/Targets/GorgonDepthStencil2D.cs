@@ -144,7 +144,7 @@ namespace Gorgon.Graphics
         /// <summary>
 		/// Function called if this buffer is attached to a swap chain and it's been resized.
 		/// </summary>
-		/// <returns><c>true</c> if this depth buffer was bound to the pipeline, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if this depth buffer was bound to the pipeline, <b>false</b> if not.</returns>
 		internal bool OnDepthStencilResize()
 		{
 			bool result = (Graphics.Output.DepthStencilView != null) && (Graphics.Output.DepthStencilView.Resource == this);
@@ -247,7 +247,7 @@ namespace Gorgon.Graphics
         /// <param name="stencilValue">[Optional] The value to fill the stencil portion with.</param>
         /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
         /// <remarks>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -263,7 +263,7 @@ namespace Gorgon.Graphics
         /// <param name="depthValue">The value to fill the depth portion with.</param>
         /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
         /// <remarks>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -279,7 +279,7 @@ namespace Gorgon.Graphics
         /// <param name="stencilValue">The value to fill the stencil portion with.</param>
         /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
         /// <remarks>
-        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context to clear the depth/stencil buffer.
         /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
@@ -317,7 +317,7 @@ namespace Gorgon.Graphics
 		/// <param name="graphics">Graphics interface that owns this depth/stencil buffer.</param>
 		/// <param name="name">The name of the depth/stencil buffer.</param>
 		/// <param name="settings">Settings for the depth buffer.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonDepthStencil2D(GorgonGraphics graphics, string name, GorgonDepthStencil2DSettings settings)
 			: base(graphics, name, settings)
@@ -330,7 +330,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)

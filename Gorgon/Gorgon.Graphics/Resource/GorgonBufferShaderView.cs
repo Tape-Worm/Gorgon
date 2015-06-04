@@ -243,7 +243,7 @@ namespace Gorgon.Graphics
 		/// <param name="format">Format of the view.</param>
 		/// <param name="elementStart">The starting element for the view.</param>
 		/// <param name="elementCount">The number of elements in the view.</param>
-		/// <param name="isRaw"><c>true</c> to use a raw view, <c>false</c> to use a normal view.</param>
+		/// <param name="isRaw"><b>true</b> to use a raw view, <b>false</b> to use a normal view.</param>
 		internal GorgonBufferShaderView(GorgonResource buffer, BufferFormat format, int elementStart, int elementCount, bool isRaw)
 			: base(buffer, format)
 		{

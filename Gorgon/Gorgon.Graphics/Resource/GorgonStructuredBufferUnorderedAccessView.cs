@@ -134,7 +134,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="buffer">Buffer that will receive the data.</param>
 		/// <param name="offset">DWORD aligned offset within the buffer to start writing at.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or larger than the size of the buffer minus 4 bytes.</exception>
 		/// <remarks>This will copy the contents of a structured buffer into any other type of buffer.  The view must have been created using a ViewType of Counter or Append, otherwise an exception will be thrown.</remarks>
 		public void CopyTo(GorgonBaseBuffer buffer, int offset)

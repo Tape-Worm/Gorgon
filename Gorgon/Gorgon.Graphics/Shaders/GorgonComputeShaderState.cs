@@ -239,7 +239,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="name">Name of the resource.</param>
             /// <returns>The index of the resource if found, -1 if not.</returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
             /// <remarks>This only looks up resources bound to a view that's bound to the pipeline.</remarks>
             public int IndexOf(string name)
@@ -273,8 +273,8 @@ namespace Gorgon.Graphics
             /// Function to determine if the list contains a resource with the specified name.
             /// </summary>
             /// <param name="name">Name of the resource.</param>
-            /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
             /// <remarks>This only looks up resources bound to a view that's bound to a pipeline.</remarks>
             public bool Contains(string name)
@@ -287,7 +287,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="resource">Resource to look up.</param>
             /// <returns>The index of the resource if found, -1 if not.</returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             public int IndexOf(GorgonResource resource)
             {
                 if (resource == null)
@@ -313,8 +313,8 @@ namespace Gorgon.Graphics
             /// Function to determine if a view is bound and is also bound to the specified resource.
             /// </summary>
             /// <param name="resource">Resource to look up.</param>
-            /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             public bool Contains(GorgonResource resource)
             {
                 return IndexOf(resource) > -1;
@@ -326,7 +326,7 @@ namespace Gorgon.Graphics
             /// <param name="slot">Starting slot for the buffer.</param>
             /// <param name="views">Buffers to set.</param>
             /// <remarks>This will bind unordered access views at the same time.  An unordered access view or its resource must not already be bound to the shader at another index, or an exception will be thrown.
-            /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="views"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
+            /// <para>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="views"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
             /// </remarks>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
             /// <exception cref="GorgonException">Thrown when one of the views in the <paramref name="views"/> parameter is already bound to another slot or has a resource bound to another slot.</exception>
@@ -399,7 +399,7 @@ namespace Gorgon.Graphics
             /// <returns>
             /// The index of <paramref name="item" /> if found in the list; otherwise, -1.
             /// </returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             public int IndexOf(GorgonUnorderedAccessView item)
             {
                 if (item == null)
@@ -473,7 +473,7 @@ namespace Gorgon.Graphics
             /// <returns>
             /// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
             /// </returns>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item" /> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item" /> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             public bool Contains(GorgonUnorderedAccessView item)
             {
                 if (item == null)
@@ -489,7 +489,7 @@ namespace Gorgon.Graphics
             /// </summary>
             /// <param name="array">Array to copy into.</param>
             /// <param name="arrayIndex">Index in the array to start writing at.</param>
-            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
             public void CopyTo(GorgonUnorderedAccessView[] array, int arrayIndex)
             {
@@ -670,7 +670,7 @@ namespace Gorgon.Graphics
         /// <remarks>Call dispatch to execute the commands in the compute shader.  A compute shader can be run on multiple threads in parallel within a threading group.  Use a particular threading group 
         /// within the shader by using a 3D vector (float3).
         /// <para>The <paramref name="indirectArgsBuffer"/> must be loaded with data that matches the argument list of <see cref="Dispatch(int, int, int)"/>.</para></remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="indirectArgsBuffer"/> was NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="indirectArgsBuffer"/> was NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="alignedOffset"/> parameter is less than 0 or not less than the number of bytes in the buffer.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the buffer passed in through <paramref name="indirectArgsBuffer"/> was not created as an indirect argument buffer.</exception>
         public void Dispatch(GorgonBuffer indirectArgsBuffer, int alignedOffset)

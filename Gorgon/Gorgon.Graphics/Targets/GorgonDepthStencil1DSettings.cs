@@ -53,7 +53,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return the texture format for the depth/stencil buffer texture.
 		/// </summary>
 		/// <remarks>
-		/// If the <see cref="AllowShaderView" /> setting is set to <c>true</c>, then this value needs to be set to a typeless format.  This is because
+		/// If the <see cref="AllowShaderView" /> setting is set to <b>true</b>, then this value needs to be set to a typeless format.  This is because
 		/// a depth/stencil buffer is not capable of having a format that is not one of the depth formats.
 		/// <para>If this value is set to Unknown, then an exception will be thrown when trying to create the depth/stencil buffer.</para>
 		/// <para>This value is only applicable on video devices that have a feature level of SM4 or better if no multisampling is present on the depth/stencil buffer.
@@ -70,9 +70,9 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to allow shader views on the depth/stencil buffer.
 		/// </summary>
 		/// <remarks>
-		/// Set this value to <c>true</c> if depth buffer needs to be bound to the shader.
+		/// Set this value to <b>true</b> if depth buffer needs to be bound to the shader.
 		/// <para>This value is only applicable on video devices that have a feature level of SM4 or better.</para>
-		/// <para>The default value is <c>false</c>.</para>
+		/// <para>The default value is <b>false</b>.</para>
 		/// </remarks>
 		public bool AllowShaderView
 		{
@@ -116,7 +116,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to allow an unordered access view of the texture for the depth/stencil buffer.
 		/// </summary>
-		/// <remarks>This value is not supported with depth/stencil buffers.  This value will always return <c>false</c>.</remarks>
+		/// <remarks>This value is not supported with depth/stencil buffers.  This value will always return <b>false</b>.</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property is made.</exception>
 		bool ITextureSettings.AllowUnorderedAccessViews
 		{
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether this depth/stencil buffer uses a cube texture.
 		/// </summary>
-		/// <remarks>This value does not apply to 1D depth/stencil buffers.  This value will always return <c>false</c>.</remarks>
+		/// <remarks>This value does not apply to 1D depth/stencil buffers.  This value will always return <b>false</b>.</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property is made.</exception>
 		bool ITextureSettings.IsTextureCube
 		{

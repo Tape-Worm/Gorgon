@@ -49,7 +49,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return a file by name.
 		/// </summary>
-		/// <remarks>Setting a file to NULL (Nothing in VB.Net) will remove it from the collection.</remarks>
+		/// <remarks>Setting a file to NULL (<i>Nothing</i> in VB.Net) will remove it from the collection.</remarks>
 		public EditorFile this[string name]
 		{
 			get
@@ -148,7 +148,7 @@ namespace Gorgon.Editor
 		/// Function to determine if the collection contains a dependency with the specified name and type.
 		/// </summary>
 		/// <param name="name">Name of the dependency.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(string name)
 		{
 			return !string.IsNullOrWhiteSpace(name) && _files.ContainsKey(name);
@@ -159,7 +159,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="name">Name of the item to retrieve.</param>
 		/// <param name="value">The value, if found.  NULL if not.</param>
-		/// <returns><c>true</c> if the value was found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the value was found, <b>false</b> if not.</returns>
 		public bool TryGetValue(string name, out EditorFile value)
 		{
 			return _files.TryGetValue(name, out value);

@@ -143,7 +143,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -201,7 +201,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(ref GorgonDepthStencilOperations other)
 		{
 			return Equals(ref this, ref other);
@@ -310,19 +310,19 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Is the depth buffer enabled or not.
 		/// </summary>
-		/// <remarks>The default value is <c>true</c>.</remarks>
+		/// <remarks>The default value is <b>true</b>.</remarks>
 		public bool IsDepthEnabled;
 
 		/// <summary>
 		/// Is the stencil buffer enabled or not.
 		/// </summary>
-		/// <remarks>The default value is <c>false</c>.</remarks>
+		/// <remarks>The default value is <b>false</b>.</remarks>
 		public bool IsStencilEnabled;
 
 		/// <summary>
 		/// Is depth writing enabled or not.
 		/// </summary>
-		/// <remarks>The default value is <c>true</c>.</remarks>
+		/// <remarks>The default value is <b>true</b>.</remarks>
 		public bool IsDepthWriteEnabled;
 
 		/// <summary>
@@ -392,7 +392,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -450,7 +450,7 @@ namespace Gorgon.Graphics
 		/// Function to compare this instance with another.
 		/// </summary>
 		/// <param name="other">The other instance to use for comparison.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public bool Equals(ref GorgonDepthStencilStates other)
 		{
 			return Equals(ref this, ref other);

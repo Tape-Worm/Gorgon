@@ -78,7 +78,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -95,7 +95,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonEffectParameter left, ref GorgonEffectParameter right)
 		{
 			if (!string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
@@ -121,7 +121,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool operator ==(GorgonEffectParameter left, GorgonEffectParameter right)
 		{
 			return Equals(ref left, ref right);
@@ -132,7 +132,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
-		/// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
 		public static bool operator !=(GorgonEffectParameter left, GorgonEffectParameter right)
 		{
 			return !Equals(ref left, ref right);
@@ -165,7 +165,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="parameterName">The name of the parameter.</param>
 		/// <param name="value">The value to assign.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="parameterName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="parameterName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="parameterName"/> is empty.</exception>
 		public GorgonEffectParameter(string parameterName, object value)
 		{

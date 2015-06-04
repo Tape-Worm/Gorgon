@@ -256,7 +256,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function enable or disable the cancellation functionality.
 		/// </summary>
-		/// <param name="cancel"><c>true</c> to enable cancellation, <c>false</c> to disable.</param>
+		/// <param name="cancel"><b>true</b> to enable cancellation, <b>false</b> to disable.</param>
 		public void EnableCancel(bool cancel)
 		{
 			if (InvokeRequired)

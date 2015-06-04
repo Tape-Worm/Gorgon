@@ -227,7 +227,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to process idle time in the application.
 		/// </summary>
-		/// <returns><c>true</c> to continue processing, <c>false</c> to end processing.</returns>
+		/// <returns><b>true</b> to continue processing, <b>false</b> to end processing.</returns>
 		private bool Idle()
 		{
 			_surface.Clear(Color.White);			

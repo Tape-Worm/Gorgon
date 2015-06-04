@@ -227,7 +227,7 @@ namespace Gorgon.Animation
 		/// Function to save the animation to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write the animation into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void Save(Stream stream)
 		{
 			GorgonDebug.AssertNull(stream, "stream");
@@ -268,7 +268,7 @@ namespace Gorgon.Animation
 		/// Function to save the animation to a file.
 		/// </summary>
 		/// <param name="fileName">Path and file name of the file to write.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
 		public void Save(string fileName)
 		{

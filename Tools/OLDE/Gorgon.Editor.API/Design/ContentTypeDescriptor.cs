@@ -51,7 +51,7 @@ namespace Gorgon.Editor
 		/// Gets a value indicating whether this instance is read only.
 		/// </summary>
 		/// <value>
-		/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
+		/// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		public override bool IsReadOnly
 		{

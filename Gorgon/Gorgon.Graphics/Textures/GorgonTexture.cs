@@ -86,7 +86,7 @@ namespace Gorgon.Graphics
 	    /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
         /// <exception cref="System.NotSupportedException">Thrown when the texture is attached to another object type.</exception>
         protected override void Dispose(bool disposing)
         {
@@ -546,7 +546,7 @@ namespace Gorgon.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		/// <remarks>The <paramref name="initialData"/> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
+		/// <remarks>The <paramref name="initialData"/> can be NULL (<i>Nothing</i> in VB.Net) IF the texture is not created with an Immutable usage flag.
 		/// <para>To initialize the texture, create a new <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
 		/// </remarks>
 		protected abstract void OnInitialize(GorgonImageData initialData);
@@ -563,19 +563,19 @@ namespace Gorgon.Graphics
         /// <param name="destZ">Depth offset into the destination texture to place the copied data.</param>
         /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
         /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
-        /// <param name="unsafeCopy"><c>true</c> to disable all range checking for coorindates, <c>false</c> to clip coorindates to safe ranges.</param>
+        /// <param name="unsafeCopy"><b>true</b> to disable all range checking for coorindates, <b>false</b> to clip coorindates to safe ranges.</param>
         /// <param name="context">The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceBox"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
         /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
         /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
-        /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+        /// <para>Pass NULL (<i>Nothing</i> in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
-        /// <para>If the <paramref name="context"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// <para>If the <paramref name="context"/> parameter is NULL (<i>Nothing</i> in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_4 device.
         /// <para>-or-</para>
         /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
@@ -722,7 +722,7 @@ namespace Gorgon.Graphics
         /// <remarks>This method is used to lock down a sub resource in the texture for reading/writing. When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
         /// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
         /// <para>Only the Write, Discard (with the Write flag) and Read flags may be used in the <paramref name="lockFlags"/> parameter.  The Read flag can only be used with staging textures and is mutually exclusive.</para>
-        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
         /// texture at the same time.</para>
         /// </remarks>
         /// <returns>This method will return a <see cref="Gorgon.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
@@ -801,8 +801,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Funtion to retrieve the binding flags for a resource.
         /// </summary>
-        /// <param name="isDepth"><c>true</c> if the texture is meant for depth/stencil.</param>
-        /// <param name="isTarget"><c>true</c> if the texture is meant for use as a render target.</param>
+        /// <param name="isDepth"><b>true</b> if the texture is meant for depth/stencil.</param>
+        /// <param name="isTarget"><b>true</b> if the texture is meant for use as a render target.</param>
         /// <returns>The Direct3D binding flags.</returns>
         internal D3D.BindFlags GetBindFlags(bool isDepth, bool isTarget)
         {
@@ -890,7 +890,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="codec">Codec used to encode the stream data.</param>
         /// <returns>A byte array containing the texture data.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>		
         /// <exception cref="System.IO.IOException">Thrown when there is an error when attempting to encode the image data.</exception>
         /// <exception cref="System.NotSupportedException">Thrown when the current video device has a feature level of SM2_a_b and the texture is not a staging texture or the texture is not 2D.</exception>
         /// <remarks>This will persist the contents of the texture into an array of bytes.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
@@ -939,7 +939,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="stream">Stream that will contain the texture information.</param>
 		/// <param name="codec">Codec used to encode the stream data.</param>        
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>		
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
@@ -986,7 +986,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="filePath">Path to the file.</param>
 		/// <param name="codec">Codec used to encode the file data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
@@ -1052,9 +1052,9 @@ namespace Gorgon.Graphics
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
-		/// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to copy the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
+		/// <para>If <paramref name="deferred"/> is NULL (<i>Nothing</i> in VB.Net), then the immediate context is used to copy the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_4 device.
 		/// <para>-or-</para>
 		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
@@ -1132,9 +1132,9 @@ namespace Gorgon.Graphics
         /// number of array indices or mip levels in the texture.</exception>
         /// <remarks>
         /// Use this to copy data into a texture with a usage of staging or default.  If the <paramref name="destBox"/> values are larger than the dimensions of the texture, then the data will be clipped.
-        /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="destArrayIndex"/> and/or the <paramref name="destMipLevel"/> parameters will use the first array index and/or mip map level.</para>
+        /// <para>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="destArrayIndex"/> and/or the <paramref name="destMipLevel"/> parameters will use the first array index and/or mip map level.</para>
         /// <para>This method will not work with depth/stencil textures or with textures that have multisampling applied.</para>
-        /// <para>If the <paramref name="context"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// <para>If the <paramref name="context"/> parameter is NULL (<i>Nothing</i> in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
         /// </remarks>
         protected void OnUpdateSubResource(GorgonImageBuffer buffer,

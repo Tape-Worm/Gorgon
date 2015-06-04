@@ -45,9 +45,9 @@ namespace Gorgon.Graphics
         /// Property to set or return whether to allow unordered access to the buffer.
         /// </summary>
         /// <remarks>
-        /// This value must be set to <c>false</c> if <see cref="IsOutput"/> is set to <c>true</c>.
+        /// This value must be set to <b>false</b> if <see cref="IsOutput"/> is set to <b>true</b>.
         /// <para>Unordered access views require a video device with SM5 capabilities.</para>
-        /// <para>The default value is <c>false</c>.</para>
+        /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
         bool AllowUnorderedAccessViews
         {
@@ -60,7 +60,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <remarks>
         /// This value does not apply to constant buffers.
-        /// <para>The default value is <c>false</c>.</para>
+        /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
         bool AllowShaderViews
         {
@@ -85,9 +85,9 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to set or return whether a buffer will allow raw views.
         /// </summary>
-        /// <remarks>This value must be set to <c>false</c> if <see cref="AllowShaderViews"/> or <see cref="AllowUnorderedAccessViews"/> is set to <c>false</c>.
+        /// <remarks>This value must be set to <b>false</b> if <see cref="AllowShaderViews"/> or <see cref="AllowUnorderedAccessViews"/> is set to <b>false</b>.
         /// <para>This value does not apply to structured buffers.</para>
-        /// <para>The default value is <c>false</c>.</para>
+        /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
         bool AllowRawViews
         {
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <remarks>
         /// This value does not apply to structured buffers or constant buffers.
-        /// <para>The default value is <c>false</c>.</para>
+        /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
         bool AllowIndirectArguments
         {
@@ -112,8 +112,8 @@ namespace Gorgon.Graphics
         /// Property to set or return whether to allow this buffer to be used for stream output.
         /// </summary>
         /// <remarks>
-        /// This value must be set to <c>false</c> if <see cref="AllowUnorderedAccessViews"/> is set to <c>true</c>.
-        /// <para>The default value is <c>false</c>.</para>
+        /// This value must be set to <b>false</b> if <see cref="AllowUnorderedAccessViews"/> is set to <b>true</b>.
+        /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
         bool IsOutput
         {

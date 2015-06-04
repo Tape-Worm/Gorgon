@@ -56,7 +56,7 @@ namespace Gorgon.Renderers
 		/// <param name="name">The name of the renderable object.</param>
 		/// <param name="stream">Stream that contains the renderable.</param>
 		/// <returns>A new renderable object of the specified type.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
@@ -100,7 +100,7 @@ namespace Gorgon.Renderers
 		/// <param name="name">The name of the renderable object.</param>
 		/// <param name="data">Array of bytes containing the renderable data to load.</param>
 		/// <returns>A new renderable object of the specified type.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data" /> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data" /> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
@@ -128,7 +128,7 @@ namespace Gorgon.Renderers
 		/// <param name="name">The name of the renderable object.</param>
 		/// <param name="filePath">The path to the file to load.</param>
 		/// <returns>A new renderable object of the specified type.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is NULL (Nothing in VB.Net).
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
@@ -162,7 +162,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="name">Name of the text object.</param>
 		/// <returns>A new text object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonText CreateText(string name)
 		{
@@ -176,7 +176,7 @@ namespace Gorgon.Renderers
 		/// <param name="font">Font to use for the text.</param>
 		/// <param name="text">Initial text to display.</param>
 		/// <returns>A new text object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonText CreateText(string name, GorgonFont font, string text)
 		{
@@ -191,7 +191,7 @@ namespace Gorgon.Renderers
 		/// <param name="text">Initial text to display.</param>
 		/// <param name="color">Color of the text.</param>
 		/// <returns>A new text object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonText CreateText(string name, GorgonFont font, string text, GorgonColor color)
 		{
@@ -205,11 +205,11 @@ namespace Gorgon.Renderers
 		/// <param name="font">Font to use for the text.</param>
 		/// <param name="text">Initial text to display.</param>
 		/// <param name="color">Color of the text.</param>
-		/// <param name="shadowed"><c>true</c> to place a shadow behind the text, <c>false</c> to display normally.</param>
+		/// <param name="shadowed"><b>true</b> to place a shadow behind the text, <b>false</b> to display normally.</param>
 		/// <param name="shadowOffset">Offset of the shadow.</param>
 		/// <param name="shadowOpacity">Opacity for the shadow.</param>
 		/// <returns>A new text object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonText CreateText(string name, GorgonFont font, string text, GorgonColor color, bool shadowed, Vector2 shadowOffset, float shadowOpacity)
 		{
@@ -244,7 +244,7 @@ namespace Gorgon.Renderers
 		/// <param name="name">Name of the sprite.</param>
 		/// <param name="settings">Settings for the sprite.</param>
 		/// <returns>A new sprite.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, GorgonSpriteSettings settings)
 		{
@@ -278,7 +278,7 @@ namespace Gorgon.Renderers
 		/// <param name="size">Size of the sprite.</param>
 		/// <param name="color">Color for the sprite.</param>
 		/// <returns>A new sprite.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonColor color)
 		{
@@ -298,7 +298,7 @@ namespace Gorgon.Renderers
 		/// <param name="texture">Texture to apply to the sprite.</param>
 		/// <param name="textureRegion">Region of the texture to map to the sprite.</param>
 		/// <returns>A new sprite.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, RectangleF textureRegion)
 		{
@@ -325,7 +325,7 @@ namespace Gorgon.Renderers
 		/// <param name="texture">Texture to apply to the sprite.</param>
 		/// <param name="textureOffset">Offset into the texture to start mapping at.</param>
 		/// <returns>A new sprite.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, Vector2 textureOffset)
 		{
@@ -346,7 +346,7 @@ namespace Gorgon.Renderers
 		/// <param name="size">Size of the sprite.</param>
 		/// <param name="texture">Texture to apply to the sprite.</param>
 		/// <returns>A new sprite.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture)
 		{
@@ -367,10 +367,10 @@ namespace Gorgon.Renderers
 		/// <param name="point1">First point in the triangle.</param>
 		/// <param name="point2">Second point in the triangle.</param>
 		/// <param name="point3">Third point in the triangle.</param>
-		/// <param name="filled"><c>true</c> to create a filled triangle, <c>false</c> to create an unfilled triangle.</param>
+		/// <param name="filled"><b>true</b> to create a filled triangle, <b>false</b> to create an unfilled triangle.</param>
 		/// <returns>A new triangle primitive object.</returns>
 		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:GorgonLibrary.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         public GorgonTriangle CreateTriangle(string name, GorgonPolygonPoint point1, GorgonPolygonPoint point2, GorgonPolygonPoint point3, bool filled)
 		{
@@ -402,9 +402,9 @@ namespace Gorgon.Renderers
 		/// <param name="name">Name of the rectangle.</param>
 		/// <param name="rectangle">Rectangle dimensions.</param>
 		/// <param name="color">Color of the rectangle.</param>
-		/// <param name="filled"><c>true</c> to create a filled rectangle, <c>false</c> to create an empty rectangle.</param>
+		/// <param name="filled"><b>true</b> to create a filled rectangle, <b>false</b> to create an empty rectangle.</param>
 		/// <returns>A new rectangle primitive object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, GorgonColor color, bool filled)
 		{
@@ -435,7 +435,7 @@ namespace Gorgon.Renderers
 		/// <param name="color">Color of the rectangle.</param>
 		/// <returns>A new rectangle primitive object.</returns>
 		/// <remarks>This method will create an unfilled rectangle.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, GorgonColor color)
 		{
@@ -450,7 +450,7 @@ namespace Gorgon.Renderers
 		/// <param name="endPosition">Ending point for the line.</param>
 		/// <param name="color">Color of the line.</param>
 		/// <returns>A new line primitive object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonLine CreateLine(string name, Vector2 startPosition, Vector2 endPosition, GorgonColor color)
 		{
@@ -480,7 +480,7 @@ namespace Gorgon.Renderers
 		/// <param name="position">The position of the point.</param>
 		/// <param name="color">Color of the point.</param>
 		/// <returns>A new point primitive object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonPoint CreatePoint(string name, Vector2 position, GorgonColor color)
 		{
@@ -508,10 +508,10 @@ namespace Gorgon.Renderers
 		/// <param name="position">Position of the ellipse.</param>
 		/// <param name="size">Size of the ellipse.</param>
 		/// <param name="color">Color of the ellipse.</param>
-		/// <param name="isFilled"><c>true</c> if the ellipse should be filled, <c>false</c> if not.</param>
+		/// <param name="isFilled"><b>true</b> if the ellipse should be filled, <b>false</b> if not.</param>
 		/// <param name="quality">Quality of the ellipse rendering.</param>
 		/// <returns>A new ellipse object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, GorgonColor color, bool isFilled, int quality)
 		{
@@ -543,10 +543,10 @@ namespace Gorgon.Renderers
 		/// <param name="position">Position of the ellipse.</param>
 		/// <param name="size">Size of the ellipse.</param>
 		/// <param name="color">Color of the ellipse.</param>
-		/// <param name="isFilled"><c>true</c> if the ellipse should be filled, <c>false</c> if not.</param>
+		/// <param name="isFilled"><b>true</b> if the ellipse should be filled, <b>false</b> if not.</param>
 		/// <returns>A new ellipse object.</returns>
 		/// <remarks>This method creates an ellipse with a quality of 64 segments.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, GorgonColor color, bool isFilled)
 		{
@@ -562,7 +562,7 @@ namespace Gorgon.Renderers
 		/// <param name="color">Color of the ellipse.</param>
 		/// <returns>A new ellipse object.</returns>
 		/// <remarks>This method creates an unfilled ellipse with a quality of 64 segments.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, GorgonColor color)
 		{
@@ -578,12 +578,12 @@ namespace Gorgon.Renderers
 		/// <param name="vertices">[Optional] Vertices for the polygon.</param>
 		/// <param name="indices">[Optional] Indices for the polygon.</param>
 		/// <param name="type">[Optional] The type of primitive to use when drawing the polygon.</param>
-		/// <param name="useDynamicVertexBuffer">[Optional] <c>true</c> to use a dynamic buffer to hold the vertices, <c>false</c> to use a static buffer.</param>
-		/// <param name="useDynamicIndexBuffer">[Optional] <c>true</c> to use a dynamic buffer to hold the indices, <c>false</c> to use a static buffer.</param>
+		/// <param name="useDynamicVertexBuffer">[Optional] <b>true</b> to use a dynamic buffer to hold the vertices, <b>false</b> to use a static buffer.</param>
+		/// <param name="useDynamicIndexBuffer">[Optional] <b>true</b> to use a dynamic buffer to hold the indices, <b>false</b> to use a static buffer.</param>
 		/// <returns>A new polygon object.</returns>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="indices"/> parameter will disable the index buffer on the polygon.  An index buffer can help with performance by 
+		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="indices"/> parameter will disable the index buffer on the polygon.  An index buffer can help with performance by 
 		/// decreasing the required number of vertices to be sent to the video device.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net). </exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net). </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		public GorgonPolygon CreatePolygon(string name,
 			Vector2 position,

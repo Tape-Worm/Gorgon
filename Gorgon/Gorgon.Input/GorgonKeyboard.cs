@@ -510,7 +510,7 @@ namespace Gorgon.Input
             /// </summary>
             /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
             /// <returns>
-            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            ///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
             /// </returns>
             public override bool Equals(object obj)
             {
@@ -527,7 +527,7 @@ namespace Gorgon.Input
             /// </summary>
             /// <param name="left">The left instance to compare.</param>
             /// <param name="right">The right instance to compare.</param>
-            /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+            /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
             public static bool Equals(ref KeyCharMap left, ref KeyCharMap right)
             {
                 return left.Key == right.Key;
@@ -549,7 +549,7 @@ namespace Gorgon.Input
             /// </summary>
             /// <param name="left">Left instance to compare.</param>
             /// <param name="right">Right instance to compare.</param>
-            /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+            /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
             public static bool operator ==(KeyCharMap left, KeyCharMap right)
             {
                 return Equals(ref left, ref right);
@@ -560,7 +560,7 @@ namespace Gorgon.Input
             /// </summary>
             /// <param name="left">Left instance to compare.</param>
             /// <param name="right">Right instance to compare.</param>
-            /// <returns><c>true</c> if not equal, <c>false</c> if equal.</returns>
+            /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
             public static bool operator !=(KeyCharMap left, KeyCharMap right)
             {
                 return !Equals(ref left, ref right);
@@ -656,7 +656,7 @@ namespace Gorgon.Input
 			/// Function to return whether a key exists in this collection or not.
 			/// </summary>
 			/// <param name="key">Key to check for.</param>
-			/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+			/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 			public bool Contains(KeyboardKeys key)
 			{
 				return _keys.ContainsKey(key);
@@ -689,7 +689,7 @@ namespace Gorgon.Input
             /// </summary>
             /// <param name="key">Key to look up.</param>
             /// <param name="value">Value in the list.</param>
-            /// <returns><c>true</c> if the value was found, <c>false</c> if not.</returns>
+            /// <returns><b>true</b> if the value was found, <b>false</b> if not.</returns>
 		    public bool TryGetValue(KeyboardKeys key, out KeyCharMap value)
 		    {
 		        return _keys.TryGetValue(key, out value);

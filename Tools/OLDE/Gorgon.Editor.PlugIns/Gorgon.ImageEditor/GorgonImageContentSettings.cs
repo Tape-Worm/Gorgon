@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if the object was set up, <c>false</c> if not.
+        /// <b>true</b> if the object was set up, <b>false</b> if not.
         /// </returns>
         public override bool PerformSetup()
         {

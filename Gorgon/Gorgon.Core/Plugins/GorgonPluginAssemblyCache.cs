@@ -234,8 +234,8 @@ namespace Gorgon.Plugins
 		/// Function to either retrieve an existing assembly, or load one and add it to the cache.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <param name="added"><c>true</c> if the assembly was added, <c>false</c> if not.</param>
-		/// <returns>The assembly that was loaded, or <c>null</c> if that assembly does not contain any plugin types.</returns>
+		/// <param name="added"><b>true</b> if the assembly was added, <b>false</b> if not.</param>
+		/// <returns>The assembly that was loaded, or <b>null</b> if that assembly does not contain any plugin types.</returns>
 		private Assembly GetOrAddAssembly(AssemblyName assemblyName, out bool added)
 		{
 			added = false;
@@ -283,7 +283,7 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly has any plugin types available.
 		/// </summary>
 		/// <param name="assembly">The assembly to evaluate.</param>
-		/// <returns><c>true</c> if plugin types were found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if plugin types were found, <b>false</b> if not.</returns>
 		private static bool HasPluginTypes(Assembly assembly)
 		{
 			Type plugInType = typeof(GorgonPlugin);
@@ -431,21 +431,26 @@ namespace Gorgon.Plugins
 		/// 
 		/// AssemblySigningResult result = assemblyCache.VerifyAssemblyStrongName("Path to your assembly", expected);
 		/// 
-		/// if ((result & AssemblySigningResult.KeyMismatch) == AssemblySigningResult.KeyMismatch)
+		/// if ((result &amp; AssemblySigningResult.KeyMismatch) == AssemblySigningResult.KeyMismatch)
 		/// {
 		///    Console.Writeline("Public token mismatch.");
 		/// }
 		/// </code>
 		/// </para>
 		/// <para>
-		/// Disclaimer time!!!
-		/// This method is intended to verify that an assembly is signed, that, to the best of its knowledge, it has not been tampered with, and optionally, if it contains a known 
-		/// public key. This is not meant to protect a system against malicious code, or provide a means of checking an identify for an assembly. This method also makes no guarantees 
-		/// that the information is 100% accurate, so if security is of the utmost importance, do not rely on this method and use other functionality to secure your assemblies. This 
-		/// method should be fine for most verification purposes.
+		/// <h2>Disclaimer time!!!</h2><br/>
+		/// If the security of your assemblies is not critical, then this method should serve the purpose of verification of an assembly. However:<br/>
+		/// <para>
+		/// <i>
+		/// This method is intended to verify that an assembly is signed, optionally contains the provide public key, and that, to the best of its knowledge, it has not been tampered 
+		/// with. This is not meant to protect a system against malicious code, or provide a means of checking an identify for an assembly. This method also makes no guarantees that 
+		/// the information is 100% accurate, so if security is of the utmost importance, do not rely on this method alone and use other functionality to secure your assemblies. 
+		/// </i>
+		/// </para>
 		/// </para>
 		/// <para>
-		/// For more information about signing an assembly, follow this link <a href="https://msdn.microsoft.com/en-us/library/xwb8f617(v=vs.110).aspx">Creating and Using Strong-Named Assemblies</a>.
+		/// For more information about signing an assembly, follow this link <a href="https://msdn.microsoft.com/en-us/library/xwb8f617(v=vs.110).aspx" target="_blank">Creating and 
+		/// Using Strong-Named Assemblies</a>.
 		/// </para>
 		/// </remarks>
 		public AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
@@ -489,7 +494,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyName">The name of the assembly to enumerate from.</param>
 		/// <returns>A read-only list of plugin names.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
 		/// <para>
 		/// If the file pointed at by <paramref name="assemblyName"/> contains <see cref="GorgonPlugin"/> types, then this method will retrieve a list of plugin names from that assembly. This method 
@@ -519,7 +524,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyFile">Path to the file containing the plugins.</param>
 		/// <returns>A read-only list of plugin names.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
 		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyFile"/> is not a valid .NET assembly.</exception>
@@ -562,13 +567,13 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly is a plugin assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly.</param>
-		/// <returns><c>true</c> if this is a plugin assembly, <c>false</c> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <returns><b>true</b> if this is a plugin assembly, <b>false</b> if it is not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will load the assembly into a separate <see cref="AppDomain"/> and will determine if it contains any types that inherit from 
-		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <c>false</c>, otherwise it will 
-		/// return <c>true</c>.
+		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <b>false</b>, otherwise it will 
+		/// return <b>true</b>.
 		/// </para>
 		/// <para>
 		/// Users should call this method before calling <see cref="Load(System.Reflection.AssemblyName)"/> to determine whether or not a plugin assembly should be loaded into the 
@@ -608,18 +613,18 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly is a plugin assembly.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly file.</param>
-		/// <returns><c>true</c> if this is a plugin assembly, <c>false</c> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <returns><b>true</b> if this is a plugin assembly, <b>false</b> if it is not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will load the assembly into a separate <see cref="AppDomain"/> and will determine if it contains any types that inherit from 
-		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <c>false</c>, otherwise it will 
-		/// return <c>true</c>. 
+		/// <see cref="GorgonPlugin"/>. If the assembly does not contain any plugin types, then this method returns <b>false</b>, otherwise it will 
+		/// return <b>true</b>. 
 		/// </para>
 		/// <para>
-		/// This method will also check to determine if the assembly is a valid .NET assembly. If it is not, then the method will return <c>false</c>, 
-		/// otherwise it will return <c>true</c>.
+		/// This method will also check to determine if the assembly is a valid .NET assembly. If it is not, then the method will return <b>false</b>, 
+		/// otherwise it will return <b>true</b>.
 		/// </para>
 		/// <para>
 		/// Users should call this method before calling <see cref="Load(System.String)"/> to determine whether or not a plugin assembly should be loaded into the 
@@ -666,7 +671,7 @@ namespace Gorgon.Plugins
 		/// Function to load an assembly that contains <see cref="GorgonPlugin"/> types.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">Thrown when the assembly does not contain any types that inherit from <see cref="GorgonPlugin"/>.</exception>
 		/// <remarks>
 		/// <para>
@@ -718,7 +723,7 @@ namespace Gorgon.Plugins
 		/// Function to load an assembly that contains <see cref="GorgonPlugin"/> types.
 		/// </summary>
 		/// <param name="assemblyPath">Name of the assembly to load.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="assemblyPath"/> is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the assembly does not contain any types that inherit from <see cref="GorgonPlugin"/>.</exception>
 		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyPath"/> is not a valid .NET assembly.</exception>
@@ -783,7 +788,7 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

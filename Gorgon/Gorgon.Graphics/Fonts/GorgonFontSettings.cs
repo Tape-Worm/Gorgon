@@ -223,7 +223,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>This allows the font generation code to use special effects for the glyphs in the font.  For example, using a textured 
 		/// brush, glyphs could be painted with a texture.  Or, using a gradient brush, glyphs could be painted using linear or path based gradients.
-		/// <para>The default value is NULL (Nothing in VB.Net).</para></remarks>
+		/// <para>The default value is NULL (<i>Nothing</i> in VB.Net).</para></remarks>
 		public GorgonGlyphBrush Brush
 		{
 			get;
@@ -280,10 +280,10 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return whether to include kerning pair information in the font.
 		/// </summary>
-		/// <remarks>Kerning pairs are used to define spacing between 2 characters in a font.  Set this to <c>true</c> to retrieve kerning information if the font 
+		/// <remarks>Kerning pairs are used to define spacing between 2 characters in a font.  Set this to <b>true</b> to retrieve kerning information if the font 
 		/// does not seem to be rendering properly.
 		/// <para>Note that some fonts do not employ the use of kerning pairs, and consequently, this setting will be ignored if that is the case.</para>
-		/// <para>The default value is <c>true</c>.</para>
+		/// <para>The default value is <b>true</b>.</para>
 		/// </remarks>
 		public bool UseKerningPairs
 		{

@@ -18,18 +18,14 @@
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>Gorgon</HtmlHelpName>
     <ApiFilter>
-      <Filter entryType="Namespace" fullName="GorgonLibrary.Framework" isExposed="False">
-  <Filter entryType="Class" fullName="GorgonLibrary.Framework.GorgonApplicationWindow" filterName="GorgonApplicationWindow" isExposed="True" />
-  <Filter entryType="Class" fullName="GorgonLibrary.Framework.SetupDialog" filterName="SetupDialog" isExposed="True" />
-</Filter>
-<Filter entryType="Namespace" fullName="GorgonLibrary.Internal" isExposed="False">
-  <Filter entryType="Class" fullName="GorgonLibrary.Internal.D3DObjects" filterName="D3DObjects" isExposed="True" />
-  <Filter entryType="Class" fullName="GorgonLibrary.Internal.NamedObject" filterName="NamedObject" isExposed="True" />
-</Filter></ApiFilter>
+      <Filter entryType="Namespace" fullName="Gorgon.Plugins" isExposed="True">
+        <Filter entryType="Class" fullName="Gorgon.Plugins.GorgonPlugInFactory" filterName="GorgonPlugInFactory" isExposed="False" />
+      </Filter>
+    </ApiFilter>
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
-    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
+    <VisibleItems>Attributes, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -43,76 +39,45 @@
     <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
-    <RootNamespaceTitle>Reference</RootNamespaceTitle>
+    <RootNamespaceTitle>API Reference</RootNamespaceTitle>
     <HelpTitle>Gorgon</HelpTitle>
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
     <CopyrightText>Copyright &amp;#169%3b 2015 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
     <FeedbackEMailAddress>gorgon%40tape-worm.net</FeedbackEMailAddress>
     <FooterText>Gorgon v2.0.0.0</FooterText>
-    <SdkLinkTarget>Self</SdkLinkTarget>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
     <PresentationStyle>VS2013</PresentationStyle>
     <ShowFeedbackControl>True</ShowFeedbackControl>
-    <IncludeFavorites>True</IncludeFavorites>
+    <IncludeFavorites>False</IncludeFavorites>
     <ComponentConfigurations>
-      <ComponentConfig id="Code Block Component" enabled="True">
-        <component id="Code Block Component">
-  <basePath value="{@HtmlEncProjectFolder}" />
-  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
-  <allowMissingSource value="false" />
-  <removeRegionMarkers value="false" />
-  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
-</component>
-      </ComponentConfig>
-<ComponentConfig id="Syntax Component" enabled="True"><component id="Syntax Component">
-  <syntax input="/document/reference" output="/document/syntax" renderReferenceLinks="false" />
-  <generators>
-    {@SyntaxFilters}
-</generators>
-  <containerElement name="codeSnippetGroup" addNoExampleTabs="true" includeOnSingleSnippets="false" groupingEnabled="{@CodeSnippetGrouping}" />
-  <configurations>
-    <generator id="C#" />
-    <generator id="Visual Basic">
-      <includeLineContinuation value="false" />
-    </generator>
-    <generator id="Visual Basic Usage">
-      <includeLineContinuation value="false" />
-    </generator>
-    <generator id="Managed C++" />
-    <generator id="F#" />
-    <generator id="J#" />
-    <generator id="JScript" />
-    <generator id="JavaScript" />
-    <generator id="XAML Usage" />
-    <generator id="ASP.NET" />
-  </configurations>
-</component></ComponentConfig></ComponentConfigurations>
+    </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
 <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\SlimMath.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\SlimMath.xml" /></DocumentationSources>
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" /></DocumentationSources>
     <NamespaceSummaries>
-      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Dialogs.Properties" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="GorgonLibrary" isDocumented="True" xmlns="">This is the primary namespace for Gorgon.  It contains the core functionality for the library.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.FileSystems" isDocumented="True" xmlns="">This namespace contains objects dealing with virtual file systems.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.FileSystems.Design" isDocumented="True" xmlns="">This namespace contains objects dealing with virtual file interfaces for use with the File System Editor.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Framework" isDocumented="True" xmlns="">This namespace contains an application framework for Gorgon to help get things up and running as quickly as possible.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Framework.Properties" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="GorgonLibrary.Graphics" isDocumented="True" xmlns="">This namespace contains graphics related objects such as sprites, text &amp;amp; font functionality, and more.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Graphics.Utilities" isDocumented="True" xmlns="">This namespace contains various high level graphics objects and utilities.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.GUI" isDocumented="True" xmlns="">This namespace contains a (very) minimal skinnable GUI system.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.InputDevices" isDocumented="True" xmlns="">This namespace contains objects relating to user input devices such as keyboards, mice and joysticks/joypads</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Internal" isDocumented="True" xmlns="">"These aren't the droids you're looking for.  He can move along." 
+      <NamespaceSummaryItem name="(global)" isDocumented="False" />
+      <NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Dialogs.Properties" isDocumented="False" />
+      <NamespaceSummaryItem name="GorgonLibrary" isDocumented="False">This is the primary namespace for Gorgon.  It contains the core functionality for the library.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.FileSystems" isDocumented="False">This namespace contains objects dealing with virtual file systems.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.FileSystems.Design" isDocumented="False">This namespace contains objects dealing with virtual file interfaces for use with the File System Editor.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Framework" isDocumented="False">This namespace contains an application framework for Gorgon to help get things up and running as quickly as possible.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Framework.Properties" isDocumented="False" />
+      <NamespaceSummaryItem name="GorgonLibrary.Graphics" isDocumented="False">This namespace contains graphics related objects such as sprites, text &amp;amp; font functionality, and more.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Graphics.Utilities" isDocumented="False">This namespace contains various high level graphics objects and utilities.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.GUI" isDocumented="False">This namespace contains a (very) minimal skinnable GUI system.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.InputDevices" isDocumented="False">This namespace contains objects relating to user input devices such as keyboards, mice and joysticks/joypads</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Internal" isDocumented="False">"These aren't the droids you're looking for.  He can move along." 
 
 "These aren't the droids we're looking for.  Move along.  Move along." 
 
 But really, these are internal functions for use by Gorgon only.  They should rarely, if ever, be needed by the user.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Internal.Native" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="GorgonLibrary.PlugIns" isDocumented="True" xmlns="">This namespace contains functionality for use in building and using plug-ins.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" xmlns="" />
-      <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True" xmlns="">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Internal.Native" isDocumented="False" />
+      <NamespaceSummaryItem name="GorgonLibrary.PlugIns" isDocumented="False">This namespace contains functionality for use in building and using plug-ins.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" />
+      <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="False">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <PlugInConfigurations />
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
@@ -127,8 +92,21 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <SyntaxFilters>Standard</SyntaxFilters>
     <NamingMethod>Guid</NamingMethod>
     <Language>en-US</Language>
-    <FeedbackEMailLinkText>Email the author</FeedbackEMailLinkText>
+    <FeedbackEMailLinkText>the author</FeedbackEMailLinkText>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <TransformComponentArguments>
+      <Argument Key="logoFile" Value="Gorgon2Icon128x128.png" />
+      <Argument Key="logoHeight" Value="" />
+      <Argument Key="logoWidth" Value="" />
+      <Argument Key="logoAltText" Value="Gorgon v2" />
+      <Argument Key="logoPlacement" Value="left" />
+      <Argument Key="logoAlignment" Value="left" />
+      <Argument Key="maxVersionParts" Value="" />
+      <Argument Key="defaultLanguage" Value="cs" />
+    </TransformComponentArguments>
+    <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
+    <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
+    <BinaryTOC>True</BinaryTOC>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
@@ -141,9 +119,7 @@ But really, these are internal functions for use by Gorgon only.  They should ra
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\" />
-    <Folder Include="Content\_svn\" />
-    <Folder Include="Content\_svn\text-base\" />
-    <Folder Include="Content\_svn\prop-base\" />
+    <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\rootPage.html" />
@@ -152,13 +128,10 @@ But really, these are internal functions for use by Gorgon only.  They should ra
     <Content Include="Content\MIT.html" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\_svn\all-wcprops" />
-    <None Include="Content\_svn\entries" />
-    <None Include="Content\_svn\text-base\GorgonLogo3.jpg.svn-base" />
-    <None Include="Content\_svn\text-base\MIT.txt.svn-base" />
-    <None Include="Content\_svn\text-base\Redistribution.htm.svn-base" />
-    <None Include="Content\_svn\text-base\rootPage.html.svn-base" />
-    <None Include="Content\_svn\prop-base\GorgonLogo3.jpg.svn-base" />
+    <Content Include="icons\Gorgon2Icon128x128.png">
+      <ImageId>Gorgon_2.x_Icon_128x128</ImageId>
+      <AlternateText>Gorgon 2.x Icon 128x 128</AlternateText>
+    </Content>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

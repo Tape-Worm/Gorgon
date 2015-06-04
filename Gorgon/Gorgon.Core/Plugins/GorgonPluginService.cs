@@ -91,7 +91,7 @@ namespace Gorgon.Plugins
 		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugin"/>.</typeparam>
 		/// <param name="assemblyName">The name of the assembly associated with the plugins.</param>
 		/// <returns>A list of plugins from the assembly.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
 		/// This will retrieve instances of all the plugins of the specified type from the given assembly. 
 		/// </remarks>
@@ -167,8 +167,8 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugin"/>.</typeparam>
 		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
-		/// <returns>The plugin, if found, or <c>null</c> (Nothing in VB.Net) if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <returns>The plugin, if found, or <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
 		public T GetPlugin<T>(string pluginName)
 			where T : GorgonPlugin
@@ -241,7 +241,7 @@ namespace Gorgon.Plugins
 		/// not indicative of whether the type has been created or not.
 		/// </para>
 		/// <para>
-		/// The <paramref name="assemblyName"/> parameter, when not <c>null</c> (Nothing in VB.Net), will return only plugin names belonging to that assembly. 
+		/// The <paramref name="assemblyName"/> parameter, when not <b>null</b> (<i>Nothing</i> in VB.Net), will return only plugin names belonging to that assembly. 
 		/// If the assembly is not loaded, then an exception is thrown.
 		/// </para>
 		/// </remarks>
@@ -369,11 +369,12 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to remove a plugin by index.
+		/// Function to unload a plugin by its name.
 		/// </summary>
-		/// <param name="name">Name of the plugin to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <c>null</c> (Nothing in VB.Net).</exception>
+		/// <param name="name">Fully qualified type name of the plugin to remove.</param>
+		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
+		/// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
 		public bool Unload(string name)
 		{
 			if (name == null)
@@ -429,7 +430,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyCache">A <see cref="GorgonPluginAssemblyCache"/> that will contain assemblies with plugin types.</param>
 		/// <param name="log">[Optional] The application log file.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyCache"/> is <c>null</c> (Nothing in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyCache"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public GorgonPluginService(GorgonPluginAssemblyCache assemblyCache, IGorgonLog log = null)
 		{
 			if (assemblyCache == null)

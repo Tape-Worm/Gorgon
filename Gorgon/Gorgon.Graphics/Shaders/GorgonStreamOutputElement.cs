@@ -100,7 +100,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
 		/// <returns>
-		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		///   <b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -117,7 +117,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="left">First instance to compare.</param>
 		/// <param name="right">Second instance to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonStreamOutputElement left, ref GorgonStreamOutputElement right)
 		{
 			return ((string.Equals(left.Context, right.Context)) && (left.ComponentCount == right.ComponentCount)
@@ -180,7 +180,7 @@ namespace Gorgon.Graphics
 		/// <param name="slot">The vertex buffer slot for the element.</param>
 		/// <remarks>The slot value must be between 0 and 3 (inclusive), the <paramref name="startComponent"/> must be between 0 and 3 (inclusive), and the <paramref name="componentCount"/> must be between 1 and 4 (inclusive).  
 		/// A value outside of these ranges will cause an exception to be thrown.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="context"/> parameter is empty.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 3.
 		/// <para>-or-</para>

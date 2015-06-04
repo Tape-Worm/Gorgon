@@ -163,7 +163,7 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
 		/// <para>-or-</para>
 		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -234,7 +234,7 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
 		/// </exception>
 		public void WriteRange<T>(T[] value, int count)
@@ -249,7 +249,7 @@ namespace Gorgon.IO
 		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void WriteRange<T>(T[] value)
 			where T : struct
 		{
@@ -268,7 +268,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="output">Output stream.</param>
 		/// <param name="encoder">Encoding for the binary writer.</param>
-		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
 		public GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStreamOpen = false)
 			: base(output, encoder, keepStreamOpen)
 		{
@@ -279,7 +279,7 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
 		/// </summary>
 		/// <param name="output">Output stream.</param>
-		/// <param name="keepStreamOpen">[Optional] <c>true</c> to keep the underlying stream open when the writer is closed, <c>false</c> to close when done.</param>
+		/// <param name="keepStreamOpen">[Optional] <b>true</b> to keep the underlying stream open when the writer is closed, <b>false</b> to close when done.</param>
 		public GorgonBinaryWriter(Stream output, bool keepStreamOpen = false)
 			: this(output, Encoding.UTF8, keepStreamOpen)
 		{

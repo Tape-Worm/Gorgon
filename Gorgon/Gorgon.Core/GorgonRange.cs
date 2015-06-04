@@ -84,7 +84,7 @@ namespace Gorgon.Core
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
-		/// <returns><c>true</c> if the value falls into the range.</returns>
+		/// <returns><b>true</b> if the value falls into the range.</returns>
 		public bool Contains(double value)
 		{
 			return (Minimum < Maximum) ? (value >= Minimum && value <= Maximum) : (value >= Maximum && value <= Minimum);
@@ -504,7 +504,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >(GorgonRangeD left, GorgonRangeD right)
         {
             return left.Range > right.Range;
@@ -515,7 +515,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >=(GorgonRangeD left, GorgonRangeD right)
         {
             return left.Range >= right.Range;
@@ -526,7 +526,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <(GorgonRangeD left, GorgonRangeD right)
         {
             return left.Range < right.Range;
@@ -537,7 +537,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <=(GorgonRangeD left, GorgonRangeD right)
         {
             return left.Range <= right.Range;
@@ -627,7 +627,7 @@ namespace Gorgon.Core
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
-		/// <returns><c>true</c> if the value falls into the range.</returns>
+		/// <returns><b>true</b> if the value falls into the range.</returns>
 		public bool Contains(decimal value)
 		{
 			return (Minimum < Maximum) ? (value >= Minimum && value <= Maximum) : (value >= Maximum && value <= Minimum);
@@ -1047,7 +1047,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >(GorgonRangeM left, GorgonRangeM right)
         {
             return left.Range > right.Range;
@@ -1058,7 +1058,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >=(GorgonRangeM left, GorgonRangeM right)
         {
             return left.Range >= right.Range;
@@ -1069,7 +1069,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <(GorgonRangeM left, GorgonRangeM right)
         {
             return left.Range < right.Range;
@@ -1080,7 +1080,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <=(GorgonRangeM left, GorgonRangeM right)
         {
             return left.Range <= right.Range;
@@ -1170,7 +1170,7 @@ namespace Gorgon.Core
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
-		/// <returns><c>true</c> if the value falls into the range.</returns>
+		/// <returns><b>true</b> if the value falls into the range.</returns>
 		public bool Contains(float value)
 		{
 			return (Minimum < Maximum) ? (value >= Minimum && value <= Maximum) : (value >= Maximum && value <= Minimum);
@@ -1590,7 +1590,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >(GorgonRangeF left, GorgonRangeF right)
         {
             return left.Range > right.Range;
@@ -1601,7 +1601,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >=(GorgonRangeF left, GorgonRangeF right)
         {
             return left.Range >= right.Range;
@@ -1612,7 +1612,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <(GorgonRangeF left, GorgonRangeF right)
         {
             return left.Range < right.Range;
@@ -1623,7 +1623,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <=(GorgonRangeF left, GorgonRangeF right)
         {
             return left.Range <= right.Range;
@@ -1713,7 +1713,7 @@ namespace Gorgon.Core
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
-		/// <returns><c>true</c> if the value falls into the range.</returns>
+		/// <returns><b>true</b> if the value falls into the range.</returns>
 		public bool Contains(int value)
 		{
 			return (Minimum < Maximum) ? (value >= Minimum && value <= Maximum) : (value >= Maximum && value <= Minimum);
@@ -2134,7 +2134,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
 	    public static bool operator >(GorgonRange left, GorgonRange right)
         {
             return left.Range > right.Range;
@@ -2145,7 +2145,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator >=(GorgonRange left, GorgonRange right)
         {
             return left.Range >= right.Range;
@@ -2156,7 +2156,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <(GorgonRange left, GorgonRange right)
         {
             return left.Range < right.Range;
@@ -2167,7 +2167,7 @@ namespace Gorgon.Core
         /// </summary>
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
-        /// <returns><c>true</c> if left is greater than right.</returns>
+        /// <returns><b>true</b> if left is greater than right.</returns>
         public static bool operator <=(GorgonRange left, GorgonRange right)
         {
             return left.Range <= right.Range;

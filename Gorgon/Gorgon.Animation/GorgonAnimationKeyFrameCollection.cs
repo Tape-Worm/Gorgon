@@ -62,7 +62,7 @@ namespace Gorgon.Animation
 		/// Function to return whether a key with the specified time exists in the collection.
 		/// </summary>
 		/// <param name="time">Time in the collection to look up.</param>
-		/// <returns><c>true</c> if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(float time)
 		{
 			return Times.ContainsKey(time);

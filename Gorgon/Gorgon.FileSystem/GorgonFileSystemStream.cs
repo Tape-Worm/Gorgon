@@ -186,11 +186,11 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to update the file information for a file.
 		/// </summary>
-		/// <param name="fileSize">The file size.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="fileOffset">The offset of the file within a packed file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="createDate">The date/time the file was created.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="physicalPath">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) or an empty string to leave unchanged.</param>
-		/// <param name="provider">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
+		/// <param name="fileSize">The file size.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
+		/// <param name="fileOffset">The offset of the file within a packed file.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
+		/// <param name="createDate">The date/time the file was created.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
+		/// <param name="physicalPath">A new file system provider for the file.  Pass NULL (<i>Nothing</i> in VB.Net) or an empty string to leave unchanged.</param>
+		/// <param name="provider">A new file system provider for the file.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
 		protected void UpdateFileInfo(long? fileSize, int? fileOffset, DateTime? createDate, string physicalPath, GorgonFileSystemProvider provider)
 		{
 		    if (FileEntry == null)
@@ -419,7 +419,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="file">File being read/written.</param>
 		/// <param name="baseStream">The underlying stream to use for this stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public GorgonFileSystemStream(GorgonFileSystemFileEntry file, Stream baseStream)
 		{
 			if (file == null)

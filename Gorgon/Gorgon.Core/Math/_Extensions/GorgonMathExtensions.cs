@@ -497,7 +497,7 @@ namespace Gorgon.Math
 		/// </summary>
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool EqualsEpsilon(this float left, float right)
 		{
 			return Abs(right - left) <= 1e-06f;
@@ -509,7 +509,7 @@ namespace Gorgon.Math
 		/// <param name="left">Left value to compare.</param>
 		/// <param name="right">Right value to compare.</param>
 		/// <param name="delta">Delta to account for error between the two values.</param>
-		/// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool EqualsEpsilon(this float left, float right, float delta)
 		{
 			return Abs(right - left) <= delta;
@@ -520,7 +520,7 @@ namespace Gorgon.Math
         /// </summary>
         /// <param name="left">Left value to compare.</param>
         /// <param name="right">Right value to compare.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public static bool EqualsEpsilon(this double left, double right)
         {
             return Abs(right - left) <= 1e-06f;
@@ -532,7 +532,7 @@ namespace Gorgon.Math
         /// <param name="left">Left value to compare.</param>
         /// <param name="right">Right value to compare.</param>
         /// <param name="delta">Delta to account for error between the two values.</param>
-        /// <returns><c>true</c> if equal, <c>false</c> if not.</returns>
+        /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
         public static bool EqualsEpsilon(this double left, double right, double delta)
         {
             return Abs(right - left) <= delta;

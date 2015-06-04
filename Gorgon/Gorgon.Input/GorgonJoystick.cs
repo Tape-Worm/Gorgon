@@ -147,7 +147,7 @@ namespace Gorgon.Input
             /// </summary>
 			public readonly string Name;
             /// <summary>
-            /// <c>true</c> if the button is pressed, <c>false</c> if not.
+            /// <b>true</b> if the button is pressed, <b>false</b> if not.
             /// </summary>
 			public readonly bool IsPressed;
 			#endregion
@@ -157,7 +157,7 @@ namespace Gorgon.Input
 			/// Initializes a new instance of the <see cref="JoystickButtonState"/> struct.
 			/// </summary>
 			/// <param name="name">The name of the button.</param>
-			/// <param name="state">State of the button, <c>true</c> for pressed, <c>false</c> if not.</param>
+			/// <param name="state">State of the button, <b>true</b> for pressed, <b>false</b> if not.</param>
 			public JoystickButtonState(string name, bool state)
 			{
 				Name = name;
@@ -682,7 +682,7 @@ namespace Gorgon.Input
 			/// Function to define a new button for the device.
 			/// </summary>
 			/// <param name="name">Name of the button to define.</param>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
 			/// <para>-or-</para>
 			/// <para>Thrown when the name already exists in the list.</para>

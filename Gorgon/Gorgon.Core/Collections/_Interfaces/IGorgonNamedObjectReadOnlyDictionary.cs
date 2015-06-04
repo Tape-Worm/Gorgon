@@ -30,7 +30,7 @@ using Gorgon.Core;
 namespace Gorgon.Collections
 {
 	/// <summary>
-	/// A generic interface for a dictionary of named objects that can be indexed by key.
+	/// A generic interface for a read only dictionary of named objects that can be indexed by name.
 	/// </summary>
 	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectReadOnlyDictionary<T> 
@@ -60,7 +60,7 @@ namespace Gorgon.Collections
 		/// Function to return whether an item with the specified name exists in this collection.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
-		/// <returns><c>true</c>if found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b>if found, <b>false</b> if not.</returns>
 		bool Contains(string name);
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace Gorgon.Collections
 		/// </summary>
 		/// <param name="name">The name of the item to look up.</param>
 		/// <param name="value">The item, if found, or the default value for the type if not.</param>
-		/// <returns><c>true</c> if the item was found, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool TryGetValue(string name, out T value);
 		#endregion
 	}

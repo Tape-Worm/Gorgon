@@ -124,7 +124,7 @@ namespace Gorgon.Collections.Specialized
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonNamedObjectDictionary{T}"/> class.
 		/// </summary>
-		/// <param name="caseSensitive">[Optional] <c>true</c> to use case sensitive keys, <c>false</c> to ignore casing.</param>
+		/// <param name="caseSensitive">[Optional] <b>true</b> to use case sensitive keys, <b>false</b> to ignore casing.</param>
 		public GorgonNamedObjectDictionary(bool caseSensitive = true)
 			: base(caseSensitive)
 		{

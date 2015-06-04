@@ -106,7 +106,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to perform clean up on the objects within this object.
 		/// </summary>
-		/// <param name="clearDrawing"><c>true</c> to destroy the drawing image, <c>false</c> to leave alone.</param>
+		/// <param name="clearDrawing"><b>true</b> to destroy the drawing image, <b>false</b> to leave alone.</param>
 		private void CleanUp(bool clearDrawing)
 		{
 			if (_buffer != null)
@@ -162,7 +162,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Function to allocate resources for our graphics.
 		/// </summary>
-		/// <param name="clearDrawing"><c>true</c> to clear the drawing, <c>false</c> to leave alone.</param>
+		/// <param name="clearDrawing"><b>true</b> to clear the drawing, <b>false</b> to leave alone.</param>
 		private void GetResources(bool clearDrawing)
 		{
 			CleanUp(clearDrawing);
@@ -289,7 +289,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
 			if (_disposed)

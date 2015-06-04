@@ -107,8 +107,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to return all the parents up to the root of this directory.
 		/// </summary>
-		/// <returns>A list of all the parents, up to and including the root. Or NULL (Nothing in VB.Net) if there is no parent directory.</returns>
-		/// <remarks>A NULL (Nothing in VB.Net) return value indicates that this directory is the root directory.</remarks>
+		/// <returns>A list of all the parents, up to and including the root. Or NULL (<i>Nothing</i> in VB.Net) if there is no parent directory.</returns>
+		/// <remarks>A NULL (<i>Nothing</i> in VB.Net) return value indicates that this directory is the root directory.</remarks>
 		public IEnumerable<GorgonFileSystemDirectory> GetParents()
 		{
 			if (FileSystem.RootDirectory == this)
@@ -160,7 +160,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Funciton to retrieve the total number of files in this directory and optionally, any directories under this one.
         /// </summary>
-        /// <param name="includeChildren">[Optional] <c>true</c> to include child directories, <c>false</c> to only use this directory.</param>
+        /// <param name="includeChildren">[Optional] <b>true</b> to include child directories, <b>false</b> to only use this directory.</param>
         /// <returns>The total number of files.</returns>
 	    public int GetFileCount(bool includeChildren = true)
         {
@@ -178,9 +178,9 @@ namespace Gorgon.IO
         /// Function to determine if the directory contains the specified file.
         /// </summary>
         /// <param name="file">File to look for.</param>
-        /// <param name="searchChildren">[Optional] <c>true</c> to search through child directories, <c>false</c> to only search this directory.</param>
-        /// <returns><c>true</c> if found, <c>false</c> if not.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <param name="searchChildren">[Optional] <b>true</b> to search through child directories, <b>false</b> to only search this directory.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 	    public bool Contains(GorgonFileSystemFileEntry file, bool searchChildren = true)
 	    {
             if (file == null)

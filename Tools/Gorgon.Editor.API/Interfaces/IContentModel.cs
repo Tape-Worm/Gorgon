@@ -55,7 +55,7 @@ namespace Gorgon.Editor
 		/// Property to return the content view.
 		/// </summary>
 		/// <remarks>
-		/// If the content does not support views, then this value will be NULL (Nothing in VB.Net).
+		/// If the content does not support views, then this value will be NULL (<i>Nothing</i> in VB.Net).
 		/// </remarks>
 		IContentPanel View
 		{

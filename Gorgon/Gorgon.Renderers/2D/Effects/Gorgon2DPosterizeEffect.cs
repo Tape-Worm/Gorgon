@@ -68,7 +68,7 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Settings"/> struct.
 			/// </summary>
-			/// <param name="useAlpha">if set to <c>true</c> [use alpha].</param>
+			/// <param name="useAlpha">if set to <b>true</b> [use alpha].</param>
 			/// <param name="power">The power.</param>
 			/// <param name="bits">The bits.</param>
 			public Settings(bool useAlpha, float power, int bits)
@@ -206,7 +206,7 @@ namespace Gorgon.Renderers
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
-		/// <c>true</c> to continue rendering, <c>false</c> to exit.
+		/// <b>true</b> to continue rendering, <b>false</b> to exit.
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
@@ -233,7 +233,7 @@ namespace Gorgon.Renderers
 	    /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed)

@@ -134,7 +134,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to find and return the registered image editor plug-in.
 		/// </summary>
-		/// <returns>The image editor plug-in, if found.  <c>false</c> if not.</returns>
+		/// <returns>The image editor plug-in, if found.  <b>false</b> if not.</returns>
 		public IImageEditorPlugIn GetRegisteredImageEditor()
 		{
 			ContentPlugIn plugIn;
@@ -164,7 +164,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to determine if an image editor plug-in is loaded.
 		/// </summary>
-		/// <returns><c>true</c> if loaded, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if loaded, <b>false</b> if not.</returns>
 		public bool HasImageEditor()
 		{
 			return GetRegisteredImageEditor() != null;
@@ -174,7 +174,7 @@ namespace Gorgon.Editor
 		/// Function to determine if a specific plug-in has been loaded already.
 		/// </summary>
 		/// <param name="plugInName">Name of the plug-in to look up.</param>
-		/// <returns><c>true</c> if the plug-in is loaded, <c>false</c> if not.</returns>
+		/// <returns><b>true</b> if the plug-in is loaded, <b>false</b> if not.</returns>
 		public bool HasPlugIn(string plugInName)
 		{
 			if (string.IsNullOrWhiteSpace(plugInName))
@@ -226,7 +226,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 		}
