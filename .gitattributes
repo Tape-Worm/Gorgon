@@ -1,0 +1,37 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Custom for Visual Studio
+*.cs     diff=csharp
+
+# Standard to msysgit
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
+
+*.dll binary
+*.jpg binary
+*.png binary
+*.bmp binary
+*.tga binary
+*.dds binary
+*.pdb binary
+*.exe binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.mp4 binary
+*.wmv binary
+*.gorPack binary
+*.gorFont binary
+*.zip binary
+*.ttf binary
+*.fxo binary
+*.ico binary
