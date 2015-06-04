@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon.Common\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core", "Gorgon.Core\Gorgon.Core.csproj", "{933569ED-52A9-4232-A929-1D4C4489B5A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.FileSystem", "Gorgon.FileSystem\Gorgon.FileSystem.csproj", "{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}"
 EndProject
@@ -38,11 +38,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E6
 		TODO.txt = TODO.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example001", "..\Examples\Gorgon.Common\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example001", "..\Examples\Gorgon.Core\Example001\Example001.csproj", "{92184B11-8908-40DE-A81B-827CE74FE8C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example002", "..\Examples\Gorgon.Common\Example002\Example002.csproj", "{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example002", "..\Examples\Gorgon.Core\Example002\Example002.csproj", "{A2B7ADCC-E21C-45C3-A349-D07DDD048BD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example003", "..\Examples\Gorgon.Common\Example003\Example003.csproj", "{CD211613-DE0D-4D09-9D3E-60ACFA893791}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example003", "..\Examples\Gorgon.Core\Example003\Example003.csproj", "{CD211613-DE0D-4D09-9D3E-60ACFA893791}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon.Animation\Gorgon.Animation.csproj", "{7EE86743-18E9-4667-9BCB-989D5C926922}"
 EndProject
@@ -52,11 +52,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Core", "Gorgon.Core"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Graphics", "Gorgon.Graphics", "{2E124B08-EECF-44F6-9175-1580FF0BFFA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004", "..\Examples\Gorgon.Common\Example004\Example004.csproj", "{7E9E7C1E-AE39-4474-833F-A85EC045C74F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004", "..\Examples\Gorgon.Core\Example004\Example004.csproj", "{7E9E7C1E-AE39-4474-833F-A85EC045C74F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.BluePlugIn", "..\Examples\Gorgon.Common\Example004\PlugIns\Example004.BluePlugIn\Example004.BluePlugIn.csproj", "{D6B85D9F-975C-4C28-BEB8-ACF18E453B3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.BluePlugIn", "..\Examples\Gorgon.Core\Example004\PlugIns\Example004.BluePlugIn\Example004.BluePlugIn.csproj", "{D6B85D9F-975C-4C28-BEB8-ACF18E453B3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.GreenAndPurplePlugIn", "..\Examples\Gorgon.Common\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example004.GreenAndPurplePlugIn", "..\Examples\Gorgon.Core\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Input", "Gorgon.Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
 EndProject

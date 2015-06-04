@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bca1725b-f885-4024-90a0-46a241e31bd0}</ProjectGuid>
-    <SHFBSchemaVersion>1.9.3.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -18,19 +18,18 @@
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>Gorgon</HtmlHelpName>
     <ApiFilter>
-      <Filter entryType="Namespace" fullName="GorgonLibrary.Framework" isExposed="False" xmlns="">
-        <Filter entryType="Class" fullName="GorgonLibrary.Framework.GorgonApplicationWindow" filterName="GorgonApplicationWindow" isExposed="True" />
-        <Filter entryType="Class" fullName="GorgonLibrary.Framework.SetupDialog" filterName="SetupDialog" isExposed="True" />
-      </Filter>
-      <Filter entryType="Namespace" fullName="GorgonLibrary.Internal" isExposed="False" xmlns="">
-        <Filter entryType="Class" fullName="GorgonLibrary.Internal.D3DObjects" filterName="D3DObjects" isExposed="True" />
-        <Filter entryType="Class" fullName="GorgonLibrary.Internal.NamedObject" filterName="NamedObject" isExposed="True" />
-      </Filter>
-    </ApiFilter>
+      <Filter entryType="Namespace" fullName="GorgonLibrary.Framework" isExposed="False">
+  <Filter entryType="Class" fullName="GorgonLibrary.Framework.GorgonApplicationWindow" filterName="GorgonApplicationWindow" isExposed="True" />
+  <Filter entryType="Class" fullName="GorgonLibrary.Framework.SetupDialog" filterName="SetupDialog" isExposed="True" />
+</Filter>
+<Filter entryType="Namespace" fullName="GorgonLibrary.Internal" isExposed="False">
+  <Filter entryType="Class" fullName="GorgonLibrary.Internal.D3DObjects" filterName="D3DObjects" isExposed="True" />
+  <Filter entryType="Class" fullName="GorgonLibrary.Internal.NamedObject" filterName="NamedObject" isExposed="True" />
+</Filter></ApiFilter>
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
-    <VisibleItems>ExplicitInterfaceImplementations, InheritedMembers, Protected</VisibleItems>
+    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -41,101 +40,57 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <FrameworkVersion>.NET 3.5</FrameworkVersion>
+    <FrameworkVersion>.NET Framework 4.5</FrameworkVersion>
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>True</RootNamespaceContainer>
     <RootNamespaceTitle>Reference</RootNamespaceTitle>
     <HelpTitle>Gorgon</HelpTitle>
     <CopyrightHref>http://www.opensource.org/licenses/mit-license.php</CopyrightHref>
-    <CopyrightText>Copyright &amp;#169%3b 2011 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
-    <FeedbackEMailAddress>tape_worm%40tape-worm.net</FeedbackEMailAddress>
-    <FooterText>Gorgon v1.1.4119.34319</FooterText>
+    <CopyrightText>Copyright &amp;#169%3b 2015 - Licensed under the MIT license by Michael Winsor %28Tape_Worm%29.  See MIT.txt for details.</CopyrightText>
+    <FeedbackEMailAddress>gorgon%40tape-worm.net</FeedbackEMailAddress>
+    <FooterText>Gorgon v2.0.0.0</FooterText>
     <SdkLinkTarget>Self</SdkLinkTarget>
-    <PresentationStyle>vs2005</PresentationStyle>
+    <PresentationStyle>VS2013</PresentationStyle>
     <ShowFeedbackControl>True</ShowFeedbackControl>
     <IncludeFavorites>True</IncludeFavorites>
     <ComponentConfigurations>
-      <ComponentConfig id="Cached MSDN URL References" enabled="True">
-        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
-          <helpOutput format="HtmlHelp1">
-            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
-            <targets files="reflection.xml" type="Local" />
-          </helpOutput>
-          <helpOutput format="MSHelp2">
-            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
-            <targets files="reflection.xml" type="Index" />
-          </helpOutput>
-          <helpOutput format="MSHelpViewer">
-            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
-            <targets files="reflection.xml" type="Id" />
-          </helpOutput>
-          <helpOutput format="Website">
-            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
-            <targets files="reflection.xml" type="Local" />
-          </helpOutput>
-        </component>
-      </ComponentConfig>
       <ComponentConfig id="Code Block Component" enabled="True">
-        <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <!-- Base path for relative filenames in source attributes
-                 (optional) -->
-          <basePath value="{@ProjectFolder}" />
-          <!-- Connect to language filter (optional).  If omitted,
-                 language filtering is enabled by default. -->
-          <languageFilter value="true" />
-          <!-- Code colorizer options (required).
-                 Attributes:
-                    Language syntax configuration file (required)
-                    XSLT style file (required)
-                    "Copy" image file URL (required)
-                    Default language (optional)
-                    Enable line numbering (optional)
-                    Enable outlining (optional)
-                    Tab size override (optional, 0 = Use syntax file setting)
-                    Use language name as default title (optional) -->
-          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" numberLines="true" outlining="true" tabSize="0" defaultTitle="true" />
-        </component>
+        <component id="Code Block Component">
+  <basePath value="{@HtmlEncProjectFolder}" />
+  <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
+  <allowMissingSource value="false" />
+  <removeRegionMarkers value="false" />
+  <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
+</component>
       </ComponentConfig>
-      <ComponentConfig id="Post-transform Component" enabled="True">
-        <component id="Post-transform Component" type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <!-- Code colorizer files (required).
-                 Attributes:
-                    Stylesheet file (required)
-                    Script file (required)
-                    "Copy" image file (required) -->
-          <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
-          <!-- Base output paths for the files (required).  These should match
-                 the parent folder of the output path of the HTML files (see
-                 each of the SaveComponent instances below). -->
-          <outputPaths>
-{@HelpFormatOutputPaths}
-            </outputPaths>
-          <!-- Logo image file (optional).  Filename is required. The height,
-                 width, altText, placement, and alignment attributes are
-                 optional. -->
-          <logoFile filename="" height="0" width="0" altText="" placement="left" alignment="left" />
-        </component>
-      </ComponentConfig>
-    </ComponentConfigurations>
+<ComponentConfig id="Syntax Component" enabled="True"><component id="Syntax Component">
+  <syntax input="/document/reference" output="/document/syntax" renderReferenceLinks="false" />
+  <generators>
+    {@SyntaxFilters}
+</generators>
+  <containerElement name="codeSnippetGroup" addNoExampleTabs="true" includeOnSingleSnippets="false" groupingEnabled="{@CodeSnippetGrouping}" />
+  <configurations>
+    <generator id="C#" />
+    <generator id="Visual Basic">
+      <includeLineContinuation value="false" />
+    </generator>
+    <generator id="Visual Basic Usage">
+      <includeLineContinuation value="false" />
+    </generator>
+    <generator id="Managed C++" />
+    <generator id="F#" />
+    <generator id="J#" />
+    <generator id="JScript" />
+    <generator id="JavaScript" />
+    <generator id="XAML Usage" />
+    <generator id="ASP.NET" />
+  </configurations>
+</component></ComponentConfig></ComponentConfigurations>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.Common.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.Common.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Draw2D\bin\Debug\Gorgon.Graphics.2D.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics.Draw2D\bin\Debug\Gorgon.Graphics.2D.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Graphics\bin\Debug\Gorgon.Graphics.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.MemoryAccess.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\Gorgon.MemoryAccess.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\SlimMath.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Common\bin\Debug\SlimMath.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\SlimMath.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\SlimMath.xml" /></DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True" xmlns="">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
@@ -160,6 +115,20 @@ But really, these are internal functions for use by Gorgon only.  They should ra
       <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="True" xmlns="">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
     </NamespaceSummaries>
     <PlugInConfigurations />
+    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
+    <IndentHtml>False</IndentHtml>
+    <KeepLogFile>True</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <CleanIntermediates>True</CleanIntermediates>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <NamespaceGrouping>True</NamespaceGrouping>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <NamingMethod>Guid</NamingMethod>
+    <Language>en-US</Language>
+    <FeedbackEMailLinkText>Email the author</FeedbackEMailLinkText>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->

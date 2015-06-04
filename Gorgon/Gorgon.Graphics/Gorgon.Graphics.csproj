@@ -227,7 +227,7 @@
     <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Common\Gorgon.Core.csproj">
+    <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>

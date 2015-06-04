@@ -1,0 +1,321 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{933569ED-52A9-4232-A929-1D4C4489B5A1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Gorgon.Core</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Gorgon.Core</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>false</SignAssembly>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\Gorgon\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DocumentationFile>bin\Debug\Gorgon.Core.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>4194304</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DebugType>pdbonly</DebugType>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Gorgon.Native">
+      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimMath">
+      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
+    <Compile Include="Collections\Specialized\GorgonDisposableObjectCollection.cs" />
+    <Compile Include="Collections\Specialized\GorgonNamedObjectList.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectList.cs" />
+    <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
+    <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
+    <Compile Include="Configuration\GorgonApplicationSettings.cs" />
+    <Compile Include="Design\LocalCategoryAttribute.cs" />
+    <Compile Include="Design\LocalDescriptionAttribute.cs" />
+    <Compile Include="Design\LocalDisplayNameAttribute.cs" />
+    <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
+    <Compile Include="Diagnostics\GorgonLogDummy.cs" />
+    <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
+    <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
+    <Compile Include="Events\GorgonCancelEventArgs.cs" />
+    <Compile Include="Events\GorgonHandledEventArgs.cs" />
+    <Compile Include="Plugins\GorgonPluginService.cs" />
+    <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
+    <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
+    <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
+    <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
+    <Compile Include="Diagnostics\GorgonDebug.cs" />
+    <Compile Include="IO\_Extensions\GorgonIOExtensions.cs" />
+    <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
+    <Compile Include="Math\_Extensions\GorgonMathExtensions.cs" />
+    <Compile Include="_Extensions\GorgonNumericFormattingExtensions.cs" />
+    <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
+    <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="GorgonApplication.cs" />
+    <Compile Include="ICloneable.cs" />
+    <Compile Include="IEquatableByRef.cs" />
+    <Compile Include="GorgonRange.cs" />
+    <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
+    <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
+    <Compile Include="Diagnostics\GorgonLogFile.cs" />
+    <Compile Include="Diagnostics\GorgonTiming.cs" />
+    <Compile Include="Diagnostics\GorgonTimer.cs" />
+    <Compile Include="INamedObject.cs" />
+    <Compile Include="IO\GorgonFileExtension.cs" />
+    <Compile Include="IO\GorgonFileExtensionCollection.cs" />
+    <Compile Include="IO\GorgonBinaryReader.cs" />
+    <Compile Include="IO\GorgonBinaryWriter.cs" />
+    <Compile Include="IO\GorgonChunkReader.cs" />
+    <Compile Include="GorgonResult.cs" />
+    <Compile Include="GorgonNamedObject.cs" />
+    <Compile Include="IO\GorgonChunkedFormat.cs" />
+    <Compile Include="IO\GorgonChunkWriter.cs" />
+    <Compile Include="IO\GorgonDataStream.cs" />
+    <Compile Include="IO\GorgonFileExtensionComparer.cs" />
+    <Compile Include="GorgonRandom.cs" />
+    <Compile Include="Math\GorgonSpline.cs" />
+    <Compile Include="Native\Win32API.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Native\Win32Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
+    <Compile Include="Plugins\GorgonPlugin.cs" />
+    <Compile Include="Plugins\GorgonPlugInFactory.cs" />
+    <Compile Include="Plugins\GorgonPluginPathCollection.cs" />
+    <Compile Include="Plugins\GorgonPlugInVerifier.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UI\BaseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\BaseDialog.designer.cs">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialog.designer.cs">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialogEx.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ConfirmationDialogEx.designer.cs">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Design\FlatFormThemeConverter.cs" />
+    <Compile Include="UI\FlatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\FlatForm.Designer.cs">
+      <DependentUpon>FlatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\FlatFormTheme.cs" />
+    <Compile Include="UI\WarningDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\WarningDialog.designer.cs">
+      <DependentUpon>WarningDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ErrorDialog.designer.cs">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\GorgonAlignment.cs" />
+    <Compile Include="UI\GorgonDialogs.cs" />
+    <Compile Include="GorgonException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\GorgonSelectablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\BaseDialog.resx">
+      <DependentUpon>BaseDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ConfirmationDialog.resx">
+      <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ConfirmationDialogEx.resx">
+      <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\FlatForm.resx">
+      <DependentUpon>FlatForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\WarningDialog.resx">
+      <DependentUpon>WarningDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ErrorDialog.resx">
+      <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Check_Disabled1.png" />
+    <None Include="Resources\Check_Enabled1.png" />
+    <EmbeddedResource Include="Resources\GorgonSelectablePanel.bmp" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Maximize.png" />
+    <None Include="Resources\Minimize.png" />
+    <None Include="Resources\Restore.png" />
+    <None Include="Resources\WarningDialogIcon.ico" />
+    <None Include="Resources\InfoDialogIcon.ico" />
+    <None Include="Resources\Warning_48x48.png" />
+    <None Include="Resources\Confirm_48x48.png" />
+    <None Include="Resources\Info_48x48.png" />
+    <None Include="Resources\Error_48x48.png" />
+    <None Include="Resources\Info_16x16.png" />
+    <None Include="Resources\ok_16x16.png" />
+    <None Include="Resources\no_16x16.png" />
+    <None Include="Resources\cancel_16x16.png" />
+    <None Include="Resources\Gorgon2.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

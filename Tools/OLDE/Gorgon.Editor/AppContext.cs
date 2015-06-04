@@ -231,7 +231,7 @@ namespace Gorgon.Editor
 			byte[] key = GetType().Assembly.GetName().GetPublicKey();
 
 			if ((key != null) && (key.Length != 0) 
-				&& (GorgonApplication.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
+				&& (GorgonApplication.PlugIns.IsAssemblySigned(inputPlugInPath, key) != AssemblySigningResult.Signed))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_INPUT_COULD_NOT_LOAD);
 			}

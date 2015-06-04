@@ -24,28 +24,23 @@
 		<img alt="" src="GorgonLogo3.jpg" width="200" height="56" /><hr/>
 		<h1 class="style1">Redistribution</h1>
 		<div id="bodyContent">
-			<p>So you've written this bang up game and now you need to send it to someone and you're asking "How do I do this?"  Well, an installer program like 
-			<a href="http://nsis.sourceforge.net/Main_Page" class="external text" title="http://www.jrsoftware.org/isinfo.php" rel="nofollow">
-			Inno Setup</a> will help greatly.  But what you'll really need is to know what files to include with your game or application.  And without further ado:
-</p>
-			<h2>Prerequisite packages for distribution:</h2>
 <div class="blueBox">
 <p>These packages are installers that deliver required files for use by Gorgon and should be included with and executed by your installer package (at the very least your victims need to be informed that they need to install these items before running your application).
 </p>
 <ul>
-	<li>The <a target="_blank" href="http://code.google.com/p/slimdx/wiki/Downloads?tm=2">SlimDX runtime</a>.</li>
 	<li> 
 	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" class="external text" title="http://www.microsoft.com/downloads/details.aspx?familyid=2da43d38-db71-4c1b-bc6a-9b6652cd92a3&amp;displaylang=en|The" rel="nofollow">
-	The latest and greatest version of the DirectX runtime</a> - The required files should be installed by SlimDX, but if not, you can use this.
+	The latest and greatest version of the DirectX runtime</a>
 </li>
 	<li> 
 	<a href="http://www.microsoft.com/downloads/details.aspx?familyid=AB99342F-5D1A-413D-8319-81DA479AB0D7&amp;displaylang=en">
-	.NET 3.5 SP1</a></li><li> Windows XP or better.</li></ul></div>
+	.NET 4.5</a></li><li> Windows Vista SP2 or better.</li></ul></div>
 <p>Along with those packages you will need to be sure that your applications bundles the following with its own installer:</p>
 <strong>Assembly (DLL/Executable) files required by Gorgon applications:</strong>
 <div class="blueBox">
-<ul><li>Gorgon.dll</li>
-<li><em>GorgonFramework.dll</em> - That is, if you're using the framework.</li>
+<ul>
+<li>Gorgon.Core.dll</li>
+<li>Gorgon.Native.dll</li>
 </ul></div><br /><strong>Required if you're using the compressed file system (BZip 2 compressed file system):
 			</strong>
 <div class="blueBox">

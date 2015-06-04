@@ -127,7 +127,7 @@
       <Project>{7EE86743-18E9-4667-9BCB-989D5C926922}</Project>
       <Name>Gorgon.Animation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon.Common\Gorgon.Core.csproj">
+    <ProjectReference Include="..\..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>
