@@ -17,8 +17,8 @@ What can it do?
 ---------------
 
 Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:
-  * __[Gorgon.Common]__ Common utility functionality.
-  * __[Gorgon.Common]__ Plug-in support.
+  * __[Gorgon.Core]__ Core and utility functionality.
+  * __[Gorgon.Core]__ Plug-in support.
   * __[Gorgon.FileSystem]__ A virtual file system that can mount a directory as a file system root, or using various plug-ins, can mount a packed file (e.g. a zip file) as a virtual file system root.  This module is based on the popular [PhysFS library](http://icculus.org/physfs/).
   * __[Gorgon.Input]__ A flexible input library to handle joysticks (gamepads), keyboard and mouse input.  Using plug-ins the input system can utilize Xbox360 controllers, standard joysticks, raw input from the keyboard and mouse and even via raw HID data.  It even includes a plug-in that wraps up windows forms input events.  The input library can use events or polling to retrieve data from the various input sources.
   * __[Gorgon.Graphics]__ A "low-level" graphics API similar to Direct 3D 11.  It improves on Direct 3D by handling some of the more mundane tasks for initializing objects in Direct 3D and provides more extensive error handling for invalid input.  This module supports all the bells and whistles that come with Direct 3D 11 such as device feature levels to allow running on older (Direct 3D 10 or better) hardware, pixel, vertex, geometry, hull, domain and compute shader support, etc...
