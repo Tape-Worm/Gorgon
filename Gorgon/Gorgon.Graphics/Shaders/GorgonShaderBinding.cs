@@ -32,7 +32,7 @@ using System.Reflection;
 using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
 using Shaders = SharpDX.D3DCompiler;

@@ -27,7 +27,7 @@
 using System;
 using System.Windows.Forms;
 using Gorgon.Collections;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms

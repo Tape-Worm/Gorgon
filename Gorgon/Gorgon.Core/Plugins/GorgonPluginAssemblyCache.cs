@@ -438,7 +438,7 @@ namespace Gorgon.Plugins
 		/// </code>
 		/// </para>
 		/// <para>
-		/// <b>Disclaimer time!!!</b><br/>
+		/// Disclaimer time!!!
 		/// This method is intended to verify that an assembly is signed, that, to the best of its knowledge, it has not been tampered with, and optionally, if it contains a known 
 		/// public key. This is not meant to protect a system against malicious code, or provide a means of checking an identify for an assembly. This method also makes no guarantees 
 		/// that the information is 100% accurate, so if security is of the utmost importance, do not rely on this method and use other functionality to secure your assemblies. This 

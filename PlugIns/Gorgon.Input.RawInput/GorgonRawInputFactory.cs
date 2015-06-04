@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Core;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;

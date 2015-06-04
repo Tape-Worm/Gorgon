@@ -26,7 +26,7 @@
 
 using System;
 using Gorgon.Collections;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Input

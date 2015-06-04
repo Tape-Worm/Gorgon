@@ -25,8 +25,9 @@
 #endregion
 
 using System.Collections.Generic;
+using Gorgon.Core;
 
-namespace Gorgon.Core.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// A generic interface for a read only list of named objects that can be indexed by key and index.

@@ -28,7 +28,7 @@ using System;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Collections;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Input.XInput.Properties;
 using XI = SharpDX.XInput;
 

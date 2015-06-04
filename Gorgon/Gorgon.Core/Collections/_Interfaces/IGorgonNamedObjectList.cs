@@ -27,8 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Gorgon.Core;
 
-namespace Gorgon.Core.Collections
+namespace Gorgon.Collections
 {
 	/// <summary>
 	/// A generic interface for a list of named objects that can be indexed by key and index.

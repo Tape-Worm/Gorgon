@@ -32,7 +32,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Gorgon.Core;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.Reflection;

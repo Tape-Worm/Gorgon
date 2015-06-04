@@ -25,9 +25,9 @@
 #endregion
 
 using System.Collections.Generic;
-using Gorgon.Collections;
+using Gorgon.Core;
 
-namespace Gorgon.Core.Collections.Specialized
+namespace Gorgon.Collections.Specialized
 {
 	/// <summary>
 	/// A dictionary to contain <see cref="INamedObject"/> types.
