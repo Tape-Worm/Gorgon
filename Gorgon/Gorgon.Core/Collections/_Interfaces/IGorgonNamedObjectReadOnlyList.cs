@@ -64,7 +64,7 @@ namespace Gorgon.Collections
 		bool Contains(string name);
 
 		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// Determines the index of a specific item in the list.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>
@@ -73,20 +73,20 @@ namespace Gorgon.Collections
 		int IndexOf(string name);
 
 		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// Determines the index of a specific item in the list.
 		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+		/// <param name="item">The object to locate in the list.</param>
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
 		int IndexOf(T item);
 
 		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+		/// Determines whether the list contains a specific value.
 		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <param name="item">The object to locate in the list.</param>
 		/// <returns>
-		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+		/// true if <paramref name="item"/> is found in the list; otherwise, false.
 		/// </returns>
 		bool Contains(T item);
 		#endregion

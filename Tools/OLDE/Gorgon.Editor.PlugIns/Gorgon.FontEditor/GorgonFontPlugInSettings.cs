@@ -42,7 +42,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the sample text.
         /// </summary>
-        [ApplicationSetting("FontSampleText", typeof(string), "FontEditor")]
+        [GorgonApplicationSetting("FontSampleText", typeof(string), "FontEditor")]
         public string SampleText
         {
             get;
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the color of the preview text in the editor.
 		/// </summary>
-		[ApplicationSetting("PreviewTextColor", typeof(int), "PreviewText")]
+		[GorgonApplicationSetting("PreviewTextColor", typeof(int), "PreviewText")]
 		public int TextColor
 		{
 			get;
@@ -62,7 +62,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the background color of the preview text in the editor.
 		/// </summary>
-		[ApplicationSetting("PreviewBackgroundColor", typeof(int), "PreviewText")]
+		[GorgonApplicationSetting("PreviewBackgroundColor", typeof(int), "PreviewText")]
 		public int BackgroundColor
 		{
 			get;
@@ -72,7 +72,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return whether the preview text should have a shadow or not.
 		/// </summary>
-		[ApplicationSetting("PreviewShadowEnabled", typeof(bool), "PreviewText")]
+		[GorgonApplicationSetting("PreviewShadowEnabled", typeof(bool), "PreviewText")]
 		public bool ShadowEnabled
 		{
 			get;
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the offset of the shadow on the preview text.
 		/// </summary>
-		[ApplicationSetting("PreviewShadowOffset", typeof(Point), "PreviewText")]
+		[GorgonApplicationSetting("PreviewShadowOffset", typeof(Point), "PreviewText")]
 		public Point ShadowOffset
 		{
 			get;
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the opacity of the shadow on the preview text.
 		/// </summary>
-		[ApplicationSetting("PreviewShadowOpacity", typeof(float), "PreviewText")]
+		[GorgonApplicationSetting("PreviewShadowOpacity", typeof(float), "PreviewText")]
 		public float ShadowOpacity
 		{
 			get;
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the blending mode for the preview text.
 		/// </summary>
-		[ApplicationSetting("PreviewBlendMode", typeof(string), "PreviewText")]
+		[GorgonApplicationSetting("PreviewBlendMode", typeof(string), "PreviewText")]
 		public string BlendMode
 		{
 			get;
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return whether transition animations are shown for the editor.
 		/// </summary>
-		[ApplicationSetting("ShowAnimations", typeof(bool), "FontEditor")]
+		[GorgonApplicationSetting("ShowAnimations", typeof(bool), "FontEditor")]
 		public bool ShowAnimations
 		{
 			get;
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
-		[ApplicationSetting("FontSizeType", FontHeightMode.Points, typeof(FontHeightMode), "FontEditor")]
+		[GorgonApplicationSetting("FontSizeType", FontHeightMode.Points, typeof(FontHeightMode), "FontEditor")]
 		public FontHeightMode FontSizeType
 		{
 			get;
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default font anti-alias mode.
 		/// </summary>
-		[ApplicationSetting("FontAntiAliasMode", FontAntiAliasMode.AntiAlias, typeof(FontAntiAliasMode), "FontEditor")]
+		[GorgonApplicationSetting("FontAntiAliasMode", FontAntiAliasMode.AntiAlias, typeof(FontAntiAliasMode), "FontEditor")]
 		public FontAntiAliasMode FontAntiAliasMode
 		{
 			get;
@@ -142,7 +142,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default font texture size.
 		/// </summary>
-		[ApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
+		[GorgonApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
 		public Size FontTextureSize
 		{
 			get;
@@ -152,7 +152,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the last texture import path.
         /// </summary>
-        [ApplicationSetting("LastTextureImportPath", typeof(string), "FontEditor")]
+        [GorgonApplicationSetting("LastTextureImportPath", typeof(string), "FontEditor")]
 	    public string LastTextureImportPath
 	    {
 	        get;
@@ -162,7 +162,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the last view used with the texture import dialog.
         /// </summary>
-        [ApplicationSetting("LastTextureImportDialogview", typeof(FileViews), "FontEditor")]
+        [GorgonApplicationSetting("LastTextureImportDialogview", typeof(FileViews), "FontEditor")]
 	    public FileViews LastTextureImportDialogView
 	    {
 	        get;
@@ -172,7 +172,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the last view used with the texture import dialog.
 		/// </summary>
-		[ApplicationSetting("LastTextureExtension", "png", typeof(string), "FontEditor")]
+		[GorgonApplicationSetting("LastTextureExtension", "png", typeof(string), "FontEditor")]
 		public string LastTextureExtension
 		{
 			get;
@@ -182,7 +182,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the size of the zoom window when editing glyphs.
 		/// </summary>
-		[ApplicationSetting("ZoomWindowSize", 256, typeof(int), "FontEditor")]
+		[GorgonApplicationSetting("ZoomWindowSize", 256, typeof(int), "FontEditor")]
 		public int ZoomWindowSize
 		{
 			get;
@@ -192,7 +192,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the scaling factor for the zoom window.
 		/// </summary>
-		[ApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "FontEditor")]
+		[GorgonApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "FontEditor")]
 		public float ZoomWindowScaleFactor
 		{
 			get;
@@ -202,7 +202,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return whether to snap the zoom window to the corners of the editor window, or to follow the cursor.
         /// </summary>
-		[ApplicationSetting("ZoomWindowSnap", false, typeof(bool), "FontEditor")]
+		[GorgonApplicationSetting("ZoomWindowSnap", false, typeof(bool), "FontEditor")]
 		public bool ZoomWindowSnap
 		{
 			get;

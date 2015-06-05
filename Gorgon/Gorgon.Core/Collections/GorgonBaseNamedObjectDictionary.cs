@@ -37,12 +37,16 @@ namespace Gorgon.Collections
 	/// Base dictionary for Gorgon library named objects.
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
+	/// <remarks>
+	/// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="INamedObject"/> interface.
+	/// </remarks>
 	public abstract class GorgonBaseNamedObjectDictionary<T>
 		: IGorgonNamedObjectDictionary<T>, IGorgonNamedObjectReadOnlyDictionary<T>
 		where T : INamedObject
 	{
 		#region Variables.
-		private readonly Dictionary<string, T> _list;			// Internal collection to hold our objects.
+		// Internal collection to hold our objects.
+		private readonly Dictionary<string, T> _list;			
 		#endregion
 
 		#region Properties.
@@ -64,21 +68,6 @@ namespace Gorgon.Collections
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </summary>
-		/// <value></value>
-		/// <returns>
-		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </returns>
-		public int Count
-		{
-			get
-			{
-				return _list.Count;
-			}
 		}
 		#endregion
 
@@ -157,7 +146,7 @@ namespace Gorgon.Collections
 
 		#region Constructor
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary&lt;T&gt;"/> class.
+		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> class.
 		/// </summary>
 		/// <param name="caseSensitive"><b>true</b> if the key names are case sensitive, <b>false</b> if not.</param>
 		protected GorgonBaseNamedObjectDictionary(bool caseSensitive)
@@ -203,6 +192,21 @@ namespace Gorgon.Collections
 
 		#region ICollection<T> Members
 		/// <summary>
+		/// Gets the number of elements contained in the dictionary.
+		/// </summary>
+		/// <value></value>
+		/// <returns>
+		/// The number of elements contained in the dictionary.
+		/// </returns>
+		public int Count
+		{
+			get
+			{
+				return _list.Count;
+			}
+		}
+
+		/// <summary>
 		/// Property to return whether the collection is read-only or not.
 		/// </summary>
 		bool ICollection<T>.IsReadOnly
@@ -214,16 +218,16 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// Adds an item to the dictionary.
 		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <param name="item">The object to add to the dictionary.</param>
 		void ICollection<T>.Add(T item)
 		{
 			_list.Add(item.Name, item);
 		}
 
 		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// Removes all items from the dictionary.
 		/// </summary>
 		void ICollection<T>.Clear()
 		{
@@ -231,9 +235,9 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+		/// Copies the elements of the dictionary to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
 		/// </summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from dictionary. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
 		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
 		/// <exception cref="T:System.ArgumentNullException">
 		/// 	<paramref name="array"/> is null.
@@ -246,7 +250,7 @@ namespace Gorgon.Collections
 		/// -or-
 		/// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
 		/// -or-
-		/// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+		/// The number of elements in the source dictionary is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
 		/// -or-
 		/// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
 		/// </exception>
@@ -256,11 +260,11 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// Removes the first occurrence of a specific object from the dictionary.
 		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <param name="item">The object to remove from the dictionary.</param>
 		/// <returns>
-		/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// true if <paramref name="item" /> was successfully removed from the dictionary; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original dictionary.
 		/// </returns>
 		bool ICollection<T>.Remove(T item)
 		{

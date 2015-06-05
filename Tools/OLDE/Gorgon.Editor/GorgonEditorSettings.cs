@@ -54,7 +54,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the directory that holds the plug-ins.
         /// </summary>
-        [ApplicationSetting("PlugInDirectory", typeof(string), "MainApplication")]
+        [GorgonApplicationSetting("PlugInDirectory", typeof(string), "MainApplication")]
         public string PlugInDirectory
         {
             get;
@@ -64,7 +64,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the main form state.
 		/// </summary>
-		[ApplicationSetting("FormState", FormWindowState.Maximized, typeof(FormWindowState), "MainApplication")]
+		[GorgonApplicationSetting("FormState", FormWindowState.Maximized, typeof(FormWindowState), "MainApplication")]
 		public FormWindowState FormState
 		{
 			get;
@@ -74,7 +74,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the window dimensions.
 		/// </summary>
-		[ApplicationSetting("WindowDimensions", typeof(Rectangle), "MainApplication")]
+		[GorgonApplicationSetting("WindowDimensions", typeof(Rectangle), "MainApplication")]
 		public Rectangle WindowDimensions
 		{
 			get;
@@ -84,7 +84,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the path to the scratch location for temporary data.
 		/// </summary>
-		[ApplicationSetting("ScratchPath", typeof(string), "Options")]
+		[GorgonApplicationSetting("ScratchPath", typeof(string), "Options")]
 		public string ScratchPath
 		{
 			get;
@@ -94,7 +94,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return whether the logo on the starting page should be animated.
 		/// </summary>
-		[ApplicationSetting("AnimateStartPageLogo", true, typeof(bool), "Options")]
+		[GorgonApplicationSetting("AnimateStartPageLogo", true, typeof(bool), "Options")]
 		public bool AnimateStartPageLogo
 		{
 			get;
@@ -104,7 +104,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
-		[ApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
+		[GorgonApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
 		public float StartPageAnimationPulseRate
 		{
 			get
@@ -129,7 +129,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the path to the last editor file.
         /// </summary>
-        [ApplicationSetting("LastEditorFile", "", typeof(string), "MainApplication")]
+        [GorgonApplicationSetting("LastEditorFile", "", typeof(string), "MainApplication")]
         public string LastEditorFile
         {
             get;
@@ -139,7 +139,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the last import file path.
 		/// </summary>
-		[ApplicationSetting("LastImportFilePath", "", typeof(string), "MainApplication")]
+		[GorgonApplicationSetting("LastImportFilePath", "", typeof(string), "MainApplication")]
 		public string ImportLastFilePath
 		{
 			get;
@@ -149,7 +149,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the last export file path.
 		/// </summary>
-        [ApplicationSetting("LastExportFilePath", "", typeof(string), "MainApplication")]
+        [GorgonApplicationSetting("LastExportFilePath", "", typeof(string), "MainApplication")]
 		public string ExportLastFilePath
 		{
 			get;
@@ -159,7 +159,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the recent files.
         /// </summary>
-        [ApplicationSetting("RecentFiles", typeof(IList<string>), "Recent")]
+        [GorgonApplicationSetting("RecentFiles", typeof(IList<string>), "Recent")]
         public IList<string> RecentFiles
         {
             get;
@@ -169,7 +169,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the list of user disabled plug-ins.
 		/// </summary>
-		[ApplicationSetting("DisabledPlugIns", typeof(IList<string>), "PlugIns")]
+		[GorgonApplicationSetting("DisabledPlugIns", typeof(IList<string>), "PlugIns")]
 		public IList<string> DisabledPlugIns
 		{
 		    get
@@ -193,7 +193,7 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to set or return the default image editor plug-in to use when handling images in other plug-ins.
         /// </summary>
-        [ApplicationSetting("DefaultImageEditorPlugIn", typeof(string), "")]
+        [GorgonApplicationSetting("DefaultImageEditorPlugIn", typeof(string), "")]
 	    public string DefaultImageEditor
 	    {
 	        get;
@@ -203,7 +203,7 @@ namespace Gorgon.Editor
             /// <summary>
         /// Property set or return whether to automatically load the last file opened by the editor on start up.
         /// </summary>
-        [ApplicationSetting("AutoLoadLastFile", true, typeof(bool), "Options")]        
+        [GorgonApplicationSetting("AutoLoadLastFile", true, typeof(bool), "Options")]        
         public bool AutoLoadLastFile
         {
             get;

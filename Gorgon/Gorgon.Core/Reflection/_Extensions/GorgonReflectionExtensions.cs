@@ -139,7 +139,7 @@ namespace Gorgon.Reflection
 				throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
 			}
 
-			if (propertyInfo.DeclaringType != typeof(T))
+			if ((propertyInfo.DeclaringType != typeof(T)) && (!propertyInfo.DeclaringType.IsSubclassOf(typeof(T))))
 			{
 				throw new InvalidCastException(string.Format(Resources.GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH,
 				                                             propertyInfo.Name,
@@ -157,8 +157,20 @@ namespace Gorgon.Reflection
 				                                             propertyType.FullName));
 			}
 			 
-			ParameterExpression instance = Expression.Parameter(propertyInfo.DeclaringType, "instance");
-			MemberExpression property = Expression.Property(instance, propertyInfo);
+			ParameterExpression instance;
+			MemberExpression property;
+
+			if (typeof(T) != propertyInfo.DeclaringType)
+			{
+				instance = Expression.Parameter(typeof(T), "parentInstance");
+				UnaryExpression cast = Expression.TypeAs(instance, propertyInfo.DeclaringType);
+				property = Expression.Property(cast, propertyInfo);
+			}
+			else
+			{
+				instance =  Expression.Parameter(propertyInfo.DeclaringType, "instance");
+				property = Expression.Property(instance, propertyInfo);
+			}
 
 			if (propertyInfo.PropertyType == propertyType)
 			{
@@ -166,6 +178,7 @@ namespace Gorgon.Reflection
 			}
 
 			UnaryExpression converter = Expression.TypeAs(property, typeof(object));
+
 			return Expression.Lambda<PropertyGetter<T, TP>>(converter, instance).Compile();
 		}
 
@@ -206,7 +219,7 @@ namespace Gorgon.Reflection
 				throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
 			}
 
-			if (propertyInfo.DeclaringType != typeof(T))
+			if ((propertyInfo.DeclaringType != typeof(T)) && (!propertyInfo.DeclaringType.IsSubclassOf(typeof(T))))
 			{
 				throw new InvalidCastException(string.Format(Resources.GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH,
 															 propertyInfo.Name,
@@ -224,8 +237,21 @@ namespace Gorgon.Reflection
 															 typeof(TP).FullName));
 			}
 
-			ParameterExpression instance = Expression.Parameter(propertyInfo.DeclaringType, "instance");
-			MemberExpression property = Expression.Property(instance, propertyInfo);
+			ParameterExpression instance;
+			MemberExpression property;
+
+			if (typeof(T) != propertyInfo.DeclaringType)
+			{
+				instance = Expression.Parameter(typeof(T), "instance");
+				UnaryExpression cast = Expression.TypeAs(instance, propertyInfo.DeclaringType);
+				property = Expression.Property(cast, propertyInfo);
+			}
+			else
+			{
+				instance = Expression.Parameter(propertyInfo.DeclaringType, "instance");
+				property = Expression.Property(instance, propertyInfo);
+			}
+
 			ParameterExpression arg = Expression.Parameter(propertyType, "arg0");
 			BinaryExpression assignment;
 

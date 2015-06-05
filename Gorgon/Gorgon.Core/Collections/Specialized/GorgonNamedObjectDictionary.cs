@@ -34,7 +34,12 @@ namespace Gorgon.Collections.Specialized
 	/// </summary>
 	/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="INamedObject"/> interface.</typeparam>
 	/// <remarks>
+	/// <para>
 	/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
+	/// </para>
+	/// <para>
+	/// This collection is <b><i>not</i></b> thread safe.
+	/// </para>
 	/// </remarks>
 	public class GorgonNamedObjectDictionary<T>
 		: GorgonBaseNamedObjectDictionary<T>

@@ -105,6 +105,7 @@
     <Reference Include="Gorgon.Native">
       <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="SlimMath">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
@@ -274,6 +275,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\SettingsDocVersion.xml" />
+    <None Include="Resources\SettingsDocNoVersion.xml" />
     <None Include="Resources\Check_Disabled1.png" />
     <None Include="Resources\Check_Enabled1.png" />
     <EmbeddedResource Include="Resources\GorgonSelectablePanel.bmp" />

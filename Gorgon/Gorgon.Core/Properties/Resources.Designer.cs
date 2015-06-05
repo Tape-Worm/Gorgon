@@ -1440,6 +1440,26 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;ApplicationSettings /&gt;.
+        /// </summary>
+        internal static string SettingsDocNoVersion {
+            get {
+                return ResourceManager.GetString("SettingsDocNoVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;ApplicationSettings Version=&quot;Version goes here.&quot; /&gt;.
+        /// </summary>
+        internal static string SettingsDocVersion {
+            get {
+                return ResourceManager.GetString("SettingsDocVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load theme....
         /// </summary>
         internal static string VERB_LOAD_THEME {

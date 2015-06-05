@@ -69,7 +69,7 @@ namespace Gorgon.Collections
 		}
 		#endregion
 
-		#region Properties.
+		#region Methods.
 		/// <summary>
 		/// Function to remove an item with the specified name from this list.
 		/// </summary>

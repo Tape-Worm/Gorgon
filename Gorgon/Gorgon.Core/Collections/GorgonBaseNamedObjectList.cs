@@ -37,6 +37,9 @@ namespace Gorgon.Collections
 	/// Base list type for Gorgon library named objects.
 	/// </summary>
 	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
+	/// <remarks>
+	/// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="INamedObject"/> interface.
+	/// </remarks>
 	public abstract class GorgonBaseNamedObjectList<T>
 		: IGorgonNamedObjectList<T>, IGorgonNamedObjectReadOnlyList<T>
 		where T : INamedObject
@@ -148,7 +151,7 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+		/// Determines the index of a specific item in the list.
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>
@@ -191,43 +194,7 @@ namespace Gorgon.Collections
 		#endregion
 
 		#region IList<T> Members
-		/// <summary>
-		/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-		/// <returns>
-		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-		/// </returns>
-		public int IndexOf(T item)
-		{
-			return _list.IndexOf(item);
-		}
-
-		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		/// </exception>
-		void IList<T>.Insert(int index, T item)
-		{
-			_list.Insert(index, item);
-		}
-
-		/// <summary>
-		/// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index of the item to remove.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		/// </exception>
-		void IList<T>.RemoveAt(int index)
-		{
-			_list.RemoveAt(index);
-		}
-
+		#region Properties.
 		/// <summary>
 		/// Property to set or return the item at the specified index.
 		/// </summary>
@@ -244,18 +211,91 @@ namespace Gorgon.Collections
 		}
 		#endregion
 
-		#region ICollection<T> Members
+		#region Methods.
 		/// <summary>
-		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Determines the index of a specific item in the list.
 		/// </summary>
-		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <param name="item">The object to locate in the list.</param>
+		/// <returns>
+		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+		/// </returns>
+		public int IndexOf(T item)
+		{
+			return _list.IndexOf(item);
+		}
+
+		/// <summary>
+		/// Inserts an item to the list at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+		/// <param name="item">The object to insert into the list.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// 	<paramref name="index"/> is not a valid index in the list.
+		/// </exception>
+		void IList<T>.Insert(int index, T item)
+		{
+			_list.Insert(index, item);
+		}
+
+		/// <summary>
+		/// Removes the list item at the specified index.
+		/// </summary>
+		/// <param name="index">The zero-based index of the item to remove.</param>
+		/// <exception cref="T:System.ArgumentOutOfRangeException">
+		/// 	<paramref name="index"/> is not a valid index in the list.
+		/// </exception>
+		void IList<T>.RemoveAt(int index)
+		{
+			_list.RemoveAt(index);
+		}
+		#endregion
+		#endregion
+
+		#region ICollection<T> Members
+		#region Properties.
+		/// <summary>
+		/// Gets the number of elements contained in the list.
+		/// </summary>
+		/// <value></value>
+		/// <returns>
+		/// The number of elements contained in the list.
+		/// </returns>
+		public int Count
+		{
+			get
+			{
+				return _list.Count;
+			}
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the list is read-only.
+		/// </summary>
+		/// <value></value>
+		/// <returns>true if the list is read-only; otherwise, false.
+		/// </returns>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsReadOnly
+		{
+			get
+			{
+				return false;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Adds an item to the list.
+		/// </summary>
+		/// <param name="item">The object to add to the list.</param>
 		void ICollection<T>.Add(T item)
 		{
 			_list.Add(item);
 		}
 
 		/// <summary>
-		/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Removes all items from the list.
 		/// </summary>
 		void ICollection<T>.Clear()
 		{
@@ -263,11 +303,11 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+		/// Determines whether the list contains a specific value.
 		/// </summary>
-		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+		/// <param name="item">The object to locate in the list.</param>
 		/// <returns>
-		/// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
+		/// true if <paramref name="item"/> is found in the list; otherwise, false.
 		/// </returns>
 		public bool Contains(T item)
 		{
@@ -275,9 +315,9 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+		/// Copies the elements of the list to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
 		/// </summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from list. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
 		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
 		/// <exception cref="T:System.ArgumentNullException">
 		/// 	<paramref name="array"/> is null.
@@ -290,7 +330,7 @@ namespace Gorgon.Collections
 		/// -or-
 		/// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
 		/// -or-
-		/// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+		/// The number of elements in the source list is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
 		/// -or-
 		/// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
 		/// </exception>
@@ -305,46 +345,17 @@ namespace Gorgon.Collections
 		}
 
 		/// <summary>
-		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// Removes the first occurrence of a specific object from the list.
 		/// </summary>
-		/// <value></value>
+		/// <param name="item">The object to remove from the list.</param>
 		/// <returns>
-		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </returns>
-		public int Count
-		{
-			get 
-			{
-				return _list.Count;
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-		/// </summary>
-		/// <value></value>
-		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
-		/// </returns>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsReadOnly
-		{
-			get 
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-		/// </summary>
-		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-		/// <returns>
-		/// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+		/// true if <paramref name="item"/> was successfully removed from the list; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original list.
 		/// </returns>
 		bool ICollection<T>.Remove(T item)
 		{
 			return _list.Remove(item);
 		}
+		#endregion
 		#endregion
 
 		#region IEnumerable<T> Members

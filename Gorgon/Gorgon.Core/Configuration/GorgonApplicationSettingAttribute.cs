@@ -32,9 +32,14 @@ namespace Gorgon.Configuration
 	/// An attribute defining whether a property is to be used as an application setting.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public sealed class ApplicationSettingAttribute
+	public sealed class GorgonApplicationSettingAttribute
 		: Attribute
 	{
+		#region Variables.
+		// Default value;
+		private object _default;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return whether there's a default setting or not.
@@ -60,7 +65,7 @@ namespace Gorgon.Configuration
 		public string SettingName
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -68,69 +73,26 @@ namespace Gorgon.Configuration
 		/// </summary>
 		public object DefaultValue
 		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the type of the property.
-		/// </summary>
-		public Type PropertyType
-		{
-			get;
-			private set;
+			get
+			{
+				return _default;
+			}
+			set
+			{
+				_default = value;
+				HasDefault = true;
+			}
 		}
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
+		/// Initializes a new instance of the <see cref="GorgonApplicationSettingAttribute"/> class.
 		/// </summary>
-		/// <param name="settingName">Name of the setting.</param>
-		/// <param name="defaultValue">The default value for the property.</param>
-		/// <param name="propertyType">Type of property.</param>		
 		/// <param name="section">Section for the setting.</param>
-		public ApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType, string section)
+		public GorgonApplicationSettingAttribute(string section)
 		{
-			SettingName = settingName;
-			DefaultValue = defaultValue;
-			PropertyType = propertyType;
 			Section = section;
-			HasDefault = true;
-		}
-
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
-		/// </summary>
-		/// <param name="settingName">Name of the setting.</param>
-		/// <param name="defaultValue">The default value for the property.</param>
-		/// <param name="propertyType">Type of property.</param>		
-		public ApplicationSettingAttribute(string settingName, object defaultValue, Type propertyType)
-			: this(settingName, defaultValue, propertyType, string.Empty)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
-		/// </summary>
-		/// <param name="settingName">Name of the setting.</param>
-		/// <param name="propertyType">Type of property.</param>		
-		/// <param name="section">Section for the setting.</param>
-		public ApplicationSettingAttribute(string settingName, Type propertyType, string section)
-			: this(settingName, null, propertyType, section)
-		{
-			HasDefault = false;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ApplicationSettingAttribute"/> class.
-		/// </summary>
-		/// <param name="settingName">Name of the setting.</param>
-		/// <param name="propertyType">Type of property.</param>		
-		public ApplicationSettingAttribute(string settingName, Type propertyType)
-			: this(settingName, null, propertyType, string.Empty)
-		{
 			HasDefault = false;
 		}
 		#endregion

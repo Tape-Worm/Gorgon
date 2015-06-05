@@ -42,7 +42,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to return the paths to assemblies that hold custom image codecs.
         /// </summary>
-        [ApplicationSetting("CustomCodecs", typeof(IList<string>), "Codecs")]
+        [GorgonApplicationSetting("CustomCodecs", typeof(IList<string>), "Codecs")]
         public IList<string> CustomCodecs
         {
             get;
@@ -52,7 +52,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the last path used when importing an image file from disk.
 		/// </summary>
-		[ApplicationSetting("LastImportDiskDirectory", typeof(string), "Paths")]
+		[GorgonApplicationSetting("LastImportDiskDirectory", typeof(string), "Paths")]
 	    public string LastImageImportDiskPath
 	    {
 		    get;
@@ -62,7 +62,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the last path used when importing an image file from the file system.
 		/// </summary>
-		[ApplicationSetting("LastImportFSDirectory", typeof(string), "Paths")]
+		[GorgonApplicationSetting("LastImportFSDirectory", typeof(string), "Paths")]
 		public string LastImageImportFileSystemPath
 		{
 			get;
@@ -72,7 +72,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the path to the last codec plug-in selected.
 		/// </summary>
-		[ApplicationSetting("LastCodecPath", typeof(string), "Paths")]
+		[GorgonApplicationSetting("LastCodecPath", typeof(string), "Paths")]
 	    public string LastCodecPath
 	    {
 		    get;
@@ -82,7 +82,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return whether cropping or resizing is the default value.
 		/// </summary>
-		[ApplicationSetting("CropDefault", typeof(bool), "CropResize")]
+		[GorgonApplicationSetting("CropDefault", typeof(bool), "CropResize")]
 	    public bool CropDefault
 	    {
 		    get;
@@ -92,7 +92,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the image filter to use when resizing an image.
 		/// </summary>
-		[ApplicationSetting("ResizeImageFilter", typeof(ImageFilter), "CropResize")]
+		[GorgonApplicationSetting("ResizeImageFilter", typeof(ImageFilter), "CropResize")]
 	    public ImageFilter ResizeImageFilter
 	    {
 		    get;
@@ -102,7 +102,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return whether to preserve the aspect ratio of the source image.
         /// </summary>
-        [ApplicationSetting("PreserveAspectRatio", typeof(bool), "CropResize")]
+        [GorgonApplicationSetting("PreserveAspectRatio", typeof(bool), "CropResize")]
         public bool PreserveAspectRatio
         {
             get;
@@ -112,7 +112,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return whether to preserve the aspect ratio of the source image.
 		/// </summary>
-		[ApplicationSetting("ImageAlign", typeof(ContentAlignment), "CropResize")]
+		[GorgonApplicationSetting("ImageAlign", typeof(ContentAlignment), "CropResize")]
 		public ContentAlignment ImageAlign
 		{
 			get;
@@ -122,7 +122,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to set or return the image filtering to use when generating mip-maps.
 		/// </summary>
-		[ApplicationSetting("MipFilter", typeof(ImageFilter), "ImageFiltering")]
+		[GorgonApplicationSetting("MipFilter", typeof(ImageFilter), "ImageFiltering")]
 	    public ImageFilter MipFilter
 	    {
 		    get;
@@ -132,7 +132,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return the image filtering to use when changing the width/height the image.
         /// </summary>
-        [ApplicationSetting("ImageWidthHeightFilter", typeof(ImageFilter), "ImageFiltering")]
+        [GorgonApplicationSetting("ImageWidthHeightFilter", typeof(ImageFilter), "ImageFiltering")]
         public ImageFilter ScaleFilter
         {
             get;
@@ -142,7 +142,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return whether to initially display the image at its actual size.
         /// </summary>
-        [ApplicationSetting("StartWithActualSize", typeof(bool), "UISettings")]
+        [GorgonApplicationSetting("StartWithActualSize", typeof(bool), "UISettings")]
         public bool StartWithActualSize
         {
             get;
@@ -152,7 +152,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// <summary>
         /// Property to set or return whether to use animations in the interface.
         /// </summary>
-        [ApplicationSetting("UseAnimations", typeof(bool), "UISettings")]
+        [GorgonApplicationSetting("UseAnimations", typeof(bool), "UISettings")]
         public bool UseAnimations
         {
             get;

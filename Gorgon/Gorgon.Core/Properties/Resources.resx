@@ -954,4 +954,10 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_PLUGIN_ASSEMBLY_NOT_FOUND" xml:space="preserve">
     <value>Could not find a plugin assembly named '{0}'.</value>
   </data>
+  <data name="SettingsDocNoVersion" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SettingsDocNoVersion.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="SettingsDocVersion" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SettingsDocVersion.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

@@ -55,6 +55,8 @@
     <Compile Include="ReflectionExtensionTests.cs" />
     <Compile Include="Support\ActivatorTestClass.cs" />
     <Compile Include="Support\PropertyTests.cs" />
+    <Compile Include="Support\SettingsTests.cs" />
+    <Compile Include="SettingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">

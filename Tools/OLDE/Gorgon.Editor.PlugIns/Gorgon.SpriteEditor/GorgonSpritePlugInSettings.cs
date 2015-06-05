@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
         /// <summary>
         /// Property to set or return the last path used to find a texture.
         /// </summary>
-        [ApplicationSetting("LastTexturePath", typeof(string), "Paths")]
+        [GorgonApplicationSetting("LastTexturePath", typeof(string), "Paths")]
         public string LastTexturePath
         {
             get;
@@ -49,7 +49,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to set or return the size of the zoom window when editing glyphs.
 		/// </summary>
-		[ApplicationSetting("ZoomWindowSize", 256, typeof(int), "SpriteEditor")]
+		[GorgonApplicationSetting("ZoomWindowSize", 256, typeof(int), "SpriteEditor")]
 		public int ZoomWindowSize
 		{
 			get;
@@ -59,7 +59,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to set or return the scaling factor for the zoom window.
 		/// </summary>
-		[ApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "SpriteEditor")]
+		[GorgonApplicationSetting("ZoomWindowScaleFactor", 2.0f, typeof(float), "SpriteEditor")]
 		public float ZoomWindowScaleFactor
 		{
 			get;
@@ -69,7 +69,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to set or return whether to snap the zoom window to the corners of the editor window, or to follow the cursor.
 		/// </summary>
-		[ApplicationSetting("ZoomWindowSnap", false, typeof(bool), "SpriteEditor")]
+		[GorgonApplicationSetting("ZoomWindowSnap", false, typeof(bool), "SpriteEditor")]
 		public bool ZoomWindowSnap
 		{
 			get;
