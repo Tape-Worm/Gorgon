@@ -775,7 +775,7 @@ namespace Gorgon.UI
 		{
 			var item = e.Item as ToolStripSplitButton;
 
-			Debug.Assert(item != null, "Drop down button is NULL!");
+			Debug.Assert(item != null, "Drop down button is <b>null</b>!");
 
 			if (item.Selected)
 			{
@@ -837,7 +837,7 @@ namespace Gorgon.UI
 		{
 			var item = e.Item as ToolStripDropDownButton;
 
-			Debug.Assert(item != null, "Drop down button is NULL!");
+			Debug.Assert(item != null, "Drop down button is <b>null</b>!");
 
 			if (item.Selected)
 			{
@@ -865,7 +865,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
 		/// <returns>The flatform theme deserialized from XML.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the stream is write-only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the stream position cannot read beyond the stream length.</exception>
 		public static FlatFormTheme Load(Stream stream)
@@ -893,7 +893,7 @@ namespace Gorgon.UI
 		/// Function to save this theme as XML data into a stream.
 		/// </summary>
 		/// <param name="stream">Stream to fill with the data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is NULL (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the stream is read-only.</exception>
 		public void Save(Stream stream)
 		{

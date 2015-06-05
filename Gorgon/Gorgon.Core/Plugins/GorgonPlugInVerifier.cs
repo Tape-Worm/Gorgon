@@ -71,7 +71,7 @@ namespace Gorgon.Plugins
         /// </summary>
         /// <param name="name">Name of the assembly.</param>
         /// <param name="requesting">Requesting assembly.</param>
-        /// <returns>The assembly if found, NULL if not.</returns>
+        /// <returns>The assembly if found, <b>null</b> if not.</returns>
         private Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
         {
             var locations = new string[requesting == null ? 1 : 2];

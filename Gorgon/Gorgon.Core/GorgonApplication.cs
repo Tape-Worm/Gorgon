@@ -154,7 +154,7 @@ namespace Gorgon.Core
 			}
 			set
 			{
-				// We can't set all to NULL.
+				// We can't set all to null.
 			    if ((ApplicationForm == null)
 			        && (value == null)
 			        && (ApplicationContext == null))
@@ -458,7 +458,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
 		/// <param name="args">Event arguments.</param>
-		/// <returns>The assembly, if found, NULL if not.</returns>
+		/// <returns>The assembly, if found, <b>null</b> if not.</returns>
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
 		{
             if ((PlugIns != null) && (PlugIns.AssemblyResolver != null))
@@ -501,7 +501,7 @@ namespace Gorgon.Core
 		/// <param name="context">Application context to use.</param>
 		/// <param name="loop">[Optional] Idle loop method for the application.</param>
 		/// <remarks>This method requires an application context, but the <paramref name="loop"/> parameter is optional.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(ApplicationContext context, Func<bool> loop = null)
 		{
@@ -550,7 +550,7 @@ namespace Gorgon.Core
 		/// <param name="mainForm">Form to use as the main form for the application.</param>
 		/// <param name="loop">[Optional] Idle loop method for the application.</param>
 		/// <remarks>A form is required to use this method, but the <paramref name="loop"/> parameter is optional.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(Form mainForm, Func<bool> loop = null)
 		{
@@ -597,7 +597,7 @@ namespace Gorgon.Core
 		/// Function to run a Gorgon application.
 		/// </summary>
 		/// <param name="loop">Idle loop method for the application.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
 		public static void Run(Func<bool> loop)
 		{
@@ -639,7 +639,7 @@ namespace Gorgon.Core
 		/// Function to add an object for tracking by the main Gorgon interface.
 		/// </summary>
 		/// <param name="trackedObject">Object to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
 		public static void AddTrackedObject(IDisposable trackedObject)
 		{
@@ -655,7 +655,7 @@ namespace Gorgon.Core
 		/// Function to remove a tracked object from the Gorgon interface.
 		/// </summary>
 		/// <param name="trackedObject">Object to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>This will -not- destroy the tracked object.</remarks>
 		public static void RemoveTrackedObject(IDisposable trackedObject)
 		{
@@ -672,7 +672,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a container control.</param>
 		/// <returns>The container control that contains the control, or the control pointed at by <paramref name="childControl"/> if the control has no parent.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public static Control GetTopLevelControl(Control childControl)
 		{
 			if (childControl == null)
@@ -694,9 +694,9 @@ namespace Gorgon.Core
 		/// Function to return the top level form that contains the child control.
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a base windows form.</param>
-		/// <returns>The windows form that contains the control, or NULL (<i>Nothing</i> in VB.Net) if the control is not embedded on a form at some level.</returns>
+		/// <returns>The windows form that contains the control, or <b>null</b> (<i>Nothing</i> in VB.Net) if the control is not embedded on a form at some level.</returns>
 		/// <remarks>If the childControl is a form, then the method will return the childControl instance.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public static Form GetTopLevelForm(Control childControl)
 		{
 		    if (childControl == null)

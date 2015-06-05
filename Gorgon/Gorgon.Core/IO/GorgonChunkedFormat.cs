@@ -159,7 +159,7 @@ namespace Gorgon.IO
 		/// Function to begin reading/writing the chunk
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
@@ -300,7 +300,7 @@ namespace Gorgon.IO
         /// </summary>
 		/// <param name="stream">The stream to use to output the chunked data.</param>
 		/// <param name="accessMode">Stream access mode for the chunk object.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="accessMode"/> parameter is set to read, but the stream cannot be read.
 		/// <para>-or-</para>
 		/// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>

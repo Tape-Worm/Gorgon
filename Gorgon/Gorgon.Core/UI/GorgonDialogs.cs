@@ -231,7 +231,7 @@ namespace Gorgon.UI
 		/// <param name="caption">[Optional] Caption for the error box.</param>
 		/// <param name="details">[Optional] Details for the error.</param>
 		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is NULL (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		/// <remarks>If the <paramref name="details"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
 		public static void ErrorBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			ErrorDialog errorDialog = null;
@@ -253,7 +253,7 @@ namespace Gorgon.UI
 
 				errorDialog.ShowDialog(owner);
 
-				// If the owner form is NULL or not available, center on screen.
+				// If the owner form is <b>null</b> or not available, center on screen.
 				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 				{
 					errorDialog.StartPosition = FormStartPosition.CenterScreen;
@@ -323,7 +323,7 @@ namespace Gorgon.UI
 		/// <param name="caption">[Optional] Caption for the error box.</param>
 		/// <param name="details">[Optional] Details for the error.</param>
 		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is NULL (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		/// <remarks>If the <paramref name="details"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
 		public static void WarningBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			if (string.IsNullOrEmpty(caption))
@@ -342,7 +342,7 @@ namespace Gorgon.UI
 					                ShowDetailPanel = (autoShowDetails) && (!string.IsNullOrEmpty(details))
 				                };
 
-				// If the owner form is NULL or not available, center on screen.
+				// If the owner form is <b>null</b> or not available, center on screen.
 				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 				{
 					warningDialog.StartPosition = FormStartPosition.CenterScreen;

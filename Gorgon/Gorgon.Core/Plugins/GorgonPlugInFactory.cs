@@ -191,7 +191,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyFile">File containing the plug-ins.</param>
 		/// <returns></returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
 		/// <remarks>Unlike the overload of this method, this method will check only the file pointed at by <c>assemblyFile</c>.</remarks>
@@ -210,7 +210,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to filter.</param>
 		/// <returns>A read-only list of plug-ins.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
 		public IReadOnlyList<GorgonPlugin> EnumeratePlugIns(AssemblyName assemblyName)
 		{
@@ -255,7 +255,7 @@ namespace Gorgon.Plugins
 		/// Function to remove a plug-in by index.
 		/// </summary>
 		/// <param name="name">Name of the plug-in to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="name"/> was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
 		public void Unload(string name)
 		{
@@ -268,7 +268,7 @@ namespace Gorgon.Plugins
 		/// Function to remove a plug-in.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public void Unload(GorgonPlugin plugIn)
 		{
 		    if (plugIn == null)
@@ -283,9 +283,9 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
-		/// <param name="publicKey">[Optional] Public key to compare, or NULL (<i>Nothing</i> in VB.Net) to bypass the key comparison.</param>
+		/// <param name="publicKey">[Optional] Public key to compare, or <b>null</b> (<i>Nothing</i> in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="AssemblySigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public AssemblySigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey = null)
 		{
 		    var result = AssemblySigningResult.Signed;
@@ -332,9 +332,9 @@ namespace Gorgon.Plugins
 		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
-		/// <param name="publicKey">[Optional] Public key to compare, or NULL (<i>Nothing</i> in VB.Net) to bypass the key comparison.</param>
+		/// <param name="publicKey">[Optional] Public key to compare, or <b>null</b> (<i>Nothing</i> in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="AssemblySigningResult">PlugInSigningResult</seealso> enumeration.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
 		public AssemblySigningResult IsAssemblySigned(string assemblyPath, byte[] publicKey = null)
@@ -347,7 +347,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly.</param>
 		/// <remarks>If the assembly file cannot be found, then the paths in the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">SearchPaths</see> collection are used to find the assembly.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyPath"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when <paramref name="assemblyPath"/> is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the search paths (including the path provided in the parameter).</exception>
 		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
@@ -366,7 +366,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly file.</param>
 		/// <returns><b>true</b> if this is a plug-in assembly, <b>false</b> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
 		public bool IsPlugInAssembly(string assemblyPath)
 		{
@@ -401,7 +401,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly.</param>
 		/// <returns><b>true</b> if this is a plug-in assembly, <b>false</b> if it is not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public bool IsPlugInAssembly(AssemblyName assemblyName)
 		{
 			bool result = false;
@@ -434,7 +434,7 @@ namespace Gorgon.Plugins
 		/// Function to load a plug-in assembly.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to load.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when <paramref name="assemblyName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{

@@ -35,6 +35,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
+using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Reflection;
 
@@ -48,17 +49,18 @@ namespace Gorgon.Configuration
 	/// Many applications require their settings to be persisted to a data store and read back again, and in .NET there are a few ways to persist application settings. The <see cref="GorgonApplicationSettings"/> 
 	/// object allows for more customizable functionality than what is present in the standard .NET offerings. For example, it allows the developer to specify where to store the settings on the file system, the 
 	/// standard app.config functionality does not (at least, not easily). It is also capable of storing collections with more varied element types (other than just <see cref="string"/>. Finally, it has some 
-	/// rudimentary (and fully optional) version control via the <see cref="Version"/> property to help transitioning between application versions.
+	/// rudimentary and fully optional version control via the <see cref="Version"/> property to help transitioning between application versions.
 	/// </para>
 	/// <para>
 	/// To set up an application with a settings file, the developer should inherit from this class, and provide properties that represent the settings for the application. These properties should be marked with 
 	/// a <see cref="GorgonApplicationSettingAttribute"/> so that the base object knows which properties to serialize/deserialize. And that's all there is to it.
 	/// </para>
 	/// <para>
-	/// While this class is flexible, there are some restrictions on the property types.  The property types must have:
+	/// <h2>Limitations</h2>
+	/// While this class is flexible, there are some restrictions on the property types:
 	/// <list type="bullet">
-	/// <item><description>Must have a getter at minimum.</description></item>
-	/// <item><description>Must be a a primitive type, enum, value type (with a <see cref="TypeConverterAttribute"/>), <see cref="String"/>, <see cref="DateTime"/> or array.</description></item>
+	/// <item><description>The property must have a property getter, at minimum.</description></item>
+	/// <item><description>Be a a primitive type, enum, value type (with a <see cref="TypeConverterAttribute"/>), <see cref="String"/>, <see cref="DateTime"/> or array.</description></item>
 	/// <item><description>Collection types are supported, and must implement either <see cref="IList{T}"/>, or a <see cref="IDictionary{String,TValue}"/>.</description></item>
 	/// </list>
 	/// Properties that are collection types must be instantiated in the constructor of the class, or they will be skipped when serializing/deserializing. 
@@ -76,6 +78,21 @@ namespace Gorgon.Configuration
 	/// </para>
 	/// <para>
 	/// Finally, types of <see cref="Nullable{T}"/> are not supported.
+	/// </para>
+	/// <para>
+	/// <h2>Versioning</h2>
+	/// If a version has been supplied to the object for comparison against that of the file, then it will check to see if the file version is less than or equal to the given version. 
+	/// If the file has a greater version number, then all items in the settings object will be reset to their default values.
+	/// </para>
+	/// <para>
+	/// While you may load a file with new, or deleted properties with no issue, changing the type of the property between versions of a settings file may cause exceptions when loading 
+	/// the file, regardless of whether or not it loads an older version of the file.
+	/// </para>
+	/// <para>
+	/// <h2>About arrays</h2>
+	/// Collection types like lists or dictionaries may have a variable number of elements, but array types are handled differently. If you initialize an array setting in your constructor to have 5 elements, then 
+	/// the settings object will always assume there will only be 5 elements. If an array item in the XML has an index that exceeds the defined count, then it is ignored.  Likewise, if the XML file does not 
+	/// contain an element for a given index, then it will be set to its default value.
 	/// </para>
 	/// <para>
 	/// <h2>About date formatting</h2>
@@ -208,7 +225,6 @@ namespace Gorgon.Configuration
 				IsDictionary = isDictionary;
 			}
 		}
-
 		#endregion
 
 		#region Constants.
@@ -247,11 +263,22 @@ namespace Gorgon.Configuration
 		private XElement _rootNode;
 		// The version attribute for the XML document.
 		private XAttribute _versionAttr;
+		// The application log.
+
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the name of the application that the settings are from.
+		/// Property to set or return the application logging interface to use.
+		/// </summary>
+		protected IGorgonLog Log
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the name of the application that these settings are used with.
 		/// </summary>
 		public string ApplicationName
 		{
@@ -262,6 +289,18 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Property to set or return the path to the configuration file.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If the path does not contain a file name, then the name of the assembly that the settings type resides in will be used as the file name.
+		/// </para>
+		/// <para>
+		/// If the directory name is not present, then a path of "Users\&lt;Username&gt;\AppData\Roaming\&lt;<see cref="ApplicationName"/>&gt;\" will 
+		/// be used.
+		/// </para>
+		/// <para>
+		/// These defaults are the same as the default path that is created when the object is constructed.
+		/// </para>
+		/// </remarks>
 		public string Path
 		{
 			get
@@ -278,6 +317,13 @@ namespace Gorgon.Configuration
 				string fileName = System.IO.Path.GetFileName(value);
 				string directory = System.IO.Path.GetDirectoryName(value);
 
+				if (string.IsNullOrWhiteSpace(directory))
+				{
+					directory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+					             + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)
+					             + ApplicationName.RemoveIllegalFilenameChars()).FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+				}
+
 				if (string.IsNullOrWhiteSpace(fileName))
 				{
 					fileName = System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
@@ -292,7 +338,17 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Property to set or return the application settings version.
 		/// </summary>
-		/// <remarks>Assigning NULL (<i>Nothing</i> in VB.Net) will bypass version checking.</remarks>
+		/// <remarks>
+		/// <para>
+		/// When this value is supplied (either in the constructor or directly on this property), that version number will be applied to the XML file generated by this object 
+		/// when the settings are persisted. When those settings are read back in from the file, the version supplied to this object will be compared to the version in the file. 
+		/// If the file version is less than or equal to the value of this property, then the settings will be loaded. If not, then the default values will be assigned to the 
+		/// properties on the object.
+		/// </para>
+		/// <para>
+		/// Assigning <b>null</b> (<i>Nothing</i> in VB.Net) to this property will turn off version checking.
+		/// </para>
+		/// </remarks>
 		public Version Version
 		{
 			get;
@@ -370,14 +426,14 @@ namespace Gorgon.Configuration
 		{
 		    if (value == null)
 		    {
-		        return null;
+				return type.IsValueType ? Activator.CreateInstance(type) : null;
 		    }
 
 		    if (type != typeof (string))
 		    {
 		        if (string.IsNullOrEmpty(value))
 		        {
-		            return null;
+			        return type.IsValueType ? Activator.CreateInstance(type) : null;
 		        }
 		    }
 		    else
@@ -446,10 +502,11 @@ namespace Gorgon.Configuration
 		{
 			int count = arrayItem != null ? ((isList) ? arrayItem.Count : arrayItem.Length) : 0;
 
+			Log.Print("Persisting {0} items from property '{1}'.", LoggingLevel.Verbose, count, name);
+
 			// Leave if no elements.
 			if ((count == 0) || (arrayItem == null))
 			{
-				section.Add(new XElement(SettingNodeName, new XAttribute(XName.Get(name), string.Empty)));
 				return;
 			}
 
@@ -476,10 +533,11 @@ namespace Gorgon.Configuration
 		{
 			int count = arrayItem != null ? arrayItem.Count : 0;
 
+			Log.Print("Persisting {0} items from property '{1}'.", LoggingLevel.Verbose, count, name);
+
 			// Leave if no elements.
 			if ((count == 0) || (arrayItem == null))
 			{
-				section.Add(new XElement(SettingNodeName, new XAttribute(XName.Get(name), string.Empty)));
 				return;
 			}
 
@@ -506,6 +564,7 @@ namespace Gorgon.Configuration
 			// Create section elements.
 		    foreach (var section in sections)
 		    {
+				Log.Print("Creating setting section '{0}'.", LoggingLevel.Verbose, section);
 		        AddSection(string.Empty, section);
 		    }
 
@@ -527,6 +586,9 @@ namespace Gorgon.Configuration
 					continue;
 				}
 
+				string value = ConvertValue(property.Getter(this));
+
+				Log.Print("Persisting value {0} from property '{1}'.", LoggingLevel.Verbose, value, property.PropertyInfo.Name);
 				section.Add(new XElement(SettingNodeName, new XAttribute(XName.Get(property.PropertyName), ConvertValue(property.Getter(this)))));
 			}
 		}
@@ -611,33 +673,42 @@ namespace Gorgon.Configuration
 				// We cannot get a name attribute, so we can't process this node.
 				if (nameAttr == null)
 				{
+					Log.Print("XML has setting element with missing property name attribute.", LoggingLevel.Simple);
 					continue;
 				}
 
 				PropertyItem property;
 
 				// No property with this name?  Ok, move on. 
-				// TODO: Implement logging so we can watch for this stuff.
 				if (!_properties.TryGetValue(nameAttr.Name.LocalName, out property))
 				{
+					Log.Print("XML contains property name '{0}', but no such property exists on this object.", LoggingLevel.Intermediate, nameAttr.Name.LocalName);
 					continue;
 				}
 
 				if (property.IsArray)
 				{
+					// If the array is null, then we won't be adding any elements into it.
+					if (property.Getter(this) == null)
+					{
+						Log.Print("Array property '{0}' is null, cannot assign values.", LoggingLevel.Intermediate, property.PropertyInfo.Name);
+						continue;
+					}
+
 					if (indexAttr == null)
 					{
 						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_SETTING_INVALID_FILE, _path), new NullReferenceException());
 					}
 
 					int itemIndex = int.Parse(indexAttr.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
-					
+					Log.Print("Loading value <{0}> into array index {1} for property '{2}'.", LoggingLevel.Verbose, nameAttr.Value, itemIndex, property.PropertyInfo.Name);
 					AddItemToArray(property, itemIndex, nameAttr.Value);
 					continue;
 				}
 
 				if (property.IsList)
 				{
+					Log.Print("Loading value <{0}> into list for property '{1}'.", LoggingLevel.Verbose, nameAttr.Value, property.PropertyInfo.Name);
 					AddItemToList(property, nameAttr.Value);
 					continue;
 				}
@@ -649,98 +720,21 @@ namespace Gorgon.Configuration
 						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_SETTING_INVALID_FILE, _path), new NullReferenceException());
 					}
 
+					Log.Print("Loading value <{0}> into dictionary key {1} for property '{2}'.", LoggingLevel.Verbose, nameAttr.Value, dictionaryKeyAttr.Value, property.PropertyInfo.Name);
 					AddItemToDictionary(property, dictionaryKeyAttr.Value, nameAttr.Value);
 					continue;
 				}
 
 				// Just assign the value.
-				if (property.Setter != null)
+				if (property.Setter == null)
 				{
-					property.Setter(this, UnconvertValue(nameAttr.Value, property.PropertyInfo.PropertyType));
+					Log.Print("Property '{0}' is read-only.", LoggingLevel.Intermediate, property.PropertyInfo.Name);
+					continue;
 				}
+
+				Log.Print("Assigning value <{0}> to property '{1}'.", LoggingLevel.Verbose, nameAttr.Value, property.PropertyInfo.Name);
+				property.Setter(this, UnconvertValue(nameAttr.Value, property.PropertyInfo.PropertyType));
 			}
-
-/*
-			foreach (PropertyItem property in _properties)
-			{
-				if ((property.Value.PropertyType.IsGenericType) || (property.Value.PropertyType == typeof(IList)))
-				{
-					Type valueType;
-
-					if (property.Key.PropertyType.IsGenericType)
-					{
-						Type[] genericType = property.Key.PropertyType.GetGenericArguments();
-						valueType = genericType[0];
-
-						if ((!valueType.IsPrimitive) && (valueType != typeof(string)) && (valueType != typeof(object)))
-						{
-							throw new GorgonException(GorgonResult.CannotEnumerate,
-								string.Format(Resources.GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING, property.Key.Name));
-						}
-					}
-					else
-					{
-						valueType = typeof(object);
-					}
-
-					string settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name + "_item" : property.Value.SettingName);
-
-					XElement currentSection = GetSectionElement(property.Value.Section);
-
-					if (currentSection == null)
-					{
-						continue;
-					}
-
-					object[] values = (from setting in currentSection.Descendants("Setting")
-									   where (setting.Attribute(settingName) != null)
-									   select UnconvertValue(setting.Attribute(settingName).Value, valueType)).ToArray();
-
-					// If the list setting doesn't exist, then use a default (if any).
-					// If there are no settings in the list, then we can overwrite the default list.
-					if (values.Length == 0)
-					{
-						continue;
-					}
-
-					object collection = property.Key.GetValue(this, null);
-
-					// If the collection isn't instanced, then move on.  We will not be creating instances.
-					if (collection == null)
-					{
-						continue;
-					}
-
-					MethodInfo addMethod = collection.GetType().GetMethod("Add");
-					MethodInfo clearMethod = collection.GetType().GetMethod("Clear");
-					
-					clearMethod.Invoke(collection, null);
-					
-					foreach (object item in values)
-					{
-						addMethod.Invoke(collection, new[]
-						                             {
-							                             item
-						                             });
-					}
-				}                
-				else
-				{
-					string settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name : property.Value.SettingName);
-					object value = GetSetting(property.Value.Section, settingName, property.Value.PropertyType);
-
-				    if ((value == null) && (property.Value.HasDefault))
-				    {
-				        value = property.Value.DefaultValue;
-				    }
-
-				    // Use application setting if we still don't have a value.
-				    if (value != null)
-				    {
-				        property.Key.SetValue(this, value, null);
-				    }
-				}
-			}*/
 		}
 
 		/// <summary>
@@ -753,6 +747,7 @@ namespace Gorgon.Configuration
 				// Handle special types.
 				if (item.IsArray)
 				{
+					Log.Print("Resetting array [{0}] to default values.", LoggingLevel.Verbose, item.PropertyInfo.Name);
 					// Reset the array.
 					Array arrayValue = item.Getter(this) as Array;
 
@@ -765,6 +760,7 @@ namespace Gorgon.Configuration
 
 				if ((item.IsList) || (item.IsDictionary))
 				{
+					Log.Print("Clearing dictionary/list [{0}].", LoggingLevel.Verbose, item.PropertyInfo.Name);
 					dynamic collectionValue = item.Getter(this);
 
 					if (collectionValue != null)
@@ -777,6 +773,7 @@ namespace Gorgon.Configuration
 
 				if (item.Setter == null)
 				{
+					Log.Print("Property [{0}] has no setter, skipping.", LoggingLevel.Verbose, item.PropertyInfo.Name);
 					continue;
 				}
 
@@ -790,7 +787,8 @@ namespace Gorgon.Configuration
 				{
 					value = Activator.CreateInstance(item.PropertyInfo.PropertyType);
 				}
-				
+
+				Log.Print("Resetting property [{0}] to {1}.", LoggingLevel.Verbose, item.PropertyInfo.Name, value ?? "Null");
 				item.Setter(this, value);
 			}
 		}
@@ -805,6 +803,7 @@ namespace Gorgon.Configuration
 
 		    if (Version == null)
 		    {
+				Log.Print("Log at '{0}' is unversioned.", LoggingLevel.Verbose, _path);
 		        return true;
 		    }
 
@@ -828,7 +827,12 @@ namespace Gorgon.Configuration
                                             new InvalidCastException(Resources.GOR_SETTING_CANNOT_CONVERT_VERSION));
             }
 
-		    return compareVersion == Version;
+			if (compareVersion > Version)
+			{
+				Log.Print("Log at '{0}' is version {1}, but we only support version {2}.", LoggingLevel.Simple, _path, compareVersion, Version);	
+			}
+
+		    return compareVersion <= Version;
 		}
 
 		/// <summary>
@@ -853,7 +857,7 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="section">Section that will contain the new section.</param>
 		/// <param name="name">Name of the section.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
@@ -940,10 +944,17 @@ namespace Gorgon.Configuration
 		}
 
 	    /// <summary>
-		/// Function to save the settings to a file.
+		/// Function to save the settings in the properties on this object into an XML file.
 		/// </summary>
-		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (<i>Nothing</i> in VB.Net).</remarks>
-		/// <exception cref="GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method will gather the values of the properties marked with the <see cref="GorgonApplicationSettingAttribute"/> and persist them into an XML file at the location provided to the <see cref="Path"/> property.
+		/// </para>
+		/// <para>
+		/// No versioning will be applied to the settings file when the <see cref="Version"/> property is <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// </para>
+		/// </remarks>
+		/// <exception cref="DirectoryNotFoundException">Thrown when the directory pointed at by the <see cref="Path"/> property does not exist.</exception>
 		public void Save()
 		{
 			SerializeSettings();
@@ -959,10 +970,22 @@ namespace Gorgon.Configuration
 					_versionAttr = new XAttribute(XName.Get(VersionAttrName), Version.ToString());
 				}
 
-				_rootNode.Add(_versionAttr);
+				if (!_rootNode.HasAttributes)
+				{ 
+					_rootNode.Add(_versionAttr);
+				}
 			}
 
-	        string directory = System.IO.Path.GetDirectoryName(_path)
+		    if (Version != null)
+		    {
+			    Log.Print("Saving settings v{1} to '{0}'.", LoggingLevel.Simple, _path, Version);
+		    }
+		    else
+		    {
+				Log.Print("Saving settings to '{0}'.", LoggingLevel.Simple, _path);
+		    }
+
+		    string directory = System.IO.Path.GetDirectoryName(_path)
 	                                 .FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 
             // Ensure we have a directory to work with.
@@ -980,14 +1003,15 @@ namespace Gorgon.Configuration
 		}
 		
 		/// <summary>
-		/// Function to load the settings from a file.
+		/// Function to read the settings from an XML file and update the properties on the object with those values.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This method will reset the values of the settings object right away. If the settings file could not be loaded, or there was a version mismatch (if <see cref="Version"/> was supplied), 
+		/// This method will reset the values of the settings object right away. If the settings file could not be loaded, or the version of the file was greater than the requested <see cref="Version"/>, 
 		/// then the object will remain at its default values.
 		/// </para>
 		/// </remarks>
+		/// <exception cref="GorgonException">Thrown when the XML file format is not valid.</exception>
 		public void Load()
 		{
 			Reset();
@@ -996,6 +1020,8 @@ namespace Gorgon.Configuration
 			{
 				return;
 			}
+
+			Log.Print("Loading settings from '{0}'.", LoggingLevel.Simple, _path);
 
 			_xmlSettings = XDocument.Load(_path);
 			_rootNode = _xmlSettings.Element(RootNodeName);
@@ -1014,12 +1040,24 @@ namespace Gorgon.Configuration
 		/// <summary>
 		/// Function to reset the settings on this object.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will set the values for each property marked with the <see cref="GorgonApplicationSettingAttribute"/> to the default value for the property type. If the attribute has defined the 
+		/// <see cref="GorgonApplicationSettingAttribute.DefaultValue"/> property, then that value is used instead.
+		/// </para> 
+		/// <para>
+		/// For dictionaries and lists, their contents will be cleared if the property value is not <b>null</b> (<i>Nothing</i> in VB.Net). For array types, the array values will be reset to the 
+		/// default value for the element type.
+		/// </para>
+		/// </remarks>
 		public void Reset()
 		{
+			Log.Print("Resetting settings for [{0}]", LoggingLevel.Verbose, GetType().FullName);
+
 			_xmlSettings = XDocument.Parse(Version != null ? Resources.SettingsDocVersion : Resources.SettingsDocNoVersion);
 			_rootNode = _xmlSettings.Element(RootNodeName);
 
-			Debug.Assert(_rootNode != null, "The settings XML root node should not be NULL!");
+			Debug.Assert(_rootNode != null, "The settings XML root node should not be <b>null</b>!");
 
 			_versionAttr = _rootNode.Attribute(VersionAttrName);
 
@@ -1032,12 +1070,37 @@ namespace Gorgon.Configuration
 		/// Initializes a new instance of the <see cref="GorgonApplicationSettings"/> class.
 		/// </summary>
 		/// <param name="applicationName">Name of the application.</param>
-		/// <param name="settingsVersion">[Optional] The version of the settings file.</param>
-		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="settingsVersion"/> parameter will bypass version checking for the settings.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty.</exception>
-		protected GorgonApplicationSettings(string applicationName, Version settingsVersion = null)
+		/// <param name="settingsVersion">The version of the settings file.</param>
+		/// <param name="log">The application logging interface.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
+		/// <remarks>
+		/// <para>
+		/// Upon creation, this object will set its default values to the properties that have the <see cref="GorgonApplicationSettingAttribute"/>. These defaults can easily be overridden in the object 
+		/// constructor. If the object contains any collection/array properties, those must be initialized in the constructor. These property types will not receive default values on startup.
+		/// </para>
+		/// <para>
+		/// When this object is created, the <see cref="Path"/> property is filled in with a path that uses the current users roaming directory, it is formatted like this:<br/> 
+		/// <c>Users\&lt;Your username&gt;\&lt;<see cref="ApplicationName"/>&gt;\&lt;Name of your assembly&gt;.config.xml</c><br/>
+		/// The <c>&lt;Name of your assembly&gt;</c> is the name of the assembly that your settings object is contained within.
+		/// </para>
+		/// <para>
+		/// If you wish to set the default property values after object construction, call the <see cref="Reset"/> method.
+		/// </para>
+		/// <para>
+		/// There may be a slight delay when constructing objects that inherit this type. This is because the expressions used to manipulate the object are being compiled and a fair bit of reflection is 
+		/// used to derive which properties are usable against those that are not. This means that the more members you have on your object, the more of a delay on creation.
+		/// </para>
+		/// <para>
+		/// Objects that inherit this class are only required to submit the <paramref name="applicationName"/> parameter. This parameter just identifies which application is using the setting object type. 
+		/// The <paramref name="settingsVersion"/> property can be set to <b>null</b> (<i>Nothing</i> in VB.Net) to disable version checking. Likewise, the <paramref name="log"/> parameter may be set to 
+		/// <b>null</b> to disable logging for this object.
+		/// </para>
+		/// </remarks>
+		protected GorgonApplicationSettings(string applicationName, Version settingsVersion, IGorgonLog log)
 		{
+			Log = log ?? new GorgonLogDummy();
+
 			if (applicationName == null)
 			{
 				throw new ArgumentNullException("applicationName");
@@ -1071,12 +1134,13 @@ namespace Gorgon.Configuration
 			_xmlSettings = XDocument.Parse(Version != null ? Resources.SettingsDocVersion : Resources.SettingsDocNoVersion);
 			_rootNode = _xmlSettings.Element(RootNodeName);
 
-			Debug.Assert(_rootNode != null, "The settings XML root node should not be NULL!");
+			Debug.Assert(_rootNode != null, "The settings XML root node should not be <b>null</b>!");
 
 			_versionAttr = _rootNode.Attribute(VersionAttrName);
 
 			// This is not typically kosher since you're not supposed to call methods from the constructor like this.
-			// But we need to populate the default values automatically, and this is the only way to do it.
+			// But we need to populate the default values automatically, and this is the only way to do it without requiring 
+			// the users to do it on their own.
 			ResetProperties();
 		}		
 		#endregion

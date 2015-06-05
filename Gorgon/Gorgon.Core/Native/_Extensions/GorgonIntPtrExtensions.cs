@@ -45,7 +45,7 @@ namespace Gorgon.Native
 		/// <param name="source">Source buffer.</param>
 		/// <param name="size">Size of the data to copy, in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public static void CopyTo(this IntPtr source, IntPtr destination, int size)
 		{
 			DirectAccess.MemoryCopy(destination, source, size);
@@ -59,7 +59,7 @@ namespace Gorgon.Native
 		/// <param name="destinationIndex">Index in the array to start writing at.</param>
 		/// <param name="size">Size of the data to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -99,7 +99,7 @@ namespace Gorgon.Native
 		/// <param name="destination">Destination array of bytes.</param>
 		/// <param name="size">Size of the data to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -115,7 +115,7 @@ namespace Gorgon.Native
 		/// <param name="source">Source pointer.</param>
 		/// <param name="destination">Destination array of bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -139,7 +139,7 @@ namespace Gorgon.Native
 		/// <param name="destinationIndex">Index in the array to start writing at.</param>
 		/// <param name="size">Size of the data to copy, in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -183,7 +183,7 @@ namespace Gorgon.Native
 		/// <param name="source">Source pointer.</param>
 		/// <param name="destination">Destination array.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -214,7 +214,7 @@ namespace Gorgon.Native
 		/// <param name="destination">Destination array of bytes.</param>
 		/// <param name="size">Size of the data to copy in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the destinationIndex is less than 0.</para>
@@ -231,7 +231,7 @@ namespace Gorgon.Native
 		/// <param name="destination">Destination pointer.</param>
 		/// <param name="source">Source pointer to copy from.</param>
 		/// <param name="size">Number of bytes to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the source pointer is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the source pointer is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		public static void CopyFrom(this IntPtr destination, IntPtr source, int size)
 		{
@@ -246,7 +246,7 @@ namespace Gorgon.Native
 		/// <param name="sourceIndex">Index to start copying from in the source array.</param>
 		/// <param name="size">Number of bytes to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -292,7 +292,7 @@ namespace Gorgon.Native
 		/// <param name="source">Source array to copy from.</param>
 		/// <param name="size">Number of bytes to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -308,7 +308,7 @@ namespace Gorgon.Native
 		/// <param name="destination">Destination pointer.</param>
 		/// <param name="source">Source array to copy from.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -332,7 +332,7 @@ namespace Gorgon.Native
 		/// <param name="sourceIndex">Index to start copying from in the source array.</param>
 		/// <param name="size">Number of bytes to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -381,7 +381,7 @@ namespace Gorgon.Native
 		/// <param name="source">Source array to copy from.</param>
 		/// <param name="size">Number of bytes to copy.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -399,7 +399,7 @@ namespace Gorgon.Native
 		/// <param name="destination">Destination pointer.</param>
 		/// <param name="source">Source array to copy from.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + sourceIndex is greater than the number of elements in the source parameter.
 		/// <para>-or-</para>
 		/// <para>Thrown if the sourceIndex is less than 0.</para>
@@ -478,7 +478,7 @@ namespace Gorgon.Native
 		/// <para>The user must pre-allocate the object before calling this method.</para>
 		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.PtrToStructure(IntPtr, Type)">Marshal.PtrToStructure</see> method.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public static void MarshalTo<T>(this IntPtr source, ref T value)
 		{
 			Marshal.PtrToStructure(source, value);

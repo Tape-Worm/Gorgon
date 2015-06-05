@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +10,37 @@ using Gorgon.Configuration;
 
 namespace Gorgon.Core.Test.Support
 {
+	public enum SettingEnum
+	{
+		Enum1 = 0,
+		Enum2 = 1,
+		Enum3 = 2
+	}
+
 	public class Settings
 		: GorgonApplicationSettings
 	{
+		[GorgonApplicationSetting("ValueTypes")]
+		public Color TehColor
+		{
+			get;
+			set;
+		}
+
+		[GorgonApplicationSetting("ValueTypes")]
+		public Rectangle Rectangle
+		{
+			get;
+			set;
+		}
+
+		[GorgonApplicationSetting("MySection", DefaultValue = SettingEnum.Enum2)]
+		public SettingEnum EnumValue
+		{
+			get;
+			set;
+		}
+
 		[GorgonApplicationSetting("MySection", DefaultValue = 123)]
 		public int Value
 		{
@@ -68,8 +97,8 @@ namespace Gorgon.Core.Test.Support
 			private set;
 		}
 
-		public Settings()
-			: base("SettingsTests")
+		public Settings(Version version = null)
+			: base("SettingsTests", version, null)
 		{
 			StrValue = "Abc";
 			IntArray = new int[5];

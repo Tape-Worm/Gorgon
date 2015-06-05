@@ -1645,7 +1645,7 @@ namespace Gorgon.IO
 		/// <param name="value">String to write into the stream.</param>
 		/// <param name="encoding">Encoding to use.</param>
         /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> value is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
+        /// <para>If the <paramref name="encoding"/> value is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
         /// </remarks>
 		public void WriteString(string value, Encoding encoding)
 		{
@@ -1854,7 +1854,7 @@ namespace Gorgon.IO
         /// <param name="index">Index inside of the source array to start reading from.</param>
         /// <param name="count">Number of elements to read.</param>
         /// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
         /// <para>-or-</para>
         /// Thrown when the index parameter is larger than the source array.
@@ -1902,7 +1902,7 @@ namespace Gorgon.IO
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
 		/// <param name="data">The data used to initialize the stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>The array elements should all be of the same type, and value types.
 		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.  
 		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data"/> parameter array elements will be reflected 

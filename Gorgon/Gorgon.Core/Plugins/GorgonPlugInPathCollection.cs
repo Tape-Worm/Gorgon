@@ -140,7 +140,7 @@ namespace Gorgon.Plugins
 			Assembly currentAssembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 
 			// This should never be the case.
-			Debug.Assert(currentAssembly != null, "Current assembly is NULL!!");
+			Debug.Assert(currentAssembly != null, "Current assembly is <b>null</b>!!");
 
 			Uri assemblyUri = new Uri(currentAssembly.CodeBase);
 			

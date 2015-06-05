@@ -335,7 +335,7 @@ namespace Gorgon.Core
         /// <remarks>
         /// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 
         /// 7-bit bytes required to encode the length of the string.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL, then UTF-8 encoding will be used.</para></remarks>
+        /// <para>If the <paramref name="encoding"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para></remarks>
         public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)
         {
             if (string.IsNullOrEmpty(value))

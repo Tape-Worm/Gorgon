@@ -57,7 +57,7 @@ namespace Gorgon.IO
         /// </remarks>
         /// <returns>The number of bytes written to the stream.</returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is <b>null</b>.</exception>
         public static int WriteToStream(this string value, Stream stream)
         {
             return WriteToStream(value, stream, null);
@@ -71,11 +71,11 @@ namespace Gorgon.IO
         /// <param name="encoding">Encoding for the string.</param>
         /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
         /// string as a series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
         /// </remarks>
         /// <returns>The number of bytes written to the stream.</returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is <b>null</b>.</exception>
         public static int WriteToStream(this string value, Stream stream, Encoding encoding)
         {
             if (string.IsNullOrEmpty(value))
@@ -122,10 +122,10 @@ namespace Gorgon.IO
         /// <param name="stream">The stream to write the string into.</param>
         /// <param name="value">The string to write.</param>
         /// <param name="encoding">The encoding for the string.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
         /// </remarks>
         public static void WriteString(this Stream stream, string value, Encoding encoding)
         {
@@ -137,7 +137,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream to write the string into.</param>
         /// <param name="value">The string to write.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
         /// </remarks>
@@ -151,7 +151,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="stream">The stream to read the string from.</param>
         /// <returns>The string in the stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
@@ -167,11 +167,11 @@ namespace Gorgon.IO
         /// <param name="stream">The stream to read the string from.</param>
         /// <param name="encoding">The encoding for the string.</param>
         /// <returns>The string in the stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
         /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
         /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is NULL (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
+        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
         /// </remarks>
         public static string ReadString(this Stream stream, Encoding encoding)
         {
@@ -279,7 +279,7 @@ namespace Gorgon.IO
         /// <param name="path">Path to fix.</param>
         /// <returns>The corrected path.</returns>
         /// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
         public static string RemoveIllegalPathChars(this string path)
         {
             if (path == null)
@@ -305,7 +305,7 @@ namespace Gorgon.IO
         /// <param name="path">Path to fix.</param>
         /// <returns>The corrected file name.</returns>
         /// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
         public static string RemoveIllegalFilenameChars(this string path)
         {
             if (path == null)
