@@ -36,7 +36,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>This defines the layout of an item of data in the output buffer.</remarks>
 	public struct GorgonStreamOutputElement
-		: INamedObject, IEquatable<GorgonStreamOutputElement>
+		: IGorgonNamedObject, IEquatable<GorgonStreamOutputElement>
 	{
 		#region Variables.
 		/// <summary>
@@ -224,11 +224,11 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

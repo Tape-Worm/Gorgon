@@ -86,7 +86,7 @@ namespace Gorgon.Graphics
 	/// Contains information about a video device.
 	/// </summary>
 	public class GorgonVideoDevice
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>
@@ -797,7 +797,7 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>

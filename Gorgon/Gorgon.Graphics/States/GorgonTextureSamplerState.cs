@@ -136,7 +136,7 @@ namespace Gorgon.Graphics
 	/// States for the texture samplers.
 	/// </summary>
 	public struct GorgonTextureSamplerStates
-		: IEquatableByRef<GorgonTextureSamplerStates>
+		: IGorgonEquatableByRef<GorgonTextureSamplerStates>
 	{
 		#region Variables.
 		/// <summary>

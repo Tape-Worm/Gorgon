@@ -67,7 +67,7 @@ namespace Gorgon.Graphics
 	/// Settings for a font.
 	/// </summary>
 	public class GorgonFontSettings
-        : ICloneable<GorgonFontSettings>
+        : IGorgonCloneable<GorgonFontSettings>
 	{
 		#region Variables.
 		private Size _textureSize = new Size(256, 256);						// Texture size.

@@ -38,7 +38,7 @@ namespace Gorgon.Editor
 	/// A collection of dependencies.
 	/// </summary>
 	public class DependencyCollection
-		: ICollection<Dependency>, ICollection, ICloneable<DependencyCollection>
+		: ICollection<Dependency>, ICollection, IGorgonCloneable<DependencyCollection>
 	{
 		#region Value Types.
 		/// <summary>

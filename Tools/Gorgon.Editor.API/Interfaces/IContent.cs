@@ -44,7 +44,7 @@ namespace Gorgon.Editor
 	/// </para>
 	/// </remarks>
 	public interface IContentData
-		: IDisposable, INamedObject
+		: IDisposable, IGorgonNamedObject
 	{
 		#region Events
 		/// <summary>

@@ -43,7 +43,7 @@ namespace Gorgon.Graphics
 	/// <para>The include object is only for shaders with source code, therefore, the objects will be ignored when used with a binary shader.  Binary shaders should already have the required information in them.</para>
 	/// </remarks>
 	public struct GorgonShaderInclude
-		: INamedObject, IEquatable<GorgonShaderInclude>
+		: IGorgonNamedObject, IEquatable<GorgonShaderInclude>
 	{
 		#region Variables.
 		/// <summary>
@@ -161,11 +161,11 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of the include file.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

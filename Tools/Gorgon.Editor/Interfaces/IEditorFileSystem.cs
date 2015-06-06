@@ -2,7 +2,7 @@
 
 namespace Gorgon.Editor
 {
-	internal interface IEditorFileSystem : INamedObject
+	internal interface IEditorFileSystem : IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return whether the file has been changed or not.

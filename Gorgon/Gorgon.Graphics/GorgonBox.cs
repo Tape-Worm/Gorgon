@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
 	/// A box structure with width, height and depth.
 	/// </summary>
 	public struct GorgonBox
-        : IEquatableByRef<GorgonBox>
+        : IGorgonEquatableByRef<GorgonBox>
     {
         #region Variables.
         /// <summary>

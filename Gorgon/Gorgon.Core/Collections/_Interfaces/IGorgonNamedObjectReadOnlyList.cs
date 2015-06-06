@@ -32,10 +32,10 @@ namespace Gorgon.Collections
 	/// <summary>
 	/// A generic interface for a read only list of named objects that can be indexed by name and numeric index.
 	/// </summary>
-	/// <typeparam name="T">The type of object stored in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
+	/// <typeparam name="T">The type of object stored in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectReadOnlyList<T>
 		: IReadOnlyList<T>
-		where T : INamedObject
+		where T : IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>

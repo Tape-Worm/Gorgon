@@ -33,7 +33,7 @@ namespace Gorgon.Editor
 	/// Disabled plug-in.
 	/// </summary>
 	struct DisabledPlugIn
-		: IEquatable<DisabledPlugIn>, INamedObject
+		: IEquatable<DisabledPlugIn>, IGorgonNamedObject
 	{
 		#region Variables.
 		/// <summary>
@@ -148,11 +148,11 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of the disabled plug-in.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

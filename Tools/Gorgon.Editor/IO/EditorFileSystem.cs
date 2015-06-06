@@ -60,7 +60,7 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the filename for the file.
 		/// </summary>

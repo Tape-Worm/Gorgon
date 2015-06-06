@@ -36,7 +36,7 @@ namespace Gorgon.Graphics
 	/// A glyph used to define a character in the font.
 	/// </summary>
 	public sealed class GorgonGlyph
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>
@@ -161,12 +161,12 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
 		/// <value></value>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

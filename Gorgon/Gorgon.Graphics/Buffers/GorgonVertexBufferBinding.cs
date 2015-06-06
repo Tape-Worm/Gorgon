@@ -34,7 +34,7 @@ namespace Gorgon.Graphics
 	/// A vertex buffer binding.
 	/// </summary>
 	public struct GorgonVertexBufferBinding
-		: IEquatableByRef<GorgonVertexBufferBinding>
+		: IGorgonEquatableByRef<GorgonVertexBufferBinding>
 	{
 		#region Variables.
 		/// <summary>

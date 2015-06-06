@@ -36,13 +36,13 @@ namespace Gorgon.Collections
 	/// <summary>
 	/// Base dictionary for Gorgon library named objects.
 	/// </summary>
-	/// <typeparam name="T">Type of object, must implement <see cref="INamedObject">INamedObject</see>.</typeparam>
+	/// <typeparam name="T">Type of object, must implement <see cref="IGorgonNamedObject">IGorgonNamedObject</see>.</typeparam>
 	/// <remarks>
-	/// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="INamedObject"/> interface.
+	/// This is a base class used to help in the creation of custom dictionaries that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
 	/// </remarks>
 	public abstract class GorgonBaseNamedObjectDictionary<T>
 		: IGorgonNamedObjectDictionary<T>, IGorgonNamedObjectReadOnlyDictionary<T>
-		where T : INamedObject
+		where T : IGorgonNamedObject
 	{
 		#region Variables.
 		// Internal collection to hold our objects.

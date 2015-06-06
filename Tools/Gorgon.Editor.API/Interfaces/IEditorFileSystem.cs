@@ -6,7 +6,7 @@ namespace Gorgon.Editor
 	/// A representation of a packed editor file in the application.
 	/// </summary>
 	public interface IEditorFileSystem 
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		/// <summary>
 		/// Property to return whether the file has been changed or not.

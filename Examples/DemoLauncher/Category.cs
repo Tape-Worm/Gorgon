@@ -35,7 +35,7 @@ namespace Gorgon.Examples
 	/// A category for our examples.
 	/// </summary>
 	class Category
-		: INamedObject, IDisposable
+		: IGorgonNamedObject, IDisposable
 	{
 		#region Variables.
 		// Flag to indicate that the object was disposed.
@@ -98,7 +98,7 @@ namespace Gorgon.Examples
 		#endregion
 
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>

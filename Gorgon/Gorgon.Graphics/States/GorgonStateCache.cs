@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <typeparam name="T">Type of state to store.</typeparam>
 	sealed class GorgonStateCache<T>
-		where T : struct, IEquatableByRef<T>
+		where T : struct, IGorgonEquatableByRef<T>
 	{
 		#region Constants.
 		private const int CacheLimit = 4096;									// Number of objects that can initially live in the cache.

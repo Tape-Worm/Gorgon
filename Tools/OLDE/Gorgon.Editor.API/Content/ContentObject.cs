@@ -46,7 +46,7 @@ namespace Gorgon.Editor
 	/// Base object for content that can be created/modified by the editor.
 	/// </summary>
 	public abstract class ContentObject
-		: IDisposable, INamedObject
+		: IDisposable, IGorgonNamedObject
     {
         #region Constants.
         /// <summary>
@@ -794,11 +794,11 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

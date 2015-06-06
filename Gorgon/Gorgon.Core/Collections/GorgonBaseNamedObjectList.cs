@@ -36,13 +36,13 @@ namespace Gorgon.Collections
 	/// <summary>
 	/// Base list type for Gorgon library named objects.
 	/// </summary>
-	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
+	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 	/// <remarks>
-	/// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="INamedObject"/> interface.
+	/// This is a base class used to help in the creation of custom lists that store objects that implement the <see cref="IGorgonNamedObject"/> interface.
 	/// </remarks>
 	public abstract class GorgonBaseNamedObjectList<T>
 		: IGorgonNamedObjectList<T>, IGorgonNamedObjectReadOnlyList<T>
-		where T : INamedObject
+		where T : IGorgonNamedObject
 	{
 		#region Variables.
 		private readonly List<T> _list;

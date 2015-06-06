@@ -36,7 +36,7 @@ namespace Gorgon.Editor
 	/// A collection of dependency properties.
 	/// </summary>
 	public class DependencyPropertyCollection
-		: GorgonBaseNamedObjectCollection<DependencyProperty>, ICloneable<DependencyPropertyCollection>
+		: GorgonBaseNamedObjectCollection<DependencyProperty>, IGorgonCloneable<DependencyPropertyCollection>
 	{
 		#region Constants.
 		/// <summary>

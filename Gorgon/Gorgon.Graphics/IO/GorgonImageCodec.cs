@@ -104,7 +104,7 @@ namespace Gorgon.IO
 	/// <para>The codec accepts and returns a <see cref="Gorgon.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
 	/// </remarks>
 	public abstract class GorgonImageCodec
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>
@@ -990,11 +990,11 @@ namespace Gorgon.IO
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

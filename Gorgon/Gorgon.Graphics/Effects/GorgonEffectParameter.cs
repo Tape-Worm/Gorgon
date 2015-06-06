@@ -36,7 +36,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>Some effects will require parameters be passed before they can function, or to alter their function.  Use this type to define an effect parameter.</remarks>
 	public struct GorgonEffectParameter
-		: IEquatable<GorgonEffectParameter>, INamedObject
+		: IEquatable<GorgonEffectParameter>, IGorgonNamedObject
 	{
 		#region Variables.
         /// <summary>
@@ -184,11 +184,11 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 	
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of the parameter.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

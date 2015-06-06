@@ -35,7 +35,7 @@ namespace Gorgon.Editor
 	/// A user defined property that is assigned to dependency objects.
 	/// </summary>
 	public struct DependencyProperty
-		: INamedObject, IEquatable<DependencyProperty>, ICloneable<DependencyProperty>
+		: IGorgonNamedObject, IEquatable<DependencyProperty>, IGorgonCloneable<DependencyProperty>
 	{
 		#region Constants.
 		private const string NameAttr = "Name";					// Name of the property name attribute.
@@ -184,11 +184,11 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

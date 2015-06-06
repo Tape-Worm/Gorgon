@@ -34,10 +34,10 @@ namespace Gorgon.Collections
 	/// <summary>
 	/// A generic interface for a dictionary of named objects that can be indexed by name.
 	/// </summary>
-	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="INamedObject"/> interface.</typeparam>
+	/// <typeparam name="T">The type of object to store in the collection. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 	public interface IGorgonNamedObjectDictionary<T> 
 		: ICollection<T>
-		where T : INamedObject
+		where T : IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>

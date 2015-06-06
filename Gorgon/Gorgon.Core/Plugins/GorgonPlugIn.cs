@@ -34,7 +34,7 @@ namespace Gorgon.Plugins
 	/// </summary>
 	/// <remarks>Plug-ins must implement this object as a proxy to create the actual concrete implementation object.</remarks>
 	public abstract class GorgonPlugin
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>
@@ -81,7 +81,7 @@ namespace Gorgon.Plugins
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>

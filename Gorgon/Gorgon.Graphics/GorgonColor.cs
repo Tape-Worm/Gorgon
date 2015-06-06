@@ -43,7 +43,7 @@ namespace Gorgon.Graphics
 	/// <remarks>This type is immutable.</remarks>
 	[StructLayout(LayoutKind.Sequential)]
 	public struct GorgonColor
-		: IEquatableByRef<GorgonColor>
+		: IGorgonEquatableByRef<GorgonColor>
 	{
 		#region Variables.
 		/// <summary>

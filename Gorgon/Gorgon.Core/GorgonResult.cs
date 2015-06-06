@@ -33,7 +33,7 @@ namespace Gorgon.Core
 	/// A defined error message to be packaged with <see cref="GorgonException"/>.
 	/// </summary>
 	public struct GorgonResult
-		: INamedObject, IEquatable<GorgonResult>
+		: IGorgonNamedObject, IEquatable<GorgonResult>
 	{
 		#region Predefined error codes.
 		private const int ErrorBase = 0x7FF000;		// Base error code.

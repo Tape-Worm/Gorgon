@@ -405,7 +405,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="trackedObject">Object to add.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="Gorgon.Gorgon.Quit">termination</see>.</remarks>
+        /// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
         public void AddTrackedObject(IDisposable trackedObject)
         {
             if (trackedObject == null)

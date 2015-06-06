@@ -42,7 +42,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>A video output is a head on the video device.</remarks>
 	public class GorgonVideoOutput
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>

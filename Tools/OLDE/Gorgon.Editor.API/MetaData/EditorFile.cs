@@ -39,7 +39,7 @@ namespace Gorgon.Editor
 	/// Metadata for a file contained within the file system.
 	/// </summary>
 	public class EditorFile
-		: INamedObject, ICloneable<EditorFile>
+		: IGorgonNamedObject, IGorgonCloneable<EditorFile>
 	{
 		#region Constants.
 		// The attribute containing the type of plug-in used to open the file.
@@ -271,11 +271,11 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

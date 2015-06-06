@@ -39,7 +39,7 @@ namespace Gorgon.Renderers
     /// So passing a point of 30x50 with a position of 70x50 and an anchor of 0x0 will create that point 100 units to the right, and 100 units down.
     /// </remarks>
     public struct GorgonPolygonPoint
-        : IEquatableByRef<GorgonPolygonPoint>
+        : IGorgonEquatableByRef<GorgonPolygonPoint>
     {
         /// <summary>
         /// Position of the point.

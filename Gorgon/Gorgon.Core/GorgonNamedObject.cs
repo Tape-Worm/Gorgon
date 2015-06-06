@@ -30,13 +30,14 @@ using Gorgon.Core.Properties;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Implementation of the named object interface. 
+	/// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
 	/// </summary>
 	public abstract class GorgonNamedObject
-		: INamedObject
+		: IGorgonNamedObject
     {
         #region Variables.
-	    private string _name = string.Empty;            // The name.
+		// The name.
+		private string _name;
         #endregion
 
         #region Methods.
@@ -44,18 +45,18 @@ namespace Gorgon.Core
 		/// Serves as a hash method for a particular type.
 		/// </summary>
 		/// <returns>
-		/// A hash code for the current <see cref="T:System.Object"/>.
+		/// A hash code for the current <see cref="GorgonNamedObject"/>.
 		/// </returns>
 		public override int GetHashCode()
-		{
-			return Name.GetHashCode();
-		}
+        {
+	        return string.IsNullOrWhiteSpace(Name) ? 0 : 281.GenerateHash(Name);
+        }
 
 		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+		/// A <see cref="T:System.String"/> that represents the current <see cref="GorgonNamedObject"/>.
 		/// </returns>
 		public override string ToString()
 		{
@@ -67,7 +68,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
 		/// </summary>
-		/// <param name="name">The name.</param>
+		/// <param name="name">The name of this object.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
@@ -86,7 +87,7 @@ namespace Gorgon.Core
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>

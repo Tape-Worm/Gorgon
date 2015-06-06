@@ -20,22 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, January 23, 2013 8:30:13 AM
+// Created: Sunday, January 27, 2013 9:41:28 AM
 // 
 #endregion
+
+using System;
 
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// A cloneable object interface.
-	/// </summary>
-	/// <typeparam name="T">Type to clone.</typeparam>
-	public interface ICloneable<out T>
+	/// Extends the <see cref="IEquatable{T}"/> type to pass by reference.
+	/// </summary>	
+	/// <typeparam name="T">The type to use for comparison.  Must be a value type.</typeparam>
+	/// <remarks>
+	/// <para>
+	/// This interface extends the <see cref="IEquatable{T}"/> interface to use references in the Equals parameter.  Passing values by reference is much faster than passing by value on the stack 
+	/// (if the value is a value type).
+	/// </para>
+	/// <para>
+	/// This is here to optimize passing value types to methods, therefore it is only suitable for value types.
+	/// </para>
+	/// </remarks>
+	public interface IGorgonEquatableByRef<T>
+		: IEquatable<T>
+		where T : struct
 	{
+		#region Methods.
 		/// <summary>
-		/// Function to clone an object.
+		/// Function to compare this instance with another.
 		/// </summary>
-		/// <returns>The cloned object.</returns>
-		T Clone();
+		/// <param name="other">The other instance to use for comparison.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		bool Equals(ref T other);
+		#endregion
 	}
 }

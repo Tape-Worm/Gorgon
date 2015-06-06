@@ -78,7 +78,7 @@ namespace Gorgon.Graphics
 	/// Immutable states for the rasterizer.
 	/// </summary>
 	public struct GorgonRasterizerStates
-		: IEquatableByRef<GorgonRasterizerStates>
+		: IGorgonEquatableByRef<GorgonRasterizerStates>
 	{
 		#region Variables.
 		/// <summary>

@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
 	/// A macro for a shader.
 	/// </summary>
 	public struct GorgonShaderMacro
-		: INamedObject, IEquatable<GorgonShaderMacro>
+		: IGorgonNamedObject, IEquatable<GorgonShaderMacro>
 	{
 		/// <summary>
 		/// Name of the macro.
@@ -150,11 +150,11 @@ namespace Gorgon.Graphics
 			Value = value;
 		}
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of the named object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

@@ -37,7 +37,7 @@ namespace Gorgon.Animation
 	/// An animation clip for an animated object.
 	/// </summary>
 	public class GorgonAnimation<T>
-		: GorgonNamedObject, ICloneable<GorgonAnimation<T>>
+		: GorgonNamedObject, IGorgonCloneable<GorgonAnimation<T>>
 		where T : class
 	{        
 		#region Variables.

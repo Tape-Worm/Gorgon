@@ -76,7 +76,7 @@ namespace Gorgon.Graphics
 	/// Operations to perform on the depth/stencil buffer.
 	/// </summary>
 	public struct GorgonDepthStencilOperations
-		: IEquatableByRef<GorgonDepthStencilOperations>
+		: IGorgonEquatableByRef<GorgonDepthStencilOperations>
 	{
 		#region Variables.
 		/// <summary>
@@ -213,7 +213,7 @@ namespace Gorgon.Graphics
 	/// Depth/stencil states to control testing via the depth and/or stencil buffer.
 	/// </summary>
 	public struct GorgonDepthStencilStates
-		: IEquatableByRef<GorgonDepthStencilStates>
+		: IGorgonEquatableByRef<GorgonDepthStencilStates>
 	{
 		#region Variables.
 		/// <summary>

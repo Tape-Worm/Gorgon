@@ -33,7 +33,7 @@ namespace Gorgon.Graphics
 	/// Settings for defining a render target buffer.
 	/// </summary>
 	public class GorgonRenderTargetBufferSettings
-		: IBufferSettings, ICloneable<GorgonRenderTargetBufferSettings>
+		: IBufferSettings, IGorgonCloneable<GorgonRenderTargetBufferSettings>
 	{
 		#region Properties.
 		/// <summary>

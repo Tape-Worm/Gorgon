@@ -115,11 +115,11 @@ namespace Gorgon.Editor
 	    }
 	    #endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

@@ -30,9 +30,9 @@ using Gorgon.Core;
 namespace Gorgon.Collections.Specialized
 {
 	/// <summary>
-	/// A dictionary to contain <see cref="INamedObject"/> types.
+	/// A dictionary to contain <see cref="IGorgonNamedObject"/> types.
 	/// </summary>
-	/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="INamedObject"/> interface.</typeparam>
+	/// <typeparam name="T">The type of object to store in the list. Must implement the <see cref="IGorgonNamedObject"/> interface.</typeparam>
 	/// <remarks>
 	/// <para>
 	/// This is a concrete implementation of the <see cref="GorgonBaseNamedObjectDictionary{T}"/> type.
@@ -43,7 +43,7 @@ namespace Gorgon.Collections.Specialized
 	/// </remarks>
 	public class GorgonNamedObjectDictionary<T>
 		: GorgonBaseNamedObjectDictionary<T>
-		where T : INamedObject
+		where T : IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>

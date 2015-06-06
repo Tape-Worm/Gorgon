@@ -35,7 +35,7 @@ namespace Gorgon.IO
 	/// </summary>
 	/// <remarks>This type is useful when building a filter list for a file dialog.</remarks>
 	public struct GorgonFileExtension
-		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, INamedObject
+		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 	{
 		#region Variables.
 		/// <summary>
@@ -313,11 +313,11 @@ namespace Gorgon.IO
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of the object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

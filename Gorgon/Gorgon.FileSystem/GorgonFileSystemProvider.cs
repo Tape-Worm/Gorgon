@@ -40,7 +40,7 @@ namespace Gorgon.IO
 	/// <remarks>File system providers are read-only systems, so writing via the provider is not allowed or available.</remarks>
 	/// </returns>
 	public class GorgonFileSystemProvider
-		: INamedObject
+		: IGorgonNamedObject
 	{
 		#region Value Types.
 		/// <summary>
@@ -265,7 +265,7 @@ namespace Gorgon.IO
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>

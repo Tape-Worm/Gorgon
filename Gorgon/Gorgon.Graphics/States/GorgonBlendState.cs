@@ -178,7 +178,7 @@ namespace Gorgon.Graphics
 	/// Blending state for an individual render target.
 	/// </summary>
 	public struct GorgonRenderTargetBlendState
-		: IEquatableByRef<GorgonRenderTargetBlendState>
+		: IGorgonEquatableByRef<GorgonRenderTargetBlendState>
 	{
 		#region Variables.
 		/// <summary>
@@ -468,7 +468,7 @@ namespace Gorgon.Graphics
 	/// Blending states used to determine how to blend pixels together.
 	/// </summary>
 	public struct GorgonBlendStates
-		: IEquatableByRef<GorgonBlendStates>
+		: IGorgonEquatableByRef<GorgonBlendStates>
 	{
 		#region Variables.
 		/// <summary>

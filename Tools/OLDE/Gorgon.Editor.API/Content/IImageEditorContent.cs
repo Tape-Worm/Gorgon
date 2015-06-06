@@ -36,7 +36,7 @@ namespace Gorgon.Editor
 	/// </summary>
 	/// <remarks>All image editing plug-ins must implement this on their content objects.</remarks>
 	public interface IImageEditorContent
-        : INamedObject, IDisposable
+        : IGorgonNamedObject, IDisposable
 	{
 		/// <summary>
 		/// Property to return the editor file associated with the content.

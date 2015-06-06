@@ -37,7 +37,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>This defines the layout of an item of data for a buffer.  Typically this is used with a Vertex buffer to define a specific element for a vertex.</remarks>
 	public struct GorgonInputElement
-		: INamedObject, IEquatable<GorgonInputElement>
+		: IGorgonNamedObject, IEquatable<GorgonInputElement>
 	{
 		#region Variables.
 		/// <summary>
@@ -226,11 +226,11 @@ namespace Gorgon.Graphics
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get 
 			{

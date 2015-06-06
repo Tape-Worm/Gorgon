@@ -34,7 +34,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <typeparam name="T">Type of state.</typeparam>
 	public abstract class GorgonState<T>
-		where T : struct, IEquatableByRef<T>
+		where T : struct, IGorgonEquatableByRef<T>
 	{
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.

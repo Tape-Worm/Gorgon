@@ -35,7 +35,7 @@ namespace Gorgon.Editor
     /// A dependency for content files.
     /// </summary>
 	public class Dependency
-		: INamedObject, ICloneable<Dependency>
+		: IGorgonNamedObject, IGorgonCloneable<Dependency>
     {
 		#region Constants.
 		private const string DependencyTypeAttr = "Type";			// Type attribute for the dependency type.
@@ -165,11 +165,11 @@ namespace Gorgon.Editor
 		}
 		#endregion
 
-		#region INamedObject Members
+		#region IGorgonNamedObject Members
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string INamedObject.Name
+		string IGorgonNamedObject.Name
 		{
 			get
 			{

@@ -139,7 +139,7 @@ namespace Gorgon.Input
 		/// Button state data.
 		/// </summary>
 		public struct JoystickButtonState
-			: INamedObject
+			: IGorgonNamedObject
 		{
 			#region Variables.
             /// <summary>
@@ -165,11 +165,11 @@ namespace Gorgon.Input
 			}
 			#endregion
 
-			#region INamedObject Members
+			#region IGorgonNamedObject Members
 			/// <summary>
 			/// Property to return the name of the button.
 			/// </summary>
-			string INamedObject.Name
+			string IGorgonNamedObject.Name
 			{
 				get 
 				{

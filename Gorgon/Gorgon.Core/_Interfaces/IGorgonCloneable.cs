@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, June 14, 2011 8:58:43 PM
+// Created: Wednesday, January 23, 2013 8:30:13 AM
 // 
 #endregion
+
+using System;
 
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Applied to objects that require names.
+	/// A type safe version of the <see cref="ICloneable"/> interface.
 	/// </summary>
-	public interface INamedObject
+	/// <typeparam name="T">The type to clone.</typeparam>
+	/// <remarks>
+	/// The .NET framework provides us with a <see cref="ICloneable"/> interface for objects that can be cloned. However, it returns the cloned object as a <see cref="object"/> type. This can 
+	/// introduce boxing issues for value types that implement <c>ICloneable</c>. This interface will allow us to mitigate the boxing issues by providing a strongly typed cloning interface.
+	/// </remarks>
+	public interface IGorgonCloneable<out T>
 	{
 		/// <summary>
-		/// Property to return the name of this object.
+		/// Function to clone an object.
 		/// </summary>
-		string Name
-		{
-			get;
-		}
+		/// <returns>The cloned object.</returns>
+		T Clone();
 	}
 }
