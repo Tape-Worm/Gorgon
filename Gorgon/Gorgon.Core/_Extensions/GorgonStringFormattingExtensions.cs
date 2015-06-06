@@ -33,16 +33,17 @@ using System.Xml.Linq;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Various path formatting methods.
+	/// Extension methods to provide formatting on the <see cref="string"/> type and additonal functionality for the <see cref="StringBuilder"/> type.
 	/// </summary>
 	public static class GorgonStringFormattingExtension
 	{
 		/// <summary>
-		/// Function to find the index of a character in a string builder string.
+		/// Function to find the index of a character in a <see cref="StringBuilder"/>.
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="character">Character to search for.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int IndexOf(this StringBuilder theString, char character)
 		{
 			if (theString == null)
@@ -67,12 +68,13 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Function to find the index of a character in a string builder string.
+		/// Function to find the index of a character in a <see cref="StringBuilder"/>.
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="characters">Characters to search for.</param>
 		/// <param name="comparison">[Optional] Comparison type.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int IndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
 		{
 			if (theString == null)
@@ -99,11 +101,12 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Function to find the last index of a character in a string builder string.
+		/// Function to find the last index of a character in a <see cref="StringBuilder"/>.
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="character">Character to search for.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int LastIndexOf(this StringBuilder theString, char character)
 		{
 			if (theString == null)
@@ -128,12 +131,13 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Function to find the last index of a character in a string builder string.
+		/// Function to find the last index of a character in a <see cref="StringBuilder"/>.
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="characters">Characters to search for.</param>
 		/// <param name="comparison">[Optional] Comparison type.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
 		{
 			if (theString == null)
@@ -164,8 +168,9 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="document">The document to convert.</param>
 		/// <returns>The XML document serialized as a string.</returns>
-		/// <remarks>This method addresses a shortcoming of the Linq-to-XML XDocument ToString() method.  The original method leaves out the declaration element when converted to 
-		/// a string.</remarks>
+		/// <remarks>
+		/// This method addresses a shortcoming of the Linq-to-XML <see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
+		/// </remarks>
 		public static string ToStringWithDeclaration(this XDocument document)
 		{
 			if (document == null)
@@ -184,19 +189,28 @@ namespace Gorgon.Core
 		}
 
         /// <summary>
-        /// Function to shorten a string and prefix an ellipses to the string.
+        /// Function to shorten a string and prefix an ellipses to the <see cref="String"/>.
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
-        /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
+        /// <remarks>
+        /// <para>
+        /// This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
+		/// </para>
+        /// <para>
+        /// This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
+        /// and will replace variable values. This way it will get the true length of the string.
+        /// </para>
+        /// <para>
+        /// If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
+        /// </para>
+        /// <para>
+        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// specified by max width) will be output without ellipses.
+        /// </para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, params object[] values)
         {
@@ -204,21 +218,32 @@ namespace Gorgon.Core
         }
 
         /// <summary>
-        /// Function to shorten a string and prefix or postfix an ellipses to the string.
+        /// Function to shorten a string and prefix or postfix an ellipses to the <see cref="String"/>.
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
         /// <param name="prefix"><b>true</b> to put the ellipses on the beginning of the string, or <b>false</b> to put on the end.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
-        /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end.</para>
+        /// <remarks>
+        /// <para>
+        /// This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
+		/// </para>
+        /// <para>
+        /// This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
+        /// and will replace variable values. This way it will get the true length of the string.
+        /// </para>
+        /// <para>
+        /// If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
+        /// </para>
+        /// <para>
+        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// specified by max width) will be output without ellipses.
+        /// </para>
+        /// <para>
+        /// Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end as a suffix.
+        /// </para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, bool prefix, params object[] values)
         {
@@ -227,7 +252,7 @@ namespace Gorgon.Core
 
 
         /// <summary>
-        /// Function to shorten a string and prefix or postfix an ellipses to the string.
+        /// Function to shorten a string and prefix or postfix an ellipses to the <see cref="String"/>.
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
@@ -235,14 +260,25 @@ namespace Gorgon.Core
         /// <param name="tabSpaceCount">Number of spaces to insert for the tab character.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
-        /// and will replace variable values. This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end.</para>
+        /// <remarks>
+        /// <para>
+        /// This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
+        /// </para>
+        /// <para>
+        /// This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing 
+        /// and will replace variable values. This way it will get the true length of the string.
+        /// </para>
+        /// <para>
+        /// If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
+        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
+        /// </para>
+        /// <para>
+        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// specified by max width) will be output without ellipses.
+        /// </para>
+        /// <para>
+        /// Specifying <b>true</b> for <paramref name="prefix"/> will put the ellipses on the beginning of the string, <b>false</b> will put it on the end as a suffix.
+        /// </para>
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth, bool prefix, int tabSpaceCount, params object[] values)
         {
@@ -326,16 +362,20 @@ namespace Gorgon.Core
         }
 
         /// <summary>
-        /// Function to return the length of a string, in bytes, with the specified encoding.
+        /// Function to return the length of a <see cref="String"/>, in bytes, with the specified <see cref="Encoding"/>.
         /// </summary>
         /// <param name="value">The string to measure.</param>
         /// <param name="includeLength"><b>true</b> to include the number of bytes for the encoded length, <b>false</b> to exclude.</param>
         /// <param name="encoding">[Optional] The encoding for the string.</param>
         /// <returns>The length of the string, in bytes.</returns>
         /// <remarks>
-        /// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 
-        /// 7-bit bytes required to encode the length of the string.
-        /// <para>If the <paramref name="encoding"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para></remarks>
+        /// <para>
+        /// If the <paramref name="includeLength"/> parameter is <b>true</b>, then the return value will also include the number of 7-bit bytes required to encode the length of the string.
+		/// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.
+        /// </para>
+        /// </remarks>
         public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null)
         {
             if (string.IsNullOrEmpty(value))

@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<introduction>
+			<para>
+			Thanks for downloading and installing Gorgon.			
+			</para>
+			<para>
+			Gorgon is meant to assist any developer in writing an application. Primarily Gorgon is meant for game development, but can be used for so much more. It is a set of libraries that 
+			provides functionality for an assortment of needs. This includes:
+			<list class="bullet">
+				<listItem>
+					<para>A graphics library patterened around Direct 3D 11. This uses the <externalLink><linkText>SharpDX API</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink> to provide access to Direct 3D from .NET</para>
+				</listItem>
+				<listItem>
+					<para>A 2D renderer that utilizes the aforementioned graphics library to provide ultra fast manipulation of 2D graphics.</para>
+				</listItem>
+				<listItem>
+					<para>A virtual file system based on the <externalLink><linkText>PhysFS</linkText><linkUri>http://icculus.org/physfs/</linkUri></externalLink> file system.</para>
+				</listItem>
+				<listItem>
+					<para>An input system that allows the a unified interface to input devices (keyboard, mouse, game devices, etc...)</para>
+				</listItem>
+				<listItem>
+					<para>A plugin system that allows extensibility of an application or even Gorgon's own functionality (e.g. the input system, virtual file system).</para>
+				</listItem>
+				<listItem>
+					<para>An animation system that animates the properties of any type of object.</para>
+				</listItem>			
+				<listItem>
+					<para>An editor that assists in the creation of various types of content for games and/or graphical functionality.</para>
+				</listItem>
+				<listItem>
+					<para>A core library of helpful utility functionality.</para>
+				</listItem>				
+			</list>
+			</para>
+		</introduction>
+
+		<section>
+			<title>Getting started</title>
+			<content></content>>
+			<sections>
+				<section>
+					<title>What's required?</title>
+					<content>
+						<para>
+							<list class="bullet">
+								<listItem>
+									<para><externalLink><linkText>.NET 4.5</linkText><linkUri>http://www.microsoft.com/en-ca/download/details.aspx?id=30653</linkUri></externalLink></para>
+								</listItem>
+								<listItem>
+									<para>Microsoft Windows Vista SP2 at minimum. Windows 7 - 8.1 are supported and future versions may work as well.</para>
+								</listItem>
+								<listItem>
+									<para>Microsoft DirectX 11.</para>
+								</listItem>
+							</list>
+						</para>						
+					</content>					
+				</section>
+				<section>
+					<title>To compile the Gorgon solution file</title>
+					<content>
+						<para><externalLink><linkText>Microsoft Visual Studio 2012 or better</linkText><linkUri>https://msdn.microsoft.com/en-gb/vstudio/</linkUri></externalLink></para>
+					</content>
+				</section>
+				<section>
+					<title>To use the Gorgon libraries</title>
+					<content>
+						<para>Any .NET 4.5 enabled language (e.g. Visual Basic .NET) can be used to write an application with Gorgon.</para>
+					</content>
+				</section>
+			</sections>						
+		</section>
+		
+		<section>
+			<title>License</title>
+			<content>
+				<para>Gorgon is licensed under the <link xlink:href="97ea73c0-3e89-4464-9a5b-0b61891ab219">MIT open source license</link>.</para>					
+			</content>
+		</section>
+		
+		<section>
+			<title>Acknowledgements</title>
+			<content>
+				<para>Gorgon uses icons from the Oxygen and Onebit 4 icon sets.</para>
+				<para>Oxygen icons may be obtained from:</para>
+				<para>
+				<externalLink><linkText>https://github.com/pasnox/oxygen-icons-png</linkText><linkUri>https://github.com/pasnox/oxygen-icons-png</linkUri></externalLink>
+				<markup><br/></markup>
+				<externalLink><linkText>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkText><linkUri>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkUri></externalLink>
+				</para>
+				<para>Onebit 4 icons may be obtained from:</para>
+				<para>
+				<externalLink><linkText>http://www.icojam.com/blog/?p=231</linkText><linkUri>http://www.icojam.com/blog/?p=231</linkUri></externalLink>
+				<markup><br/></markup>
+				<externalLink><linkText>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkText><linkUri>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkUri></externalLink>
+				</para>				
+			</content>
+		</section>
+	</developerConceptualDocument>
+</topic>

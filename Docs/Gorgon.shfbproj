@@ -53,9 +53,10 @@
     </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+    </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
@@ -115,23 +116,32 @@ But really, these are internal functions for use by Gorgon only.  They should ra
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <SiteMap Include="HelpMap.sitemap" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="icons\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\rootPage.html" />
-    <Content Include="Content\Redistribution.htm" />
+    <Content Include="Content\Redistribution.htm">
+      <ExcludeFromToc>True</ExcludeFromToc>
+    </Content>
     <Content Include="Content\GorgonLogo3.jpg" />
-    <Content Include="Content\MIT.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\Gorgon2Icon128x128.png">
       <ImageId>Gorgon_2.x_Icon_128x128</ImageId>
       <AlternateText>Gorgon 2.x Icon 128x 128</AlternateText>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ContentLayout Include="Content Layout.content" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Welcome.aml" />
+    <None Include="Content\MIT.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SlimMath">
+      <HintPath>..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

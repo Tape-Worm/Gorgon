@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<siteMap xmlns="http://schemas.microsoft.com/AspNet/SiteMap-File-1.0">
-  <siteMapNode title="Gorgon" url="Content\rootPage.html" isDefault="true" isExpanded="true" isSelected="true" splitToc="true">
-    <siteMapNode title="How to distribute Gorgon applications." url="Content\Redistribution.htm" />
-    <siteMapNode title="License" url="Content\MIT.html" />
-  </siteMapNode>
-</siteMap>
