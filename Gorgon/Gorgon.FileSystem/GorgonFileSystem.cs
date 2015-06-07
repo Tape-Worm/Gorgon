@@ -34,7 +34,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
 

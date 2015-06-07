@@ -60,7 +60,7 @@ namespace Gorgon.Configuration
 	/// While this class is flexible, there are some restrictions on the property types:
 	/// <list type="bullet">
 	/// <item><description>The property must have a property getter, at minimum.</description></item>
-	/// <item><description>Be a a primitive type, enum, value type (with a <see cref="TypeConverterAttribute"/>), <see cref="String"/>, <see cref="DateTime"/> or array.</description></item>
+	/// <item><description>Be a a primitive type, enum, value type (with a <see cref="TypeConverterAttribute"/>), <see cref="string"/>, <see cref="DateTime"/> or array.</description></item>
 	/// <item><description>Collection types are supported, and must implement either <see cref="IList{T}"/>, or a <see cref="IDictionary{String,TValue}"/>.</description></item>
 	/// </list>
 	/// Properties that are collection types must be instantiated in the constructor of the class, or they will be skipped when serializing/deserializing. 

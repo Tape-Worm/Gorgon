@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using Gorgon.Collections;
 using Gorgon.Collections.Specialized;
-using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 
 namespace Gorgon.Input

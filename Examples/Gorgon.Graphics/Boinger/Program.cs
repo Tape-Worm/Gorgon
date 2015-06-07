@@ -29,12 +29,12 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers;
+using Gorgon.Timing;
 using Gorgon.UI;
 using SlimMath;
 

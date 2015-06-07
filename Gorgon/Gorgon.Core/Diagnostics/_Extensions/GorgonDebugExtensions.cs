@@ -25,9 +25,9 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Diagnostics;
 using Gorgon.Core.Properties;
-using System.Collections;
 
 namespace Gorgon.Diagnostics
 {

@@ -34,6 +34,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
+using Gorgon.Timing;
 using Gorgon.UI;
 
 namespace Gorgon.Editor

@@ -30,9 +30,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Gorgon.Core;
+using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.Plugins;
-using Gorgon.Examples.Properties;
 
 namespace Gorgon.Examples
 {

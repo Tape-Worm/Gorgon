@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Core;
+
 namespace Gorgon.Editor
 {
 	/// <summary>

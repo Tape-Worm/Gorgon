@@ -28,8 +28,8 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
+using Gorgon.Timing;
 
 namespace Gorgon.Examples
 {

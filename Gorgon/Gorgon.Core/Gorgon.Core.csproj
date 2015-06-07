@@ -168,8 +168,8 @@
     <Compile Include="Collections\GorgonBaseNamedObjectDictionary.cs" />
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
-    <Compile Include="Diagnostics\GorgonTiming.cs" />
-    <Compile Include="Diagnostics\GorgonTimer.cs" />
+    <Compile Include="Timing\GorgonTiming.cs" />
+    <Compile Include="Timing\GorgonTimer.cs" />
     <Compile Include="_Interfaces\IGorgonNamedObject.cs" />
     <Compile Include="IO\GorgonFileExtension.cs" />
     <Compile Include="IO\GorgonFileExtensionCollection.cs" />

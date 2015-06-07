@@ -20,4 +20,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Windows.Forms.Control.set_Text(System.String)", Scope = "member", Target = "Gorgon.UI.WarningDialog.#InitializeComponent()")]
 [assembly: SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "397*previousHash", Scope = "member", Target = "Gorgon.Core.Extensions.GorgonHashGenerationExtension.#GenerateHash`1(System.Int32,!!0)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.Diagnostics.GorgonLogFile")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.Plugins.GorgonPlugInFactory")]
+[assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.Plugins.GorgonPlugInFactory")]

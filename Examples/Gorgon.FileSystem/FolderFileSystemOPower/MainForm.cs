@@ -30,11 +30,11 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Renderers;
+using Gorgon.Timing;
 using Gorgon.UI;
 using SlimMath;
 

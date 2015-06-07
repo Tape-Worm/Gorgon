@@ -27,10 +27,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Renderers;
+using Gorgon.Timing;
 
 namespace Gorgon.Editor
 {

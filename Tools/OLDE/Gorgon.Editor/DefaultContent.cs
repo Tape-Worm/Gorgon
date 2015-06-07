@@ -26,12 +26,12 @@
 
 using System.Drawing;
 using System.IO;
-using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Timing;
 using SlimMath;
 
 namespace Gorgon.Editor

@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using Gorgon.Animation.Properties;
 using Gorgon.Collections;
-using Gorgon.Diagnostics;
 
 namespace Gorgon.Animation
 {

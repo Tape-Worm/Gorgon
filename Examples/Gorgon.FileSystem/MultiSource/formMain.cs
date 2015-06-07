@@ -32,8 +32,8 @@ using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO;
-using Gorgon.UI;
 using Gorgon.Plugins;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {

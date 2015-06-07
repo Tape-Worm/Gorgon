@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics

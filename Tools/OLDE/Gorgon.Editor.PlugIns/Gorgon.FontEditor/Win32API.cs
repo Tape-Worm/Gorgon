@@ -32,6 +32,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.IO;
 

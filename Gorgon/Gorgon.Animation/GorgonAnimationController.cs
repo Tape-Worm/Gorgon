@@ -30,8 +30,8 @@ using System.IO;
 using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Collections;
-using Gorgon.Diagnostics;
 using Gorgon.IO;
+using Gorgon.Timing;
 
 namespace Gorgon.Animation
 {

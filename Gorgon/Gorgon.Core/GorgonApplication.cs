@@ -38,6 +38,7 @@ using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;
 using Gorgon.Plugins;
+using Gorgon.Timing;
 
 namespace Gorgon.Core
 {

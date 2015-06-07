@@ -32,6 +32,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.Timing;
 
 namespace Gorgon.Input.Raw
 {

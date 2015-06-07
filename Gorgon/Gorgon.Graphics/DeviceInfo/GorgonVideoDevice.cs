@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Collections;
 using Gorgon.Collections.Specialized;
+using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;

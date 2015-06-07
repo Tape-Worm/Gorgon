@@ -38,6 +38,7 @@ using Gorgon.Input;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.Timing;
 using Gorgon.UI;
 
 namespace Gorgon.Editor.ImageEditorPlugIn

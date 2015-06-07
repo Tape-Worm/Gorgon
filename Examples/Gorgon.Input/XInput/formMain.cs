@@ -30,8 +30,8 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Input;
+using Gorgon.Timing;
 using Gorgon.UI;
 
 namespace Gorgon.Examples

@@ -28,6 +28,7 @@ using System;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
+using Gorgon.Timing;
 using StructureMap;
 
 namespace Gorgon.Editor

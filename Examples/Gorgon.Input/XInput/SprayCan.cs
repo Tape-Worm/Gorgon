@@ -26,9 +26,9 @@
 
 using System.Drawing;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Input;
 using Gorgon.Math;
+using Gorgon.Timing;
 
 namespace Gorgon.Examples
 {
