@@ -493,7 +493,7 @@ namespace Gorgon.Graphics
 		public void Save(Stream stream, bool binary = false, bool saveDebug = false)
 		{
 			Shaders.ShaderBytecode compiledShader = null;
-			GorgonDebug.AssertNull(stream, "stream");
+			stream.ValidateObject("stream");
 
 		    if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
 		    {
@@ -541,7 +541,7 @@ namespace Gorgon.Graphics
 		{
 			FileStream stream = null;
 
-			GorgonDebug.AssertParamString(fileName, "fileName");
+			GorgonDebugExtensions.ValidateString(fileName, "fileName");
 
 			try
 			{

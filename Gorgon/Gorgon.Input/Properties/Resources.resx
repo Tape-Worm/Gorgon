@@ -123,6 +123,9 @@
   <data name="GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH" xml:space="preserve">
     <value>The device requested already exists, but is not of the type '{0}'.</value>
   </data>
+  <data name="GORINP_ERR_HID_PROPERTY_NULL" xml:space="preserve">
+    <value>The HID property '{0}' is NULL.</value>
+  </data>
   <data name="GORINP_HID_NOT_FOUND" xml:space="preserve">
     <value>Could not find the HID '{0}'.</value>
   </data>

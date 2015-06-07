@@ -146,7 +146,7 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		public override void Update<T>(T[] data, GorgonGraphics deferred = null)
 		{
-			GorgonDebug.AssertNull(data, "data");
+			data.ValidateObject("data");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)

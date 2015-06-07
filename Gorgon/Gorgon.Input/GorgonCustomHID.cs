@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.IO;
 using Gorgon.Collections;
 using Gorgon.Collections.Specialized;
 using Gorgon.Diagnostics;
+using Gorgon.Input.Properties;
 
 namespace Gorgon.Input
 {
@@ -127,8 +129,20 @@ namespace Gorgon.Input
 		/// <exception cref="System.ArgumentException">Thrown when the propertyName parameter is an empty string.</exception>
 		protected void SetData(string propertyName, object value)
 		{
-			GorgonDebug.AssertParamString(propertyName, "propertyName");
-            GorgonDebug.AssertNull(Data[propertyName], "propertyName");
+			if (propertyName == null)
+			{
+				throw new ArgumentNullException("propertyName");
+			}
+
+			if (string.IsNullOrWhiteSpace(propertyName))
+			{
+				throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "propertyName");
+			}
+
+			if (Data[propertyName] == null)
+			{
+				throw new InvalidDataException(string.Format(Resources.GORINP_ERR_HID_PROPERTY_NULL, propertyName));
+			}
 
 		    GorgonCustomHIDProperty property;
 

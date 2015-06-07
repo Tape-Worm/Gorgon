@@ -559,7 +559,7 @@ namespace Gorgon.Renderers
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         public void SetVertexData(GorgonPolygonPoint[] vertices)
         {
-            GorgonDebug.AssertNull(vertices, "vertices");
+            vertices.ValidateObject("vertices");
 
             SetVertexData(vertices, 0, 0, vertices.Length);
         }
@@ -584,7 +584,7 @@ namespace Gorgon.Renderers
         /// </exception>
         public void SetVertexData(GorgonPolygonPoint[] vertices, int vertexListOffset, int offset)
         {
-            GorgonDebug.AssertNull(vertices, "vertices");
+            vertices.ValidateObject("vertices");
 
             SetVertexData(vertices, vertexListOffset, offset, vertices.Length);
         }
@@ -614,7 +614,7 @@ namespace Gorgon.Renderers
         /// number of vertices in the <paramref name="vertices"/> parameter.</exception>
         public void SetVertexData(GorgonPolygonPoint[] vertices, int vertexListOffset, int offset, int count)
         {
-            GorgonDebug.AssertNull(vertices, "vertices");
+            vertices.ValidateObject("vertices");
 
             if (vertices.Length == 0)
             {

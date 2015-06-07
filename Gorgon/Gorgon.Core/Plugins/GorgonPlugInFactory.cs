@@ -197,7 +197,7 @@ namespace Gorgon.Plugins
 		/// <remarks>Unlike the overload of this method, this method will check only the file pointed at by <c>assemblyFile</c>.</remarks>
 		public IList<string> EnumeratePlugIns(string assemblyFile)
 		{
-			GorgonDebug.AssertParamString(assemblyFile, assemblyFile);
+			assemblyFile.ValidateString("assemblyFile");
 
 			CreateAppDomains();
 
@@ -214,7 +214,7 @@ namespace Gorgon.Plugins
 		/// <remarks>Unlike the overload of this method, this method only enumerates plug-ins from assemblies that are already loaded into memory.</remarks>
 		public IReadOnlyList<GorgonPlugin> EnumeratePlugIns(AssemblyName assemblyName)
 		{
-			GorgonDebug.AssertNull(assemblyName, "assemblyName");
+			assemblyName.ValidateObject("assemblyName");
 
 			return this.Where(item => AssemblyName.ReferenceMatchesDefinition(item.Assembly, assemblyName)).ToArray();
 		}
@@ -259,7 +259,7 @@ namespace Gorgon.Plugins
 		/// <exception cref="System.ArgumentException">The name was an empty string..</exception>
 		public void Unload(string name)
 		{
-			GorgonDebug.AssertParamString(name, "name");
+			name.ValidateString("name");
 
 			Items.Remove(name);
 		}

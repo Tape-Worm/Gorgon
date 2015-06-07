@@ -261,7 +261,7 @@ namespace Gorgon.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion, RectangleF textureRegion)
 		{
-			GorgonDebug.AssertNull(texture, "texture");
+			texture.ValidateObject("texture");
 			FilledRectangle(blitRegion, Color.White, texture, textureRegion);
 		}
 
@@ -433,7 +433,7 @@ namespace Gorgon.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color, bool useShadow, Vector2 shadowOffset, float shadowOpacity)
 		{
-			GorgonDebug.AssertNull(font, "font");
+			font.ValidateObject("font");
 
 			if (string.IsNullOrEmpty(text))
 			{

@@ -66,7 +66,7 @@ namespace Gorgon.Math
         {
             Matrix calculations = Matrix.Identity;
 
-            GorgonDebug.AssertParamRange(startPointIndex, 0, Points.Count - 1, "startPointIndex");
+			startPointIndex.ValidateRange("startPointIndex", 0, Points.Count - 1);
 
             if (delta.EqualsEpsilon(0.0f))
             {

@@ -139,8 +139,8 @@ namespace Gorgon.Graphics
 		/// <remarks>This will copy the contents of a structured buffer into any other type of buffer.  The view must have been created using a ViewType of Counter or Append, otherwise an exception will be thrown.</remarks>
 		public void CopyTo(GorgonBaseBuffer buffer, int offset)
 		{
-			GorgonDebug.AssertNull(buffer, "buffer");
-			GorgonDebug.AssertParamRange(offset, 0, buffer.SizeInBytes - 4, "index");
+			buffer.ValidateObject("buffer");
+			offset.ValidateRange("index", 0, buffer.SizeInBytes - 4);
 
 #if DEBUG
 			if (ViewType == UnorderedAccessViewType.Standard)

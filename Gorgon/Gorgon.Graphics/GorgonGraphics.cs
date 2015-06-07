@@ -513,7 +513,7 @@ namespace Gorgon.Graphics
         /// </remarks>
         public void ExecuteDeferred(GorgonRenderCommands commands)
         {
-            GorgonDebug.AssertNull(commands, "commands");
+            commands.ValidateObject("commands");
 
 #if DEBUG
             if (IsDeferred)

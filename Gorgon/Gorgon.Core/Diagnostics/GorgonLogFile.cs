@@ -425,7 +425,7 @@ namespace Gorgon.Diagnostics
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 
-			GorgonDebug.AssertParamString(appname, "appname");
+			GorgonDebugExtensions.ValidateString(appname, "appname");
 
 			IsClosed = true;
 

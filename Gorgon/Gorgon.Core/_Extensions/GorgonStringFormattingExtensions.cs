@@ -72,7 +72,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="characters">Characters to search for.</param>
-		/// <param name="comparison">[Optional] Comparison type.</param>
+		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int IndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
@@ -135,7 +135,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
 		/// <param name="characters">Characters to search for.</param>
-		/// <param name="comparison">[Optional] Comparison type.</param>
+		/// <param name="comparison">[Optional] One of the enumeration values that specifies the rules for the search.</param>
 		/// <returns>The index of the character, or -1 if not found.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <c>null</c> (<i>Nothing</i> in VB.Net).</exception>
 		public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
@@ -169,7 +169,7 @@ namespace Gorgon.Core
 		/// <param name="document">The document to convert.</param>
 		/// <returns>The XML document serialized as a string.</returns>
 		/// <remarks>
-		/// This method addresses a shortcoming of the Linq-to-XML <see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
+		/// This method addresses a shortcoming of the Linq-to-XML <see cref="XDocument"/>.<see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
 		/// </remarks>
 		public static string ToStringWithDeclaration(this XDocument document)
 		{

@@ -214,7 +214,7 @@ namespace Gorgon.Graphics
             public TR GetResource<TR>(int index)
                 where TR : GorgonResource
             {
-                GorgonDebug.AssertParamRange(index, 0, _unorderedViews.Length, "index");
+				index.ValidateRange("index", 0, _unorderedViews.Length);
 
                 var resourceView = _unorderedViews[index];
 
@@ -334,7 +334,7 @@ namespace Gorgon.Graphics
             {
                 int count = _unorderedViews.Length - slot;
 
-                GorgonDebug.AssertParamRange(slot, 0, _unorderedViews.Length, "slot");
+				slot.ValidateRange("slot", 0, _unorderedViews.Length);
 
                 if (views != null)
                 {
@@ -655,9 +655,9 @@ namespace Gorgon.Graphics
         /// within the shader by using a 3D vector (float3).</remarks>
 	    public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
         {
-            GorgonDebug.AssertParamRange(threadCountX, 0, 65535, "threadCountX");
-            GorgonDebug.AssertParamRange(threadCountY, 0, 65535, "threadCountY");
-            GorgonDebug.AssertParamRange(threadCountZ, 0, 65535, "threadCountZ");
+			threadCountX.ValidateRange("threadCountX", 0, 65535);
+			threadCountY.ValidateRange("threadCountY", 0, 65535);
+			threadCountZ.ValidateRange("threadCountZ", 0, 65535);
 
             Graphics.Context.Dispatch(threadCountX, threadCountY, threadCountZ);
         }
@@ -675,8 +675,8 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the buffer passed in through <paramref name="indirectArgsBuffer"/> was not created as an indirect argument buffer.</exception>
         public void Dispatch(GorgonBuffer indirectArgsBuffer, int alignedOffset)
         {
-            GorgonDebug.AssertNull(indirectArgsBuffer, "indirectArgsBuffer");
-            GorgonDebug.AssertParamRange(alignedOffset, 0, indirectArgsBuffer.SizeInBytes, "alignedOffset");
+			indirectArgsBuffer.ValidateObject("indirectArgsBuffer");
+            alignedOffset.ValidateRange("alignedOffset", 0, indirectArgsBuffer.SizeInBytes);
 
 #if DEBUG
             if (!indirectArgsBuffer.Settings.AllowIndirectArguments)

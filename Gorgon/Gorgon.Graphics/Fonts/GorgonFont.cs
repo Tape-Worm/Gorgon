@@ -1109,7 +1109,7 @@ namespace Gorgon.Graphics
 		{
 			FileStream stream = null;
 
-			GorgonDebug.AssertParamString(fileName, "fileName");
+			GorgonDebugExtensions.ValidateString(fileName, "fileName");
 
 			try
 			{

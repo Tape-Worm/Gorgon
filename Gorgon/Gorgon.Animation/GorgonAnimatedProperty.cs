@@ -53,51 +53,17 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimatedProperty" /> struct.
 		/// </summary>
-		/// <param name="displayName">The display name used to override the property name.</param>
-		/// <param name="dataType">Type of the data used to override the property type.</param>
+		/// <param name="displayName">[Optional] The display name used to override the property name.</param>
+		/// <param name="dataType">[Optional] Type of the data used to override the property type.</param>
 		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/>, <paramref name="dataType"/>, or <paramref name="propertyInfo"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the displayName parameter is an empty string.</exception>
-		public GorgonAnimatedProperty(string displayName, Type dataType, PropertyInfo propertyInfo)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		public GorgonAnimatedProperty(PropertyInfo propertyInfo, string displayName = null, Type dataType = null)
 		{
-			GorgonDebug.AssertParamString(displayName, "displayName");
-			GorgonDebug.AssertNull(dataType, "dataType");
-			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
+			propertyInfo.ValidateObject("propertyInfo");
 
-			DisplayName = displayName;
-			DataType = dataType;
+			DisplayName = string.IsNullOrWhiteSpace(displayName) ? propertyInfo.Name : displayName;
+			DataType = dataType ?? propertyInfo.PropertyType;
 			Property = propertyInfo;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimatedProperty" /> struct.
-		/// </summary>
-		/// <param name="displayName">The display name used to override the property name.</param>
-		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="displayName"/> or <paramref name="propertyInfo"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the displayName parameter is an empty string.</exception>
-		public GorgonAnimatedProperty(string displayName, PropertyInfo propertyInfo)
-		{
-			GorgonDebug.AssertParamString(displayName, "displayName");
-			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
-
-			DisplayName = displayName;
-			DataType = propertyInfo.PropertyType;
-			Property = propertyInfo;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAnimatedProperty" /> struct.
-		/// </summary>
-		/// <param name="propertyInfo">The property info.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonAnimatedProperty(PropertyInfo propertyInfo)
-		{
-			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
-
-			Property = propertyInfo;
-			DisplayName = propertyInfo.Name;
-			DataType = propertyInfo.PropertyType;
 		}
 	}
 }

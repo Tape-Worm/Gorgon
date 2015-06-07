@@ -397,9 +397,9 @@ namespace Gorgon.Graphics
 			/// <exception cref="GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonVertexBufferBinding[] binding)
 			{
-				int count = _bindings.Length - slot;
+				slot.ValidateRange("slot", 0, _bindings.Length);
 
-				GorgonDebug.AssertParamRange(slot, 0, _bindings.Length, true, false,"startIndex");
+				int count = _bindings.Length - slot;
                 
                 if (binding != null)
 				{

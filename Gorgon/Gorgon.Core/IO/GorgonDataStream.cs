@@ -1364,7 +1364,7 @@ namespace Gorgon.IO
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
-			GorgonDebug.AssertNull(buffer, "buffer");
+			buffer.ValidateObject("buffer");
 
 			WriteRange(buffer, 0, buffer.Length);
 		}
@@ -1483,7 +1483,7 @@ namespace Gorgon.IO
         /// </exception>
         public void ReadFromStream(Stream stream, int size)
         {
-            GorgonDebug.AssertNull(stream, "stream");
+			stream.ValidateObject("stream");
 
 #if DEBUG
             if (!stream.CanRead)

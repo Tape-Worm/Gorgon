@@ -108,8 +108,10 @@ namespace Gorgon.Examples
 		{
 			Console.Clear();
 
-			foreach (var envString in GorgonComputerInfo.SystemEnvironmentVariables)
+			foreach (var envString in GorgonComputerInfo.MachineEnvironmentVariables)
+			{
 				Console.WriteLine("{0} = {1}", envString.Key, envString.Value);
+			}
 
 			Console.BackgroundColor = ConsoleColor.Black;
 			Console.ForegroundColor = ConsoleColor.Yellow;

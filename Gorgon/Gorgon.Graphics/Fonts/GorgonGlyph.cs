@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using System.Globalization;
 using Gorgon.Core;
@@ -146,7 +147,10 @@ namespace Gorgon.Graphics
 		/// </exception>
 		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Point offset, int advance)
 		{
-			GorgonDebug.AssertNull(texture, "texture");
+			if (texture == null)
+			{
+				throw new ArgumentNullException("texture");
+			}
 
 			Character = character;
 			GlyphCoordinates = glyphCoordinates;

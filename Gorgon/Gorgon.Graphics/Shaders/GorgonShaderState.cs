@@ -319,7 +319,7 @@ namespace Gorgon.Graphics
 			{
 			    int count = _states.Length - slot;
 
-				GorgonDebug.AssertParamRange(slot, 0, _states.Length, "slot");
+				slot.ValidateRange("slot", 0, _states.Length);
 
                 if (states != null)
                 {
@@ -732,7 +732,7 @@ namespace Gorgon.Graphics
 			{
 			    int count = _buffers.Length - slot;
 
-				GorgonDebug.AssertParamRange(slot, 0, _buffers.Length, "slot");
+				slot.ValidateRange("slot", 0, _buffers.Length);
 
                 if (buffers != null)
                 {
@@ -1132,7 +1132,7 @@ namespace Gorgon.Graphics
 			{
 			    int count = _resources.Length - slot;
 
-				GorgonDebug.AssertParamRange(slot, 0, _resources.Length, "slot");
+				slot.ValidateRange("slot", 0, _resources.Length);
 
                 if (resourceViews != null)
                 {
@@ -1176,7 +1176,7 @@ namespace Gorgon.Graphics
             public TR GetResource<TR>(int index)
                 where TR : GorgonResource
             {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
+				index.ValidateRange("index", 0, _resources.Length);
 
                 var resourceView = _resources[index];
                 

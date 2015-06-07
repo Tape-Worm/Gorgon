@@ -149,11 +149,14 @@ namespace Gorgon.Animation
 	    /// </summary>
 	    /// <param name="track">Track to add.</param>
 	    /// <exception cref="ArgumentException"></exception>
-	    /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+	    /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 	    /// <exception cref="System.ArgumentException">Thrown when the track parameter already exists in the collection.</exception>
 	    public void Add(GorgonAnimationTrack<T> track)
 		{
-			GorgonDebug.AssertNull(track, "track");
+		    if (track == null)
+		    {
+			    throw new ArgumentNullException("track");
+		    }
 
 		    if (Contains(track.Name))
 		    {
@@ -168,7 +171,7 @@ namespace Gorgon.Animation
 		/// Function to remove a track from the collection.
 		/// </summary>
 		/// <param name="track">Track to remove from the collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public void Remove(GorgonAnimationTrack<T> track)
 		{
 			if (track == null)
@@ -184,7 +187,7 @@ namespace Gorgon.Animation
 		/// Function to remove a track by its name.
 		/// </summary>
 		/// <param name="name">Name of the track to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the track could not be found in the collection.</exception>
 		public void Remove(string name)

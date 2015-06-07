@@ -585,7 +585,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
         protected void OnCopySubResource(GorgonTexture sourceTexture, GorgonBox sourceBox, int sourceArrayIndex, int sourceMipLevel, int destX, int destY, int destZ, int destArrayIndex, int destMipLevel, bool unsafeCopy, GorgonGraphics context)
         {
-            GorgonDebug.AssertNull(sourceTexture, "texture");
+            sourceTexture.ValidateObject("texture");
 
             // If we're trying to place the image data outside of this texture, then leave.
             if ((destX >= Settings.Width)
@@ -1071,7 +1071,7 @@ namespace Gorgon.Graphics
         /// is not a staging texture and the this texture is a staging texture, or if the textures are 1D textures and neither texture is a staging texture.</exception>
 		public void Copy(GorgonTexture texture, GorgonGraphics deferred = null)
 		{
-			GorgonDebug.AssertNull(texture, "texture");
+			texture.ValidateObject("texture");
 
 #if DEBUG            
 			if (texture.ResourceType != ResourceType)

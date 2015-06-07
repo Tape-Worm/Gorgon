@@ -150,4 +150,7 @@
   <data name="GORANM_TRACK_DOES_NOT_EXIST" xml:space="preserve">
     <value>The track '{0}' does not exist.</value>
   </data>
+  <data name="GORANM_ERR_STREAM_READ_ONLY" xml:space="preserve">
+    <value>The stream is read-only.</value>
+  </data>
 </root>

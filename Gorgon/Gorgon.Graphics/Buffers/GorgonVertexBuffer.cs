@@ -115,7 +115,7 @@ namespace Gorgon.Graphics
         /// </remarks>
 		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
 		{
-			GorgonDebug.AssertNull(stream, "stream");
+			stream.ValidateObject("stream");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)
@@ -204,7 +204,7 @@ namespace Gorgon.Graphics
 		public void Update<T>(T[] values, int offset, GorgonGraphics deferred = null)
 			where T : struct
 		{
-			GorgonDebug.AssertNull(values, "values");
+			values.ValidateObject("values");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)

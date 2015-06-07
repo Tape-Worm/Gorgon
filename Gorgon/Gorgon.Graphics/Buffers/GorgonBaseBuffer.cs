@@ -827,11 +827,11 @@ namespace Gorgon.Graphics
             int sourceByteIndex = sourceOffset + byteCount;
             int destByteIndex = destOffset + byteCount;
 
-            GorgonDebug.AssertNull(buffer, "buffer");
-            GorgonDebug.AssertParamRange(sourceOffset, 0, buffer.SizeInBytes, "sourceOffset");
-            GorgonDebug.AssertParamRange(sourceByteIndex, 0, buffer.SizeInBytes, "sourceOffset");
-            GorgonDebug.AssertParamRange(destOffset, 0, SizeInBytes, "destOffset");
-            GorgonDebug.AssertParamRange(destByteIndex, 0, buffer.SizeInBytes, "destOffset");
+			buffer.ValidateObject("buffer");
+            sourceOffset.ValidateRange("sourceOffset", 0, buffer.SizeInBytes);
+			sourceByteIndex.ValidateRange("sourceOffset", 0, buffer.SizeInBytes);
+            destOffset.ValidateRange("destOffset", 0, SizeInBytes);
+			destByteIndex.ValidateRange("destOffset", 0, buffer.SizeInBytes);
 
 #if DEBUG
             if (Settings.Usage == BufferUsage.Immutable)
@@ -911,7 +911,7 @@ namespace Gorgon.Graphics
 		public virtual void Update<T>(T[] data, GorgonGraphics deferred = null)
 			where T : struct
 		{
-			GorgonDebug.AssertNull(data, "data");
+			data.ValidateObject("data");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)
@@ -949,7 +949,7 @@ namespace Gorgon.Graphics
         /// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
         public void Update(GorgonDataStream stream, GorgonGraphics deferred = null)
         {
-            GorgonDebug.AssertNull(stream, "stream");
+			stream.ValidateObject("stream");
 
 #if DEBUG
             if (Settings.Usage != BufferUsage.Default)

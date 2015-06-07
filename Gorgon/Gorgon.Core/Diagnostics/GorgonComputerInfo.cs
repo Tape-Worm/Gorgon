@@ -27,7 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
+using Gorgon.Core.Collections.Specialized;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics
@@ -38,7 +38,6 @@ namespace Gorgon.Diagnostics
     /// <summary>
 	/// CPU/OS platform type.
 	/// </summary>
-	/// <remarks>This is a replacement for the old PlatformID code in the 1.x version of </remarks>
 	public enum PlatformArchitecture
 	{
 		/// <summary>
@@ -61,11 +60,11 @@ namespace Gorgon.Diagnostics
 	{
 		#region Variables.
 		// List of machine specific environment variables.
-		private static Dictionary<string, string> _machineVariables;
+		private static readonly GorgonConcurrentDictionary<string, string> _machineVariables;
 		// List of user specific environment variables.
-		private static Dictionary<string, string> _userVariables;
-		// Synchronization primitive for threads.
-		private static int _syncPrimitive;
+		private static readonly GorgonConcurrentDictionary<string, string> _userVariables;
+		// List of process specific environment variables.
+		private static readonly GorgonConcurrentDictionary<string, string> _processVariables;
 		#endregion
 
 		#region Properties.
@@ -94,7 +93,10 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return the platform that this instance of Gorgon was compiled for.
 		/// </summary>
-		/// <remarks>When the library is compiled for 64-bit processors, then this will read x64, otherwise it'll be x86.  If the platform cannot be determined it will return unknown.</remarks>
+		/// <remarks>
+		/// When the application that uses this class is run on a 64 bit version of windows, on a 64 bit machine, and the application is running as 64 bit, then this value will return 
+		/// <see cref="Diagnostics.PlatformArchitecture.x64"/>, otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
+		/// </remarks>
 		public static PlatformArchitecture PlatformArchitecture
 		{
 			get
@@ -106,6 +108,10 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return the architecture of the Operating System that Gorgon is running on.
 		/// </summary>
+		/// <remarks>
+		/// When the application that uses this class is run on a 64 bit version of windows, and on a 64 bit machine then this value will return <see cref="Diagnostics.PlatformArchitecture.x64"/>, 
+		/// otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
+		/// </remarks>
 		public static PlatformArchitecture OperatingSystemArchitecture
 		{
 			get
@@ -196,7 +202,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return a list of machine specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> SystemEnvironmentVariables
+		public static IReadOnlyDictionary<string, string> MachineEnvironmentVariables
 		{
 			get
 			{
@@ -214,41 +220,49 @@ namespace Gorgon.Diagnostics
 				return _userVariables;
 			}
 		}
+
+		/// <summary>
+		/// Property to return a list of process specific environment variables.
+		/// </summary>
+		public static IReadOnlyDictionary<string, string> ProcessEnvironmentVariables
+		{
+			get
+			{
+				return _processVariables;
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to refresh the list of user and machine specific environment variables.
 		/// </summary>
+		/// <remarks>
+		/// This method will populate the <see cref="MachineEnvironmentVariables"/>, <see cref="ProcessEnvironmentVariables"/>, and the <see cref="UserEnvironmentVariables"/> properties with values from the 
+		/// environment variables for the operating system. These values cannot be modified from this class since this class is meant for information gathering only.
+		/// </remarks>
 		public static void RefreshEnvironmentVariables()
 		{
-			try
+			IDictionary machine = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
+			IDictionary process = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
+			IDictionary user = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
+
+			_machineVariables.Clear();
+			foreach (DictionaryEntry variable in machine)
 			{
-				if (Interlocked.Increment(ref _syncPrimitive) > 1)
-				{
-					return;
-				}
-
-				_machineVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-				_userVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-				IDictionary systemVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Machine);
-				IDictionary userVariables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.User);
-
-				foreach (DictionaryEntry variable in systemVariables)
-				{
-					_machineVariables.Add(variable.Key.ToString(), variable.Value.ToString());
-				}
-
-
-				foreach (DictionaryEntry variable in userVariables)
-				{
-					_userVariables.Add(variable.Key.ToString(), variable.Value.ToString());
-				}
+				_machineVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
 			}
-			finally
+
+			_processVariables.Clear();
+			foreach (DictionaryEntry variable in process)
 			{
-				Interlocked.Decrement(ref _syncPrimitive);
+				_processVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
+			}
+
+			_userVariables.Clear();
+			foreach (DictionaryEntry variable in user)
+			{
+				_userVariables.TryAdd(variable.Key.ToString(), variable.Value.ToString());
 			}
 		}
 		#endregion
@@ -259,6 +273,10 @@ namespace Gorgon.Diagnostics
 		/// </summary>
 		static GorgonComputerInfo()
 		{
+			_machineVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_userVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+			_processVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 			RefreshEnvironmentVariables();
 		}
 		#endregion

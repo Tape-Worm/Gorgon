@@ -129,6 +129,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
@@ -152,7 +153,7 @@
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
-    <Compile Include="Diagnostics\GorgonDebug.cs" />
+    <Compile Include="Diagnostics\_Extensions\GorgonDebugExtensions.cs" />
     <Compile Include="IO\_Extensions\GorgonIOExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
     <Compile Include="Math\_Extensions\GorgonMathExtensions.cs" />

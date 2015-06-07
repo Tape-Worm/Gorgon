@@ -927,7 +927,7 @@ namespace Gorgon.Graphics
 			var flags = GI.PresentFlags.None;
 			Result result = Result.Ok;
 
-			GorgonDebug.AssertParamRange(interval, 0, 4, true, true, "interval");
+			interval.ValidateRange("interval", 0, 4, true, true);
 
 		    if (GISwapChain == null)
 		    {

@@ -117,7 +117,7 @@ namespace Gorgon.Graphics
         /// </remarks>
 		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
 		{
-			GorgonDebug.AssertNull(stream, "stream");
+			stream.ValidateObject("stream");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)
@@ -202,7 +202,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(int[] values, int offset, GorgonGraphics deferred = null)
 		{
-			GorgonDebug.AssertNull(values, "values");
+			values.ValidateObject("values");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)

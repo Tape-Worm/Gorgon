@@ -105,7 +105,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
         public void Clear(int[] values)
         {
-            GorgonDebug.AssertNull(values, "values");
+            values.ValidateObject("values");
 
             if (values.Length != 4)
             {
@@ -151,7 +151,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
         public void Clear(float[] values)
         {
-            GorgonDebug.AssertNull(values, "values");
+            values.ValidateObject("values");
 
             if (values.Length != 4)
             {

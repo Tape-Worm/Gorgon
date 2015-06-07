@@ -79,16 +79,16 @@ namespace Gorgon.Graphics
 			{
 				Tuple<int, int> offsetSize;
 
-				GorgonDebug.AssertParamRange(mipLevel, 0, _image.Settings.MipCount, "mipLevel");
+				mipLevel.ValidateRange("mipLevel", 0, _image.Settings.MipCount);
 
 				if (_image.Settings.ImageType == ImageType.Image3D)
 				{
-					GorgonDebug.AssertParamRange(arrayIndexDepthSlice, 0, _image.Settings.Depth, "arrayIndexDepthSlice");
+					arrayIndexDepthSlice.ValidateRange("arrayIndexDepthSlice", 0, _image.Settings.Depth);
 					offsetSize = MipOffsetSize[mipLevel];
 					return _buffers[offsetSize.Item1 + arrayIndexDepthSlice];
 				}
 
-				GorgonDebug.AssertParamRange(arrayIndexDepthSlice, 0, _image.Settings.ArrayCount, "arrayIndexDepthSlice");
+				arrayIndexDepthSlice.ValidateRange("arrayIndexDepthSlice", 0, _image.Settings.ArrayCount);
 				offsetSize = MipOffsetSize[mipLevel + (arrayIndexDepthSlice * _image.Settings.MipCount)];
 				return _buffers[offsetSize.Item1];
 			}

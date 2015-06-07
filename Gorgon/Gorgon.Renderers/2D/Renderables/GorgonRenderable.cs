@@ -1001,7 +1001,7 @@ namespace Gorgon.Renderers
 		protected GorgonRenderable(Gorgon2D gorgon2D, string name)
 			: base(name)
 		{			
-			GorgonDebug.AssertNull(gorgon2D, "gorgon2D");
+			gorgon2D.ValidateObject("gorgon2D");
 						
 			Gorgon2D = gorgon2D;
 			CullingMode = CullingMode.Back;

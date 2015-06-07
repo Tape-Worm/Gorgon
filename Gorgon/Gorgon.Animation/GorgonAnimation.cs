@@ -24,10 +24,11 @@
 // 
 #endregion
 
+using System;
 using System.IO;
 using System.Linq;
+using Gorgon.Animation.Properties;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Math;
 
@@ -227,10 +228,19 @@ namespace Gorgon.Animation
 		/// Function to save the animation to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write the animation into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> is read-only.</exception>
 		public void Save(Stream stream)
 		{
-			GorgonDebug.AssertNull(stream, "stream");
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new IOException(Resources.GORANM_ERR_STREAM_READ_ONLY);
+			}
 
 			using (var chunk = new GorgonChunkWriter(stream))
 			{
@@ -268,11 +278,19 @@ namespace Gorgon.Animation
 		/// Function to save the animation to a file.
 		/// </summary>
 		/// <param name="fileName">Path and file name of the file to write.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
 		public void Save(string fileName)
 		{
-			GorgonDebug.AssertParamString(fileName, "fileName");
+			if (fileName == null)
+			{
+				throw new ArgumentNullException("fileName");
+			}
+
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
+			}
 
 		    using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
 		    {
@@ -301,8 +319,6 @@ namespace Gorgon.Animation
 		internal GorgonAnimation(GorgonAnimationController<T> controller, string name, float length)
 			: base(name)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-
 			Tracks = new GorgonAnimationTrackCollection<T>(this);
 			Length = length;
 			Speed = 1.0f;

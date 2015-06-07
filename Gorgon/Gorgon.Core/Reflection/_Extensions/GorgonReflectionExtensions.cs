@@ -126,6 +126,12 @@ namespace Gorgon.Reflection
 		/// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
 		/// </para>
 		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="propertyInfo"/> has a <b>null</b> <see cref="MemberInfo.DeclaringType"/> property.</exception>
+		/// <exception cref="InvalidCastException">Thrown when the declaring type of the property and type specified by <typeparamref name="T"/> are not the same, and the declaring type does not inherit from <typeparamref name="T"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the type of the property does not match the type specified by <typeparamref name="TP"/>, or <see cref="object"/>.</para>
+		/// </exception>
 		/// <returns>The method that will retrieve a property value from an instance.</returns>
 		public static PropertyGetter<T, TP> CreatePropertyGetter<T, TP>(this PropertyInfo propertyInfo)
 		{
@@ -207,6 +213,12 @@ namespace Gorgon.Reflection
 		/// </para>
 		/// </remarks>
 		/// <returns>The method that will assign a value to a property on an instance.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="propertyInfo"/> has a <b>null</b> <see cref="MemberInfo.DeclaringType"/> property.</exception>
+		/// <exception cref="InvalidCastException">Thrown when the declaring type of the property and type specified by <typeparamref name="T"/> are not the same, and the declaring type does not inherit from <typeparamref name="T"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the type of the property does not match the type specified by <typeparamref name="TP"/>, or <see cref="object"/>.</para>
+		/// </exception>
 		public static PropertySetter<T, TP> CreatePropertySetter<T, TP>(this PropertyInfo propertyInfo)
 		{
 			if (propertyInfo == null)
@@ -292,7 +304,7 @@ namespace Gorgon.Reflection
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="TypeLoadException">Thrown when the type does not contain a constructor with the specified <paramref name="paramTypes"/>.</exception>
-		/// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter (T) is not the same as the <paramref name="type"/> parameter.</exception>
+		/// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter <typeparamref name="T"/> is not the same as the <paramref name="type"/> parameter.</exception>
 		public static ObjectActivator<T> CreateActivator<T>(this Type type, params Type[] paramTypes)
 		{
 			if (type == null)

@@ -1505,7 +1505,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown if the current video device is a SM2_a_b or SM4_x device.</exception>
 		public void DrawInstancedIndirect(GorgonBaseBuffer buffer, int alignedByteOffset, bool isIndexed)
 		{
-			GorgonDebug.AssertNull(buffer, "buffer");
+			buffer.ValidateObject("buffer");
 
 #if DEBUG
             if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)

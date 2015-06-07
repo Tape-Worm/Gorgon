@@ -98,7 +98,7 @@ namespace Gorgon.Animation
 		{
 		    IKeyFrame[] frames = keyFrames.ToArray();
 
-			GorgonDebug.AssertParamRange(index, 0, Count, "index");
+			index.ValidateRange("index", 0, Count);
 
 			foreach (var key in frames)
 			{
