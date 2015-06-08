@@ -80,7 +80,7 @@ namespace Gorgon.Core
 		// Application loop method.														
 		private static Func<bool> _loop;
 		// Flag to indicate that frame rate timing has started.
-        private static bool _timingStarted = true;
+        private static bool _timingStarted;
 		// The log interface to use.
 		private static IGorgonLog _log;
 		// The dummy log interface.
@@ -306,10 +306,10 @@ namespace Gorgon.Core
 			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.
-			    if (_timingStarted)
+			    if (!_timingStarted)
 			    {
 			        GorgonTiming.Reset();
-			        _timingStarted = false;
+			        _timingStarted = true;
 			    }
 
 				GorgonTiming.Update();
@@ -366,6 +366,19 @@ namespace Gorgon.Core
 		{
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
 		    AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+
+			// Initialize the timer.
+			if (GorgonTimerQpc.SupportsQpc())
+			{
+				GorgonTiming.Timer = new GorgonTimerQpc();
+			}
+			else
+			{
+				// Set the period to 1 millisecond before using the multimedia timing, otherwise things may not be 
+				// accurate. 
+				GorgonTimerMultimedia.BeginTiming();
+				GorgonTiming.Timer = new GorgonTimerMultimedia();
+			}
 
 		    // Display the form.
 			if ((ApplicationForm != null) && (!ApplicationForm.IsDisposed))
@@ -440,9 +453,9 @@ namespace Gorgon.Core
 			PlugIns.UnloadAll();
 
 			// Reset the low resolution timer period on application end.
-			if (GorgonTimer.UsingLowResTimers)
+			if ((GorgonTiming.Timer != null) && (GorgonTiming.Timer is GorgonTimerMultimedia))
 			{
-				GorgonTimer.ResetLowResTimerPeriod();
+				GorgonTimerMultimedia.EndTiming();
 			}
 
 			Log.Print("Shutting down.", LoggingLevel.All);
@@ -531,7 +544,7 @@ namespace Gorgon.Core
 			    }
 
 			    IsRunning = true;
-			    _timingStarted = true;
+			    _timingStarted = false;
                 Application.Run(context);
 			}
 			catch (Exception ex)
@@ -580,7 +593,7 @@ namespace Gorgon.Core
 				}
 
 				IsRunning = true;
-                _timingStarted = true;
+                _timingStarted = false;
 				Application.Run(ApplicationForm);
 			}
 			catch (Exception ex)
@@ -622,7 +635,7 @@ namespace Gorgon.Core
 				}
 
 				IsRunning = true;
-                _timingStarted = true;
+                _timingStarted = false;
 				Application.Run();
 			}
 			catch (Exception ex)
@@ -742,9 +755,6 @@ namespace Gorgon.Core
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.
 			UnfocusedSleepTime = 10;
-
-            // Initializing application timing.
-            GorgonTiming.Reset();
 		}
 		#endregion
 	}

@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Example.Properties;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers;
@@ -131,7 +130,6 @@ namespace Gorgon.Graphics.Example
 		private static GorgonInputLayout _inputLayout;			    // Input layout.
 		private static GorgonTexture2D _texture;					// Our texture.
 		private static GorgonConstantBuffer _wvpBuffer;			    // Our world/view/project matrix buffer.
-		private static GorgonDataStream _wvpBufferStream;		    // Stream to our buffer.
 		private static Gorgon2D _2D;								// 2D interface.
 		private static Matrix _viewMatrix = Matrix.Identity;		// Our view matrix.
 		private static Matrix _projMatrix = Matrix.Identity;		// Our projection matrix.
@@ -308,9 +306,7 @@ namespace Gorgon.Graphics.Example
 			Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-			_wvpBufferStream.Write(wvp);
-			_wvpBufferStream.Position = 0;
-			_wvpBuffer.Update(_wvpBufferStream);
+			_wvpBuffer.Update(ref wvp);
 		}
 
 		/// <summary>
@@ -369,7 +365,7 @@ namespace Gorgon.Graphics.Example
 
 			// Create the 2D interface for our text.
 			_2D = Graphics.Output.Create2DRenderer(_swap);									
-
+			
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
@@ -416,7 +412,6 @@ namespace Gorgon.Graphics.Example
 				{
 					SizeInBytes = Matrix.SizeInBytes
 				});
-			_wvpBufferStream = new GorgonDataStream(_wvpBuffer.SizeInBytes);
 
 			// Create our planes.
 			// Here's where we create the 2 planes for our rear wall and floor.  We set the texture size to texel units
@@ -552,11 +547,6 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
-				if (_wvpBufferStream != null)				
-				{
-					_wvpBufferStream.Dispose();
-				}
-
 				if (Graphics != null)
 				{
 					Graphics.Dispose();

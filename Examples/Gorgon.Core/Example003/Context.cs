@@ -41,8 +41,10 @@ namespace Gorgon.Examples
 		: ApplicationContext
 	{
 		#region Variables.
-		private readonly GorgonTimer _timer;		// A timer for the splash screen.
-		private formSplash _splashScreen;		    // A splash screen.
+		// A timer for the splash screen.
+		private readonly IGorgonTimer _timer;
+		// A splash screen.
+		private formSplash _splashScreen;		    
 		#endregion
 
 		#region Methods.
@@ -167,7 +169,14 @@ namespace Gorgon.Examples
 		public Context()
 		{
 			// Create our timer object.
-			_timer = new GorgonTimer();
+			if (GorgonTimerQpc.SupportsQpc())
+			{
+				_timer = new GorgonTimerQpc();
+			}
+			else
+			{
+				_timer = new GorgonTimerMultimedia();
+			}
 
 			// Create the splash screen and the main interface.
 			_splashScreen = new formSplash();			

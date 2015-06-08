@@ -1356,7 +1356,7 @@
         </member>
         <member name="T:SlimMath.Design.HalfConverter">
             <summary>
-            Provides a type converter to convert <see cref="T:SlimDX.Half" /> objects to and from various 
+            Provides a type converter to convert <c>SlimDX.Half</c> objects to and from various 
             other representations.
             </summary>
         </member>
@@ -2813,6 +2813,7 @@
             <param name="scale">When the method completes, contains the scaling component of the decomposed matrix.</param>
             <param name="rotation">When the method completes, contains the rtoation component of the decomposed matrix.</param>
             <param name="translation">When the method completes, contains the translation component of the decomposed matrix.</param>
+            <returns><b>true</b> if the matrix contains a rotation matrix, <b>false</b> if not.</returns>
             <remarks>
             This method is designed to decompose an SRT transformation matrix only.
             </remarks>
@@ -2826,10 +2827,10 @@
         </member>
         <member name="M:SlimMath.Matrix.ExchangeColumns(System.Int32,System.Int32)">
             <summary>
-            
+            Function to exchange two sets of column values within the matrix.
             </summary>
-            <param name="firstColumn"></param>
-            <param name="secondColumn"></param>
+            <param name="firstColumn">The source column to exchange.</param>
+            <param name="secondColumn">The destination column to exchange.</param>
         </member>
         <member name="M:SlimMath.Matrix.ToArray">
             <summary>
@@ -5321,6 +5322,13 @@
         <member name="M:SlimMath.Utilities.RoundInt(System.Single)">
             <summary>
             Function to round a floating point value to an integer.
+            </summary>
+            <param name="value">Value to round.</param>
+            <returns>Rounded value.</returns>
+        </member>
+        <member name="M:SlimMath.Utilities.RoundUInt(System.Single)">
+            <summary>
+            Function to round a floating point value to an unsigned integer.
             </summary>
             <param name="value">Value to round.</param>
             <returns>Rounded value.</returns>

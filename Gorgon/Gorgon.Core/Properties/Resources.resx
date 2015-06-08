@@ -960,4 +960,10 @@ Code: 0x{2}</value>
   <data name="SettingsDocVersion" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SettingsDocVersion.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="GOR_ERR_TIME_QPC_NOT_AVAILABLE" xml:space="preserve">
+    <value>The QPC timer is not supported on this system.</value>
+  </data>
+  <data name="GOR_ERR_TIMING_NO_TIMER" xml:space="preserve">
+    <value>No timer has been assigned to the timing data.</value>
+  </data>
 </root>

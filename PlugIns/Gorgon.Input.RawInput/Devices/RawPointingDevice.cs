@@ -46,7 +46,7 @@ namespace Gorgon.Input.Raw
 		private readonly MessageFilter _messageFilter;			// Window message filter.
 		private RAWINPUTDEVICE _device;					        // Input device.
 		private bool _outside;							        // Outside of window?
-		private readonly GorgonTimer _doubleClicker;		    // Double click timer.
+		private readonly IGorgonTimer _doubleClicker;		    // Double click timer.
 		private int _clickCount;							    // Click counter.		
 		private PointF _doubleClickPosition;				    // Double click position.
 		private PointingDeviceButtons _doubleClickButton;	    // Button that was double clicked.
@@ -420,7 +420,14 @@ namespace Gorgon.Input.Raw
 		{
 			GorgonApplication.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
 			_deviceHandle = handle;
-			_doubleClicker = new GorgonTimer();
+			if (GorgonTimerQpc.SupportsQpc())
+			{
+				_doubleClicker = new GorgonTimerQpc();
+			}
+			else
+			{
+				_doubleClicker = new GorgonTimerMultimedia();
+			}
 			_doubleClicker.Reset();
 			_messageFilter = owner.MessageFilter;
 		}

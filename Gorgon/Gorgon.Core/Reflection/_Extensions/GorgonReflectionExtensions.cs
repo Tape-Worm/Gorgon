@@ -123,7 +123,7 @@ namespace Gorgon.Reflection
 		/// the cache. Failure to do so may result in drastic performance drops.
 		/// </para>
 		/// <para>
-		/// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
+		/// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters" target="_blank">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
 		/// </para>
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -209,7 +209,7 @@ namespace Gorgon.Reflection
 		/// the cache. Failure to do so may result in drastic performance drops.
 		/// </para>
 		/// <para>
-		/// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
+		/// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters" target="_blank">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
 		/// </para>
 		/// </remarks>
 		/// <returns>The method that will assign a value to a property on an instance.</returns>

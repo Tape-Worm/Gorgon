@@ -96,7 +96,7 @@ namespace Gorgon.Configuration
 	/// </para>
 	/// <para>
 	/// <h2>About date formatting</h2>
-	/// This object can (de)serialize a date/time value from/to a string in the backing file. To do this, the application takes the date value and formats it according to the <a href="http://www.iso.org/iso/catalogue_detail?csnumber=40874">ISO 8601</a> 
+	/// This object can (de)serialize a date/time value from/to a string in the backing file. To do this, the application takes the date value and formats it according to the <a href="http://www.iso.org/iso/catalogue_detail?csnumber=40874" target="_blank">ISO 8601</a> 
 	/// specification.
 	/// </para>
 	/// </remarks>

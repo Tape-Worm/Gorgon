@@ -150,6 +150,8 @@
     <Compile Include="GorgonHandledEventArgs.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
+    <Compile Include="Timing\GorgonTimerMultimedia.cs" />
+    <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
@@ -169,7 +171,7 @@
     <Compile Include="Collections\GorgonBaseNamedObjectList.cs" />
     <Compile Include="Diagnostics\GorgonLogFile.cs" />
     <Compile Include="Timing\GorgonTiming.cs" />
-    <Compile Include="Timing\GorgonTimer.cs" />
+    <Compile Include="Timing\GorgonTimerQpc.cs" />
     <Compile Include="_Interfaces\IGorgonNamedObject.cs" />
     <Compile Include="IO\GorgonFileExtension.cs" />
     <Compile Include="IO\GorgonFileExtensionCollection.cs" />

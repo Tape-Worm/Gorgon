@@ -178,6 +178,9 @@ namespace Gorgon.Examples
 
 			try
 			{
+				// In order to use the GorgonTiming class, we need to supply a timer to it.
+				GorgonTiming.Timer = new GorgonTimerMultimedia();
+
 				WriteOptions();
 				ReadValue();
 			}
