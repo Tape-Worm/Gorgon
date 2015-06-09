@@ -7,7 +7,7 @@
     <ProjectGuid>{256CC806-B7DC-4125-A350-F78F520D9742}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
+    <RootNamespace>Gorgon.Graphics.Example</RootNamespace>
     <AssemblyName>Boinger</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
