@@ -241,7 +241,7 @@ namespace Gorgon.IO
 		/// <param name="offset">Offset of the file within a packed file.</param>
 		/// <param name="createDate">Create date for the file.</param>
 		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, string fileName, string mountPoint, string physicalPath, long fileSize, long offset, DateTime createDate)
-			: base(fileName.RemoveIllegalFilenameChars())
+			: base(fileName.FormatFileName())
 		{
 			Provider = provider;
 			Directory = directory;

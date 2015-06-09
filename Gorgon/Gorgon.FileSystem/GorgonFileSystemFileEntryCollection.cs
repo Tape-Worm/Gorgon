@@ -94,7 +94,7 @@ namespace Gorgon.IO
 		{
 			get
 			{
-				fileName = fileName.RemoveIllegalFilenameChars();
+				fileName = fileName.FormatFileName();
 
 				if (!_files.ContainsKey(fileName))
 				{
@@ -105,7 +105,7 @@ namespace Gorgon.IO
 			}
 			set
 			{
-				string formattedFileName = fileName.RemoveIllegalFilenameChars();
+				string formattedFileName = fileName.FormatFileName();
 
 				if (string.IsNullOrWhiteSpace(formattedFileName))
 				{
@@ -184,7 +184,7 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY);
 			}
 
-			name = name.RemoveIllegalFilenameChars();
+			name = name.FormatFileName();
 			GorgonFileSystemFileEntry file;
 
 			if (!_files.TryGetValue(name, out file))
@@ -205,7 +205,7 @@ namespace Gorgon.IO
 		/// </returns>
 		public bool Contains(string name)
 		{
-			name = name.RemoveIllegalPathChars();
+			name = name.FormatFileName();
 
 			return !string.IsNullOrWhiteSpace(name) && _files.ContainsKey(name);
 		}
@@ -222,7 +222,7 @@ namespace Gorgon.IO
 		{
 			value = null;
 
-			name = name.RemoveIllegalFilenameChars();
+			name = name.FormatFileName();
 
 			return !string.IsNullOrWhiteSpace(name) && _files.TryGetValue(name, out value);
 		}

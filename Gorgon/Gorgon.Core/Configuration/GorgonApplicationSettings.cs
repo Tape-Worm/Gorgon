@@ -321,12 +321,12 @@ namespace Gorgon.Configuration
 				{
 					directory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
 					             + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)
-					             + ApplicationName.RemoveIllegalFilenameChars()).FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+					             + ApplicationName);
 				}
 
 				if (string.IsNullOrWhiteSpace(fileName))
 				{
-					fileName = System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
+					fileName = System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name, "config.xml");
 				}
 
 				fileName = fileName.FormatFileName();
@@ -1126,10 +1126,11 @@ namespace Gorgon.Configuration
 			ApplicationName = applicationName;
 			Version = settingsVersion;
 
-			_path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-			_path += System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-			_path += applicationName.RemoveIllegalFilenameChars() + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-			_path += System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
+			_path = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+			         + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)
+			         + applicationName + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)
+			         + System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name, "config.xml"))
+				.FormatPath(System.IO.Path.DirectorySeparatorChar);
 
 			_xmlSettings = XDocument.Parse(Version != null ? Resources.SettingsDocVersion : Resources.SettingsDocNoVersion);
 			_rootNode = _xmlSettings.Element(RootNodeName);

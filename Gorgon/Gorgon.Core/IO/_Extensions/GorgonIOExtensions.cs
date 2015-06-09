@@ -29,207 +29,342 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.IO
 {
-    /// <summary>
-    /// String formatting extensions for IO operations.
-    /// </summary>
-    public static class GorgonIOExtensions
-    {
-        #region Variables.
-        private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-        private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+	/// <summary>
+	/// Extension methods for IO operations and string formatting.
+	/// </summary>
+	public static class GorgonIOExtensions
+	{
+		#region Variables.
+		// The system directory path separator.
+		private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+		// The system alternate path separator.
+		private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+		// Illegal path characters.
+		private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
+		// Illegal file name characters.
+		private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
+		// Buffer for reading a string back from a stream.
+		private static byte[] _buffer;
+		// Buffer to hold decoded characters when reading from a stream.
+		private static char[] _charBuffer;
+		#endregion
 
-        private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();          // Illegal path characters.
-        private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();      // Illegal file name characters.
-        #endregion
+		#region Methods.
+		/// <summary>
+		/// Function to write a string into a stream.
+		/// </summary>
+		/// <param name="value">The string to write into the stream.</param>
+		/// <param name="stream">Stream to encode the string into.</param>
+		/// <remarks>
+		/// <para>
+		/// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
+		/// </para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		/// <returns>The number of bytes written to the stream.</returns>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		public static int WriteToStream(this string value, Stream stream)
+		{
+			return WriteToStream(value, stream, null);
+		}
 
-        #region Methods.
-        /// <summary>
-        /// Function to write a string into a stream.
-        /// </summary>
-        /// <param name="value">The string to write into the stream.</param>
-        /// <param name="stream">Stream to encode the string into.</param>
-        /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
-        /// string as a series of 7 bit byte values.
-        /// </remarks>
-        /// <returns>The number of bytes written to the stream.</returns>
-        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is <b>null</b>.</exception>
-        public static int WriteToStream(this string value, Stream stream)
-        {
-            return WriteToStream(value, stream, null);
-        }
+		/// <summary>
+		/// Function to encode a string into a stream with the specified encoding.
+		/// </summary>
+		/// <param name="value">The string to write into the stream.</param>
+		/// <param name="stream">Stream to encode the string into.</param>
+		/// <param name="encoding">Encoding for the string.</param>
+		/// <remarks>
+		/// <para>
+		/// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
+		/// </para>
+		/// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		/// <returns>The number of bytes written to the stream.</returns>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		public static int WriteToStream(this string value, Stream stream, Encoding encoding)
+		{
+			if (string.IsNullOrEmpty(value))
+			{
+				return 0;
+			}
 
-        /// <summary>
-        /// Function to encode a string into a stream with the specified encoding.
-        /// </summary>
-        /// <param name="value">The string to write into the stream.</param>
-        /// <param name="stream">Stream to encode the string into.</param>
-        /// <param name="encoding">Encoding for the string.</param>
-        /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
-        /// string as a series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
-        /// </remarks>
-        /// <returns>The number of bytes written to the stream.</returns>
-        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is <b>null</b>.</exception>
-        public static int WriteToStream(this string value, Stream stream, Encoding encoding)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return 0;
-            }
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
 
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
-
-            if (!stream.CanWrite)
-            {
-                throw new IOException(Resources.GOR_STREAM_IS_READONLY);
-            }
-
-            if (encoding == null)
-            {
-                encoding = Encoding.UTF8;
-            }
-
-            byte[] stringData = encoding.GetBytes(value);
-            int size = stringData.Length;
-            int result = size + 1;
-
-            // Build the 7 bit encoded length.
-            while (size >= 0x80)
-            {
-                stream.WriteByte((byte)((size | 0x80) & 0xFF));
-                size >>= 7;
-                result++;
-            }
-
-            stream.WriteByte((byte)size);
-            stream.Write(stringData, 0, stringData.Length);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Function to write a string to a stream with the specified encoding.
-        /// </summary>
-        /// <param name="stream">The stream to write the string into.</param>
-        /// <param name="value">The string to write.</param>
-        /// <param name="encoding">The encoding for the string.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
-        /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
-        /// </remarks>
-        public static void WriteString(this Stream stream, string value, Encoding encoding)
-        {
-            WriteToStream(value, stream, encoding);
-        }
-
-        /// <summary>
-        /// Function to write a string to a stream with the specified encoding.
-        /// </summary>
-        /// <param name="stream">The stream to write the string into.</param>
-        /// <param name="value">The string to write.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
-        /// a series of 7-bit bytes.
-        /// </remarks>
-        public static void WriteString(this Stream stream, string value)
-        {
-            WriteToStream(value, stream, null);
-        }
-
-        /// <summary>
-        /// Function to read a string from a stream.
-        /// </summary>
-        /// <param name="stream">The stream to read the string from.</param>
-        /// <returns>The string in the stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
-        /// a series of 7-bit bytes.
-        /// </remarks>
-        public static string ReadString(this Stream stream)
-        {
-            return ReadString(stream, null);
-        }
-
-        /// <summary>
-        /// Function to read a string from a stream with the specified encoding.
-        /// </summary>
-        /// <param name="stream">The stream to read the string from.</param>
-        /// <param name="encoding">The encoding for the string.</param>
-        /// <returns>The string in the stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-        /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
-        /// a series of 7-bit bytes.
-        /// <para>If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.</para>
-        /// </remarks>
-        public static string ReadString(this Stream stream, Encoding encoding)
-        {
-            int stringLength = 0;
-
-            if (stream == null)
-            {
-                throw new ArgumentNullException("stream");
-            }
+			if (!stream.CanWrite)
+			{
+				throw new IOException(Resources.GOR_STREAM_IS_READONLY);
+			}
 
 			if (encoding == null)
 			{
 				encoding = Encoding.UTF8;
 			}
 
-            // String length is encoded in a 7 bit integer.
-            // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
-            int counter = 0;
-            while (true)
-            {
-                int value = stream.ReadByte();
+			byte[] stringData = encoding.GetBytes(value);
+			int size = stringData.Length;
+			int result = size + 1;
 
-                if (value == -1)
-                {
-                    throw new IOException(Resources.GOR_STREAM_EOS);
-                }
+			// Build the 7 bit encoded length.
+			while (size >= 0x80)
+			{
+				stream.WriteByte((byte)((size | 0x80) & 0xFF));
+				size >>= 7;
+				result++;
+			}
 
-                stringLength |= (value & 0x7F) << counter;
-                counter += 7;
-                if (((value & 0x80) == 0) || (counter > 32))
-                    break;
-            }
+			stream.WriteByte((byte)size);
+			stream.Write(stringData, 0, stringData.Length);
 
-            if (stringLength == 0)
-                return string.Empty;
-            
-            var byteData = new byte[stringLength];
-            stream.Read(byteData, 0, byteData.Length);
-            return encoding.GetString(byteData, 0, byteData.Length);
-        }
+			return result;
+		}
+
+		/// <summary>
+		/// Function to write a string to a stream with the specified encoding.
+		/// </summary>
+		/// <param name="stream">The stream to write the string into.</param>
+		/// <param name="value">The string to write.</param>
+		/// <param name="encoding">The encoding for the string.</param>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
+		/// </para>
+		/// <para>
+		/// If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.
+		/// </para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		public static void WriteString(this Stream stream, string value, Encoding encoding)
+		{
+			WriteToStream(value, stream, encoding);
+		}
+
+		/// <summary>
+		/// Function to write a string to a stream with the specified encoding.
+		/// </summary>
+		/// <param name="stream">The stream to write the string into.</param>
+		/// <param name="value">The string to write.</param>
+		/// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
+		/// </para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		public static void WriteString(this Stream stream, string value)
+		{
+			WriteToStream(value, stream, null);
+		}
+
+		/// <summary>
+		/// Function to read a string from a stream.
+		/// </summary>
+		/// <param name="stream">The stream to read the string from.</param>
+		/// <returns>The string in the stream.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
+		/// </para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		public static string ReadString(this Stream stream)
+		{
+			return ReadString(stream, null);
+		}
+
+		/// <summary>
+		/// Function to read a string from a stream with the specified encoding.
+		/// </summary>
+		/// <param name="stream">The stream to read the string from.</param>
+		/// <param name="encoding">The encoding for the string.</param>
+		/// <returns>The string in the stream.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
+		/// <remarks>
+		/// <para>
+		/// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
+		/// </para>
+		/// <para>
+		/// If the <paramref name="encoding"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding is used.
+		/// </para>
+		/// <para>
+		/// This method is <b>not</b> thread safe. Use care when using threads with this method.
+		/// </para>
+		/// </remarks>
+		public static string ReadString(this Stream stream, Encoding encoding)
+		{
+			int stringLength = 0;
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (encoding == null)
+			{
+				encoding = Encoding.UTF8;
+			}
+
+			// String length is encoded in a 7 bit integer.
+			// We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
+			int counter = 0;
+			while (true)
+			{
+				int value = stream.ReadByte();
+
+				if (value == -1)
+				{
+					throw new IOException(Resources.GOR_STREAM_EOS);
+				}
+
+				stringLength |= (value & 0x7F) << counter;
+				counter += 7;
+				if (((value & 0x80) == 0) || (counter > 32))
+					break;
+			}
+
+			if (stringLength == 0)
+			{
+				return string.Empty;
+			}
+
+			// Find the number of bytes required for 4096 characters.
+			int maxByteCount = encoding.GetMaxByteCount(4096);
+			int maxCharCount = encoding.GetMaxCharCount(maxByteCount);
+
+			// If they've changed or haven't been allocated yet, then allocate our worker buffers.
+			if ((_buffer == null) || (_buffer.Length < maxByteCount))
+			{
+				_buffer = new byte[maxByteCount];
+			}
+
+			if ((_charBuffer == null) || (_charBuffer.Length < maxCharCount))
+			{
+				_charBuffer = new char[maxCharCount];
+			}
+
+			Decoder decoder = encoding.GetDecoder();
+			StringBuilder result = null;
+			counter = 0;
+
+			// Buffer the string in, just in case it's super long.
+			while ((stream.Position < stream.Length) && (counter < stringLength))
+			{
+				// Fill the byte buffer.
+				int bytesRead = stream.Read(_buffer, 0, stringLength <= _buffer.Length ? stringLength : _buffer.Length);
+
+				if (bytesRead == 0)
+				{
+					throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+				}
+
+				// Get the characters.
+				int charsRead = decoder.GetChars(_buffer, 0, bytesRead, _charBuffer, 0);
+
+				// If we've already read the entire string, just dump it back out now.
+				if ((counter == 0) && (bytesRead == stringLength))
+				{
+					return new string(_charBuffer, 0, charsRead);
+				}
+
+				// We'll need a bigger string. So allocate a string builder and use that.
+				if (result == null)
+				{
+					// Try to max out the string builder size by the length of our string, in characters.
+					result = new StringBuilder(encoding.GetMaxCharCount(stringLength));
+				}
+
+				result.Append(_charBuffer, 0, charsRead);
+
+				counter += bytesRead;
+			}
+
+			return result == null ? string.Empty : result.ToString();
+		}
 
         /// <summary>
-        /// Function to return a properly file name.
+        /// Function to format a filename with safe characters.
         /// </summary>
-        /// <param name="path">Path to the file.</param>
-        /// <returns>The formatted path to the file.</returns>
+        /// <param name="path">The path containing the filename to evaluate.</param>
+		/// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+		/// <remarks>
+		/// <para>
+		/// This will replace any illegal filename characters with the underscore character.
+		/// </para>
+		/// <para>
+		/// If <b>null</b> (<i>Nothing</i> in VB.Net) or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+		/// filename, then an empty string will be returned as well.
+		/// </para>
+		/// </remarks>
         public static string FormatFileName(this string path)
         {
-            return string.IsNullOrEmpty(path) ? string.Empty : RemoveIllegalFilenameChars(Path.GetFileName(path));
+	        if (string.IsNullOrWhiteSpace(path))
+	        {
+		        return string.Empty;
+	        }
+
+			var output = new StringBuilder(path);
+
+			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+
+	        string fileName = Path.GetFileName(output.ToString());
+
+	        if (string.IsNullOrWhiteSpace(fileName))
+	        {
+		        return string.Empty;
+	        }
+
+	        output.Length = 0;
+	        output.Append(fileName);
+
+			output = _illegalFileChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+
+	        return output.ToString();
         }
 
         /// <summary>
-        /// Function to return a properly formatted directory name.
+        /// Function to format a directory path with safe characters.
         /// </summary>
-        /// <param name="path">Path to repair.</param>
+        /// <param name="path">The directory path to evaluate..</param>
         /// <param name="directorySeparator">Directory separator character to use.</param>
-        /// <returns>The formatted path.</returns>
-        /// <remarks>When the <paramref name="directorySeparator"/> character is whitespace or illegal, then the system will use the <see cref="F:System.IO.Path.DirectorySeparatorChar"/> character.</remarks>
+        /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
+        /// to <paramref name="directorySeparator"/>.</returns> 
+        /// <remarks>
+        /// <para>
+        /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
+        /// passed to <paramref name="directorySeparator"/>.
+        /// </para>
+        /// <para>
+		/// If <b>null</b> (<i>Nothing</i> in VB.Net) or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+		/// that string will be formatted as though it were a directory path.
+		/// </para>
+        /// </remarks>
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             string directorySep = _directoryPathSeparator;
@@ -245,9 +380,9 @@ namespace Gorgon.IO
                 directorySeparator = Path.DirectorySeparatorChar;
             }
 
-            path = RemoveIllegalPathChars(path);
-
-            var output = new StringBuilder(path);
+			var output = new StringBuilder(path);
+			
+			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
             if (directorySeparator != Path.AltDirectorySeparatorChar)
             {
@@ -265,7 +400,7 @@ namespace Gorgon.IO
             }
 
             // Remove doubled up separators.
-            while (output.ToString().LastIndexOf(doubleSeparator, StringComparison.Ordinal) > -1)
+            while (output.LastIndexOf(doubleSeparator, StringComparison.Ordinal) > -1)
             {
                 output = output.Replace(doubleSeparator, directorySep);
             }
@@ -274,23 +409,23 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Function to remove any illegal path characters from a path.
+        /// Function to format a specific piece of a path.
         /// </summary>
-        /// <param name="path">Path to fix.</param>
-        /// <returns>The corrected path.</returns>
-        /// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-        public static string RemoveIllegalPathChars(this string path)
+        /// <param name="path">The path part to evaluate and repair.</param>
+        /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// This method removes illegal symbols from the <paramref name="path"/> and replaces them with an underscore character. It will not respect path separators and will consider those characters 
+        /// as illegal if provided in the <paramref name="path"/> parameter.
+        /// </remarks>
+        public static string FormatPathPart(this string path)
         {
-            if (path == null)
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("path");
+	            return string.Empty;
             }
 
-            if (path.Length == 0)
-            {
-                return string.Empty;
-            }
+		    path = path.Replace(Path.DirectorySeparatorChar, '_');
+		    path = path.Replace(Path.AltDirectorySeparatorChar, '_');
 
             var output = new StringBuilder(path);
 
@@ -299,27 +434,84 @@ namespace Gorgon.IO
             return output.ToString();
         }
 
+		/// <summary>
+		/// Function to split a path into component parts.
+		/// </summary>
+		/// <param name="path">The path to split.</param>
+		/// <param name="directorySeparator">The separator to split the path on.</param>
+		/// <returns>An array containing the parts of the path, or an empty array if the path is <b>null</b> (<i>Nothing</i> in VB.Net) or empty.</returns>
+		/// <remarks>
+		/// This will take a path a split it into individual pieces for evaluation. The <paramref name="directorySeparator"/> parameter will be the character 
+		/// used to determine how to split the path. For example:
+		/// <code language="csharp">
+		///		string myPath = @"C:\Windows\System32\ddraw.dll";
+		///		string[] parts = myPath.GetPathParts(Path.DirectorySeparatorChar);
+		///		
+		///		foreach(string part in parts)
+		///     {
+		///			Console.WriteLine(part);
+		///		}
+		/// 
+		///		/* Output should be:
+		///		 * C:
+		///		 * Windows
+		///		 * System32
+		///		 * ddraw.dll
+		///		 */
+		/// </code>
+		/// </remarks>
+		public static string[] GetPathParts(this string path, char directorySeparator)
+		{
+			path = path.FormatPath(directorySeparator);
+
+			return path.Split(new[]
+			                  {
+				                  directorySeparator
+			                  },
+			                  StringSplitOptions.RemoveEmptyEntries);
+		}
+
         /// <summary>
-        /// Function to remove any illegal file name characters from a path.
+        /// Function to format a path with safe characters.
         /// </summary>
-        /// <param name="path">Path to fix.</param>
-        /// <returns>The corrected file name.</returns>
-        /// <remarks>This will replace any illegal characters with the '_' symbol.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-        public static string RemoveIllegalFilenameChars(this string path)
+        /// <param name="path">Path to the file or folder to format.</param>
+		/// <param name="directorySeparator">Directory separator character to use.</param>
+        /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory"/>, and if the path contains a filename, it will be 
+        /// formatted according to the formatting applied by the <see cref="FormatFileName"/> method.
+		/// </para>
+		/// <para>
+		/// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+		/// </para>
+		/// <para>
+		/// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+		/// </para>
+		/// </remarks>
+		public static string FormatPath(this string path, char directorySeparator)
         {
-            if (path == null)
+            if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentNullException("path");
+	            return string.Empty;
             }
 
-            if (path.Length == 0)
-            {
-                return string.Empty;
-            }
+			// Filter out bad characters.
+	        var output = new StringBuilder(path);
+			output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-            var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar));
-            var output = new StringBuilder(Path.GetFileName(path));
+            var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
+
+	        path = output.ToString();
+
+			// Try to get the filename portion.
+	        output.Length = 0;
+            output.Append(Path.GetFileName(path));
+
+	        if (output.Length == 0)
+	        {
+		        return filePath.ToString();
+	        }
 
             output = _illegalFileChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 

@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
 using Gorgon.Native;
@@ -44,12 +45,13 @@ namespace Gorgon.IO
 		: BinaryReader
 	{
 		#region Variables.
-		private byte[] _tempBuffer;			// Temporary buffer.
+		// Temporary buffer.
+		private byte[] _tempBuffer;			
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return whether to keep the underlying stream open or not after the reader is closed.
+		/// Property to return whether to keep the underlying stream open or not after the reader is closed.
 		/// </summary>
 		public bool KeepStreamOpen
 		{
@@ -118,6 +120,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <returns>The value in the stream.</returns>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
 		public unsafe T ReadValue<T>()
 			where T : struct
 		{
@@ -166,6 +177,15 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
 		/// <para>-or-</para>
@@ -235,6 +255,15 @@ namespace Gorgon.IO
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
 		/// </exception>
@@ -250,6 +279,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
 		public void ReadRange<T>(T[] value)
@@ -268,6 +306,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
 		public T[] ReadRange<T>(int count)
 			where T : struct

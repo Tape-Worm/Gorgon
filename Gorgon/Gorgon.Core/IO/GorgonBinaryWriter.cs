@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
 using Gorgon.Native;
@@ -44,7 +45,8 @@ namespace Gorgon.IO
 		: BinaryWriter
 	{
 		#region Variables.
-		private byte[] _tempBuffer;		// Temporary buffer.
+		// Temporary buffer.
+		private byte[] _tempBuffer;
 		#endregion
 
 		#region Properties.
@@ -118,6 +120,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
 		/// <param name="value">Value to write to the stream.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		public unsafe void WriteValue<T>(T value)
 			where T : struct
@@ -163,6 +174,15 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
 		/// <para>-or-</para>
@@ -233,6 +253,15 @@ namespace Gorgon.IO
 		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
@@ -248,6 +277,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public void WriteRange<T>(T[] value)

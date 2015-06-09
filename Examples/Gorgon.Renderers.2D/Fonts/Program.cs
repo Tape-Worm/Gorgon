@@ -69,25 +69,20 @@ namespace Fonts
 				throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
-			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
-			{
-				path += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-			}
-
-			path = path.RemoveIllegalPathChars();
+			path = path.FormatDirectory(Path.DirectorySeparatorChar);
 
 			// If this is a directory, then sanitize it as such.
-			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
 			{
-				path += resourceItem.RemoveIllegalPathChars();
+				path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
 			}
 			else
 			{
-				// Otherwise, sanitize the file name.
-				path += resourceItem.RemoveIllegalFilenameChars();
+				// Otherwise, format the file name.
+				path += resourceItem.FormatFileName();
 			}
 
-			// Ensure that 
+			// Ensure that we have an absolute path.
 			return Path.GetFullPath(path);
 		}
 

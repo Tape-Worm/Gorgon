@@ -64,7 +64,7 @@ namespace Gorgon.IO
 		{
 			get
 			{
-				name = name.RemoveIllegalPathChars();
+				name = name.FormatPathPart();
 
 				GorgonFileSystemDirectory directory;
 
@@ -77,7 +77,7 @@ namespace Gorgon.IO
 			}
 			set
 			{
-				name = name.RemoveIllegalPathChars();
+				name = name.FormatPathPart();
 
 				if ((value == null)
 					|| (string.IsNullOrWhiteSpace(name)))
@@ -110,7 +110,7 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY);
 			}
 
-			name = name.RemoveIllegalPathChars();
+			name = name.FormatPathPart();
 
 			if (!_directories.ContainsKey(name))
 			{
@@ -132,7 +132,7 @@ namespace Gorgon.IO
 		{
 			value = null;
 
-			name = name.RemoveIllegalPathChars();
+			name = name.FormatPathPart();
 
 			return !string.IsNullOrWhiteSpace(name) && _directories.TryGetValue(name, out value);
 		}
@@ -144,7 +144,7 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
 		public bool Contains(string name)
 		{
-			name = name.RemoveIllegalPathChars();
+			name = name.FormatPathPart();
 
 			return !string.IsNullOrWhiteSpace(name) && _directories.ContainsKey(name);
 		}

@@ -201,7 +201,7 @@ namespace Gorgon.IO
 		/// <param name="name">The name of the directory.</param>
 		/// <param name="parent">Parent directory.</param>
 		internal GorgonFileSystemDirectory(GorgonFileSystem fileSystem, string name, GorgonFileSystemDirectory parent)
-			: base(name.RemoveIllegalPathChars())
+			: base(name.FormatPathPart())
 		{
 		    FileSystem = fileSystem;
 			_files = new GorgonFileSystemFileEntryCollection(this);

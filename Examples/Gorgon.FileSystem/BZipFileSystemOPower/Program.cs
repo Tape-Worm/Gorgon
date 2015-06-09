@@ -76,29 +76,24 @@ namespace Gorgon.Examples
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (<i>Nothing</i> in VB.Net) or empty.</exception>
         public static string GetResourcePath(string resourceItem)
         {
-            string path = Settings.Default.ResourceLocation;
+	        string path = Settings.Default.ResourceLocation;
 
             if (string.IsNullOrEmpty(resourceItem))
             {
                 throw new ArgumentException("The resource was not specified.", "resourceItem");
             }
 
-            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                path += Path.DirectorySeparatorChar.ToString();
-            }
-
-            path = path.RemoveIllegalPathChars();
+	        path = path.FormatDirectory(Path.DirectorySeparatorChar);
 
             // If this is a directory, then sanitize it as such.
             if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
-                path += resourceItem.RemoveIllegalPathChars();
+	            path += resourceItem.FormatDirectory(Path.DirectorySeparatorChar);
             }
             else
             {
-                // Otherwise, sanitize the file name.
-                path += resourceItem.RemoveIllegalFilenameChars();
+				// Otherwise, format the file name.
+	            path += resourceItem.FormatFileName();
             }
 
             // Ensure that 
