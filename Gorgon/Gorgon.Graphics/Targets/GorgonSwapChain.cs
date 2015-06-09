@@ -692,12 +692,12 @@ namespace Gorgon.Graphics
 		    // Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
 			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
+			CreateResources();
+
 			if (!Settings.IsWindowed)
 			{
 				ModeStateUpdate();
 			}
-
-			CreateResources();
 
 			Settings.Window.Resize += Window_Resize;
 			
