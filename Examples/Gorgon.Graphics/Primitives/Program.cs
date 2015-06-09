@@ -33,6 +33,7 @@ using Gorgon.Graphics.Example.Properties;
 using Gorgon.Input;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -641,11 +642,15 @@ namespace Gorgon.Graphics.Example
 
 			_cameraRotation = Vector2.Zero;
 
-			GorgonApplication.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
+			// TODO: Fix this to use the plug-in service instead of the "factory", it's going away.
+			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			{
+				GorgonApplication.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
 
-			_input = GorgonInputFactory.CreateInputFactory("GorgonLibrary.Input.GorgonRawPlugIn");
-			_keyboard = _input.CreateKeyboard(_form);
-			_mouse = _input.CreatePointingDevice(_form);
+				_input = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
+				_keyboard = _input.CreateKeyboard(_form);
+				_mouse = _input.CreatePointingDevice(_form);
+			}
 
 			_keyboard.KeyDown += (sender, args) =>
 			                     {

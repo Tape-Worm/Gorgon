@@ -32,6 +32,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.IO;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using SlimMath;
@@ -105,31 +106,39 @@ namespace CodecPlugIn
 		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
 	    private bool LoadCodec()
 		{
-			// Load our plug-in.
-			string plugInPath = GorgonApplication.ApplicationDirectory + "TVImageCodec.dll";
+			const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
 
-			if (!File.Exists(plugInPath))
+			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
-				return false;
+				// Load our plug-in.
+				string plugInPath = GorgonApplication.ApplicationDirectory + "TVImageCodec.dll";
+
+				if (!File.Exists(plugInPath))
+				{
+					return false;
+				}
+
+				// Ensure that we can load this file.
+				if (!pluginAssemblies.IsPluginAssembly(plugInPath))
+				{
+					return false;
+				}
+
+				pluginAssemblies.Load(plugInPath);
+
+				// Activate the plugin service.
+				var pluginService = new GorgonPluginService(pluginAssemblies);
+
+				// Find the plugin.
+				var plugIn = pluginService.GetPlugin<GorgonCodecPlugIn>(pluginName);
+
+				if (plugIn == null)
+				{
+					return false;
+				}
+
+				_customCodec = plugIn.CreateCodec();
 			}
-
-			if (!GorgonApplication.PlugIns.IsPlugInAssembly(plugInPath))
-			{
-				return false;
-			}
-
-			GorgonApplication.PlugIns.LoadPlugInAssembly(plugInPath);
-
-			// Get the plug-in object.
-			var plugIn = GorgonApplication.PlugIns["GorgonLibrary.Graphics.Example.TvImageCodecPlugIn"] as GorgonCodecPlugIn;
-
-			if (plugIn == null)
-			{
-				return false;
-			}
-
-			// Create the codec.
-			_customCodec = plugIn.CreateCodec();
 
 			return _customCodec != null;
 		}

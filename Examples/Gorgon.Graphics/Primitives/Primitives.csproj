@@ -7,7 +7,7 @@
     <ProjectGuid>{834D4440-7007-49BF-8B2E-F35F19FF0D58}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
+    <RootNamespace>Gorgon.Graphics.Example</RootNamespace>
     <AssemblyName>Primitives</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
