@@ -27,7 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Gorgon.Core.Collections.Specialized;
+using Gorgon.Collections.Specialized;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics

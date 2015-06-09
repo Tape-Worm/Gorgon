@@ -56,7 +56,7 @@ namespace Gorgon.IO
 
 		#region Methods.
 		/// <summary>
-		/// Function to write a string into a stream.
+		/// Function to write a string into a stream with UTF-8 encoding.
 		/// </summary>
 		/// <param name="value">The string to write into the stream.</param>
 		/// <param name="stream">Stream to encode the string into.</param>
@@ -159,7 +159,7 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to write a string to a stream with the specified encoding.
+		/// Function to write a string to a stream with UTF-8 encoding.
 		/// </summary>
 		/// <param name="stream">The stream to write the string into.</param>
 		/// <param name="value">The string to write.</param>
@@ -179,7 +179,7 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to read a string from a stream.
+		/// Function to read a string from a stream using UTF-8 encoding.
 		/// </summary>
 		/// <param name="stream">The stream to read the string from.</param>
 		/// <returns>The string in the stream.</returns>

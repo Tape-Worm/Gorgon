@@ -306,6 +306,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="count">Number of array elements to copy.</param>
+		/// <returns>An array filled with generic values.</returns>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 

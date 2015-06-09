@@ -27,7 +27,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Gorgon.Core.Collections.Specialized
+namespace Gorgon.Collections.Specialized
 {
 	/// <summary>
 	/// A custom concurrent dictionary that supplements the original <see cref="ConcurrentDictionary{TKey,TValue}"/> type by supplying a read-only interface.
