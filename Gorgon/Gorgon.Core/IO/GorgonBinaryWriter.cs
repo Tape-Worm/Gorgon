@@ -45,11 +45,48 @@ namespace Gorgon.IO
 		: BinaryWriter
 	{
 		#region Variables.
+		// The size of the temporary buffer used to stream data out.
+		private int _bufferSize = 65536;
 		// Temporary buffer.
 		private byte[] _tempBuffer;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the size of the buffer, in bytes, used to stream the data out.
+		/// </summary>
+		/// <remarks>
+		/// This value is meant to help in buffering data to the data source if the source data is large. It will only accept a value between 128 and 81920.  The upper bound is 
+		/// to ensure that the temporary buffer is not pushed into the Large Object Heap.
+		/// </remarks>
+		public int BufferSize
+		{
+			get
+			{
+				return _bufferSize;
+			}
+			set
+			{
+				if (value < 128)
+				{
+					value = 128;
+				}
+
+				if (value > 81920)
+				{
+					value = 81920;
+				}
+
+				_bufferSize = value;
+
+				// If we've previously allocated the buffer, then resize it.
+				if (_tempBuffer != null)
+				{
+					_tempBuffer = new byte[_bufferSize];
+				}
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return whether to keep the underlying stream open or not after the writer is closed.
 		/// </summary>
@@ -226,24 +263,24 @@ namespace Gorgon.IO
 			// Allocate our temporary buffer if we haven't already.
 			if (_tempBuffer == null)
 			{
-				_tempBuffer = new byte[GorgonChunkedFormat.TempBufferSize];
+				_tempBuffer = new byte[_bufferSize];
 			}
 
-			fixed (byte* tempBufferPointer = &_tempBuffer[0])
+			while (size > 0)
 			{
-				while (size > 0)
-				{
-					int blockSize = size > GorgonChunkedFormat.TempBufferSize ? GorgonChunkedFormat.TempBufferSize : size;
+				int blockSize = size > _bufferSize ? _bufferSize : size;
 
+				fixed (byte* tempBufferPointer = &_tempBuffer[0])
+				{
 					// Read our array into our temporary byte buffer.
 					DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
-
-					offset += blockSize;
-					size -= size;
 
 					// Write the temporary byte buffer to the stream.
 					Write(_tempBuffer, 0, blockSize);
 				}
+
+				offset += blockSize;
+				size -= size;
 			}
 		}
 

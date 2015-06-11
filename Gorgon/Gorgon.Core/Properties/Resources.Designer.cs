@@ -166,15 +166,6 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The chunk name must be 8 characters exactly..
-        /// </summary>
-        internal static string GOR_CHUNK_NAME_TOO_SMALL {
-            get {
-                return ResourceManager.GetString("GOR_CHUNK_NAME_TOO_SMALL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The collection is read only..
         /// </summary>
         internal static string GOR_COLLECTION_READ_ONLY {
@@ -414,6 +405,15 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_ERR_CANNOT_FIND_CONSTRUCTOR {
             get {
                 return ResourceManager.GetString("GOR_ERR_CANNOT_FIND_CONSTRUCTOR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk name must be 8 characters exactly..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_NAME_SIZE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_NAME_SIZE_MISMATCH", resourceCulture);
             }
         }
         

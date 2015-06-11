@@ -608,7 +608,7 @@ Code: 0x{2}</value>
   <data name="GOR_CHUNK_INVALID" xml:space="preserve">
     <value>The reader was expecting [0x{0}], but got [0x{1}] instead.  Chunked data is not valid.</value>
   </data>
-  <data name="GOR_CHUNK_NAME_TOO_SMALL" xml:space="preserve">
+  <data name="GOR_ERR_CHUNK_NAME_SIZE_MISMATCH" xml:space="preserve">
     <value>The chunk name must be 8 characters exactly.</value>
   </data>
   <data name="GOR_STREAM_IS_WRITEONLY" xml:space="preserve">

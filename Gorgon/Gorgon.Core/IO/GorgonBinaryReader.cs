@@ -45,11 +45,48 @@ namespace Gorgon.IO
 		: BinaryReader
 	{
 		#region Variables.
+		// The size of the temporary buffer used to stream data in.
+		private int _bufferSize;
 		// Temporary buffer.
 		private byte[] _tempBuffer;			
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the size of the buffer, in bytes, used to stream the data in.
+		/// </summary>
+		/// <remarks>
+		/// This value is meant to help in buffering data from the data source if the data is large. It will only accept a value between 128 and 81920.  The upper bound is 
+		/// to ensure that the temporary buffer is not pushed into the Large Object Heap.
+		/// </remarks>
+		public int BufferSize
+		{
+			get
+			{
+				return _bufferSize;
+			}
+			set
+			{
+				if (value < 128)
+				{
+					value = 128;
+				}
+
+				if (value > 81920)
+				{
+					value = 81920;
+				}
+
+				_bufferSize = value;
+
+				// If we've previously allocated the buffer, then resize it.
+				if (_tempBuffer != null)
+				{
+					_tempBuffer = new byte[_bufferSize];
+				}
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether to keep the underlying stream open or not after the reader is closed.
 		/// </summary>
@@ -228,24 +265,24 @@ namespace Gorgon.IO
 
 			if (_tempBuffer == null)
 			{
-				_tempBuffer = new byte[GorgonChunkedFormat.TempBufferSize];
+				_tempBuffer = new byte[_bufferSize];
 			}
 
-			fixed (byte* tempBufferPointer = &_tempBuffer[0])
+			while (size > 0)
 			{
-				while (size > 0)
-				{
-					int blockSize = size > GorgonChunkedFormat.TempBufferSize ? GorgonChunkedFormat.TempBufferSize : size;
+				int blockSize = size > _bufferSize ? _bufferSize : size;
 
-					// Read the data from the stream as byte values.
+				// Read the data from the stream as byte values.
+				fixed (byte* tempBufferPointer = &_tempBuffer[0])
+				{
 					Read(_tempBuffer, 0, blockSize);
 
 					// Copy into our array.
 					DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
-
-					offset += blockSize;
-					size -= blockSize;
 				}
+
+				offset += blockSize;
+				size -= blockSize;
 			}
 		}
 
@@ -306,7 +343,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <param name="count">Number of array elements to copy.</param>
-		/// <returns>An array filled with generic values.</returns>
+		/// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 

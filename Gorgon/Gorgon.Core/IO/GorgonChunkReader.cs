@@ -27,45 +27,124 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.Native;
 
 namespace Gorgon.IO
 {
 	/// <summary>
 	/// Reads Gorgon chunked formatted data.
 	/// </summary>
-	/// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
-	/// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
-	/// that does not exist in a previous version, then the older version will be able to read the file and skip the 
-	/// unnecessary parts.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This object is used to deserialize object data from a chunked file format. Essentially this takes the binary layout of the file, and makes it easier to process by reading the identifiers within the 
+	/// format. 
+	/// </para>
+	/// <para>
+	/// Since chunk files use identifiers to identify parts of the data, the format for a given piece of data should be fairly simple to parse as the identifiers are merely constant 64-bit <see cref="long"/> 
+	/// values. The identifiers are built from an identifier string passed into the <see cref="GorgonChunkedFormat.Begin"/> method. This string must have 8 characters, 1 for each byte in a 64 bit <see cref="long"/> value.
+	/// </para>
+	/// <para>
+	/// When reading the binary data, the user should check for the existence of a chunk with <see cref="HasChunk"/>, and then make a call to <see cref="GorgonChunkedFormat.Begin"/>. Then, using the reader methods read 
+	/// the data in to the object. When done, the user must call <see cref="GorgonChunkedFormat.End"/>.
+	/// </para> 
+	/// </remarks>
+	/// <example>
+	/// This code will read a file formatted with 3 chunks: a header, a list of strings, and a list of integer values:
+	/// <code language="csharp"> 
+	/// const string HeaderChunk = "HEAD_CHK"
+	/// const string StringsChunk = "STRNGLST"
+	/// const string IntChunk = "INTGRLST" 
+	/// const uint head = 0xBAADBEEF;
+	/// 
+	/// string[] strings;
+	/// int[] ints;
+	/// 
+	/// using (Stream myStream = File.Open("Some binary file you made.", FileMode.Open))
+	/// {
+	///		using (GorgonChunkReader reader = new GorgonChunkReader())
+	///		{
+	///			if (!reader.HasChunk(HeaderChunk))
+	///			{
+	///				throw new Exception("This is not the correct file type!");
+	///			}
+	/// 
+	///			reader.Begin(HeaderChunk);
+	/// 
+	///			uint myHeader = reader.ReadUInt32();
+	/// 
+	///			if (myHeader != head)
+	///			{
+	///				throw new Exception("This is not the correct file type!");
+	///			}
+	/// 
+	///			reader.End();
+	/// 
+	///			if (!reader.HasChunk(StringsChunk))
+	///			{
+	///				throw new Exception("This is not the correct file type!");
+	///			}
+	///	
+	///			reader.Begin(StringsChunk);
+	///			int strCount = reader.ReadInt32();
+	///			
+	///			if (strCount > 0)
+	///			{
+	///				strings = new string[strCount];
+	/// 
+	///				for (int i = 0; i &lt; strCount; ++i)
+	///				{
+	///					strings[i] = reader.ReadString();		
+	///				}
+	///			}
+	///			reader.End();
+	/// 
+	///			if (!reader.HasChunk(IntChunk))
+	///			{
+	///				throw new Exception("This is not the correct file type!");
+	///			}
+	///			
+	///			reader.Begin(IntChunk);
+	///			int intCount = reader.ReadInt32();
+	///			
+	///			if (intCount > 0)
+	///			{
+	///				ints = new int[intCount];
+	/// 
+	///				for (int i = 0; i &lt; intCount; ++i)
+	///				{
+	///					ints[i] = reader.ReadInt32();		
+	///				}
+	///			} 
+	///			reader.End();
+	///		}
+	/// } 
+	/// </code>
+	/// </example>
 	public class GorgonChunkReader
 		: GorgonChunkedFormat
     {
         #region Methods.
         /// <summary>
-        /// Function to determine if the next bytes indicate match the chunk ID.
+        /// Function to determine if the next 8 bytes indicate match the chunk ID.
         /// </summary>
         /// <param name="chunkName">Name of the chunk.</param>
         /// <returns><b>true</b> if the next bytes are a the specified chunk ID, <b>false</b> if not.</returns>
         /// <remarks>The <paramref name="chunkName"/> parameter must be at least 8 characters in length, if it is not, then an exception will be thrown. 
         /// If the chunkName parameter is longer than 8 characters, then it will be truncated to 8 characters.
         /// </remarks>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="chunkName"/> parameter is not equal to exactly 8 characters.</exception>
         public bool HasChunk(string chunkName)
         {
-            if (chunkName.Length < 8)
+            if (chunkName.Length != 8)
             {
-                throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
-            }
-
-            if (chunkName.Length > 8)
-            {
-                chunkName = chunkName.Substring(0, 8);
+                throw new ArgumentException(Resources.GOR_ERR_CHUNK_NAME_SIZE_MISMATCH, "chunkName");
             }
 
             // If we're at the end of the stream, then obviously we don't have the chunk ID.
-            if (Reader.BaseStream.Position + 8 > Reader.BaseStream.Length)
+            if (Reader.BaseStream.Position + 8 >= Reader.BaseStream.Length)
             {
                 return false;
             }
@@ -88,7 +167,6 @@ namespace Gorgon.IO
 		public sbyte ReadSByte()
 		{
 			ValidateAccess(false);
-
 			return Reader.ReadSByte();
 		}
 
@@ -309,7 +387,16 @@ namespace Gorgon.IO
         /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
         /// </exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-        public unsafe void ReadRange<T>(T[] value, int startIndex, int count)
+        /// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+        /// </remarks>
+        public void ReadRange<T>(T[] value, int startIndex, int count)
             where T : struct
         {
             ValidateAccess(false);
@@ -336,31 +423,7 @@ namespace Gorgon.IO
                                                                     value.Length));
             }
 
-            int typeSize = DirectAccess.SizeOf<T>();
-            int size = typeSize * count;
-            int offset = startIndex * typeSize;
-
-            if (TempBuffer == null)
-            {
-                TempBuffer = new byte[TempBufferSize];
-            }
-
-            fixed (byte* tempBufferPointer = &TempBuffer[0])
-            {
-                while (size > 0)
-                {
-                    int blockSize = size > TempBufferSize ? TempBufferSize : size;
-
-                    // Read the data from the stream as byte values.
-                    Read(TempBuffer, 0, blockSize);
-                    
-                    // Copy into our array.
-                    DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
-
-                    offset += blockSize;
-                    size -= blockSize;                    
-                }
-            }
+			Reader.ReadRange(value, startIndex, count);
         }
 
         /// <summary>
@@ -373,7 +436,16 @@ namespace Gorgon.IO
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
         /// </exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-        public void ReadRange<T>(T[] value, int count)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
+		public void ReadRange<T>(T[] value, int count)
             where T : struct
         {
             ReadRange(value, 0, count);
@@ -386,7 +458,16 @@ namespace Gorgon.IO
         /// <param name="value">Array of values to read.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-        public void ReadRange<T>(T[] value)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
+		public void ReadRange<T>(T[] value)
             where T : struct
         {
             if (value == null)
@@ -402,8 +483,18 @@ namespace Gorgon.IO
         /// </summary>
         /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
         /// <param name="count">Number of array elements to copy.</param>
+        /// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
         /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-        public T[] ReadRange<T>(int count)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
+		public T[] ReadRange<T>(int count)
             where T : struct
         {
             var array = new T[count];
@@ -418,45 +509,21 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <returns>The value in the stream.</returns>
-		public unsafe T Read<T>()
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </remarks>
+		public T Read<T>()
 			where T : struct
-		{
-			T returnVal;
-			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = stackalloc byte[size];
-			byte* bytes = pointer;
+        {
+			ValidateAccess(false);
 
-			while (size > 0)
-			{
-				if (size >= 8)
-				{
-					*((long*)bytes) = Reader.ReadInt64();
-					bytes += 8;
-					size -= 8;
-				}
-				else if (size >= 4)
-				{
-					*((int*)bytes) = Reader.ReadInt32();
-					bytes += 4;
-					size -= 4;
-				}
-				else if (size >= 2)
-				{
-					*((short*)bytes) = Reader.ReadInt16();
-					bytes += 2;
-					size -= 2;
-				}
-				else
-				{
-					*bytes = Reader.ReadByte();
-					bytes++;
-					size--;
-				}
-			}
-
-			DirectAccess.ReadValue(pointer, out returnVal);
-
-			return returnVal;
+			return Reader.ReadValue<T>();
 		}
 
 		/// <summary>

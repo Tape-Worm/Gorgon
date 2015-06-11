@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
@@ -49,38 +50,51 @@ namespace Gorgon.IO
     /// <summary>
     /// Reads/writes Gorgon chunked formatted data.
     /// </summary>
-    /// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
-    /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
-    /// that does not exist in a previous version, then the older version will be able to read the file and skip the 
-    /// unnecessary parts.</remarks>
+    /// <remarks>
+    /// <para>
+    /// Gorgon uses the chunked file format for its own file serializing/deserialzing of its objects that support persistence.
+    /// </para>
+    /// <para>
+    /// This object is used to serialize or deserialize object data into a chunked file format. Essentially this takes the binary layout of the file, and makes it easier to process by putting identifiers 
+    /// within the format. It is a base class to the <see cref="GorgonChunkWriter"/> and <see cref="GorgonChunkReader"/> objects which perform the actual serialization/deserialization.
+	/// </para>
+	/// <para>
+	/// Since chunk files use identifiers to identify parts of the data, the format for a given piece of data should be fairly simple to parse as the identifiers are merely constant 64-bit <see cref="long"/> 
+	/// values. The identifiers are built from an identifier string passed into the <see cref="Begin"/> method. This string must have 8 characters, 1 for each byte in a 64 bit <see cref="long"/> value.
+	/// </para>
+	/// <para>
+	/// When writing out the binary data, the user should begin a new chunk by calling the <see cref="Begin"/> method, and passing in the 8 character string identifying that chunk. Then, they should write 
+	/// the data as normal using the write methods. Then, a call to <see cref="End"/> should be made to close that chunk. Reading the binary data is pretty much the same thing:  call <see cref="Begin"/>, 
+	/// read the data, call <see cref="End"/>.
+	/// </para>
+	/// <para>
+	/// Each chunk will store a 32 bit integer representing the size of the chunk immediately after the chunk ID. This is used so the caller can <see cref="End"/> the reading of the chunk early, and 
+	/// the <see cref="GorgonChunkReader"/> can skip to the next chunk. A typical case where this is needed is when an object needs to deserialize less data than actually exists in the chunk block, this 
+	/// is handy for  forward compatibility. For example: Object Foo originally had 12 fields, and could read/write those 12 fields. Version 2 of Object Foo has 16 fields. The 1st version of Foo, as long as 
+	/// the layout remains the same, can read those first 12 fields and then call <see cref="End"/> to move on to the next chunk block, skipping the extra 4 fields. Thus making Foo v1 compatible with Foo v2.
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="GorgonChunkReader"/>
+	/// <seealso cref="GorgonChunkWriter"/>
     public abstract class GorgonChunkedFormat
         : IDisposable
     {
-        #region Constants.
-        /// <summary>
-        /// The size of the temporary buffer for large data reads/writes.
-        /// </summary>
-        protected internal const int TempBufferSize = 65536;
-        #endregion
-
         #region Variables.
-        private bool _disposed;                                                 // Flag to indicate that the object was disposed.
-		private ulong _currentChunk;											// Our current chunk.
-		private long _chunkStart;												// The start of the current chunk.
-		private long _chunkEnd;													// The end of the current chunk.
-		private uint _chunkSize;												// Size of the chunk.
+		// Flag to indicate that the object was disposed.
+        private bool _disposed;
+		// Our current chunk.
+		private ulong _currentChunk;
+		// The start of the current chunk.
+		private long _chunkStart;
+		// The end of the current chunk.
+		private long _chunkEnd;
+		// Size of the chunk.
+		private uint _chunkSize;		
+		// Byte representation of a chunk ID string.
+		private	readonly byte[] _chunkBytes = new byte[8];
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the temporary buffer for large reads/writes.
-        /// </summary>
-		protected byte[] TempBuffer
-        {
-            get;
-            set;
-        }
-
 		/// <summary>
 		/// Property to return the writer for our stream.
 		/// </summary>
@@ -139,63 +153,72 @@ namespace Gorgon.IO
 		}
 
         /// <summary>
-        /// Function to convert a chunk name into a code.
+        /// Function to convert a chunk name <see cref="string"/> into a <see cref="ulong"/> chunk code.
         /// </summary>
         /// <param name="chunkName">The string containing the code to use.</param>
         /// <returns>The name encoded as an 8 byte unsigned long value.</returns>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="chunkName"/> parameter is not exactly 8 characters in length.</exception>
         protected ulong GetChunkCode(string chunkName)
         {
             if (chunkName.Length != 8)
             {
-                throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
+                throw new ArgumentException(Resources.GOR_ERR_CHUNK_NAME_SIZE_MISMATCH, "chunkName");
             }
             chunkName = chunkName.ToUpper();
 
-            return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
-                   | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | chunkName[0];
+	        Encoding.ASCII.GetBytes(chunkName, 0, 8, _chunkBytes, 0);
+
+            return ((ulong)_chunkBytes[7] << 56) | ((ulong)_chunkBytes[6] << 48) | ((ulong)_chunkBytes[5] << 40) | ((ulong)_chunkBytes[4] << 32)
+                   | ((ulong)_chunkBytes[3] << 24) | ((ulong)_chunkBytes[2] << 16) | ((ulong)_chunkBytes[1] << 8) | _chunkBytes[0];
         }
 
 	    /// <summary>
 		/// Function to begin reading/writing the chunk
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
+		/// <returns>The size of the chunk, in bytes, when reading the chunk data. When in write mode, this value returns 0.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the chunkName parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
+		/// <para>Thrown when the chunkName parameter length is not exactly 8 characters.</para>
 		/// </exception>
 		/// <exception cref="System.IO.InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
 		/// <remarks>
+		/// <para>
 		/// Use this to begin a chunk in the stream.  This method must be called before using any of the read/write methods.
-		/// <para>The <paramref name="chunkName" /> parameter must be 8 characters in length, otherwise an exception will be thrown.  If the name is longer than 8 characters,
-		/// then only the first 8 characters will be used.</para>
+		/// </para>
+		/// <para>
+		/// When reading a file, this method will return the number of bytes that the chunk occupies. This can be used to determine if a chunk is compatible, or even valid. However, 
+		/// when writing a file, this value returns 0 because there's no data written yet, and as such, a count is impossible to determine.
+		/// </para>
+		/// <para>
+		/// The <paramref name="chunkName" /> parameter must be 8 characters in length, otherwise an exception will be thrown.  If the name is longer than 8 characters,
+		/// then only the first 8 characters will be used.
+		/// </para>
+		/// <para>
+		/// Always pair a call to <c>Begin</c> with a call to <see cref="End"/>, or else the file may get corrupted. If another call to <c>Begin</c> is made before <see cref="End"/> is called, 
+		/// then the previous chunk will be closed automatically so the new one can begin.
+		/// </para>
 		/// </remarks>
-		public void Begin(string chunkName)
+		/// <seealso cref="End"/>
+		public uint Begin(string chunkName)
 		{
 			if (chunkName == null)
 			{
 				throw new ArgumentNullException("chunkName");
 			}
 
-            chunkName = chunkName.Trim();
-
-			if (chunkName.Length < 8)
+			if (chunkName.Length != 8)
 			{
-				throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
+				throw new ArgumentException(Resources.GOR_ERR_CHUNK_NAME_SIZE_MISMATCH, "chunkName");
 			}
-
-            // Truncate to 8 characters.
-            if (chunkName.Length > 8)
-            {
-                chunkName = chunkName.Substring(0, 8);
-            }
 
             ulong newChunkID = GetChunkCode(chunkName);
 
             // Return if we're using the same chunk.
             if (newChunkID == _currentChunk)
             {
-                return;
+                return _chunkSize;
             }
 
 			if (_currentChunk != 0) 
@@ -233,18 +256,34 @@ namespace Gorgon.IO
 				_chunkStart = Reader.BaseStream.Position;
 				_chunkEnd += _chunkSize + _chunkStart;
 			}
+
+		    return _chunkSize;
 		}
 
 		/// <summary>
 		/// Function to end the chunk stream.
 		/// </summary>
+		/// <returns>The size of the chunk, in bytes. Or 0 if no chunk has been started with <see cref="Begin"/>.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream cannot seek and reading has prematurely ended before getting the end of the chunk.</exception>
-		public void End()
+		/// <remarks>
+		/// <para>
+		/// This marks the end of a chunk in the stream. It writes out the total size of the chunk when writing a file, and when reading it uses the chunk size to skip 
+		/// any unnecessary data if the object hasn't read the entire chunk.
+		/// </para>
+		/// <para>
+		/// This method should always be paired with a call to <see cref="Begin"/>, otherwise nothing will happen.
+		/// </para>
+		/// <para>
+		/// Like the <see cref="Begin"/> method, this method returns the number of bytes occupied by a chunk. This value may be used to validate a chunk.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Begin"/>
+		public uint End()
 		{
 			// We don't have a chunk being processed right now, so leave.
 			if (_currentChunk == 0)
 			{
-				return;
+				return 0;
 			}
 
 			// Record the end of the chunk.			
@@ -270,17 +309,25 @@ namespace Gorgon.IO
 				}
 			}
 
+			// Record the chunk size so we can spit it out when we're done.
+			uint chunkSize = _chunkSize;
+
 			// Reset the chunk status.
 			_currentChunk = 0;
 			_chunkStart = 0;
 			_chunkSize = 0;
 			_chunkEnd = 0;
+
+			return chunkSize;
 		}
 
         /// <summary>
         /// Function to skip the specified number of bytes in the stream.
         /// </summary>
         /// <param name="byteCount">Number of bytes in the stream to skip.</param>
+        /// <remarks>
+        /// This method requires that the underlying <see cref="Stream"/> object have its <see cref="Stream.CanSeek"/> property return <b>true</b>, otherwise an exception will occur.
+        /// </remarks>
         public void SkipBytes(long byteCount)
         {
             if (ChunkAccessMode == ChunkAccessMode.Read)

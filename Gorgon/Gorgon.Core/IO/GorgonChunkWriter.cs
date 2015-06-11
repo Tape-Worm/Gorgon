@@ -27,19 +27,72 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core.Properties;
-using Gorgon.Native;
 
 namespace Gorgon.IO
 {
 	/// <summary>
 	/// Writes Gorgon chunked formatted data.
 	/// </summary>
-	/// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
-	/// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
-	/// that does not exist in a previous version, then the older version will be able to read the file and skip the 
-	/// unnecessary parts.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This object is used to serialize object data to a chunked file format. Essentially this takes the binary layout of the file, and marks data blocks in your object with identifier values when writing 
+	/// to the file.
+	/// </para>
+	/// <para>
+	/// Since chunk files use identifiers to identify parts of the data, the format for a given piece of data in an object should output a 64-bit <see cref="long"/> value used to identify the chunk. The 
+	/// identifiers are built from an identifier string passed into the <see cref="GorgonChunkedFormat.Begin"/> method. This string must have 8 characters, 1 for each byte in a 64 bit <see cref="long"/> value.
+	/// </para>
+	/// <para>
+	/// When writing the binary data, the user must call <see cref="GorgonChunkedFormat.Begin"/> for each logical grouping in your object structure. Then, using the writer methods write the parts that belong 
+	/// to that grouping. When done, the user must call <see cref="GorgonChunkedFormat.End"/>.
+	/// </para> 
+	/// </remarks>
+	/// <example>
+	/// This code will write a file formatted with 3 chunks: a header, a list of strings, and a list of integer values:
+	/// <code language="csharp"> 
+	/// const string HeaderChunk = "HEAD_CHK"
+	/// const string StringsChunk = "STRNGLST"
+	/// const string IntChunk = "INTGRLST" 
+	/// const uint head = 0xBAADBEEF;
+	/// 
+	/// string[] strings = { "Cow", "Pig", "Dog", "Cat", "Slagathor" };
+	/// int[] ints { 1, 2, 9, 100, 122, 129, 882, 82, 62, 42 };
+	/// 
+	/// using (Stream myStream = File.Open("Some binary file you made.", FileMode.Create))
+	/// {
+	///		using (GorgonChunkWriter writer = new GorgonChunkWriter())
+	///		{
+	///			writer.Begin(HeaderChunk);
+	/// 
+	///			uint myHeader = writer.WriteUInt32(head);
+	/// 
+	///			writer.End();
+	///	
+	///			writer.Begin(StringsChunk);
+	/// 
+	///			writer.Write(strings.Length);
+	///			for (int i = 0; i &lt; strings.Length; ++i)
+	///			{
+	///				writer.WriteString(strings[i]);
+	///			}
+	/// 
+	///			writer.End();
+	/// 
+	///			writer.Begin(IntChunk);
+	/// 
+	///			writer.Write(ints.Length);
+	///			for (int i = 0; i &lt; ints.Length; ++i)
+	/// 		{
+	///				writer.WriteInt32(ints[i]);
+	///			} 
+	///			writer.End();
+	///		}
+	/// } 
+	/// </code>
+	/// </example>
 	public class GorgonChunkWriter
 		: GorgonChunkedFormat
     {
@@ -358,7 +411,16 @@ namespace Gorgon.IO
         /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
         /// </exception>
         /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-        public unsafe void WriteRange<T>(T[] value, int startIndex, int count)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
+		public void WriteRange<T>(T[] value, int startIndex, int count)
             where T : struct
         {
             ValidateAccess(true);
@@ -385,32 +447,7 @@ namespace Gorgon.IO
                                                                     value.Length));
             }            
 
-            int typeSize = DirectAccess.SizeOf<T>();
-            int offset = typeSize * startIndex;
-            int size = typeSize * count;            
-
-            // Allocate our temporary buffer if we haven't already.
-            if (TempBuffer == null)
-            {
-                TempBuffer = new byte[TempBufferSize];
-            }
-
-            fixed (byte *tempBufferPointer = &TempBuffer[0])
-            {
-                while (size > 0)
-                {
-                    int blockSize = size > TempBufferSize ? TempBufferSize : size;
-
-                    // Read our array into our temporary byte buffer.
-                    DirectAccess.WriteArray(tempBufferPointer, value, offset, blockSize);
-
-                    offset += blockSize;
-                    size -= size;
-
-                    // Write the temporary byte buffer to the stream.
-                    Write(TempBuffer, 0, blockSize);
-                }                
-            }
+			Writer.WriteRange(value, startIndex, count);
         }
 
         /// <summary>
@@ -423,7 +460,16 @@ namespace Gorgon.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
         /// </exception>
-        public void WriteRange<T>(T[] value, int count)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
+		public void WriteRange<T>(T[] value, int count)
             where T : struct
         {
             WriteRange(value, 0, count);
@@ -436,7 +482,16 @@ namespace Gorgon.IO
         /// <param name="value">Array of values to write.</param>
         /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-        public void WriteRange<T>(T[] value)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
+		public void WriteRange<T>(T[] value)
             where T : struct
         {
             if (value == null)
@@ -453,43 +508,21 @@ namespace Gorgon.IO
 		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
 		/// <param name="value">Value to write to the stream.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		public unsafe void Write<T>(T value)
+		/// <remarks>
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// </para>
+		/// </remarks>
+		public void Write<T>(T value)
 			where T : struct
 		{
 			ValidateAccess(true);
 
-			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = stackalloc byte[size];
-
-			DirectAccess.WriteValue(pointer, ref value);
-
-			while (size > 0)
-			{
-				if (size >= 8)
-				{
-					Writer.Write(*((long *)pointer));
-					pointer += 8;
-					size -= 8;
-				}
-				else if (size >= 4)
-				{
-					Writer.Write(*((int*)pointer));
-					pointer += 4;
-					size -= 4;
-				}
-				else if (size >= 2)
-				{
-					Writer.Write(*((short*)pointer));
-					pointer += 2;
-					size -= 2;
-				}
-				else
-				{
-					Writer.Write(*pointer);
-					pointer++;
-					size--;
-				}
-			}
+			Writer.WriteValue(value);
 		}
 		#endregion
 
