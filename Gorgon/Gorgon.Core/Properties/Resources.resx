@@ -966,4 +966,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_TIMING_NO_TIMER" xml:space="preserve">
     <value>No timer has been assigned to the timing data.</value>
   </data>
+  <data name="GOR_ERR_CHUNK_OUT_OF_BOUNDS" xml:space="preserve">
+    <value>The requested size of {0} is beyond the end of the current chunk ({1}).</value>
+  </data>
 </root>

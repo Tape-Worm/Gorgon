@@ -58,6 +58,7 @@
     <Compile Include="Support\PropertyTests.cs" />
     <Compile Include="Support\SettingsTests.cs" />
     <Compile Include="SettingTests.cs" />
+    <Compile Include="IOTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">

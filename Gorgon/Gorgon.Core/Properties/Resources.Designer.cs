@@ -418,6 +418,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The requested size of {0} is beyond the end of the current chunk ({1})..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_OUT_OF_BOUNDS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_OUT_OF_BOUNDS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The path &apos;{0}&apos; was not found in this collection..
         /// </summary>
         internal static string GOR_ERR_PATH_NOT_FOUND {

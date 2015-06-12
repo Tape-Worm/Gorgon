@@ -46,7 +46,7 @@ namespace Gorgon.IO
 	{
 		#region Variables.
 		// The size of the temporary buffer used to stream data in.
-		private int _bufferSize;
+		private int _bufferSize = 65536;
 		// Temporary buffer.
 		private byte[] _tempBuffer;			
 		#endregion
@@ -163,7 +163,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		public unsafe T ReadValue<T>()
@@ -220,7 +220,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -298,7 +298,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -322,7 +322,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -350,7 +350,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>

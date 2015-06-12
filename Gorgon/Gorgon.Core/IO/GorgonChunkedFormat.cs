@@ -96,6 +96,39 @@ namespace Gorgon.IO
 
         #region Properties.
 		/// <summary>
+		/// Property to return the size of the current chunk when reading.
+		/// </summary>
+		/// <remarks>
+		/// This value is not set until a call to <see cref="Begin"/> has been made and only applies to the reader. If accessed from a writer object, this property will return -1.
+		/// </remarks>
+	    protected long CurrentChunkSize
+	    {
+		    get
+		    {
+			    if (ChunkAccessMode == ChunkAccessMode.Write)
+			    {
+				    return -1;
+			    }
+
+			    return _chunkSize;
+		    }
+	    }
+
+		/// <summary>
+		/// Property to return the start of the chunk.
+		/// </summary>
+		/// <remarks>
+		/// This is the start of the chunk <i>after</i> the chunk size value.
+		/// </remarks>
+	    protected long ChunkStart
+	    {
+		    get
+		    {
+			    return _chunkStart;
+		    }
+	    }
+
+		/// <summary>
 		/// Property to return the writer for our stream.
 		/// </summary>
 		protected GorgonBinaryWriter Writer
@@ -300,7 +333,7 @@ namespace Gorgon.IO
 			{
 				_chunkEnd = Reader.BaseStream.Position;
 				// If we end the read prematurely, then just skip to the next chunk.
-				long skipAmount = _chunkEnd - (_chunkStart + _chunkSize);
+				long skipAmount = (_chunkStart + _chunkSize) - _chunkEnd;
 
 				// Skip ahead.
 				if (skipAmount > 0)

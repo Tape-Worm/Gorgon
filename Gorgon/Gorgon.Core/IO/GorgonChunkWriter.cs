@@ -94,8 +94,8 @@ namespace Gorgon.IO
 	/// </code>
 	/// </example>
 	public class GorgonChunkWriter
-		: GorgonChunkedFormat
-    {
+		: GorgonChunkedFormat, IGorgonChunkWriter
+	{
         #region Methods.
         /// <summary>
 		/// Function to write a signed byte to the stream.
@@ -417,7 +417,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		public void WriteRange<T>(T[] value, int startIndex, int count)
@@ -466,7 +466,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		public void WriteRange<T>(T[] value, int count)
@@ -488,7 +488,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		public void WriteRange<T>(T[] value)
@@ -514,7 +514,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		public void Write<T>(T value)

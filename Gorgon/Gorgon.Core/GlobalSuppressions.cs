@@ -21,3 +21,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "397*previousHash", Scope = "member", Target = "Gorgon.Core.Extensions.GorgonHashGenerationExtension.#GenerateHash`1(System.Int32,!!0)")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.Diagnostics.GorgonLogFile")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.Plugins.GorgonPlugInFactory")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Scope = "type", Target = "Gorgon.IO.GorgonChunkReader")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Scope = "type", Target = "Gorgon.IO.GorgonChunkWriter")]

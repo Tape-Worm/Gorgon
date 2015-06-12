@@ -163,7 +163,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
@@ -217,7 +217,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -296,7 +296,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
@@ -320,7 +320,7 @@ namespace Gorgon.IO
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
 		/// </para>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>

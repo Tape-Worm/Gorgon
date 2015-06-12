@@ -85,18 +85,33 @@
 			<title>Acknowledgements</title>
 			<content>
 				<para>Gorgon uses icons from the Oxygen and Onebit 4 icon sets.</para>
-				<para>Oxygen icons may be obtained from:</para>
-				<para>
+				<para>Oxygen icons may be obtained from:
+				<markup><br/></markup>
 				<externalLink><linkText>https://github.com/pasnox/oxygen-icons-png</linkText><linkUri>https://github.com/pasnox/oxygen-icons-png</linkUri></externalLink>
 				<markup><br/></markup>
 				<externalLink><linkText>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkText><linkUri>http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html</linkUri></externalLink>
 				</para>
-				<para>Onebit 4 icons may be obtained from:</para>
-				<para>
+				<para>Onebit 4 icons may be obtained from:
+				<markup><br/></markup>
 				<externalLink><linkText>http://www.icojam.com/blog/?p=231</linkText><linkUri>http://www.icojam.com/blog/?p=231</linkUri></externalLink>
 				<markup><br/></markup>
 				<externalLink><linkText>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkText><linkUri>http://www.iconarchive.com/show/onebit-4-icons-by-icojam.html</linkUri></externalLink>
-				</para>				
+				</para>
+				<para>Gorgon uses the several external 3rd party libraries such as:</para>
+				<para>Sharp DX by Alexandre Mutel
+				<markup><br/></markup>
+				<externalLink><linkText>http://sharpdx.org/</linkText><linkUri>http://sharpdx.org/</linkUri></externalLink>
+				<markup><br/></markup>
+				<externalLink><linkText>https://github.com/sharpdx/SharpDX</linkText><linkUri>https://github.com/sharpdx/SharpDX/</linkUri></externalLink>
+				</para>
+				<para>SlimMath by Mike Popoloski and the <externalLink><linkText>SlimDX Group</linkText><linkUri>http://www.slimdx.org/download.php</linkUri></externalLink>.
+				<markup><br/></markup>
+				<externalLink><linkText>https://code.google.com/p/slimmath/</linkText><linkUri>https://code.google.com/p/slimmath/</linkUri></externalLink> (Note: Google code is shutting down, this link may not be valid in the future)
+				</para>
+				<para>SharpZipLib by Mike Krueger, and currently maintained by David Pierson.
+				<markup><br/></markup>
+				<externalLink><linkText>http://icsharpcode.github.io/SharpZipLib/</linkText><linkUri>http://icsharpcode.github.io/SharpZipLib/</linkUri></externalLink>
+				</para>
 			</content>
 		</section>
 	</developerConceptualDocument>

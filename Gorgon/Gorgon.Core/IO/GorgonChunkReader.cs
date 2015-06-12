@@ -29,7 +29,9 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using Gorgon.Core;
 using Gorgon.Core.Properties;
+using Gorgon.Native;
 
 namespace Gorgon.IO
 {
@@ -123,9 +125,35 @@ namespace Gorgon.IO
 	/// </code>
 	/// </example>
 	public class GorgonChunkReader
-		: GorgonChunkedFormat
-    {
+		: GorgonChunkedFormat, IGorgonChunkReader
+	{
         #region Methods.
+		/// <summary>
+		/// Function to return the formatted exception message for the out of bounds exception.
+		/// </summary>
+		/// <param name="size">Size of the requested data, in bytes.</param>
+		/// <returns>The exception message.</returns>
+		private string GetOutOfBoundsExceptionMessage(long size)
+		{
+			return string.Format(Resources.GOR_ERR_CHUNK_OUT_OF_BOUNDS, size.FormatMemory(), CurrentChunkSize.FormatMemory());
+		}
+
+		/// <summary>
+		/// Function to determine if size requested for a read is within the chunk boundaries.
+		/// </summary>
+		/// <returns><b>true</b> if within the chunk, <b>false</b> if not.</returns>
+		private bool InChunkBounds(long size)
+		{
+			if (size > CurrentChunkSize)
+			{
+				return false;
+			}
+
+			long length = CurrentChunkSize - (Reader.BaseStream.Position - ChunkStart);
+
+			return size <= length;
+		}
+
         /// <summary>
         /// Function to determine if the next 8 bytes indicate match the chunk ID.
         /// </summary>
@@ -151,7 +179,7 @@ namespace Gorgon.IO
 
             long streamPosition = Reader.BaseStream.Position;
             ulong chunkID = GetChunkCode(chunkName);
-            ulong streamData = ReadUInt64();
+            ulong streamData = Reader.ReadUInt64();
 
             // Reset the stream position.
             Reader.BaseStream.Position = streamPosition;
@@ -163,9 +191,17 @@ namespace Gorgon.IO
 		/// Function to read a signed byte from the stream.
 		/// </summary>
 		/// <returns>The signed byte in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public sbyte ReadSByte()
 		{
+			if (!InChunkBounds(sizeof(sbyte)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(sbyte)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadSByte();
 		}
@@ -174,9 +210,17 @@ namespace Gorgon.IO
 		/// Function to read an unsigned byte from the stream.
 		/// </summary>
 		/// <returns>Unsigned byte in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public byte ReadByte()
 		{
+			if (!InChunkBounds(sizeof(byte)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(byte)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadByte();
 		}
@@ -185,9 +229,17 @@ namespace Gorgon.IO
 		/// Function to read a signed 16 bit integer from the stream.
 		/// </summary>
 		/// <returns>The signed 16 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Int16 ReadInt16()
 		{
+			if (!InChunkBounds(sizeof(Int16)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int16)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadInt16();
 		}
@@ -196,9 +248,17 @@ namespace Gorgon.IO
 		/// Function to read an unsigned 16 bit integer from the stream.
 		/// </summary>
 		/// <returns>The unsigned 16 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public UInt16 ReadUInt16()
 		{
+			if (!InChunkBounds(sizeof(UInt16)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(UInt16)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadUInt16();
 		}
@@ -207,9 +267,17 @@ namespace Gorgon.IO
 		/// Function to read a signed 32 bit integer from the stream.
 		/// </summary>
 		/// <returns>The signed 32 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Int32 ReadInt32()
 		{
+			if (!InChunkBounds(sizeof(Int32)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int32)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadInt32();
 		}
@@ -218,9 +286,17 @@ namespace Gorgon.IO
 		/// Function to read a unsigned 32 bit integer from the stream.
 		/// </summary>
 		/// <returns>The unsigned 32 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public UInt32 ReadUInt32()
 		{
+			if (!InChunkBounds(sizeof(UInt32)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(UInt32)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadUInt32();
 		}
@@ -229,9 +305,17 @@ namespace Gorgon.IO
 		/// Function to read a signed 64 bit integer from the stream.
 		/// </summary>
 		/// <returns>The signed 64 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Int64 ReadInt64()
 		{
+			if (!InChunkBounds(sizeof(Int64)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int64)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadInt64();
 		}
@@ -240,9 +324,17 @@ namespace Gorgon.IO
 		/// Function to read an unsigned 64 bit integer from the stream.
 		/// </summary>
 		/// <returns>The unsigned 64 bit integer in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public UInt64 ReadUInt64()
 		{
+			if (!InChunkBounds(sizeof(UInt64)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(UInt64)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadUInt64();
 		}
@@ -251,9 +343,17 @@ namespace Gorgon.IO
 		/// Function to read a boolean value from the stream.
 		/// </summary>
 		/// <returns>The boolean value in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Boolean ReadBoolean()
 		{
+			if (!InChunkBounds(sizeof(bool)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(bool)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadBoolean();
 		}
@@ -263,9 +363,17 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <returns>The single character in the stream.</returns>
 		/// <remarks>This will read 2 bytes for the character since the default encoding for .NET is UTF-16.</remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public char ReadChar()
 		{
+			if (!InChunkBounds(sizeof(Int16)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int16)));
+			}
+
 			ValidateAccess(false);
 
 			return (char)ReadInt16();
@@ -277,9 +385,17 @@ namespace Gorgon.IO
 		/// <param name="encoding">The encoding to use.</param>
 		/// <returns>The string value in the stream.</returns>
 		/// <remarks>If the <paramref name="encoding"/> is <b>null</b> (<i>Nothing</i> in VB.Net), UTF-8 encoding will be used instead.</remarks>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public string ReadString(Encoding encoding)
 		{
+			if (!InChunkBounds(sizeof(byte)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(byte)));
+			}
+
 			ValidateAccess(false);
 
 			return Reader.BaseStream.ReadString(encoding);
@@ -289,9 +405,17 @@ namespace Gorgon.IO
 		/// Function to read a string from the stream.
 		/// </summary>
 		/// <returns>The string value in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public string ReadString()
 		{
+			if (!InChunkBounds(sizeof(byte)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(byte)));
+			}
+
 			ValidateAccess(false);
 			return Reader.BaseStream.ReadString(null);
 		}
@@ -300,9 +424,17 @@ namespace Gorgon.IO
 		/// Function to read double precision value from the stream.
 		/// </summary>
 		/// <returns>The double precision value in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public double ReadDouble()
 		{
+			if (!InChunkBounds(sizeof(double)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(double)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadDouble();
 		}
@@ -311,9 +443,17 @@ namespace Gorgon.IO
 		/// Function to read a single precision floating point value from the stream.
 		/// </summary>
 		/// <returns>The single precision floating point value in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public float ReadFloat()
 		{
+			if (!InChunkBounds(sizeof(Single)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Single)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadSingle();
 		}
@@ -322,9 +462,17 @@ namespace Gorgon.IO
 		/// Function to read a decimal value from the stream.
 		/// </summary>
 		/// <returns>The decimal value in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public decimal ReadDecimal()
 		{
+			if (!InChunkBounds(sizeof(decimal)))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(decimal)));
+			}
+
 			ValidateAccess(false);
 			return Reader.ReadDecimal();
 		}
@@ -335,8 +483,11 @@ namespace Gorgon.IO
 		/// <param name="data">Array of bytes in the stream.</param>
         /// <param name="startIndex">Starting index in the array.</param>
         /// <param name="count">Number of bytes in the array to read.</param>
-        /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -345,6 +496,11 @@ namespace Gorgon.IO
         /// </exception>
         public void Read(byte[] data, int startIndex, int count)
 		{
+			if (!InChunkBounds(count))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(count));
+			}
+
 			ValidateAccess(false);
 
             if (data == null)
@@ -386,19 +542,27 @@ namespace Gorgon.IO
         /// <para>-or-</para>
         /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
         /// </exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-        /// <remarks>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
+		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
         /// </remarks>
         public void ReadRange<T>(T[] value, int startIndex, int count)
             where T : struct
         {
+			if (!InChunkBounds(DirectAccess.SizeOf<T>() * count))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(DirectAccess.SizeOf<T>() * count));
+			}
+
             ValidateAccess(false);
 
             if (value == null)
@@ -435,14 +599,17 @@ namespace Gorgon.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
         /// </exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		public void ReadRange<T>(T[] value, int count)
@@ -457,14 +624,17 @@ namespace Gorgon.IO
         /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
         /// <param name="value">Array of values to read.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		public void ReadRange<T>(T[] value)
@@ -484,19 +654,27 @@ namespace Gorgon.IO
         /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
         /// <param name="count">Number of array elements to copy.</param>
         /// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
-        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		public T[] ReadRange<T>(int count)
             where T : struct
         {
+			if (!InChunkBounds(DirectAccess.SizeOf<T>() * count))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(DirectAccess.SizeOf<T>() * count));
+			}
+
             var array = new T[count];
 
             ReadRange(array, 0, count);
@@ -509,18 +687,27 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
 		/// <returns>The value in the stream.</returns>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		/// <remarks>
 		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
 		/// </remarks>
 		public T Read<T>()
 			where T : struct
         {
+			if (!InChunkBounds(DirectAccess.SizeOf<T>()))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(DirectAccess.SizeOf<T>()));
+			}
+
 			ValidateAccess(false);
 
 			return Reader.ReadValue<T>();
@@ -530,9 +717,17 @@ namespace Gorgon.IO
 		/// Function to read a point from the stream.
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Point ReadPoint()
 		{
+			if (!InChunkBounds(sizeof(Int32) * 2))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int32) * 2));
+			}
+
 			ValidateAccess(false);
 
 			return new Point(Reader.ReadInt32(), Reader.ReadInt32());
@@ -542,9 +737,17 @@ namespace Gorgon.IO
 		/// Function to read a point from the stream.
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public PointF ReadPointF()
 		{
+			if (!InChunkBounds(sizeof(Single) * 2))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Single) * 2));
+			}
+
 			ValidateAccess(false);
 
 			return new PointF(Reader.ReadSingle(), Reader.ReadSingle());
@@ -554,9 +757,17 @@ namespace Gorgon.IO
 		/// Function to read a point from the stream.
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Size ReadSize()
 		{
+			if (!InChunkBounds(sizeof(Int32) * 2))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int32) * 2));
+			}
+
 			ValidateAccess(false);
 
 			return new Size(Reader.ReadInt32(), Reader.ReadInt32());
@@ -566,9 +777,17 @@ namespace Gorgon.IO
 		/// Function to read a point from the stream.
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public SizeF ReadSizeF()
 		{
+			if (!InChunkBounds(sizeof(Single) * 2))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Single) * 2));
+			}
+
 			ValidateAccess(false);
 
 			return new SizeF(Reader.ReadSingle(), Reader.ReadSingle());
@@ -578,9 +797,17 @@ namespace Gorgon.IO
 		/// Function to read a rectangle from the stream.
 		/// </summary>
 		/// <returns>The rectangle in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public Rectangle ReadRectangle()
 		{
+			if (!InChunkBounds(sizeof(Int32) * 4))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Int32) * 4));
+			}
+
 			ValidateAccess(false);
 
 			return new Rectangle(Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32(), Reader.ReadInt32());
@@ -590,9 +817,17 @@ namespace Gorgon.IO
 		/// Function to read a rectangle from the stream.
 		/// </summary>
 		/// <returns>The rectangle in the stream.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		public RectangleF ReadRectangleF()
 		{
+			if (!InChunkBounds(sizeof(Single) * 2))
+			{
+				throw new IOException(GetOutOfBoundsExceptionMessage(sizeof(Single) * 2));
+			}
+
 			ValidateAccess(false);
 
 			return new RectangleF(Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle(), Reader.ReadSingle());
