@@ -41,7 +41,7 @@
         </member>        
         <member name="M:Gorgon.Native.DirectAccess.WriteArray``1(System.Void*,``0[],System.Int32,System.Int32)">
             <summary>
-            Writes an array of generic types to memory pointed at by a pointer.
+            Function to write an array of generic types to memory pointed at by a pointer.
             </summary>
             <typeparam name="T">The type of data in the array.</typeparam>
             <param name="destination">A raw pointer to native memory.</param>
@@ -62,7 +62,7 @@
         </member>
         <member name="M:Gorgon.Native.DirectAccess.WriteArray``1(System.IntPtr,``0[],System.Int32,System.Int32)">
             <summary>
-            Writes an array of generic types to memory pointed at by a pointer.
+            Function to write an array of generic types to memory pointed at by a pointer.
             </summary>
             <typeparam name="T">The type of data in the array.</typeparam>
             <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
@@ -80,7 +80,7 @@
         </member>
         <member name="M:Gorgon.Native.DirectAccess.ReadArray``1(System.Void*,``0[],System.Int32,System.Int32)">
             <summary>
-	    Reads native memory into an array of generic types from the memory pointed at by a pointer.
+	    Function to read native memory into an array of generic types from the memory pointed at by a pointer.
             </summary>
             <typeparam name="T">The type of data in the array.</typeparam>
             <param name="source">A raw pointer to native memory.</param>
@@ -101,7 +101,7 @@
         </member>
         <member name="M:Gorgon.Native.DirectAccess.ReadArray``1(System.IntPtr,``0[],System.Int32,System.Int32)">
             <summary>
-            Reads native memory into an array of generic types from the memory pointed at by a pointer.
+            Function to read native memory into an array of generic types from the memory pointed at by a pointer.
             </summary>
             <typeparam name="T">The type of data in the array.</typeparam>
             <param name="source">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
@@ -114,6 +114,152 @@
             </para>
             <para>
             Ensure that the <paramref name="sizeInBytes"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.WriteValue``1(System.IntPtr,``0@)">
+            <summary>
+            Function to write the specified value into native memory.
+            </summary>
+            <typeparam name="T">The type of data to write into native memory.</typeparam>
+            <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
+            <param name="value">The value that will be written into native memory.</param>
+            <remarks>
+            <para>
+            This writes the data in the <paramref name="value"/> parameter into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.WriteValue``1(System.Void*,``0@)">
+            <summary>
+            Function to write the specified value into native memory.
+            </summary>
+            <typeparam name="T">The type of data to write into native memory.</typeparam>
+            <param name="destination">A raw pointer to native memory.</param>
+            <param name="value">The value that will be written into native memory.</param>
+            <remarks>
+            <para>
+            This writes the data in the <paramref name="value"/> parameter into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ReadValue``1(System.IntPtr,``0@)">
+            <summary>
+            Function to read native memory into a value from the memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data to read the native data as.</typeparam>
+            <param name="source">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
+            <param name="retValue">The value that will receive its data from native memory.</param>
+            <remarks>
+            <para>
+            This copies the contents of native memory pointed at by <paramref name="source"/> into the value specified by the <paramref name="retValue"/> parameter.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ReadValue``1(System.Void*,``0@)">
+            <summary>
+            Function to read native memory into a value from the memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data to read the native data as.</typeparam>
+            <param name="source">A raw pointer to native memory.</param>
+            <param name="retValue">The value that will receive its data from native memory.</param>
+            <remarks>
+            <para>
+            This copies the contents of native memory pointed at by <paramref name="source"/> into the value specified by the <paramref name="retValue"/> parameter.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.MemoryCopy(System.Void*,System.Void*,System.Int32)">
+            <summary>
+            Function to copy native memory from a source pointer to a destination pointer.
+            </summary>
+            <param name="destination">A raw pointer to memory that will receive the data pointed at by the source pointer.</param>
+            <param name="source">A raw pointer to memory that will contain the memory to copy.</param>
+            <param name="size">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>memcpy</c> in C++. It will copy the data pointed at by <paramref name="source"/> into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.MemoryCopy(System.IntPtr,System.IntPtr,System.Int32)">
+            <summary>
+            Function to copy native memory from a source pointer to a destination pointer.
+            </summary>
+            <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory that will receive the data pointed at by the source pointer.</param>
+            <param name="source">An <see cref="T:System.IntPtr"/> representing a pointer to native memory that will contain the memory to copy.</param>
+            <param name="size">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>memcpy</c> in C++. It will copy the data pointed at by <paramref name="source"/> into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ZeroMemory(System.Void*,System.Int32)">
+            <summary>
+            Function to fill memory with zeroes.
+            </summary>
+            <param name="destination">A raw pointer to memory that will be overwritten with zeroes.</param>            
+            <param name="size">The total size of the data to write, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>ZeroMemory</c> from the Win32 API. It will write a series of zeroes into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ZeroMemory(System.IntPtr,System.Int32)">
+            <summary>
+            Function to fill memory with zeroes.
+            </summary>
+            <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory that will be overwritten with zeroes.</param>            
+            <param name="size">The total size of the data to write, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>ZeroMemory</c> from the Win32 API. It will write a series zeroes into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.FillMemory(System.Void*,System.Byte,System.Int32)">
+            <summary>
+            Function to fill memory with with a specified byte value.
+            </summary>
+            <param name="destination">A raw pointer to memory that will be overwritten with the byte value.</param>            
+            <param name="fillValue">The value to write.</param>
+            <param name="size">The total size of the data to write, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>memset</c> in C++. It will write a series of byte values, specified by <paramref name="fillValue"/>, into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.FillMemory(System.IntPtr,System.Byte,System.Int32)">
+            <summary>
+            Function to fill memory with with a specified byte value.
+            </summary>
+            <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory that will be overwritten with the byte value.</param>            
+            <param name="fillValue">The value to write.</param>
+            <param name="size">The total size of the data to write, in bytes.</param>            
+            <remarks>
+            <para>
+            This function works like <c>memset</c> in C++. It will write a series of byte values, specified by <paramref name="fillValue"/>, into the memory pointed at by <paramref name="destination"/>.
+            </para>
+            <para>
+            Ensure that the <paramref name="size"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
             </para>
             </remarks>
         </member>
