@@ -86,7 +86,7 @@
 
 // =============== CLASS MEMBERS DECLARATION ===================
 
-.class public auto ansi Gorgon.Native.DirectAccess
+.class public abstract auto ansi sealed Gorgon.Native.DirectAccess
        extends [mscorlib]System.Object
 {
 	// Function to return the size of a type (value types only) in bytes.
@@ -425,17 +425,6 @@
     .maxstack  8
     IL_0000:  ret
   } // end of method DirectAccess::.cctor
-
-  .method public hidebysig specialname rtspecialname 
-          instance void  .ctor() cil managed
-  {
-    // Code size       7 (0x7)
-    .maxstack  8
-    IL_0000:  ldarg.0
-    IL_0001:  call       instance void [mscorlib]System.Object::.ctor()
-    IL_0006:  ret
-  } // end of method DirectAccess::.ctor
-
 } // end of class GorgonLibrary.Native.DirectAccess
 
 

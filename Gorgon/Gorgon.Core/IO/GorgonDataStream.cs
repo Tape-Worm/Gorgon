@@ -57,11 +57,53 @@ namespace Gorgon.IO
 	}
 
 	/// <summary>
-	/// A generic data stream.
+	/// A stream type for reading and writing binary data.
 	/// </summary>
-	/// <remarks>This will hold generic byte data in unmanaged memory.  It is similar to the <see cref="System.IO.MemoryStream">MemoryStream</see> object, except that MemoryStream uses an array of bytes as a backing store.
-	/// <para>Because this stream uses unmanaged memory, it is imperative that you call the Dispose method when you're done with the object.</para>
+	/// <remarks>
+	/// <para>
+	/// This stream type is similar to the <see cref="System.IO.MemoryStream"/> object, except that MemoryStream uses an array of bytes as a backing store. This object uses native unmanaged memory to hold 
+	/// its data, and accesses it through the use of either unsafe pointers or <see cref="IntPtr"/> for those .NET languages that don't support raw pointers (e.g. Visual Basic.NET).
+	/// </para>
+	/// <para>
+	/// The object supports a multitude of reading/writing options for primitive data, string data, array data, and even generic types to the stream. For generic types being read or written, the type must 
+	/// be decorated with a <see cref="StructLayoutAttribute"/> and a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> value. Otherwise, .NET may rearrange the members of the type 
+	/// and the data being read/written will not serialize as expected. Also, for the <c>Read</c>/<c>Write</c> methods, the generic type must not use any marshalling (<see cref="MarshalAsAttribute"/>) or 
+	/// reference types. Only primitive types and value types (structs) are allowed. 
+	/// </para>
+	/// <para>
+	/// If data needs to be marshalled, then the object provides two static members: <see cref="ValueToStream{T}"/> and <see cref="ArrayToStream{T}"/> for marshalling reference types to and from the stream. 
+	/// The rules about having the <see cref="StructLayoutAttribute"/> still apply, and additonally, a size, in bytes of the value should be supplied to the attribute along with the <see cref="LayoutKind"/>. 
+	/// Because these methods may cause performance to suffer, it is recommended that data be written directly on a per-member basis instead of using these functions if performance is absolutely critical.
+	/// </para>
+	/// <para>
+	/// This object will also provide native access to an <see cref="Array"/> by pinning the array and returning a pointer to the handle on the first element via the <see cref="GCHandle"/> type. Because of 
+	/// how .NET memory management reorders and compacts memory, it is recommended that any stream access to an <see cref="Array"/> be limited to very short durations or else memory fragmentation could 
+	/// become an issue.
+	/// </para>
+	/// <para>
+	/// Existing pointers to native memory can be used when constructing this stream type via the <see cref="GorgonDataStream(IntPtr, int)"/> (or using the constructor with the raw <c>void *</c> pointer). 
+	/// The data stream will read and write from this pointer, but it will not take ownership of it, and thus will not free the memory associated with it when it is done. That repsonsibility is up to the 
+	/// caller of the data stream.
+	/// </para>
+	/// <para>
+	/// <h3><u>IMPORTANT!</u></h3>
+	/// When using this stream to allocate a new block of memory, it is very important that <see cref="Dispose"/> method is called when finished using this object. Failure to do so can cause memory leaks 
+	/// due to the inability of the garbage collector to handle the native memory allocated by this stream. The exception to this rule is when this stream is applied to an existing pointer. In those 
+	/// cases, calling <c>Dispose</c> is not necessary as no memory has been allocated by the stream, and the pointer is not owned by the stream.
+	/// </para>
+	/// <para>
+	/// Like most stream based types, it is <i>not</i> safe to use the same instance of this type from multiple threads. Doing so may cause performance degradation, or worse, memory corruption. If multithreading 
+	/// is a possibility and native memory access is required, then the <see cref="DirectAccess"/> class provides less restricted (and less comprehensive) functionality for working with native memory 
+	/// directly. Also, using a raw pointer (<c>void *</c> in C# or <see cref="IntPtr"/> and the <see cref="GorgonIntPtrExtensions"/> in languages that don't support raw pointers), is the best route to manipulating 
+	/// native memory without the worry of concurrency problems that can plague a stream type.
+	/// </para>
+	/// <para>
+	/// <h3>Other considerations</h3>
+	/// Gorgon will be phasing out it's internal usage of this type in favor of more direct access to memory. There may be new native types available for use in the future to supplement this type. This space 
+	/// will be updated with alternatives as well as <c>See Also</c> references.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="DirectAccess"/>
 	public unsafe class GorgonDataStream
 		: Stream
 	{

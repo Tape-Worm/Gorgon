@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Gorgon.Native</name>
+    </assembly>
+    <members>
+        <member name="T:Gorgon.Native.DirectAccess">
+            <summary>
+            Provides raw native memory access for .NET languages.
+            </summary>
+            <remarks>
+            <para>
+            The methods provided on this class allow for reading/writing generic values to and from native memory by way of a pointer. This provides a very fast mechanism for accessing memory that is pretty close to the performance of native languages like C++.
+            </para>            
+            <para>
+            Each method can take a <c>void *</c> pointer to the raw memory, or, if the language doesn't support raw pointers (e.g. Visual Basic.NET), then an overload that provides access via an <see cref="T:System.IntPtr"/> type will be provided.            
+            </para>	    
+	    <para>
+	    When passing data in, use value types only (structs). And ensure that these value types have a <see cref="T:System.Runtime.InteropServices.StructLayoutAttribute"/> with a layout of <see cref="F:System.Runtime.InteropServices.LayoutKind.Sequential"/> or <see cref="F:System.Runtime.InteropServices.LayoutKind.Explicit"/>. Otherwise, .NET may rearrange the members and the data may not appear in the correct place. Also, value types with reference type fields (object) are not supported, regardless of whether marshalling is used on those fields or not. Fields with marshalling will not be serialized, and may cause corruption.
+	    </para>
+            <para>
+            <h2>Disclaimer</h2>
+            All members of this class are completely unsafe to use. There is no range validation of any kind on the methods provided here, and therefore, it is quite easy to corrupt memory. Use this at your own risk! If you are uncomfortable with pointers, direct memory management, etc... it is best to avoid these methods completely. No support will be given for the use of this type.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.SizeOf``1">
+            <summary>
+            Function to return the size of the specified type, in bytes.
+            </summary>
+            <typeparam name="T">The type of data to evaluate.</typeparam>
+            <returns>The size of the type <typeparamref name="T"/>, in bytes.</returns>
+            <remarks>
+            <para>
+            Only use this on value types that have primitive types, or value types as fields.
+            </para>
+            <para>
+            If the type contains any reference types, even those with marshalling attributes, then the size returned will be incorrect.
+            </para>
+            </remarks>
+        </member>        
+        <member name="M:Gorgon.Native.DirectAccess.WriteArray``1(System.Void*,``0[],System.Int32,System.Int32)">
+            <summary>
+            Writes an array of generic types to memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data in the array.</typeparam>
+            <param name="destination">A raw pointer to native memory.</param>
+            <param name="buffer">An array of values to write to native memory.</param>
+            <param name="arrayIndex">Index within the array to start copying from.</param>
+            <param name="sizeInBytes">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            <b>This method is only for languages that support raw pointers (e.g. C#)</b>
+            </para>
+            <para>
+            This copies the contents of the <paramref name="buffer"/> into native memory.
+            </para>
+            <para>
+            Ensure that the <paramref name="sizeInBytes"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.WriteArray``1(System.IntPtr,``0[],System.Int32,System.Int32)">
+            <summary>
+            Writes an array of generic types to memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data in the array.</typeparam>
+            <param name="destination">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
+            <param name="buffer">An array of values to write to native memory.</param>
+            <param name="arrayIndex">Index within the array to start copying from.</param>
+            <param name="sizeInBytes">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            This copies the contents of the <paramref name="buffer"/> into native memory.
+            </para>
+            <para>
+            Ensure that the <paramref name="sizeInBytes"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ReadArray``1(System.Void*,``0[],System.Int32,System.Int32)">
+            <summary>
+	    Reads native memory into an array of generic types from the memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data in the array.</typeparam>
+            <param name="source">A raw pointer to native memory.</param>
+            <param name="buffer">An array of values that will be filled with the data located in native memory.</param>
+            <param name="arrayIndex">Index within the array to start copying into.</param>
+            <param name="sizeInBytes">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            <b>This method is only for languages that support raw pointers (e.g. C#)</b>
+            </para>
+            <para>
+            This copies the contents of native memory pointed at by <paramref name="source"/> into the array specified by the <paramref name="buffer"/> parameter.
+            </para>
+            <para>
+            Ensure that the <paramref name="sizeInBytes"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Gorgon.Native.DirectAccess.ReadArray``1(System.IntPtr,``0[],System.Int32,System.Int32)">
+            <summary>
+            Reads native memory into an array of generic types from the memory pointed at by a pointer.
+            </summary>
+            <typeparam name="T">The type of data in the array.</typeparam>
+            <param name="source">An <see cref="T:System.IntPtr"/> representing a pointer to native memory.</param>
+            <param name="buffer">An array of values that will be filled with the data located in native memory.</param>
+            <param name="arrayIndex">Index within the array to start copying into.</param>
+            <param name="sizeInBytes">The total size of the data to copy, in bytes.</param>            
+            <remarks>
+            <para>
+            This copies the contents of native memory pointed at by <paramref name="source"/> into the array specified by the <paramref name="buffer"/> parameter.
+            </para>
+            <para>
+            Ensure that the <paramref name="sizeInBytes"/> is correct, otherwise a buffer overrun may occur and memory corruption will soon follow.
+            </para>
+            </remarks>
+        </member>
+    </members>
+</doc>
