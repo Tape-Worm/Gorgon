@@ -282,7 +282,7 @@ namespace Gorgon.Diagnostics
 		}
 
 		/// <summary>
-		/// Function to print a line to the logfile.
+		/// Function to print a line to the log file.
 		/// </summary>
 		/// <param name="formatSpecifier">Format specifier for the line.</param>
 		/// <param name="level">Level that this message falls under.</param>
@@ -420,12 +420,12 @@ namespace Gorgon.Diagnostics
 		/// <param name="appname">File name for the log file.</param>
 		/// <param name="extraPath">Additional directories for the path.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the appname parameter is empty.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
 		public GorgonLogFile(string appname, string extraPath)
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 
-			GorgonDebugExtensions.ValidateString(appname, "appname");
+			appname.ValidateString("appname");
 
 			IsClosed = true;
 

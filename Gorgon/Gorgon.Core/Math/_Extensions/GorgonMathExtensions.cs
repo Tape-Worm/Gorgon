@@ -619,7 +619,7 @@ namespace Gorgon.Math
 		}
 
 		/// <summary>
-		/// Function to return the arccosine of an angle, in radians.
+		/// Function to return the inverse cosine of an angle, in radians.
 		/// </summary>
 		/// <param name="angle">Angle,in radians, to retrieve the arc cosine value from.</param>
 		/// <returns>The cosine value of the angle.</returns>
@@ -690,7 +690,7 @@ namespace Gorgon.Math
 		}
 
 		/// <summary>
-		/// Function to return the arccosine of an angle, in radians.
+		/// Function to return the inverse cosine of an angle, in radians.
 		/// </summary>
 		/// <param name="angle">Angle,in radians, to retrieve the arc cosine value from.</param>
 		/// <returns>The cosine value of the angle.</returns>
@@ -761,7 +761,7 @@ namespace Gorgon.Math
 		}
 
 		/// <summary>
-		/// Function to return the arccosine of an angle, in radians.
+		/// Function to return the inverse cosine of an angle, in radians.
 		/// </summary>
 		/// <param name="angle">Angle,in radians, to retrieve the arc cosine value from.</param>
 		/// <returns>The cosine value of the angle.</returns>

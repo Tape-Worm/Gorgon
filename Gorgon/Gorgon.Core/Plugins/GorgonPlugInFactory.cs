@@ -79,7 +79,7 @@ namespace Gorgon.Plugins
 		}
 
         /// <summary>
-        /// Property to set or return a fucntion that will be used to resolve plug-in assembly dependencies.
+        /// Property to set or return a function that will be used to resolve plug-in assembly dependencies.
         /// </summary>
         /// <remarks>This property will intercept an event on the current application domain to resolve assembly dependencies as 
         /// they are loaded.  This is necessary to handle issues where types won't load or instantiate in an assembly at run time.  

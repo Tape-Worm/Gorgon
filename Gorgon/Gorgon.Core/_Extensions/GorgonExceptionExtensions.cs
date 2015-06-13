@@ -35,7 +35,7 @@ namespace Gorgon.Core
 	public static class GorgonExceptionExtensions
 	{
 		/// <summary>
-		/// Functon to catch and handle an exception.
+		/// Function to catch and handle an exception.
 		/// </summary>
 		/// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
 		/// <param name="ex">Exception to pass to the handler.</param>

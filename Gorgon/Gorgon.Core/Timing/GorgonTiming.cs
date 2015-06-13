@@ -234,7 +234,7 @@ namespace Gorgon.Timing
 		}
 
 		/// <summary>
-		/// Propery to return the lowest FPS.
+		/// Property to return the lowest FPS.
 		/// </summary>
 		/// <remarks>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 

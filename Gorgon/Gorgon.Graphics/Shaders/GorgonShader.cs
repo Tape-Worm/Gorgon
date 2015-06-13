@@ -541,7 +541,7 @@ namespace Gorgon.Graphics
 		{
 			FileStream stream = null;
 
-			GorgonDebugExtensions.ValidateString(fileName, "fileName");
+			fileName.ValidateString("fileName");
 
 			try
 			{

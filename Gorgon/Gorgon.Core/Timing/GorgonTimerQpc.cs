@@ -35,7 +35,7 @@ namespace Gorgon.Timing
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This implementation uses the <a href="https://msdn.microsoft.com/en-us/library/ms644904(v=vs.85).aspx" target="_blank">Query Performance Counter</a>. It provides accurancy of 1 microsecond. 
+	/// This implementation uses the <a href="https://msdn.microsoft.com/en-us/library/ms644904(v=vs.85).aspx" target="_blank">Query Performance Counter</a>. It provides accuracy of 1 microsecond. 
 	/// </para>
 	/// <para>
 	/// <h2>Issues</h2> 
@@ -45,7 +45,7 @@ namespace Gorgon.Timing
 	/// <see cref="SupportsQpc"/> static method on this class to determine if the system will support the timer. This should not be an issue with a reasonably modern system.
 	/// </para> 
 	/// <para>
-	/// This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct timestamp. Since Gorgon requires Windows Vista SP2 at minimum, 
+	/// This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct time stamp. Since Gorgon requires Windows Vista SP2 at minimum, 
 	/// this should not be an issue.
 	/// </para>
 	/// <para>

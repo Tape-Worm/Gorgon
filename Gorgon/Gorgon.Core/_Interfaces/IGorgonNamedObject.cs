@@ -29,7 +29,7 @@ using System.Collections.Generic;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Gives an arbitrary object type a name to be used for lookup or another things that require an idenfitier.
+	/// Gives an arbitrary object type a name to be used for lookup or another things that require an identifier.
 	/// </summary>
 	/// <remarks> 
 	/// Many objects require an ID to give uniqueness to that object. This could be necessary for lookup in a <see cref="IDictionary{TKey,TValue}"/>, or merely for logging purposes. This interface 
@@ -41,7 +41,7 @@ namespace Gorgon.Core
 		/// Property to return the name of this object.
 		/// </summary>
 		/// <remarks>
-		/// For best practices, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
+		/// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
 		/// property.
 		/// </remarks>
 		string Name

@@ -314,8 +314,8 @@ namespace Gorgon.Core
 			// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 			// Determine which simplex we are in.
 
-			int offset1, offset2, offset3; // Offsets for second corner of simplex in (i,j,k) coords
-			int offset4, offset5, offset6; // Offsets for third corner of simplex in (i,j,k) coords
+			int offset1, offset2, offset3; // Offsets for second corner of simplex in (i,j,k) coordinates
+			int offset4, offset5, offset6; // Offsets for third corner of simplex in (i,j,k) coordinates
 
 			if (distance.X >= distance.Y)
 			{
@@ -384,14 +384,14 @@ namespace Gorgon.Core
 			// a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where
 			// c = 1/6.
 
-			// Offsets for second corner in (x,y,z) coords
+			// Offsets for second corner in (x,y,z) coordinates
 			var corner1 = new Vector3(distance.X - offset1 + G3, distance.Y - offset2 + G3, distance.Z - offset3 + G3);
 
-			// Offsets for third corner in (x,y,z) coords
+			// Offsets for third corner in (x,y,z) coordinates
 			var corner2 = new Vector3(distance.X - offset4 + OffsetAmount3D1, distance.Y - offset5 + OffsetAmount3D1,
 				distance.Z - offset6 + OffsetAmount3D1);
 
-			// Offsets for last corner in (x,y,z) coords
+			// Offsets for last corner in (x,y,z) coordinates
 			var corner3 = new Vector3(distance.X + OffsetAmount3D2, distance.Y + OffsetAmount3D2, distance.Z + OffsetAmount3D2);
 
 			// Work out the hashed gradient indices of the four simplex corners
@@ -552,13 +552,13 @@ namespace Gorgon.Core
 
 			// The fifth corner has all coordinate offsets = 1, so no need to compute that.
 
-			// Offsets for second corner in (x,y,z,w) coords
+			// Offsets for second corner in (x,y,z,w) coordinates
 			var corner1 = new Vector4(distance.X - offset1 + G4, distance.Y - offset2 + G4, distance.Z - offset3 + G4, distance.W - offset4 + G4);
-			// Offsets for third corner in (x,y,z,w) coords
+			// Offsets for third corner in (x,y,z,w) coordinates
 			var corner2 = new Vector4(distance.X - offset5 + OffsetAmount4D1, distance.Y - offset6 + OffsetAmount4D1, distance.Z - offset7 + OffsetAmount4D1, distance.W - offset8 + OffsetAmount4D1);
-			// Offsets for fourth corner in (x,y,z,w) coords
+			// Offsets for fourth corner in (x,y,z,w) coordinates
 			var corner3 = new Vector4(distance.X - offset9 + OffsetAmount4D2, distance.Y - offset10 + OffsetAmount4D2, distance.Z - offset11 + OffsetAmount4D2, distance.W - offset12 + OffsetAmount4D2);
-			// Offsets for last corner in (x,y,z,w) coords
+			// Offsets for last corner in (x,y,z,w) coordinates
 			var corner4 = new Vector4(distance.X + OffsetAmount4D3, distance.Y + OffsetAmount4D3, distance.Z + OffsetAmount4D3, distance.W + OffsetAmount4D3);
 
 			// Work out the hashed gradient indices of the five simplex corners

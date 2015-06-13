@@ -39,6 +39,7 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Plugins
 {
+#warning You didn't finish the documentation for this, moron.
 	/// <summary>
 	/// A service to create, cache and return <see cref="GorgonPlugin"/> instances.
 	/// </summary>

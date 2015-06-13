@@ -31,7 +31,7 @@ using Gorgon.Core.Properties;
 namespace Gorgon.Native
 {
 	/// <summary>
-	/// Extensions for manipulating memory via an Intptr.
+	/// Extensions for manipulating memory via an <see cref="IntPtr"/>.
 	/// </summary>
 	/// <remarks>Great care must be exercised when using these methods.  They allow access to native memory, so it's entirely possible 
 	/// to corrupt memory very easily with these methods.  Be sure that you are familiar with how pointers work and how unmanaged memory
@@ -429,7 +429,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to fill with a specific
 		/// </summary>
-		/// <param name="destination">Desintaiont pointer to zero out.</param>
+		/// <param name="destination">Destination pointer to zero out.</param>
 		/// <param name="fillValue">Value to fill the memory with.</param>
 		/// <param name="size">Amount of memory to fill.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
@@ -441,7 +441,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to marshal an object or value type into unmanaged memory.
 		/// </summary>
-		/// <param name="destination">Pointer to marhsal the data into.</param>
+		/// <param name="destination">Pointer to marshal the data into.</param>
 		/// <param name="value">Object or value type to marshal.</param>
 		/// <param name="deleteContents"><b>true</b> to remove any pre-allocated data, <b>false</b> to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.

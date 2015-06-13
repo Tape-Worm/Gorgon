@@ -36,7 +36,7 @@ namespace Gorgon.Core
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return whether an operation should be canceled or not.
+		/// Property to set or return whether an operation should be cancelled or not.
 		/// </summary>
 		public bool Cancel
 		{
@@ -49,7 +49,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCancelEventArgs"/> class.
 		/// </summary>
-		/// <param name="cancel"><b>true</b> if the operation should be canceled, <b>false</b> if not.</param>
+		/// <param name="cancel"><b>true</b> if the operation should be cancelled, <b>false</b> if not.</param>
 		public GorgonCancelEventArgs(bool cancel)
 		{
 			Cancel = cancel;

@@ -476,7 +476,7 @@ namespace Gorgon.IO
         }
 
         /// <summary>
-        /// Functio to write a range of generic values.
+        /// Function to write a range of generic values.
         /// </summary>
         /// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
         /// <param name="value">Array of values to write.</param>

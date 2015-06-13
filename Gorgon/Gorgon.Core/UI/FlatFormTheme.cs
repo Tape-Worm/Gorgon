@@ -45,10 +45,10 @@ namespace Gorgon.UI
 	/// <summary>
 	/// A theme to apply to flat forms.
 	/// </summary>
-	/// <remarks>A flat form theme is a means to apply multiple colour settings to a <see cref="FlatForm"/> window.  Themes can be loaded from an xml file or set manually via code.  
+	/// <remarks>A flat form theme is a means to apply multiple color settings to a <see cref="FlatForm"/> window.  Themes can be loaded from an xml file or set manually via code.  
 	/// By assigning a theme to a flat form, the colors for that window are automatically set by the colors in the window.
 	/// <para>
-	/// The theme object inherits from the ToolStrip renderer class and will be applied as a visual style for toolbars and menus as well.
+	/// The theme object inherits from the ToolStrip renderer class and will be applied as a visual style for tool bars and menus as well.
 	/// </para>
 	/// </remarks>
 	[TypeConverter(typeof(FlatFormThemeConverter)), Serializable]
@@ -90,7 +90,7 @@ namespace Gorgon.UI
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the background color for a toolstrip.
+		/// Property to set or return the background color for a tool strip.
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Color), "Control")]
@@ -471,7 +471,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to set or return the image used for menu items that use a checkmark.
+		/// Property to set or return the image used for menu items that use a check mark.
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
@@ -490,7 +490,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to set or return the image used for disabled menu items that use a checkmark.
+		/// Property to set or return the image used for disabled menu items that use a check mark.
 		/// </summary>
 		[Browsable(true)]
 		[DefaultValue(typeof(Image), null)]
@@ -864,7 +864,7 @@ namespace Gorgon.UI
 		/// Function to load this theme from a stream containing XML data.
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
-		/// <returns>The flatform theme deserialized from XML.</returns>
+		/// <returns>The <see cref="FlatForm"/> theme deserialized from XML.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the stream is write-only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the stream position cannot read beyond the stream length.</exception>

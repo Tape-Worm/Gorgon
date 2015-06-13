@@ -1322,7 +1322,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The background color used when hilighting menu items..
+        ///   Looks up a localized string similar to The background color used when highlighting menu items..
         /// </summary>
         internal static string PROP_THEME_HILIGHTBACKCOLOR_DESC {
             get {
@@ -1331,7 +1331,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The foreground color used when hilighting menu items..
+        ///   Looks up a localized string similar to The foreground color used when highlighting menu items..
         /// </summary>
         internal static string PROP_THEME_HILIGHTFORECOLOR_DESC {
             get {
@@ -1340,7 +1340,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The color behind a checkmark on a menu item..
+        ///   Looks up a localized string similar to The color behind a check mark on a menu item..
         /// </summary>
         internal static string PROP_THEME_MENUCHECKBACKCOLOR_DESC {
             get {
@@ -1349,7 +1349,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The color behind a checkmark on a menu item when the item is selected..
+        ///   Looks up a localized string similar to The color behind a check mark on a menu item when the item is selected..
         /// </summary>
         internal static string PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC {
             get {

@@ -80,13 +80,16 @@ namespace Gorgon.Configuration
 	/// Finally, types of <see cref="Nullable{T}"/> are not supported.
 	/// </para>
 	/// <para>
-	/// <h2>Versioning</h2>
+	/// <note>
+	/// <para>
 	/// If a version has been supplied to the object for comparison against that of the file, then it will check to see if the file version is less than or equal to the given version. 
 	/// If the file has a greater version number, then all items in the settings object will be reset to their default values.
 	/// </para>
 	/// <para>
 	/// While you may load a file with new, or deleted properties with no issue, changing the type of the property between versions of a settings file may cause exceptions when loading 
 	/// the file, regardless of whether or not it loads an older version of the file.
+	/// </para>
+	/// </note>
 	/// </para>
 	/// <para>
 	/// <h2>About arrays</h2>
@@ -203,16 +206,16 @@ namespace Gorgon.Configuration
 			/// Initializes a new instance of the <see cref="PropertyItem"/> class.
 			/// </summary>
 			/// <param name="property">The property information.</param>
-			/// <param name="attr">The <see cref="GorgonApplicationSettingAttribute"/> assigned to the property.</param>
+			/// <param name="settingAttr">The <see cref="GorgonApplicationSettingAttribute"/> assigned to the property.</param>
 			/// <param name="isDictionary"><c>true</c> if the property type is a dictionary, <c>false</c> if not.</param>
 			/// <param name="isList"><c>true</c> if the property type is a list, <c>false</c> if not.</param>
-			public PropertyItem(PropertyInfo property, GorgonApplicationSettingAttribute attr, bool isDictionary, bool isList)
+			public PropertyItem(PropertyInfo property, GorgonApplicationSettingAttribute settingAttr, bool isDictionary, bool isList)
 			{
 				PropertyInfo = property;
-				HasDefault = attr.HasDefault;
-				PropertySection = attr.Section;
-				PropertyName = string.IsNullOrWhiteSpace(attr.SettingName) ? property.Name : attr.SettingName;
-				DefaultValue = attr.DefaultValue;
+				HasDefault = settingAttr.HasDefault;
+				PropertySection = settingAttr.Section;
+				PropertyName = string.IsNullOrWhiteSpace(settingAttr.SettingName) ? property.Name : settingAttr.SettingName;
+				DefaultValue = settingAttr.DefaultValue;
 
 				Getter = property.CreatePropertyGetter<GorgonApplicationSettings, object>();
 
@@ -371,7 +374,7 @@ namespace Gorgon.Configuration
 
 		    var type = value.GetType();
 			var attrib = type.GetCustomAttribute<TypeConverterAttribute>(true);
-			var convertableValue = value as IConvertible;
+			var convertibleValue = value as IConvertible;
 			var formattableValue = value as IFormattable;
 
 			if (value is DateTime)
@@ -379,10 +382,10 @@ namespace Gorgon.Configuration
 				return ((DateTime)value).ToString(DateFormat, CultureInfo.InvariantCulture);
 			}
 
-			if ((convertableValue != null) || (formattableValue != null))
+			if ((convertibleValue != null) || (formattableValue != null))
 			{
-				return convertableValue != null
-					? convertableValue.ToString(CultureInfo.InvariantCulture)
+				return convertibleValue != null
+					? convertibleValue.ToString(CultureInfo.InvariantCulture)
 					: formattableValue.ToString(null, CultureInfo.InvariantCulture);
 			}
 
@@ -622,18 +625,18 @@ namespace Gorgon.Configuration
 		/// <param name="value">Value to deserialize and assign.</param>
 		private void AddItemToDictionary(PropertyItem item, string key, string value)
 		{
-			dynamic dictonaryValue = item.Getter(this);
+			dynamic dictionaryValue = item.Getter(this);
 
-			if (dictonaryValue == null)
+			if (dictionaryValue == null)
 			{
 				return;
 			}
 
-			Type dictionaryType = dictonaryValue.GetType();
+			Type dictionaryType = dictionaryValue.GetType();
 			Type valueType = dictionaryType.GetGenericArguments()[1];
 			dynamic typedValue = UnconvertValue(value, valueType);
 
-			dictonaryValue[key] = typedValue;
+			dictionaryValue[key] = typedValue;
 		}
 
 		/// <summary>

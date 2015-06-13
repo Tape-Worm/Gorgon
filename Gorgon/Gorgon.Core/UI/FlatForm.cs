@@ -956,7 +956,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Function to transform mouse event arguments into the client space of the form.
 		/// </summary>
-		/// <param name="control">Control with the local mouse coorindates.</param>
+		/// <param name="control">Control with the local mouse coordinates.</param>
 		/// <param name="e">Event arguments to transform.</param>
 		/// <returns>The transformed event arguments.</returns>
 		private MouseEventArgs TransformMouseArgs(Control control, MouseEventArgs e)

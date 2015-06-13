@@ -72,7 +72,7 @@ namespace Gorgon.IO
 	/// </para>
 	/// <para>
 	/// If data needs to be marshalled, then the object provides two static members: <see cref="ValueToStream{T}"/> and <see cref="ArrayToStream{T}"/> for marshalling reference types to and from the stream. 
-	/// The rules about having the <see cref="StructLayoutAttribute"/> still apply, and additonally, a size, in bytes of the value should be supplied to the attribute along with the <see cref="LayoutKind"/>. 
+	/// The rules about having the <see cref="StructLayoutAttribute"/> still apply, and additionally, a size, in bytes of the value should be supplied to the attribute along with the <see cref="LayoutKind"/>. 
 	/// Because these methods may cause performance to suffer, it is recommended that data be written directly on a per-member basis instead of using these functions if performance is absolutely critical.
 	/// </para>
 	/// <para>
@@ -82,25 +82,29 @@ namespace Gorgon.IO
 	/// </para>
 	/// <para>
 	/// Existing pointers to native memory can be used when constructing this stream type via the <see cref="GorgonDataStream(IntPtr, int)"/> (or using the constructor with the raw <c>void *</c> pointer). 
-	/// The data stream will read and write from this pointer, but it will not take ownership of it, and thus will not free the memory associated with it when it is done. That repsonsibility is up to the 
+	/// The data stream will read and write from this pointer, but it will not take ownership of it, and thus will not free the memory associated with it when it is done. That responsibility is up to the 
 	/// caller of the data stream.
 	/// </para>
 	/// <para>
-	/// <h3><u>IMPORTANT!</u></h3>
+	/// <note type="important">
 	/// When using this stream to allocate a new block of memory, it is very important that <see cref="Dispose"/> method is called when finished using this object. Failure to do so can cause memory leaks 
 	/// due to the inability of the garbage collector to handle the native memory allocated by this stream. The exception to this rule is when this stream is applied to an existing pointer. In those 
 	/// cases, calling <c>Dispose</c> is not necessary as no memory has been allocated by the stream, and the pointer is not owned by the stream.
+	/// </note>
 	/// </para>
 	/// <para>
-	/// Like most stream based types, it is <i>not</i> safe to use the same instance of this type from multiple threads. Doing so may cause performance degradation, or worse, memory corruption. If multithreading 
+	/// <note type="caution">
+	/// Like most stream based types, it is <i>not</i> safe to use the same instance of this type from multiple threads. Doing so may cause performance degradation, or worse, memory corruption. If multi threading 
 	/// is a possibility and native memory access is required, then the <see cref="DirectAccess"/> class provides less restricted (and less comprehensive) functionality for working with native memory 
 	/// directly. Also, using a raw pointer (<c>void *</c> in C# or <see cref="IntPtr"/> and the <see cref="GorgonIntPtrExtensions"/> in languages that don't support raw pointers), is the best route to manipulating 
 	/// native memory without the worry of concurrency problems that can plague a stream type.
+	/// </note>
 	/// </para>
 	/// <para>
-	/// <h3>Other considerations</h3>
-	/// Gorgon will be phasing out it's internal usage of this type in favor of more direct access to memory. There may be new native types available for use in the future to supplement this type. This space 
+	/// <note type="caution">
+	/// Gorgon will be phasing out it's internal usage of this type in favour of more direct access to memory. There may be new native types available for use in the future to supplement this type. This space 
 	/// will be updated with alternatives as well as <c>See Also</c> references.
+	/// </note>
 	/// </para>
 	/// </remarks>
 	/// <seealso cref="DirectAccess"/>
@@ -1521,7 +1525,7 @@ namespace Gorgon.IO
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is write-only.</exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream parameter .
         /// <para>-or-</para>
-        /// <para>Thrown when this stream cannot accomodate the <paramref name="size"/> parameter.</para>
+        /// <para>Thrown when this stream cannot accommodate the <paramref name="size"/> parameter.</para>
         /// </exception>
         public void ReadFromStream(Stream stream, int size)
         {

@@ -58,7 +58,7 @@ namespace Gorgon.Examples
 			Console.CursorTop = Console.WindowHeight - 1;
 			Console.Write(timeString.PadRight(Console.WindowWidth - 1));
 
-			// Reset the colours.
+			// Reset the colors.
 			Console.BackgroundColor = ConsoleColor.DarkBlue;
 			Console.ForegroundColor = ConsoleColor.White;
 

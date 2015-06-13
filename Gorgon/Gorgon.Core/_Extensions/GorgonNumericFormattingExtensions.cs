@@ -620,7 +620,7 @@ namespace Gorgon.Core
 		/// <param name="pointer">Pointer to format.</param>
 		/// <returns>The formatted address of the pointer.</returns>
 		/// <remarks>
-		/// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will padd zeroes to the left of the value based on the size of the type, but unlike the 
+		/// This will return a string with the number formatted as a hexadecimal number. Like other overloads of this method, this will pad zeroes to the left of the value based on the size of the type, but unlike the 
 		/// other overloads, it will use the correct number of zeroes based on the platform (x64, x86).  For example:
 		/// <code language="csharp">
 		/// IntPtr hexValue = new IntPtr(122388812);

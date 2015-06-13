@@ -33,7 +33,7 @@ using System.Xml.Linq;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Extension methods to provide formatting on the <see cref="string"/> type and additonal functionality for the <see cref="StringBuilder"/> type.
+	/// Extension methods to provide formatting on the <see cref="string"/> type and additional functionality for the <see cref="StringBuilder"/> type.
 	/// </summary>
 	public static class GorgonStringFormattingExtension
 	{
@@ -208,7 +208,7 @@ namespace Gorgon.Core
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
         /// </para>
         /// <para>
-        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// If the <paramref name="maxWidth"/> is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.
         /// </para>
         /// </remarks>        
@@ -238,7 +238,7 @@ namespace Gorgon.Core
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
         /// </para>
         /// <para>
-        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// If the <paramref name="maxWidth"/> is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.
         /// </para>
         /// <para>
@@ -273,7 +273,7 @@ namespace Gorgon.Core
         /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.
         /// </para>
         /// <para>
-        /// If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
+        /// If the <paramref name="maxWidth"/> is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
         /// specified by max width) will be output without ellipses.
         /// </para>
         /// <para>

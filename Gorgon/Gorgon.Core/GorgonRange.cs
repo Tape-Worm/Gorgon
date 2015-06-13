@@ -319,7 +319,7 @@ namespace Gorgon.Core
 		/// Returns the hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A 32-bit signed floateger that is the hash code for this instance.
+		/// A 32-bit signed integer that is the hash code for this instance.
 		/// </returns>
 		public override int GetHashCode()
 		{
@@ -862,7 +862,7 @@ namespace Gorgon.Core
 		/// Returns the hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A 32-bit signed floateger that is the hash code for this instance.
+		/// A 32-bit signed integer that is the hash code for this instance.
 		/// </returns>
 		public override int GetHashCode()
 		{
@@ -1405,7 +1405,7 @@ namespace Gorgon.Core
 		/// Returns the hash code for this instance.
 		/// </summary>
 		/// <returns>
-		/// A 32-bit signed floateger that is the hash code for this instance.
+		/// A 32-bit signed integer that is the hash code for this instance.
 		/// </returns>
 		public override int GetHashCode()
 		{

@@ -47,7 +47,7 @@ namespace Gorgon.Plugins
 	public enum AssemblySigningResult
 	{
 		/// <summary>
-		/// Assembly is not signed.  This flag is mutally exclusive.
+		/// Assembly is not signed.  This flag is mutually exclusive.
 		/// </summary>
 		NotSigned = 1,
 		/// <summary>
@@ -146,7 +146,7 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Property to set or return a fucntion that will be used to resolve plugin assembly dependencies.
+		/// Property to set or return a function that will be used to resolve plugin assembly dependencies.
 		/// </summary>
 		/// <remarks>
 		/// <para>

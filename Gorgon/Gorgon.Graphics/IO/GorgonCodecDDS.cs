@@ -288,11 +288,11 @@ namespace Gorgon.IO
 		/// </summary>
 		RGBA = 0x41,
 		/// <summary>
-		/// Lunminance data.
+		/// Luminance data.
 		/// </summary>
 		Luminance = 0x20000,
 		/// <summary>
-		/// Lunminance + alpha data.
+		/// Luminance + alpha data.
 		/// </summary>
 		LuminanceAlpha = 0x20001,
 		/// <summary>
@@ -300,7 +300,7 @@ namespace Gorgon.IO
 		/// </summary>
 		Alpha = 0x2,
 		/// <summary>
-		/// Paletted/indexed data.
+		/// Palette/indexed data.
 		/// </summary>
 		PaletteIndexed = 0x20
 	}
@@ -1861,7 +1861,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read file meta data.
 		/// </summary>
-		/// <param name="stream">Stream used to read the metadata.</param>
+		/// <param name="stream">Stream used to read the meta data.</param>
 		/// <returns>
 		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
 		/// </returns>

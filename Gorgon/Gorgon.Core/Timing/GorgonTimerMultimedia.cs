@@ -45,7 +45,7 @@ namespace Gorgon.Timing
 	/// <h2>Issues</h2>
 	/// There are a few caveats when using this timer:
 	/// <list type="bullet">
-	/// <item><description>This timer wraps around to 0 every 2^32 millseconds (~49.71 days), and can cause issues in code relying on this type of timer. Gorgon will do its best to ensure this is not a problem.</description></item>
+	/// <item><description>This timer wraps around to 0 every 2^32 milliseconds (~49.71 days), and can cause issues in code relying on this type of timer. Gorgon will do its best to ensure this is not a problem.</description></item>
 	/// <item><description> It has a default precision of 5 milliseconds, but Gorgon will attempt to change the resolution to 1 millisecond when using the <see cref="GorgonApplication"/> class.</description></item>
 	/// </list>
 	/// The second bullet point is important, since it will change the timer frequency not only for the application, but across the system. This may cause weird issues with other applications relying on this 

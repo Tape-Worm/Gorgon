@@ -52,7 +52,7 @@ namespace Gorgon.IO
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Gorgon uses the chunked file format for its own file serializing/deserialzing of its objects that support persistence.
+    /// Gorgon uses the chunked file format for its own file serializing/deserializing of its objects that support persistence.
     /// </para>
     /// <para>
     /// This object is used to serialize or deserialize object data into a chunked file format. Essentially this takes the binary layout of the file, and makes it easier to process by putting identifiers 
