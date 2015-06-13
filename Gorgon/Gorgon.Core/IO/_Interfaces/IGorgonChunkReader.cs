@@ -260,107 +260,43 @@ namespace Gorgon.IO
 		/// </exception>
 		void Read(byte[] data, int startIndex, int count);
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <param name="startIndex">Starting index in the array.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+		/// <inheritdoc cref="Gorgon.IO.GorgonBinaryReader.ReadRange{T}(T[], int, int)"/>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
-		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
 		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		/// <remarks>
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </remarks>
 		void ReadRange<T>(T[] value, int startIndex, int count)
 			where T : struct;
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
+		/// <inheritdoc cref="Gorgon.IO.GorgonBinaryReader.ReadRange{T}(T[], int)"/>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
 		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		/// <remarks>
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </remarks>
 		void ReadRange<T>(T[] value, int count)
 			where T : struct;
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <param name="value">Array of values to read.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		/// <remarks>
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc cref="Gorgon.IO.GorgonBinaryReader.ReadRange{T}(T[])"/>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		void ReadRange<T>(T[] value)
 			where T : struct;
 
-		/// <summary>
-		/// Function to read a range of generic values.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <param name="count">Number of array elements to copy.</param>
-		/// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		/// <remarks>
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc cref="Gorgon.IO.GorgonBinaryReader.ReadRange{T}(int)"/>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		T[] ReadRange<T>(int count)
 			where T : struct;
 
-		/// <summary>
-		/// Function to read a generic value from the stream.
-		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
-		/// <returns>The value in the stream.</returns>
-		/// <remarks>
-		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-		/// </para>
-		/// <para>
-		/// Value types with marshalling attributes are <i>not</i> supported and will not be read correctly.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc cref="Gorgon.IO.GorgonBinaryReader.ReadValue{T}()"/>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The size of the value being read plus the current position in the stream exceeds the size of the chunk.</para>
+		/// </exception>
 		T Read<T>()
 			where T : struct;
 

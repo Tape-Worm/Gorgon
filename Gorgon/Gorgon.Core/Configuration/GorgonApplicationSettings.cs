@@ -56,7 +56,9 @@ namespace Gorgon.Configuration
 	/// a <see cref="GorgonApplicationSettingAttribute"/> so that the base object knows which properties to serialize/deserialize. And that's all there is to it.
 	/// </para>
 	/// <para>
-	/// <h2>Limitations</h2>
+	/// <note>
+	/// <h3>Limitations</h3>
+	/// <para>
 	/// While this class is flexible, there are some restrictions on the property types:
 	/// <list type="bullet">
 	/// <item><description>The property must have a property getter, at minimum.</description></item>
@@ -79,9 +81,12 @@ namespace Gorgon.Configuration
 	/// <para>
 	/// Finally, types of <see cref="Nullable{T}"/> are not supported.
 	/// </para>
+	/// </note> 
+	/// </para>
 	/// <para>
 	/// <note>
 	/// <para>
+	/// <h3>Versioning</h3>
 	/// If a version has been supplied to the object for comparison against that of the file, then it will check to see if the file version is less than or equal to the given version. 
 	/// If the file has a greater version number, then all items in the settings object will be reset to their default values.
 	/// </para>
@@ -92,15 +97,23 @@ namespace Gorgon.Configuration
 	/// </note>
 	/// </para>
 	/// <para>
-	/// <h2>About arrays</h2>
+	/// <note>
+	/// <h3>Arrays</h3>
+	/// <para>
 	/// Collection types like lists or dictionaries may have a variable number of elements, but array types are handled differently. If you initialize an array setting in your constructor to have 5 elements, then 
 	/// the settings object will always assume there will only be 5 elements. If an array item in the XML has an index that exceeds the defined count, then it is ignored.  Likewise, if the XML file does not 
 	/// contain an element for a given index, then it will be set to its default value.
 	/// </para>
+	/// </note>
+	/// </para>
 	/// <para>
-	/// <h2>About date formatting</h2>
+	/// <note>
+	/// <h3>Date format</h3>
+	/// <para>
 	/// This object can (de)serialize a date/time value from/to a string in the backing file. To do this, the application takes the date value and formats it according to the <a href="http://www.iso.org/iso/catalogue_detail?csnumber=40874" target="_blank">ISO 8601</a> 
 	/// specification.
+	/// </para> 
+	/// </note>
 	/// </para>
 	/// </remarks>
 	public abstract class GorgonApplicationSettings

@@ -38,21 +38,23 @@ namespace Gorgon.Timing
 	/// This implementation uses the <a href="https://msdn.microsoft.com/en-us/library/ms644904(v=vs.85).aspx" target="_blank">Query Performance Counter</a>. It provides accuracy of 1 microsecond. 
 	/// </para>
 	/// <para>
-	/// <h2>Issues</h2> 
-	/// </para>
-	/// <para>
-	/// On older processors this functionality may not be supported at all. If Gorgon can't detect support for this type of timer, it will throw an exception. In order to avoid this, use the 
-	/// <see cref="SupportsQpc"/> static method on this class to determine if the system will support the timer. This should not be an issue with a reasonably modern system.
-	/// </para> 
-	/// <para>
-	/// This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct time stamp. Since Gorgon requires Windows Vista SP2 at minimum, 
-	/// this should not be an issue.
-	/// </para>
-	/// <para>
-	/// There may be a performance hit using this timer, depending on your operating system version and hardware.
-	/// </para>
-	/// <para>
-	/// For a comprehensive overview of the Qpc timer, go to <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx" target="_blank">https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</a>.
+	/// <note type="caution">
+	///		<h3>Issues</h3>  
+	///		<para>
+	///		On older processors this functionality may not be supported at all. If Gorgon can't detect support for this type of timer, it will throw an exception. In order to avoid this, use the 
+	///		<see cref="SupportsQpc"/> static method on this class to determine if the system will support the timer. This should not be an issue with a reasonably modern system.
+	///		</para> 
+	///		<para>
+	///		This is an issue on systems with Windows versions before Windows Vista because multi-core systems may not report the correct time stamp. Since Gorgon requires Windows Vista SP2 at minimum, 
+	///		this should not be an issue.
+	///		</para>
+	///		<para>
+	///		There may be a performance hit using this timer, depending on your operating system version and hardware.
+	///		</para>
+	///		<para>
+	///		For a comprehensive overview of the Qpc timer, go to <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx" target="_blank">https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx</a>.
+	///		</para>
+	/// </note>
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonTimerQpc 

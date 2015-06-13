@@ -438,8 +438,11 @@ namespace Gorgon.Plugins
 		/// </code>
 		/// </para>
 		/// <para>
-		/// <h2>Disclaimer time!!!</h2><br/>
-		/// If the security of your assemblies is not critical, then this method should serve the purpose of verification of an assembly. However:<br/>
+		/// <note type="important">
+		/// <h3>Disclaimer time!!!</h3>
+		/// <para>
+		/// If the security of your assemblies is not critical, then this method should serve the purpose of verification of an assembly. However:
+		/// </para>
 		/// <para>
 		/// <i>
 		/// This method is intended to verify that an assembly is signed, optionally contains the provide public key, and that, to the best of its knowledge, it has not been tampered 
@@ -447,10 +450,11 @@ namespace Gorgon.Plugins
 		/// the information is 100% accurate, so if security is of the utmost importance, do not rely on this method alone and use other functionality to secure your assemblies. 
 		/// </i>
 		/// </para>
-		/// </para>
 		/// <para>
 		/// For more information about signing an assembly, follow this link <a href="https://msdn.microsoft.com/en-us/library/xwb8f617(v=vs.110).aspx" target="_blank">Creating and 
 		/// Using Strong-Named Assemblies</a>.
+		/// </para>
+		/// </note>
 		/// </para>
 		/// </remarks>
 		public AssemblySigningResult VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)

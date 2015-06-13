@@ -42,7 +42,8 @@ namespace Gorgon.Timing
 	/// measurement of time down to 1 millisecond. 
 	/// </para>
 	/// <para>
-	/// <h2>Issues</h2>
+	/// <note type="caution">
+	/// <h3>Known issues</h3>
 	/// There are a few caveats when using this timer:
 	/// <list type="bullet">
 	/// <item><description>This timer wraps around to 0 every 2^32 milliseconds (~49.71 days), and can cause issues in code relying on this type of timer. Gorgon will do its best to ensure this is not a problem.</description></item>
@@ -53,6 +54,7 @@ namespace Gorgon.Timing
 	/// and <see cref="EndTiming"/> static methods on this class if the <see cref="GorgonApplication"/> class is not used in your application. It is vitally important that the <see cref="EndTiming"/> method is called 
 	/// when the <see cref="BeginTiming"/> method is used. Failure to do so can leave the operating system timing in a state where the task scheduler switches tasks more often and the power saving may not trigger 
 	/// properly.
+	/// </note>
 	/// </para>
 	/// </remarks>
 	public sealed class GorgonTimerMultimedia 

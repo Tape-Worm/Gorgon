@@ -15,13 +15,14 @@
             <para>
             Each method can take a <c>void *</c> pointer to the raw memory, or, if the language doesn't support raw pointers (e.g. Visual Basic.NET), then an overload that provides access via an <see cref="T:System.IntPtr"/> type will be provided.            
             </para>	    
-	    <para>
+	    <note type="important">
 	    When passing data in, use value types only (structs). And ensure that these value types have a <see cref="T:System.Runtime.InteropServices.StructLayoutAttribute"/> with a layout of <see cref="F:System.Runtime.InteropServices.LayoutKind.Sequential"/> or <see cref="F:System.Runtime.InteropServices.LayoutKind.Explicit"/>. Otherwise, .NET may rearrange the members and the data may not appear in the correct place. Also, value types with reference type fields (object) are not supported, regardless of whether marshalling is used on those fields or not. Fields with marshalling will not be serialized, and may cause corruption.
-	    </para>
+	    </note>            
+            <note type="caution">
             <para>
-            <h2>Disclaimer</h2>
             All members of this class are completely unsafe to use. There is no range validation of any kind on the methods provided here, and therefore, it is quite easy to corrupt memory. Use this at your own risk! If you are uncomfortable with pointers, direct memory management, etc... it is best to avoid these methods completely. No support will be given for the use of this type.
             </para>
+            </note>
             </remarks>
         </member>
         <member name="M:Gorgon.Native.DirectAccess.SizeOf``1">

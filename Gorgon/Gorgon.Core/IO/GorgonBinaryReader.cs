@@ -103,7 +103,14 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer to fill with data.</param>
 		/// <param name="size">Number of bytes to read.</param>
-		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This method will read the number of bytes specified by the <paramref name="size"/> parameter into the <see cref="IntPtr"/> representing a memory pointer.
+		/// </para>
+		/// <note type="caution">
+		/// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
+		/// </note>
+		/// </remarks>
 		public unsafe void Read(IntPtr pointer, int size)
 		{
 			Read(pointer.ToPointer(), size);
@@ -114,7 +121,14 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer to fill with data.</param>
 		/// <param name="size">Number of bytes to read.</param>
-		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This method will read the number of bytes specified by the <paramref name="size"/> parameter into memory pointed at by the raw <paramref name="pointer"/>.
+		/// </para>
+		/// <note type="caution">
+		/// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
+		/// </note>
+		/// </remarks>
 		public unsafe void Read(void* pointer, int size)
 		{
 			if ((pointer == null) || (size < 1))
@@ -159,12 +173,17 @@ namespace Gorgon.IO
 		/// <returns>The value in the stream.</returns>
 		/// <remarks>
 		/// <para>
+		/// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
 		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		public unsafe T ReadValue<T>()
 			where T : struct
@@ -216,12 +235,18 @@ namespace Gorgon.IO
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
 		/// <para>
+		/// This will read data from the binary stream into the specified array of values of type <typeparamref name="T"/>. The values will be populated starting at the <paramref name="startIndex"/> up to 
+		/// the <paramref name="count"/> specified.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
 		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
@@ -294,12 +319,17 @@ namespace Gorgon.IO
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
 		/// <para>
+		/// This method will read data from the binary stream into the specified array of values of type <typeparamref name="T"/> up to the <paramref name="count"/> specified.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
 		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
@@ -318,12 +348,17 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to read.</param>
 		/// <remarks>
 		/// <para>
+		/// This method will read data from the binary stream into the specified array of values of type <typeparamref name="T"/>.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
 		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
@@ -346,12 +381,17 @@ namespace Gorgon.IO
 		/// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
 		/// <remarks>
 		/// <para>
+		/// This method will read the specified <paramref name="count"/> of values of type <typeparamref name="T"/> into an array from a binary data stream and return that array.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
 		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
 		public T[] ReadRange<T>(int count)

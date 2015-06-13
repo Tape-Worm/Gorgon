@@ -103,7 +103,14 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer containing the data.</param>
 		/// <param name="size">Number of bytes to write.</param>
-		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the data located at the <see cref="IntPtr"/> representing a memory pointer.
+		/// </para>
+		/// <note type="caution">
+		/// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
+		/// </note>
+		/// </remarks>
 		public unsafe void Write(IntPtr pointer, int size)
 		{
 			Write(pointer.ToPointer(), size);
@@ -114,7 +121,14 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the buffer containing the data.</param>
 		/// <param name="size">Number of bytes to write.</param>
-		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		/// <remarks>
+		/// <para>
+		/// This method will write the number of bytes specified by the <paramref name="size"/> parameter from the data pointed at by the raw <paramref name="pointer"/>.
+		/// </para>
+		/// <note type="caution">
+		/// This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.
+		/// </note>
+		/// </remarks>
 		public unsafe void Write(void* pointer, int size)
 		{
 			if ((pointer == null) || (size < 1))
@@ -159,12 +173,18 @@ namespace Gorgon.IO
 		/// <param name="value">Value to write to the stream.</param>
 		/// <remarks>
 		/// <para>
+		/// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+		/// <typeparamref name="T"/>, and any packing rules applied.
+		/// </para>
+		/// <note type="important">
+		/// <para>
 		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		public unsafe void WriteValue<T>(T value)
@@ -213,12 +233,22 @@ namespace Gorgon.IO
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
 		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. The values will start at the <paramref name="startIndex"/> in the array up to 
+		/// the <paramref name="count"/> specified. 
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
+		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* (</c><paramref name="count"/>-<paramref name="startIndex"/><c>)</c>. 
+		/// Packing rules on type <typeparamref name="T"/> will affect the size of the type.
 		/// </para>
+		/// <note type="important">
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
@@ -292,12 +322,21 @@ namespace Gorgon.IO
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
 		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
+		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>*</c> <paramref name="count"/>.  Packing rules on type <typeparamref name="T"/> will affect the 
+		/// size of the type.
 		/// </para>
+		/// <note type="important">
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
@@ -316,12 +355,21 @@ namespace Gorgon.IO
 		/// <param name="value">Array of values to write.</param>
 		/// <remarks>
 		/// <para>
-		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-		/// struct layout. Otherwise, .NET may rearrange the members and the data may be persisted in the correct order.
+		/// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
 		/// </para>
 		/// <para>
-		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be written correctly.
+		/// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> <c>* value.Length</c>.  Packing rules on type <typeparamref name="T"/> will affect the 
+		/// size of the type.
 		/// </para>
+		/// <note type="important">
+		/// <para>
+		/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+		/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+		/// </para>
+		/// <para>
+		/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+		/// </para>
+		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
