@@ -12,6 +12,7 @@
       <IgnoreFile>.\Gorgon.Core\GlobalSuppressions.cs</IgnoreFile>
       <IgnoreFile>.\Gorgon.Core\Native\Win32API.cs</IgnoreFile>
       <IgnoreFile>.\Gorgon.Core\Native\Win32Enums.cs</IgnoreFile>
+      <IgnoreFile>..\Test\Gorgon.Core.Test\IOTests.cs</IgnoreFile>
     </IgnoreFiles>
   </SpellChecker>
 <HelpConfigurations selected="HelpFile">

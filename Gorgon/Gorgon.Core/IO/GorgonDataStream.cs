@@ -67,8 +67,8 @@ namespace Gorgon.IO
 	/// <para>
 	/// The object supports a multitude of reading/writing options for primitive data, string data, array data, and even generic types to the stream. For generic types being read or written, the type must 
 	/// be decorated with a <see cref="StructLayoutAttribute"/> and a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> value. Otherwise, .NET may rearrange the members of the type 
-	/// and the data being read/written will not serialize as expected. Also, for the <c>Read</c>/<c>Write</c> methods, the generic type must not use any marshalling (<see cref="MarshalAsAttribute"/>) or 
-	/// reference types. Only primitive types and value types (structs) are allowed. 
+	/// and the data being read/written will not serialize as expected. Also, for the <see cref="O:Gorgon.IO.GorgonDataStream.Read">Read</see>/<see cref="O:Gorgon.IO.GorgonDataStream.Write">Write</see> methods, 
+	/// the generic type must not use any marshalling (<see cref="MarshalAsAttribute"/>) or reference types. Only primitive types and value types (structs) are allowed. 
 	/// </para>
 	/// <para>
 	/// If data needs to be marshalled, then the object provides two static members: <see cref="ValueToStream{T}"/> and <see cref="ArrayToStream{T}"/> for marshalling reference types to and from the stream. 
@@ -525,7 +525,7 @@ namespace Gorgon.IO
 #if DEBUG
 	        if (!CanRead)
 	        {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 	        }
 
 	        if (_data == IntPtr.Zero)
@@ -558,6 +558,11 @@ namespace Gorgon.IO
 	        {
 	            actualCount = (_length - _pointerPosition);
 	        }
+
+		    if (actualCount <= 0)
+		    {
+			    return 0;
+		    }
 
 	        DirectAccess.ReadArray(_dataPointer, buffer, offset, actualCount);
 
@@ -593,11 +598,11 @@ namespace Gorgon.IO
 #if DEBUG
 			        if (offset < 0)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_BOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 			        }
 			        if (offset > _length)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_EOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 			        }
 #endif
 			        newPosition = offset;
@@ -607,11 +612,11 @@ namespace Gorgon.IO
 #if DEBUG
 			        if (newPosition < 0)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_BOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 			        }
 			        if (newPosition > _length)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_EOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 			        }
 #endif
 			        break;
@@ -621,11 +626,11 @@ namespace Gorgon.IO
 #if DEBUG
 			        if (newPosition < 0)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_BOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 			        }
 			        if (newPosition > _length)
 			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_STREAM_EOS);
+			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 			        }
 #endif
 			        break;
@@ -664,7 +669,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -714,7 +719,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -745,7 +750,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -776,7 +781,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -807,7 +812,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -838,7 +843,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -869,7 +874,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -901,7 +906,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -933,7 +938,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -966,7 +971,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -993,7 +998,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1026,7 +1031,7 @@ namespace Gorgon.IO
 #if DEBUG
 			if (!CanRead)
 			{
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
 
@@ -1060,7 +1065,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1094,7 +1099,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1128,7 +1133,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1162,7 +1167,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1196,7 +1201,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1230,7 +1235,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1264,7 +1269,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1298,7 +1303,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
 
@@ -1340,7 +1345,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1432,7 +1437,7 @@ namespace Gorgon.IO
 #if DEBUG
 		    if (!CanWrite)
 		    {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 		    }
 
 		    if (_data == IntPtr.Zero)
@@ -1472,7 +1477,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1534,7 +1539,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!stream.CanRead)
             {
-                throw new IOException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_length - _pointerPosition < size)
@@ -1544,7 +1549,7 @@ namespace Gorgon.IO
 
             if (size > stream.Length - stream.Position)
             {
-                throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
             }
 #endif   
             // Create a buffer that's under the Large Object Heap size requirement.
@@ -1604,7 +1609,7 @@ namespace Gorgon.IO
 #if DEBUG
 		    if (!CanRead)
 		    {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 		    }
 
 		    if (_data == IntPtr.Zero)
@@ -1614,7 +1619,7 @@ namespace Gorgon.IO
 
 		    if (typeSize + Position > _length)
 		    {
-                throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 		    }
 #endif
 
@@ -1638,7 +1643,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1648,7 +1653,7 @@ namespace Gorgon.IO
 
             if (size + Position > _length)
             {
-                throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
             }
 #endif
             _pointerOffset.CopyTo(pointer, size);
@@ -1668,7 +1673,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1678,7 +1683,7 @@ namespace Gorgon.IO
 
             if (size + Position > _length)
             {
-                throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
             }
 #endif
             DirectAccess.MemoryCopy(_dataPointer, pointer, size);
@@ -1722,7 +1727,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1766,7 +1771,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1797,7 +1802,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1834,7 +1839,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanWrite)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_READONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1871,7 +1876,7 @@ namespace Gorgon.IO
 #if DEBUG
             if (!CanRead)
             {
-                throw new NotSupportedException(Resources.GOR_STREAM_IS_WRITEONLY);
+                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
             if (_data == IntPtr.Zero)
@@ -1881,7 +1886,7 @@ namespace Gorgon.IO
 
             if (dataSize + Position > _length)
             {
-                throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
             }
 #endif
 

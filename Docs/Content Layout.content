@@ -1,13 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Topics>
-  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" title="Gorgon documentation">
+  <Topic id="0abf7d37-670e-4f0d-8581-e0368e39e8ef" visible="True" isDefault="true" isExpanded="true" isSelected="true" title="Gorgon documentation">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome,Gorgon" />
     </HelpKeywords>
-    <Topic id="97ea73c0-3e89-4464-9a5b-0b61891ab219" visible="True" isSelected="true" title="MIT License">
+    <Topic id="97ea73c0-3e89-4464-9a5b-0b61891ab219" visible="True" title="MIT License">
       <HelpKeywords>
         <HelpKeyword index="K" term="License,MIT" />
       </HelpKeywords>
+    </Topic>
+    <Topic id="17845af9-16ae-4c27-a5f9-fde15bc414f4" visible="True" noFile="true" isExpanded="true" title="Specifications" tocTitle="Specifications">
+      <Topic id="7b81343e-e2fc-4f0f-926a-d9193ae481fe" visible="True" title="Gorgon chunked file format (GCFF)" tocTitle="Gorgon chunked file format (GCFF)">
+        <HelpKeywords>
+          <HelpKeyword index="K" term="GCFF, File, Format, Chunk" />
+        </HelpKeywords>
+      </Topic>
     </Topic>
   </Topic>
 </Topics>

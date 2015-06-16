@@ -108,7 +108,7 @@ namespace Gorgon.IO
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException(Resources.GOR_STREAM_IS_READONLY);
+				throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
 			if (encoding == null)
@@ -240,7 +240,7 @@ namespace Gorgon.IO
 
 				if (value == -1)
 				{
-					throw new IOException(Resources.GOR_STREAM_EOS);
+					throw new IOException(Resources.GOR_ERR_STREAM_EOS);
 				}
 
 				stringLength |= (value & 0x7F) << counter;
@@ -281,7 +281,7 @@ namespace Gorgon.IO
 
 				if (bytesRead == 0)
 				{
-					throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+					throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 				}
 
 				// Get the characters.
@@ -519,6 +519,75 @@ namespace Gorgon.IO
 
             return filePath.ToString();
         }
+
+		/// <summary>
+		/// Function to return the chunk ID based on the name of the chunk passed to this method.
+		/// </summary>
+		/// <param name="chunkName">The name of the chunk.</param>
+		/// <returns>A <see cref="UInt64"/> value representing the chunk ID of the name.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method is used to generate a new chunk ID for the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon chunked file format</conceptualLink>. It converts the characters in the string to their ASCII byte 
+		/// equivalents, and then builds a <see cref="UInt64"/> value from those bytes.
+		/// </para>
+		/// <para>
+		/// Since the size of an <see cref="UInt64"/> is 8 bytes, then the string should contain 8 characters. If it does not, then the ID will be padded with 0's on the right to take up the remaining 
+		/// bytes. If the string is larger than 8 characters, then it will be truncated to the 8 character limit.
+		/// </para>
+		/// <para>
+		/// The format of the long value is not endian specific and is encoded in the same order as the characters in the string.  For example, encoding the string 'TESTVALU' produces:<br/>
+		/// <list type="table">
+		/// <listheader>
+		///		<term>Byte</term>
+		///		<term>1</term>
+		///		<term>2</term>
+		///		<term>3</term>
+		///		<term>4</term>
+		///		<term>5</term>
+		///		<term>6</term>
+		///		<term>7</term>
+		///		<term>8</term>
+		/// </listheader>
+		///		<item>
+		///			<term>Character</term>
+		///			<term>'T' (0x54)</term>
+		///			<term>'E' (0x45)</term>
+		///			<term>'S' (0x53)</term>
+		///			<term>'T' (0x54)</term>
+		///			<term>'V' (0x56)</term>
+		///			<term>'A' (0x41)</term>
+		///			<term>'L' (0x4C)</term>
+		///			<term>'U' (0x55)</term>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		public static ulong ChunkID(this string chunkName)
+		{
+			if (chunkName == null)
+			{
+				throw new ArgumentNullException("chunkName");
+			}
+
+			byte[] chunkBytes = new byte[8];
+
+			if (chunkName.Length > chunkBytes.Length)
+			{
+				chunkName = chunkName.Substring(0, chunkBytes.Length);
+			}
+
+			Encoding.ASCII.GetBytes(chunkName, 0, chunkName.Length, chunkBytes, 0);
+
+			return ((ulong)chunkBytes[7] << 56)
+			       | ((ulong)chunkBytes[6] << 48)
+			       | ((ulong)chunkBytes[5] << 40)
+			       | ((ulong)chunkBytes[4] << 32)
+			       | ((ulong)chunkBytes[3] << 24)
+			       | ((ulong)chunkBytes[2] << 16)
+			       | ((ulong)chunkBytes[1] << 8)
+			       | chunkBytes[0];
+		}
         #endregion
     }
 }

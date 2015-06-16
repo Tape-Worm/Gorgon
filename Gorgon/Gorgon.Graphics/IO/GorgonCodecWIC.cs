@@ -140,7 +140,7 @@ namespace Gorgon.IO
 		/// </summary>
 		No16BPP = 0x4,
 		/// <summary>
-		/// Loads 1-bit monochrome as 8 bit greyscale.
+		/// Loads 1-bit monochrome as 8 bit grayscale.
 		/// </summary>
 		AllowMono = 0x8
 	}

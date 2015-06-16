@@ -409,6 +409,78 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chunk file is already open in [{0}] mode..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_ALREADY_OPEN {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_ALREADY_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk at offset 0x{0} has does not match the chunk ID of 0x{1}..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The header ID of the chunk file is {0}, this value is unrecognized. The chunk file could be out of date, or the file is not a chunk file..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_HEADER_MISMATCH {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_HEADER_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk file is corrupt. The recorded file size {0}, is too small..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk file is corrupt. The chunk table ID is invalid..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_TABLE_CHUNK_INVALID {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_TABLE_CHUNK_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk file is corrupt. Table entry count is less than zero..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_TABLE_INVALID_COUNT {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_TABLE_INVALID_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk file is corrupt. The chunk table offset is invalid..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The mode must be either [Read] or [Write]..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chunk name must be 8 characters exactly..
         /// </summary>
         internal static string GOR_ERR_CHUNK_NAME_SIZE_MISMATCH {
@@ -418,11 +490,38 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find a chunk with an ID of 0x{0}..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The requested size of {0} is beyond the end of the current chunk ({1})..
         /// </summary>
         internal static string GOR_ERR_CHUNK_OUT_OF_BOUNDS {
             get {
                 return ResourceManager.GetString("GOR_ERR_CHUNK_OUT_OF_BOUNDS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk ID 0x{0} is already the ID of a reserved value..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_RESERVED {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_RESERVED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset {0} + size {1} requested are larger than the array: {2}.
+        /// </summary>
+        internal static string GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY", resourceCulture);
             }
         }
         
@@ -486,6 +585,87 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_ERR_PROPERTY_TYPE_MISMATCH {
             get {
                 return ResourceManager.GetString("GOR_ERR_PROPERTY_TYPE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot read beyond the beginning of the stream..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_BOS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_BOS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This stream does not support asynchronous I/O..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_DOES_NOT_SUPPORT_ASYNC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_EOS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_EOS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is read-only..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_IS_READONLY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_IS_READONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is write only..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_IS_WRITEONLY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_IS_WRITEONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to seek within this stream..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_NOT_SEEKABLE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_NOT_SEEKABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The child stream requires a parent stream that can seek..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_PARENT_NEEDS_SEEK {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_PARENT_NEEDS_SEEK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream position must be 0 or greater..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_POS_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_POS_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream size of {0} bytes, with a starting position of {1} bytes is too large for the parent stream, which has a length of {2} bytes..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_POS_SIZE_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_POS_SIZE_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -718,56 +898,11 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot read beyond the beginning of the stream..
-        /// </summary>
-        internal static string GOR_STREAM_BOS {
-            get {
-                return ResourceManager.GetString("GOR_STREAM_BOS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The count [{0}] must be greater than or equal to 0..
         /// </summary>
         internal static string GOR_STREAM_COUNT_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GOR_STREAM_COUNT_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
-        /// </summary>
-        internal static string GOR_STREAM_EOS {
-            get {
-                return ResourceManager.GetString("GOR_STREAM_EOS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream is read-only..
-        /// </summary>
-        internal static string GOR_STREAM_IS_READONLY {
-            get {
-                return ResourceManager.GetString("GOR_STREAM_IS_READONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream is write only..
-        /// </summary>
-        internal static string GOR_STREAM_IS_WRITEONLY {
-            get {
-                return ResourceManager.GetString("GOR_STREAM_IS_WRITEONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to seek within this stream..
-        /// </summary>
-        internal static string GOR_STREAM_NOT_SEEKABLE {
-            get {
-                return ResourceManager.GetString("GOR_STREAM_NOT_SEEKABLE", resourceCulture);
             }
         }
         
@@ -1322,7 +1457,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The background color used when highlighting menu items..
+        ///   Looks up a localized string similar to The background color used when hilighting menu items..
         /// </summary>
         internal static string PROP_THEME_HILIGHTBACKCOLOR_DESC {
             get {
@@ -1331,7 +1466,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The foreground color used when highlighting menu items..
+        ///   Looks up a localized string similar to The foreground color used when hilighting menu items..
         /// </summary>
         internal static string PROP_THEME_HILIGHTFORECOLOR_DESC {
             get {
@@ -1340,7 +1475,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The color behind a check mark on a menu item..
+        ///   Looks up a localized string similar to The color behind a checkmark on a menu item..
         /// </summary>
         internal static string PROP_THEME_MENUCHECKBACKCOLOR_DESC {
             get {
@@ -1349,7 +1484,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The color behind a check mark on a menu item when the item is selected..
+        ///   Looks up a localized string similar to The color behind a checkmark on a menu item when the item is selected..
         /// </summary>
         internal static string PROP_THEME_MENUCHECKBACKCOLORHILIGHT_DESC {
             get {

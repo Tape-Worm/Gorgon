@@ -877,12 +877,12 @@ namespace Gorgon.UI
 
 			if (!stream.CanRead)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_IS_WRITEONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, "stream");
 			}
 
 			if (stream.Position >= stream.Length)
 			{
-				throw new EndOfStreamException(Resources.GOR_STREAM_EOS);
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 
 			var serializer = new XmlSerializer(typeof(FlatFormTheme));
@@ -904,7 +904,7 @@ namespace Gorgon.UI
 
 			if (!stream.CanWrite)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_IS_READONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, "stream");
 			}
 
 			var serializer = new XmlSerializer(typeof(FlatFormTheme));
