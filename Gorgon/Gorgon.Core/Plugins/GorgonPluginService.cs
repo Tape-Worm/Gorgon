@@ -39,16 +39,9 @@ using Gorgon.Reflection;
 
 namespace Gorgon.Plugins
 {
-#warning You didn't finish the documentation for this, moron.
-	/// <summary>
-	/// A service to create, cache and return <see cref="GorgonPlugin"/> instances.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// TODO: something something something about plugins.
-	/// </para>
-	/// </remarks>
-	public class GorgonPluginService
+	/// <inheritdoc/>
+	public class GorgonPluginService 
+		: IGorgonPluginService
 	{
 		#region Variables.
 		// List of previously loaded plugins.
@@ -64,18 +57,14 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the plugin assembly cache this service is using.
-		/// </summary>
+		/// <inheritdoc/>
 		public GorgonPluginAssemblyCache PluginAssemblyCache
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the number of plugins that are currently loaded in this service.
-		/// </summary>
+		/// <inheritdoc/>
 		public int LoadedPluginCount
 		{
 			get
@@ -86,16 +75,7 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve the list of plugins from a given assembly.
-		/// </summary>
-		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugin"/>.</typeparam>
-		/// <param name="assemblyName">The name of the assembly associated with the plugins.</param>
-		/// <returns>A list of plugins from the assembly.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>
-		/// This will retrieve instances of all the plugins of the specified type from the given assembly. 
-		/// </remarks>
+		/// <inheritdoc/>
 		public IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName)
 			where T : GorgonPlugin
 		{
@@ -163,14 +143,7 @@ namespace Gorgon.Plugins
 			return result.Cast<T>().ToArray();
 		}
 
-		/// <summary>
-		/// Function to retrieve a plugin by its fully qualified type name.
-		/// </summary>
-		/// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugin"/>.</typeparam>
-		/// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
-		/// <returns>The plugin, if found, or <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
+		/// <inheritdoc/>
 		public T GetPlugin<T>(string pluginName)
 			where T : GorgonPlugin
 		{
@@ -231,21 +204,7 @@ namespace Gorgon.Plugins
 			}
 		}
 
-		/// <summary>
-		/// Function to retrieve a list of names for available plugins.
-		/// </summary>
-		/// <param name="assemblyName">[Optional] Name of the assembly containing the plugins.</param>
-		/// <returns>A list of names for the available plugins.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method will retrieve a list of fully qualified type names for plugins contained within the <see cref="GorgonPluginAssemblyCache"/> passed to this object. This list is 
-		/// not indicative of whether the type has been created or not.
-		/// </para>
-		/// <para>
-		/// The <paramref name="assemblyName"/> parameter, when not <b>null</b> (<i>Nothing</i> in VB.Net), will return only plugin names belonging to that assembly. 
-		/// If the assembly is not loaded, then an exception is thrown.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc/>
 		public IReadOnlyList<string> GetPluginNames(AssemblyName assemblyName = null)
 		{
 			if ((!_constructors.IsValueCreated) || (!_assemblyConstructors.IsValueCreated))
@@ -268,12 +227,7 @@ namespace Gorgon.Plugins
 			return pluginConstructors.Value.Keys.Select(item => item.FullName).ToArray();
 		}
 
-		/// <summary>
-		/// Function to scan for plugins in the loaded plugin assemblies that are cached in the <see cref="GorgonPluginAssemblyCache"/> passed to this object.
-		/// </summary>
-		/// <remarks>
-		/// This method will unload any active plugins, and, if implemented, call the dispose method for any plugin.
-		/// </remarks>
+		/// <inheritdoc/>
 		public void ScanPlugins()
 		{
 			// Get rid of any plugins that are instanced.
@@ -344,9 +298,7 @@ namespace Gorgon.Plugins
 			_log.Print("{0} plugins found in the assembly cache.", LoggingLevel.Simple, _constructors.Value.Count);
 		}
 
-		/// <summary>
-		/// Function to unload all the plugins.
-		/// </summary>
+		/// <inheritdoc/>
 		public void UnloadAll()
 		{
 			if ((!_loadedPlugins.IsValueCreated) || (_loadedPlugins.Value.Count == 0))
@@ -369,13 +321,7 @@ namespace Gorgon.Plugins
 			_loadedPlugins.Value.Clear();
 		}
 
-		/// <summary>
-		/// Function to unload a plugin by its name.
-		/// </summary>
-		/// <param name="name">Fully qualified type name of the plugin to remove.</param>
-		/// <exception cref="System.ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
-		/// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
+		/// <inheritdoc/>
 		public bool Unload(string name)
 		{
 			if (name == null)

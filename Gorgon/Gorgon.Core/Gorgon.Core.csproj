@@ -159,6 +159,8 @@
     <Compile Include="IO\_Interfaces\IGorgonChunk.cs" />
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
+    <Compile Include="Plugins\_Interfaces\IGorgonPluginAssemblyCache.cs" />
+    <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />

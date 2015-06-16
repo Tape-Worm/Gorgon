@@ -30,15 +30,19 @@ using Gorgon.Core;
 namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// A base plug-in entry point object.
+	/// A base plugin entry point object.
 	/// </summary>
-	/// <remarks>Plug-ins must implement this object as a proxy to create the actual concrete implementation object.</remarks>
+	/// <remarks>
+	/// <para>
+	/// The base plugin object that other plugins must implement in order to be used by the <see cref="GorgonPluginService"/>.
+	/// </para>
+	/// </remarks>
 	public abstract class GorgonPlugin
 		: IGorgonNamedObject
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the assembly that contains this plug-in.
+		/// Property to return the assembly that contains this plugin.
 		/// </summary>
 		public AssemblyName Assembly
 		{
@@ -47,7 +51,7 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Property to return the path to the plug-in assembly.
+		/// Property to return the path to the plugin assembly.
 		/// </summary>
 		public string PlugInPath
 		{
@@ -56,7 +60,7 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Property to return the description of the plug-in.
+		/// Property to return the description of the plugin.
 		/// </summary>
 		public string Description
 		{
@@ -69,8 +73,10 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPlugin"/> class.
 		/// </summary>
-		/// <param name="description">Optional description of the plug-in.</param>
-		/// <remarks>Objects that implement this base class should pass in a hard coded description on the base constructor.</remarks>
+		/// <param name="description">Optional description of the plugin.</param>
+		/// <remarks>
+		/// Implementors of this base class should pass in a hard coded description to the base constructor.
+		/// </remarks>
 		protected GorgonPlugin(string description)
 		{
 			Description = description ?? string.Empty;

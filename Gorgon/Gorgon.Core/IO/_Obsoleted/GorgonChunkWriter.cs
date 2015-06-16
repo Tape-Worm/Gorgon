@@ -33,7 +33,6 @@ using Gorgon.Core.Properties;
 
 namespace Gorgon.IO
 {
-#warning Comment this by using <inheritdoc/> when you come back to it.
 	/// <summary>
 	/// Writes Gorgon chunked formatted data.
 	/// </summary>
