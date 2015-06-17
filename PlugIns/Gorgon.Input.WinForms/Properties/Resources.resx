@@ -117,7 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORINP_WIN_KEYBOARD_DESC" xml:space="preserve">
+    <value>Win Forms Input Keyboard</value>
+  </data>
   <data name="GORINP_WIN_KEYBOARD_MOUSE_ONLY" xml:space="preserve">
     <value>This plug-in only supports pointing devices and keyboards.</value>
+  </data>
+  <data name="GORINP_WIN_MOUSE_DESC" xml:space="preserve">
+    <value>Win Forms Mouse</value>
   </data>
 </root>

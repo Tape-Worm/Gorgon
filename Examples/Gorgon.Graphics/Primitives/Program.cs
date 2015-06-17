@@ -101,7 +101,7 @@ namespace Gorgon.Graphics.Example
 		// Rotation value.
 		private static float _cloudRotation;
 		// Input factory.
-		private static GorgonInputFactory _input;
+		private static GorgonInputService _input;
 		// Keyboard interface.
 		private static GorgonKeyboard _keyboard;
 		// Mouse interface.
@@ -642,12 +642,15 @@ namespace Gorgon.Graphics.Example
 
 			_cameraRotation = Vector2.Zero;
 
-			// TODO: Fix this to use the plug-in service instead of the "factory", it's going away.
-			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			
+			using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
-				GorgonApplication.PlugIns.LoadPlugInAssembly(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
+				pluginAssemblies.Load(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
 
-				_input = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
+				IGorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+				GorgonInputServiceFactory inputFactory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+
+				_input = inputFactory.CreateService("Gorgon.Input.GorgonRawPlugIn");
 				_keyboard = _input.CreateKeyboard(_form);
 				_mouse = _input.CreatePointingDevice(_form);
 			}

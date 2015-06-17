@@ -206,7 +206,6 @@
     </Compile>
     <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
     <Compile Include="Plugins\GorgonPlugin.cs" />
-    <Compile Include="Plugins\GorgonPlugInFactory.cs" />
     <Compile Include="Plugins\GorgonPluginPathCollection.cs" />
     <Compile Include="Plugins\GorgonPlugInVerifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

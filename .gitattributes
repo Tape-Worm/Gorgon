@@ -5,6 +5,8 @@
 *.cs     diff=csharp
 
 # Standard to msysgit
+*.xml	diff=astextplain
+*.XML	diff=astextplain
 *.doc	 diff=astextplain
 *.DOC	 diff=astextplain
 *.docx diff=astextplain

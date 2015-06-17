@@ -415,7 +415,7 @@ namespace Gorgon.Input.Raw
 		/// <param name="deviceName">Device name.</param>
 		/// <param name="handle">The handle to the device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawPointingDevice(GorgonRawInputFactory owner, string deviceName, IntPtr handle)
+		internal RawPointingDevice(GorgonRawInputService owner, string deviceName, IntPtr handle)
 			: base(owner, deviceName)
 		{
 			GorgonApplication.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());

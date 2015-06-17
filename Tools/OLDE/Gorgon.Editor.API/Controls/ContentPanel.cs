@@ -57,7 +57,7 @@ namespace Gorgon.Editor
 		/// Property to return the raw input interface.
 		/// </summary>
 		[Browsable(false)]
-		protected GorgonInputFactory RawInput
+		protected GorgonInputServiceFactory RawInput
 		{
 			get;
             private set;
@@ -353,7 +353,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		/// <param name="content">The content.</param>
 		/// <param name="input">Input interface to use.</param>
-		public ContentPanel(ContentObject content, GorgonInputFactory input = null)
+		public ContentPanel(ContentObject content, GorgonInputServiceFactory input = null)
 			: this()
 		{
 			if (content == null)

@@ -276,15 +276,6 @@ namespace Gorgon.Core
 				}
 			}
 		}
-
-		/// <summary>
-		/// Property to return the plug-in factory interface.
-		/// </summary>
-		public static GorgonPlugInFactory PlugIns
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -364,9 +355,6 @@ namespace Gorgon.Core
 		/// <returns><b>true</b> if the application has signalled to quit before it starts running, <b>false</b> to continue.</returns>
 		private static bool Initialize()
 		{
-			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
-		    AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-
 			// Initialize the timer.
 			if (GorgonTimerQpc.SupportsQpc())
 			{
@@ -432,9 +420,6 @@ namespace Gorgon.Core
 		{
 			IsRunning = false;
 
-			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
-	        AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
-
 		    // Remove quit handlers.
 			Application.ApplicationExit -= Application_ApplicationExit;
 			Application.ThreadExit -= Application_ThreadExit;
@@ -450,8 +435,6 @@ namespace Gorgon.Core
 				_trackedObjects.Clear();
 			}
 
-			PlugIns.UnloadAll();
-
 			// Reset the low resolution timer period on application end.
 			if ((GorgonTiming.Timer != null) && (GorgonTiming.Timer is GorgonTimerMultimedia))
 			{
@@ -465,22 +448,6 @@ namespace Gorgon.Core
 			{
 				Log.Close();
 			}
-		}
-
-		/// <summary>
-		/// Function called when a type needs to be resolved from another assembly in the current app domain.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="args">Event arguments.</param>
-		/// <returns>The assembly, if found, <b>null</b> if not.</returns>
-		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
-		{
-            if ((PlugIns != null) && (PlugIns.AssemblyResolver != null))
-            {
-                return PlugIns.AssemblyResolver((AppDomain)sender, args);
-            }
-
-			return null;
 		}
 
 		/// <summary>
@@ -749,8 +716,7 @@ namespace Gorgon.Core
 		static GorgonApplication()
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
-
-			PlugIns = new GorgonPlugInFactory();
+			
 			Log = new GorgonLogFile(LogFile, "Tape_Worm");
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.

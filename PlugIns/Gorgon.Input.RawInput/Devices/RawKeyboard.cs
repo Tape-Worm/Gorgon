@@ -198,7 +198,7 @@ namespace Gorgon.Input.Raw
 		/// <param name="deviceName">Name of the device.</param>
 		/// <param name="handle">The handle to the device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawKeyboard(GorgonRawInputFactory owner, string deviceName, IntPtr handle)
+		internal RawKeyboard(GorgonRawInputService owner, string deviceName, IntPtr handle)
 			: base(owner, deviceName)
 		{
 			GorgonApplication.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());

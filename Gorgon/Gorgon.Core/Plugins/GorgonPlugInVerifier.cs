@@ -32,7 +32,7 @@ using System.Reflection;
 namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// Plug-in verification object.
+	/// Plugin verification.
 	/// </summary>
 	class GorgonPluginVerifier
 		: MarshalByRefObject
@@ -46,7 +46,7 @@ namespace Gorgon.Plugins
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the Gorgon plug-in type.
+		/// Function to retrieve the Gorgon plugin type.
 		/// </summary>
 		/// <remarks>This loads the base Gorgon assembly as a reflection only library.  This is done to extract specific reflection only 
 		/// information for type comparisons later on.</remarks>
@@ -60,7 +60,7 @@ namespace Gorgon.Plugins
 			AssemblyName gorgonAssemblyName = typeof(GorgonPluginVerifier).Assembly.GetName();
 			Assembly gorgonReflection = Assembly.ReflectionOnlyLoad(gorgonAssemblyName.FullName);
 
-			// Get the Gorgon reflection only plug-in type.
+			// Get the Gorgon reflection only plugin type.
 			_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugin).FullName == item.FullName);
 
 			_assembly = _plugInType.Assembly;
@@ -94,7 +94,7 @@ namespace Gorgon.Plugins
             foreach (string assemblyLocation in locations)
             {
                 // Search for DLLs.
-                string location = Path.ChangeExtension(assemblyLocation, "dll");
+                string location = assemblyLocation + ".dll";
 
                 if (File.Exists(location))
                 {
@@ -102,7 +102,7 @@ namespace Gorgon.Plugins
                 }
 
                 // Search for executables.
-                location = Path.ChangeExtension(location, "exe");
+	            location = assemblyLocation + ".exe";
 
                 result = File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
 
@@ -145,10 +145,10 @@ namespace Gorgon.Plugins
 		}
 
 		/// <summary>
-		/// Function to load plug-in type names from the specified assembly file.
+		/// Function to load plugin type names from the specified assembly file.
 		/// </summary>
 		/// <param name="name">Name of the assembly to check.</param>
-		/// <returns>A list of plug-in type names.</returns>
+		/// <returns>A list of plugin type names.</returns>
 		public string[] GetPlugInTypes(AssemblyName name)
 		{
             AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
@@ -175,10 +175,10 @@ namespace Gorgon.Plugins
         }
 
 		/// <summary>
-		/// Function to determine if an assembly contains plug-ins.
+		/// Function to determine if an assembly contains plugins.
 		/// </summary>
 		/// <param name="name">Name of the assembly to check.</param>
-		/// <returns><b>true</b> if plug-ins are found, <b>false</b> if not.</returns>
+		/// <returns><b>true</b> if plugins are found, <b>false</b> if not.</returns>
 		public bool IsPlugInAssembly(AssemblyName name)
 		{
             return GetPlugInTypes(name).Length > 0;

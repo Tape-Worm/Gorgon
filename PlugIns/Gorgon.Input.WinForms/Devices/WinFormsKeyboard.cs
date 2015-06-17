@@ -29,6 +29,7 @@ using System.Security;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
 {
@@ -39,7 +40,8 @@ namespace Gorgon.Input.WinForms
 		: GorgonKeyboard
 	{
 		#region Variables.
-		private readonly KeyMapper _mapper = new KeyMapper();		// Key mappings.
+		// Key mappings.
+		private readonly KeyMapper _mapper = new KeyMapper();		
 		#endregion
 
 		#region Methods.
@@ -47,7 +49,7 @@ namespace Gorgon.Input.WinForms
 		/// Function to get the state of a key.
 		/// </summary>
 		/// <param name="nVirtKey">Virtual key code to retrieve.</param>
-		// <returns>A bitmask containing the state of the virtual key.</returns>
+		// <returns>A bit mask containing the state of the virtual key.</returns>
 		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
 		private static extern short GetKeyState(Keys nVirtKey);
 
@@ -159,8 +161,20 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		protected override void BindDevice()
 		{
-			BoundControl.KeyUp += BoundWindow_KeyUp;
-			BoundControl.KeyDown += BoundWindow_KeyDown;
+			UnbindDevice();
+
+			// If the bound control is a panel, then we'll need to bind to the form since it 
+			// doesn't support key down/key up events natively.
+			if (BoundControl is Panel)
+			{
+				BoundTopLevelForm.KeyDown += BoundWindow_KeyDown;
+				BoundTopLevelForm.KeyUp += BoundWindow_KeyUp;
+			}
+			else
+			{
+				BoundControl.KeyUp += BoundWindow_KeyUp;
+				BoundControl.KeyDown += BoundWindow_KeyDown;
+			}
 		}
 
 		/// <summary>
@@ -168,8 +182,16 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		protected override void UnbindDevice()
 		{
-			BoundControl.KeyUp -= BoundWindow_KeyUp;
-			BoundControl.KeyDown -= BoundWindow_KeyDown;
+			if (BoundControl is Panel)
+			{
+				BoundTopLevelForm.KeyDown -= BoundWindow_KeyDown;
+				BoundTopLevelForm.KeyUp -= BoundWindow_KeyUp;
+			}
+			else
+			{
+				BoundControl.KeyUp -= BoundWindow_KeyUp;
+				BoundControl.KeyDown -= BoundWindow_KeyDown;
+			}
 		}
 		#endregion
 
@@ -179,10 +201,9 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal WinFormsKeyboard(GorgonInputFactory owner)
-			: base(owner, "Win Forms Input Keyboard")
+		internal WinFormsKeyboard(GorgonInputService owner)
+			: base(owner, Resources.GORINP_WIN_KEYBOARD_DESC)
 		{
-			AllowExclusiveMode = false;
 			GorgonApplication.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
 		}
 		#endregion

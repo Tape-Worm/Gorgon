@@ -67,7 +67,7 @@
     <Compile Include="GorgonWinFormsPlugIn.cs" />
     <Compile Include="GorgonWinFormsInputDeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GorgonWinFormsInputFactory.cs" />
+    <Compile Include="GorgonWinFormsInputService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

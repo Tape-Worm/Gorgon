@@ -24,9 +24,11 @@
 // 
 #endregion
 
+using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
 {
@@ -191,16 +193,30 @@ namespace Gorgon.Input.WinForms
 		}
 
 		/// <summary>
+		/// Function to constrain the pointing device data to the supplied ranges.
+		/// </summary>
+		protected override void ConstrainData()
+		{
+			base.ConstrainData();
+
+			Cursor.Clip = Exclusive ? BoundControl.RectangleToScreen(PositionRange != RectangleF.Empty ? Rectangle.Round(PositionRange) : WindowRectangle) : Rectangle.Empty;
+		}
+
+		/// <summary>
 		/// Function to bind the input device.
 		/// </summary>
 		protected override void BindDevice()
 		{
+			UnbindDevice();
+
 			BoundControl.MouseMove += BoundWindow_MouseMove;
 			BoundControl.MouseDown += BoundWindow_MouseDown;
 			BoundControl.MouseUp += BoundWindow_MouseUp;
 			BoundControl.MouseDoubleClick += BoundWindow_MouseDoubleClick;
 			// Bind this to the form because some controls won't have focus and won't be able to fire the event.
 			BoundTopLevelForm.MouseWheel += BoundWindow_MouseWheel;
+
+			ConstrainData();
 		}
 
 		/// <summary>
@@ -213,6 +229,7 @@ namespace Gorgon.Input.WinForms
 			BoundControl.MouseUp -= BoundWindow_MouseUp;
 			BoundControl.MouseDoubleClick -= BoundWindow_MouseDoubleClick;
 			BoundTopLevelForm.MouseWheel -= BoundWindow_MouseWheel;
+			Cursor.Clip = Rectangle.Empty;
 		}
 		#endregion
 
@@ -222,10 +239,9 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal WinFormsPointingDevice(GorgonInputFactory owner)
-			: base(owner, "Win Forms Mouse")
+		internal WinFormsPointingDevice(GorgonInputService owner)
+			: base(owner, Resources.GORINP_WIN_MOUSE_DESC)
 		{
-			AllowExclusiveMode = false;
 			GorgonApplication.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
 		}
 		#endregion

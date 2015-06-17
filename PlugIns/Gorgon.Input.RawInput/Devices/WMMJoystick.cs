@@ -175,6 +175,23 @@ namespace Gorgon.Input.Raw
 		MultimediaJoystickButtons _buttonStates;	    // Button states.
 		#endregion
 
+		#region Properties.
+		/// <summary>
+		/// Property to set or return whether the window has exclusive access or not.
+		/// </summary>
+		public override bool Exclusive
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				// Intentionally left blank.
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to shift the value to fall within the axis range.
@@ -370,10 +387,9 @@ namespace Gorgon.Input.Raw
 		/// <param name="joystickID">The ID of the joystick.</param>
 		/// <param name="name">The name of the joystick.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal MultimediaJoystick(GorgonInputFactory owner, int joystickID, string name)
+		internal MultimediaJoystick(GorgonInputService owner, int joystickID, string name)
 			: base(owner, name)
 		{
-		    AllowExclusiveMode = false;
 			_joystickID = joystickID;
 			GorgonApplication.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
 		}

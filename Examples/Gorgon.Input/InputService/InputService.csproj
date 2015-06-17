@@ -8,8 +8,8 @@
     <ProjectGuid>{26B09EBD-0140-4274-92EF-6E674FBDBB22}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
-    <AssemblyName>InputFactory</AssemblyName>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
+    <AssemblyName>InputService</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

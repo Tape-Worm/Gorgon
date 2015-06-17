@@ -108,7 +108,7 @@ namespace CodecPlugIn
 		{
 			const string pluginName = "Gorgon.Graphics.Example.TvImageCodecPlugIn";
 
-			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
 				// Load our plug-in.
 				string plugInPath = GorgonApplication.ApplicationDirectory + "TVImageCodec.dll";
@@ -127,7 +127,7 @@ namespace CodecPlugIn
 				pluginAssemblies.Load(plugInPath);
 
 				// Activate the plugin service.
-				var pluginService = new GorgonPluginService(pluginAssemblies);
+				IGorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies);
 
 				// Find the plugin.
 				var plugIn = pluginService.GetPlugin<GorgonCodecPlugIn>(pluginName);

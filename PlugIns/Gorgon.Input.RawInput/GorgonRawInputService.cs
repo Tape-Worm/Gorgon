@@ -43,8 +43,8 @@ namespace Gorgon.Input.Raw
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	internal class GorgonRawInputFactory
-		: GorgonInputFactory
+	internal class GorgonRawInputService
+		: GorgonInputService
 	{
 		#region Variables.
 		// Flag to indicate that the object was disposed.
@@ -662,17 +662,17 @@ namespace Gorgon.Input.Raw
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRawInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawInputService"/> class.
 		/// </summary>
-		public GorgonRawInputFactory()
+		public GorgonRawInputService()
 			: base("Gorgon Raw Input")
 		{
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="GorgonRawInputFactory"/> class.
+		/// Finalizes an instance of the <see cref="GorgonRawInputService"/> class.
 		/// </summary>
-		~GorgonRawInputFactory()
+		~GorgonRawInputService()
 		{
 			Dispose(false);
 		}

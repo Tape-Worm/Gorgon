@@ -80,7 +80,7 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Enums.cs" />
     <Compile Include="Native\Win32Types.cs" />
-    <Compile Include="GorgonRawInputFactory.cs" />
+    <Compile Include="GorgonRawInputService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

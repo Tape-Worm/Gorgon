@@ -51,20 +51,11 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the input interface owner for this device.
 		/// </summary>
-		protected internal GorgonInputFactory DeviceFactory
+		protected internal GorgonInputService DeviceFactory
 		{
 			get;
 			internal set;
 		}
-
-        /// <summary>
-        /// Property to set or return whether this device type allows for an exclusive mode.
-        /// </summary>
-	    protected bool AllowExclusiveMode
-	    {
-	        get;
-	        set;
-	    }
 
 		/// <summary>
 		/// Property to set or return the factory UUID for this device.
@@ -137,7 +128,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to set or return whether the window has exclusive access or not.
 		/// </summary>
-		public bool Exclusive
+		public virtual bool Exclusive
 		{
 			get
 			{
@@ -145,8 +136,7 @@ namespace Gorgon.Input
 			}
 		    set
 			{
-				if ((_exclusive == value)
-                    || (!AllowExclusiveMode))
+				if (_exclusive == value)
 				{
 					return;
 				}
@@ -424,15 +414,13 @@ namespace Gorgon.Input
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		protected internal GorgonInputDevice(GorgonInputFactory owner, string deviceName)
+		protected internal GorgonInputDevice(GorgonInputService owner, string deviceName)
 			: base(deviceName)
 		{
 		    if (owner == null)
 		    {
 		        throw new ArgumentNullException("owner");
 		    }
-
-		    AllowExclusiveMode = true;
 
 		    DeviceFactory = owner;
 			UUID = Guid.Empty.ToString();

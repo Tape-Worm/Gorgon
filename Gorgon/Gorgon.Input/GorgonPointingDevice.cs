@@ -446,25 +446,25 @@ namespace Gorgon.Input
 			if (_positionConstraint != RectangleF.Empty)
 			{
 				// Limit positioning.
-			    if (_position.X < _positionConstraint.X)
-			    {
-			        _position.X = _positionConstraint.X;
-			    }
+				if (_position.X < _positionConstraint.X)
+				{
+					_position.X = _positionConstraint.X;
+				}
 
-			    if (_position.Y < _positionConstraint.Y)
-			    {
-			        _position.Y = _positionConstraint.Y;
-			    }
+				if (_position.Y < _positionConstraint.Y)
+				{
+					_position.Y = _positionConstraint.Y;
+				}
 
-			    if (_position.X > _positionConstraint.Right - 1)
-			    {
-			        _position.X = _positionConstraint.Right - 1;
-			    }
+				if (_position.X > _positionConstraint.Right - 1)
+				{
+					_position.X = _positionConstraint.Right - 1;
+				}
 
-			    if (_position.Y > _positionConstraint.Bottom - 1)
-			    {
-			        _position.Y = _positionConstraint.Bottom - 1;
-			    }
+				if (_position.Y > _positionConstraint.Bottom - 1)
+				{
+					_position.Y = _positionConstraint.Bottom - 1;
+				}
 			}
 
 			if (_wheelConstraint == Point.Empty)
@@ -604,7 +604,7 @@ namespace Gorgon.Input
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName)
+		protected GorgonPointingDevice(GorgonInputService owner, string deviceName)
 			: base(owner, deviceName)
 		{
 			_position = PointF.Empty;

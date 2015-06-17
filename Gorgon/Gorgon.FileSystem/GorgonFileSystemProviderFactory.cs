@@ -39,13 +39,13 @@ namespace Gorgon.IO
 	/// A factory used to create file system providers.
 	/// </summary>
 	/// <remarks>
-	/// The file system provider factory is used to create file system providers available in a <see cref="GorgonPluginService"/> object.
+	/// The file system provider factory is used to create file system provider plugins available in a <see cref="GorgonPluginService"/> object.
 	/// </remarks>
 	public sealed class GorgonFileSystemProviderFactory
 	{
 		#region Variables.
 		// A plugin service where instances of the provider plugins can be found.
-		private readonly GorgonPluginService _pluginService;
+		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
 		#endregion
@@ -133,7 +133,7 @@ namespace Gorgon.IO
 		/// <param name="pluginService">The plugin service used to retrieve file system provider plugins.</param>
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonFileSystemProviderFactory(GorgonPluginService pluginService, IGorgonLog log = null)
+		public GorgonFileSystemProviderFactory(IGorgonPluginService pluginService, IGorgonLog log = null)
 		{
 			if (pluginService == null)
 			{

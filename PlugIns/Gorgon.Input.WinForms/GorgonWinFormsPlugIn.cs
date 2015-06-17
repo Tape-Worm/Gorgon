@@ -32,18 +32,51 @@ namespace Gorgon.Input
 	/// The entry point for the win forms input plug-in.
 	/// </summary>
 	public class GorgonWinFormsPlugIn
-		: GorgonInputPlugIn
+		: GorgonInputServicePlugin
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
+		/// </summary>
+		public override bool SupportsGameDevices
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
+		/// </summary>
+		public override bool SupportsPointingDevices
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the plugin supports keyboard devices.
+		/// </summary>
+		public override bool SupportsKeyboardDevices
+		{
+			get
+			{
+				return true;
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
-		/// Function to perform the actual creation of the input factory object.
+		/// Function to create and return a <see cref="GorgonInputService" />.
 		/// </summary>
-		/// <returns>
-		/// The interface for the input factory.
-		/// </returns>
-		protected override GorgonInputFactory CreateFactory()
+		/// <returns>The interface for the input factory.</returns>
+		protected override GorgonInputService OnCreateInputService()
 		{
-			return new GorgonWinFormsInputFactory();
+			return new GorgonWinFormsInputService();
 		}
 		#endregion
 

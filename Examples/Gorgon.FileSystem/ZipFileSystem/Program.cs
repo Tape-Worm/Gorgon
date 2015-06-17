@@ -65,9 +65,9 @@ namespace Gorgon.Examples
 
         #region Variables.
 		// The plugin assemblies.
-		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		private static IGorgonPluginAssemblyCache _pluginAssemblies;
 		// The plugin service.
-		private static GorgonPluginService _pluginService;
+		private static IGorgonPluginService _pluginService;
 		// File system.
         private static GorgonFileSystem _fileSystem;
         #endregion

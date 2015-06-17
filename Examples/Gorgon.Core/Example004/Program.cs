@@ -82,11 +82,11 @@ namespace Gorgon.Examples
 		{
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-			var pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
 
 			// Create our plugin service.
 			// This takes the cache of assemblies that we just loaded.
-			var pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+			IGorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
 
 			try
 			{

@@ -58,7 +58,7 @@ namespace Gorgon.Plugins
 
 		#region Properties.
 		/// <inheritdoc/>
-		public GorgonPluginAssemblyCache PluginAssemblyCache
+		public IGorgonPluginAssemblyCache PluginAssemblyCache
 		{
 			get;
 			private set;
@@ -75,32 +75,19 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
-		public IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName)
-			where T : GorgonPlugin
+		/// <summary>
+		/// Function to create or retrieve a list of plugins.
+		/// </summary>
+		/// <typeparam name="T">Type of plugin.</typeparam>
+		/// <param name="pluginConstructors">A list of plugin constructors.</param>
+		/// <returns>An array of plugins created or retrieved.</returns>
+		private T[] GetPluginsFromConstructors<T>(ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>> pluginConstructors)
 		{
-			if (assemblyName == null)
-			{
-				throw new ArgumentNullException("assemblyName");
-			}
-
-			if (!_assemblyConstructors.IsValueCreated)
-			{
-				ScanPlugins();
-			}
-
-			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
-
-			if (!_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors))
-			{
-				return new T[0];
-			}
-
-			Type typeT = typeof(T);
 			var result = new ConcurrentBag<GorgonPlugin>();
+			Type typeT = typeof(T);
 
 			// Match the types with our generic type. The type in the plugin must be an exact match with T, or a subclass of T.
-			foreach (KeyValuePair<Type, ObjectActivator<GorgonPlugin>> constructor in pluginConstructors.Value.Where(item => typeT == item.Key || item.Key.IsSubclassOf(typeT)))
+			foreach (KeyValuePair<Type, ObjectActivator<GorgonPlugin>> constructor in pluginConstructors.Where(item => typeT == item.Key || item.Key.IsSubclassOf(typeT)))
 			{
 				GorgonPlugin plugin;
 
@@ -141,6 +128,50 @@ namespace Gorgon.Plugins
 			}
 
 			return result.Cast<T>().ToArray();
+		}
+
+		/// <summary>
+		/// Function to retrieve all the plugins of the specified type from the currently loaded plugin assemblies.
+		/// </summary>
+		/// <typeparam name="T">Type of plugin to filter.</typeparam>
+		/// <returns>The list of all the plugins.</returns>
+		private IReadOnlyList<T> GetAllPlugins<T>()
+			where T : GorgonPlugin
+		{
+			if (_assemblyConstructors.Value.Count == 0)
+			{
+				return new T[0];
+			}
+
+			List<T> result = new List<T>();
+
+			foreach (var item in _assemblyConstructors.Value)
+			{
+				result.AddRange(GetPluginsFromConstructors<T>(item.Value.Value));
+			}
+
+			return result;
+		}
+
+		/// <inheritdoc/>
+		public IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName = null)
+			where T : GorgonPlugin
+		{
+			if (!_assemblyConstructors.IsValueCreated)
+			{
+				ScanPlugins();
+			}
+
+			if (assemblyName == null)
+			{
+				return GetAllPlugins<T>();
+			}
+
+			Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>> pluginConstructors;
+
+			return !_assemblyConstructors.Value.TryGetValue(assemblyName.FullName, out pluginConstructors)
+				       ? new T[0]
+				       : GetPluginsFromConstructors<T>(pluginConstructors.Value);
 		}
 
 		/// <inheritdoc/>
@@ -378,7 +409,7 @@ namespace Gorgon.Plugins
 		/// <param name="assemblyCache">A <see cref="GorgonPluginAssemblyCache"/> that will contain assemblies with plugin types.</param>
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyCache"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonPluginService(GorgonPluginAssemblyCache assemblyCache, IGorgonLog log = null)
+		public GorgonPluginService(IGorgonPluginAssemblyCache assemblyCache, IGorgonLog log = null)
 		{
 			if (assemblyCache == null)
 			{

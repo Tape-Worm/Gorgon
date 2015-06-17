@@ -4353,7 +4353,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonFontContentPanel"/> class.
         /// </summary>
-        public GorgonFontContentPanel(GorgonFontContent content, GorgonInputFactory input)
+        public GorgonFontContentPanel(GorgonFontContent content, GorgonInputServiceFactory input)
             : base(content, input)
         {
             _content = content;

@@ -31,6 +31,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
+using Gorgon.Plugins;
 using Gorgon.UI;
 
 namespace Gorgon.Examples
@@ -87,7 +88,7 @@ namespace Gorgon.Examples
 		#region Variables.
         private Spray _spray;                                   // The spray effect.
         private MouseCursor _cursor;                            // Our mouse cursor.
-		private GorgonInputFactory _factory;					// Our input factory.
+		private GorgonInputService _service;					// Our input service.
 		private GorgonPointingDevice _mouse;					// Our mouse interface.
 		private GorgonJoystick _joystick;						// A joystick interface.
 		private GorgonKeyboard _keyboard;						// Our keyboard interface.
@@ -399,7 +400,7 @@ namespace Gorgon.Examples
         private void CreateMouse()
         {
             // Create the device from the factory.
-            _mouse = _factory.CreatePointingDevice(this);
+            _mouse = _service.CreatePointingDevice(panelDisplay);
 
             // Set up the mouse for use.
             _mouse.Enabled = true;
@@ -427,7 +428,7 @@ namespace Gorgon.Examples
         private void CreateKeyboard()
         {
             // Create our device.
-            _keyboard = _factory.CreateKeyboard(this);
+            _keyboard = _service.CreateKeyboard(panelDisplay);
 
             // Enable the devices.
             _keyboard.Enabled = true;
@@ -444,13 +445,13 @@ namespace Gorgon.Examples
         private void CreateJoystick()
         {
             // If we have a joystick controller, then let's activate it.
-	        if (_factory.JoystickDevices.Count <= 0)
+	        if (_service.JoystickDevices.Count <= 0)
 	        {
 		        return;
 	        }
 
 	        // Find the first one that's active.
-	        var activeDevice = (from joystick in _factory.JoystickDevices
+	        var activeDevice = (from joystick in _service.JoystickDevices
 		        where joystick.IsConnected
 		        select joystick).FirstOrDefault();
 
@@ -461,7 +462,7 @@ namespace Gorgon.Examples
 
 	        // Note that joysticks from Raw Input are always exclusive access,
 	        // so setting _joystick.Exclusive = true; does nothing.
-	        _joystick = _factory.CreateJoystick(this, activeDevice.Name);
+	        _joystick = _service.CreateJoystick(panelDisplay, activeDevice.Name);
 
 	        // Show our joystick information.
 	        labelJoystick.Text = string.Empty;
@@ -476,41 +477,66 @@ namespace Gorgon.Examples
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			IGorgonPluginAssemblyCache assemblies = null;
+			string pluginPath = Program.PlugInPath;
+
 			base.OnLoad(e);
 
 			try
 			{
+				// We can't use the raw input under RDP/Terminal services.
+				string pluginName;
+
+				if (!SystemInformation.TerminalServerSession)
+				{
+					pluginName = "Gorgon.Input.GorgonRawPlugIn";
+					pluginPath += "Gorgon.Input.Raw.DLL";
+				}
+				else
+				{
+					pluginName = "Gorgon.Input.GorgonWinFormsPlugIn";
+					pluginPath += "Gorgon.Input.WinForms.DLL";
+				}
+
 				// Set our default cursor.
 				_currentCursor = Resources.hand_icon;
-				
+
 				// Load our raw input plug-in assembly.
-				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.Raw.DLL");
+				assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+				if (!assemblies.IsPluginAssembly(pluginPath))
+				{
+					GorgonDialogs.ErrorBox(this, "The assembly '" + pluginPath + "' is not a valid plugin assembly.");
+					GorgonApplication.Quit();
+				}
+				assemblies.Load(pluginPath);
 
 				// Create our input factory.
-				_factory = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonRawPlugIn");
+				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				var factory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+				_service = factory.CreateService(pluginName);
 
 				// Get our device info.
-                // This function is called when the factory is created.
-                // However, I'm calling it here just to show that it exists.
-				_factory.EnumerateDevices();
+				// This function is called when the factory is created.
+				// However, I'm calling it here just to show that it exists.
+				_service.EnumerateDevices();
 
 				// Validate, even though it's highly unlikely we'll run into these.
-				if (_factory.PointingDevices.Count == 0)
+				if (_service.PointingDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no mice detected on this computer.  The application requires a mouse.");
 					GorgonApplication.Quit();
 				}
 
-				if (_factory.KeyboardDevices.Count == 0)
+				if (_service.KeyboardDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no keyboards detected on this computer.  The application requires a keyboard.");
 					GorgonApplication.Quit();
 				}
 
 				// Get our input devices.				
-                CreateMouse();
-                CreateKeyboard();
-                CreateJoystick();
+				CreateMouse();
+				CreateKeyboard();
+				CreateJoystick();
 
 				// When the display area changes size, update the spray effect
 				// and limit the mouse.
@@ -519,15 +545,15 @@ namespace Gorgon.Examples
 				// Set the initial range of the mouse cursor.
 				_mouse.PositionRange = Rectangle.Round(panelDisplay.ClientRectangle);
 
-                // Set up our spray object.
-                _spray = new Spray(panelDisplay.ClientSize);
-                _cursor = new MouseCursor(panelDisplay)
-                    {
-                        Hotspot = new Point(-16, -3)
-                    };
+				// Set up our spray object.
+				_spray = new Spray(panelDisplay.ClientSize);
+				_cursor = new MouseCursor(panelDisplay)
+				          {
+					          Hotspot = new Point(-16, -3)
+				          };
 
-			    // Set up our idle method.
-                GorgonApplication.ApplicationIdleLoopMethod = Idle;                
+				// Set up our idle method.
+				GorgonApplication.ApplicationIdleLoopMethod = Idle;
 			}
 			catch (Exception ex)
 			{
@@ -535,6 +561,13 @@ namespace Gorgon.Examples
 				// function will send the exception to the Gorgon log file.
 				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 				GorgonApplication.Quit();
+			}
+			finally
+			{
+				if (assemblies != null)
+				{
+					assemblies.Dispose();
+				}
 			}
 		}
 

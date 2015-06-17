@@ -20,74 +20,84 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:22:48 AM
+// Created: Sunday, June 26, 2011 1:57:01 PM
 // 
 #endregion
 
-using Gorgon.Input.XInput;
+using System;
+using System.Runtime.Remoting.Messaging;
+using Gorgon.Plugins;
 
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// The entry point for the XInput plug-in.
+	/// Plugin interface for an input device factory plugin.
 	/// </summary>
-	public class GorgonXInputPlugIn
-		: GorgonInputServicePlugin
+	/// <remarks>
+	/// This plugin will create a single instance of a concrete <see cref="GorgonInputService"/>. If the <see cref="CreateInputService"/> is called multiple times then this single instance will be sent back 
+	/// instead of a new instance.
+	/// </remarks>
+	public abstract class GorgonInputServicePlugin
+		: GorgonPlugin
 	{
+		#region Variables.
+		// The lazily created input service.
+		private readonly Lazy<GorgonInputService> _inputService;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices
+		public abstract bool SupportsGameDevices
 		{
-			get
-			{
-				return true;
-			}
+			get;
 		}
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices
+		public abstract bool SupportsPointingDevices
 		{
-			get
-			{
-				return false;
-			}
+			get;
 		}
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices
+		public abstract bool SupportsKeyboardDevices
 		{
-			get
-			{
-				return false;
-			}
+			get;
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to create and return a <see cref="GorgonInputService" />.
+		/// Function to create and return a <see cref="GorgonInputService"/>.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		protected override GorgonInputService OnCreateInputService()
+		protected abstract GorgonInputService OnCreateInputService();
+
+		/// <summary>
+		/// Function to create and return an input service.
+		/// </summary>
+		/// <returns>The interface for the input factory.</returns>
+		internal GorgonInputService CreateInputService()
 		{
-			return new GorgonXInputService();
+			return _inputService.Value;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonXInputPlugIn"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputServicePlugin"/> class.
 		/// </summary>
-		public GorgonXInputPlugIn()
-			: base("Gorgon XBOX 360 controller input plug-in.")
-		{
+		/// <param name="description">Optional description of the plugin.</param>
+		protected GorgonInputServicePlugin(string description)
+			: base(description)
+		{			
+			_inputService = new Lazy<GorgonInputService>(OnCreateInputService);
 		}
-		#endregion
+		#endregion		
 	}
 }

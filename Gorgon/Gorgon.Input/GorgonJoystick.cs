@@ -1183,7 +1183,7 @@ namespace Gorgon.Input
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		protected GorgonJoystick(GorgonInputFactory owner, string deviceName)
+		protected GorgonJoystick(GorgonInputService owner, string deviceName)
 			: base(owner, deviceName)
 		{
 			Direction = new JoystickAxisDirections();

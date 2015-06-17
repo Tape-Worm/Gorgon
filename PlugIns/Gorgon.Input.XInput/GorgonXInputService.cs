@@ -37,8 +37,8 @@ namespace Gorgon.Input.XInput
 	/// <summary>
 	/// Object representing the main interface to the input library.
 	/// </summary>
-	internal class GorgonXInputFactory
-		: GorgonInputFactory
+	internal class GorgonXInputService
+		: GorgonInputService
 	{
 		#region Methods.
 		/// <summary>
@@ -145,9 +145,9 @@ namespace Gorgon.Input.XInput
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonXInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonXInputService"/> class.
 		/// </summary>
-		public GorgonXInputFactory()
+		public GorgonXInputService()
 			: base("Gorgon XBox 360 Controller Input")
 		{
 		}

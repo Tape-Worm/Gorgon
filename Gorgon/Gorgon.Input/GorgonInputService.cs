@@ -42,7 +42,7 @@ namespace Gorgon.Input
 	/// <para>This object is capable of creating multiple interfaces for each keyboard and pointing device attached to the system.  
 	/// If the user has more than one of these devices attached, they will be enumerated here and will be available as distinct object instances.</para>
 	/// </remarks>
-	public abstract class GorgonInputFactory
+	public abstract class GorgonInputService
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
@@ -511,79 +511,16 @@ namespace Gorgon.Input
 				OnAfterEnumerate();
 			}
 		}
-
-		/// <summary>
-		/// Function to return a new input device factory object.
-		/// </summary>
-		/// <param name="plugInType">Type name of the input device factory plug-in.</param>
-		/// <returns>The input device factory object.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter was NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty.</exception>
-		/// <exception cref="System.InvalidCastException">Thrown when the input plug-in was not found or was not the correct type.</exception>
-		/// <exception cref="GorgonException">Thrown when the input factory could not be created.</exception>
-		public static GorgonInputFactory CreateInputFactory(string plugInType)
-		{
-		    if (plugInType == null)
-			{
-			    throw new ArgumentNullException("plugInType");
-			}
-
-            if (string.IsNullOrWhiteSpace(plugInType))
-            {
-                throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "plugInType");
-            }
-
-		    var plugIn =
-				GorgonApplication.PlugIns.FirstOrDefault(
-		            item => string.Equals(item.Name, plugInType, StringComparison.OrdinalIgnoreCase)) as
-		        GorgonInputPlugIn;
-
-            if (plugIn == null)
-            {
-                throw new InvalidCastException(string.Format(Resources.GORINP_PLUGIN_NOT_FOUND, plugInType));
-            }
-
-		    GorgonInputFactory factory = plugIn.GetFactory();
-
-            if (factory == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORINP_CANNOT_CREATE, plugInType));
-            }
-
-			// Enumerate the devices.
-			factory.EnumerateDevices();
-
-			GorgonApplication.AddTrackedObject(factory);
-
-			return factory;
-		}
-
-		/// <summary>
-		/// Function to return a new input device factory object.
-		/// </summary>
-		/// <param name="plugInType">Type of the input device factory plug-in.</param>
-		/// <returns>The input device factory object.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (<i>Nothing</i> in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory plug-in type was not found.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
-		/// </exception>
-		public static GorgonInputFactory CreateInputFactory(Type plugInType)
-		{
-			return CreateInputFactory(plugInType.FullName);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputFactory"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputService"/> class.
 		/// </summary>
 		/// <param name="name">The name of the device manager.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonInputFactory(string name)
+		protected GorgonInputService(string name)
 			: base(name)
 		{
 			ExclusiveDevices = InputDeviceType.None;

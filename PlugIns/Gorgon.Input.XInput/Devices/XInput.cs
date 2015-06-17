@@ -141,8 +141,25 @@ namespace Gorgon.Input.XInput
         private const uint LastPacket = int.MaxValue;       // Last packet number.
         #endregion
 
-        #region Variables.
-        private readonly int _controllerID;					// Controller ID.
+		#region Properties.
+		/// <summary>
+		/// Property to set or return whether the window has exclusive access or not.
+		/// </summary>
+		public override bool Exclusive
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				// Intentionally left blank.
+			}
+		}
+		#endregion
+
+		#region Variables.
+		private readonly int _controllerID;					// Controller ID.
 		private readonly XI.Controller _controller;			// Controller instance.
 		private XI.GamepadButtonFlags[] _button;			// Button flags.
 	    private XInputButtons _buttonList;					// List of buttons for the controller.
@@ -360,11 +377,9 @@ namespace Gorgon.Input.XInput
 		/// <param name="joystickID">The ID of the joystick.</param>
 		/// <param name="name">The name of the joystick.</param>
 		/// <param name="controller">Controller instance to bind to this joystick.</param>
-		internal XInputController(GorgonInputFactory owner, int joystickID, string name, XI.Controller controller)
+		internal XInputController(GorgonInputService owner, int joystickID, string name, XI.Controller controller)
 			: base(owner, name)
 		{
-            AllowExclusiveMode = false;
-
 		    _controller = controller;
 			_controllerID = joystickID;
 			if (controller.IsConnected)

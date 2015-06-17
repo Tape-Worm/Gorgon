@@ -2071,7 +2071,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// </summary>
 		/// <param name="content">The content that created this panel.</param>
 		/// <param name="input">The input interface.</param>
-        public GorgonImageContentPanel(GorgonImageContent content, GorgonInputFactory input)
+        public GorgonImageContentPanel(GorgonImageContent content, GorgonInputServiceFactory input)
 			: base(content, input)
 		{
 			_content = content;

@@ -65,9 +65,9 @@ namespace Gorgon.Examples
 		// The providers that were loaded.
 		private static GorgonFileSystemProvider[] _providers;
 		// The cache that will hold the assemblies where our plugins will live.
-		private static GorgonPluginAssemblyCache _pluginAssemblies;
+		private static IGorgonPluginAssemblyCache _pluginAssemblies;
 		// The plugin service.
-		private static GorgonPluginService _pluginService;
+		private static IGorgonPluginService _pluginService;
         #endregion
 
         #region Properties.
@@ -149,7 +149,7 @@ namespace Gorgon.Examples
 		    try
 		    {
 			    Console.WriteLine("Gorgon is capable of mounting virtual file systems for file access.  A virtual");
-			    Console.WriteLine("filesystem root can be a folder on a harddrive, a zip file, or any data store");
+			    Console.WriteLine("file system root can be a folder on a hard drive, a zip file, or any data store");
 			    Console.WriteLine("(assuming there's a provider for it).\n");
 			    Console.WriteLine("In Gorgon, the types of data that can be mounted as a virtual file system are");
 			    Console.WriteLine("managed by objects called providers. By default, the file system has a folder");

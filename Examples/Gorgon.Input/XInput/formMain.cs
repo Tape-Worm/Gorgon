@@ -31,6 +31,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input;
+using Gorgon.Plugins;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -48,7 +49,7 @@ namespace Gorgon.Examples
 	/// we make use of all 4 controllers (if connected) to give a sort of multi-player drawing example.  We do this by 
 	/// tracking the state of each controller in our idle loop.  
 	/// 
-	/// The set up is similar to the other input examples:  Load the plug-in assembly, create the input factory and create
+	/// The set up is similar to the other input examples:  Load the plug-in assembly, create the input service and create
 	/// each joystick as needed.  Then in the idle loop, we poll the joysticks for input.  If no XBox controller is found
 	/// a prompt to plug one in is shown.
 	/// 
@@ -60,9 +61,9 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonInputFactory _factory;					// Our input factory.
+		private GorgonInputService _service;					// Our service factory.
 		private IList<GorgonJoystick> _joystick;				// Our XBox controllers.
-		private PointF[] _stickPosition;						// Current stick positon point for the spray.
+		private PointF[] _stickPosition;						// Current stick position point for the spray.
 		private SprayCan[] _sprayStates;					    // Spray states.
 		private DrawingSurface _surface;						// Surface to draw on.
 		#endregion
@@ -106,7 +107,7 @@ namespace Gorgon.Examples
 			}
 			else
 			{
-				label.Text = string.Format("{0} ({1})", joystick.Name, _factory.JoystickDevices[joystick.Name].ClassName);
+				label.Text = string.Format("{0} ({1})", joystick.Name, _service.JoystickDevices[joystick.Name].ClassName);
 
 				// Turn off the other ones since we don't want to clutter 
 				// up the screen.
@@ -126,7 +127,7 @@ namespace Gorgon.Examples
 									joystick.SecondaryY,
 									joystick.Throttle,
 									joystick.Rudder,
-									_factory.JoystickDevices[joystick.Name].ClassName);
+									_service.JoystickDevices[joystick.Name].ClassName);
 		}
 
 	    /// <summary>
@@ -270,18 +271,27 @@ namespace Gorgon.Examples
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			IGorgonPluginAssemblyCache assemblies = null;
+
 			base.OnLoad(e);
 
 			try
 			{
-				// Load the XInput plug-in assembly.
-				GorgonApplication.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.Input.XInput.dll");
+				// Create the assembly cache.
+				assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+				assemblies.Load(Program.PlugInPath + "Gorgon.Input.XInput.dll");
+
+				// Create the plug services.
+				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+
+				// Create the input service factory.
+				GorgonInputServiceFactory factory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
 
 				// Create our factory.
-				_factory = GorgonInputFactory.CreateInputFactory("Gorgon.Input.GorgonXInputPlugIn");
+				_service = factory.CreateService("Gorgon.Input.GorgonXInputPlugIn");
 
 				// Ensure that we have and XBox controller to work with.
-				if (_factory.JoystickDevices.Count == 0)
+				if (_service.JoystickDevices.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "No XBox controllers were found on this system.\nThis example requires an XBox controller.");
 					GorgonApplication.Quit();
@@ -289,14 +299,14 @@ namespace Gorgon.Examples
 				}
 
 				// Enumerate the active joysticks.  We'll only take 3 of the 4 available xbox controllers.
-				_joystick = _factory.JoystickDevices.Take(3).Select(item => _factory.CreateJoystick(this, item.Name)).ToArray();
+				_joystick = _service.JoystickDevices.Take(3).Select(item => _service.CreateJoystick(this, item.Name)).ToArray();
 				_stickPosition = new PointF[_joystick.Count];
 				_sprayStates = new SprayCan[_joystick.Count];
 
 				for (int i = 0; i < _joystick.Count; i++)
 				{
 					var joystick = _joystick[i];
-					
+
 					// Set a dead zone on the joystick.
 					// A dead zone will stop input from the joystick until it reaches the outside
 					// of the specified coordinates.
@@ -306,25 +316,28 @@ namespace Gorgon.Examples
 					_joystick[i].DeadZone.SecondaryY = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
 
 					// Start at a random spot.					
-					_stickPosition[i] = new Point(GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Width - 64), GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Height - 64));
+					_stickPosition[i] = new Point(GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Width - 64),
+					                              GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Height - 64));
 
 					// Turn off spray for all controllers.
 					_sprayStates[i] = new SprayCan(joystick, i);
 				}
 
-                // Check for connected controllers.
-                while (!_joystick.Any(item => item.IsConnected))
-                {
-	                if (MessageBox.Show(this,
-		                "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.",
-		                "No Controllers", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.Cancel)
-	                {
-		                continue;
-	                }
+				// Check for connected controllers.
+				while (!_joystick.Any(item => item.IsConnected))
+				{
+					if (MessageBox.Show(this,
+					                    "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.",
+					                    "No Controllers",
+					                    MessageBoxButtons.OKCancel,
+					                    MessageBoxIcon.Warning) != DialogResult.Cancel)
+					{
+						continue;
+					}
 
-	                GorgonApplication.Quit();
-	                return;
-                }
+					GorgonApplication.Quit();
+					return;
+				}
 
 				// Get the graphics interface for our panel.
 				_surface = new DrawingSurface(panelDisplay);
@@ -338,6 +351,13 @@ namespace Gorgon.Examples
 				// function will send the exception to the Gorgon log file.
 				ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
 				GorgonApplication.Quit();
+			}
+			finally
+			{
+				if (assemblies != null)
+				{
+					assemblies.Dispose();
+				}
 			}
 		}
 

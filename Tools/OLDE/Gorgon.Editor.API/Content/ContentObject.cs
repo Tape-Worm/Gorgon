@@ -56,7 +56,7 @@ namespace Gorgon.Editor
         #endregion
 
 		#region Variables.
-		private GorgonInputFactory _input;									// Raw input interface.
+		private GorgonInputServiceFactory _input;									// Raw input interface.
         private string _name = "Content";									// Name of the content.
 	    private bool _disposed;												// Flag to indicate that the object was disposed.
 	    private bool _isOwned;												// Flag to indicate that this content is linked to another piece of content.
@@ -370,7 +370,7 @@ namespace Gorgon.Editor
         /// Function to return the raw input object from the editor.
         /// </summary>
         /// <returns>The raw input interface from the editor.</returns>
-        protected GorgonInputFactory GetRawInput()
+        protected GorgonInputServiceFactory GetRawInput()
         {
             if (_input != null)
             {
@@ -382,7 +382,7 @@ namespace Gorgon.Editor
                 return null;
             }
 
-            _input = GorgonInputFactory.CreateInputFactory(GorgonRawInputTypeName);
+            _input = GorgonInputServiceFactory.CreateInputFactory(GorgonRawInputTypeName);
 
             return _input;
         }

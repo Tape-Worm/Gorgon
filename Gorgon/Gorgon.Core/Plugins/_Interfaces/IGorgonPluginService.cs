@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -147,7 +146,7 @@ namespace Gorgon.Plugins
 		/// <summary>
 		/// Property to return the plugin assembly cache this service is using.
 		/// </summary>
-		GorgonPluginAssemblyCache PluginAssemblyCache
+		IGorgonPluginAssemblyCache PluginAssemblyCache
 		{
 			get;
 		}
@@ -164,13 +163,13 @@ namespace Gorgon.Plugins
 		/// Function to retrieve the list of plugins from a given assembly.
 		/// </summary>
 		/// <typeparam name="T">Type of plugin to retrieve. Must implement <see cref="GorgonPlugin"/>.</typeparam>
-		/// <param name="assemblyName">The name of the assembly associated with the plugins.</param>
+		/// <param name="assemblyName">[Optional] The name of the assembly associated with the plugins.</param>
 		/// <returns>A list of plugins from the assembly.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyName"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
-		/// This will retrieve instances of all the plugins of the specified type from the given assembly. 
+		/// This will retrieve all the plugins from the plugin service of the type <typeparamref name="T"/>. If the <paramref name="assemblyName"/> parameter is not <b>null</b> (<i>Nothing</i> in VB.Net), then, 
+		/// the only the assembly with that name will be scanned for the plugin type.
 		/// </remarks>
-		IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName)
+		IReadOnlyList<T> GetPlugins<T>(AssemblyName assemblyName = null)
 			where T : GorgonPlugin;
 
 		/// <summary>
