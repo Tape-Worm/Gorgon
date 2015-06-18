@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Drawing.Text;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.IO;
-using Gorgon.Math;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Core.Test

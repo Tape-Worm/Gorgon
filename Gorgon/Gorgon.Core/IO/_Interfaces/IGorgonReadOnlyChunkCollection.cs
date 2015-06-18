@@ -48,7 +48,7 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Property to return a chunk by its <see cref="UInt64"/> ID.
+		/// Property to return a chunk by its <see cref="ulong"/> ID.
 		/// </summary>
 		/// <remarks>
 		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).

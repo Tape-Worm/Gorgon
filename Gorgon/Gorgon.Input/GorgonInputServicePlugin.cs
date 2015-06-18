@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Runtime.Remoting.Messaging;
 using Gorgon.Plugins;
 
 namespace Gorgon.Input

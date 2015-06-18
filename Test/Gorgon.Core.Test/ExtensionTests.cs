@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Gorgon.IO;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gorgon.Core.Test
 {

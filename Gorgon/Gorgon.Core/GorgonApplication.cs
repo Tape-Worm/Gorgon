@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Collections.Specialized;
@@ -37,7 +36,6 @@ using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.Native;
-using Gorgon.Plugins;
 using Gorgon.Timing;
 
 namespace Gorgon.Core

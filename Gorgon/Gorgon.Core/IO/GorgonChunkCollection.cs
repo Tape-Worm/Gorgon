@@ -25,10 +25,8 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.IO
 {
@@ -186,9 +184,9 @@ namespace Gorgon.IO
 		/// Returns an enumerator that iterates through a collection.
 		/// </summary>
 		/// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((System.Collections.IEnumerable)_list).GetEnumerator();
+			return ((IEnumerable)_list).GetEnumerator();
 		}
 		#endregion
 
@@ -211,7 +209,7 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Property to return a chunk by its <see cref="UInt64"/> ID.
+		/// Property to return a chunk by its <see cref="ulong"/> ID.
 		/// </summary>
 		/// <remarks>
 		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).

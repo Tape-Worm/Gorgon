@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Net.Configuration;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Native;
