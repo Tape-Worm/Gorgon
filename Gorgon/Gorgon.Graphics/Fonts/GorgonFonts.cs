@@ -37,6 +37,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// Font interface for Gorgon.
 	/// </summary>
+	[Obsolete("TODO: Rename this to GorgonFontService, make an IGorgonFontService for it.  Take if OFF the graphics object to facilitate DI.")]
 	public class GorgonFonts
 	{
 		#region Variables.
@@ -111,12 +112,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="stream">Stream to read from.</param>
-		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
 		/// <returns>The font in the stream.</returns>
 		/// <remarks>
-		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
-		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
-		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
 		/// <para>Fonts may only be created on the immediate context.</para></remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="name"/> parameters are NULL.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
@@ -126,7 +123,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromStream(string name, Stream stream, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
+		public GorgonFont FromStream(string name, Stream stream)
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -145,10 +142,20 @@ namespace Gorgon.Graphics
 
 			var font = new GorgonFont(_graphics, name, new GorgonFontSettings());
 
-			using (var chunk = new GorgonChunkReader(stream))
+			IGorgonChunkFileReader fontFile = new GorgonChunkFileReader(stream,
+			                                                            new[]
+			                                                            {
+				                                                            GorgonFont.FileHeader.ChunkID()
+			                                                            });
+
+			try
 			{
-				chunk.Begin(GorgonFont.FileHeader);
-				font.ReadFont(chunk, missingTextureFunction);
+				fontFile.Open();
+				font.ReadFont(fontFile);
+			}
+			finally
+			{
+				fontFile.Close();
 			}
 
 			_graphics.AddTrackedObject(font);
@@ -161,12 +168,8 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="name">Name of the font object.</param>
         /// <param name="fontData">Byte array containing the font data.</param>
-		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
         /// <returns>The font in the array.</returns>
 		/// <remarks>
-		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
-		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
-		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
 		/// <para>Fonts may only be created on the immediate context.</para></remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
@@ -179,11 +182,11 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-        public GorgonFont FromMemory(string name, byte[] fontData, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
+        public GorgonFont FromMemory(string name, byte[] fontData)
         {
             using (var memoryStream = new GorgonDataStream(fontData))
             {
-                return FromStream(name, memoryStream, missingTextureFunction);
+                return FromStream(name, memoryStream);
             }
         }
 
@@ -192,11 +195,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="fileName">Path and filename of the font to load.</param>
-		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
 		/// <remarks>
-		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
-		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
-		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
 		/// <para>Fonts may only be created on the immediate context.</para></remarks>
 		/// <returns>The font in the file.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> or the <paramref name="name"/> parameters are NULL.</exception>
@@ -207,7 +206,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromFile(string name, string fileName, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
+		public GorgonFont FromFile(string name, string fileName)
 		{
 			FileStream stream = null;
 
@@ -224,7 +223,7 @@ namespace Gorgon.Graphics
             try
 			{
 				stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return FromStream(name, stream, missingTextureFunction);
+				return FromStream(name, stream);
 			}
 			finally
 			{

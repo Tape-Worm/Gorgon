@@ -168,59 +168,6 @@ namespace Gorgon.Graphics
 				       WrapMode = WrapMode
 			       };
 		}
-
-		/// <summary>
-		/// Function to write the brush elements out to a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		internal override void Write(GorgonChunkWriter chunk)
-		{
-			// We have no texture.
-			if (Texture == null)
-			{
-				return;
-			}
-
-			chunk.Begin("BRSHDATA");
-			chunk.Write(BrushType);
-			chunk.Write(WrapMode);
-
-			chunk.WriteRectangle(TextureRegion);
-			chunk.WriteString(_texture.Name);
-			chunk.Write(_texture.Settings.Width);
-			chunk.Write(_texture.Settings.Height);
-			chunk.Write(_texture.Settings.Format);
-			chunk.Write(_texture.Settings.ArrayCount);
-			chunk.Write(_texture.Settings.MipCount);
-
-			chunk.End();
-		}
-
-		/// <summary>
-		/// Function to read the brush elements in from a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonChunkReader chunk)
-		{
-			WrapMode = chunk.Read<WrapMode>();
-
-			if (Texture != null)
-			{
-				Texture.Dispose();
-				Texture = null;
-			}
-
-			TextureRegion = chunk.ReadRectangleF();
-			_deferredTextureName = chunk.ReadString();
-			_textureSettings.Width = chunk.ReadInt32();
-			_textureSettings.Height = chunk.ReadInt32();
-			_textureSettings.Format = chunk.Read<BufferFormat>();
-			_textureSettings.ArrayCount = chunk.ReadInt32();
-			_textureSettings.MipCount = chunk.ReadInt32();
-
-			// Try to find the appropriate texture in any previously loaded texture list.
-			FindTexture();
-		}
 		#endregion
 
 		#region Constructor

@@ -40,12 +40,12 @@ namespace Gorgon.Animation
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
-	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="Gorgon.Animation.GorgonAnimation{T}.Tracks">Tracks</see> of an 
-	/// <see cref="Gorgon.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="Gorgon.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
-	/// of a sprite uses a floating point value, so a <see cref="Gorgon.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
-	/// <para>To ensure the object will animate, it should have a <see cref="Gorgon.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
+	/// A controller will force the object to update its properties over a certain time frame (or continuously if looped).  It does this by placing its animated properties into the <see cref="GorgonAnimation{T}.Tracks"/> of an 
+	/// <see cref="GorgonAnimation{T}"/>.  These tracks will take <see cref="GorgonAnimationTrack{T}.KeyFrames"/> which correspond to the type of the property.  For example, the Angle property
+	/// of a sprite uses a floating point value, so a <see cref="GorgonKeySingle"/>, or floating point key frame should be added to the Angle track.
+	/// <para>To ensure the object will animate, it should have a <see cref="AnimatedPropertyAttribute"/> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
 	/// all have appropriate attributes assigned to their properties.</para>
-	/// <para>A user may add a custom track by inheriting from <see cref="Gorgon.Animation.GorgonAnimationTrack{T}">GorgonAnimationTrack</see> and creating a custom key frame type that implements <see cref="Gorgon.Animation.IKeyFrame">IKeyFrame</see>, and then adding a instance of the 
+	/// <para>A user may add a custom track by inheriting from <see cref="GorgonAnimationTrack{T}"/> and creating a custom key frame type that implements <see cref="IKeyFrame"/>, and then adding a instance of the 
 	/// custom track to the animation (not the controller).</para>
 	/// </remarks>
 	public class GorgonAnimationController<T>
@@ -53,6 +53,9 @@ namespace Gorgon.Animation
 		where T : class
 	{
 		#region Constants.
+		// Animation data chunk.
+		internal const string AnimationChunk = "ANIMDATA";
+
 		/// <summary>
 		/// Version header for the animation.
 		/// </summary>
@@ -171,53 +174,47 @@ namespace Gorgon.Animation
 				throw new ArgumentNullException("stream");
 			}
 
-			using (var chunk = new GorgonChunkReader(stream))
+			IGorgonChunkFileReader animFile = new GorgonChunkFileReader(stream,
+			                                                          new[]
+			                                                          {
+				                                                          AnimationVersion.ChunkID()
+			                                                          });
+
+			try
 			{
-				// Get the header.
-				chunk.Begin(AnimationVersion);
+				animFile.Open();
+				GorgonBinaryReader reader = animFile.OpenChunk(AnimationChunk);
 
-				chunk.Begin("ANIMDATA");				
-				// Get the type data.
-				string typeString = chunk.ReadString();
-
-			    if (typeString != AnimatedObjectType.FullName)
-			    {
-			        throw new InvalidCastException(string.Format(Resources.GORANM_ANIMATION_TYPE_MISMATCH, typeString,
-			                                                     AnimatedObjectType.FullName));
-			    }
-
-			    // Get the name.
-				string animationName = chunk.ReadString();
-			    if (Contains(animationName))
-			    {
-			        throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animationName),
-			                                    "stream");
-			    }
-
-			    animation = new GorgonAnimation<T>(this, animationName, chunk.ReadFloat())
-				    {
-				        IsLooped = chunk.ReadBoolean()
-				    };
-
-			    chunk.End();
-
-				// Get all the tracks.
-				while (chunk.HasChunk("TRCKDATA"))
+				// Ensure this type matches the data in the animation file.
+				string typeString = reader.ReadString();
+				if (!string.Equals(typeString, AnimatedObjectType.FullName, StringComparison.OrdinalIgnoreCase))
 				{
-					chunk.Begin("TRCKDATA");
-
-					string trackName = chunk.ReadString();			// Get the name of the track.
-
-				    if (!animation.Tracks.Contains(trackName))
-				    {
-				        throw new ArgumentException(
-				            string.Format(Resources.GORANM_TRACK_TYPE_DOES_NOT_EXIST, trackName, AnimatedObjectType.FullName), "stream");
-				    }
-
-				    animation.Tracks[trackName].FromChunk(chunk);
-
-					chunk.End();
+					throw new InvalidCastException(string.Format(Resources.GORANM_ANIMATION_TYPE_MISMATCH,
+																 typeString,
+																 AnimatedObjectType.FullName));
 				}
+
+				// Read name.
+				string animationName = reader.ReadString();
+				if (Contains(animationName))
+				{
+					throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animationName),
+												"stream");
+				}
+
+				animation = new GorgonAnimation<T>(this, animationName, reader.ReadSingle())
+				            {
+					            IsLooped = reader.ReadBoolean()
+				            };
+
+				animFile.CloseChunk();
+
+				// Read tracks.
+				GorgonAnimationTrack<T>.FromChunk(animFile, animation);
+			}
+			finally
+			{
+				animFile.Close();
 			}
 
 			Add(animation);

@@ -25,7 +25,6 @@
 #endregion
 
 using System.Drawing;
-using Gorgon.IO;
 
 namespace Gorgon.Graphics
 {
@@ -100,18 +99,6 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <returns>The GDI+ brush type for this object.</returns>
 		abstract internal Brush ToGDIBrush();
-
-		/// <summary>
-		/// Function to write the brush elements out to a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		abstract internal void Write(GorgonChunkWriter chunk);
-
-		/// <summary>
-		/// Function to read the brush elements in from a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk reader used to read the data.</param>
-		abstract internal void Read(GorgonChunkReader chunk);
 		#endregion
 	}
 }

@@ -89,6 +89,28 @@ namespace Gorgon.IO
 	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 	public interface IGorgonChunkFileWriter
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the list of chunks available in the file.
+		/// </summary>
+		/// <remarks>
+		/// Use this property to determine if a chunk exists when reading a chunk file.
+		/// </remarks>
+		IGorgonReadOnlyChunkCollection Chunks
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the <see cref="GorgonStreamWrapper"/> that is being used by this chunk file reader.
+		/// </summary>
+		GorgonStreamWrapper Stream
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
 		/// <summary>
 		/// Function to open a chunk for reading.
 		/// </summary>
@@ -119,17 +141,6 @@ namespace Gorgon.IO
 		/// </para>
 		/// </remarks>
 		void CloseChunk();
-
-		/// <summary>
-		/// Property to return the list of chunks available in the file.
-		/// </summary>
-		/// <remarks>
-		/// Use this property to determine if a chunk exists when reading a chunk file.
-		/// </remarks>
-		IGorgonReadOnlyChunkCollection Chunks
-		{
-			get;
-		}
 
 		/// <summary>
 		/// Function to open a chunked file within the stream.
@@ -185,5 +196,6 @@ namespace Gorgon.IO
 		/// </remarks>
 		/// <seealso cref="Gorgon.IO.IGorgonChunkFileWriter.OpenChunk(ulong)"/>
 		GorgonBinaryWriter OpenChunk(string chunkName);
+		#endregion
 	}
 }

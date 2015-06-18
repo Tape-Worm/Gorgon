@@ -70,6 +70,14 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to clear the glyphs.
+		/// </summary>
+		internal void Clear()
+		{
+			_list.Clear();
+		}
+
+		/// <summary>
 		/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
 		/// </summary>
 		/// <param name="glyph">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>

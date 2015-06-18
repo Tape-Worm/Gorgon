@@ -86,6 +86,7 @@
     <Compile Include="Effects\GorgonEffectPass.cs" />
     <Compile Include="Effects\GorgonEffectPassArray.cs" />
     <Compile Include="Fonts\GorgonGlyphBrushInterpolator.cs" />
+    <Compile Include="Fonts\GorgonGlyphBrushInterpolatorEqualityComparer.cs" />
     <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
     <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
     <Compile Include="Fonts\GorgonGlyphTextureBrush.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Fonts\GorgonGlyphPacker.cs" />
     <Compile Include="Fonts\GorgonGlyphPathGradientBrush.cs" />
     <Compile Include="Fonts\GorgonKerningPair.cs" />
+    <Compile Include="Fonts\GorgonKerningPairEqualityComparer.cs" />
     <Compile Include="Geometry\GorgonInputGeometry.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />

@@ -101,6 +101,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return whether this texture is external to the font or not.
         /// </summary>
+        [Obsolete("TODO: Get rid of this, Gorgon fonts will now copy the texture to take ownership of it. This flag is no longer necessary")]
 	    public bool IsExternalTexture
 	    {
 	        get;
@@ -160,7 +161,6 @@ namespace Gorgon.Graphics
 			Texture = texture;
 			Offset = offset;
 			Advance = advance;
-		    IsExternalTexture = true;
 		}
 		#endregion
 

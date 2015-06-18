@@ -29,7 +29,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using Gorgon.Graphics.Fonts;
-using Gorgon.IO;
 using Gorgon.Math;
 using SlimMath;
 
@@ -150,15 +149,15 @@ namespace Gorgon.Graphics
 			
 			if (Interpolation.Count > 2)
 			{
-				var interpColors = new ColorBlend(Interpolation.Count);
+				var interpolationColors = new ColorBlend(Interpolation.Count);
 
 				for (int i = 0; i < Interpolation.Count; i++)
 				{
-					interpColors.Colors[i] = Interpolation[i].Color;
-					interpColors.Positions[i] = Interpolation[i].Weight;
+					interpolationColors.Colors[i] = Interpolation[i].Color;
+					interpolationColors.Positions[i] = Interpolation[i].Weight;
 				}
 
-				result.InterpolationColors = interpColors;
+				result.InterpolationColors = interpolationColors;
 			}
 
 			for (int i = 0; i < blend.Factors.Length; i++)
@@ -182,110 +181,6 @@ namespace Gorgon.Graphics
 			result.SurroundColors = SurroundColors.Select(item => item.ToColor()).ToArray();
 
 			return result;
-		}
-
-		/// <summary>
-		/// Function to write the brush elements out to a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		internal override void Write(GorgonChunkWriter chunk)
-		{
-			chunk.Begin("BRSHDATA");
-			chunk.Write(BrushType);
-			chunk.Write(WrapMode);
-			chunk.Write(Points.Count);
-			
-			foreach (Vector2 point in Points)
-			{
-				chunk.Write(point);
-			}
-
-			chunk.Write(BlendFactors.Count);
-
-			foreach (float factor in BlendFactors)
-			{
-				chunk.Write(factor);
-			}
-
-			chunk.Write(BlendPositions.Count);
-
-			foreach (float position in BlendPositions)
-			{
-				chunk.Write(position);
-			}
-
-			chunk.Write(CenterColor);
-			chunk.Write(CenterPoint);
-			chunk.Write(FocusScales);
-
-			chunk.Write(Interpolation.Count);
-
-			foreach (GorgonGlyphBrushInterpolator interpolator in Interpolation)
-			{
-				interpolator.WriteChunk(chunk);
-			}
-
-			chunk.Write(SurroundColors.Count);
-
-			foreach (GorgonColor color in SurroundColors)
-			{
-				chunk.Write(color);
-			}
-
-			chunk.End();
-		}
-
-		/// <summary>
-		/// Function to read the brush elements in from a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonChunkReader chunk)
-		{
-			Points.Clear();
-			BlendPositions.Clear();
-			BlendFactors.Clear();
-			Interpolation.Clear();
-			SurroundColors.Clear();
-
-			WrapMode = chunk.Read<WrapMode>();
-			int counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				Points.Add(chunk.Read<Vector2>());
-			}
-
-			counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				BlendFactors.Add(chunk.ReadFloat());
-			}
-
-			counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				BlendPositions.Add(chunk.ReadFloat());
-			}
-
-			CenterColor = chunk.Read<GorgonColor>();
-			CenterPoint = chunk.Read<Vector2>();
-			FocusScales = chunk.Read<Vector2>();
-
-			counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				Interpolation.Add(new GorgonGlyphBrushInterpolator(chunk));
-			}
-
-			counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				SurroundColors.Add(chunk.Read<GorgonColor>());
-			}
 		}
 		#endregion
 

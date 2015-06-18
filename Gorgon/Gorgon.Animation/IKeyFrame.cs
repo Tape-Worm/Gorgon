@@ -59,13 +59,13 @@ namespace Gorgon.Animation
 		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		void FromChunk(GorgonChunkReader chunk);
+		void FromChunk(GorgonBinaryReader chunk);
 
 		/// <summary>
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void ToChunk(GorgonChunkWriter chunk);
+		void ToChunk(GorgonBinaryWriter chunk);
 		#endregion
 	}
 }

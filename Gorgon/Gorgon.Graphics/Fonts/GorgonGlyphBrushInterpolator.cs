@@ -27,7 +27,6 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
-using Gorgon.IO;
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Fonts
@@ -35,41 +34,30 @@ namespace Gorgon.Graphics.Fonts
 	/// <summary>
 	/// An interpolation value used to weight the color blending in a gradient brush.
 	/// </summary>
-	public struct GorgonGlyphBrushInterpolator
+	public class GorgonGlyphBrushInterpolator
 		: IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 	{
-		#region Variables.
+		#region Properties.
 		/// <summary>
-		/// The interpolation weight.
+		/// Property to return the interpolation weight.
 		/// </summary>
-		public readonly float Weight;
+		public float Weight
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
-		/// The interpolation color.
+		/// Property to return the interpolation color.
 		/// </summary>
-		public readonly GorgonColor Color;
+		public GorgonColor Color
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to write the interpolation value to a chunk writer.
-		/// </summary>
-		internal void WriteChunk(GorgonChunkWriter writer)
-		{
-			writer.WriteFloat(Weight);
-			writer.Write(Color);
-		}
-
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="left">Left value to compare.</param>
-		/// <param name="right">Right value to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool Equals(ref GorgonGlyphBrushInterpolator left, ref GorgonGlyphBrushInterpolator right)
-		{
-			return left.Weight.EqualsEpsilon(right.Weight);
-		}
-
 		/// <summary>
 		/// Returns a <see cref="System.String" /> that represents this instance.
 		/// </summary>
@@ -96,102 +84,9 @@ namespace Gorgon.Graphics.Fonts
 		{
 			return 281.GenerateHash(Weight);
 		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/>, is equal to this instance.
-		/// </summary>
-		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-		/// <returns>
-		///   <b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.
-		/// </returns>
-		public override bool Equals(object obj)
-		{
-			if (obj is GorgonGlyphBrushInterpolator)
-			{
-				return ((GorgonGlyphBrushInterpolator)obj).Equals(this);
-			}
-
-			return base.Equals(obj);
-		}
-
-		/// <summary>
-		/// Operator to compare two instances for equality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public static bool operator ==(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return Equals(ref left, ref right);
-		}
-
-		/// <summary>
-		/// Operator to compare two instances for inequality.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-		public static bool operator !=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return !Equals(ref left, ref right);
-		}
-
-		/// <summary>
-		/// Operator to determine if one instance is less than the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if the left is less than the right, <b>false</b> if not.</returns>
-		public static bool operator <(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return left.Weight < right.Weight;
-		}
-
-		/// <summary>
-		/// Operator to determine if one instance is greater than the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if the left is greater than the right, <b>false</b> if not.</returns>
-		public static bool operator >(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return left.Weight > right.Weight;
-		}
-
-		/// <summary>
-		/// Operator to determine if one instance is less than or equal to the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if the left is less than or equal to the right, <b>false</b> if not.</returns>
-		public static bool operator <=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return left.Weight < right.Weight || Equals(ref left, ref right);
-		}
-
-		/// <summary>
-		/// Operator to determine if one instance is greater than or equal to the other.
-		/// </summary>
-		/// <param name="left">Left instance to compare.</param>
-		/// <param name="right">Right instance to compare.</param>
-		/// <returns><b>true</b> if the left is greater than or equal to the right, <b>false</b> if not.</returns>
-		public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right)
-		{
-			return left.Weight > right.Weight || Equals(ref left, ref right);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
-		/// </summary>
-		/// <param name="reader">The chunk reader to retrieve the values from.</param>
-		internal GorgonGlyphBrushInterpolator(GorgonChunkReader reader)
-		{
-			Weight = reader.ReadFloat();
-			Color = reader.Read<GorgonColor>();
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGlyphBrushInterpolator"/> struct.
 		/// </summary>
@@ -214,7 +109,12 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		public bool Equals(GorgonGlyphBrushInterpolator other)
 		{
-			return Equals(ref this, ref other);
+			if (other == null)
+			{
+				return false;
+			}
+
+			return other.Weight.EqualsEpsilon(Weight) && Color.Equals(other.Color);
 		}
 		#endregion
 
@@ -228,6 +128,11 @@ namespace Gorgon.Graphics.Fonts
 		/// </returns>
 		public int CompareTo(GorgonGlyphBrushInterpolator other)
 		{
+			if (other == null)
+			{
+				return -1;
+			}
+
 			if (Weight < other.Weight)
 			{
 				return -1;

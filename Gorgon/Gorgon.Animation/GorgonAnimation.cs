@@ -242,35 +242,33 @@ namespace Gorgon.Animation
 				throw new IOException(Resources.GORANM_ERR_STREAM_READ_ONLY);
 			}
 
-			using (var chunk = new GorgonChunkWriter(stream))
-			{
-				chunk.Begin(GorgonAnimationController<T>.AnimationVersion);
+			IGorgonChunkFileWriter animFile = new GorgonChunkFileWriter(stream, GorgonAnimationController<T>.AnimationVersion.ChunkID());
 
-				// Write out animation header data.
-				chunk.Begin("ANIMDATA");
-				chunk.WriteString(AnimationController.AnimatedObjectType.FullName);
-				chunk.WriteString(Name);
-				chunk.WriteFloat(Length);
-				chunk.WriteBoolean(IsLooped);
-				chunk.End();
+			try
+			{
+				animFile.Open();
+
+				GorgonBinaryWriter writer = animFile.OpenChunk(GorgonAnimationController<T>.AnimationChunk.ChunkID());
+				writer.Write(AnimationController.AnimatedObjectType.FullName);
+				writer.Write(Name);
+				writer.Write(Length);
+				writer.Write(IsLooped);
+
+				animFile.CloseChunk();
 
 				// Put out the tracks with the most keys first.
 				var activeTracks = from GorgonAnimationTrack<T> track in Tracks
 								   where track.KeyFrames.Count > 0
-								   orderby track.KeyFrames.Count
 								   select track;
-
-				foreach (var track in activeTracks)
+				
+				foreach (GorgonAnimationTrack<T> track in activeTracks)
 				{
-					if (track.KeyFrames.Count <= 0)
-					{
-						continue;
-					}
-
-					chunk.Begin("TRCKDATA");
-					track.ToChunk(chunk);
-					chunk.End();
+					track.ToChunk(animFile);
 				}
+			}
+			finally
+			{
+				animFile.Close();
 			}
 		}
 

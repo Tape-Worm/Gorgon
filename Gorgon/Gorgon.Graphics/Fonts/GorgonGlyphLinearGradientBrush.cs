@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using Gorgon.Graphics.Fonts;
-using Gorgon.IO;
 
 namespace Gorgon.Graphics
 {
@@ -181,59 +180,17 @@ namespace Gorgon.Graphics
 				             GammaCorrection = GammaCorrection
 			             };
 
-			var interpColors = new ColorBlend(Interpolation.Count);
+			var interpolationColors = new ColorBlend(Interpolation.Count);
 
 			for (int i = 0; i < Interpolation.Count; i++)
 			{
-				interpColors.Colors[i] = Interpolation[i].Color;
-				interpColors.Positions[i] = Interpolation[i].Weight;
+				interpolationColors.Colors[i] = Interpolation[i].Color;
+				interpolationColors.Positions[i] = Interpolation[i].Weight;
 			}
 
-			result.InterpolationColors = interpColors;
+			result.InterpolationColors = interpolationColors;
 
 			return result;
-		}
-
-		/// <summary>
-		/// Function to write the brush elements out to a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		internal override void Write(GorgonChunkWriter chunk)
-		{
-			chunk.Begin("BRSHDATA");
-			chunk.Write(BrushType);
-			chunk.Write(GammaCorrection);
-			chunk.Write(Angle);
-			chunk.Write(ScaleAngle);
-
-			chunk.Write(Interpolation.Count);
-
-			foreach (GorgonGlyphBrushInterpolator interpolation in Interpolation)
-			{
-				interpolation.WriteChunk(chunk);
-			}
-
-			chunk.End();
-		}
-
-		/// <summary>
-		/// Function to read the brush elements in from a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonChunkReader chunk)
-		{
-			Interpolation.Clear();
-
-			GammaCorrection = chunk.ReadBoolean();
-			Angle = chunk.ReadFloat();
-			ScaleAngle = chunk.ReadBoolean();
-
-			int counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				Interpolation.Add(new GorgonGlyphBrushInterpolator(chunk));
-			}
 		}
 		#endregion
 

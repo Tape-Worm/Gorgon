@@ -103,18 +103,18 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Property to return the stream that contains the chunked file.
+		/// Property to return an editable list of chunks.
 		/// </summary>
-		protected GorgonStreamWrapper Stream
+		internal GorgonChunkCollection ChunkList
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return an editable list of chunks.
+		/// Property to return the <see cref="GorgonStreamWrapper"/> that contains the chunked file.
 		/// </summary>
-		internal GorgonChunkCollection ChunkList
+		public GorgonStreamWrapper Stream
 		{
 			get;
 			private set;

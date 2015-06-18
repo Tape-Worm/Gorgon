@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,62 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, October 12, 2013 11:22:36 PM
+// Created: Wednesday, June 17, 2015 10:28:29 PM
 // 
 #endregion
 
-using System.Drawing;
+using System.Collections.Generic;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A brush used to draw glyphs using a solid fill color.
+	/// An equality comparer for the <see cref="GorgonKerningPair"/> value type.
 	/// </summary>
-	public class GorgonGlyphSolidBrush
-		: GorgonGlyphBrush
+	public class GorgonKerningPairEqualityComparer
+		: IEqualityComparer<GorgonKerningPair>
 	{
-		#region Properties.
+		#region IEqualityComparer<GorgonKerningPair> Members
 		/// <summary>
-		/// Property to return the type of brush.
+		/// Determines whether the specified objects are equal.
 		/// </summary>
-		public override GlyphBrushType BrushType
+		/// <param name="x">The first object of type <see cref="GorgonKerningPair"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="GorgonKerningPair"/> to compare.</param>
+		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+		public bool Equals(GorgonKerningPair x, GorgonKerningPair y)
 		{
-			get
-			{
-				return GlyphBrushType.Solid;
-			}
+			return GorgonKerningPair.Equals(ref x, ref y);
 		}
 
 		/// <summary>
-		/// Property to set or return the color for the brush.
+		/// Returns a hash code for this instance.
 		/// </summary>
-		public GorgonColor Color
+		/// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+		public int GetHashCode(GorgonKerningPair obj)
 		{
-			get;
-			set;
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to convert this brush to the equivalent GDI+ brush type.
-		/// </summary>
-		/// <returns>
-		/// The GDI+ brush type for this object.
-		/// </returns>
-		internal override Brush ToGDIBrush()
-		{
-			return new SolidBrush(Color);
-		}
-		#endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
-		/// </summary>
-		public GorgonGlyphSolidBrush()
-		{
-			Color = GorgonColor.White;
+			return obj.GetHashCode();
 		}
 		#endregion
 	}

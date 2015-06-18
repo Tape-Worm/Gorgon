@@ -98,9 +98,9 @@ namespace Gorgon.Animation
 		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		void IKeyFrame.FromChunk(GorgonChunkReader chunk)
+		void IKeyFrame.FromChunk(GorgonBinaryReader chunk)
 		{
-			Time = chunk.ReadFloat();
+			Time = chunk.ReadSingle();
 			Value = chunk.ReadUInt64();
 		}
 
@@ -108,10 +108,10 @@ namespace Gorgon.Animation
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void IKeyFrame.ToChunk(GorgonChunkWriter chunk)
+		void IKeyFrame.ToChunk(GorgonBinaryWriter chunk)
 		{
-			chunk.WriteFloat(Time);
-			chunk.WriteUInt64(Value);
+			chunk.Write(Time);
+			chunk.Write(Value);
 		}
 		#endregion
 	}

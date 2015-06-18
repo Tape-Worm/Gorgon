@@ -136,6 +136,13 @@ namespace Gorgon.IO
 			get;
 		}
 
+		/// <summary>
+		/// Property to return the <see cref="GorgonStreamWrapper"/> that is being used by this chunk file reader.
+		/// </summary>
+		GorgonStreamWrapper Stream
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.

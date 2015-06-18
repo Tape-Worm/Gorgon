@@ -191,14 +191,14 @@ namespace Gorgon.Animation
         /// Function to read a keyframe from a chunk.
         /// </summary>
         /// <param name="chunk">Chunk to read from.</param>
-		void IKeyFrame.FromChunk(GorgonChunkReader chunk)
+		void IKeyFrame.FromChunk(GorgonBinaryReader chunk)
 		{
             Value = null;
-			Time = chunk.ReadFloat();
+			Time = chunk.ReadSingle();
 			bool hasTexture = chunk.ReadBoolean();
 
 			// Get the texture region we're using.
-			TextureRegion = chunk.ReadRectangleF();
+	        TextureRegion = new RectangleF(chunk.ReadSingle(), chunk.ReadSingle(), chunk.ReadSingle(), chunk.ReadSingle());
 
 	        if (!hasTexture)
 	        {
@@ -212,8 +212,8 @@ namespace Gorgon.Animation
 	        _settings = new GorgonTexture2DSettings
 	        {
 		        ArrayCount = chunk.ReadInt32(),
-		        Format = chunk.Read<BufferFormat>(),
-		        Size = chunk.ReadSize(),
+		        Format = chunk.ReadValue<BufferFormat>(),
+		        Size = new Size(chunk.ReadInt32(), chunk.ReadInt32()),
 		        IsTextureCube = chunk.ReadBoolean(),
 		        MipCount = chunk.ReadInt32(),
 		        Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32()),
@@ -229,25 +229,29 @@ namespace Gorgon.Animation
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void IKeyFrame.ToChunk(GorgonChunkWriter chunk)
+		void IKeyFrame.ToChunk(GorgonBinaryWriter chunk)
 		{
-			chunk.WriteFloat(Time);
-			chunk.WriteBoolean(Value != null);
-			chunk.WriteRectangle(TextureRegion);
+			chunk.Write(Time);
+			chunk.Write(Value != null);
+			chunk.Write(TextureRegion.Left);
+			chunk.Write(TextureRegion.Top);
+			chunk.Write(TextureRegion.Width);
+			chunk.Write(TextureRegion.Height);
 
 			if (Value == null)
 			{
 				return;
 			}
 
-			chunk.WriteString(Value.Name);
-			chunk.WriteInt32(Value.Settings.ArrayCount);
-			chunk.Write(Value.Settings.Format);
-			chunk.WriteSize(Value.Settings.Size);
-			chunk.WriteBoolean(Value.Settings.IsTextureCube);
-			chunk.WriteInt32(Value.Settings.MipCount);
-			chunk.WriteInt32(Value.Settings.Multisampling.Count);
-			chunk.WriteInt32(Value.Settings.Multisampling.Quality);
+			chunk.Write(Value.Name);
+			chunk.Write(Value.Settings.ArrayCount);
+			chunk.WriteValue(Value.Settings.Format);
+			chunk.Write(Value.Settings.Size.Width);
+			chunk.Write(Value.Settings.Size.Height);
+			chunk.Write(Value.Settings.IsTextureCube);
+			chunk.Write(Value.Settings.MipCount);
+			chunk.Write(Value.Settings.Multisampling.Count);
+			chunk.Write(Value.Settings.Multisampling.Quality);
 		}
 		#endregion
 	}

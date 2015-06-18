@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Gorgon.Animation.Properties;
@@ -65,6 +66,13 @@ namespace Gorgon.Animation
 		: GorgonNamedObject
 		where T : class
 	{
+		#region Constants.
+		// Key frames list
+		private const string KeyFramesChunk = "KEFRAMES";
+		// Track listing.
+		private const string TracksChunk = "TRAKDATA";
+		#endregion
+
 		#region Value Types.
 		/// <summary>
 		/// Value type containing information about the nearest keys for a time position.
@@ -367,46 +375,70 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Function to read the track data from a data chunk.
 		/// </summary>
-		/// <param name="chunk">Chunk to read.</param>
-		internal void FromChunk(GorgonChunkReader chunk)
+		/// <param name="animFile">Animation file to read from.</param>
+		/// <param name="animation">Animation that owns the track.</param>
+		internal static void FromChunk(IGorgonChunkFileReader animFile, GorgonAnimation<T> animation)
 		{
-			InterpolationMode = chunk.Read<TrackInterpolationMode>();
+			int trackCount = animFile.Chunks.Count(item => item.ID == TracksChunk.ChunkID());
 
-			// Load all key frames from this track.
-			while (chunk.HasChunk("KEYFRAME"))
+			// Get all tracks for the animation.
+			for (int i = 0; i < trackCount; ++i)
 			{
-				IKeyFrame key = MakeKey();
+				GorgonBinaryReader reader = animFile.OpenChunk(TracksChunk);
+				string trackName = reader.ReadString();
 
-				chunk.Begin("KEYFRAME");
-				key.FromChunk(chunk);
-				chunk.End();
+				GorgonAnimationTrack<T> track;
 
-				KeyFrames.Add(key);
+				if (!animation.Tracks.TryGetValue(trackName, out track))
+				{
+					throw new GorgonException(GorgonResult.CannotRead,
+					                          string.Format(Resources.GORANM_TRACK_TYPE_DOES_NOT_EXIST, trackName, animation.AnimationController.AnimatedObjectType.FullName));
+				}
+
+				track.InterpolationMode = reader.ReadValue<TrackInterpolationMode>();
+
+				animFile.CloseChunk();
+
+				// Get key frames for the track.
+				reader = animFile.OpenChunk(KeyFramesChunk);
+				int keyCount = reader.ReadInt32();
+
+				for (int k = 0; k < keyCount; ++k)
+				{
+					IKeyFrame key = track.MakeKey();
+					key.FromChunk(reader);
+					track.KeyFrames.Add(key);
+				}
+
+				animFile.CloseChunk();
 			}
 		}
 
 		/// <summary>
 		/// Function to write the track data to a data chunk.
 		/// </summary>
-		/// <param name="chunk">Chunk to write.</param>
-		internal void ToChunk(GorgonChunkWriter chunk)
+		/// <param name="animFile">Animation file to write into.</param>
+		internal void ToChunk(IGorgonChunkFileWriter animFile)
 		{
-			chunk.WriteString(Name);
-			chunk.Write(InterpolationMode);
+			GorgonBinaryWriter writer = animFile.OpenChunk(TracksChunk);
+			writer.Write(Name);
+			writer.WriteValue(InterpolationMode);
+			animFile.CloseChunk();
 
+			writer = animFile.OpenChunk(KeyFramesChunk);
+			writer.Write(KeyFrames.Count);
 			foreach (IKeyFrame keyFrame in KeyFrames)
 			{
-				chunk.Begin("KEYFRAME");
-				keyFrame.ToChunk(chunk);
-				chunk.End();
+				keyFrame.ToChunk(writer);
 			}
+			animFile.CloseChunk();
 		}
 
 		/// <summary>
 		/// Function to retrieve a key frame for a given time.
 		/// </summary>
 		/// <param name="time">Time to look up.</param>
-		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="Gorgon.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
+		/// <returns>A key frame at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="Gorgon.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
 		    IKeyFrame result;

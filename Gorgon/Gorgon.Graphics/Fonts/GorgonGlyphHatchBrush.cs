@@ -26,7 +26,6 @@
 
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using Gorgon.IO;
 
 namespace Gorgon.Graphics
 {
@@ -86,31 +85,6 @@ namespace Gorgon.Graphics
 		internal override Brush ToGDIBrush()
 		{
 			return new HatchBrush(HatchStyle, ForegroundColor, BackgroundColor);
-		}
-
-		/// <summary>
-		/// Function to write the brush elements out to a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		internal override void Write(GorgonChunkWriter chunk)
-		{
-			chunk.Begin("BRSHDATA");
-			chunk.Write(BrushType);
-			chunk.Write(HatchStyle);
-			chunk.Write(ForegroundColor);
-			chunk.Write(BackgroundColor);
-			chunk.End();
-		}
-
-		/// <summary>
-		/// Function to read the brush elements in from a chunked file.
-		/// </summary>
-		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonChunkReader chunk)
-		{
-			HatchStyle = chunk.Read<HatchStyle>();
-			ForegroundColor = chunk.Read<GorgonColor>();
-			BackgroundColor = chunk.Read<GorgonColor>();
 		}
 		#endregion
 	}

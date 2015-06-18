@@ -743,4 +743,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_IMAGE_BUFFER_CANT_BE_SAME" xml:space="preserve">
     <value>Cannot copy a buffer into itself.</value>
   </data>
+  <data name="GORGFX_ERR_FONT_FILE_CORRUPT" xml:space="preserve">
+    <value>The font file data is corrupt.</value>
+  </data>
 </root>
