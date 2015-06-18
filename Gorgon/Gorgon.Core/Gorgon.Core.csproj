@@ -189,11 +189,8 @@
     <Compile Include="IO\GorgonFileExtensionCollection.cs" />
     <Compile Include="IO\GorgonBinaryReader.cs" />
     <Compile Include="IO\GorgonBinaryWriter.cs" />
-    <Compile Include="IO\_Obsoleted\GorgonChunkReader.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
-    <Compile Include="IO\_Obsoleted\GorgonChunkedFormat.cs" />
-    <Compile Include="IO\_Obsoleted\GorgonChunkWriter.cs" />
     <Compile Include="IO\GorgonDataStream.cs" />
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="GorgonRandom.cs" />

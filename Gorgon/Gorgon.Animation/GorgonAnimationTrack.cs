@@ -35,6 +35,8 @@ using Gorgon.Math;
 
 namespace Gorgon.Animation
 {
+	// TODO: Why is this marked as flags??
+
 	/// <summary>
 	/// Interpolation mode for animating between key frames.
 	/// </summary>    
@@ -62,6 +64,7 @@ namespace Gorgon.Animation
     /// <see cref="Gorgon.Animation.GorgonAnimation{T}.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
 	/// <see cref="Gorgon.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
 	/// <typeparam name="T">The type of object being animated.</typeparam>
+	[Obsolete("TODO: Use our property expression tree code in Gorgon.Reflection instead of what we've got here.")]
 	public abstract class GorgonAnimationTrack<T>
 		: GorgonNamedObject
 		where T : class

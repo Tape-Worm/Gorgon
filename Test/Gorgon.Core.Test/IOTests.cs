@@ -13,23 +13,6 @@ namespace Gorgon.Core.Test
 	[TestClass]
 	public class IOTests
 	{
-		[StructLayout(LayoutKind.Sequential)]
-		struct TehStruct
-		{
-			public int Value;
-			public uint Value2;
-			public float Value3;
-		}
-
-		[StructLayout(LayoutKind.Sequential)]
-		struct NewStruct
-		{
-			public int Value;
-			public uint Value2;
-			public float Value3;
-			public double Value4;
-		}
-
 		[TestMethod]
 		public void ChunkIDTest()
 		{
@@ -125,10 +108,9 @@ namespace Gorgon.Core.Test
 		[TestMethod]
 		public void ChunkReaderWriter()
 		{
-			const string HeaderChunk = "HEADCHNK";
-			const string StringChunk = "STRSCHNK";
-			const string IntChunk = "INTSCHNK";
-			const string Header = "TheHeader";
+			const string stringChunk = "STRSCHNK";
+			const string intChunk = "INTSCHNK";
+			const string header = "TheHeader";
 
 			string[] strs =
 			{
@@ -154,16 +136,13 @@ namespace Gorgon.Core.Test
 
 			int expectedStrLength = strs.Length;
 			int expectedIntsLength = ints.Length;
-			uint expectedHeadSize;
-			uint expectedStrsSize;
-			uint expectedIntsSize;
 
 			using (MemoryStream stream = new MemoryStream())
 			{
-				var fileWriter = new GorgonChunkFileWriter(stream, Header.ChunkID());
+				var fileWriter = new GorgonChunkFileWriter(stream, header.ChunkID());
 				fileWriter.Open();
 
-				GorgonBinaryWriter writer = fileWriter.OpenChunk(StringChunk.ChunkID());
+				GorgonBinaryWriter writer = fileWriter.OpenChunk(stringChunk.ChunkID());
 
 				writer.Write(strs.Length);
 
@@ -174,7 +153,7 @@ namespace Gorgon.Core.Test
 
 				fileWriter.CloseChunk();
 
-				writer = fileWriter.OpenChunk(IntChunk.ChunkID());
+				writer = fileWriter.OpenChunk(intChunk.ChunkID());
 
 				writer.Write(ints.Length);
 
@@ -192,12 +171,12 @@ namespace Gorgon.Core.Test
 				var fileReader = new GorgonChunkFileReader(stream,
 				                                           new[]
 				                                           {
-					                                           Header.ChunkID()
+					                                           header.ChunkID()
 				                                           });
 
 				fileReader.Open();
 
-				GorgonBinaryReader reader = fileReader.OpenChunk(IntChunk.ChunkID());
+				GorgonBinaryReader reader = fileReader.OpenChunk(intChunk.ChunkID());
 
 				int numInts = reader.ReadInt32();
 
@@ -214,7 +193,7 @@ namespace Gorgon.Core.Test
 
 				fileReader.CloseChunk();
 
-				reader = fileReader.OpenChunk(StringChunk.ChunkID());
+				reader = fileReader.OpenChunk(stringChunk.ChunkID());
 
 				int numStrs = reader.ReadInt32();
 

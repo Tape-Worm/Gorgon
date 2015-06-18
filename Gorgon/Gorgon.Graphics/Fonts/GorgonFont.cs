@@ -948,6 +948,7 @@ namespace Gorgon.Graphics
 				writer.Write(Settings.FontFamilyName);
 				writer.Write(Settings.Size);
 				writer.WriteValue(Settings.FontHeightMode);
+				writer.WriteValue(Settings.FontStyle);
 				writer.Write(Settings.DefaultCharacter);
 				writer.Write(string.Join(string.Empty, Settings.Characters));
 				writer.Write(FontHeight);

@@ -41,7 +41,7 @@ namespace Gorgon.Graphics
 	/// 4 component (Red, Green, Blue, and Alpha) color value.
 	/// </summary>
 	/// <remarks>This type is immutable.</remarks>
-	[StructLayout(LayoutKind.Sequential)]
+	[StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct GorgonColor
 		: IGorgonEquatableByRef<GorgonColor>
 	{

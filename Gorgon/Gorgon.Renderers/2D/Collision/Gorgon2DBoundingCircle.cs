@@ -25,7 +25,6 @@
 #endregion
 
 using System.Drawing;
-using Gorgon.IO;
 using Gorgon.Math;
 using SlimMath;
 
@@ -137,40 +136,6 @@ namespace Gorgon.Renderers
 
 			UpdateFromCollisionObject();
 		}
-
-		/// <summary>
-        /// Function to write the collider information into a chunk.
-        /// </summary>
-        /// <param name="writer">The writer for the chunk.</param>
-        /// <remarks>
-        /// This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).
-        /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
-        /// <para>This method assumes the chunk writer has already started the collider chunk.</para>
-        /// </remarks>
-        protected internal override void WriteToChunk(GorgonChunkWriter writer)
-        {
-            writer.WriteString(GetType().FullName);
-            writer.Write(Center);
-            writer.WriteFloat(Radius);
-        }
-
-        /// <summary>
-        /// Function to read in the information about a collider from a chunk.
-        /// </summary>
-        /// <param name="reader">The reader for the chunk.</param>
-        /// <remarks>
-        /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="Gorgon.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
-        /// about the collider (e.g. location, width, height, etc...).</para>
-        /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
-        /// </remarks>
-        protected internal override void ReadFromChunk(GorgonChunkReader reader)
-        {
-            _center = reader.Read<Vector2>();
-            _radius = reader.ReadFloat();
-
-            OnPropertyUpdated();
-        }
 
 		/// <summary>
 		/// Function to update the collider on the object to match the collision object transformation.
