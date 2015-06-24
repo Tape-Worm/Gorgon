@@ -173,7 +173,7 @@ namespace Gorgon.Graphics.Example
 				using (var normalData = new GorgonDataStream(VertexCount * 2 * Vector4.SizeInBytes))
 				using (var indexData = new GorgonDataStream(IndexCount * DirectAccess.SizeOf<int>()))
 				{
-					GetVertices((Vertex3D *)vertexData.UnsafePointer, (int *)indexData.UnsafePointer, normalData.UnsafePointer, radius, textureCoordinates, ringCount, segmentCount);
+					GetVertices((Vertex3D *)vertexData.BasePointer, (int *)indexData.BasePointer, normalData.BasePointer, radius, textureCoordinates, ringCount, segmentCount);
 
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("SphereVertexBuffer",
 					                                                   new GorgonBufferSettings

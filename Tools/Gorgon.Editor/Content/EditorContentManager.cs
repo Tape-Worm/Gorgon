@@ -107,14 +107,6 @@ namespace Gorgon.Editor
 			_settings = settings;
 			_noContentService = noContentService;
 		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref="EditorContentManager"/> class.
-		/// </summary>
-		~EditorContentManager()
-		{
-			Dispose(false);
-		}
 		#endregion
 
 		#region IContentManager

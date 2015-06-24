@@ -668,14 +668,6 @@ namespace Gorgon.Input.Raw
 			: base("Gorgon Raw Input")
 		{
 		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref="GorgonRawInputService"/> class.
-		/// </summary>
-		~GorgonRawInputService()
-		{
-			Dispose(false);
-		}
 		#endregion
 	}
 }

@@ -1960,7 +1960,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <returns><b>true</b> if the buffer has data, <b>false</b> if not.</returns>
 	    public unsafe bool ImageBufferHasData()
 		{
-			var bufferPtr = (byte*)Buffer.Data.UnsafePointer;
+			var bufferPtr = (byte*)Buffer.Data.BasePointer;
 
 			for (int y = 0; y < Buffer.Height; y++)
 			{
@@ -2064,7 +2064,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 				unsafe
 				{
 					// Clear the buffer so we don't get garbage left over.
-					DirectAccess.ZeroMemory(Buffer.Data.UnsafePointer, (int)Buffer.Data.Length);
+					DirectAccess.ZeroMemory(Buffer.Data.BasePointer, (int)Buffer.Data.Length);
 				}
 
 				// Copy the data into the buffer.

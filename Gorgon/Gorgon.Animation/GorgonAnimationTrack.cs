@@ -210,7 +210,7 @@ namespace Gorgon.Animation
 		/// <summary>
 		/// Property to return the spline control interface.
 		/// </summary>
-		protected GorgonSpline Spline
+		protected GorgonCatmullRomSpline Spline
 		{
 			get;
 			private set;
@@ -496,7 +496,7 @@ namespace Gorgon.Animation
 			// this will remedy that.
 			AnimatedProperty = property;
 			KeyFrames = new GorgonAnimationKeyFrameCollection<T>(this);
-			Spline = new GorgonSpline();
+			Spline = new GorgonCatmullRomSpline();
 		}
 		#endregion
 	}

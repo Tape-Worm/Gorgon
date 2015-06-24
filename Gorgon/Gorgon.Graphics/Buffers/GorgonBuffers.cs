@@ -338,18 +338,20 @@ namespace Gorgon.Graphics
         /// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
         /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
         /// <exception cref="GorgonException">Thrown when the buffer could not be created.</exception>
-        public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, T value, BufferUsage usage)
+        public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, ref T value, BufferUsage usage)
             where T : struct
         {
-            using (var stream = GorgonDataStream.ValueToStream(value))
-            {
-                return CreateStructuredBuffer(name, new GorgonStructuredBufferSettings
-                {
-                    Usage = usage,
-					SizeInBytes = DirectAccess.SizeOf<T>(),
-					StructureSize = DirectAccess.SizeOf<T>()
-                }, stream);
-            }
+	        GorgonStructuredBuffer buffer = CreateStructuredBuffer(name,
+	                                                               new GorgonStructuredBufferSettings
+	                                                               {
+		                                                               Usage = usage,
+		                                                               SizeInBytes = DirectAccess.SizeOf<T>(),
+		                                                               StructureSize = DirectAccess.SizeOf<T>()
+	                                                               });
+
+			buffer.Update(ref value, _graphics);
+
+			return buffer;
         }
 
         /// <summary>

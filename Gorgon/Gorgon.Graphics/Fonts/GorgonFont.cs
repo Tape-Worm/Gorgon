@@ -1433,14 +1433,6 @@ namespace Gorgon.Graphics
 				ShaderViewFormat = BufferFormat.Unknown
 			};
 		}
-
-        /// <summary>
-        /// Finalizes an instance of the <see cref="GorgonFont"/> class.
-        /// </summary>
-        ~GorgonFont()
-        {
-            Dispose(false);
-        }
 		#endregion
 
 		#region IDisposable Members

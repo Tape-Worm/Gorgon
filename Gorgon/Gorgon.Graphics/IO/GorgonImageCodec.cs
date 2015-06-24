@@ -859,13 +859,13 @@ namespace Gorgon.IO
 								var sourceBuffer = data.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
                                 var destBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-								var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+								var dataRect = new DataRectangle(sourceBuffer.Data.BaseIntPtr, sourceBuffer.PitchInformation.RowPitch);
 
 								// Create a temporary WIC bitmap to work with.
 								using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 								{
 									wic.TransformImageData(bitmap,
-									                       destBuffer.Data.BasePointer,
+									                       destBuffer.Data.BaseIntPtr,
 									                       destBuffer.PitchInformation.RowPitch,
 									                       destBuffer.PitchInformation.SlicePitch,
 									                       destPixelFormat,
@@ -900,12 +900,12 @@ namespace Gorgon.IO
 								    var sourceBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
 									var destBuffer = destData.Buffers[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-									var dataRect = new DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+									var dataRect = new DataRectangle(sourceBuffer.Data.BaseIntPtr, sourceBuffer.PitchInformation.RowPitch);
 
 									// Create a temporary WIC bitmap to work with.
 									using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 									{
-										wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
+										wic.TransformImageData(bitmap, destBuffer.Data.BaseIntPtr, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
 																Guid.Empty, false, false, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);
 									}
 								}

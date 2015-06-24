@@ -749,7 +749,7 @@ namespace Gorgon.Renderers
 				unsafe
 				{
 					ushort index = 0;
-					var buffer = (int*)ibData.UnsafePointer;
+					var buffer = (int*)ibData.BasePointer;
 					for (int i = 0; i < _cache.CacheSize; i++)
 					{
 						*(buffer++) = index;

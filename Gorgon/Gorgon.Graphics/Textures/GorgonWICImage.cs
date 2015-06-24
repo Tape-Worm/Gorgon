@@ -503,7 +503,7 @@ namespace Gorgon.Graphics
             // Copy to the bitmap.
             foreach (var buffer in data.Buffers)
             {
-                var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+                var pointer = new DX.DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
                 bitmaps[bitmapIndex] = new Bitmap(Factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
                 bitmapIndex++;
             }
@@ -518,7 +518,7 @@ namespace Gorgon.Graphics
         /// <returns>The WIC bitmap.</returns>
         public Bitmap CreateWICBitmapFromImageBuffer(GorgonImageBuffer buffer)
         {
-            var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+            var pointer = new DX.DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
 
             Guid bitmapFormat = GetGUID(buffer.Format);
 
@@ -724,7 +724,7 @@ namespace Gorgon.Graphics
                             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_IMAGE_PITCH_TOO_SMALL);
 						}
 					}
-					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 				}
 			}
 			finally
@@ -751,7 +751,7 @@ namespace Gorgon.Graphics
 				using (var scaler = new BitmapScaler(Factory))
 				{
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
-					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 				}
 
 				return true;
@@ -777,7 +777,7 @@ namespace Gorgon.Graphics
 			{
 				clipper.Initialize(bitmap, new DX.Rectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
-				clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+				clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 			}
 		}
 
@@ -817,7 +817,7 @@ namespace Gorgon.Graphics
                 // Just dump without converting because our formats are equal.
 				if ((!needsResize) || (!ResizeBitmap(bitmap, (BitmapInterpolationMode)filter, buffer, clip)))
 				{
-					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 				}
             }            
         }

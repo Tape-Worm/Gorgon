@@ -249,7 +249,7 @@ namespace Gorgon.Graphics.Example
 
 				// Get pointers to our data buffers.
 		        var imagePtr = (byte*)result.UnsafePointer;
-		        var srcPtr = (ushort*)stream.UnsafePointer;
+		        var srcPtr = (ushort*)stream.BasePointer;
 
 		        // Write each scanline.
 		        for (int y = 0; y < settings.Height; ++y)

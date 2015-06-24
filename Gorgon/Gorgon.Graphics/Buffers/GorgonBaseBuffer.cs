@@ -292,7 +292,7 @@ namespace Gorgon.Graphics
             {
                 long position = data.Position;
 
-                using (var dxStream = new DX.DataStream(data.BasePointer, data.Length - position, true, true))
+                using (var dxStream = new DX.DataStream(data.BaseIntPtr, data.Length - position, true, true))
                 {
                     D3DResource = D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
                 }
@@ -444,7 +444,7 @@ namespace Gorgon.Graphics
             context.Context.UpdateSubresource(
                 new DX.DataBox
                 {
-                    DataPointer = stream.PositionPointer,
+                    DataPointer = stream.PositionIntPtr,
                     RowPitch = size,
                     SlicePitch = 0
                 },

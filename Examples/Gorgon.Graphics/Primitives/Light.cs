@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="index">Index of the light to update.</param>
 		private unsafe void UpdateIndex(int index)
 		{
-			var data = (LightData*)_lightStore.UnsafePointer;
+			var data = (LightData*)_lightStore.BasePointer;
 
 			for (int i = 0; i < _lightData.Length; ++i)
 			{
@@ -166,8 +166,8 @@ namespace Gorgon.Graphics.Example
 			_lightStore = new GorgonDataStream(_buffer.SizeInBytes);
 			unsafe
 			{
-				DirectAccess.ZeroMemory(_lightStore.UnsafePointer, _buffer.SizeInBytes);
-				var data = (LightData*)_lightStore.UnsafePointer;
+				DirectAccess.ZeroMemory(_lightStore.BasePointer, _buffer.SizeInBytes);
+				var data = (LightData*)_lightStore.BasePointer;
 				*data = _lightData[0];
 			}
 

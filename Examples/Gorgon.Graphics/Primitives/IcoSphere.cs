@@ -389,7 +389,7 @@ namespace Gorgon.Graphics.Example
 					IndexCount = indexList.Count;
 					TriangleCount = IndexCount / 3;
 
-					CalculateTangents((Vertex3D*)vertexData.UnsafePointer, (int*)indexData.UnsafePointer);
+					CalculateTangents((Vertex3D*)vertexData.BasePointer, (int*)indexData.BasePointer);
 
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("IcoSphereVertexBuffer",
 						                                                new GorgonBufferSettings

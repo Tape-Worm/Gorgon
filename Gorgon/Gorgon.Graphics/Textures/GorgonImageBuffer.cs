@@ -159,7 +159,7 @@ namespace Gorgon.Graphics
 			}
 
 			if ((buffer == this)
-				|| (buffer.Data.UnsafePointer == Data.UnsafePointer))
+				|| (buffer.Data.BasePointer == Data.BasePointer))
 			{
 				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_CANT_BE_SAME, "buffer");
 			}
@@ -212,7 +212,7 @@ namespace Gorgon.Graphics
 			// If the buffers are identical in dimensions and have no offset, then just do a straight copy.
 		    if (srcRegion == dstRegion)
 		    {
-		        DirectAccess.MemoryCopy(buffer.Data.UnsafePointer, Data.UnsafePointer, (int)Data.Length);
+		        DirectAccess.MemoryCopy(buffer.Data.BasePointer, Data.BasePointer, (int)Data.Length);
 		        return;
 		    }
 
@@ -220,10 +220,10 @@ namespace Gorgon.Graphics
 			int dataSize = PitchInformation.RowPitch / Width;
 
 			int srcLineSize = dataSize * srcRegion.Width;	// Number of source bytes/scanline.
-			var srcData = ((byte*)Data.UnsafePointer) + (srcRegion.Y * PitchInformation.RowPitch) + (srcRegion.X * dataSize);
+			var srcData = ((byte*)Data.BasePointer) + (srcRegion.Y * PitchInformation.RowPitch) + (srcRegion.X * dataSize);
 
 			int dstLineSize = dataSize * dstRegion.Width;	// Number of dest bytes/scanline.
-			var dstData = ((byte*)buffer.Data.UnsafePointer) + (dstRegion.Y * buffer.PitchInformation.RowPitch) + (dstRegion.X * dataSize);
+			var dstData = ((byte*)buffer.Data.BasePointer) + (dstRegion.Y * buffer.PitchInformation.RowPitch) + (dstRegion.X * dataSize);
 
 			// Get the smallest line size.
 			int minLineSize = dstLineSize.Min(srcLineSize);

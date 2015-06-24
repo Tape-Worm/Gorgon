@@ -1063,7 +1063,7 @@ namespace Gorgon.IO
 			conversionFlags = DDSConversionFlags.None;
 
             // Read the magic # from the header.
-            uint magicNumber = stream.ReadUInt32();
+            uint magicNumber = stream.Read<UInt32>();
 
             // If the magic number doesn't match, then this is not a DDS file.
             if (magicNumber != MagicNumber)
@@ -1627,7 +1627,7 @@ namespace Gorgon.IO
 					&& (pitchFlags == PitchFlags.None) && (image.Settings.ArrayCount == _actualArrayCount) && (image.Settings.Depth == _actualDepth))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
-                DirectAccess.MemoryCopy(image.Buffers[0].Data.UnsafePointer, stream.PositionPointerUnsafe, sizeInBytes);
+                DirectAccess.MemoryCopy(image.Buffers[0].Data.BasePointer, stream.PositionPointer, sizeInBytes);
                 return;
 			}
 
@@ -1646,7 +1646,7 @@ namespace Gorgon.IO
 			// Clip the depth.
 			int depth = _actualDepth.Min(image.Settings.Depth);
 			int arrayCount = _actualArrayCount.Min(image.Settings.ArrayCount);
-			var srcPointer = (byte*)stream.PositionPointerUnsafe;
+			var srcPointer = (byte*)stream.PositionPointer;
 
 			for (int array = 0; array < arrayCount; array++)
 			{
@@ -1655,7 +1655,7 @@ namespace Gorgon.IO
 					// Get our destination buffer.
 					var destBuffer = image.Buffers[mipLevel, array];
 					var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
-					var destPointer = (byte*)destBuffer.Data.UnsafePointer;
+					var destPointer = (byte*)destBuffer.Data.BasePointer;
 
 					for (int slice = 0; slice < depth; slice++)
 					{
@@ -1834,7 +1834,7 @@ namespace Gorgon.IO
 							{
 								var buffer = imageData.Buffers[mipLevel, array];
 								
-								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
+								writer.Write(buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 							}
 						}
 						break;
@@ -1845,7 +1845,7 @@ namespace Gorgon.IO
 							for (int slice = 0; slice < depth; slice++)
 							{
 								var buffer = imageData.Buffers[mipLevel, slice];
-								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
+								writer.Write(buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 							}
 
 							if (depth > 1)
@@ -1909,7 +1909,7 @@ namespace Gorgon.IO
 
                 using (var memoryStream = new GorgonDataStream(size))
                 {
-                    memoryStream.ReadFromStream(stream, size);
+	                stream.CopyToStream(memoryStream, size);
 	                memoryStream.Position = 0;
                     return ReadHeader(memoryStream, size, out flags);
                 }

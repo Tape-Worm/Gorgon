@@ -1193,7 +1193,7 @@ namespace Gorgon.Graphics
 
             var box = new DX.DataBox
             {
-                DataPointer = buffer.Data.BasePointer,
+                DataPointer = buffer.Data.BaseIntPtr,
                 RowPitch = buffer.PitchInformation.RowPitch,
                 SlicePitch = buffer.PitchInformation.SlicePitch
             };

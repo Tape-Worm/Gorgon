@@ -443,12 +443,21 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="destination">Pointer to marshal the data into.</param>
 		/// <param name="value">Object or value type to marshal.</param>
-		/// <param name="deleteContents"><b>true</b> to remove any pre-allocated data, <b>false</b> to leave alone.</param>
-		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
-		/// <para>Passing <b>false</b> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
-		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
+		/// <param name="deleteContents">[Optional] <b>true</b> to free memory allocated for the object/value types fields when reusing the destination pointer, <b>false</b> to leave alone.</param>
+		/// <remarks>
+		/// <para>
+		/// This method will marshal a structure (object or value type) into unmanaged memory.
+		/// </para>
+		/// <para>
+		/// Passing <b>false</b> to <paramref name="deleteContents"/> may result in a memory leak if the pointer in <paramref name="destination"/> was initialized previously, and is being reused and the 
+		/// type of <paramref name="value"/> contains reference types (e.g. <see cref="string"/>).
+		/// </para>
+		/// <para>
+		/// For more information, see the <see cref="Marshal.StructureToPtr"/> method.
+		/// </para> 
 		/// </remarks>
-		public static void MarshalFrom(this IntPtr destination, object value, bool deleteContents)
+		/// <seealso cref="Marshal.StructureToPtr"/>
+		public static void MarshalFrom(this IntPtr destination, object value, bool deleteContents = false)
 		{
 			Marshal.StructureToPtr(value, destination, deleteContents);
 		}

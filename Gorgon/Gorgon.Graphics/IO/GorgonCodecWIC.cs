@@ -309,7 +309,7 @@ namespace Gorgon.IO
 				// Get the frame data.
 				using (var frame = decoder.GetFrame(array))
 				{
-					IntPtr bufferPointer = buffer.Data.BasePointer;
+					IntPtr bufferPointer = buffer.Data.BaseIntPtr;
 					Guid frameFormat = frame.PixelFormat;
 					int frameWidth = frame.Size.Width;
 					int frameHeight = frame.Size.Height;
@@ -318,7 +318,7 @@ namespace Gorgon.IO
 					// Calculate the pointer offset if we have an offset from the frame.  Only offset if we're clipping the image though.
 					if (((frameOffset.Y != 0) || (frameOffset.X != 0)) && (Clip))
 					{
-						bufferPointer = buffer.Data.BasePointer + (frameOffset.Y * buffer.PitchInformation.RowPitch) + (frameOffset.X * (buffer.PitchInformation.RowPitch / buffer.Width));
+						bufferPointer = buffer.Data.BaseIntPtr + (frameOffset.Y * buffer.PitchInformation.RowPitch) + (frameOffset.X * (buffer.PitchInformation.RowPitch / buffer.Width));
 					}
 
 					// Confirm that we actually need to perform clipping.
@@ -419,7 +419,7 @@ namespace Gorgon.IO
 			// We don't need to convert, so just leave.
 			if ((convertFormat == Guid.Empty) || (srcFormat == convertFormat))
 			{
-				frame.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+				frame.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 				return;
 			}
 
@@ -447,7 +447,7 @@ namespace Gorgon.IO
 						{
 							tempBitmap.Palette = paletteInfo.Item1;
 							converter.Initialize(tempBitmap, convertFormat, (BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
-							converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+							converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 						}
 
 						return;
@@ -455,7 +455,7 @@ namespace Gorgon.IO
 
 					// Only apply palettes to indexed image data.
 					converter.Initialize(frame, convertFormat, (BitmapDitherType)Dithering, null, 0.0, BitmapPaletteType.Custom);
-					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
 				}
 				finally
 				{
@@ -675,7 +675,7 @@ namespace Gorgon.IO
 									// the best format for the codec.
 									if (targetFormat != actualFormat)
 									{
-										var rect = new DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+										var rect = new DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
 										using (var bitmap = new Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
 										{
 											// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
@@ -713,7 +713,7 @@ namespace Gorgon.IO
 									{
 										// No conversion was needed, just dump as-is.										
 										AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, null);
-										frame.WritePixels(buffer.Height, buffer.Data.BasePointer, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+										frame.WritePixels(buffer.Height, buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
 									}									
 
 									frame.Commit();

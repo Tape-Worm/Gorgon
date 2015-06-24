@@ -32,6 +32,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Input;
+using Gorgon.Native;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
@@ -122,7 +123,7 @@ namespace Gorgon.Examples
 					// Fill the back up image with white.
 			        using(var imageLock = _backupImage.Lock(BufferLockFlags.Write))
 			        {
-			            imageLock.Data.Fill(0xFF);
+						imageLock.Data.BaseIntPtr.FillMemory(0xFF, (int)imageLock.Data.Length);
 			        }
 
 			        _backBuffer.CopySubResource(_backupImage,
@@ -422,7 +423,7 @@ namespace Gorgon.Examples
 				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
 				using (var textureData = _backupImage.Lock(BufferLockFlags.Write))
 				{
-					textureData.Data.Fill(0xFF);
+					textureData.Data.BaseIntPtr.FillMemory(0xFF, (int)textureData.Data.Length);
 				}
 
 				// Set the mouse range and position.

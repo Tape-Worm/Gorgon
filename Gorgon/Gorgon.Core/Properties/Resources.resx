@@ -635,8 +635,8 @@ Code: 0x{2}</value>
   <data name="GOR_STREAM_OFFSET_OUT_OF_RANGE" xml:space="preserve">
     <value>The offset [{0}] must be greater than or equal to 0 and less than {1}.</value>
   </data>
-  <data name="GOR_UNSAFE_EXTERN_PTR" xml:space="preserve">
-    <value>The pointer is from an external source and cannot be modified.</value>
+  <data name="GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE" xml:space="preserve">
+    <value>The data stream encapsulates a pointer that it does not own and cannot be resized.</value>
   </data>
   <data name="GOR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
     <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type 'GorgonLibrary.PlugIns.GorgonPlugIn'.</value>
@@ -1013,5 +1013,8 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_CHUNK_FILE_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The chunk file is corrupt. The recorded file size {0}, is too small.</value>
+  </data>
+  <data name="GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE" xml:space="preserve">
+    <value>The data stream cannot resize memory that was pinned.</value>
   </data>
 </root>

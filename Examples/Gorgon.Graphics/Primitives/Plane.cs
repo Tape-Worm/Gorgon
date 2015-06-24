@@ -136,10 +136,10 @@ namespace Gorgon.Graphics.Example
 				using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
 				using (var indexData = new GorgonDataStream(IndexCount * sizeof(int)))
 				{
-					GetVertices((Vertex3D *)vertexData.UnsafePointer, size, textureCoordinates, columns, rows);
-					GetIndices((int*)indexData.UnsafePointer, columns, rows);
+					GetVertices((Vertex3D *)vertexData.BasePointer, size, textureCoordinates, columns, rows);
+					GetIndices((int*)indexData.BasePointer, columns, rows);
 
-					CalculateTangents((Vertex3D *)vertexData.UnsafePointer, (int *)indexData.UnsafePointer);
+					CalculateTangents((Vertex3D *)vertexData.BasePointer, (int *)indexData.BasePointer);
 
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("PlaneVB", new GorgonBufferSettings
 					                                                              {

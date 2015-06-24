@@ -234,7 +234,7 @@ namespace Gorgon.IO
     ///         <description>Interleaved files are not supported.</description>
     ///     </item>
     ///     <item>
-    ///         <description>Supports the following formats: 8 bit greyscale, 16, 24 and 32 bits per pixel images.</description>
+    ///         <description>Supports the following formats: 8 bit grayscale, 16, 24 and 32 bits per pixel images.</description>
     ///     </item>
     ///     <item>
     ///         <description>Writes uncompressed files only.  RLE is only supported for reading.</description>
@@ -1016,8 +1016,8 @@ namespace Gorgon.IO
 				                             : formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
 
 			// Otherwise, allocate a buffer for conversion.
-			var srcPtr = (byte*)stream.PositionPointerUnsafe;
-			var destPtr = (byte*)buffer.Data.UnsafePointer;
+			var srcPtr = (byte*)stream.PositionPointer;
+			var destPtr = (byte*)buffer.Data.BasePointer;
 
 			// Adjust destination for inverted axes.
 			if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
@@ -1032,7 +1032,7 @@ namespace Gorgon.IO
 
 			// Get bounds of image memory.
 			var scanSize = (int)(stream.Length - stream.Position);
-			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
+			byte* endScan = (byte*)stream.PositionPointer + scanSize;
 
 			int opaqueLineCount = 0;
 			for (int y = 0; y < image.Settings.Height; y++)
@@ -1070,7 +1070,7 @@ namespace Gorgon.IO
 			}
 
 			// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
-			destPtr = (byte*)buffer.Data.UnsafePointer;
+			destPtr = (byte*)buffer.Data.BasePointer;
 			for (int y = 0; y < image.Settings.Height; y++)
 			{
 				CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
@@ -1152,7 +1152,7 @@ namespace Gorgon.IO
 				}
 
 				// Get the pointer to the first mip/array/depth level.
-				var srcPointer = (byte *)imageData.Buffers[0].Data.UnsafePointer;
+				var srcPointer = (byte *)imageData.Buffers[0].Data.BasePointer;
 				var srcPitch = imageData.Buffers[0].PitchInformation;
 
 				// If the two pitches are equal, then just write out the buffer.
@@ -1165,7 +1165,7 @@ namespace Gorgon.IO
 				// If we have to do a conversion, create a worker buffer.
 				using (var convertBuffer = new GorgonDataStream(pitch.SlicePitch))
 				{
-					var destPtr = (byte*)convertBuffer.UnsafePointer;
+					var destPtr = (byte*)convertBuffer.BasePointer;
 
 					// Write out each scan line.					
 					for (int y = 0; y < imageData.Settings.Height; y++)
@@ -1188,7 +1188,7 @@ namespace Gorgon.IO
 					}
 
 					// Persist to the stream.
-					writer.Write(convertBuffer.UnsafePointer, pitch.SlicePitch);
+					writer.Write(convertBuffer.BasePointer, pitch.SlicePitch);
 				}
 			}
 		}
@@ -1243,9 +1243,9 @@ namespace Gorgon.IO
 
                 using (var memoryStream = new GorgonDataStream(headerSize))
                 {
-                    memoryStream.ReadFromStream(stream, headerSize);
+					stream.CopyToStream(memoryStream, headerSize);
 					memoryStream.Position = 0;
-                    return ReadHeader(memoryStream, out conversion);
+					return ReadHeader(memoryStream, out conversion);
                 }
             }
             finally

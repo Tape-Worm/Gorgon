@@ -524,7 +524,7 @@ namespace Gorgon.Renderers
                     GorgonDataStream lockStream = IndexBuffer.Lock(lockFlags | BufferLockFlags.Write,
                         Gorgon2D.Graphics);
 
-                    var vertexPtr = (int*)lockStream.UnsafePointer;
+                    var vertexPtr = (int*)lockStream.BasePointer;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -679,7 +679,7 @@ namespace Gorgon.Renderers
                     GorgonDataStream lockStream = _vertexBuffer.Lock(lockFlags | BufferLockFlags.Write,
                         Gorgon2D.Graphics);
 
-                    var vertexPtr = (Gorgon2DVertex*)lockStream.UnsafePointer;
+                    var vertexPtr = (Gorgon2DVertex*)lockStream.BasePointer;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -708,7 +708,7 @@ namespace Gorgon.Renderers
                 {
                     using(var data = new GorgonDataStream(Gorgon2DVertex.SizeInBytes * count))
                     {
-                        var ptr = (Gorgon2DVertex *)data.UnsafePointer;
+                        var ptr = (Gorgon2DVertex *)data.BasePointer;
 
                         // Find the new size if necessary.
                         for (int i = 0; i < count; ++i)
@@ -1601,7 +1601,7 @@ namespace Gorgon.Renderers
 				// Write the contents of the vertex buffer.
 				using (var lockStream = stagingVertex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
 				{
-					var vertexPtr = (Gorgon2DVertex*)lockStream.UnsafePointer;
+					var vertexPtr = (Gorgon2DVertex*)lockStream.BasePointer;
 
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -1620,7 +1620,7 @@ namespace Gorgon.Renderers
 				{
 					using (var lockStream = stagingIndex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
 					{
-						var indexPtr = (int*)lockStream.UnsafePointer;
+						var indexPtr = (int*)lockStream.BasePointer;
 
 						for (int i = 0; i < IndexCount; ++i)
 						{

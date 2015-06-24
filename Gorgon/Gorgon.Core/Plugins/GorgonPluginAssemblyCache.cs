@@ -553,14 +553,6 @@ namespace Gorgon.Plugins
 			_discoveryDomain = new Lazy<AppDomain>(CreateAppDomain);
 			_verifier = new Lazy<GorgonPluginVerifier>(GetVerifier);
 		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref="GorgonPluginAssemblyCache"/> class.
-		/// </summary>
-		~GorgonPluginAssemblyCache()
-		{
-			Dispose(false);
-		}
 		#endregion
 
 		#region IDisposable Members

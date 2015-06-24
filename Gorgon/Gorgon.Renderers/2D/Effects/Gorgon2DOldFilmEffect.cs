@@ -393,7 +393,7 @@ namespace Gorgon.Renderers
 			{
 				unsafe
 				{
-					var dataPtr = (byte*)image.Buffers[0].Data.UnsafePointer;
+					var dataPtr = (byte*)image.Buffers[0].Data.BasePointer;
 
 					// Write perlin noise to the texture.
 					for (int y = 0; y < textureSize; ++y)

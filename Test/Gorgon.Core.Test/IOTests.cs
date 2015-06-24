@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Gorgon.Core.Test.Properties;
 using Gorgon.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,6 +12,64 @@ namespace Gorgon.Core.Test
 	[TestClass]
 	public class IOTests
 	{
+		[StructLayout(LayoutKind.Sequential, Pack = 4)]
+		private struct MyStruct
+		{
+			public int MyInt;
+			[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+			public string MyStr;
+		}
+
+		[TestMethod]
+		public void DataStreamMarshalTest()
+		{
+			MyStruct[] items = new MyStruct[50];
+
+			for (int i = 0; i < items.Length; ++i)
+			{
+				items[i] = new MyStruct
+				           {
+					           MyInt = i,
+					           MyStr = "String #" + i + "\0"
+				           };
+			}
+
+			using (GorgonDataStream stream = GorgonDataStream.MarshalArrayToStream(items))
+			{
+				byte[] expected = Resources.DataStreamMarshalOut1;
+
+				// Not sure how I can test the validity of the data?
+				byte[] dataBlock = new byte[stream.Length];
+				
+				stream.Read(dataBlock, 0, dataBlock.Length);
+
+				Assert.IsTrue(expected.SequenceEqual(dataBlock));
+			}
+		}
+
+		[TestMethod]
+		public void CopyToStreamTest()
+		{
+			using (MemoryStream stream1 = new MemoryStream(Resources.DataStreamMarshalOut1))
+			{
+				using (MemoryStream stream2 = new MemoryStream())
+				{
+					int copied = stream1.CopyToStream(stream2, Resources.DataStreamMarshalOut1.Length / 2, 2048);
+
+					Assert.AreEqual(Resources.DataStreamMarshalOut1.Length / 2, copied);
+
+					stream2.Position = 0;
+					byte[] actual = stream2.ToArray();
+
+					for (int i = 0; i < copied; ++i)
+					{
+						Assert.AreEqual(Resources.DataStreamMarshalOut1[i], actual[i]);
+					}
+				}
+			}
+		}
+
+
 		[TestMethod]
 		public void ChunkIDTest()
 		{

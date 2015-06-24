@@ -218,7 +218,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 			using (var stream = new GorgonDataStream((int)size))
 			{							
-				GetFontUnicodeRanges(hDc, stream.BasePointer);
+				GetFontUnicodeRanges(hDc, stream.BaseIntPtr);
 
 				// Skip the first 12 bytes.
 				stream.Read<Int64>();

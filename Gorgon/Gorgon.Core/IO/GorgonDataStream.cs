@@ -25,12 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
 using Gorgon.Native;
@@ -38,20 +37,20 @@ using Gorgon.Native;
 namespace Gorgon.IO
 {
 	/// <summary>
-	/// Status for the stream.
+	/// Access values for the <see cref="GorgonDataStream"/> object.
 	/// </summary>
-	public enum StreamStatus
+	public enum StreamAccess
 	{
 		/// <summary>
-		/// Buffer can be read from and written to.
+		/// The buffer can be read from and written to.
 		/// </summary>
 		ReadWrite = 0,
 		/// <summary>
-		/// Buffer can be read from.
+		/// The buffer can be read from, but not written to.
 		/// </summary>
 		ReadOnly = 1,
 		/// <summary>
-		/// Buffer can be written to.
+		/// The buffer can be written to, but not read from.
 		/// </summary>
 		WriteOnly = 2
 	}
@@ -71,9 +70,10 @@ namespace Gorgon.IO
 	/// the generic type must not use any marshalling (<see cref="MarshalAsAttribute"/>) or reference types. Only primitive types and value types (structs) are allowed. 
 	/// </para>
 	/// <para>
-	/// If data needs to be marshalled, then the object provides two static members: <see cref="ValueToStream{T}"/> and <see cref="ArrayToStream{T}"/> for marshalling reference types to and from the stream. 
-	/// The rules about having the <see cref="StructLayoutAttribute"/> still apply, and additionally, a size, in bytes of the value should be supplied to the attribute along with the <see cref="LayoutKind"/>. 
-	/// Because these methods may cause performance to suffer, it is recommended that data be written directly on a per-member basis instead of using these functions if performance is absolutely critical.
+	/// If data needs to be marshalled, then the object provides three members: <see cref="ReadMarshal{T}"/>, <see cref="WriteMarshal{T}"/> and <see cref="MarshalArrayToStream{T}"/> for marshalling reference types to 
+	/// and from the stream. The rules about having the <see cref="StructLayoutAttribute"/> still apply, and additionally, a size, in bytes of the value should be supplied to the attribute along with the 
+	/// <see cref="LayoutKind"/>. Because these methods may cause performance to suffer, it is recommended that data be written directly on a per-member basis instead of using these functions if performance is 
+	/// absolutely critical.
 	/// </para>
 	/// <para>
 	/// This object will also provide native access to an <see cref="Array"/> by pinning the array and returning a pointer to the handle on the first element via the <see cref="GCHandle"/> type. Because of 
@@ -112,46 +112,53 @@ namespace Gorgon.IO
 		: Stream
 	{
 		#region Variables.
-        private static byte[] _buffer;                      // Buffer for read operations.
-		private bool _disposed;							    // Flag to indicate that the object was disposed.
-		private IntPtr _data = IntPtr.Zero;					// Pointer to the data held by the stream.
-		private int _pointerPosition;						// Position in the buffer.
-		private int _length;								// Number of bytes in the buffer.
-		private IntPtr _pointerOffset = IntPtr.Zero;		// Pointer offset.
-		private GCHandle _handle = default(GCHandle);		// Handle to a pinned array.
-		private readonly bool _ownsPointer = true;			// Flag to indicate that we own this pointer.
-        private void* _dataPointer = null;                  // Pointer to the data in memory.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;
+		// Pointer to the data held by the stream.
+		private IntPtr _data = IntPtr.Zero;
+		// Position in the buffer.
+		private int _position;
+		// Number of bytes in the buffer.
+		private int _length;
+		// Pointer offset.
+		private IntPtr _pointerOffset = IntPtr.Zero;
+		// Handle to a pinned array.
+		private GCHandle _handle = default(GCHandle);
+		// Flag to indicate that we own this pointer.
+		private readonly bool _ownsPointer = true;
+		// Pointer to the data in memory.
+		//private void* _dataPointer = null; 
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the status of the stream.
+		/// Property to return the access level for the stream.
 		/// </summary>
-		protected StreamStatus StreamStatus
+		public StreamAccess StreamAccess
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
 		/// </summary>
-		/// <returns>true if the stream supports reading; otherwise, false.</returns>
+		/// <returns><b>true</b> if the stream supports reading; otherwise, <b>false</b>.</returns>
 		public override bool CanRead
 		{
-			get 
+			get
 			{
-				return ((StreamStatus == StreamStatus.ReadOnly) || (StreamStatus == StreamStatus.ReadWrite));
+				return ((StreamAccess == StreamAccess.ReadOnly) || (StreamAccess == StreamAccess.ReadWrite));
 			}
 		}
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
 		/// </summary>
-		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
+		/// <returns>This property will always return <b>true</b> for this type.</returns>
 		public override bool CanSeek
 		{
-			get 
+			get
 			{
 				return true;
 			}
@@ -160,12 +167,12 @@ namespace Gorgon.IO
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
 		/// </summary>
-		/// <returns>true if the stream supports writing; otherwise, false.</returns>
+		/// <returns><b>true</b> if the stream supports writing; otherwise, <b>false</b>.</returns>
 		public override bool CanWrite
 		{
-			get 
+			get
 			{
-				return ((StreamStatus == StreamStatus.WriteOnly) || (StreamStatus == StreamStatus.ReadWrite));
+				return ((StreamAccess == StreamAccess.WriteOnly) || (StreamAccess == StreamAccess.ReadWrite));
 			}
 		}
 
@@ -175,7 +182,7 @@ namespace Gorgon.IO
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
 		public override long Length
 		{
-			get 
+			get
 			{
 				return _length;
 			}
@@ -185,40 +192,43 @@ namespace Gorgon.IO
 		/// When overridden in a derived class, gets or sets the position within the current stream.
 		/// </summary>
 		/// <returns>The current position within the stream.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="System.Int32.MaxValue">Int32.MaxValue</see>.</exception>
+		/// <remarks>
+		/// <note type="important">
+		/// To improve performance, exceptions will only be thrown for this property if the library is compiled for <b>DEBUG</b> mode.
+		/// </note>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="Int32.MaxValue"/>.</exception>
 		public override long Position
 		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				return _pointerPosition;
+				return _position;
 			}
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
-				if (_data == IntPtr.Zero)
-				{
-					_pointerOffset = IntPtr.Zero;
-					_pointerPosition = 0;
-					return;
-				}
-				
 #if DEBUG
 				// Limit to the bounds of an integer.
 				if ((value > Int32.MaxValue) || (value < 0))
 				{
-				    throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, value, Int32.MaxValue));
+					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, value, Int32.MaxValue));
 				}
 #endif
-				
-				_pointerPosition = (int)value;
-				_pointerOffset = _data + _pointerPosition;
-                _dataPointer = _pointerOffset.ToPointer();
+
+				_position = (int)value;
+				_pointerOffset = _data + _position;
 			}
 		}
 
 		/// <summary>
-		/// Property to return the base pointer address to the allocated unmanaged memory.
+		/// Property to return the <see cref="IntPtr"/> which wraps the native pointer to the unmanaged memory wrapped by the stream.
 		/// </summary>
-		public IntPtr BasePointer
+		/// <remarks>
+		/// This value returns an <see cref="IntPtr"/> that wraps the pointer that points at the starting address for the unmanaged memory wrapped by the stream. To get the pointer to the memory address 
+		/// offset by the current <see cref="Position"/>, use the <see cref="PositionIntPtr"/> property.
+		/// </remarks>
+		public IntPtr BaseIntPtr
 		{
 			get
 			{
@@ -226,21 +236,27 @@ namespace Gorgon.IO
 			}
 		}
 
-        /// <summary>
-        /// Property to return the unsafe pointer to the data offset by the position within the stream.
-        /// </summary>
-        public void* PositionPointerUnsafe
-        {
-            get
-            {
-                return _pointerOffset.ToPointer();
-            }
-        }
+		/// <summary>
+		/// Property to return the native pointer to the unmanaged memory wrapped by the stream, and offset by the current <see cref="Position"/> in the stream.
+		/// </summary>
+		/// <remarks>
+		/// This value returns the same value as the <see cref="BasePointer"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
+		/// </remarks>
+		public void* PositionPointer
+		{
+			get
+			{
+				return _pointerOffset.ToPointer();
+			}
+		}
 
 		/// <summary>
-		/// Property to return the pointer address of the current position in the stream.
+		/// Property to return the <see cref="IntPtr"/> which wraps the native pointer to the unmanaged memory wrapped by the stream, and offset by the current <see cref="Position"/> in the stream.
 		/// </summary>
-		public IntPtr PositionPointer
+		/// <remarks>
+		/// This value returns the same value as the <see cref="BaseIntPtr"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
+		/// </remarks>
+		public IntPtr PositionIntPtr
 		{
 			get
 			{
@@ -249,103 +265,120 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Property to return the pointer to the allocated unmanaged memory.
+		/// Property to return the native pointer to the unmanaged memory wrapped by the stream.
 		/// </summary>
-		public void* UnsafePointer
+		/// <remarks>
+		/// This value returns a pointer that points at the starting address for the unmanaged memory wrapped by the stream. To get the pointer to the memory address offset by the current 
+		/// <see cref="Position"/>, use the <see cref="PositionPointer"/> property.
+		/// </remarks>
+		public void* BasePointer
 		{
 			get
 			{
-				return _dataPointer;
+				return _data.ToPointer();
 			}
 		}
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to allocate the buffer for the stream.
-        /// </summary>
-        /// <param name="value">Number of bytes in the buffer.</param>
-        private void AllocateBuffer(long value)
-        {
-            if (!_ownsPointer)
-            {
-                throw new NotSupportedException(Resources.GOR_UNSAFE_EXTERN_PTR);
-            }
-
-            if (value < 0)
-            {
-                value = 0;
-            }
-            if (value > Int32.MaxValue)
-            {
-                value = Int32.MaxValue;
-            }
-
-            if ((_data != IntPtr.Zero) && (!_handle.IsAllocated))
-            {
-                Marshal.FreeHGlobal(_data);
-            }
-
-            if (_handle.IsAllocated)
-            {
-                _handle.Free();
-            }
-
-            _data = IntPtr.Zero;
-            _pointerOffset = IntPtr.Zero;
-            _dataPointer = null;
-            _pointerPosition = 0;
-            _length = 0;
-
-            if (value == 0)
-            {
-                return;
-            }
-
-            _data = Marshal.AllocHGlobal((int)value);
-            GC.AddMemoryPressure(value);
-            _pointerOffset = _data;
-            _dataPointer = _pointerOffset.ToPointer();
-            _length = (int)value;
-        }
-        
-        /// <summary>
-		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
+		/// <summary>
+		/// Function to allocate the buffer for the stream.
 		/// </summary>
-		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
+		/// <param name="value">Number of bytes in the buffer.</param>
+		private void AllocateBuffer(long value)
 		{
-			if (!_disposed)
+			if (!_ownsPointer)
 			{
-				if (_ownsPointer)
-				{
-					// Destroy the buffer if we own it.
-				    if ((_data != IntPtr.Zero)
-				        && (!_handle.IsAllocated))
-				    {
-				        Marshal.FreeHGlobal(_data);
-
-				        if (_length > 0)
-				        {
-				            GC.RemoveMemoryPressure(_length);
-				            _length = 0;
-				        }
-				    }
-
-				    // Unpin any array that we've captured.
-				    if (_handle.IsAllocated)
-				    {
-				        _handle.Free();
-				    }
-				}
-
-				_data = IntPtr.Zero;
-				_pointerOffset = IntPtr.Zero;
-                _dataPointer = null;
-				_disposed = true;
+				throw new NotSupportedException(Resources.GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE);
 			}
 
-			base.Dispose(disposing);
+			if (_handle.IsAllocated)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE);
+			}
+
+			if (value < 0)
+			{
+				value = 0;
+			}
+			if (value > Int32.MaxValue)
+			{
+				value = Int32.MaxValue;
+			}
+
+			if (_data != IntPtr.Zero)
+			{
+				if (!_handle.IsAllocated)
+				{
+					Marshal.FreeHGlobal(_data);
+
+					// Ensure that the garbage collector knows that we've dumped this memory.
+					if (_length > 0)
+					{
+						GC.RemoveMemoryPressure(_length);
+					}
+				}
+				else
+				{
+					_handle.Free();
+				}
+			}
+
+			_data = IntPtr.Zero;
+			_pointerOffset = IntPtr.Zero;
+			_position = 0;
+			_length = 0;
+
+			if (value == 0)
+			{
+				return;
+			}
+
+			_data = Marshal.AllocHGlobal((int)value);
+
+			// Ensure the garbage collector is aware of how big this object really is.
+			// Failure to do this will make the GC think this object is only 10's of bytes in size, thus making it 
+			// fail to take into account the memory bloat from the buffer when performing analysis for collection.
+			// This ensures that the GC always knows the exact size of the stream at any given time.
+			GC.AddMemoryPressure(value);
+			_pointerOffset = _data;
+			_length = (int)value;
+		}
+
+		/// <summary>
+		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.
+		/// </summary>
+		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2215:Dispose methods should call base class dispose")]
+		protected override void Dispose(bool disposing)
+		{
+			// We suppress the base call to Dispose because Stream's Dispose(bool) does nothing.
+
+			if ((_disposed) || (!_ownsPointer) || ((_data == IntPtr.Zero) && (!_handle.IsAllocated)))
+			{
+				return;
+			}
+
+			// Destroy the buffer.
+			if (!_handle.IsAllocated)
+			{
+				Marshal.FreeHGlobal(_data);
+
+				if (_length > 0)
+				{
+					GC.RemoveMemoryPressure(_length);
+					_length = 0;
+				}
+			}
+			else
+			{
+				// Unpin any array that we've captured.
+				_handle.Free();
+			}
+
+			_data = IntPtr.Zero;
+			_pointerOffset = IntPtr.Zero;
+			_disposed = true;
 		}
 
 		/// <summary>
@@ -355,91 +388,137 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if the type requires marshalling, <b>false</b> if not.</returns>
 		private static bool UseMarshalling(Type type)
 		{
-			var members = type.GetMembers().Where(item => item.MemberType == MemberTypes.Property || item.MemberType == MemberTypes.Field);
-			
-			foreach (var member in members)
-			{				
-				var field = member as FieldInfo;
-			    Type memberType;
-				bool isValid;
+			return type.GetMembers()
+			           .Any(item =>
+			                {
+				                if ((item.MemberType != MemberTypes.Property) && (item.MemberType != MemberTypes.Field))
+				                {
+					                return false;
+				                }
 
-				if (field != null)
-				{
-					memberType = field.FieldType;
-					isValid = !field.IsInitOnly && !field.IsStatic;
-				}
-				else
-				{
-				    var property = (PropertyInfo)member;
-					memberType = property.PropertyType;
-					isValid = property.CanRead && property.CanWrite;
-				}
+				                Type memberType;
+				                var fieldInfo = item as FieldInfo;
 
-				isValid = isValid && !memberType.IsPrimitive;
+				                if (fieldInfo != null)
+				                {
+					                if ((fieldInfo.IsInitOnly) || (fieldInfo.IsStatic))
+					                {
+						                return false;
+					                }
 
-				if (!isValid)
-				{
-					continue;
-				}
+					                memberType = fieldInfo.FieldType;
+				                }
+				                else
+				                {
+					                var propInfo = (PropertyInfo)item;
 
-				var marshalAttrib = member.GetCustomAttributes(typeof(MarshalAsAttribute), true) as IList<MarshalAsAttribute>;
-				if ((marshalAttrib != null) && (marshalAttrib.Count > 0))
-				{
-					return true;
-				}
+					                if ((!propInfo.CanRead) || (!propInfo.CanWrite))
+					                {
+						                return false;
+					                }
 
-				if (UseMarshalling(memberType))
-				{
-					return true;
-				}
-			}
+					                memberType = propInfo.PropertyType;
+				                }
 
-			return false;
+				                return Attribute.IsDefined(item, typeof(MarshalAsAttribute), true) || UseMarshalling(memberType);
+			                });
 		}
 
 		/// <summary>
-		/// Function to marshal an array of value types into a new Gorgon Data Stream.
+		/// Function to marshal an array of value types into a <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of value to marshal.</typeparam>
-		/// <param name="value">Values to marshal.</param>
-		/// <returns>A data stream containing the marshalled data.</returns>
-		/// <remarks>Use this to create and initialize a data stream with marshalled data.  This method will create a copy of the data stored in the array.
-		/// <para>Value types must include the System.Runtime.InteropServices.StructLayout attribute, and must use an explicit layout.</para>
+		/// <typeparam name="T">Type of value to marshal. Must be a value type.</typeparam>
+		/// <param name="value">An array of values to copy into the stream.</param>
+		/// <returns>A new <see cref="GorgonDataStream"/> containing the marshalled data.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method is used to serialize an array of values of the type <typeparamref name="T"/> as binary data into a <see cref="GorgonDataStream"/> object.
+		/// </para>
+		/// <para>
+		/// Unlike the <see cref="O:Gorgon.IO.GorgonDataStream.WriteRange">WriteRange</see> methods, this method will accept types that use marshalled fields (i.e. fields that are decorated with the <see cref="MarshalAsAttribute"/>). 
+		/// This allows for a greater flexibility when copying data into a binary data stream. If the type does not use marshalling, then the method will still copy the data as-is.
+		/// </para>
+		/// <para>
+		/// Like the <see cref="O:Gorgon.IO.GorgonDataStream.WriteRange">WriteRange</see> methods, this method requires that the type <typeparamref name="T"/> be a value or primitive type, and be decorated with the <see cref="StructLayoutAttribute"/> 
+		/// with a <see cref="StructLayoutAttribute.Value"/> of <see cref="LayoutKind.Sequential"/> (preferred), or <see cref="LayoutKind.Explicit"/>.
+		/// </para>
+		/// <note type="warning">
+		/// <para>
+		/// This method has poor performance. It is not recommended for use except in cases where marshalling <i>must</i> be used to transfer data (e.g. a <see cref="string"/> or <see cref="Array"/> needs copying to a C/C++ buffer). 
+		/// </para>
+		/// <para>
+		/// For best performance, use only primitive types or value types (that, in turn, use only primitive/value types) within the value type and use the <see cref="O:Gorgon.IO.GorgonDataStream.WriteRange">WriteRange</see> methods.
+		/// </para>
+		/// </note>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the type of <paramref name="value"/> is not explicitly laid out with the System.Runtime.InteropServices.StructLayout attribute.</exception>
-		public static GorgonDataStream ArrayToStream<T>(T[] value) 
-            where T : struct
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when the type of <paramref name="value"/> is not sequentially/explicitly laid out with the <see cref="StructLayoutAttribute"/>.
+		/// </exception>
+		/// <example>
+		/// An example where an array of values will be copied into a new stream object:
+		/// <code language="csharp">
+		/// <![CDATA[
+		/// [StructLayout(LayoutKind.Sequential)]
+		/// public struct MyStruct
+		/// {
+		///		public int MyInt;
+		///		[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+		///		public string MyStr;
+		/// }
+		/// 
+		/// MyStruct[] items = new MyStruct[50];
+		/// 
+		/// for (int i = 0; i < items.Length; ++i)
+		/// {
+		///		items[i] = new MyStruct
+		///				{
+		///					MyInt = i,
+		///					MyStr = "String #" + i
+		///				};
+		/// }
+		/// 
+		/// using (var newStream = GorgonDataStream.MarshalArrayToStream(items))
+		/// {
+		///		// Do your work with you stream data.
+		/// }
+		/// 
+		/// ]]>
+		/// </code>
+		/// </example>
+		public static GorgonDataStream MarshalArrayToStream<T>(T[] value)
+			where T : struct
 		{
-		    Type type = typeof(T);
-		    int count = value.Count();
+			Type type = typeof(T);
+			int count = value.Count();
 
-		    if (value == null)
-		    {
-		        return null;
-		    }
-
-		    if (((!type.IsPrimitive) && (!type.IsExplicitLayout)  && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
-		    {
-		        throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName),
-		                                    "value");
-		    }
-
-		    int size = type.StructLayoutAttribute.Size <= 0
-		                   ? DirectAccess.SizeOf<T>()*count
-		                   : type.StructLayoutAttribute.Size*count;
-
-		    var result = new GorgonDataStream(size);
-
-			foreach (T item in value)
+			if (value == null)
 			{
-			    if (!UseMarshalling(type))
-			    {
-			        result.Write(item);
-			    }
-			    else
-			    {
-			        result.WriteMarshal(item, false);
-			    }
+				return null;
+			}
+
+			if (((!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
+			{
+				throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName), "value");
+			}
+
+			int size = type.StructLayoutAttribute.Size <= 0 ? Marshal.SizeOf(type) * count : type.StructLayoutAttribute.Size * count;
+
+			var result = new GorgonDataStream(size);
+
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < value.Length; ++i)
+			{
+				T item = value[i];
+
+				if (!UseMarshalling(type))
+				{
+					result.Write(item);
+				}
+				else
+				{
+					// We never need to deallocate the structure data because we're only ever using this pointer once.
+					result.WriteMarshal(item, false);
+				}
 			}
 
 			result.Position = 0;
@@ -448,123 +527,78 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to marshal a value type into a Gorgon Data Stream.
+		/// This method does nothing for a <see cref="GorgonDataStream"/>
 		/// </summary>
-		/// <typeparam name="T">Type of value to marshal.</typeparam>
-		/// <param name="value">Value to marshal.</param>
-		/// <returns>A data stream containing the marshalled data.</returns>
-		/// <remarks>Use this to create and initialize a data stream with marshalled data.
-		/// <para>Value types must include the System.Runtime.InteropServices.StructLayout attribute, and must use an explicit layout.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the type of <paramref name="value"/> is not explicitly laid out with the System.Runtime.InteropServices.StructLayout attribute.</exception>
-		public static GorgonDataStream ValueToStream<T>(T value) where T : struct
+		public override void Flush()
 		{
-		    Type type = typeof(T);
-
-            if (((!type.IsPrimitive) && (!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
-		    {
-		        throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName),
-		                                    "value");
-		    }
-
-		    int size = type.StructLayoutAttribute.Size <= 0 ? DirectAccess.SizeOf<T>() : type.StructLayoutAttribute.Size;
-
-			var result = new GorgonDataStream(size);
-
-		    if (!UseMarshalling(type))
-		    {
-		        result.Write(value);
-		    }
-		    else
-		    {
-		        result.WriteMarshal(value, false);
-		    }
-
-		    result.Position = 0;
-
-			return result;
+			// Do nothing.
 		}
 
 		/// <summary>
-		/// Function to retrieve the size of type, in bytes.
+		/// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
 		/// </summary>
-		/// <typeparam name="T">Type of data to find the size for.</typeparam>
-		/// <returns>Number of bytes for the type.</returns>
-		public static int SizeOf<T>() where T : struct
-		{			
-			return DirectAccess.SizeOf<T>();
-		}
-
-	    /// <summary>
-	    /// Does nothing for a data stream.
-	    /// </summary>
-	    public override void Flush()
-	    {
-		    // Do nothing.
-	    }
-
-	    /// <summary>
-	    /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-	    /// </summary>
-	    /// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1) replaced by the bytes read from the current source.</param>
-	    /// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin storing the data read from the current stream.</param>
-	    /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
-	    /// <returns>
-	    /// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
-	    /// </returns>
-	    /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
-	    /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
-	    /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-	    /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-	    /// <exception cref="System.ObjectDisposedException">Thrown when the stream is disposed.</exception>
-	    /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-	    public override int Read(byte[] buffer, int offset, int count)
-	    {
-	        int actualCount = count;
+		/// <param name="buffer">An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <paramref name="offset"/> and (<paramref name="offset"/> + <paramref name="count"/> - 1) replaced by the bytes read from the current source.</param>
+		/// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin storing the data read from the current stream.</param>
+		/// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+		/// <returns>
+		/// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+		/// </returns>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
+		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
+		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+		/// <exception cref="System.ObjectDisposedException">Thrown when the stream is disposed.</exception>
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		public override int Read(byte[] buffer, int offset, int count)
+		{
+			int actualCount = count;
 
 #if DEBUG
-	        if (!CanRead)
-	        {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-	        }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-	        if (_data == IntPtr.Zero)
-	        {
-	            throw new ObjectDisposedException("GorgonDataStream");
-	        }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-	        if (buffer == null)
-	        {
-	            throw new ArgumentNullException("buffer");
-	        }
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
 
-	        if ((offset < 0) || (offset >= buffer.Length))
-		    {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
-		    }
+			if ((offset < 0) || (offset >= buffer.Length))
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+			}
 
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
-            }
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+			}
 
-		    if (offset + count > buffer.Length)
-		    {
-		        throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-		    }
+			if (offset + count > buffer.Length)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
 
-	        if ((actualCount + _pointerPosition) > _length)
-	        {
-	            actualCount = (_length - _pointerPosition);
-	        }
+			if ((actualCount + _position) > _length)
+			{
+				actualCount = (_length - _position);
+			}
 
-		    if (actualCount <= 0)
-		    {
-			    return 0;
-		    }
+			if (actualCount <= 0)
+			{
+				return 0;
+			}
 
-	        DirectAccess.ReadArray(_dataPointer, buffer, offset, actualCount);
+			DirectAccess.ReadArray(PositionPointer, buffer, offset, actualCount);
 
 			Position += actualCount;
 
@@ -581,74 +615,89 @@ namespace Gorgon.IO
 		/// </returns>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the offset moves the position outside of the boundaries of the stream.</exception>
+		/// <remarks>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </remarks>
 		public override long Seek(long offset, SeekOrigin origin)
 		{
-		    long newPosition;
+			long newPosition;
 
-#if DEBUG
-		    if (_data == IntPtr.Zero)
-		    {
-		        throw new ObjectDisposedException("GorgonDataStream");
-		    }
-#endif
+			if (_data == IntPtr.Zero)
+			{
+				return 0;
+			}
 
 			switch (origin)
 			{
 				case SeekOrigin.Begin:
 #if DEBUG
-			        if (offset < 0)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
-			        }
-			        if (offset > _length)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
-			        }
+					if (offset < 0)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+					}
+					if (offset > _length)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+					}
 #endif
-			        newPosition = offset;
-			        break;
+					newPosition = offset;
+					break;
 				case SeekOrigin.End:
-			        newPosition = _length + offset;
+					newPosition = _length + offset;
 #if DEBUG
-			        if (newPosition < 0)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
-			        }
-			        if (newPosition > _length)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
-			        }
+					if (newPosition < 0)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+					}
+					if (newPosition > _length)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+					}
 #endif
-			        break;
+					break;
 				default:
-					newPosition = _pointerPosition + offset;
+					newPosition = _position + offset;
 
 #if DEBUG
-			        if (newPosition < 0)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
-			        }
-			        if (newPosition > _length)
-			        {
-			            throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
-			        }
+					if (newPosition < 0)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+					}
+					if (newPosition > _length)
+					{
+						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+					}
 #endif
-			        break;
+					break;
 			}
 
-		    Position = newPosition;
-		    return Position;
+			Position = newPosition;
+			return Position;
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// When overridden in a derived class, sets the length of the current stream.
 		/// </summary>
 		/// <param name="value">The desired length of the current stream in bytes.</param>
-		/// <remarks>Calling this function will clear any data being held by the buffer, and reset the <see cref="P:GorgonLibrary.IO.GorgonDataStream.Position">position</see> to the beginning of the stream..</remarks>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support both writing and seeking, such as if the stream is constructed from a pipe or console output. </exception>
+		/// <remarks>
+		/// <para>
+		/// Calling this method will deallocate any data being held by the buffer, and reset the <see cref="Position"/> to the beginning of the stream.
+		/// </para>
+		/// <para>
+		/// If the stream does not own the pointer to the data that it is wrapping, then an exception will be thrown. The same will happen if the stream is used to wrap and pin an <see cref="Array"/>.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not own the pointer it is wrapping, or if the stream is wrapping an array.</exception>
 		public override void SetLength(long value)
 		{
-            AllocateBuffer(value);
+			AllocateBuffer(value);
 		}
 
 		/// <summary>
@@ -662,632 +711,89 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			int actualCount = count;
 
 #if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (buffer == null)
-            {
-                throw new ArgumentNullException("buffer");
-            }
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
 
-            if ((offset < 0) || (offset >= buffer.Length))
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
-            }
+			if ((offset < 0) || (offset >= buffer.Length))
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+			}
 
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
-            }
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+			}
 
-            if (offset + count > buffer.Length)
-            {
-                throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
+			if (offset + count > buffer.Length)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
 
-		    if ((actualCount + _pointerPosition) > _length)
-		    {
-		        actualCount = (_length - _pointerPosition);
-		    }
+			if ((actualCount + _position) > _length)
+			{
+				actualCount = (_length - _position);
+			}
 
-		    DirectAccess.WriteArray(_dataPointer, buffer, offset, actualCount);
+			DirectAccess.WriteArray(PositionPointer, buffer, offset, actualCount);
 
 			Position += actualCount;
 		}
 
 		/// <summary>
-		/// Writes a floating point value to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The floating point value to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteFloat(float value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (float*)_dataPointer;
-			*pointer = value;
-
-			Position += 4;
-		}
-
-		/// <summary>
-		/// Writes a double to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The double to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteDouble(double value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (double*)_dataPointer;
-			*pointer = value;
-
-			Position += sizeof(double);
-		}
-
-		/// <summary>
-		/// Writes an unsigned 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The unsigned 16 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteUInt16(UInt16 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (UInt16*)_dataPointer;
-			*pointer = value;
-
-			Position += 2;
-		}
-
-		/// <summary>
-		/// Writes an unsigned 64 bit integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The unsigned 64 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteUInt64(UInt64 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (UInt64*)_dataPointer;
-			*pointer = value;
-
-			Position += 8;
-		}
-
-		/// <summary>
-		/// Writes an unsigned integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The unsigned integer to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteUInt32(UInt32 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (UInt32*)_dataPointer;
-			*pointer = value;
-
-			Position += 4;
-		}
-
-		/// <summary>
-		/// Writes a 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The 16 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteInt16(Int16 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (Int16*)_dataPointer;
-			*pointer = value;
-
-			Position += 2;
-		}
-
-		/// <summary>
-		/// Writes a 64 bit integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The 64 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteInt64(Int64 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (Int64*)_dataPointer;
-			*pointer = value;
-
-			Position += 8;
-		}
-
-		/// <summary>
-		/// Writes an integer to the current position in the stream and advances the position within the stream by one byte.
-		/// </summary>
-		/// <param name="value">The integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void WriteInt32(Int32 value)
-		{
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (Int32*)_dataPointer;
-			*pointer = value;
-
-			Position += 4;
-		}
-
-        /// <summary>
-        /// Function to write a character to the current position in the stream and advances the position by 2 bytes.
-        /// </summary>
-        /// <param name="value">The character to write to the stream.</param>
-		/// <remarks>This function advances the position by 2 bytes because internally .NET defaults to UTF16 for a character, which is 2 bytes.</remarks>
-        /// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="value"/> parameter is a surrogate character.  These are not supported.</exception>
-        public void WriteChar(char value)
-        {
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-
-            if (char.IsSurrogate(value))
-            {
-                throw new ArgumentException(string.Format(Resources.GOR_CHUNK_CANNOT_WRITE_SURROGATE, value));
-            }
-#endif
-			WriteUInt16(Convert.ToUInt16(value));
-        }
-
-		/// <summary>
 		/// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The byte to write to the stream.</param>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to write beyond the end of the stream is made.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public override void WriteByte(byte value)
 		{
+			const int size = sizeof(byte);
+
 #if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= _length)
-		    {
-		        return;
-		    }
-
-		    var pointer = (byte*)_dataPointer;
-			*pointer = value;
-
-			Position++;
-		}
-
-		/// <summary>
-		/// Function to write a floating point value to the stream and increment the position by the size of a float.
-		/// </summary>
-		/// <returns>
-		/// The float, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public float ReadFloat()
-		{
-#if DEBUG
-			if (!CanRead)
+			if (!CanWrite)
 			{
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-		    if (_data == IntPtr.Zero)
-		    {
-		        throw new ObjectDisposedException("GorgonDataStream");
-		    }
+			if (_position + size > _length)
+			{
+				throw new EndOfStreamException();
+			}
 #endif
 
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
+			*((byte*)PositionPointer) = value;
 
-		    var pointer = (float*)_dataPointer;
-			Position +=4;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write a double to the stream and increment the position by the size of a double.
-		/// </summary>
-		/// <returns>
-		/// The double, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public double ReadDouble()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
-
-		    var pointer = (double*)_dataPointer;
-			Position += sizeof(double);
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write an unsigned 16 bit integer to the stream and increment the position by the size of a 16 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The unsigned 16 bit integer, or 0 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public UInt16 ReadUInt16()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return 0;
-		    }
-
-		    var pointer = (UInt16*)_dataPointer;
-			Position+=2;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write an unsigned 32 bit integer to the stream and increment the position by the size of a 32 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The unsigned 32 bit integer, or 0 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public UInt32 ReadUInt32()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return 0;
-		    }
-
-		    var pointer = (UInt32*)_dataPointer;
-			Position+=4;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write an unsigned 64 bit integer to the stream and increment the position by the size of a 64 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The unsigned 64 bit integer, or 0 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public UInt64 ReadUInt64()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return 0;
-		    }
-
-		    var pointer = (UInt64*)_dataPointer;
-			Position+=8;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write a 16 bit integer to the stream and increment the position by the size of a 16 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The 16 bit integer, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public Int16 ReadInt16()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
-
-		    var pointer = (Int16*)_dataPointer;
-			Position+=2;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write a 32 bit integer to the stream and increment the position by the size of a 32 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The 32 bit integer, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public Int32 ReadInt32()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
-
-		    var pointer = (Int32*)_dataPointer;
-			Position+=4;
-
-			return *pointer;
-		}
-
-		/// <summary>
-		/// Function to write a 64 bit integer to the stream and increment the position by the size of a 64 bit integer.
-		/// </summary>
-		/// <returns>
-		/// The 64 bit integer, or -1 if at the end of the stream.
-		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public Int64 ReadInt64()
-		{
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
-
-		    var pointer = (Int64*)_dataPointer;
-			Position+=8;
-
-			return *pointer;
+			Position += size;
 		}
 
 		/// <summary>
@@ -1298,120 +804,123 @@ namespace Gorgon.IO
 		/// </returns>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public override int ReadByte()
 		{
+			const int size = sizeof(byte);
+
 #if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 #endif
 
-		    if (_pointerPosition >= Length)
-		    {
-		        return -1;
-		    }
+			if (_position >= Length)
+			{
+				return -1;
+			}
 
-		    var pointer = (byte*)_dataPointer;
-			Position++;
+			byte value = *((byte*)PositionPointer);
 
-			return *pointer;
+			Position += size;
+
+			return value;
 		}
 
 		/// <summary>
-		/// Function to write a list of value types to the stream.
+		/// Function to write a list of values to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write.</typeparam>
-		/// <param name="buffer">Array of data to write.</param>
-		/// <param name="offset">Offset into the array to start at.</param>
+		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
+		/// <param name="buffer">Array of data to write to the stream.</param>
+		/// <param name="offset">Offset into the array to start reading the values from.</param>
 		/// <param name="count">Number of elements in the array to read.</param>
-		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>   
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception> 
-		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>   
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public virtual void WriteRange<T>(T[] buffer, int offset, int count)
+		/// <exception cref="ArgumentException">Thrown when the sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>   
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is null. </exception> 
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> or <paramref name="count"/> parameters are negative. </exception>   
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>   
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <remarks>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void WriteRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
 			int actualCount = count * DirectAccess.SizeOf<T>();
 
 #if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (buffer == null)
-            {
-                throw new ArgumentNullException("buffer");
-            }
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
 
-            if ((offset < 0) || (offset >= buffer.Length))
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
-            }
+			if ((offset < 0) || (offset >= buffer.Length))
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+			}
 
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
-            }
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+			}
 
-            if (offset + count > buffer.Length)
-            {
-                throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
+			if (offset + count > buffer.Length)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
 
-			if ((actualCount + _pointerPosition) > _length)
-				actualCount = (_length - _pointerPosition);
+			if ((actualCount + _position) > _length)
+			{
+				actualCount = (_length - _position);
+			}
 
-            DirectAccess.WriteArray(_dataPointer, buffer, offset, actualCount);
-			
+			DirectAccess.WriteArray(PositionPointer, buffer, offset, actualCount);
+
 			Position += actualCount;
 		}
 
 		/// <summary>
-		/// Function to fill the stream with the specified value.
+		/// Function to write a list of values to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <param name="value">Value to fill with.</param>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		public void Fill(byte value)
-		{			
-			DirectAccess.FillMemory(BasePointer, value, (int)Length);
-			Position = Length;
-		}
-
-		/// <summary>
-		/// Function to fill the stream with zeroes.
-		/// </summary>
-		public void Zero()			
-		{
-			DirectAccess.ZeroMemory(BasePointer, (int)Length);
-			Position = Length;
-		}
-
-		/// <summary>
-		/// Function to write an array of value types to the stream.
-		/// </summary>
-		/// <typeparam name="T">Type of data to write.</typeparam>
-		/// <param name="buffer">Array to read from.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="buffer"/> is null. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
+		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
+		/// <param name="buffer">Array of data to write to the stream.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is null.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method, unlike the <see cref="WriteRange{T}(T[],int,int)"/> method will write the entire contents of the <paramref name="buffer"/> to the stream.
+		/// </para>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
@@ -1421,168 +930,123 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to write a value type to the stream.
+		/// Function to write a value to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write.</typeparam>
+		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
 		/// <param name="item">Value to write.</param>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public void Write<T>(T item)
 			where T : struct
 		{
 			int typeSize = DirectAccess.SizeOf<T>();
 
 #if DEBUG
-		    if (!CanWrite)
-		    {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-		    }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-		    if (_data == IntPtr.Zero)
-		    {
-		        throw new ObjectDisposedException("GorgonDataStream");
-		    }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 #endif
-            if (typeSize + Position > _length)
-            {
-                return;
-            }
+			if (typeSize + Position > _length)
+			{
+				return;
+			}
 
-            DirectAccess.WriteValue(_dataPointer, ref item);
+			DirectAccess.WriteValue(PositionPointer, ref item);
 			Position += typeSize;
 		}
 
 		/// <summary>
-		/// Function to read an array of value types from the stream.
+		/// Function to read an array of values from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <param name="buffer">Array to write the value types into.</param>
-		/// <param name="offset">Offset within the array to start writing at.</param>
-		/// <param name="count">Number of elements to write.</param>
+		/// <typeparam name="T">The type of the values to read. Must be a value type.</typeparam>
+		/// <param name="buffer">Array to deserialize the binary data into.</param>
+		/// <param name="offset">Offset within the array to start copying into.</param>
+		/// <param name="count">Number of elements to copy.</param>
 		/// <returns>
-		/// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
+		/// The total number of bytes read from the stream. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
 		/// </returns>
-		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
-		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>   
-		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
+		/// <exception cref="ArgumentException">Thrown when the sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length.</exception>   
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is null.</exception>   
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> or <paramref name="count"/> parameters are negative.</exception>   
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>   
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public virtual int ReadRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
 			int actualCount = count * DirectAccess.SizeOf<T>();
 
 #if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (buffer == null)
-            {
-                throw new ArgumentNullException("buffer");
-            }
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
 
-            if ((offset < 0) || (offset >= buffer.Length))
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
-            }
+			if ((offset < 0) || (offset >= buffer.Length))
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+			}
 
-            if (count < 0)
-            {
-                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
-            }
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+			}
 
-            if (offset + count > buffer.Length)
-            {
-                throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
+			if (offset + count > buffer.Length)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
 
-		    if ((actualCount + _pointerPosition) > _length)
-		    {
-		        actualCount = (_length - _pointerPosition);
-		    }
+			if ((actualCount + _position) > _length)
+			{
+				actualCount = (_length - _position);
+			}
 
 			if (actualCount <= 0)
 			{
 				return actualCount;
 			}
 
-			DirectAccess.ReadArray(_dataPointer, buffer, offset, actualCount);
+			DirectAccess.ReadArray(PositionPointer, buffer, offset, actualCount);
 			Position += actualCount;
 
 			return actualCount;
 		}
 
-        /// <summary>
-        /// Function to copy data from a stream into this stream.
-        /// </summary>
-        /// <param name="stream">The stream to copy from.</param>
-        /// <param name="size">The size of the data to copy.</param>
-        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is write-only.</exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream parameter .
-        /// <para>-or-</para>
-        /// <para>Thrown when this stream cannot accommodate the <paramref name="size"/> parameter.</para>
-        /// </exception>
-        public void ReadFromStream(Stream stream, int size)
-        {
-			stream.ValidateObject("stream");
-
-#if DEBUG
-            if (!stream.CanRead)
-            {
-                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-            if (_length - _pointerPosition < size)
-            {
-                throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
-
-            if (size > stream.Length - stream.Position)
-            {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-            }
-#endif   
-            // Create a buffer that's under the Large Object Heap size requirement.
-            if (_buffer == null)
-            {
-                _buffer = new byte[81920];
-            }
-
-            int blockSize = _buffer.Length;
-
-            // Copy by block.
-            while (size > 0)
-            {
-                if (blockSize > size)
-                {
-                    blockSize = size;
-                }
-
-                stream.Read(_buffer, 0, blockSize);
-                Write(_buffer, 0, blockSize);
-
-                size -= blockSize;
-            }
-        }
-
 		/// <summary>
-		/// Function to read an array of value types from the stream.
+		/// Function to read an array of values from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write.</typeparam>
-		/// <param name="count">Number of items to read.</param>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
+		/// <typeparam name="T">Type of data to read. Must be a value type.</typeparam>
+		/// <param name="count">Number of items to read from the stream.</param>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>
+		/// <returns>An array of values of type <typeparamref name="T"/> that were deserialized from the stream.</returns>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public T[] ReadRange<T>(int count)
 			where T : struct
 		{
@@ -1594,264 +1058,244 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to read a value type from the stream.
+		/// Function to read a value from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <returns>The value type within the stream.</returns>
-		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+		/// <typeparam name="T">The type of the value to read. Must be a value type.</typeparam>
+		/// <returns>The deserialized value from the stream.</returns>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
+		/// <exception cref="EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// </remarks>
 		public T Read<T>()
 			where T : struct
 		{
 			int typeSize = DirectAccess.SizeOf<T>();
 
 #if DEBUG
-		    if (!CanRead)
-		    {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-		    }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-		    if (_data == IntPtr.Zero)
-		    {
-		        throw new ObjectDisposedException("GorgonDataStream");
-		    }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-		    if (typeSize + Position > _length)
-		    {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-		    }
+			if (typeSize + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+			}
 #endif
 
 			T result;
-            DirectAccess.ReadValue(_dataPointer, out result);
+			DirectAccess.ReadValue(PositionPointer, out result);
 			Position += typeSize;
 
 			return result;
 		}
 
 		/// <summary>
-		/// Function to copy data from the stream into a pointer.
+		/// Function to copy the data in the <see cref="GorgonDataStream"/> to an <see cref="IntPtr"/> representing a pointer to an unmanaged memory address.
 		/// </summary>
-		/// <param name="pointer">Pointer to the data to write into.</param>
-		/// <param name="size">Size, in bytes, to read from the stream.</param>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <param name="pointer">Pointer to the unmanaged memory to copy into.</param>
+		/// <param name="size">The number of bytes to copy from the stream.</param>
+		/// <exception cref="EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="caution">
+		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void CopyToPointer(IntPtr pointer, int size)
 		{
 #if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (size + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-            }
+			if (size + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+			}
 #endif
-            _pointerOffset.CopyTo(pointer, size);
+			_pointerOffset.CopyTo(pointer, size);
 			Position += size;
 		}
 
-        /// <summary>
-        /// Function to copy data from the stream into a pointer.
-        /// </summary>
-        /// <param name="pointer">Pointer to the data to write into.</param>
-        /// <param name="size">Size, in bytes, to read from the stream.</param>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
-        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        public void CopyToPointer(void* pointer, int size)
-        {
+		/// <summary>
+		/// Function to copy the data in the <see cref="GorgonDataStream"/> to the unmanaged memory specified by the pointer.
+		/// </summary>
+		/// <param name="pointer">Pointer to the unmanaged memory to copy into.</param>
+		/// <param name="size">The number of bytes to copy from the stream.</param>
+		/// <exception cref="EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="caution">
+		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void CopyToPointer(void* pointer, int size)
+		{
 #if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (size + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-            }
+			if (size + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+			}
 #endif
-            DirectAccess.MemoryCopy(_dataPointer, pointer, size);
-            Position += size;
-        }
-
-		/// <summary>
-		/// Function to write a string to the stream.
-		/// </summary>
-		/// <param name="value">String to write into the stream.</param>
-		/// <param name="encoding">Encoding to use.</param>
-        /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.
-        /// <para>If the <paramref name="encoding"/> value is <b>null</b> (<i>Nothing</i> in VB.Net), then UTF-8 encoding will be used.</para>
-        /// </remarks>
-		public void WriteString(string value, Encoding encoding)
-		{
-            value.WriteToStream(this, encoding);
+			DirectAccess.MemoryCopy(PositionPointer, pointer, size);
+			Position += size;
 		}
 
 		/// <summary>
-		/// Function to write a string to the stream.
+		/// Function to copy the native memory specified by the pointer wrapped by a <see cref="IntPtr"/> into a <see cref="GorgonDataStream"/>.		
 		/// </summary>
-		/// <param name="value">String to write into the stream.</param>
-        /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.</remarks>
-		public void WriteString(string value)
-		{
-			WriteString(value, null);
-		}
-
-        /// <summary>
-        /// Function to read a character with the specified encoding from the stream and increment the position by the size of a character.
-        /// </summary>
-        /// <returns>
-        /// The character in the stream or the default character to indicate the end of stream.
-        /// </returns>
-        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        public char ReadChar()
-        {
-            const char result = default(char);
-#if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
-
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
-#endif
-            return Position >= Length ? result : Convert.ToChar(ReadUInt16());
-        }
-
-		/// <summary>
-		/// Function to read a string from the stream.
-		/// </summary>
-		/// <returns>The string in the stream.</returns>
-		public string ReadString()
-		{
-			return ReadString(null);
-		}
-
-		/// <summary>
-		/// Function to read a string from the stream.
-		/// </summary>
-		/// <param name="encoding">Text encoding to use.</param>
-		/// <returns>The string in the stream.</returns>
-        /// <remarks>This method reads the length of the string from a series of 7 bit bytes before reading the string.</remarks>
-		public string ReadString(Encoding encoding)
-		{
-            return GorgonIOExtensions.ReadString(this, encoding);
-		}
-
-		/// <summary>
-		/// Function to copy the data from a pointer into the stream.		
-		/// </summary>
-		/// <param name="pointer">Pointer to the data to read.</param>
-		/// <param name="size">Size, in bytes, to write to the stream.</param>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <param name="pointer">Pointer to the data to copy.</param>
+		/// <param name="size">The number of bytes to copy into the stream.</param>
+		/// <exception cref="EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="caution">
+		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void CopyFromPointer(IntPtr pointer, int size)
 		{
 #if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (size + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
+			if (size + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
 
 			_pointerOffset.CopyFrom(pointer, size);
 			Position += size;
 		}
 
-        /// <summary>
-        /// Function to copy the data from a pointer into the stream.		
-        /// </summary>
-        /// <param name="pointer">Pointer to the data to read.</param>
-        /// <param name="size">Size, in bytes, to write to the stream.</param>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
-        /// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        public void CopyFromPointer(void *pointer, int size)
-        {
+		/// <summary>
+		/// Function to copy the native memory specified by the pointer into a <see cref="GorgonDataStream"/>.		
+		/// </summary>
+		/// <param name="pointer">Pointer to the data to copy.</param>
+		/// <param name="size">The number of bytes to copy into the stream.</param>
+		/// <exception cref="EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
+		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
+		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
+		/// <remarks>
+		/// <inheritdoc cref="CopyFromPointer(System.IntPtr,int)"/>
+		/// </remarks>
+		public void CopyFromPointer(void* pointer, int size)
+		{
 #if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (size + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
+			if (size + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 #endif
-            DirectAccess.MemoryCopy(_dataPointer, pointer, size);
-            Position += size;
-        }
+			DirectAccess.MemoryCopy(PositionPointer, pointer, size);
+			Position += size;
+		}
 
 		/// <summary>
-		/// Function to marshal a structure into the stream.
+		/// Function to marshal a value into the <see cref="GorgonDataStream"/>.
 		/// </summary>
 		/// <typeparam name="T">Type of data to marshal.</typeparam>
 		/// <param name="data">Data to marshal.</param>
-		/// <param name="deleteContents"><b>true</b> to remove any pre-allocated data within the data, <b>false</b> to leave alone.</param>
-		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
-		/// <para>Passing <b>false</b> to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
-		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr" /> method.</para>
+		/// <param name="deleteContents">[Optional] <b>true</b> to free memory allocated for the object/value types fields when reusing the destination pointer, <b>false</b> to leave alone.</param>
+		/// <remarks>
+		/// <para>
+		/// This method will marshal a value of the type <typeparamref name="T"/> (can be either an object or value type) into the unmanaged memory wrapped by this stream.
+		/// </para>
+		/// <para>
+		/// This method supports marshalling of field/property values (e.g. members with the <see cref="MarshalAsAttribute"/>).
+		/// </para>
+		/// <para>
+		/// Passing <b>false</b> to <paramref name="deleteContents"/> may result in a memory leak if the stream data had this type written to it previous at the current <see cref="Position"/>, and is being reused and the 
+		/// type specified by <typeparamref name="T"/> contains reference types (e.g. <see cref="string"/>).
+		/// </para>
+		/// <para>
+		/// For more information, see the <see cref="Marshal.StructureToPtr"/> method.
+		/// </para>
+		/// <note type="warning">
+		/// <para>
+		/// There is a performance penalty for using this method, and it is not recommended to performance critical code. 
+		/// </para>
+		/// <para>
+		/// For best performance, use the <see cref="Write{T}"/> method where the type specified by <typeparamref name="T"/> only contains other value types (the same restriction for child value types applies), or primitive 
+		/// types (i.e. blittable fields).
+		/// </para>
+		/// </note>
 		/// </remarks>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the length of the stream is made.</exception>
+		/// <exception cref="NotSupportedException">The stream does not support writing. </exception>
+		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the length of the stream is made.</exception>
 		public void WriteMarshal<T>(T data, bool deleteContents)
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
-            
-#if DEBUG
-            if (!CanWrite)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
-            }
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (!CanWrite)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
+			}
 
-            if (dataSize + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-            }
-#endif
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
+
+			if (dataSize + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
 
@@ -1859,38 +1303,55 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to marshal a structure from the stream.
+		/// Function to marshal a value from the <see cref="GorgonDataStream"/>.
 		/// </summary>
 		/// <typeparam name="T">Type of data to marshal.</typeparam>
-		/// <returns>The data converted into a new value type or object.</returns>
-		/// <remarks>This method will marshal unmanaged data back into a new structure (object or value type).
-		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.PtrToStructure(IntPtr, Type)">Marshal.PtrToStructure</see> method.</para>
+		/// <returns>The data deserialized into the value of type <typeparamref name="T"/>.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will marshal binary data from the unmanaged memory wrapped by this stream into a value of the type <typeparamref name="T"/> (can be either an object or value type).
+		/// </para>
+		/// <para>
+		/// This method supports marshalling of field/property values (e.g. members with the <see cref="MarshalAsAttribute"/>).
+		/// </para>
+		/// <para>
+		/// For more information, see the <see cref="Marshal.PtrToStructure(IntPtr, Type)"/> method.
+		/// </para>
+		/// <note type="warning">
+		/// <para>
+		/// There is a performance penalty for using this method, and it is not recommended to performance critical code. 
+		/// </para>
+		/// <para>
+		/// For best performance, use the <see cref="Read{T}"/> method where the type specified by <typeparamref name="T"/> only contains other value types (the same restriction for child value types applies), or primitive 
+		/// types (i.e. blittable fields).
+		/// </para>
+		/// </note>
 		/// </remarks>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream was made.</exception>
+		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
+		/// <exception cref="NotSupportedException">The stream does not support reading. </exception>
+		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream was made.</exception>
 		public T ReadMarshal<T>()
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
 
 #if DEBUG
-            if (!CanRead)
-            {
-                throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-            }
+			if (!CanRead)
+			{
+				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+			}
 
-            if (_data == IntPtr.Zero)
-            {
-                throw new ObjectDisposedException("GorgonDataStream");
-            }
+			if (_data == IntPtr.Zero)
+			{
+				throw new ObjectDisposedException("GorgonDataStream");
+			}
 
-            if (dataSize + Position > _length)
-            {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-            }
+			if (dataSize + Position > _length)
+			{
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+			}
 #endif
 
-			var value = _pointerOffset.MarshalTo<T>();			
+			var value = _pointerOffset.MarshalTo<T>();
 			Position += dataSize;
 
 			return value;
@@ -1898,55 +1359,54 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
-        /// </summary>
-        /// <param name="data">The data used to initialize the stream.</param>
-        /// <param name="index">Index inside of the source array to start reading from.</param>
-        /// <param name="count">Number of elements to read.</param>
-        /// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
-        /// <para>-or-</para>
-        /// Thrown when the index parameter is larger than the source array.
-        /// </exception>
-        /// <exception cref="System.ArgumentException">Thrown when the index plus the count parameters total to larger than the size of the array.</exception>
-        /// <remarks>
-        /// The array elements should all be of the same type, and value types.
-        /// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.
-        /// Also, since the stream is holding a pointer, any changes to the <paramref name="data" /> parameter array elements will be reflected
-        /// in the stream.
-        /// </para>
-        /// </remarks>
-		public GorgonDataStream(Array data, int index, int count, StreamStatus status = StreamStatus.ReadWrite)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
+		/// </summary>
+		/// <param name="data">The data used to initialize the stream.</param>
+		/// <param name="index">Index inside of the source array to start reading from.</param>
+		/// <param name="count">Number of elements to read.</param>
+		/// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
+		/// <para>-or-</para>
+		/// Thrown when the index parameter is larger than the source array.
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the index plus the count parameters total to larger than the size of the array.</exception>
+		/// <remarks>
+		/// The array elements should all be of the same type, and value types.
+		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.
+		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data" /> parameter array elements will be reflected
+		/// in the stream.
+		/// </para>
+		/// </remarks>
+		public GorgonDataStream(Array data, int index, int count, StreamAccess status = StreamAccess.ReadWrite)
 		{
-		    if (data == null)
-		    {
-		        throw new ArgumentNullException("data");
-		    }
+			if (data == null)
+			{
+				throw new ArgumentNullException("data");
+			}
 
-		    if ((index < 0) || (index>=data.Length))
-		    {
-		        throw new ArgumentOutOfRangeException("index", string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, data.Length));
-		    }
+			if ((index < 0) || (index >= data.Length))
+			{
+				throw new ArgumentOutOfRangeException("index", string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, data.Length));
+			}
 
-		    if (count < 0)
-		    {
-		        throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
-		    }
+			if (count < 0)
+			{
+				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+			}
 
-		    if (index + count > data.Length)
-		    {
-		        throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
-		    }
+			if (index + count > data.Length)
+			{
+				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+			}
 
-		    // Pin the array.
+			// Pin the array.
 			_handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
 			_length = count * Marshal.SizeOf(data.GetType().GetElementType());
 			_pointerOffset = _data;
-            _dataPointer = _pointerOffset.ToPointer();
-			StreamStatus = status;
+			StreamAccess = status;
 		}
 
 		/// <summary>
@@ -1973,7 +1433,7 @@ namespace Gorgon.IO
 		{
 			AllocateBuffer(capacity);
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
@@ -1984,27 +1444,25 @@ namespace Gorgon.IO
 			_ownsPointer = false;
 			_data = source;
 			_pointerOffset = source;
-            _dataPointer = _pointerOffset.ToPointer();
-			_pointerPosition = 0;
+			_position = 0;
 			_length = size;
-			StreamStatus = StreamStatus.ReadWrite;
+			StreamAccess = StreamAccess.ReadWrite;
 		}
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
-        /// </summary>
-        /// <param name="source">The source pointer.</param>
-        /// <param name="size">The size of the buffer (in bytes).</param>
-        public GorgonDataStream(void *source, int size)
-        {
-            _ownsPointer = false;
-            _dataPointer = source;
-            _data = new IntPtr(_dataPointer);
-            _pointerOffset = _data;
-            _pointerPosition = 0;
-            _length = size;
-            StreamStatus = StreamStatus.ReadWrite;
-        }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
+		/// </summary>
+		/// <param name="source">The source pointer.</param>
+		/// <param name="size">The size of the buffer (in bytes).</param>
+		public GorgonDataStream(void* source, int size)
+		{
+			_ownsPointer = false;
+			_data = new IntPtr(source);
+			_pointerOffset = _data;
+			_position = 0;
+			_length = size;
+			StreamAccess = StreamAccess.ReadWrite;
+		}
 
 		/// <summary>
 		/// Releases unmanaged resources and performs other cleanup operations before the

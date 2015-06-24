@@ -150,7 +150,7 @@ namespace Gorgon.Graphics.Example
 					GorgonDataStream vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size),
 					                 indexData = new GorgonDataStream(IndexCount * sizeof(int)))
 				{
-					var vertices = (Vertex3D*)vertexData.UnsafePointer;
+					var vertices = (Vertex3D*)vertexData.BasePointer;
 					// Front.
 					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Bottom.
@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Example
 					// Right
 					GetVertices(vertices + (faceVertexCount * 5), Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
-					var indices = (int*)indexData.UnsafePointer;
+					var indices = (int*)indexData.BasePointer;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
 					GetIndices(indices + faceIndexCount, faceVertexCount, columnsPerFace, rowsPerFace);
 					GetIndices(indices + (faceIndexCount * 2), faceVertexCount * 2, columnsPerFace, rowsPerFace);

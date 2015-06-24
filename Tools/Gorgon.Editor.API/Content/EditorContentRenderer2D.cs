@@ -153,14 +153,6 @@ namespace Gorgon.Editor
 			Content = content;
 			RenderInterval = 1;
 		}
-
-		/// <summary>
-		/// Finalizes an instance of the <see cref="EditorContentRenderer2D"/> class.
-		/// </summary>
-		~EditorContentRenderer2D()
-		{
-			Dispose(false);
-		}
 		#endregion
 
 		#region IContentRenderer
