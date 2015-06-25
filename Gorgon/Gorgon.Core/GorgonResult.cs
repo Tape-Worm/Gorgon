@@ -238,7 +238,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_GORGONRESULT_TOSTRING, Name, Description, Code.FormatHex());
+			return string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
 		}
 
 		/// <summary>
@@ -295,7 +295,7 @@ namespace Gorgon.Core
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			if (description == null)
@@ -305,7 +305,7 @@ namespace Gorgon.Core
 
 			if (string.IsNullOrEmpty(description))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "description");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "description");
 			}
 
 			_name = name;

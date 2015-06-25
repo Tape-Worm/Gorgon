@@ -186,7 +186,7 @@ namespace Gorgon.IO
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_FILE_EXTENSION_TOSTR, Extension, Description);
+			return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Extension, Description);
 		}
 
 		/// <summary>
@@ -219,7 +219,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(extension))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "extension");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "extension");
 			}
 
 			Extension = extension;

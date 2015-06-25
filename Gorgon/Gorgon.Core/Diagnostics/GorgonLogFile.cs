@@ -154,7 +154,7 @@ namespace Gorgon.Diagnostics
 				Print("{1}{0}", logLevel, lines[i], indicator);
 			}
 
-			Print("{0}<<<{1}>>>", logLevel, indicator, Resources.GOR_DLG_ERR_STACK_END);
+			Print("{0}<<<{1}>>>", logLevel, indicator, Resources.GOR_EXCEPT_STACK_END);
 		}
 
 		/// <summary>
@@ -211,10 +211,10 @@ namespace Gorgon.Diagnostics
 				var gorgonException = inner as GorgonException;
 
 				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-				Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator, Resources.GOR_DLG_ERR_EXCEPT_TYPE);
+				Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator, Resources.GOR_EXCEPT_EXCEPT_TYPE);
 				if (inner.Source != null)
 				{
-					Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_DLG_ERR_SRC);
+					Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
 				}
 
 				if ((inner.TargetSite != null) && (inner.TargetSite.DeclaringType != null))
@@ -223,7 +223,7 @@ namespace Gorgon.Diagnostics
 					      (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
 					      inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name,
 					      indicator,
-					      Resources.GOR_DLG_ERR_TARGET_SITE);
+					      Resources.GOR_EXCEPT_TARGET_SITE);
 				}
 
 				if (gorgonException != null)
@@ -234,7 +234,7 @@ namespace Gorgon.Diagnostics
 					      gorgonException.ResultCode.Description,
 					      gorgonException.ResultCode.Code,
 					      indicator,
-					      Resources.GOR_DLG_ERR_GOREXCEPT_RESULT);
+					      Resources.GOR_EXCEPT_GOREXCEPT_RESULT);
 				}
 
 				IDictionary extraInfo = inner.Data;
@@ -243,7 +243,7 @@ namespace Gorgon.Diagnostics
 				if (extraInfo.Count > 0)
 				{
 					Print("{0}", LoggingLevel.Verbose, indicator);
-					Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_DLG_ERR_CUSTOM_INFO);
+					Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_EXCEPT_CUSTOM_INFO);
 					Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
 					foreach (DictionaryEntry item in extraInfo)
 					{
@@ -272,7 +272,7 @@ namespace Gorgon.Diagnostics
 						indicator = "|   ";
 					}
 
-					Print("{0}  {2} \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message, Resources.GOR_DLG_ERR_NEXT_EXCEPTION);
+					Print("{0}  {2} \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message, Resources.GOR_EXCEPT_NEXT_EXCEPTION);
 					Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
 				}
 

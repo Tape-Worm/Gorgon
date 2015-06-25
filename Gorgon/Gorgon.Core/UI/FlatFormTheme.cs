@@ -961,12 +961,12 @@ namespace Gorgon.UI
 		{
 			if (reader.MoveToContent() != XmlNodeType.Element)
 			{
-				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
+				throw new IOException(Resources.GOR_ERR_FLATFORM_CANNOT_READ_THEME);
 			}
 
 			if (!string.Equals(reader.LocalName, GetType().Name))
 			{
-				throw new IOException(Resources.GOR_CANNOT_READ_THEME);
+				throw new IOException(Resources.GOR_ERR_FLATFORM_CANNOT_READ_THEME);
 			}
 
 			// Get our properties so we can set them.

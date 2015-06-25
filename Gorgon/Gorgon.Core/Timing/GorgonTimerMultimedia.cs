@@ -236,7 +236,7 @@ namespace Gorgon.Timing
 
 			if (Win32API.timeBeginPeriod((uint)period) == TimePeriodReturn.NoCanDo)
 			{
-				throw new Win32Exception(Resources.GOR_TIME_CANNOT_BEGIN);
+				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
 			}
 
 			_lastPeriod = period;
@@ -264,7 +264,7 @@ namespace Gorgon.Timing
 
 			if (Win32API.timeEndPeriod((uint)_lastPeriod.Value) == TimePeriodReturn.NoCanDo)
 			{
-				throw new Win32Exception(Resources.GOR_TIME_CANNOT_END);
+				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_END);
 			}
 
 			_lastPeriod = null;
@@ -278,7 +278,7 @@ namespace Gorgon.Timing
 		{
 			if (Win32API.timeGetDevCaps(ref _timeCaps, DirectAccess.SizeOf<TIMECAPS>()) != 0)
 			{
-				throw new Win32Exception(Resources.GOR_TIME_CANNOT_BEGIN);
+				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
 			}
 
 			if (_lastPeriod != null)

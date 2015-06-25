@@ -713,7 +713,7 @@ namespace Gorgon.Configuration
 
 					if (indexAttr == null)
 					{
-						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_SETTING_INVALID_FILE, _path), new NullReferenceException());
+						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path), new NullReferenceException());
 					}
 
 					int itemIndex = int.Parse(indexAttr.Value, NumberStyles.Integer, CultureInfo.InvariantCulture);
@@ -733,7 +733,7 @@ namespace Gorgon.Configuration
 				{
 					if ((dictionaryKeyAttr == null) || (string.IsNullOrWhiteSpace(dictionaryKeyAttr.Value)))
 					{
-						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_SETTING_INVALID_FILE, _path), new NullReferenceException());
+						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path), new NullReferenceException());
 					}
 
 					Log.Print("Loading value <{0}> into dictionary key {1} for property '{2}'.", LoggingLevel.Verbose, nameAttr.Value, dictionaryKeyAttr.Value, property.PropertyInfo.Name);
@@ -826,7 +826,7 @@ namespace Gorgon.Configuration
 		    if (_rootNode == null)
 		    {
 		        throw new GorgonException(GorgonResult.InvalidFileFormat, 
-                                            string.Format(Resources.GOR_SETTING_INVALID_FILE, _path));
+                                            string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path));
 		    }
 
 		    // If we don't have a version attribute, then we're not versioning this file.
@@ -839,8 +839,8 @@ namespace Gorgon.Configuration
 		    if (!Version.TryParse(_versionAttr.Value, out compareVersion))
 		    {
                 throw new GorgonException(GorgonResult.InvalidFileFormat,
-                                            string.Format(Resources.GOR_SETTING_INVALID_FILE, _path),
-                                            new InvalidCastException(Resources.GOR_SETTING_CANNOT_CONVERT_VERSION));
+                                            string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path),
+                                            new InvalidCastException(Resources.GOR_ERR_SETTING_CANNOT_CONVERT_VERSION));
             }
 
 			if (compareVersion > Version)
@@ -1044,7 +1044,7 @@ namespace Gorgon.Configuration
 
 			if (_rootNode == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_SETTING_INVALID_FILE, _path));
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path));
 			}
 
 			if (CheckVersion())
@@ -1124,7 +1124,7 @@ namespace Gorgon.Configuration
 
 			if (string.IsNullOrWhiteSpace(applicationName))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "applicationName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "applicationName");
 			}
 			
 			// Get the properties for this interface.

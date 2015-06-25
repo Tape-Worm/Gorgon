@@ -552,7 +552,7 @@ namespace Gorgon.UI
 			{
 				dialog = new SaveFileDialog
 				{
-					Title = Resources.GOR_DLG_SAVE_THEME,
+					Title = Resources.GOR_TEXT_SAVE_THEME,
 					DefaultExt = "xml",
 					Filter = Resources.GOR_TEXT_XML_FILTER
 				};
@@ -603,7 +603,7 @@ namespace Gorgon.UI
 			{
 				dialog = new OpenFileDialog
 				{
-					Title = Resources.GOR_DLG_LOAD_THEME,
+					Title = Resources.GOR_TEXT_LOAD_THEME,
 					DefaultExt = "xml",
 					Filter = Resources.GOR_TEXT_XML_FILTER
 				};
@@ -1048,7 +1048,7 @@ namespace Gorgon.UI
 					itemMinimize.Enabled = true;
 					itemMove.Enabled = false;
 					itemSize.Enabled = false;
-					labelMaxRestore.Text = Resources.GOR_ZUNE_MAX_ICON;
+					labelMaxRestore.Text = Resources.GOR_TEXT_FLATFORM_MAX_ICON;
 					break;
 				case FormWindowState.Minimized:
 					itemRestore.Enabled = true;
@@ -1058,7 +1058,7 @@ namespace Gorgon.UI
 					itemMinimize.Enabled = false;
 					break;
 				case FormWindowState.Normal:
-					labelMaxRestore.Text = Resources.GOR_ZUNE_RESTORE_ICON;
+					labelMaxRestore.Text = Resources.GOR_TEXT_FLATFORM_RESTORE_ICON;
 					itemMove.Enabled = true;
 					itemSize.Enabled = true;
 					itemRestore.Enabled = false;

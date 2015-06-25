@@ -212,7 +212,7 @@ namespace Gorgon.IO
 				// Limit to the bounds of an integer.
 				if ((value > Int32.MaxValue) || (value < 0))
 				{
-					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, value, Int32.MaxValue));
+					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, value, Int32.MaxValue));
 				}
 #endif
 
@@ -498,7 +498,7 @@ namespace Gorgon.IO
 
 			if (((!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName), "value");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName), "value");
 			}
 
 			int size = type.StructLayoutAttribute.Size <= 0 ? Marshal.SizeOf(type) * count : type.StructLayoutAttribute.Size * count;
@@ -574,17 +574,17 @@ namespace Gorgon.IO
 
 			if ((offset < 0) || (offset >= buffer.Length))
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
 			}
 
 			if (offset + count > buffer.Length)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 
@@ -736,17 +736,17 @@ namespace Gorgon.IO
 
 			if ((offset < 0) || (offset >= buffer.Length))
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
 			}
 
 			if (offset + count > buffer.Length)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 
@@ -883,17 +883,17 @@ namespace Gorgon.IO
 
 			if ((offset < 0) || (offset >= buffer.Length))
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
 			}
 
 			if (offset + count > buffer.Length)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 
@@ -1006,17 +1006,17 @@ namespace Gorgon.IO
 
 			if ((offset < 0) || (offset >= buffer.Length))
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE, offset, buffer.Length));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+				throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
 			}
 
 			if (offset + count > buffer.Length)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 
@@ -1204,7 +1204,7 @@ namespace Gorgon.IO
 
 			if (size + Position > _length)
 			{
-				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 
@@ -1238,7 +1238,7 @@ namespace Gorgon.IO
 
 			if (size + Position > _length)
 			{
-				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
 			DirectAccess.MemoryCopy(PositionPointer, pointer, size);
@@ -1294,7 +1294,7 @@ namespace Gorgon.IO
 
 			if (dataSize + Position > _length)
 			{
-				throw new EndOfStreamException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
@@ -1388,17 +1388,17 @@ namespace Gorgon.IO
 
 			if ((index < 0) || (index >= data.Length))
 			{
-				throw new ArgumentOutOfRangeException("index", string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, data.Length));
+				throw new ArgumentOutOfRangeException("index", string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, data.Length));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_STREAM_COUNT_OUT_OF_RANGE, count));
+				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
 			}
 
 			if (index + count > data.Length)
 			{
-				throw new ArgumentException(Resources.GOR_STREAM_OFFSET_COUNT_TOO_LARGE);
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 
 			// Pin the array.

@@ -97,7 +97,7 @@ namespace Gorgon.UI
 				result.Append("\n");
 			}
 
-			result.AppendFormat("<<<{0}>>>", Resources.GOR_DLG_ERR_STACK_END);
+			result.AppendFormat("<<<{0}>>>", Resources.GOR_EXCEPT_STACK_END);
 			return result.ToString();
 		}
 
@@ -110,7 +110,7 @@ namespace Gorgon.UI
 		{
 			if (innerException == null)
 			{
-				return Resources.GOR_DLG_ERR_NO_MSG;
+				return Resources.GOR_EXCEPT_NO_MSG;
 			}
 
 			// Find all inner exceptions.
@@ -120,20 +120,20 @@ namespace Gorgon.UI
 			while (nextException != null)
 			{
 				errorText.AppendFormat("{0}: {1}\n{2}:  {3}",
-									   Resources.GOR_DLG_ERR_DETAILS_MSG,
+									   Resources.GOR_EXCEPT_DETAILS_MSG,
 									   nextException.Message,
-									   Resources.GOR_DLG_ERR_EXCEPT_TYPE,
+									   Resources.GOR_EXCEPT_EXCEPT_TYPE,
 									   nextException.GetType().FullName);
 
 				if (nextException.Source != null)
 				{
-					errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_DLG_ERR_SRC, nextException.Source);
+					errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
 				}
 
 				if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
 				{
 					errorText.AppendFormat("\n{0}:  {1}.{2}",
-										   Resources.GOR_DLG_ERR_TARGET_SITE,
+										   Resources.GOR_EXCEPT_TARGET_SITE,
 										   nextException.TargetSite.DeclaringType.FullName,
 										   nextException.TargetSite.Name);
 				}
@@ -143,7 +143,7 @@ namespace Gorgon.UI
 				if (gorgonException != null)
 				{
 					errorText.AppendFormat("\n{0}: [{1}] {2} (0x{3})",
-										   Resources.GOR_DLG_ERR_GOREXCEPT_RESULT,
+										   Resources.GOR_EXCEPT_GOREXCEPT_RESULT,
 										   gorgonException.ResultCode.Name,
 										   gorgonException.ResultCode.Description,
 										   gorgonException.ResultCode.Code.FormatHex());
@@ -172,7 +172,7 @@ namespace Gorgon.UI
 					if (customData.Length > 0)
 					{
 						errorText.AppendFormat("\n{0}:\n-------------------\n{1}\n-------------------\n",
-											   Resources.GOR_DLG_ERR_CUSTOM_INFO,
+											   Resources.GOR_EXCEPT_CUSTOM_INFO,
 											   customData);
 					}
 				}
@@ -188,7 +188,7 @@ namespace Gorgon.UI
 
 				if (nextException != null)
 				{
-					errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_DLG_ERR_NEXT_EXCEPTION);
+					errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_EXCEPT_NEXT_EXCEPTION);
 				}
 			}
 
@@ -207,7 +207,7 @@ namespace Gorgon.UI
 		{
 			if (string.IsNullOrWhiteSpace(message))
 			{
-				message = innerException != null ? innerException.Message : Resources.GOR_DLG_ERR_NO_MSG;
+				message = innerException != null ? innerException.Message : Resources.GOR_EXCEPT_NO_MSG;
 			}
 
 			ErrorBox(owner, message, caption, GetDetailsFromException(innerException), autoShowDetails);
@@ -240,7 +240,7 @@ namespace Gorgon.UI
 			{
 				if (string.IsNullOrEmpty(caption))
 				{
-					caption = Resources.GOR_DLG_CAPTION_ERROR;
+					caption = Resources.GOR_TEXT_CAPTION_ERROR;
 				}
 
 				errorDialog = new ErrorDialog
@@ -280,7 +280,7 @@ namespace Gorgon.UI
 
 			if (string.IsNullOrWhiteSpace(caption))
 			{
-				caption = Resources.GOR_DLG_CAPTION_INFO;
+				caption = Resources.GOR_TEXT_CAPTION_INFO;
 			}
 
 			try
@@ -302,7 +302,7 @@ namespace Gorgon.UI
 			        dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
 			    }
 
-			    dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_INFO;
+			    dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_TEXT_CAPTION_INFO;
 
 			    dialog.ShowDialog(owner);
 			}
@@ -328,7 +328,7 @@ namespace Gorgon.UI
 		{
 			if (string.IsNullOrEmpty(caption))
 			{
-				caption = Resources.GOR_DLG_CAPTION_WARNING;
+				caption = Resources.GOR_TEXT_CAPTION_WARNING;
 			}
 
 			WarningDialog warningDialog = null;
@@ -375,14 +375,14 @@ namespace Gorgon.UI
 
 			if (string.IsNullOrEmpty(caption))
 			{
-				caption = Resources.GOR_DLG_CAPTION_CONFIRM;
+				caption = Resources.GOR_TEXT_CAPTION_CONFIRM;
 			}
 
 			try
 			{
 				confirm = allowToAll ? new ConfirmationDialogEx() : new ConfirmationDialog();
 
-				confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_CONFIRM;
+				confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_TEXT_CAPTION_CONFIRM;
 
 				confirm.Message = message;
 				confirm.ShowCancel = allowCancel;

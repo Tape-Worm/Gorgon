@@ -77,7 +77,7 @@ namespace Gorgon.UI
 			this.labelClose.TabIndex = 2;
 			this.labelClose.Text = "r";
 			this.labelClose.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelClose, global::Gorgon.Core.Properties.Resources.GOR_ZUNE_CLOSE_TIP);
+			this.toolTip.SetToolTip(this.labelClose, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_CLOSE_TIP);
 			this.labelClose.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelClose_MouseDown);
 			this.labelClose.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelClose.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -95,7 +95,7 @@ namespace Gorgon.UI
 			this.labelMaxRestore.TabIndex = 1;
 			this.labelMaxRestore.Text = "2";
 			this.labelMaxRestore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelMaxRestore, global::Gorgon.Core.Properties.Resources.GOR_ZUNE_MAXIMIZE_TIP);
+			this.toolTip.SetToolTip(this.labelMaxRestore, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MAXIMIZE_TIP);
 			this.labelMaxRestore.Click += new System.EventHandler(this.labelMaxRestore_Click);
 			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
 			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
@@ -113,7 +113,7 @@ namespace Gorgon.UI
 			this.labelMinimize.TabIndex = 0;
 			this.labelMinimize.Text = "0";
 			this.labelMinimize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelMinimize, global::Gorgon.Core.Properties.Resources.GOR_ZUNE_MINIMIZE_ZIP);
+			this.toolTip.SetToolTip(this.labelMinimize, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MINIMIZE_TIP);
 			this.labelMinimize.Click += new System.EventHandler(this.labelMinimize_Click);
 			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
 			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
@@ -203,21 +203,21 @@ namespace Gorgon.UI
 			this.itemRestore.Image = global::Gorgon.Core.Properties.Resources.Restore;
 			this.itemRestore.Name = "itemRestore";
 			this.itemRestore.Size = new System.Drawing.Size(177, 26);
-			this.itemRestore.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_RESTORE;
+			this.itemRestore.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_RESTORE;
 			this.itemRestore.Click += new System.EventHandler(this.itemRestore_Click);
 			// 
 			// itemMove
 			// 
 			this.itemMove.Name = "itemMove";
 			this.itemMove.Size = new System.Drawing.Size(177, 26);
-			this.itemMove.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_MOVE;
+			this.itemMove.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MOVE;
 			this.itemMove.Click += new System.EventHandler(this.itemMove_Click);
 			// 
 			// itemSize
 			// 
 			this.itemSize.Name = "itemSize";
 			this.itemSize.Size = new System.Drawing.Size(177, 26);
-			this.itemSize.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_SIZE;
+			this.itemSize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_SIZE;
 			this.itemSize.Click += new System.EventHandler(this.itemSize_Click);
 			// 
 			// itemMinimize
@@ -225,7 +225,7 @@ namespace Gorgon.UI
 			this.itemMinimize.Image = ((System.Drawing.Image)(resources.GetObject("itemMinimize.Image")));
 			this.itemMinimize.Name = "itemMinimize";
 			this.itemMinimize.Size = new System.Drawing.Size(177, 26);
-			this.itemMinimize.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_MINIMIZE;
+			this.itemMinimize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MINIMIZE;
 			this.itemMinimize.Click += new System.EventHandler(this.itemMinimize_Click);
 			// 
 			// itemMaximize
@@ -233,7 +233,7 @@ namespace Gorgon.UI
 			this.itemMaximize.Image = ((System.Drawing.Image)(resources.GetObject("itemMaximize.Image")));
 			this.itemMaximize.Name = "itemMaximize";
 			this.itemMaximize.Size = new System.Drawing.Size(177, 26);
-			this.itemMaximize.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_MAXIMIZE;
+			this.itemMaximize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MAXIMIZE;
 			this.itemMaximize.Click += new System.EventHandler(this.itemMaximize_Click);
 			// 
 			// toolStripMenuItem1
@@ -248,7 +248,7 @@ namespace Gorgon.UI
 			this.itemClose.Name = "itemClose";
 			this.itemClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
 			this.itemClose.Size = new System.Drawing.Size(177, 26);
-			this.itemClose.Text = global::Gorgon.Core.Properties.Resources.GOR_ZUNE_CLOSE;
+			this.itemClose.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_CLOSE;
 			this.itemClose.Click += new System.EventHandler(this.itemClose_Click);
 			// 
 			// toolTip

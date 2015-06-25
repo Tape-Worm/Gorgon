@@ -286,7 +286,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrEmpty(chunkName))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "chunkName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "chunkName");
 			}
 
 			return OpenChunk(chunkName.ChunkID());

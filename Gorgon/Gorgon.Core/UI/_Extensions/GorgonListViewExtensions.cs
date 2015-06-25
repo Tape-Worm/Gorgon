@@ -61,7 +61,7 @@ namespace Gorgon.UI
 
 				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_GETITEM, columnPtr, ref item) == IntPtr.Zero)
 				{
-					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_LISTVIEW_CANNOT_FIND_HEADER);
+					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER);
 				}
 
 				if (order != SortOrder.None && columnNumber == headerIndex)
@@ -85,7 +85,7 @@ namespace Gorgon.UI
 
 				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_SETITEM, columnPtr, ref item) == IntPtr.Zero)
 				{
-					throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR_LISTVIEW_CANNOT_UPDATE_COLUMN);
+					throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN);
 				}
 			}
 		}

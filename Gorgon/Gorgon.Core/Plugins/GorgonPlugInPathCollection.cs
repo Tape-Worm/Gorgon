@@ -79,7 +79,7 @@ namespace Gorgon.Plugins
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
             }
 			
 			return Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);

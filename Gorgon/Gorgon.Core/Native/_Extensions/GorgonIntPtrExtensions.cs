@@ -80,13 +80,13 @@ namespace Gorgon.Native
 		    if (destinationIndex < 0)
 		    {
 		        throw new ArgumentOutOfRangeException("destinationIndex", 
-                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length));
+                    string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length));
 		    }
 
 		    if (destinationIndex + size > destination.Length)
 		    {
                 throw new ArgumentOutOfRangeException("destinationIndex",
-                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length));
+                    string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length));
             }
 #endif
 			DirectAccess.ReadArray(source, destination, destinationIndex, size);
@@ -163,13 +163,13 @@ namespace Gorgon.Native
 		    if (destinationIndex < 0)
             {
                 throw new ArgumentOutOfRangeException("destinationIndex",
-                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length * sizeInBytes));
+                    string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length * sizeInBytes));
             }
 
             if ((destinationIndex * sizeInBytes) + size > destination.Length * DirectAccess.SizeOf<T>())
             {
                 throw new ArgumentOutOfRangeException("destinationIndex",
-                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length * sizeInBytes));
+                    string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length * sizeInBytes));
             }
 #endif
 
@@ -270,14 +270,14 @@ namespace Gorgon.Native
 		    if (sourceIndex < 0)
 		    {
 		        throw new ArgumentOutOfRangeException("sourceIndex",
-		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex,
+		                                              string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, sourceIndex,
 		                                                            source.Length));
 		    }
 
 		    if (sourceIndex + size > source.Length)
 		    {
 		        throw new ArgumentOutOfRangeException("sourceIndex",
-		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex + size,
+		                                              string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, sourceIndex + size,
 		                                                            source.Length));
 		    }
 #endif
@@ -357,14 +357,14 @@ namespace Gorgon.Native
 		    if (sourceIndex < 0)
 		    {
                 throw new ArgumentOutOfRangeException("sourceIndex",
-                                                      string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex,
+                                                      string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, sourceIndex,
                                                                     source.Length));
             }
 
 		    if ((sourceIndex*typeSize) + size > source.Length*typeSize)
 		    {
 		        throw new ArgumentOutOfRangeException("sourceIndex",
-		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE,
+		                                              string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE,
 		                                                            sourceIndex*typeSize + size,
 		                                                            source.Length));
 		    }

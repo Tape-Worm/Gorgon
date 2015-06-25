@@ -60,7 +60,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_GORGONNAMEDOBJECT_TOSTRING, Name);
+			return string.Format(Resources.GOR_TOSTR_NAMEDOBJECT, Name);
 		}
 		#endregion
 
@@ -80,7 +80,7 @@ namespace Gorgon.Core
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
 			_name = name;

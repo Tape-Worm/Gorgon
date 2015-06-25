@@ -486,12 +486,12 @@ namespace Gorgon.Core
 		{
 		    if (context == null)
 		    {
-		        throw new InvalidOperationException(Resources.GOR_NOCONTEXT);
+		        throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_NOCONTEXT);
 		    }
 
             if (IsRunning)
             {
-                throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
+                throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
             }
 
 		    if (loop != null)
@@ -540,7 +540,7 @@ namespace Gorgon.Core
 
 			if (IsRunning)
 			{
-				throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
+				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
 			}
 
 			if (loop != null)
@@ -587,7 +587,7 @@ namespace Gorgon.Core
 
 			if (IsRunning)
 			{
-			    throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
+			    throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_ALREADY_RUNNING);
 			}
 
 			ApplicationIdleLoopMethod = loop;

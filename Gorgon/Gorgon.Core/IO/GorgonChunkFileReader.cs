@@ -278,7 +278,7 @@ namespace Gorgon.IO
 
 			if (_appSpecificIds.Count == 0)
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "appSpecificIds");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "appSpecificIds");
 			}
 
 			Mode = ChunkFileMode.Read;

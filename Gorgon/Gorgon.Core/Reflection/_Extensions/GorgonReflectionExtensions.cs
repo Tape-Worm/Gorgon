@@ -341,7 +341,7 @@ namespace Gorgon.Reflection
 
 			if (constructor == null)
 			{
-				throw new TypeLoadException(string.Format(Resources.GOR_ERR_CANNOT_FIND_CONSTRUCTOR, type.FullName));
+				throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR, type.FullName));
 			}
 
 			ParameterExpression paramExpr = Expression.Parameter(typeof(object[]), "args");

@@ -185,7 +185,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(pluginName))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginName");
 			}
 
 			if (!_constructors.IsValueCreated)
@@ -297,7 +297,7 @@ namespace Gorgon.Plugins
 						if (activator == null)
 						{
 							throw new GorgonException(GorgonResult.CannotCreate,
-							                          string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, pluginType.FullName, pluginType.Assembly.FullName));
+							                          string.Format(Resources.GOR_ERR_PLUGIN_CANNOT_CREATE, pluginType.FullName, pluginType.Assembly.FullName));
 						}
 
 						_log.Print("Found plugin '{0}' in the assembly '{1}'.", LoggingLevel.Verbose, pluginType.FullName, assemblyItem.Value.FullName);
@@ -320,7 +320,7 @@ namespace Gorgon.Plugins
 					}
 
 					throw new GorgonException(GorgonResult.CannotEnumerate,
-					                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE,
+					                          string.Format(Resources.GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE,
 					                                        assemblyItem.Key,
 					                                        errorMessage));
 				}
@@ -362,7 +362,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			while (true)

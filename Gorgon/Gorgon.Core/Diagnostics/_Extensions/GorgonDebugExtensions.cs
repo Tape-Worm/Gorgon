@@ -63,7 +63,7 @@ namespace Gorgon.Diagnostics
 		    if (((!keepWhitespace) && (string.IsNullOrWhiteSpace(value))) 
 				|| ((keepWhitespace) && (string.IsNullOrEmpty(value))))
 		    {
-		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
+		        throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
 		    }
 		}
 
@@ -92,12 +92,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -126,12 +126,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -160,12 +160,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -194,12 +194,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -228,12 +228,12 @@ namespace Gorgon.Diagnostics
 		{
 		    if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 		    {
-		        throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+		        throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 		    }
 
 		    if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 		    {
-                throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+                throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
             }
 		}
 
@@ -262,12 +262,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -296,12 +296,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -330,12 +330,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -364,12 +364,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -398,12 +398,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -432,12 +432,12 @@ namespace Gorgon.Diagnostics
 		{
 			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_LESS_THAN, value, min));
 			}
 
 			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
 			{
-				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+				throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_ERR_VALUE_IS_GREATER_THAN, value, min));
 			}
 		}
 
@@ -464,7 +464,7 @@ namespace Gorgon.Diagnostics
 
 			if ((index < 0) || (index >= collection.Count))
 			{
-                throw new IndexOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, collection.Count));
+                throw new IndexOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, collection.Count));
 			}
 		}
 

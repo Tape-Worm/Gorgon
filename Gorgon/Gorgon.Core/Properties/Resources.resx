@@ -537,40 +537,31 @@
   <data name="Close" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Close.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+  <data name="GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GOR_GORGONRESULT_TOSTRING" xml:space="preserve">
+  <data name="GOR_TOSTR_GORGONRESULT" xml:space="preserve">
     <value>{0}
 Result: "{1}"
 Code: 0x{2}</value>
   </data>
-  <data name="GOR_GORGONNAMEDOBJECT_TOSTRING" xml:space="preserve">
+  <data name="GOR_TOSTR_NAMEDOBJECT" xml:space="preserve">
     <value>Named object: {0}</value>
   </data>
-  <data name="GOR_GORGONRANGE_TOSTRING" xml:space="preserve">
+  <data name="GOR_TOSTR_GORGONRANGE" xml:space="preserve">
     <value>Min: {0}  Max: {1}  Range: {2}</value>
   </data>
-  <data name="GOR_APPLICATION_ALREADY_RUNNING" xml:space="preserve">
+  <data name="GOR_ERR_APPLICATION_ALREADY_RUNNING" xml:space="preserve">
     <value>The application is already running.</value>
   </data>
-  <data name="GOR_NOCONTEXT" xml:space="preserve">
+  <data name="GOR_ERR_APPLICATION_NOCONTEXT" xml:space="preserve">
     <value>Cannot run an application without either a main form, or a idle method.</value>
   </data>
-  <data name="GOR_COLLECTION_READ_ONLY" xml:space="preserve">
-    <value>The collection is read only.</value>
-  </data>
-  <data name="GOR_ITEM_ALREADY_EXISTS" xml:space="preserve">
-    <value>The item '{0}' already exists in this collection.</value>
-  </data>
-  <data name="GOR_KEY_NOT_FOUND" xml:space="preserve">
+  <data name="GOR_ERR_KEY_NOT_FOUND" xml:space="preserve">
     <value>The key '{0}' does not exist in this collection.</value>
   </data>
-  <data name="GOR_SETTING_INVALID_FILE" xml:space="preserve">
+  <data name="GOR_ERR_SETTING_INVALID_FILE" xml:space="preserve">
     <value>'{0}' is not a Gorgon application settings file.</value>
-  </data>
-  <data name="GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING" xml:space="preserve">
-    <value>Cannot enumerate the property '{0}' the generic parameter type is not a primitive or string type.</value>
   </data>
   <data name="GOR_UNIT_MEM_BYTES" xml:space="preserve">
     <value>bytes</value>
@@ -578,7 +569,7 @@ Code: 0x{2}</value>
   <data name="GOR_UNIT_MEM_GB" xml:space="preserve">
     <value>GB</value>
   </data>
-  <data name="GOR_INDEX_OUT_OF_RANGE" xml:space="preserve">
+  <data name="GOR_ERR_INDEX_OUT_OF_RANGE" xml:space="preserve">
     <value>The index is out of range.  The index value [{0}] must be be 0 or less than {1}.</value>
   </data>
   <data name="GOR_UNIT_MEM_KB" xml:space="preserve">
@@ -599,17 +590,11 @@ Code: 0x{2}</value>
   <data name="GOR_UNIT_MEM_TB" xml:space="preserve">
     <value>TB</value>
   </data>
-  <data name="GOR_VALUE_IS_GREATER_THAN" xml:space="preserve">
+  <data name="GOR_ERR_VALUE_IS_GREATER_THAN" xml:space="preserve">
     <value>The value '{0}' is greater than or equal to the maximum value '{1}'</value>
   </data>
-  <data name="GOR_VALUE_IS_LESS_THAN" xml:space="preserve">
+  <data name="GOR_ERR_VALUE_IS_LESS_THAN" xml:space="preserve">
     <value>The value '{0}' is less than or equal to the minimum value '{1}'</value>
-  </data>
-  <data name="GOR_CHUNK_INVALID" xml:space="preserve">
-    <value>The reader was expecting [0x{0}], but got [0x{1}] instead.  Chunked data is not valid.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_NAME_SIZE_MISMATCH" xml:space="preserve">
-    <value>The chunk name must be 8 characters exactly.</value>
   </data>
   <data name="GOR_ERR_STREAM_IS_WRITEONLY" xml:space="preserve">
     <value>The stream is write only.</value>
@@ -617,158 +602,143 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_STREAM_NOT_SEEKABLE" xml:space="preserve">
     <value>Unable to seek within this stream.</value>
   </data>
-  <data name="GOR_CHUNK_CANNOT_WRITE_SURROGATE" xml:space="preserve">
-    <value>Cannot write surrogate character '{0}' as a single character.</value>
-  </data>
   <data name="GOR_ERR_STREAM_BOS" xml:space="preserve">
     <value>Cannot read beyond the beginning of the stream.</value>
   </data>
-  <data name="GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT" xml:space="preserve">
+  <data name="GOR_ERR_STRUCT_NOT_EXPLICIT_LAYOUT" xml:space="preserve">
     <value>The type '{0}' is not explicitly or sequentially laid out using the StructLayout attribute.</value>
   </data>
-  <data name="GOR_STREAM_COUNT_OUT_OF_RANGE" xml:space="preserve">
+  <data name="GOR_ERR_STREAM_COUNT_OUT_OF_RANGE" xml:space="preserve">
     <value>The count [{0}] must be greater than or equal to 0.</value>
   </data>
-  <data name="GOR_STREAM_OFFSET_COUNT_TOO_LARGE" xml:space="preserve">
+  <data name="GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE" xml:space="preserve">
     <value>The offset plus the count is too large for this stream.</value>
   </data>
-  <data name="GOR_STREAM_OFFSET_OUT_OF_RANGE" xml:space="preserve">
+  <data name="GOR_ERR_STREAM_OFFSET_OUT_OF_RANGE" xml:space="preserve">
     <value>The offset [{0}] must be greater than or equal to 0 and less than {1}.</value>
   </data>
   <data name="GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE" xml:space="preserve">
     <value>The data stream encapsulates a pointer that it does not own and cannot be resized.</value>
   </data>
-  <data name="GOR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
+  <data name="GOR_ERR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
     <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type 'GorgonLibrary.PlugIns.GorgonPlugIn'.</value>
   </data>
-  <data name="GOR_PLUGIN_CANNOT_FIND_FILE" xml:space="preserve">
+  <data name="GOR_ERR_PLUGIN_CANNOT_FIND_FILE" xml:space="preserve">
     <value>The could not find the assembly file '{0}' on any of the plug-in search paths.</value>
   </data>
-  <data name="GOR_PLUGIN_CONFLICT" xml:space="preserve">
-    <value>The plug-in '{0}' in assembly '{1}' already exists in another plug-in assembly '{2}' and is not the same type.</value>
-  </data>
-  <data name="GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY" xml:space="preserve">
+  <data name="GOR_ERR_PLUGIN_NOT_PLUGIN_ASSEMBLY" xml:space="preserve">
     <value>Not a valid plug-in assembly.  There are no plug-ins in the assembly '{0}'.</value>
   </data>
-  <data name="GOR_PLUGIN_TYPE_LOAD_FAILURE" xml:space="preserve">
+  <data name="GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE" xml:space="preserve">
     <value>Cannot read types from the assembly '{0}'
 {1}</value>
   </data>
-  <data name="GOR_DLG_CAPTION_CONFIRM" xml:space="preserve">
+  <data name="GOR_TEXT_CAPTION_CONFIRM" xml:space="preserve">
     <value>Confirmation</value>
   </data>
-  <data name="GOR_DLG_CAPTION_ERROR" xml:space="preserve">
+  <data name="GOR_TEXT_CAPTION_ERROR" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="GOR_DLG_CAPTION_INFO" xml:space="preserve">
+  <data name="GOR_TEXT_CAPTION_INFO" xml:space="preserve">
     <value>Information</value>
   </data>
-  <data name="GOR_DLG_CAPTION_WARNING" xml:space="preserve">
+  <data name="GOR_TEXT_CAPTION_WARNING" xml:space="preserve">
     <value>Warning</value>
   </data>
-  <data name="GOR_DLG_CANCEL" xml:space="preserve">
+  <data name="GOR_TEXT_CANCEL" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>
-  <data name="GOR_DLG_DETAILS" xml:space="preserve">
+  <data name="GOR_TEXT_DETAILS" xml:space="preserve">
     <value>&amp;Details</value>
   </data>
-  <data name="GOR_DLG_ERR_CUSTOM_INFO" xml:space="preserve">
+  <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
   </data>
-  <data name="GOR_DLG_ERR_DETAILS_MSG" xml:space="preserve">
+  <data name="GOR_EXCEPT_DETAILS_MSG" xml:space="preserve">
     <value>Error Message</value>
   </data>
-  <data name="GOR_DLG_ERR_EXCEPT_TYPE" xml:space="preserve">
+  <data name="GOR_EXCEPT_EXCEPT_TYPE" xml:space="preserve">
     <value>Exception Type</value>
   </data>
-  <data name="GOR_DLG_ERR_GOREXCEPT_RESULT" xml:space="preserve">
+  <data name="GOR_EXCEPT_GOREXCEPT_RESULT" xml:space="preserve">
     <value>Result Code</value>
   </data>
-  <data name="GOR_DLG_ERR_NEXT_EXCEPTION" xml:space="preserve">
+  <data name="GOR_EXCEPT_NEXT_EXCEPTION" xml:space="preserve">
     <value>Next Exception</value>
   </data>
-  <data name="GOR_DLG_ERR_NO_MSG" xml:space="preserve">
+  <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
     <value>No message given.</value>
   </data>
-  <data name="GOR_DLG_ERR_SRC" xml:space="preserve">
+  <data name="GOR_EXCEPT_SRC" xml:space="preserve">
     <value>Source</value>
   </data>
-  <data name="GOR_DLG_ERR_STACK_END" xml:space="preserve">
+  <data name="GOR_EXCEPT_STACK_END" xml:space="preserve">
     <value>END</value>
   </data>
-  <data name="GOR_DLG_ERR_TARGET_SITE" xml:space="preserve">
+  <data name="GOR_EXCEPT_TARGET_SITE" xml:space="preserve">
     <value>Target Site</value>
   </data>
-  <data name="GOR_DLG_NO" xml:space="preserve">
+  <data name="GOR_TEXT_NO" xml:space="preserve">
     <value>&amp;No</value>
   </data>
-  <data name="GOR_DLG_OK" xml:space="preserve">
+  <data name="GOR_TEXT_OK" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
-  <data name="GOR_DLG_TO_ALL" xml:space="preserve">
+  <data name="GOR_TEXT_TO_ALL" xml:space="preserve">
     <value>&amp;Apply selection to all items?</value>
   </data>
-  <data name="GOR_DLG_YES" xml:space="preserve">
+  <data name="GOR_TEXT_YES" xml:space="preserve">
     <value>&amp;Yes</value>
   </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
   </data>
-  <data name="GOR_TIME_CANNOT_BEGIN" xml:space="preserve">
+  <data name="GOR_ERR_TIME_CANNOT_BEGIN" xml:space="preserve">
     <value>Cannot begin the timer period.</value>
   </data>
-  <data name="GOR_TIME_CANNOT_END" xml:space="preserve">
+  <data name="GOR_ERR_TIME_CANNOT_END" xml:space="preserve">
     <value>Cannot end the timer period.</value>
   </data>
-  <data name="GOR_ZUNE_CLOSE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_CLOSE" xml:space="preserve">
     <value>Close</value>
   </data>
-  <data name="GOR_ZUNE_CLOSE_ICON" xml:space="preserve">
-    <value>r</value>
-  </data>
-  <data name="GOR_ZUNE_CLOSE_TIP" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_CLOSE_TIP" xml:space="preserve">
     <value>Close the window</value>
   </data>
-  <data name="GOR_ZUNE_MAXIMIZE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MAXIMIZE" xml:space="preserve">
     <value>Ma&amp;ximize</value>
   </data>
-  <data name="GOR_ZUNE_MAXIMIZE_TIP" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MAXIMIZE_TIP" xml:space="preserve">
     <value>Maximize the window</value>
   </data>
-  <data name="GOR_ZUNE_MAX_ICON" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MAX_ICON" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="GOR_ZUNE_MINIMIZE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MINIMIZE" xml:space="preserve">
     <value>Mi&amp;nimize</value>
   </data>
-  <data name="GOR_ZUNE_MINIMIZE_ZIP" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MINIMIZE_TIP" xml:space="preserve">
     <value>Minimize the window</value>
   </data>
-  <data name="GOR_ZUNE_MIN_ICON" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="GOR_ZUNE_MOVE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_MOVE" xml:space="preserve">
     <value>&amp;Move</value>
   </data>
-  <data name="GOR_ZUNE_RESTORE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_RESTORE" xml:space="preserve">
     <value>&amp;Restore</value>
   </data>
-  <data name="GOR_ZUNE_RESTORE_ICON" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_RESTORE_ICON" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="GOR_ZUNE_SIZE" xml:space="preserve">
+  <data name="GOR_TEXT_FLATFORM_SIZE" xml:space="preserve">
     <value>&amp;Size</value>
   </data>
-  <data name="GOR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
+  <data name="GOR_ERR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
     <value>Version type string could not be converted to a version type.</value>
   </data>
-  <data name="GOR_APPLICATION_REQUIRES_FORM_OR_IDLE" xml:space="preserve">
-    <value>The application requires either a form, an idle method or both.</value>
-  </data>
-  <data name="GOR_FILE_EXTENSION_EXISTS" xml:space="preserve">
+  <data name="GOR_ERR_FILE_EXTENSION_EXISTS" xml:space="preserve">
     <value>The file extension '{0}' already exists in this collection.</value>
   </data>
-  <data name="GOR_FILE_EXTENSION_TOSTR" xml:space="preserve">
+  <data name="GOR_TOSTR_FILE_EXTENSION" xml:space="preserve">
     <value>File extension: .{0} - {1}</value>
   </data>
   <data name="PROP_BORDERCOLOR_DESC" xml:space="preserve">
@@ -810,10 +780,10 @@ Code: 0x{2}</value>
   <data name="PROP_WINDOWCAPTION_DESC" xml:space="preserve">
     <value>Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons.</value>
   </data>
-  <data name="GOR_LISTVIEW_CANNOT_FIND_HEADER" xml:space="preserve">
+  <data name="GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER" xml:space="preserve">
     <value>Cannot find the column header.</value>
   </data>
-  <data name="GOR_LISTVIEW_CANNOT_UPDATE_COLUMN" xml:space="preserve">
+  <data name="GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN" xml:space="preserve">
     <value>Cannot update the column.</value>
   </data>
   <data name="PROP_SHOWFOCUS_DESC" xml:space="preserve">
@@ -903,13 +873,13 @@ Code: 0x{2}</value>
   <data name="VERB_SAVE_THEME" xml:space="preserve">
     <value>Save theme...</value>
   </data>
-  <data name="GOR_CANNOT_READ_THEME" xml:space="preserve">
+  <data name="GOR_ERR_FLATFORM_CANNOT_READ_THEME" xml:space="preserve">
     <value>Cannot read theme xml file.</value>
   </data>
-  <data name="GOR_DLG_LOAD_THEME" xml:space="preserve">
+  <data name="GOR_TEXT_LOAD_THEME" xml:space="preserve">
     <value>Load theme</value>
   </data>
-  <data name="GOR_DLG_SAVE_THEME" xml:space="preserve">
+  <data name="GOR_TEXT_SAVE_THEME" xml:space="preserve">
     <value>Save theme as...</value>
   </data>
   <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
@@ -918,13 +888,10 @@ Code: 0x{2}</value>
   <data name="GOR_FILE_EXTENSION_DLG_FORMAT" xml:space="preserve">
     <value>{0} (*.{1})</value>
   </data>
-  <data name="GOR_ERR_CANNOT_DISPOSE_LOG_FROM_OTHER_THREAD" xml:space="preserve">
-    <value>Cannot dispose the log object from a thread that did not create the object.</value>
-  </data>
   <data name="GOR_ERR_ACTIVATOR_TYPE_MISMATCH" xml:space="preserve">
     <value>The type [{0}] is not the same as the generic type [{1}].</value>
   </data>
-  <data name="GOR_ERR_CANNOT_FIND_CONSTRUCTOR" xml:space="preserve">
+  <data name="GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR" xml:space="preserve">
     <value>Could not find an applicable constructor on type [{0}] with the specified parameter types.</value>
   </data>
   <data name="GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH" xml:space="preserve">
@@ -935,12 +902,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_PROPERTY_TYPE_MISMATCH" xml:space="preserve">
     <value>The property '{0}' has a type of [{1}], which is not the same as the generic [{2}].</value>
-  </data>
-  <data name="GOR_ERR_PROP_GET_NOT_IMPLEMENTED" xml:space="preserve">
-    <value>The property '{0}' on type [{1}] does not have a property getter.</value>
-  </data>
-  <data name="GOR_ERR_PROP_SET_NOT_IMPLEMENTED" xml:space="preserve">
-    <value>The property '{0}' on type [{1}] does not have a property setter.</value>
   </data>
   <data name="GOR_ERR_PATH_NOT_FOUND" xml:space="preserve">
     <value>The path '{0}' was not found in this collection.</value>
@@ -966,9 +927,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_TIMING_NO_TIMER" xml:space="preserve">
     <value>No timer has been assigned to the timing data.</value>
   </data>
-  <data name="GOR_ERR_CHUNK_OUT_OF_BOUNDS" xml:space="preserve">
-    <value>The requested size of {0} is beyond the end of the current chunk ({1}).</value>
-  </data>
   <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
     <value>The mode must be either [Read] or [Write].</value>
   </data>
@@ -983,12 +941,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_STREAM_POS_OUT_OF_RANGE" xml:space="preserve">
     <value>The stream position must be 0 or greater.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_POS_SIZE_TOO_LARGE" xml:space="preserve">
-    <value>The stream size of {0} bytes, with a starting position of {1} bytes is too large for the parent stream, which has a length of {2} bytes.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_ALREADY_OPEN" xml:space="preserve">
-    <value>The chunk file is already open in [{0}] mode.</value>
   </data>
   <data name="GOR_ERR_CHUNK_FILE_HEADER_MISMATCH" xml:space="preserve">
     <value>The header ID of the chunk file is {0}, this value is unrecognized. The chunk file could be out of date, or the file is not a chunk file.</value>
@@ -1008,13 +960,10 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CHUNK_RESERVED" xml:space="preserve">
     <value>The chunk ID 0x{0} is already the ID of a reserved value.</value>
   </data>
-  <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
-    <value>The chunk at offset 0x{0} has does not match the chunk ID of 0x{1}.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_SIZE_TOO_SMALL" xml:space="preserve">
-    <value>The chunk file is corrupt. The recorded file size {0}, is too small.</value>
-  </data>
   <data name="GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE" xml:space="preserve">
     <value>The data stream cannot resize memory that was pinned.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
+    <value>The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}.</value>
   </data>
 </root>

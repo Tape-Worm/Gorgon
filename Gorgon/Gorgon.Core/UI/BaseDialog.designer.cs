@@ -77,7 +77,7 @@ namespace Gorgon.UI
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(55, 30);
 			this.buttonOK.TabIndex = 10;
-			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_OK;
+			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_OK;
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonOK.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			// 

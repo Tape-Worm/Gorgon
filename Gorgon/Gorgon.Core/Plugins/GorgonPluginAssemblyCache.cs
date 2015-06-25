@@ -315,7 +315,7 @@ namespace Gorgon.Plugins
 			
 			if (string.IsNullOrWhiteSpace(pluginPath))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginPath");
 			}
 
 			pluginPath = Path.GetFullPath(pluginPath);
@@ -347,7 +347,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(pluginPath))
 			{
-				throw new FileNotFoundException(string.Format(Resources.GOR_PLUGIN_CANNOT_FIND_FILE,
+				throw new FileNotFoundException(string.Format(Resources.GOR_ERR_PLUGIN_CANNOT_FIND_FILE,
 					assemblyFile));
 			}
 
@@ -417,7 +417,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(assemblyFile))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyFile");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyFile");
 			}
 
 			return EnumeratePlugins(FindPluginAssembly(assemblyFile));
@@ -460,7 +460,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrEmpty(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
 			}
 
 			AssemblyName assemblyName;
@@ -499,7 +499,7 @@ namespace Gorgon.Plugins
 
 			if (assembly == null)
 			{
-				throw new GorgonException(GorgonResult.InvalidFileFormat, string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName));
+				throw new GorgonException(GorgonResult.InvalidFileFormat, string.Format(Resources.GOR_ERR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName));
 			}
 
 			if (!newAssembly)
@@ -527,7 +527,7 @@ namespace Gorgon.Plugins
 
 			if (string.IsNullOrWhiteSpace(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
 			}
 
 			AssemblyName assemblyName = FindPluginAssembly(assemblyPath);

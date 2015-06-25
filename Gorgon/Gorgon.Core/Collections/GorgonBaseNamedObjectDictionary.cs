@@ -341,12 +341,12 @@ namespace Gorgon.Collections
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
 			if (!Contains(name))
 			{
-				throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, name));
+				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
 			}
 
 			_list.Remove(name);

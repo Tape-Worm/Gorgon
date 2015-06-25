@@ -71,7 +71,7 @@ namespace Gorgon.UI
 			this.buttonOK.Location = new System.Drawing.Point(12, 78);
 			this.buttonOK.Size = new System.Drawing.Size(55, 30);
 			this.buttonOK.TabIndex = 0;
-			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_YES;
+			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_YES;
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
 			// 
 			// pictureDialog
@@ -91,7 +91,7 @@ namespace Gorgon.UI
 			this.buttonNo.Name = "buttonNo";
 			this.buttonNo.Size = new System.Drawing.Size(55, 30);
 			this.buttonNo.TabIndex = 1;
-			this.buttonNo.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_NO;
+			this.buttonNo.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_NO;
 			this.buttonNo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonNo.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
@@ -109,7 +109,7 @@ namespace Gorgon.UI
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(79, 30);
 			this.buttonCancel.TabIndex = 2;
-			this.buttonCancel.Text = global::Gorgon.Core.Properties.Resources.GOR_DLG_CANCEL;
+			this.buttonCancel.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_CANCEL;
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this.buttonCancel.Visible = false;

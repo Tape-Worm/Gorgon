@@ -92,7 +92,7 @@ namespace Gorgon.UI
 			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkToAll.Size = new System.Drawing.Size(243, 19);
 			this.checkToAll.TabIndex = 12;
-			this.checkToAll.Text = Resources.GOR_DLG_TO_ALL;
+			this.checkToAll.Text = Resources.GOR_TEXT_TO_ALL;
 			this.checkToAll.UseVisualStyleBackColor = false;
 			// 
 			// ConfirmationDialogEx

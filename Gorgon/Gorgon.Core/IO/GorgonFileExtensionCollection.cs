@@ -85,7 +85,7 @@ namespace Gorgon.IO
 
 			if (Contains(extension))
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_FILE_EXTENSION_EXISTS, extension.Extension));
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_EXISTS, extension.Extension));
 			}
 
 			Items.Add(extension.Extension, extension);
