@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 
@@ -33,18 +34,25 @@ namespace Gorgon.IO
 	/// <summary>
 	/// An extension and description for a file.
 	/// </summary>
-	/// <remarks>This type is useful when building a filter list for a file dialog.</remarks>
+	/// <remarks>
+	/// <para>
+	/// This type allows for easy manipulation of file extensions and their descriptions when populating a <see cref="OpenFileDialog"/>, or <see cref="SaveFileDialog"/> extension list.
+	/// </para>
+	/// <para>
+	/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
+	/// </para>
+	/// </remarks>
 	public struct GorgonFileExtension
 		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, IGorgonNamedObject
 	{
 		#region Variables.
 		/// <summary>
-		/// Extension (without the leading .) for the file system writer plug-in file.
+		/// The file extension without the leading period.
 		/// </summary>
 		public readonly string Extension;
 
 		/// <summary>
-		/// Friendly human-readable description of the file type.
+		/// The description of the file type.
 		/// </summary>
 		public readonly string Description;
 		#endregion
@@ -62,7 +70,7 @@ namespace Gorgon.IO
 		}
 		#endregion
 
-		#region Methods.
+		#region Operators.
 		/// <summary>
 		/// Operator to return whether 2 instances are equal.
 		/// </summary>
@@ -138,7 +146,9 @@ namespace Gorgon.IO
 		{
 			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
 		}
+		#endregion
 
+		#region Methods.
 		/// <summary>
 		/// Function to return if instances are equal.
 		/// </summary>
@@ -186,16 +196,7 @@ namespace Gorgon.IO
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Extension, Description);
-		}
-
-		/// <summary>
-		/// Function to return this extension as a formatted value suitable for a windows file dialog extension description.
-		/// </summary>
-		/// <returns>The extension formatted as "Description (*.ext)".</returns>
-		public string ToDialogDescription()
-		{
-			return string.Format(Resources.GOR_FILE_EXTENSION_DLG_FORMAT, Description, Extension);
+			return string.Format(Resources.GOR_TOSTR_FILE_EXTENSION, Description, Extension);
 		}
 		#endregion
 

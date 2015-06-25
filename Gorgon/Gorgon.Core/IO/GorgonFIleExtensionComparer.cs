@@ -24,40 +24,61 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace Gorgon.IO
 {
 	/// <summary>
-	/// A comparer used to determine equality between file extensions.
+	/// A comparer used to perform a comparison on two instances of <see cref="GorgonFileExtension"/>.
 	/// </summary>
 	public class GorgonFileExtensionComparer
-		: IEqualityComparer<GorgonFileExtension>
+		: IComparer<GorgonFileExtension>
 	{
-		#region IEqualityComparer<GorgonFileExtension> Members
+		#region IComparer<GorgonFileExtension> Members
 		/// <summary>
-		/// Determines whether the specified objects are equal.
+		/// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
 		/// </summary>
-		/// <param name="x">The first object of type <see cref="GorgonFileExtension"/> to compare.</param>
-		/// <param name="y">The second object of type <see cref="GorgonFileExtension"/> to compare.</param>
+		/// <param name="x">The first object to compare.</param>
+		/// <param name="y">The second object to compare.</param>
 		/// <returns>
-		/// true if the specified objects are equal; otherwise, false.
+		/// <para>
+		/// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.
+		/// </para>
+		/// <list type="table">
+		///		<listheader>
+		///			<term>Value</term>
+		///			<description>Meaning</description>
+		///		</listheader>
+		///		<item>
+		///			<term>
+		///			Less than zero
+		///			</term>
+		///			<description>
+		///			<paramref name="x" /> is less than <paramref name="y" />.
+		///			</description>			
+		///		</item>
+		///		<item>
+		///			<term>
+		///			Zero
+		///			</term>
+		///			<description>
+		///			<paramref name="x" /> equals <paramref name="y" />.
+		///			</description>
+		///		</item>
+		///		<item>
+		///			<term>
+		///			Greater than zero
+		///			</term>
+		///			<description>
+		///			<paramref name="x" /> is greater than <paramref name="y" />.
+		///			</description>
+		///		</item>
+		/// </list>
 		/// </returns>
-		bool IEqualityComparer<GorgonFileExtension>.Equals(GorgonFileExtension x, GorgonFileExtension y)
+		public int Compare(GorgonFileExtension x, GorgonFileExtension y)
 		{
-			return GorgonFileExtension.Equals(ref x, ref y);
-		}
-
-		/// <summary>
-		/// Returns a hash code for this instance.
-		/// </summary>
-		/// <param name="obj">The object.</param>
-		/// <returns>
-		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
-		/// </returns>
-		int IEqualityComparer<GorgonFileExtension>.GetHashCode(GorgonFileExtension obj)
-		{
-			return obj.GetHashCode();
+			return string.Compare(x.Extension, y.Extension, StringComparison.OrdinalIgnoreCase);
 		}
 		#endregion
 	}

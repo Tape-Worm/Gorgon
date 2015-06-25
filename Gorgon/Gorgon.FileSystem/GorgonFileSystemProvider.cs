@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 
@@ -98,7 +99,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return a list of preferred file extensions (if applicable).
 		/// </summary>
-		public GorgonFileExtensionCollection PreferredExtensions
+		public IGorgonNamedObjectDictionary<GorgonFileExtension> PreferredExtensions
 		{
 			get;
 			private set;

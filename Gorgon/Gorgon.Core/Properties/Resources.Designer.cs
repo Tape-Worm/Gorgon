@@ -274,6 +274,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file extension &apos;{0}&apos; was not found in this collection..
+        /// </summary>
+        internal static string GOR_ERR_FILE_EXTENSION_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_ERR_FILE_EXTENSION_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read theme xml file..
         /// </summary>
         internal static string GOR_ERR_FLATFORM_CANNOT_READ_THEME {
@@ -680,15 +689,6 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} (*.{1}).
-        /// </summary>
-        internal static string GOR_FILE_EXTENSION_DLG_FORMAT {
-            get {
-                return ResourceManager.GetString("GOR_FILE_EXTENSION_DLG_FORMAT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to (Theme).
         /// </summary>
         internal static string GOR_FLAT_THEME_TEXT {
@@ -923,7 +923,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File extension: .{0} - {1}.
+        ///   Looks up a localized string similar to {0} (*.{1}).
         /// </summary>
         internal static string GOR_TOSTR_FILE_EXTENSION {
             get {

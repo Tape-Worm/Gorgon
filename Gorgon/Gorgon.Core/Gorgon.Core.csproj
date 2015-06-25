@@ -153,6 +153,7 @@
     <Compile Include="IO\GorgonChunkFile.cs" />
     <Compile Include="IO\GorgonChunkFileReader.cs" />
     <Compile Include="IO\GorgonChunkFileWriter.cs" />
+    <Compile Include="IO\GorgonFileExtensionEqualityComparer.cs" />
     <Compile Include="IO\GorgonStreamWrapper.cs" />
     <Compile Include="IO\_Interfaces\IGorgonChunkFileWriter.cs" />
     <Compile Include="IO\_Interfaces\IGorgonChunkFileReader.cs" />

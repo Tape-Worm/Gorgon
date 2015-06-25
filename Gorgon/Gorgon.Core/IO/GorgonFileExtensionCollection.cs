@@ -34,13 +34,12 @@ namespace Gorgon.IO
 	/// <summary>
 	/// A collection of file extensions.
 	/// </summary>
-	/// <remarks>This collection is useful for building a series of file type descriptions for a file dialog.</remarks>
 	public class GorgonFileExtensionCollection
 		: GorgonBaseNamedObjectDictionary<GorgonFileExtension>
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to set or return an extension in the list.
+		/// Property to set or return an extension in the collection.
 		/// </summary>
 		public GorgonFileExtension this[string extension]
 		{
@@ -49,6 +48,11 @@ namespace Gorgon.IO
 				if (extension.StartsWith(".", StringComparison.Ordinal))
 				{
 					extension = extension.Substring(1);
+				}
+
+				if (!Contains(extension))
+				{
+					throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
 				}
 
 				return Items[extension];
@@ -73,9 +77,9 @@ namespace Gorgon.IO
 
 		#region Methods.
 		/// <summary>
-		/// Function to add a file extension to the list.
+		/// Function to add a file extension to the collection.
 		/// </summary>
-		/// <param name="extension">Extension to add.</param>
+		/// <param name="extension">Extension to add to the collection.</param>
 		public void Add(GorgonFileExtension extension)
 		{
 			if (extension.Extension == null)
@@ -92,11 +96,18 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Function to remove a file extension from the list.
+		/// Function to remove a file extension from the collection.
 		/// </summary>
-		/// <param name="extension">Extension to remove.</param>
+		/// <param name="extension">The file extension to remove from the collection.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
 		public void Remove(string extension)
 		{
+			if (extension == null)
+			{
+				throw new ArgumentNullException("extension");
+			}
+
 			if (extension.StartsWith(".", StringComparison.Ordinal))
 			{
 				extension = extension.Substring(1);
@@ -104,28 +115,29 @@ namespace Gorgon.IO
 
 			if (!Contains(extension))
 			{
-				throw new KeyNotFoundException();
+				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
 			}
 
 			Items.Remove(extension);
 		}
 
 		/// <summary>
-		/// Function to remove a file extension from the list.
+		/// Function to remove a file extension from the collection.
 		/// </summary>
-		/// <param name="extension"></param>
+		/// <param name="extension">The file extension to remove from the collection.</param>
+		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
 		public void Remove(GorgonFileExtension extension)
 		{
 			if (!Contains(extension))
 			{
-				throw new KeyNotFoundException();
+				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
 			}
-
+			
 			RemoveItem(extension);
 		}
 
 		/// <summary>
-		/// Function to clear all items from the list.
+		/// Function to clear all items from the collection.
 		/// </summary>
 		public void Clear()
 		{

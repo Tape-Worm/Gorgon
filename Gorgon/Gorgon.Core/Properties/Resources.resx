@@ -738,9 +738,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_FILE_EXTENSION_EXISTS" xml:space="preserve">
     <value>The file extension '{0}' already exists in this collection.</value>
   </data>
-  <data name="GOR_TOSTR_FILE_EXTENSION" xml:space="preserve">
-    <value>File extension: .{0} - {1}</value>
-  </data>
   <data name="PROP_BORDERCOLOR_DESC" xml:space="preserve">
     <value>Sets the color of the border on the form when Border is set to true.</value>
   </data>
@@ -885,7 +882,7 @@ Code: 0x{2}</value>
   <data name="GOR_TEXT_XML_FILTER" xml:space="preserve">
     <value>Gorgon theme XML Files (*.xml)|*.xml</value>
   </data>
-  <data name="GOR_FILE_EXTENSION_DLG_FORMAT" xml:space="preserve">
+  <data name="GOR_TOSTR_FILE_EXTENSION" xml:space="preserve">
     <value>{0} (*.{1})</value>
   </data>
   <data name="GOR_ERR_ACTIVATOR_TYPE_MISMATCH" xml:space="preserve">
@@ -965,5 +962,8 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
     <value>The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}.</value>
+  </data>
+  <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
+    <value>The file extension '{0}' was not found in this collection.</value>
   </data>
 </root>

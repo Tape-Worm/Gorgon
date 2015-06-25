@@ -195,7 +195,7 @@ namespace Gorgon.Editor
 		{
 			_log = log;
 			_scratchArea = scratchArea;
-			_providers = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new GorgonFileExtensionComparer());
+			_providers = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new GorgonFileExtensionEqualityComparer());
 			_packedFileSystem = packFileSystem;
 			_plugInRegistry = plugInRegistry;
 
