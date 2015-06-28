@@ -966,4 +966,52 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
     <value>The file extension '{0}' was not found in this collection.</value>
   </data>
+  <data name="GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE" xml:space="preserve">
+    <value>The array element type is not a value type.</value>
+  </data>
+  <data name="GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID" xml:space="preserve">
+    <value>The array element type does not have a structure layout, or the structure layout is not valid.</value>
+  </data>
+  <data name="GOR_ERR_DATASTREAM_POINTER_IS_NULL" xml:space="preserve">
+    <value>The pointer passed to the stream is NULL.</value>
+  </data>
+  <data name="GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The stream size must be 0 or greater.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_CANNOT_ALLOC_x86" xml:space="preserve">
+    <value>Cannot allocate more than 2GB on an x86 platform.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_COUNT_TOO_SMALL" xml:space="preserve">
+    <value>The count should be {0} or greater.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE" xml:space="preserve">
+    <value>The index: {0} + the count: {1} is larger than the array.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO" xml:space="preserve">
+    <value>The index must be equal to or greater than 0.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS" xml:space="preserve">
+    <value>The array should have at least 1 element.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE" xml:space="preserve">
+    <value>The offset: {0} + the size: {1} is larger than the buffer.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The size must be greater than 0.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_TYPE_INVALID" xml:space="preserve">
+    <value>The type '{0}' does not have a structure layout, or the structure layout is not valid.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_TYPE_NOT_VALUETYPE" xml:space="preserve">
+    <value>The type '{0}' is not a value type.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_BUFFER_OVERRUN" xml:space="preserve">
+    <value>The size of the data, plus the offset would result in a buffer overrun.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_OFFSET_TOO_SMALL" xml:space="preserve">
+    <value>The offset must be 0 or greater.</value>
+  </data>
+  <data name="GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT" xml:space="preserve">
+    <value>The stream type only supports 2GB of memory, the memory held by this object is too large.</value>
+  </data>
 </root>

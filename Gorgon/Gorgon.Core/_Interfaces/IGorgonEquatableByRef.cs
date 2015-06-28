@@ -31,7 +31,7 @@ namespace Gorgon.Core
 	/// <summary>
 	/// Extends the <see cref="IEquatable{T}"/> type to pass by reference.
 	/// </summary>	
-	/// <typeparam name="T">The type to use for comparison.  Must be a value type.</typeparam>
+	/// <typeparam name="T">The type to use for comparison.  Must be a value or primitive type.</typeparam>
 	/// <remarks>
 	/// <para>
 	/// This interface extends the <see cref="IEquatable{T}"/> interface to use references in the Equals parameter.  Passing values by reference is much faster than passing by value on the stack 

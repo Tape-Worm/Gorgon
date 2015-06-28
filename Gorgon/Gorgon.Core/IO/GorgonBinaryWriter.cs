@@ -169,7 +169,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a generic value to the stream.
 		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Value to write to the stream.</param>
 		/// <remarks>
 		/// <para>
@@ -227,7 +227,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
@@ -317,7 +317,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
@@ -351,7 +351,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to write.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to write.</param>
 		/// <remarks>
 		/// <para>

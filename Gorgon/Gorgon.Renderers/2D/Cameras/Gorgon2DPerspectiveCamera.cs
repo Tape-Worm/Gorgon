@@ -225,7 +225,7 @@ namespace Gorgon.Renderers
 			{
 				Matrix rotation;						// Rotation matrix.
 
-				Matrix.RotationZ(_angle.Radians(), out rotation);
+				Matrix.RotationZ(_angle.ToRadians(), out rotation);
 				Matrix.Multiply(ref rotation, ref center, out center);
 			}
 			// ReSharper restore CompareOfFloatsByEqualityOperator

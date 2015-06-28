@@ -121,12 +121,13 @@ namespace Gorgon.Examples
 					break;
 				case KeyboardKeys.C:
 					// Fill the back up image with white.
-			        using(var imageLock = _backupImage.Lock(BufferLockFlags.Write))
-			        {
-						imageLock.Data.BaseIntPtr.FillMemory(0xFF, (int)imageLock.Data.Length);
-			        }
+					using (var imageLock = _backupImage.Lock(BufferLockFlags.Write))
+					{
+#warning We really shouldn't be using DirectAccess here as it's unsupported. Replace with a "buffer" class or something.
+						DirectAccess.FillMemory(imageLock.Data.BaseIntPtr, 0xff, (int)imageLock.Data.Length);
+					}
 
-			        _backBuffer.CopySubResource(_backupImage,
+					_backBuffer.CopySubResource(_backupImage,
 			            new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height));
 			        break;
 				case KeyboardKeys.J:
@@ -423,7 +424,8 @@ namespace Gorgon.Examples
 				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
 				using (var textureData = _backupImage.Lock(BufferLockFlags.Write))
 				{
-					textureData.Data.BaseIntPtr.FillMemory(0xFF, (int)textureData.Data.Length);
+#warning We really shouldn't be using DirectAccess here as it's unsupported. Replace with a "buffer" class or something.
+					DirectAccess.FillMemory(textureData.Data.BaseIntPtr, 0xff, (int)textureData.Data.Length);
 				}
 
 				// Set the mouse range and position.

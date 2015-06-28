@@ -19,13 +19,14 @@
     <HtmlHelpName>Gorgon</HtmlHelpName>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="Gorgon.IO" isExposed="True">
-  <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkedFormat" filterName="GorgonChunkedFormat" isExposed="False" />
-  <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkReader" filterName="GorgonChunkReader" isExposed="False" />
-  <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkWriter" filterName="GorgonChunkWriter" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="Gorgon.Plugins" isExposed="True">
-  <Filter entryType="Class" fullName="Gorgon.Plugins.GorgonPlugInFactory" filterName="GorgonPlugInFactory" isExposed="False" />
-</Filter></ApiFilter>
+        <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkedFormat" filterName="GorgonChunkedFormat" isExposed="False" />
+        <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkReader" filterName="GorgonChunkReader" isExposed="False" />
+        <Filter entryType="Class" fullName="Gorgon.IO.GorgonChunkWriter" filterName="GorgonChunkWriter" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="Gorgon.Plugins" isExposed="True">
+        <Filter entryType="Class" fullName="Gorgon.Plugins.GorgonPlugInFactory" filterName="GorgonPlugInFactory" isExposed="False" />
+      </Filter>
+    </ApiFilter>
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, TypeParameter</MissingTags>
@@ -111,7 +112,7 @@ The types in here are inherently dangerous to use because they offer little in t
     <PlugInConfigurations>
     </PlugInConfigurations>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
-    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
+    <HelpFileFormat>Website</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>

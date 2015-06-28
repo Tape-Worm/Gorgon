@@ -169,7 +169,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a generic value from the stream.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
 		/// <returns>The value in the stream.</returns>
 		/// <remarks>
 		/// <para>
@@ -229,7 +229,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of array elements to copy.</param>
@@ -314,7 +314,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <remarks>
@@ -344,7 +344,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
 		/// <param name="value">Array of values to read.</param>
 		/// <remarks>
 		/// <para>
@@ -376,7 +376,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a range of generic values.
 		/// </summary>
-		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to read.  Must be a value or primitive type.</typeparam>
 		/// <param name="count">Number of array elements to copy.</param>
 		/// <returns>An array filled with values of type <typeparamref name="T"/>.</returns>
 		/// <remarks>

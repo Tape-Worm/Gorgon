@@ -425,7 +425,7 @@ namespace Gorgon.Graphics.Example
 		    Radius = radius;
 			PrimitiveType = PrimitiveType.TriangleList;
 		    Quaternion orientation;
-			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
+			Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out orientation);
 		    Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 			BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);

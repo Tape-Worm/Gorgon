@@ -400,7 +400,7 @@ namespace Gorgon.Graphics.Example
 			// Basically we're telling the renderer that we want to have a vertical FOV of 75 degrees, with the aspect ratio
 			// based on our form width and height.  The final values indicate how to distribute Z values across depth (tip: 
 			// it's not linear).
-			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 
 			// Create our constant buffer and backing store.			
 			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible
@@ -519,7 +519,7 @@ namespace Gorgon.Graphics.Example
 		static void _swap_Resized(object sender, EventArgs e)
 		{
 			// Reset our projection matrix to match our new size.
-			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = Matrix.PerspectiveFovLH((75.0f).ToRadians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 			// Update our viewport to reflect the new size.
 			Graphics.Rasterizer.SetViewport(
 				new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)

@@ -419,7 +419,7 @@ namespace Gorgon.Renderers
 			// ReSharper disable once CompareOfFloatsByEqualityOperator
 			if (Angle != 0.0f)
 			{
-				float angle = Angle.Radians();						// Angle in radians.
+				float angle = Angle.ToRadians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
@@ -473,7 +473,7 @@ namespace Gorgon.Renderers
 			// ReSharper disable once CompareOfFloatsByEqualityOperator
 			if (Angle != 0.0f)
 			{
-				float angle = Angle.Radians();						// Angle in radians.
+				float angle = Angle.ToRadians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 

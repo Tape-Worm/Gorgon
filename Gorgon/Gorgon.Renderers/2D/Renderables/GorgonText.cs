@@ -820,7 +820,7 @@ namespace Gorgon.Renderers
 			int vertexIndex = 0;
 			Vector2 pos = Vector2.Zero;
 			float outlineOffset = 0;
-			float angle = _angle.Radians();						// Angle in radians.
+			float angle = _angle.ToRadians();						// Angle in radians.
 			float cosVal = angle.Cos();							// Cached cosine.
 			float sinVal = angle.Sin();							// Cached sine.
 

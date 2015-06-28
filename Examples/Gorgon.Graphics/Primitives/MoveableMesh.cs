@@ -129,7 +129,7 @@ namespace Gorgon.Graphics.Example
 
 				if (_needsRotTransform)
 				{
-					var rads = new Vector3(_rotation.X.Radians(), _rotation.Y.Radians(), _rotation.Z.Radians());
+					var rads = new Vector3(_rotation.X.ToRadians(), _rotation.Y.ToRadians(), _rotation.Z.ToRadians());
 					Matrix.RotationYawPitchRoll(rads.Y, rads.X, rads.Z, out _rotMatrix);
 					_needsRotTransform = false;
 				}

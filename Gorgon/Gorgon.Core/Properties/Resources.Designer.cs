@@ -247,6 +247,132 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The size of the data, plus the offset would result in a buffer overrun..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_BUFFER_OVERRUN {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_BUFFER_OVERRUN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot allocate more than 2GB on an x86 platform..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_CANNOT_ALLOC_x86 {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_CANNOT_ALLOC_x86", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The count should be {0} or greater..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_COUNT_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_COUNT_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The index: {0} + the count: {1} is larger than the array..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The index must be equal to or greater than 0..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset must be 0 or greater..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_OFFSET_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_OFFSET_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The array should have at least 1 element..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset: {0} + the size: {1} is larger than the buffer..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream type only supports 2GB of memory, the memory held by this object is too large..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size must be greater than 0..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; does not have a structure layout, or the structure layout is not valid..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_TYPE_INVALID {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_TYPE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a value type..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_TYPE_NOT_VALUETYPE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_TYPE_NOT_VALUETYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The array element type is not a value type..
+        /// </summary>
+        internal static string GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The array element type does not have a structure layout, or the structure layout is not valid..
+        /// </summary>
+        internal static string GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The data stream encapsulates a pointer that it does not own and cannot be resized..
         /// </summary>
         internal static string GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE {
@@ -261,6 +387,24 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE {
             get {
                 return ResourceManager.GetString("GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The pointer passed to the stream is NULL..
+        /// </summary>
+        internal static string GOR_ERR_DATASTREAM_POINTER_IS_NULL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATASTREAM_POINTER_IS_NULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream size must be 0 or greater..
+        /// </summary>
+        internal static string GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL", resourceCulture);
             }
         }
         

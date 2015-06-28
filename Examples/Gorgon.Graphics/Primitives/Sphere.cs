@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Example
 			IndexCount = 6 * ringCount * (segmentCount + 1);
 		    TriangleCount = IndexCount / 3;
 
-			Quaternion.RotationYawPitchRoll(angle.Y.Radians(), angle.X.Radians(), angle.Z.Radians(), out orientation);
+			Quaternion.RotationYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians(), out orientation);
 		    Matrix.RotationQuaternion(ref orientation, out _orientation);
 
 		    unsafe

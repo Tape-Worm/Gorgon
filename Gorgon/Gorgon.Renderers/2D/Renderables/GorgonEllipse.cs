@@ -313,7 +313,7 @@ namespace Gorgon.Renderers
 			if (Angle != 0.0f)
 			{
 				Vector2 rotVector = result;
-				float angle = Angle.Radians();						// Angle in radians.
+				float angle = Angle.ToRadians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
@@ -358,7 +358,7 @@ namespace Gorgon.Renderers
 
 				if (Angle != 0.0f)
 				{
-					float angle = Angle.Radians();		// Angle in radians.
+					float angle = Angle.ToRadians();		// Angle in radians.
 					float cosVal = angle.Cos();		    // Cached cosine.
 					float sinVal = angle.Sin();		    // Cached sine.
 

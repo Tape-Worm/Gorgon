@@ -137,7 +137,7 @@ namespace Gorgon.Graphics.Example
 			float aspect = screenWidth / screenHeight;
 			Matrix projection;
 
-			Matrix.PerspectiveFovLH(fov.Radians(), aspect, nearZ, farZ, out projection);
+			Matrix.PerspectiveFovLH(fov.ToRadians(), aspect, nearZ, farZ, out projection);
 
 		    _viewProj.Projection = projection;
 

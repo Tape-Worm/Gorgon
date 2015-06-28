@@ -236,7 +236,7 @@ namespace Gorgon.Graphics.Example
 			};
 			_materialBuffer.Update(ref sphereMat);
 
-			_yPos = (_objRotation.Radians().Sin().Abs() * 2.0f) - 1.10f;
+			_yPos = (_objRotation.ToRadians().Sin().Abs() * 2.0f) - 1.10f;
 			_sphere.Position = new Vector3(-2.0f, _yPos, 0.75f);
 			_sphere.Rotation = new Vector3(_objRotation, _objRotation, 0);
 			world = _sphere.World;
@@ -369,9 +369,9 @@ namespace Gorgon.Graphics.Example
 
 			if (!_lock)
 			{
-				Matrix.RotationYawPitchRoll(_cameraRotation.X.Radians(),
-				                            _cameraRotation.Y.Radians(),
-				                            _cameraRotation.Z.Radians(),
+				Matrix.RotationYawPitchRoll(_cameraRotation.X.ToRadians(),
+				                            _cameraRotation.Y.ToRadians(),
+				                            _cameraRotation.Z.ToRadians(),
 				                            out rotMatrix);
 				Vector3.TransformCoordinate(ref forward, ref rotMatrix, out lookAt);
 				Vector3.TransformCoordinate(ref right, ref rotMatrix, out rightDir);

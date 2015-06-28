@@ -278,16 +278,16 @@ namespace Gorgon.Examples
 			{
 				if (sprayVectorDelta.X < 0.0f)
 				{
-					sprayAngle = (-90.0f).Radians();
+					sprayAngle = (-90.0f).ToRadians();
 				}
 				else if (sprayVectorDelta.X > 0.0f)
 				{
-					sprayAngle = (90.0f).Radians();
+					sprayAngle = (90.0f).ToRadians();
 				}
 			}
 			else
 			{
-				sprayAngle = (sprayVectorDelta.Y).ATan(sprayVectorDelta.X) + (-45.0f).Radians();
+				sprayAngle = (sprayVectorDelta.Y).ATan(sprayVectorDelta.X) + (-45.0f).ToRadians();
 			}
 
 			// Get sine and cosine for the angle.

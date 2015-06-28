@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,6 +33,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
+using Gorgon.Math;
 using Gorgon.Native;
 
 namespace Gorgon.IO
@@ -64,7 +66,7 @@ namespace Gorgon.IO
 	/// its data, and accesses it through the use of either unsafe pointers or <see cref="IntPtr"/> for those .NET languages that don't support raw pointers (e.g. Visual Basic.NET).
 	/// </para>
 	/// <para>
-	/// The object supports a multitude of reading/writing options for primitive data, string data, array data, and even generic types to the stream. For generic types being read or written, the type must 
+	/// The object supports a multitude of reading/writing options for primitive data, array data, and even generic types to the stream. For generic types being read or written, the type must 
 	/// be decorated with a <see cref="StructLayoutAttribute"/> and a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> value. Otherwise, .NET may rearrange the members of the type 
 	/// and the data being read/written will not serialize as expected. Also, for the <see cref="O:Gorgon.IO.GorgonDataStream.Read">Read</see>/<see cref="O:Gorgon.IO.GorgonDataStream.Write">Write</see> methods, 
 	/// the generic type must not use any marshalling (<see cref="MarshalAsAttribute"/>) or reference types. Only primitive types and value types (structs) are allowed. 
@@ -95,19 +97,20 @@ namespace Gorgon.IO
 	/// <note type="caution">
 	/// <para>
 	/// Like most stream based types, it is <i>not</i> safe to use the same instance of this type from multiple threads. Doing so may cause performance degradation, or worse, memory corruption. If multi threading 
-	/// is a possibility and native memory access is required, then the <see cref="DirectAccess"/> class provides less restricted (and less comprehensive) functionality for working with native memory 
-	/// directly. Also, using a raw pointer (<c>void *</c> in C# or <see cref="IntPtr"/> and the <see cref="GorgonIntPtrExtensions"/> in languages that don't support raw pointers), is the best route to manipulating 
-	/// native memory without the worry of concurrency problems that can plague a stream type.
+	/// is a possibility and native memory access is required, then the <see cref="GorgonPointer"/> object provides better functionality for working with native memory directly while providing functions that 
+	/// are better suited to thread safety. 
+	/// </para>
+	/// <para>
+	/// A better interface to dealing with unmanaged memory is through the <see cref="GorgonPointer"/> class.
 	/// </para>
 	/// </note>
 	/// <note type="caution">
 	/// <para>
-	/// Gorgon will be phasing out it's internal usage of this type in favour of more direct access to memory. There may be new native types available for use in the future to supplement this type. This space 
-	/// will be updated with alternatives as well as <c>See Also</c> references.
+	/// Gorgon will be phasing out it's internal usage of this type in favour of more direct access to memory via the <see cref="GorgonPointer"/>
 	/// </para>
 	/// </note>
 	/// </remarks>
-	/// <seealso cref="DirectAccess"/>
+	/// <seealso cref="GorgonPointer"/>
 	public unsafe class GorgonDataStream
 		: Stream
 	{
@@ -353,7 +356,6 @@ namespace Gorgon.IO
 		protected override void Dispose(bool disposing)
 		{
 			// We suppress the base call to Dispose because Stream's Dispose(bool) does nothing.
-
 			if ((_disposed) || (!_ownsPointer) || ((_data == IntPtr.Zero) && (!_handle.IsAllocated)))
 			{
 				return;
@@ -427,7 +429,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to marshal an array of value types into a <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of value to marshal. Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of value to marshal. Must be a value or primitive type.</typeparam>
 		/// <param name="value">An array of values to copy into the stream.</param>
 		/// <returns>A new <see cref="GorgonDataStream"/> containing the marshalled data.</returns>
 		/// <remarks>
@@ -517,7 +519,7 @@ namespace Gorgon.IO
 				else
 				{
 					// We never need to deallocate the structure data because we're only ever using this pointer once.
-					result.WriteMarshal(item, false);
+					result.WriteMarshal(item);
 				}
 			}
 
@@ -839,7 +841,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a list of values to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of data to write. Must be a value or primitive type.</typeparam>
 		/// <param name="buffer">Array of data to write to the stream.</param>
 		/// <param name="offset">Offset into the array to start reading the values from.</param>
 		/// <param name="count">Number of elements in the array to read.</param>
@@ -910,7 +912,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a list of values to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of data to write. Must be a value or primitive type.</typeparam>
 		/// <param name="buffer">Array of data to write to the stream.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is null.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
@@ -932,7 +934,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to write a value to the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to write. Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of data to write. Must be a value or primitive type.</typeparam>
 		/// <param name="item">Value to write.</param>
 		/// <exception cref="EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
@@ -968,7 +970,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read an array of values from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">The type of the values to read. Must be a value type.</typeparam>
+		/// <typeparam name="T">The type of the values to read. Must be a value or primitive type.</typeparam>
 		/// <param name="buffer">Array to deserialize the binary data into.</param>
 		/// <param name="offset">Offset within the array to start copying into.</param>
 		/// <param name="count">Number of elements to copy.</param>
@@ -1039,7 +1041,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read an array of values from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">Type of data to read. Must be a value type.</typeparam>
+		/// <typeparam name="T">Type of data to read. Must be a value or primitive type.</typeparam>
 		/// <param name="count">Number of items to read from the stream.</param>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>
@@ -1060,7 +1062,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read a value from the <see cref="GorgonDataStream"/>.
 		/// </summary>
-		/// <typeparam name="T">The type of the value to read. Must be a value type.</typeparam>
+		/// <typeparam name="T">The type of the value to read. Must be a value or primitive type.</typeparam>
 		/// <returns>The deserialized value from the stream.</returns>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
@@ -1131,7 +1133,7 @@ namespace Gorgon.IO
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 #endif
-			_pointerOffset.CopyTo(pointer, size);
+			DirectAccess.MemoryCopy(pointer, _pointerOffset, size);
 			Position += size;
 		}
 
@@ -1208,7 +1210,7 @@ namespace Gorgon.IO
 			}
 #endif
 
-			_pointerOffset.CopyFrom(pointer, size);
+			DirectAccess.MemoryCopy(_pointerOffset, pointer, size);
 			Position += size;
 		}
 
@@ -1278,7 +1280,7 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the length of the stream is made.</exception>
-		public void WriteMarshal<T>(T data, bool deleteContents)
+		public void WriteMarshal<T>(T data, bool deleteContents = false)
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
 
@@ -1297,7 +1299,7 @@ namespace Gorgon.IO
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 
-			_pointerOffset.MarshalFrom(data, deleteContents);
+			Marshal.StructureToPtr(data, _pointerOffset, deleteContents);
 
 			Position += dataSize;
 		}
@@ -1332,7 +1334,8 @@ namespace Gorgon.IO
 		/// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream was made.</exception>
 		public T ReadMarshal<T>()
 		{
-			int dataSize = Marshal.SizeOf(typeof(T));
+			Type typeT = typeof(T);
+			int dataSize = Marshal.SizeOf(typeT);
 
 #if DEBUG
 			if (!CanRead)
@@ -1351,7 +1354,7 @@ namespace Gorgon.IO
 			}
 #endif
 
-			var value = _pointerOffset.MarshalTo<T>();
+			T value = (T)Marshal.PtrToStructure(_pointerOffset, typeT);
 			Position += dataSize;
 
 			return value;
@@ -1362,21 +1365,46 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
 		/// </summary>
-		/// <param name="data">The data used to initialize the stream.</param>
+		/// <param name="data">An array that will be wrapped by the stream.</param>
 		/// <param name="index">Index inside of the source array to start reading from.</param>
 		/// <param name="count">Number of elements to read.</param>
 		/// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
 		/// <para>-or-</para>
+		/// <para>
 		/// Thrown when the index parameter is larger than the source array.
+		/// </para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the index plus the count parameters total to larger than the size of the array.</exception>
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when the <paramref name="index"/> plus the <paramref name="count"/> parameters total to larger than the size of the array.
+		/// <para>-or-</para>
+		/// <para>
+		/// Thrown when the <paramref name="data"/> array does not contain elements that are value types, or primitive types.
+		/// </para>
+		/// <para>
+		/// -or-
+		/// </para>
+		/// <para>
+		/// Thrown when the <paramref name="data"/> array elements are value types, but do not use the <see cref="StructLayoutAttribute"/>, or the layout is not <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>
+		/// </para>
+		/// </exception>
 		/// <remarks>
-		/// The array elements should all be of the same type, and value types.
-		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.
-		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data" /> parameter array elements will be reflected
-		/// in the stream.
+		/// <para>
+		/// This constructor is meant to wrap and pin an array for reading/writing via this stream. The items in the array must be value types or primitive types. Value types must be decorated with the 
+		/// <see cref="StructLayoutAttribute"/> attribute with a layout of either <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.
+		/// </para>
+		/// <para>
+		/// The data stream does not check for multiple types within the array, so it is important that the developer ensure that all array elements are of the same type. If the array contains a mix of element types 
+		/// then the <see cref="Length"/> of the stream will be incorrect, and the results will be undefined.
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// A pointer to the first array element specified by <paramref name="index"/> will be pinned and released upon disposal of the stream, this will impact garbage collection performance. It is 
+		/// recommended that any operation that requires this constructor be performed quickly to minimize disruption to the garbage collector.
+		/// </para>
+		/// </note>
 		/// </para>
 		/// </remarks>
 		public GorgonDataStream(Array data, int index, int count, StreamAccess status = StreamAccess.ReadWrite)
@@ -1401,23 +1429,55 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 
+			Type elementType = data.GetType().GetElementType();
+
+			Debug.Assert(elementType != null, "Could not get the array element type.");
+
+			if ((!elementType.IsValueType) && (!elementType.IsPrimitive))
+			{
+				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE, "data");
+			}
+			
+			// If the element is a value type, ensure that we have struct layout.
+			if ((elementType.IsValueType) && ((elementType.StructLayoutAttribute == null) || ((!elementType.IsExplicitLayout) && (!elementType.IsLayoutSequential))))
+			{
+				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID, "data");
+			}
+
 			// Pin the array.
 			_handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
-			_length = count * Marshal.SizeOf(data.GetType().GetElementType());
+			_length = count * Marshal.SizeOf(elementType);
 			_pointerOffset = _data;
 			StreamAccess = status;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
 		/// </summary>
-		/// <param name="data">The data used to initialize the stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>The array elements should all be of the same type, and value types.
-		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.  
-		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data"/> parameter array elements will be reflected 
-		/// in the stream.
+		/// <param name="data">An array that will be wrapped by the stream.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when the <paramref name="data"/> array does not contain elements that are value types, or primitive types.
+		/// <para>
+		/// -or-
+		/// </para>
+		/// <para>
+		/// Thrown when the <paramref name="data"/> array elements are value types, but do not use the <see cref="StructLayoutAttribute"/>, or the layout is not <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>
+		/// </para>
+		/// </exception>
+		/// <remarks>
+		/// <para>
+		/// This constructor is meant to wrap and pin an array for reading/writing via this stream. The items in the array must be value types or primitive types. Value types must be decorated with the 
+		/// <see cref="StructLayoutAttribute"/> attribute with a layout of either <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// A pointer to the first array element in the array will be pinned and released upon disposal of the stream, this will impact garbage collection performance. It is 
+		/// recommended that any operation that requires this constructor be performed quickly to minimize disruption to the garbage collector.
+		/// </para>
+		/// </note>
 		/// </para>
 		/// </remarks>
 		public GorgonDataStream(Array data)
@@ -1428,19 +1488,39 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
-		/// <param name="capacity">The capacity of the underlying buffer.</param>
+		/// <param name="capacity">The size of the buffer used by the stream, in bytes.</param>
+		/// <remarks>
+		/// This constructor allocates a buffer of unmanaged native memory and uses that to read/write. Callers of the stream should call <see cref="Dispose"/> when finished with the stream. Otherwise 
+		/// the memory will not be freed until the object is finalized much later.
+		/// </remarks>
 		public GorgonDataStream(int capacity)
 		{
-			AllocateBuffer(capacity);
+			AllocateBuffer(capacity.Max(0));
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
-		/// <param name="source">The source pointer.</param>
-		/// <param name="size">The size of the buffer (in bytes).</param>
+		/// <param name="source">The <see cref="IntPtr"/> wrapping the pointer to the unmanaged memory.</param>
+		/// <param name="size">The size of the data, in bytes.</param>
+		/// <remarks>
+		/// This constructor will wrap an <see cref="IntPtr"/> pointing at unmanaged memory and uses that to read/write. The stream does not own the pointer, and as such a call to <see cref="Dispose"/> will 
+		/// do nothing and therefore optional (although it is recommended for best practise).
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter has a value of <see cref="IntPtr.Zero"/>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
 		public GorgonDataStream(IntPtr source, int size)
 		{
+			if (source == IntPtr.Zero)
+			{
+				throw new ArgumentNullException("source", Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
+			}
+
+			if (size < 0)
+			{
+				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL);
+			}
+
 			_ownsPointer = false;
 			_data = source;
 			_pointerOffset = source;
@@ -1452,10 +1532,26 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
-		/// <param name="source">The source pointer.</param>
-		/// <param name="size">The size of the buffer (in bytes).</param>
+		/// <param name="source">The native pointer to the unmanaged memory.</param>
+		/// <param name="size">The size of the data, in bytes.</param>
+		/// <remarks>
+		/// This constructor will wrap a native pointer that is pointing at unmanaged memory and uses that to read/write. The stream does not own the pointer, and as such a call to <see cref="Dispose"/> will 
+		/// do nothing and therefore optional (although it is recommended for best practise).
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter has a value of <see cref="IntPtr.Zero"/>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
 		public GorgonDataStream(void* source, int size)
 		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source", Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
+			}
+
+			if (size < 0)
+			{
+				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_POINTER_SIZE_TOO_SMALL);
+			}
+
 			_ownsPointer = false;
 			_data = new IntPtr(source);
 			_pointerOffset = _data;
@@ -1465,8 +1561,7 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Releases unmanaged resources and performs other cleanup operations before the
-		/// <see cref="GorgonDataStream"/> is reclaimed by garbage collection.
+		/// Releases unmanaged resources and performs other cleanup operations before the <see cref="GorgonDataStream"/> is reclaimed by garbage collection.
 		/// </summary>
 		~GorgonDataStream()
 		{

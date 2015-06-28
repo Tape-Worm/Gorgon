@@ -206,7 +206,7 @@ namespace Gorgon.Graphics
 				{
 					T value = data.Value;
 					dataPtr = Marshal.AllocHGlobal(bytes);
-					dataPtr.Write(ref value);
+					DirectAccess.WriteValue(dataPtr, ref value);
 					D3DResource.SetPrivateData(guid, bytes, dataPtr);
 				}
 				else
@@ -251,7 +251,8 @@ namespace Gorgon.Graphics
 
 			    D3DResource.GetPrivateData(guid, ref bytes, dataPtr);
 			    T result;
-			    dataPtr.Read(out result);
+
+				DirectAccess.ReadValue(dataPtr, out result);
 
 			    return result;
 			}

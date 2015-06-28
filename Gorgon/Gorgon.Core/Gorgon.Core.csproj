@@ -160,6 +160,7 @@
     <Compile Include="IO\_Interfaces\IGorgonChunk.cs" />
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
     <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
+    <Compile Include="Native\GorgonPointer.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginAssemblyCache.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
@@ -168,7 +169,6 @@
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
-    <Compile Include="Native\_Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\_Extensions\GorgonDebugExtensions.cs" />
     <Compile Include="IO\_Extensions\GorgonIOExtensions.cs" />
     <Compile Include="UI\_Extensions\GorgonListViewExtensions.cs" />
@@ -197,10 +197,10 @@
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="GorgonRandom.cs" />
     <Compile Include="Math\GorgonCatmullRomSpline.cs" />
-    <Compile Include="Native\Win32API.cs">
+    <Compile Include="Native\_Internal\Win32API.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Native\Win32Enums.cs">
+    <Compile Include="Native\_Internal\Win32Enums.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
