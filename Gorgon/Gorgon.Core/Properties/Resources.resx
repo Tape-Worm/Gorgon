@@ -1014,4 +1014,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT" xml:space="preserve">
     <value>The stream type only supports 2GB of memory, the memory held by this object is too large.</value>
   </data>
+  <data name="GOR_ERR_DATABUFF_PTR_DISPOSED" xml:space="preserve">
+    <value>Pointer has been disposed.</value>
+  </data>
 </root>

@@ -45,13 +45,15 @@
     <HelpKINode Title="GorgonNamedObjectList(T).AddRange Method " Url="html/249a717b-257d-473c-53d7-5b90665c2275.htm" />
     <HelpKINode Title="IGorgonNamedObjectList(T).AddRange Method " Url="html/520d9a1a-310d-5bd9-2350-49235c094433.htm" />
   </HelpKINode>
+  <HelpKINode Title="Address property">
+    <HelpKINode Title="GorgonPointerBase.Address Property " Url="html/130dc5f7-1c09-5dc4-8e51-8d954d53d995.htm" />
+    <HelpKINode Title="IGorgonPointer.Address Property " Url="html/f1daf744-7c2c-68c7-09f3-e488fb9077d4.htm" />
+  </HelpKINode>
   <HelpKINode Title="AddTrackedObject method" Url="html/3dc3ac06-c752-4751-3bc8-295e17e47659.htm" />
   <HelpKINode Title="AffineTransformation method" Url="html/3cbecdd2-aeb9-06e7-bf91-f8242351c630.htm" />
   <HelpKINode Title="AffineTransformation2D method" Url="html/aef23341-1b1b-c1b1-9da4-be89482ffdfc.htm" />
-  <HelpKINode Title="Alias method" Url="html/8f0c9adb-f90b-d38c-2684-d52fae2815af.htm" />
   <HelpKINode Title="Alignment enumeration" Url="html/d1b99bc8-f81c-0c81-2f9e-e709d25b85f4.htm" />
   <HelpKINode Title="All enumeration member" Url="html/758222de-1c9c-6ec9-d942-00ef1d3a8c74.htm" />
-  <HelpKINode Title="Allocate method" Url="html/1a808e56-d94b-0fac-b757-6a4a4dd050ea.htm" />
   <HelpKINode Title="AllowBackground property" Url="html/675eef8e-27ac-14f5-3e0c-3a08c1e747bb.htm" />
   <HelpKINode Title="Angle property" Url="html/f6719932-3517-7f34-4983-f65273f91cf2.htm" />
   <HelpKINode Title="ApplicationContext property" Url="html/71297bc6-17cb-5d75-eb51-baf7165ba32d.htm" />
@@ -375,16 +377,25 @@
   </HelpKINode>
   <HelpKINode Title="ConvertToFloat method" Url="html/722d1b7e-dd9e-d284-e515-89c5def0f5a9.htm" />
   <HelpKINode Title="ConvertToHalf method" Url="html/aae56c11-4990-e4d8-e2ed-9171815ff3c0.htm" />
-  <HelpKINode Title="CopyFrom method" Url="html/fd483d50-82bb-d8f8-126a-48737f23a8d8.htm" />
+  <HelpKINode Title="CopyFrom method">
+    <HelpKINode Title="GorgonPointerBase.CopyFrom Method " Url="html/c51a3e3d-4835-f0ca-63a5-f88d60789813.htm" />
+    <HelpKINode Title="IGorgonPointer.CopyFrom Method " Url="html/7c3f56b4-2a6a-35e4-c250-cd878cce5d87.htm" />
+  </HelpKINode>
   <HelpKINode Title="CopyFromPointer method" Url="html/09bf37cd-21ba-21e0-99cd-a9d4754ca79d.htm" />
-  <HelpKINode Title="CopyMemory method" Url="html/83c8a847-a381-e947-8034-d3cf651a90e1.htm" />
+  <HelpKINode Title="CopyMemory method">
+    <HelpKINode Title="GorgonPointerBase.CopyMemory Method " Url="html/aca09b35-a13d-04ea-8794-15e5aa9ce0c2.htm" />
+    <HelpKINode Title="IGorgonPointer.CopyMemory Method " Url="html/19fb08ad-6c5e-25ce-b40e-1a3800d05bd5.htm" />
+  </HelpKINode>
   <HelpKINode Title="CopyTo method">
     <HelpKINode Title="GorgonBaseNamedObjectDictionary(T).CopyTo Method " Url="html/0d7a418d-b349-9b36-94d2-e7035a3f0aaa.htm" />
     <HelpKINode Title="GorgonBaseNamedObjectList(T).CopyTo Method " Url="html/cd3f86e8-f56f-8ce0-9345-3d931e9f7354.htm" />
     <HelpKINode Title="GorgonPluginPathCollection.CopyTo Method " Url="html/33427084-be30-675b-db24-3d73cfe7ac21.htm" />
   </HelpKINode>
   <HelpKINode Title="CopyToAsync method" Url="html/a198fa3d-213b-6e3e-3554-caab5e2b4428.htm" />
-  <HelpKINode Title="CopyToMemoryStream method" Url="html/7a96b0c7-79ba-2bd6-cf05-3ce8be50cce7.htm" />
+  <HelpKINode Title="CopyToMemoryStream method">
+    <HelpKINode Title="GorgonPointerBase.CopyToMemoryStream Method " Url="html/0e8f1f2d-e365-45e4-c531-c9c863971419.htm" />
+    <HelpKINode Title="IGorgonPointer.CopyToMemoryStream Method " Url="html/a7e49951-645c-1752-356f-e77954051ef7.htm" />
+  </HelpKINode>
   <HelpKINode Title="CopyToPointer method" Url="html/9a09096d-7092-3b27-63d5-8ab471a79d09.htm" />
   <HelpKINode Title="CopyToStream method" Url="html/b3d8d2f3-1573-f1ec-e124-0160a3febb79.htm" />
   <HelpKINode Title="Cos method">
@@ -422,6 +433,7 @@
   <HelpKINode Title="CreateProviders method" Url="html/58d273b5-08bc-eac0-5d77-48b0e8c7fd2b.htm" />
   <HelpKINode Title="Cross method" Url="html/4975546a-5fb1-57b4-a757-1934fab90932.htm" />
   <HelpKINode Title="D field" Url="html/a7e26813-c91a-8584-7f24-63c8b5150792.htm" />
+  <HelpKINode Title="DataPointer property" Url="html/18017250-fb58-5a46-0ac4-00c775ef87fd.htm" />
   <HelpKINode Title="Days property">
     <HelpKINode Title="GorgonTimerMultimedia.Days Property " Url="html/168a7974-664a-8fde-3107-d5fceb7e6e57.htm" />
     <HelpKINode Title="GorgonTimerQpc.Days Property " Url="html/e985fc9a-2678-2b3c-7a4d-2bc9426698f7.htm" />
@@ -470,7 +482,13 @@
     <HelpKINode Title="GorgonDataStream.Dispose Method " Url="html/d20d8267-d021-2252-0080-6fba4799e94f.htm" />
     <HelpKINode Title="GorgonFileSystemStream.Dispose Method " Url="html/f3435b81-8fc5-b93e-d155-753d3939f513.htm" />
     <HelpKINode Title="GorgonPluginAssemblyCache.Dispose Method " Url="html/8f157fee-9a82-200e-5b6c-576f7fd5615a.htm" />
-    <HelpKINode Title="GorgonPointer.Dispose Method " Url="html/034e54a8-0bdd-5b0b-d951-8195170c6626.htm" />
+    <HelpKINode Title="GorgonPointer.Dispose Method " Url="html/59c750e0-88da-8723-61da-93a61bed0ba3.htm" />
+    <HelpKINode Title="GorgonPointerAlias.Dispose Method " Url="html/48fdd949-23f4-4bad-0359-5cfa259f7010.htm" />
+    <HelpKINode Title="GorgonPointerBase.Dispose Method " Url="html/b4a23cb7-9c1c-83f3-37c5-ecd278f24673.htm" />
+  </HelpKINode>
+  <HelpKINode Title="Disposed property">
+    <HelpKINode Title="GorgonPointerBase.Disposed Property " Url="html/71af1d5c-5b4f-5255-950d-9d7129c167e5.htm" />
+    <HelpKINode Title="IGorgonPointer.Disposed Property " Url="html/32e62b3c-6a37-4743-e6cf-a4e6c0cb7025.htm" />
   </HelpKINode>
   <HelpKINode Title="Distance method">
     <HelpKINode Title="Vector2.Distance Method " Url="html/82bedf5d-3a18-0e13-a797-9f273aab108a.htm" />
@@ -620,9 +638,15 @@
     <HelpKINode Title="GorgonFileSystemDirectory.FileSystem Property " Url="html/37349eee-fe04-0e3f-8bd9-e87fe9129d8a.htm" />
     <HelpKINode Title="GorgonFileSystemFileEntry.FileSystem Property " Url="html/aa61e27c-2773-398c-7eea-f50f417f3276.htm" />
   </HelpKINode>
-  <HelpKINode Title="Fill method" Url="html/dcb02dfa-cd1c-b771-ab9b-411a724ec74a.htm" />
+  <HelpKINode Title="Fill method">
+    <HelpKINode Title="GorgonPointerBase.Fill Method " Url="html/ca0c188a-731c-7bfa-bacb-33cd7ae8ca3e.htm" />
+    <HelpKINode Title="IGorgonPointer.Fill Method " Url="html/a8731847-5114-ee20-aab0-837f1e1a1c87.htm" />
+  </HelpKINode>
   <HelpKINode Title="FillMemory method" Url="html/b94fa4a7-4e48-da3e-9c80-01d5b5d77be7.htm" />
-  <HelpKINode Title="Finalize method" Url="html/a7ca77fa-acdf-6653-e779-434002d883b8.htm" />
+  <HelpKINode Title="Finalize method">
+    <HelpKINode Title="GorgonDataStream.Finalize Method " Url="html/a7ca77fa-acdf-6653-e779-434002d883b8.htm" />
+    <HelpKINode Title="GorgonPointer.Finalize Method " Url="html/45fdda23-10de-4396-a4cd-120faca3c156.htm" />
+  </HelpKINode>
   <HelpKINode Title="FindDirectories method" Url="html/beff42b2-fae2-852c-70f5-3a3c6d4a390a.htm" />
   <HelpKINode Title="FindFiles method" Url="html/22b6e852-eec4-34be-f876-ffceb31a8160.htm" />
   <HelpKINode Title="FlatForm class">
@@ -925,6 +949,15 @@
   <HelpKINode Title="Gorgon.Native namespace" Url="html/e1cc3fc5-f792-faea-acf0-51dae2cbe0f6.htm" />
   <HelpKINode Title="Gorgon.Native.DirectAccess class" Url="html/885dd9f7-312d-f700-5ce0-2f851dcbc346.htm" />
   <HelpKINode Title="Gorgon.Native.GorgonPointer class" Url="html/edb90d82-6f28-a602-7a8f-965de3f4f110.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerAlias class" Url="html/26894eab-99e1-9712-bb3d-e81c1153c3a9.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerAliasTyped(Of T) class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerAliasTyped&lt;T&gt; class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerBase class" Url="html/01c4ebec-ab3d-42ec-9fa8-56c2a90da01c.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerPinned(Of T) class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerPinned&lt;T&gt; class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerTyped(Of T) class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+  <HelpKINode Title="Gorgon.Native.GorgonPointerTyped&lt;T&gt; class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+  <HelpKINode Title="Gorgon.Native.IGorgonPointer interface" Url="html/8202c751-65d9-f24e-3006-1d2da62ab740.htm" />
   <HelpKINode Title="Gorgon.Plugins namespace" Url="html/32c843bc-c06e-f959-6714-bf66dd1e25f1.htm" />
   <HelpKINode Title="Gorgon.Plugins.AssemblySigningResult enumeration" Url="html/b495c174-3704-c276-e3f6-c1036627e8f0.htm" />
   <HelpKINode Title="Gorgon.Plugins.GorgonPlugin class" Url="html/6bc9e54f-8ea9-af2b-a37c-409de42a7763.htm" />
@@ -1779,27 +1812,96 @@
   <HelpKINode Title="GorgonPointer class">
     <HelpKINode Title="GorgonPointer Class" Url="html/edb90d82-6f28-a602-7a8f-965de3f4f110.htm" />
     <HelpKINode Title="about GorgonPointer class" Url="html/edb90d82-6f28-a602-7a8f-965de3f4f110.htm" />
+    <HelpKINode Title="constructor" Url="html/050b5ad3-1046-378c-23b8-c20784bb64c8.htm" />
     <HelpKINode Title="methods" Url="html/462ddc41-119f-50e9-ec99-8e52723d504e.htm" />
     <HelpKINode Title="properties" Url="html/12743643-7e9f-47bc-6b9b-b9b6075aedd9.htm" />
   </HelpKINode>
-  <HelpKINode Title="GorgonPointer.Alias method" Url="html/8f0c9adb-f90b-d38c-2684-d52fae2815af.htm" />
-  <HelpKINode Title="GorgonPointer.Allocate method" Url="html/1a808e56-d94b-0fac-b757-6a4a4dd050ea.htm" />
-  <HelpKINode Title="GorgonPointer.CopyFrom method" Url="html/fd483d50-82bb-d8f8-126a-48737f23a8d8.htm" />
-  <HelpKINode Title="GorgonPointer.CopyMemory method" Url="html/83c8a847-a381-e947-8034-d3cf651a90e1.htm" />
-  <HelpKINode Title="GorgonPointer.CopyToMemoryStream method" Url="html/7a96b0c7-79ba-2bd6-cf05-3ce8be50cce7.htm" />
-  <HelpKINode Title="GorgonPointer.Dispose method" Url="html/034e54a8-0bdd-5b0b-d951-8195170c6626.htm" />
-  <HelpKINode Title="GorgonPointer.Fill method" Url="html/dcb02dfa-cd1c-b771-ab9b-411a724ec74a.htm" />
-  <HelpKINode Title="GorgonPointer.Pin(Of T) method" Url="html/c3981716-1377-53fd-1d04-358ead18f4e6.htm" />
-  <HelpKINode Title="GorgonPointer.Pin&lt;T&gt; method" Url="html/c3981716-1377-53fd-1d04-358ead18f4e6.htm" />
-  <HelpKINode Title="GorgonPointer.PinnedOffset property" Url="html/1853e5d4-9d84-6c0e-32a8-63f01318f243.htm" />
-  <HelpKINode Title="GorgonPointer.PinRange method" Url="html/f642a67d-e844-e433-9aea-713bd1ae7cdf.htm" />
-  <HelpKINode Title="GorgonPointer.Read method" Url="html/1ebabcf2-2dc4-6680-e919-3af5ca9bebe4.htm" />
-  <HelpKINode Title="GorgonPointer.ReadRange method" Url="html/820b1b44-7b3e-a004-e0d2-8bb433cf026a.htm" />
-  <HelpKINode Title="GorgonPointer.Size property" Url="html/9cac150e-6ac6-1aab-89eb-a8fedba37347.htm" />
-  <HelpKINode Title="GorgonPointer.ToDataStream method" Url="html/f68173f9-810d-0715-3344-e383737e16a4.htm" />
-  <HelpKINode Title="GorgonPointer.Write method" Url="html/0c2161ea-fcbc-b833-9fb0-4fd7832a6bf6.htm" />
-  <HelpKINode Title="GorgonPointer.WriteRange method" Url="html/5982898c-43ea-881c-763d-23ee0dc20c15.htm" />
-  <HelpKINode Title="GorgonPointer.Zero method" Url="html/18763ee8-268a-4aad-9620-f52627a8d122.htm" />
+  <HelpKINode Title="GorgonPointer.Dispose method" Url="html/59c750e0-88da-8723-61da-93a61bed0ba3.htm" />
+  <HelpKINode Title="GorgonPointer.Finalize method" Url="html/45fdda23-10de-4396-a4cd-120faca3c156.htm" />
+  <HelpKINode Title="GorgonPointer.GorgonPointer constructor" Url="html/050b5ad3-1046-378c-23b8-c20784bb64c8.htm" />
+  <HelpKINode Title="GorgonPointerAlias class">
+    <HelpKINode Title="GorgonPointerAlias Class" Url="html/26894eab-99e1-9712-bb3d-e81c1153c3a9.htm" />
+    <HelpKINode Title="about GorgonPointerAlias class" Url="html/26894eab-99e1-9712-bb3d-e81c1153c3a9.htm" />
+    <HelpKINode Title="constructor" Url="html/db93404d-6857-e1a5-058e-61f255088b22.htm" />
+    <HelpKINode Title="methods" Url="html/61dae73a-a8f9-eaa4-5f98-288697bfb4ba.htm" />
+    <HelpKINode Title="properties" Url="html/5249099b-3f72-06c1-a3fb-b6325e5f425b.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerAlias.Dispose method" Url="html/48fdd949-23f4-4bad-0359-5cfa259f7010.htm" />
+  <HelpKINode Title="GorgonPointerAlias.GorgonPointerAlias constructor" Url="html/db93404d-6857-e1a5-058e-61f255088b22.htm" />
+  <HelpKINode Title="GorgonPointerAliasTyped(Of T) class">
+    <HelpKINode Title="GorgonPointerAliasTyped(T) Class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+    <HelpKINode Title="about GorgonPointerAliasTyped(Of T) class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+    <HelpKINode Title="constructor" Url="html/6d391778-f1db-dfec-52a0-f3885bea095d.htm" />
+    <HelpKINode Title="methods" Url="html/afd42388-6f28-b707-7fec-7463f9f8ea2b.htm" />
+    <HelpKINode Title="properties" Url="html/7072a12f-0a32-54b0-a371-7558bfe392f0.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerAliasTyped(Of T).GorgonPointerAliasTyped constructor" Url="html/6d391778-f1db-dfec-52a0-f3885bea095d.htm" />
+  <HelpKINode Title="GorgonPointerAliasTyped&lt;T&gt; class">
+    <HelpKINode Title="GorgonPointerAliasTyped(T) Class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+    <HelpKINode Title="about GorgonPointerAliasTyped&lt;T&gt; class" Url="html/9c7c7710-42ec-eb6d-51d9-34522080f437.htm" />
+    <HelpKINode Title="constructor" Url="html/6d391778-f1db-dfec-52a0-f3885bea095d.htm" />
+    <HelpKINode Title="methods" Url="html/afd42388-6f28-b707-7fec-7463f9f8ea2b.htm" />
+    <HelpKINode Title="properties" Url="html/7072a12f-0a32-54b0-a371-7558bfe392f0.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerAliasTyped&lt;T&gt;.GorgonPointerAliasTyped constructor" Url="html/6d391778-f1db-dfec-52a0-f3885bea095d.htm" />
+  <HelpKINode Title="GorgonPointerBase class">
+    <HelpKINode Title="GorgonPointerBase Class" Url="html/01c4ebec-ab3d-42ec-9fa8-56c2a90da01c.htm" />
+    <HelpKINode Title="about GorgonPointerBase class" Url="html/01c4ebec-ab3d-42ec-9fa8-56c2a90da01c.htm" />
+    <HelpKINode Title="constructor" Url="html/0b9ffe07-5d4c-bef3-507c-9818ccec6b82.htm" />
+    <HelpKINode Title="methods" Url="html/fedc8fb1-5845-5f96-7250-b2f564334c60.htm" />
+    <HelpKINode Title="properties" Url="html/6f86a6d5-2056-4d76-3c42-5e086580a3d0.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerBase.Address property" Url="html/130dc5f7-1c09-5dc4-8e51-8d954d53d995.htm" />
+  <HelpKINode Title="GorgonPointerBase.CopyFrom method" Url="html/c51a3e3d-4835-f0ca-63a5-f88d60789813.htm" />
+  <HelpKINode Title="GorgonPointerBase.CopyMemory method" Url="html/aca09b35-a13d-04ea-8794-15e5aa9ce0c2.htm" />
+  <HelpKINode Title="GorgonPointerBase.CopyToMemoryStream method" Url="html/0e8f1f2d-e365-45e4-c531-c9c863971419.htm" />
+  <HelpKINode Title="GorgonPointerBase.DataPointer property" Url="html/18017250-fb58-5a46-0ac4-00c775ef87fd.htm" />
+  <HelpKINode Title="GorgonPointerBase.Dispose method" Url="html/b4a23cb7-9c1c-83f3-37c5-ecd278f24673.htm" />
+  <HelpKINode Title="GorgonPointerBase.Disposed property" Url="html/71af1d5c-5b4f-5255-950d-9d7129c167e5.htm" />
+  <HelpKINode Title="GorgonPointerBase.Fill method" Url="html/ca0c188a-731c-7bfa-bacb-33cd7ae8ca3e.htm" />
+  <HelpKINode Title="GorgonPointerBase.GorgonPointerBase constructor" Url="html/0b9ffe07-5d4c-bef3-507c-9818ccec6b82.htm" />
+  <HelpKINode Title="GorgonPointerBase.Read method" Url="html/0c3c50b5-0627-deb9-76c5-174f735a60a0.htm" />
+  <HelpKINode Title="GorgonPointerBase.ReadRange method" Url="html/beb87241-b8bd-948d-1874-f948eafec07c.htm" />
+  <HelpKINode Title="GorgonPointerBase.SetDisposed method" Url="html/18087653-5bf4-c23b-a702-93767d441236.htm" />
+  <HelpKINode Title="GorgonPointerBase.Size property" Url="html/14e1d495-4342-6f24-2675-2a07e55a22a2.htm" />
+  <HelpKINode Title="GorgonPointerBase.ToDataStream method" Url="html/eba8717b-7d25-0f30-9f6d-f77f0f43e0cb.htm" />
+  <HelpKINode Title="GorgonPointerBase.Write method" Url="html/cc654dfc-f5f2-cfda-c1ec-89706bb8a85e.htm" />
+  <HelpKINode Title="GorgonPointerBase.WriteRange method" Url="html/7f310415-01bc-40cc-7e22-ab4c973253ff.htm" />
+  <HelpKINode Title="GorgonPointerBase.Zero method" Url="html/258acea5-f8c6-b03e-3d41-30409f2168f8.htm" />
+  <HelpKINode Title="GorgonPointerPinned(Of T) class">
+    <HelpKINode Title="GorgonPointerPinned(T) Class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+    <HelpKINode Title="about GorgonPointerPinned(Of T) class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+    <HelpKINode Title="constructor" Url="html/ef142886-d9ac-88d1-2ad3-3d1ac696a974.htm" />
+    <HelpKINode Title="methods" Url="html/8c757820-d026-26fb-ea21-47386c902602.htm" />
+    <HelpKINode Title="properties" Url="html/be9b2739-9923-63a0-314e-7979e3cc5ca4.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerPinned(Of T).GorgonPointerPinned constructor" Url="html/ef142886-d9ac-88d1-2ad3-3d1ac696a974.htm" />
+  <HelpKINode Title="GorgonPointerPinned(Of T).PinnedOffset property" Url="html/3d721345-a473-d1b8-36c4-c73bf19ca605.htm" />
+  <HelpKINode Title="GorgonPointerPinned&lt;T&gt; class">
+    <HelpKINode Title="GorgonPointerPinned(T) Class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+    <HelpKINode Title="about GorgonPointerPinned&lt;T&gt; class" Url="html/774dbefd-21c5-84ae-f072-f0025e14379f.htm" />
+    <HelpKINode Title="constructor" Url="html/ef142886-d9ac-88d1-2ad3-3d1ac696a974.htm" />
+    <HelpKINode Title="methods" Url="html/8c757820-d026-26fb-ea21-47386c902602.htm" />
+    <HelpKINode Title="properties" Url="html/be9b2739-9923-63a0-314e-7979e3cc5ca4.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerPinned&lt;T&gt;.GorgonPointerPinned constructor" Url="html/ef142886-d9ac-88d1-2ad3-3d1ac696a974.htm" />
+  <HelpKINode Title="GorgonPointerPinned&lt;T&gt;.PinnedOffset property" Url="html/3d721345-a473-d1b8-36c4-c73bf19ca605.htm" />
+  <HelpKINode Title="GorgonPointerTyped(Of T) class">
+    <HelpKINode Title="GorgonPointerTyped(T) Class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+    <HelpKINode Title="about GorgonPointerTyped(Of T) class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+    <HelpKINode Title="constructor" Url="html/24d8a89c-209c-7503-3457-19c129f73faa.htm" />
+    <HelpKINode Title="methods" Url="html/09d59833-bda5-3287-bf08-12eda9382d3a.htm" />
+    <HelpKINode Title="properties" Url="html/315e46a4-f514-9a9b-f663-2285a9320b6f.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerTyped(Of T).GorgonPointerTyped constructor" Url="html/24d8a89c-209c-7503-3457-19c129f73faa.htm" />
+  <HelpKINode Title="GorgonPointerTyped&lt;T&gt; class">
+    <HelpKINode Title="GorgonPointerTyped(T) Class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+    <HelpKINode Title="about GorgonPointerTyped&lt;T&gt; class" Url="html/5cfeaa99-c688-0a7e-b727-22bce5224c59.htm" />
+    <HelpKINode Title="constructor" Url="html/24d8a89c-209c-7503-3457-19c129f73faa.htm" />
+    <HelpKINode Title="methods" Url="html/09d59833-bda5-3287-bf08-12eda9382d3a.htm" />
+    <HelpKINode Title="properties" Url="html/315e46a4-f514-9a9b-f663-2285a9320b6f.htm" />
+  </HelpKINode>
+  <HelpKINode Title="GorgonPointerTyped&lt;T&gt;.GorgonPointerTyped constructor" Url="html/24d8a89c-209c-7503-3457-19c129f73faa.htm" />
   <HelpKINode Title="GorgonRandom class">
     <HelpKINode Title="GorgonRandom Class" Url="html/77ffdfc2-a4cc-fc54-3c3e-b65ec8b5f3af.htm" />
     <HelpKINode Title="about GorgonRandom class" Url="html/77ffdfc2-a4cc-fc54-3c3e-b65ec8b5f3af.htm" />
@@ -2502,6 +2604,25 @@
   <HelpKINode Title="IGorgonPluginService.ScanPlugins method" Url="html/b82f4fde-3c65-ae5c-b17e-16659465e0b1.htm" />
   <HelpKINode Title="IGorgonPluginService.Unload method" Url="html/1b30b197-c941-3678-2afe-d4519fbbf7dc.htm" />
   <HelpKINode Title="IGorgonPluginService.UnloadAll method" Url="html/f1972ceb-78cb-f7c9-0231-ebcbb6ae4320.htm" />
+  <HelpKINode Title="IGorgonPointer interface">
+    <HelpKINode Title="IGorgonPointer Interface" Url="html/8202c751-65d9-f24e-3006-1d2da62ab740.htm" />
+    <HelpKINode Title="about IGorgonPointer interface" Url="html/8202c751-65d9-f24e-3006-1d2da62ab740.htm" />
+    <HelpKINode Title="methods" Url="html/12071144-a605-8403-1510-746bf0618f29.htm" />
+    <HelpKINode Title="properties" Url="html/6541dbe8-2d63-2429-463c-6ec74fff78a6.htm" />
+  </HelpKINode>
+  <HelpKINode Title="IGorgonPointer.Address property" Url="html/f1daf744-7c2c-68c7-09f3-e488fb9077d4.htm" />
+  <HelpKINode Title="IGorgonPointer.CopyFrom method" Url="html/7c3f56b4-2a6a-35e4-c250-cd878cce5d87.htm" />
+  <HelpKINode Title="IGorgonPointer.CopyMemory method" Url="html/19fb08ad-6c5e-25ce-b40e-1a3800d05bd5.htm" />
+  <HelpKINode Title="IGorgonPointer.CopyToMemoryStream method" Url="html/a7e49951-645c-1752-356f-e77954051ef7.htm" />
+  <HelpKINode Title="IGorgonPointer.Disposed property" Url="html/32e62b3c-6a37-4743-e6cf-a4e6c0cb7025.htm" />
+  <HelpKINode Title="IGorgonPointer.Fill method" Url="html/a8731847-5114-ee20-aab0-837f1e1a1c87.htm" />
+  <HelpKINode Title="IGorgonPointer.Read method" Url="html/7c5aa143-1e45-37b7-cce5-9c3491d8c6c7.htm" />
+  <HelpKINode Title="IGorgonPointer.ReadRange method" Url="html/ae9924e4-8524-4b11-f5d3-76ee960f5778.htm" />
+  <HelpKINode Title="IGorgonPointer.Size property" Url="html/4c9de7e4-e3eb-18cd-e9d8-a5cc5993deb9.htm" />
+  <HelpKINode Title="IGorgonPointer.ToDataStream method" Url="html/42beda7e-6c1d-ad94-af63-e7ed308c6817.htm" />
+  <HelpKINode Title="IGorgonPointer.Write method" Url="html/7d78ca31-43cb-4d5c-d6be-ff6d4b13c75a.htm" />
+  <HelpKINode Title="IGorgonPointer.WriteRange method" Url="html/d099dd2a-080a-3659-fe3c-b86bc3541dc2.htm" />
+  <HelpKINode Title="IGorgonPointer.Zero method" Url="html/9478031a-869e-ae87-025e-ed579d4b8404.htm" />
   <HelpKINode Title="IGorgonReadOnlyChunkCollection interface">
     <HelpKINode Title="IGorgonReadOnlyChunkCollection Interface" Url="html/d3047a73-eb63-4971-3ecc-53703889bdfa.htm" />
     <HelpKINode Title="about IGorgonReadOnlyChunkCollection interface" Url="html/d3047a73-eb63-4971-3ecc-53703889bdfa.htm" />
@@ -3126,10 +3247,7 @@
   <HelpKINode Title="PhysicalFileSystemPath property" Url="html/334e25a9-da44-c336-3a08-a4491a7597f1.htm" />
   <HelpKINode Title="PhysicalPath field" Url="html/86526deb-aa9b-839e-568a-d8770d2d1b2a.htm" />
   <HelpKINode Title="PI field" Url="html/b7667ca5-b3da-3615-2c97-d10c8829d15f.htm" />
-  <HelpKINode Title="Pin(Of T) method" Url="html/c3981716-1377-53fd-1d04-358ead18f4e6.htm" />
-  <HelpKINode Title="Pin&lt;T&gt; method" Url="html/c3981716-1377-53fd-1d04-358ead18f4e6.htm" />
-  <HelpKINode Title="PinnedOffset property" Url="html/1853e5d4-9d84-6c0e-32a8-63f01318f243.htm" />
-  <HelpKINode Title="PinRange method" Url="html/f642a67d-e844-e433-9aea-713bd1ae7cdf.htm" />
+  <HelpKINode Title="PinnedOffset property" Url="html/3d721345-a473-d1b8-36c4-c73bf19ca605.htm" />
   <HelpKINode Title="Plane structure">
     <HelpKINode Title="Plane Structure" Url="html/9ce40aa9-c56e-e87f-e4d1-35a5ca965188.htm" />
     <HelpKINode Title="about Plane structure" Url="html/9ce40aa9-c56e-e87f-e4d1-35a5ca965188.htm" />
@@ -3316,8 +3434,9 @@
     <HelpKINode Title="GorgonDataStream.Read Method " Url="html/260a2991-856e-753b-f81f-027f758b4dc1.htm" />
     <HelpKINode Title="GorgonFileSystemFileEntry.Read Method " Url="html/c2026d93-1aaf-78c8-7dc2-e1d765960465.htm" />
     <HelpKINode Title="GorgonFileSystemStream.Read Method " Url="html/3b4b3210-bd42-b1aa-a392-7328f2570920.htm" />
-    <HelpKINode Title="GorgonPointer.Read Method " Url="html/1ebabcf2-2dc4-6680-e919-3af5ca9bebe4.htm" />
+    <HelpKINode Title="GorgonPointerBase.Read Method " Url="html/0c3c50b5-0627-deb9-76c5-174f735a60a0.htm" />
     <HelpKINode Title="GorgonStreamWrapper.Read Method " Url="html/ef36159a-2565-d5ed-85b5-256513ffb9f4.htm" />
+    <HelpKINode Title="IGorgonPointer.Read Method " Url="html/7c5aa143-1e45-37b7-cce5-9c3491d8c6c7.htm" />
   </HelpKINode>
   <HelpKINode Title="ReadArray method" Url="html/f4bc4a26-a605-3ac2-baae-0ebac04fdf31.htm" />
   <HelpKINode Title="ReadAsync method" Url="html/a6326c85-acdf-fdc1-4cf2-6b5a34ed2fcc.htm" />
@@ -3334,7 +3453,8 @@
   <HelpKINode Title="ReadRange method">
     <HelpKINode Title="GorgonBinaryReader.ReadRange Method " Url="html/3318ae75-0f69-b64d-fb09-7a996abd50c2.htm" />
     <HelpKINode Title="GorgonDataStream.ReadRange Method " Url="html/275c68c2-922f-ae67-4ffe-06e2d8851a18.htm" />
-    <HelpKINode Title="GorgonPointer.ReadRange Method " Url="html/820b1b44-7b3e-a004-e0d2-8bb433cf026a.htm" />
+    <HelpKINode Title="GorgonPointerBase.ReadRange Method " Url="html/beb87241-b8bd-948d-1874-f948eafec07c.htm" />
+    <HelpKINode Title="IGorgonPointer.ReadRange Method " Url="html/ae9924e4-8524-4b11-f5d3-76ee960f5778.htm" />
   </HelpKINode>
   <HelpKINode Title="ReadString method" Url="html/57286dcd-bec7-49dc-eb0f-fdd7b0ff8cbe.htm" />
   <HelpKINode Title="ReadTimeout property" Url="html/43d49a32-0552-8fa7-71a3-fbb82fc8a7e0.htm" />
@@ -3445,6 +3565,7 @@
     <HelpKINode Title="GorgonFileSystemStream.Seek Method " Url="html/812c52c3-fd73-047c-26b5-7a0f598d9a35.htm" />
     <HelpKINode Title="GorgonStreamWrapper.Seek Method " Url="html/1340816a-bb2f-7201-f21b-0cfcc0833f49.htm" />
   </HelpKINode>
+  <HelpKINode Title="SetDisposed method" Url="html/18087653-5bf4-c23b-a702-93767d441236.htm" />
   <HelpKINode Title="SetLength method">
     <HelpKINode Title="GorgonDataStream.SetLength Method " Url="html/896697ca-a741-218e-d5cb-98ca7be7d88b.htm" />
     <HelpKINode Title="GorgonFileSystemStream.SetLength Method " Url="html/8419482b-cda8-0c43-72cb-7312a680da8e.htm" />
@@ -3482,8 +3603,9 @@
   <HelpKINode Title="Single to Half conversion" Url="html/9a05113e-1260-29a3-d551-a3aaf31d5676.htm" />
   <HelpKINode Title="Size property">
     <HelpKINode Title="GorgonFileSystemFileEntry.Size Property " Url="html/db3943e1-9db1-68d2-8799-89af66af7923.htm" />
-    <HelpKINode Title="GorgonPointer.Size Property " Url="html/9cac150e-6ac6-1aab-89eb-a8fedba37347.htm" />
+    <HelpKINode Title="GorgonPointerBase.Size Property " Url="html/14e1d495-4342-6f24-2675-2a07e55a22a2.htm" />
     <HelpKINode Title="IGorgonChunk.Size Property " Url="html/113f99d2-4d96-4359-54f4-c186d2cec641.htm" />
+    <HelpKINode Title="IGorgonPointer.Size Property " Url="html/4c9de7e4-e3eb-18cd-e9d8-a5cc5993deb9.htm" />
   </HelpKINode>
   <HelpKINode Title="Size to Vector2 conversion" Url="html/91f2832a-cb7b-5712-7604-8c369ca58e20.htm" />
   <HelpKINode Title="SizeF to Vector2 conversion" Url="html/ea70835a-14f4-282e-44d7-1775fc1b254d.htm" />
@@ -3619,7 +3741,10 @@
     <HelpKINode Title="Vector3.ToArray Method " Url="html/918cb5aa-1ef8-a3a8-6022-7495a9ea927f.htm" />
     <HelpKINode Title="Vector4.ToArray Method " Url="html/60cc9825-a9aa-237b-cde9-c024fcc5a157.htm" />
   </HelpKINode>
-  <HelpKINode Title="ToDataStream method" Url="html/f68173f9-810d-0715-3344-e383737e16a4.htm" />
+  <HelpKINode Title="ToDataStream method">
+    <HelpKINode Title="GorgonPointerBase.ToDataStream Method " Url="html/eba8717b-7d25-0f30-9f6d-f77f0f43e0cb.htm" />
+    <HelpKINode Title="IGorgonPointer.ToDataStream Method " Url="html/42beda7e-6c1d-ad94-af63-e7ed308c6817.htm" />
+  </HelpKINode>
   <HelpKINode Title="ToDegrees method" Url="html/12c739ce-cd4e-2926-448a-54713f6f8747.htm" />
   <HelpKINode Title="ToolStripArrowColor property" Url="html/11aafbf8-bec3-22fd-0176-e2115b76b215.htm" />
   <HelpKINode Title="ToolStripBackColor property" Url="html/3a5c082b-b8b5-aa19-0ef0-0ffa4d0213e5.htm" />
@@ -4029,8 +4154,9 @@
     <HelpKINode Title="GorgonDataStream.Write Method " Url="html/0ce75c90-5185-5cf3-35d2-bfc3c9080c70.htm" />
     <HelpKINode Title="GorgonFileSystemFileEntry.Write Method " Url="html/b01b5e35-d59f-bda1-82ca-d8b4c88188e8.htm" />
     <HelpKINode Title="GorgonFileSystemStream.Write Method " Url="html/4f90b277-d92e-4ac7-a051-9992c6a6e7da.htm" />
-    <HelpKINode Title="GorgonPointer.Write Method " Url="html/0c2161ea-fcbc-b833-9fb0-4fd7832a6bf6.htm" />
+    <HelpKINode Title="GorgonPointerBase.Write Method " Url="html/cc654dfc-f5f2-cfda-c1ec-89706bb8a85e.htm" />
     <HelpKINode Title="GorgonStreamWrapper.Write Method " Url="html/59eae867-f1e4-a398-839b-aed9c110ee63.htm" />
+    <HelpKINode Title="IGorgonPointer.Write Method " Url="html/7d78ca31-43cb-4d5c-d6be-ff6d4b13c75a.htm" />
   </HelpKINode>
   <HelpKINode Title="WriteArray method" Url="html/37febfc4-7a29-4fc4-b4ae-0e45c1a36a31.htm" />
   <HelpKINode Title="WriteAsync method" Url="html/002fb6d9-ad59-0007-da2b-092da48f14dc.htm" />
@@ -4048,7 +4174,8 @@
   <HelpKINode Title="WriteRange method">
     <HelpKINode Title="GorgonBinaryWriter.WriteRange Method " Url="html/fb3f0693-924d-f969-6d2b-30038e094e53.htm" />
     <HelpKINode Title="GorgonDataStream.WriteRange Method " Url="html/7f52d89d-08ed-7f15-d6e9-7c835358ace9.htm" />
-    <HelpKINode Title="GorgonPointer.WriteRange Method " Url="html/5982898c-43ea-881c-763d-23ee0dc20c15.htm" />
+    <HelpKINode Title="GorgonPointerBase.WriteRange Method " Url="html/7f310415-01bc-40cc-7e22-ab4c973253ff.htm" />
+    <HelpKINode Title="IGorgonPointer.WriteRange Method " Url="html/d099dd2a-080a-3659-fe3c-b86bc3541dc2.htm" />
   </HelpKINode>
   <HelpKINode Title="WriteString method" Url="html/4db7b5cc-890c-a543-05a6-5db6a6b91f5e.htm" />
   <HelpKINode Title="WriteTimeout property" Url="html/77ba6083-8913-166c-877d-1fbdd0f6fb1f.htm" />
@@ -4091,6 +4218,9 @@
     <HelpKINode Title="Vector3.Zero Field" Url="html/7cd0c5f4-af86-6d22-bdf5-b796657ee8d0.htm" />
     <HelpKINode Title="Vector4.Zero Field" Url="html/1369ed40-eb28-798b-76b1-d861d90df50c.htm" />
   </HelpKINode>
-  <HelpKINode Title="Zero method" Url="html/18763ee8-268a-4aad-9620-f52627a8d122.htm" />
+  <HelpKINode Title="Zero method">
+    <HelpKINode Title="GorgonPointerBase.Zero Method " Url="html/258acea5-f8c6-b03e-3d41-30409f2168f8.htm" />
+    <HelpKINode Title="IGorgonPointer.Zero Method " Url="html/9478031a-869e-ae87-025e-ed579d4b8404.htm" />
+  </HelpKINode>
   <HelpKINode Title="ZeroMemory method" Url="html/ade6e986-ba37-da4e-e725-285e56c32da2.htm" />
 </HelpKI>

@@ -97,20 +97,20 @@ namespace Gorgon.IO
 	/// <note type="caution">
 	/// <para>
 	/// Like most stream based types, it is <i>not</i> safe to use the same instance of this type from multiple threads. Doing so may cause performance degradation, or worse, memory corruption. If multi threading 
-	/// is a possibility and native memory access is required, then the <see cref="GorgonPointer"/> object provides better functionality for working with native memory directly while providing functions that 
+	/// is a possibility and native memory access is required, then the <see cref="GorgonPointerBase"/> object provides better functionality for working with native memory directly while providing functions that 
 	/// are better suited to thread safety. 
 	/// </para>
 	/// <para>
-	/// A better interface to dealing with unmanaged memory is through the <see cref="GorgonPointer"/> class.
+	/// A better interface to dealing with unmanaged memory is through the <see cref="GorgonPointerBase"/> class.
 	/// </para>
 	/// </note>
 	/// <note type="caution">
 	/// <para>
-	/// Gorgon will be phasing out it's internal usage of this type in favour of more direct access to memory via the <see cref="GorgonPointer"/>
+	/// Gorgon will be phasing out it's internal usage of this type in favour of more direct access to memory via the <see cref="GorgonPointerBase"/>
 	/// </para>
 	/// </note>
 	/// </remarks>
-	/// <seealso cref="GorgonPointer"/>
+	/// <seealso cref="GorgonPointerBase"/>
 	public unsafe class GorgonDataStream
 		: Stream
 	{

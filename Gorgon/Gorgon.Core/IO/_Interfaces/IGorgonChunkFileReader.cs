@@ -76,7 +76,7 @@ namespace Gorgon.IO
 	///		// Notice that we're passing in an array of file header ID values. This allows us to allow the formatter to 
 	///		// read the file with multiple versions of the header ID. This gives us an ability to provide backwards 
 	///		// compatibility with file types.
-	///		GorgonChunkFileWriter file = new GorgonChunkFileReader(myStream, new [] { FileHeader });
+	///		IGorgonChunkFileReader file = new GorgonChunkFileReader(myStream, new [] { FileHeader });
 	/// 
 	///		try
 	///		{

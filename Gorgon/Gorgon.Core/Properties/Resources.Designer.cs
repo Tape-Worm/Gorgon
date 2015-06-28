@@ -310,6 +310,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pointer has been disposed..
+        /// </summary>
+        internal static string GOR_ERR_DATABUFF_PTR_DISPOSED {
+            get {
+                return ResourceManager.GetString("GOR_ERR_DATABUFF_PTR_DISPOSED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset: {0} + the size: {1} is larger than the buffer..
         /// </summary>
         internal static string GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE {

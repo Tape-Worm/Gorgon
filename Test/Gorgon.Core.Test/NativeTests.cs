@@ -26,7 +26,7 @@ namespace Gorgon.Core.Test
 		[TestMethod]
 		public void PinTest()
 		{
-			using (GorgonPointer buffer = GorgonPointer.PinRange(_vectors))
+			using (IGorgonPointer buffer = new GorgonPointerPinned<Vector2>(_vectors))
 			{
 				buffer.Write(Vector2.SizeInBytes * 16, 3.0f);
 				buffer.Write((Vector2.SizeInBytes * 16) + sizeof(float), 4.0f);
@@ -37,7 +37,7 @@ namespace Gorgon.Core.Test
 				Assert.IsTrue(_vectors[16].Y.EqualsEpsilon(actual.Y));
 			}
 
-			using (GorgonPointer buffer = GorgonPointer.PinRange(_vectors, 16, 1))
+			using (var buffer = new GorgonPointerPinned<Vector2>(_vectors, 16, 1))
 			{
 				Assert.AreEqual(Vector2.SizeInBytes, buffer.Size);
 				Assert.AreEqual(Vector2.SizeInBytes * 16, buffer.PinnedOffset);
@@ -51,7 +51,7 @@ namespace Gorgon.Core.Test
 				Assert.IsTrue(_vectors[16].Y.EqualsEpsilon(actual.Y));
 			}
 
-			using (GorgonPointer buffer = GorgonPointer.Pin(_pinVector))
+			using (GorgonPointerBase buffer = new GorgonPointerPinned<Vector4>(_pinVector))
 			{
 				Assert.AreEqual(Vector4.SizeInBytes, buffer.Size);
 
@@ -69,7 +69,7 @@ namespace Gorgon.Core.Test
 		{
 			Vector4 expected = new Vector4(1, 2, 3, 4);
 			Vector4* ptr = &expected;
-			using (GorgonPointer buffer = GorgonPointer.Alias<Vector4>(ptr))
+			using (IGorgonPointer buffer = new GorgonPointerAliasTyped<Vector4>(ptr))
 			{
 				Assert.AreEqual(16, buffer.Size);
 
@@ -82,7 +82,7 @@ namespace Gorgon.Core.Test
 			
 			fixed(Vector2 *vec2 = &_vectors[0])
 			{
-				using (GorgonPointer buffer = GorgonPointer.Alias(vec2, Vector2.SizeInBytes * _vectors.Length))
+				using (IGorgonPointer buffer = new GorgonPointerAlias(vec2, Vector2.SizeInBytes * _vectors.Length))
 				{
 					buffer.Write(Vector2.SizeInBytes * 16, 3.0f);
 					buffer.Write((Vector2.SizeInBytes * 16) + sizeof(float), 4.0f);
@@ -100,7 +100,7 @@ namespace Gorgon.Core.Test
 		{
 			var expected = new Vector4(1, 2, 3 ,4);
 
-			using (GorgonPointer buffer = GorgonPointer.Allocate<Vector4>())
+			using (IGorgonPointer buffer = new GorgonPointerTyped<Vector4>())
 			{
 				buffer.Write(ref expected);
 
@@ -114,7 +114,7 @@ namespace Gorgon.Core.Test
 				_vectors[i] = new Vector2(i * 2, ((i * 2) + 1));
 			}
 
-			using (GorgonPointer buffer = GorgonPointer.Allocate(Vector2.SizeInBytes * _vectors.Length))
+			using (IGorgonPointer buffer = new GorgonPointer(Vector2.SizeInBytes * _vectors.Length))
 			{
 				buffer.WriteRange(_vectors, 16, 1);
 
@@ -154,7 +154,7 @@ namespace Gorgon.Core.Test
 		[TestMethod]
 		public void DataBufferAllocTest()
 		{
-			using (GorgonPointer buffer = GorgonPointer.Allocate(666))
+			using (IGorgonPointer buffer = new GorgonPointer(666))
 			{
 				byte[] expected = new byte[666];
 				byte[] actual = new byte[666];
