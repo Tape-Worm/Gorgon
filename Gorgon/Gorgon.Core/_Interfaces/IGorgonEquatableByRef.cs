@@ -38,7 +38,7 @@ namespace Gorgon.Core
 	/// (if the value is a value type).
 	/// </para>
 	/// <para>
-	/// This is here to optimize passing value types to methods, therefore it is only suitable for value types.
+	/// This is here to optimize passing value types to methods, therefore it is only suitable for value or primitive types.
 	/// </para>
 	/// </remarks>
 	public interface IGorgonEquatableByRef<T>

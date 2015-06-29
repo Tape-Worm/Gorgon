@@ -10,6 +10,8 @@ namespace Gorgon.Timing
 	/// <a href="https://msdn.microsoft.com/en-us/library/dd757629(v=vs.85).aspx" target="_blank"><c>timeGetTime</c></a> win32 API call.
 	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonTimerMultimedia"/>
+	/// <seealso cref="GorgonTimerQpc"/>
 	public interface IGorgonTimer
 	{
 		/// <summary>

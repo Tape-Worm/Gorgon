@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Input.Properties;
+using Gorgon.UI;
 
 namespace Gorgon.Input
 {

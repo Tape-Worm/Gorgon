@@ -28,6 +28,7 @@ using System;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Renderers;
+using Gorgon.UI;
 
 namespace Gorgon.Graphics
 {

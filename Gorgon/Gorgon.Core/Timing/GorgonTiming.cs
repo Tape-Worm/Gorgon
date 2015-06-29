@@ -26,6 +26,7 @@
 
 using Gorgon.Core;
 using Gorgon.Core.Properties;
+using Gorgon.UI;
 
 namespace Gorgon.Timing
 {	
@@ -44,7 +45,7 @@ namespace Gorgon.Timing
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// The application loop usage with the <see cref="GorgonApplication.ApplicationIdleLoopMethod"/> assigned by one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods:
+	/// The application loop usage with the <see cref="GorgonApplication.ApplicationIdleLoopMethod"/> assigned by one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods:
 	/// <code>
 	///	public static bool MyLoop()
 	/// {
@@ -122,7 +123,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
+		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
 		/// it will return 0.
 		/// </para>
 		/// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
@@ -145,7 +146,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
+		/// This property starts counting at the first call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods. If this property is called prior to that, then 
 		/// it will return 0.
 		/// </para>
 		/// <para>This value is not affected by the <see cref="TimeScale"/> property.</para>
@@ -212,7 +213,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </remarks>
 		public static float AverageFPS
 		{
@@ -225,7 +226,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </remarks>
 		public static float HighestFPS
 		{
@@ -238,7 +239,7 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </remarks>
 		public static float LowestFPS
 		{
@@ -252,7 +253,7 @@ namespace Gorgon.Timing
 		/// <remarks>
 		/// <para>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </para>
 		/// <para>
 		/// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
@@ -270,7 +271,7 @@ namespace Gorgon.Timing
 		/// <remarks>
 		/// <para>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </para>
 		/// <para>
 		/// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
@@ -288,7 +289,7 @@ namespace Gorgon.Timing
 		/// <remarks>
 		/// <para>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </para>
 		/// <para>
 		/// This value is not affected by the <see cref="TimeScale"/> property because it is meant to be used in performance measurement.
@@ -306,7 +307,7 @@ namespace Gorgon.Timing
 		/// <remarks>
 		/// <para>
 		/// Note that the averaged/min/max calculations are affected by the length of time it takes to execute a single iteration of the idle loop and will not have meaningful data until the 
-		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.Core.GorgonApplication.Run"/> methods.
+		/// application loop begins processing after a call to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods.
 		/// </para>
 		/// <para>
 		/// This value is affected by the <see cref="TimeScale"/> property.

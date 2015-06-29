@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
+using Gorgon.UI;
 
 namespace Gorgon.Input.Raw
 {

@@ -33,7 +33,7 @@ namespace Gorgon.Core
 	/// </summary>
 	/// <remarks> 
 	/// Many objects require an ID to give uniqueness to that object. This could be necessary for lookup in a <see cref="IDictionary{TKey,TValue}"/>, or merely for logging purposes. This interface 
-	/// will ensure that items that need a textual representation of the object have a <see cref="Name"/> they can use for those purposes. 
+	/// will ensure that items that need a textual representation of the object have a <see cref="Name"/> they can use for that purpose. 
 	/// </remarks>
 	public interface IGorgonNamedObject
 	{

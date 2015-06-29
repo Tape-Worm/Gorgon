@@ -26,6 +26,7 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.UI;
 using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics

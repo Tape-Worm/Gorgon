@@ -32,6 +32,10 @@ namespace Gorgon.Core
 	/// <summary>
 	/// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
 	/// </summary>
+	/// <remarks>
+	/// This abstract concrete implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a 
+	/// name.
+	/// </remarks>
 	public abstract class GorgonNamedObject
 		: IGorgonNamedObject
     {
@@ -88,9 +92,10 @@ namespace Gorgon.Core
 		#endregion
 
 		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
+		/// <inheritdoc/>
+		/// <remarks>
+		/// Unlike the interface this property is derived from, it has a protected setter to assign the name at a later stage during an objects initialization. 
+		/// </remarks>
 		public virtual string Name
 		{
 			get

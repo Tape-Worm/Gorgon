@@ -34,6 +34,7 @@ using Gorgon.Core;
 using Gorgon.Editor.ImageEditorPlugIn.Controls;
 using Gorgon.Editor.ImageEditorPlugIn.Properties;
 using Gorgon.IO;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.ImageEditorPlugIn
 {

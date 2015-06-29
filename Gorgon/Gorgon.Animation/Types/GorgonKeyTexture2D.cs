@@ -31,6 +31,7 @@ using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.IO;
+using Gorgon.UI;
 
 namespace Gorgon.Animation
 {

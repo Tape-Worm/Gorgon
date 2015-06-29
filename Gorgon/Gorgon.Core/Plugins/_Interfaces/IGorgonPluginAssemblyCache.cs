@@ -33,6 +33,26 @@ using Gorgon.Core;
 namespace Gorgon.Plugins
 {
 	/// <summary>
+	/// The return values for the <see cref="IGorgonPluginAssemblyCache.VerifyAssemblyStrongName"/> method.
+	/// </summary>
+	[Flags]
+	public enum AssemblySigningResult
+	{
+		/// <summary>
+		/// Assembly is not signed.  This flag is mutually exclusive.
+		/// </summary>
+		NotSigned = 1,
+		/// <summary>
+		/// Assembly is signed, and if it was requested, the key matches.
+		/// </summary>
+		Signed = 2,
+		/// <summary>
+		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
+		/// </summary>
+		KeyMismatch = 4
+	}
+
+	/// <summary>
 	/// A cache to hold plugin assemblies.
 	/// </summary>
 	/// <remarks>
@@ -170,7 +190,7 @@ namespace Gorgon.Plugins
 		/// The assembly being enumerated is not loaded into the current application domain, and as such, is not cached. 
 		/// </para>
 		/// <para>
-		/// Users should call <see cref="GorgonPluginAssemblyCache.IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
+		/// Users should call <see cref="IGorgonPluginAssemblyCache.IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
 		/// can be loaded or not.
 		/// </para>
 		/// </remarks>
@@ -197,11 +217,11 @@ namespace Gorgon.Plugins
 		/// If the file pointed by the <paramref name="assemblyFile"/> parameter is not a .NET assembly, then an exception will be raised.
 		/// </para>
 		/// <para>
-		/// Since this method takes a path to an assembly, the <see cref="GorgonPluginAssemblyCache.SearchPaths"/> property will be used if the assembly could not be found 
+		/// Since this method takes a path to an assembly, the <see cref="IGorgonPluginAssemblyCache.SearchPaths"/> property will be used if the assembly could not be found 
 		/// on the path specified.
 		/// </para>
 		/// <para>
-		/// Users should call <see cref="GorgonPluginAssemblyCache.IsPluginAssembly(string)"/> prior to this method in order to determine whether the assembly 
+		/// Users should call <see cref="IGorgonPluginAssemblyCache.IsPluginAssembly(string)"/> prior to this method in order to determine whether the assembly 
 		/// can be loaded or not.
 		/// </para>
 		/// </remarks>
@@ -220,7 +240,7 @@ namespace Gorgon.Plugins
 		/// return <b>true</b>.
 		/// </para>
 		/// <para>
-		/// Users should call this method before calling <see cref="GorgonPluginAssemblyCache.Load(System.Reflection.AssemblyName)"/> to determine whether or not a plugin assembly should be loaded into the 
+		/// Users should call this method before calling <see cref="IGorgonPluginAssemblyCache.Load(System.Reflection.AssemblyName)"/> to determine whether or not a plugin assembly should be loaded into the 
 		/// application.
 		/// </para>
 		/// <para>
@@ -247,14 +267,14 @@ namespace Gorgon.Plugins
 		/// otherwise it will return <b>true</b>.
 		/// </para>
 		/// <para>
-		/// Users should call this method before calling <see cref="GorgonPluginAssemblyCache.Load(string)"/> to determine whether or not a plugin assembly should be loaded into the 
+		/// Users should call this method before calling <see cref="IGorgonPluginAssemblyCache.Load(string)"/> to determine whether or not a plugin assembly should be loaded into the 
 		/// application.
 		/// </para>
 		/// <para>
 		/// Because this method loads the assembly into a separate application domain, the assembly will not be cached.
 		/// </para>
 		/// <para>
-		/// Since this method takes a path to an assembly, the <see cref="GorgonPluginAssemblyCache.SearchPaths"/> property will be used if the assembly could not be found 
+		/// Since this method takes a path to an assembly, the <see cref="IGorgonPluginAssemblyCache.SearchPaths"/> property will be used if the assembly could not be found 
 		/// on the path specified.
 		/// </para>
 		/// </remarks>
@@ -272,7 +292,7 @@ namespace Gorgon.Plugins
 		/// <see cref="GorgonPlugin"/>, then an exception will be raised.
 		/// </para>
 		/// <para>
-		/// Users should call <see cref="GorgonPluginAssemblyCache.IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
+		/// Users should call <see cref="IGorgonPluginAssemblyCache.IsPluginAssembly(System.Reflection.AssemblyName)"/> prior to this method in order to determine whether the assembly 
 		/// can be loaded or not.
 		/// </para>
 		/// </remarks>
@@ -294,7 +314,7 @@ namespace Gorgon.Plugins
 		/// <see cref="GorgonPlugin"/>, then an exception will be raised.
 		/// </para>
 		/// <para>
-		/// Users should call <see cref="GorgonPluginAssemblyCache.IsPluginAssembly(string)"/> prior to this method in order to determine whether the assembly 
+		/// Users should call <see cref="IGorgonPluginAssemblyCache.IsPluginAssembly(string)"/> prior to this method in order to determine whether the assembly 
 		/// can be loaded or not.
 		/// </para>
 		/// </remarks>

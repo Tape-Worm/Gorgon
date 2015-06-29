@@ -59,7 +59,7 @@ namespace Gorgon.IO
 	/// </remarks>
 	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 	/// <example>
-	/// This example builds on the example provided in the <see cref="GorgonChunkFileWriter"/> example and shows how to read in the file created by that example:
+	/// This example builds on the example provided in the <see cref="IGorgonChunkFileWriter"/> example and shows how to read in the file created by that example:
 	/// <code language="csharp">
 	/// <![CDATA[
 	///		// An application defined file header ID. Useful for identifying the contents of the file.
@@ -176,7 +176,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This opens a Gorgon chunk file that exists within the <see cref="GorgonChunkFile{T}.Stream"/> passed to the constructor of this object. Typically this would be in a <see cref="FileStream"/>, but any type of stream 
+		/// This opens a Gorgon chunk file that exists within the <see cref="Stream"/> passed to this object. Typically this would be in a <see cref="FileStream"/>, but any type of stream 
 		/// is valid and can contain a chunk file. 
 		/// </para>
 		/// <para>

@@ -33,6 +33,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.Plugins;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {

@@ -31,6 +31,7 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.UI;
 using SharpDX;
 using Common = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;

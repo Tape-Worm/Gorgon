@@ -30,6 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {

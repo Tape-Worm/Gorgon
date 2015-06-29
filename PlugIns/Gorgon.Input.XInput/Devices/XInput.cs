@@ -28,6 +28,7 @@ using System;
 using System.Collections.ObjectModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.UI;
 using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput

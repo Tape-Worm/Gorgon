@@ -40,26 +40,6 @@ using Gorgon.Diagnostics;
 
 namespace Gorgon.Plugins
 {
-	/// <summary>
-	/// The return values for the <see cref="GorgonPluginAssemblyCache.VerifyAssemblyStrongName"/> method.
-	/// </summary>
-	[Flags]
-	public enum AssemblySigningResult
-	{
-		/// <summary>
-		/// Assembly is not signed.  This flag is mutually exclusive.
-		/// </summary>
-		NotSigned = 1,
-		/// <summary>
-		/// Assembly is signed, and if it was requested, the key matches.
-		/// </summary>
-		Signed = 2,
-		/// <summary>
-		/// This flag is combined with the Signed flag to indicate that it was signed, but the keys did not match.
-		/// </summary>
-		KeyMismatch = 4
-	}
-
 	/// <inheritdoc/>
 	public class GorgonPluginAssemblyCache
 		: IGorgonPluginAssemblyCache

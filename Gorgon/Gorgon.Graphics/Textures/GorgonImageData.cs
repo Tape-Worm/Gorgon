@@ -60,6 +60,7 @@ using Gorgon.Graphics.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.UI;
 using SharpDX.WIC;
 using Bitmap = SharpDX.WIC.Bitmap;
 using DX = SharpDX;

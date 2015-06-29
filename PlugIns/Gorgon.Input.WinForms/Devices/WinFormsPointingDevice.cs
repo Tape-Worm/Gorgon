@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.WinForms.Properties;
+using Gorgon.UI;
 
 namespace Gorgon.Input.WinForms
 {

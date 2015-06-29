@@ -36,6 +36,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
+using Gorgon.UI;
 using Microsoft.Win32;
 
 namespace Gorgon.Input.Raw

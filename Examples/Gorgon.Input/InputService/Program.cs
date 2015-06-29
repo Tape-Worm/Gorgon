@@ -32,6 +32,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.Plugins;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {

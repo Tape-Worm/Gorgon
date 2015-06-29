@@ -809,15 +809,15 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
-		public void CopyFrom(IGorgonPointer buffer, long sourceOffset, int sourceSize, long destinationOffset = 0)
+		public void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0)
 		{
 #if DEBUG
-			if (buffer == null)
+			if (source == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException("source");
 			}
 
-			if ((IsDisposed) || (buffer.IsDisposed))
+			if ((IsDisposed) || (source.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
@@ -837,7 +837,7 @@ namespace Gorgon.Native
 				throw new ArgumentOutOfRangeException("destinationOffset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
-			if (sourceOffset + sourceSize > buffer.Size)
+			if (sourceOffset + sourceSize > source.Size)
 			{
 				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceOffset, sourceSize), "sourceOffset");
 			}
@@ -854,7 +854,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				byte* srcPtr = (byte *)(buffer.Address + sourceOffset);
+				byte* srcPtr = (byte *)(source.Address + sourceOffset);
 				byte* destPtr = _pointer + destinationOffset;
 
 				DirectAccess.MemoryCopy(destPtr, srcPtr, sourceSize);
@@ -862,15 +862,15 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
-		public void CopyFrom(IGorgonPointer buffer, int sourceSize)
+		public void CopyFrom(IGorgonPointer source, int sourceSize)
 		{
 #if DEBUG
-			if (buffer == null)
+			if (source == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException("source");
 			}
 
-			if ((IsDisposed) || (buffer.IsDisposed))
+			if ((IsDisposed) || (source.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
@@ -880,7 +880,7 @@ namespace Gorgon.Native
 				throw new ArgumentOutOfRangeException("sourceSize", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
-			if ((sourceSize > buffer.Size) || (sourceSize > Size))
+			if ((sourceSize > source.Size) || (sourceSize > Size))
 			{
 				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, sourceSize), "sourceSize");
 			}
@@ -892,7 +892,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.MemoryCopy(_pointer, (byte *)buffer.Address, sourceSize);
+				DirectAccess.MemoryCopy(_pointer, (byte *)source.Address, sourceSize);
 			}
 		}
 

@@ -28,6 +28,7 @@ using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
+using Gorgon.UI;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using DXCommon = SharpDX.Direct3D;

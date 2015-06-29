@@ -31,6 +31,7 @@ using System.Xml.Linq;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
+using Gorgon.UI;
 
 namespace Gorgon.Examples
 {

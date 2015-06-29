@@ -33,6 +33,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
+using Gorgon.UI;
 
 namespace Gorgon.Editor
 {

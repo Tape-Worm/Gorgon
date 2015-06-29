@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using Gorgon.IO;
 
 namespace Gorgon.Native
 {

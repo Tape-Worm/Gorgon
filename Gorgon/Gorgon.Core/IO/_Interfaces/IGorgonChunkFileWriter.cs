@@ -44,7 +44,7 @@ namespace Gorgon.IO
 	///		int[] ints { 1, 2, 9, 100, 122, 129, 882, 82, 62, 42 };
 	/// 
 	///		Stream myStream = File.Open("<<Path to your file>>", FileMode.Create, FileAccess.Write, FileShare.None);
-	///		GorgonChunkFileWriter file = new GorgonChunkFileWriter(myStream, FileHeader);
+	///		IGorgonChunkFileWriter file = new GorgonChunkFileWriter(myStream, FileHeader);
 	/// 
 	///		try
 	///		{
@@ -122,7 +122,7 @@ namespace Gorgon.IO
 		/// is not required to be unique, but must not be the same as the header for the file, or the chunk table identifier. There are constants in the <see cref="GorgonChunkFile{T}"/> type that expose these values.
 		/// </para>
 		/// <note type="Important">
-		/// This method should always be paired with a call to <see cref="GorgonChunkFileWriter.CloseChunk"/>. Failure to do so will keep the chunk table from being updated properly, and corrupt the file.
+		/// This method should always be paired with a call to <see cref="IGorgonChunkFileWriter.CloseChunk"/>. Failure to do so will keep the chunk table from being updated properly, and corrupt the file.
 		/// </note>
 		/// </remarks>
 		GorgonBinaryWriter OpenChunk(ulong chunkId);
@@ -147,7 +147,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This opens a Gorgon chunk file that exists within the <see cref="GorgonChunkFile{T}.Stream"/> passed to the constructor of this object. Typically this would be in a <see cref="FileStream"/>, but any type of stream 
+		/// This opens a Gorgon chunk file that exists within the <see cref="Stream"/> passed to this object. Typically this would be in a <see cref="FileStream"/>, but any type of stream 
 		/// is valid and can contain a chunk file. 
 		/// </para>
 		/// <para>

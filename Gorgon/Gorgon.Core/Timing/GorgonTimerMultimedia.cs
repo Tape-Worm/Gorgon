@@ -29,6 +29,7 @@ using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Native;
+using Gorgon.UI;
 
 namespace Gorgon.Timing
 {
