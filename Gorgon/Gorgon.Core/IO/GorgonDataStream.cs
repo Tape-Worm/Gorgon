@@ -25,14 +25,12 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core.Properties;
-using Gorgon.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Native;
 
@@ -83,7 +81,7 @@ namespace Gorgon.IO
 	/// become an issue.
 	/// </para>
 	/// <para>
-	/// Existing pointers to native memory can be used when constructing this stream type via the <see cref="GorgonDataStream(IntPtr, int)"/> (or using the constructor with the raw <c>void *</c> pointer). 
+	/// Existing pointers to native memory can be used when constructing this stream type via the <see cref="GorgonDataStream(IntPtr, long)"/> (or using the constructor with the raw <c>void *</c> pointer). 
 	/// The data stream will read and write from this pointer, but it will not take ownership of it, and thus will not free the memory associated with it when it is done. That responsibility is up to the 
 	/// caller of the data stream.
 	/// </para>
@@ -115,22 +113,14 @@ namespace Gorgon.IO
 		: Stream
 	{
 		#region Variables.
+		// The pointer to unmanaged memory.
+		private IGorgonPointer _pointer;
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
-		// Pointer to the data held by the stream.
-		private IntPtr _data = IntPtr.Zero;
 		// Position in the buffer.
-		private int _position;
-		// Number of bytes in the buffer.
-		private int _length;
-		// Pointer offset.
-		private IntPtr _pointerOffset = IntPtr.Zero;
-		// Handle to a pinned array.
-		private GCHandle _handle = default(GCHandle);
+		private long _position;
 		// Flag to indicate that we own this pointer.
-		private readonly bool _ownsPointer = true;
-		// Pointer to the data in memory.
-		//private void* _dataPointer = null; 
+		private readonly bool _ownsPointer;
 		#endregion
 
 		#region Properties.
@@ -187,7 +177,7 @@ namespace Gorgon.IO
 		{
 			get
 			{
-				return _length;
+				return _pointer == null ? 0 : _pointer.Size;
 			}
 		}
 
@@ -206,21 +196,31 @@ namespace Gorgon.IO
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
+#if DEBUG
+				if (_pointer == null)
+				{
+					throw new ObjectDisposedException("GorgonDataStream");
+				}
+#endif
 				return _position;
 			}
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set
 			{
 #if DEBUG
-				// Limit to the bounds of an integer.
-				if ((value > Int32.MaxValue) || (value < 0))
+				if (_pointer == null)
 				{
-					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, value, Int32.MaxValue));
+					throw new ObjectDisposedException("GorgonDataStream");
+				}
+
+				// Limit to the bounds of an integer.
+				if (value < 0)
+				{
+					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, value, Int64.MaxValue));
 				}
 #endif
 
 				_position = (int)value;
-				_pointerOffset = _data + _position;
 			}
 		}
 
@@ -231,11 +231,12 @@ namespace Gorgon.IO
 		/// This value returns an <see cref="IntPtr"/> that wraps the pointer that points at the starting address for the unmanaged memory wrapped by the stream. To get the pointer to the memory address 
 		/// offset by the current <see cref="Position"/>, use the <see cref="PositionIntPtr"/> property.
 		/// </remarks>
+		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
 		public IntPtr BaseIntPtr
 		{
 			get
 			{
-				return _data;
+				return new IntPtr(_pointer.Address);
 			}
 		}
 
@@ -245,11 +246,12 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// This value returns the same value as the <see cref="BasePointer"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
 		/// </remarks>
+		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
 		public void* PositionPointer
 		{
 			get
 			{
-				return _pointerOffset.ToPointer();
+				return (void *)(_pointer.Address + _position);
 			}
 		}
 
@@ -259,11 +261,12 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// This value returns the same value as the <see cref="BaseIntPtr"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
 		/// </remarks>
+		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
 		public IntPtr PositionIntPtr
 		{
 			get
 			{
-				return _pointerOffset;
+				return new IntPtr(_pointer.Address + _position);
 			}
 		}
 
@@ -274,11 +277,12 @@ namespace Gorgon.IO
 		/// This value returns a pointer that points at the starting address for the unmanaged memory wrapped by the stream. To get the pointer to the memory address offset by the current 
 		/// <see cref="Position"/>, use the <see cref="PositionPointer"/> property.
 		/// </remarks>
+		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
 		public void* BasePointer
 		{
 			get
 			{
-				return _data.ToPointer();
+				return (void *)(_pointer.Address);
 			}
 		}
 		#endregion
@@ -295,91 +299,40 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_DATASTREAM_NOT_OWNER_NO_RESIZE);
 			}
 
-			if (_handle.IsAllocated)
+			value = value.Max(0);
+
+			if (_pointer != null)
 			{
-				throw new NotSupportedException(Resources.GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE);
+				_pointer.Dispose();
+				_pointer = null;
 			}
 
-			if (value < 0)
-			{
-				value = 0;
-			}
-			if (value > Int32.MaxValue)
-			{
-				value = Int32.MaxValue;
-			}
-
-			if (_data != IntPtr.Zero)
-			{
-				if (!_handle.IsAllocated)
-				{
-					Marshal.FreeHGlobal(_data);
-
-					// Ensure that the garbage collector knows that we've dumped this memory.
-					if (_length > 0)
-					{
-						GC.RemoveMemoryPressure(_length);
-					}
-				}
-				else
-				{
-					_handle.Free();
-				}
-			}
-
-			_data = IntPtr.Zero;
-			_pointerOffset = IntPtr.Zero;
 			_position = 0;
-			_length = 0;
 
 			if (value == 0)
 			{
 				return;
 			}
 
-			_data = Marshal.AllocHGlobal((int)value);
-
-			// Ensure the garbage collector is aware of how big this object really is.
-			// Failure to do this will make the GC think this object is only 10's of bytes in size, thus making it 
-			// fail to take into account the memory bloat from the buffer when performing analysis for collection.
-			// This ensures that the GC always knows the exact size of the stream at any given time.
-			GC.AddMemoryPressure(value);
-			_pointerOffset = _data;
-			_length = (int)value;
+			_pointer = new GorgonPointer(value);
 		}
 
 		/// <summary>
 		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.
 		/// </summary>
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2215:Dispose methods should call base class dispose")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2215:Dispose methods should call base class dispose", Justification = "Base Stream does nothing in Dispose(bool). Why call it?")]
 		protected override void Dispose(bool disposing)
 		{
 			// We suppress the base call to Dispose because Stream's Dispose(bool) does nothing.
-			if ((_disposed) || (!_ownsPointer) || ((_data == IntPtr.Zero) && (!_handle.IsAllocated)))
+			if ((_disposed) || (!_ownsPointer) || (_pointer == null) || (_pointer.IsDisposed))
 			{
 				return;
 			}
 
 			// Destroy the buffer.
-			if (!_handle.IsAllocated)
-			{
-				Marshal.FreeHGlobal(_data);
-
-				if (_length > 0)
-				{
-					GC.RemoveMemoryPressure(_length);
-					_length = 0;
-				}
-			}
-			else
-			{
-				// Unpin any array that we've captured.
-				_handle.Free();
-			}
-
-			_data = IntPtr.Zero;
-			_pointerOffset = IntPtr.Zero;
+			_pointer.Dispose();
+			_pointer = null;
 			_disposed = true;
 		}
 
@@ -564,7 +517,7 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
@@ -590,19 +543,18 @@ namespace Gorgon.IO
 			}
 #endif
 
-			if ((actualCount + _position) > _length)
+			if ((actualCount + _position) > _pointer.Size)
 			{
-				actualCount = (_length - _position);
+				actualCount = (int)(_pointer.Size - _position);
 			}
 
 			if (actualCount <= 0)
 			{
 				return 0;
 			}
-
-			DirectAccess.ReadArray(PositionPointer, buffer, offset, actualCount);
-
-			Position += actualCount;
+			
+			_pointer.ReadRange(_position, buffer, offset, actualCount);
+			_position += actualCount;
 
 			return actualCount;
 		}
@@ -631,7 +583,7 @@ namespace Gorgon.IO
 		{
 			long newPosition;
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				return 0;
 			}
@@ -644,7 +596,7 @@ namespace Gorgon.IO
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 					}
-					if (offset > _length)
+					if (offset > _pointer.Size)
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 					}
@@ -652,13 +604,13 @@ namespace Gorgon.IO
 					newPosition = offset;
 					break;
 				case SeekOrigin.End:
-					newPosition = _length + offset;
+					newPosition = _pointer.Size + offset;
 #if DEBUG
 					if (newPosition < 0)
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 					}
-					if (newPosition > _length)
+					if (newPosition > _pointer.Size)
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 					}
@@ -672,7 +624,7 @@ namespace Gorgon.IO
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
 					}
-					if (newPosition > _length)
+					if (newPosition > _pointer.Size)
 					{
 						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
 					}
@@ -680,8 +632,8 @@ namespace Gorgon.IO
 					break;
 			}
 
-			Position = newPosition;
-			return Position;
+			_position = newPosition;
+			return _position;
 		}
 
 		/// <summary>
@@ -726,7 +678,7 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
@@ -752,14 +704,13 @@ namespace Gorgon.IO
 			}
 #endif
 
-			if ((actualCount + _position) > _length)
+			if ((actualCount + _position) > _pointer.Size)
 			{
-				actualCount = (_length - _position);
+				actualCount = (int)(_pointer.Size - _position);
 			}
 
-			DirectAccess.WriteArray(PositionPointer, buffer, offset, actualCount);
-
-			Position += actualCount;
+			_pointer.WriteRange(_position, buffer, offset, actualCount);
+			_position += actualCount;
 		}
 
 		/// <summary>
@@ -782,20 +733,18 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (_position + size > _length)
+			if (_position + size > _pointer.Size)
 			{
 				throw new EndOfStreamException();
 			}
 #endif
-
-			*((byte*)PositionPointer) = value;
-
-			Position += size;
+			_pointer.Write(_position, ref value);
+			_position += size;
 		}
 
 		/// <summary>
@@ -820,20 +769,21 @@ namespace Gorgon.IO
 			}
 
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 #endif
 
-			if (_position >= Length)
+			if (_position >= _pointer.Size)
 			{
 				return -1;
 			}
+			
+			byte value;
 
-			byte value = *((byte*)PositionPointer);
-
-			Position += size;
+			_pointer.Read(_position, out value);
+			_position += size;
 
 			return value;
 		}
@@ -873,7 +823,7 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
@@ -899,14 +849,13 @@ namespace Gorgon.IO
 			}
 #endif
 
-			if ((actualCount + _position) > _length)
+			if ((actualCount + _position) > _pointer.Size)
 			{
-				actualCount = (_length - _position);
+				actualCount = (int)(_pointer.Size - _position);
 			}
 
-			DirectAccess.WriteArray(PositionPointer, buffer, offset, actualCount);
-
-			Position += actualCount;
+			_pointer.WriteRange(_position, buffer, offset, count);
+			_position += actualCount;
 		}
 
 		/// <summary>
@@ -926,7 +875,10 @@ namespace Gorgon.IO
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
 		{
-			buffer.ValidateObject("buffer");
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
 
 			WriteRange(buffer, 0, buffer.Length);
 		}
@@ -953,18 +905,18 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 #endif
-			if (typeSize + Position > _length)
+			if (typeSize + Position > _pointer.Size)
 			{
 				return;
 			}
 
-			DirectAccess.WriteValue(PositionPointer, ref item);
-			Position += typeSize;
+			_pointer.Write(_position, ref item);
+			_position += typeSize;
 		}
 
 		/// <summary>
@@ -988,15 +940,13 @@ namespace Gorgon.IO
 		public virtual int ReadRange<T>(T[] buffer, int offset, int count)
 			where T : struct
 		{
-			int actualCount = count * DirectAccess.SizeOf<T>();
-
 #if DEBUG
 			if (!CanRead)
 			{
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
@@ -1021,21 +971,22 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
+			int countSize = DirectAccess.SizeOf<T>() * count;
 
-			if ((actualCount + _position) > _length)
+			if ((countSize + _position) > _pointer.Size)
 			{
-				actualCount = (_length - _position);
+				countSize = (int)(_pointer.Size - _position);
 			}
 
-			if (actualCount <= 0)
+			if (countSize <= 0)
 			{
-				return actualCount;
+				return 0;
 			}
 
-			DirectAccess.ReadArray(PositionPointer, buffer, offset, actualCount);
-			Position += actualCount;
+			_pointer.ReadRange(_position, buffer, offset, count);
+			_position += countSize;
 
-			return actualCount;
+			return countSize;
 		}
 
 		/// <summary>
@@ -1081,20 +1032,20 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (typeSize + Position > _length)
+			if (typeSize + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 #endif
 
 			T result;
-			DirectAccess.ReadValue(PositionPointer, out result);
-			Position += typeSize;
+			_pointer.Read(_position, out result);
+			_position += typeSize;
 
 			return result;
 		}
@@ -1123,18 +1074,19 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (size + Position > _length)
+			if (size + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 #endif
-			DirectAccess.MemoryCopy(pointer, _pointerOffset, size);
-			Position += size;
+
+			DirectAccess.MemoryCopy(pointer, new IntPtr(_pointer.Address + _position), size);
+			_position += size;
 		}
 
 		/// <summary>
@@ -1161,18 +1113,18 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (size + Position > _length)
+			if (size + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 #endif
-			DirectAccess.MemoryCopy(PositionPointer, pointer, size);
-			Position += size;
+			DirectAccess.MemoryCopy(pointer, (void *)(_pointer.Address + _position), size);
+			_position += size;
 		}
 
 		/// <summary>
@@ -1199,19 +1151,18 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (size + Position > _length)
+			if (size + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
-
-			DirectAccess.MemoryCopy(_pointerOffset, pointer, size);
-			Position += size;
+			_pointer.CopyMemory(pointer, size, _position);
+			_position += size;
 		}
 
 		/// <summary>
@@ -1233,18 +1184,18 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (size + Position > _length)
+			if (size + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
 #endif
-			DirectAccess.MemoryCopy(PositionPointer, pointer, size);
-			Position += size;
+			_pointer.CopyMemory(pointer, size, _position);
+			_position += size;
 		}
 
 		/// <summary>
@@ -1284,24 +1235,26 @@ namespace Gorgon.IO
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
 
+#if DEBUG
 			if (!CanWrite)
 			{
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_READONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (dataSize + Position > _length)
+			if (dataSize + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
 			}
+#endif
 
-			Marshal.StructureToPtr(data, _pointerOffset, deleteContents);
+			Marshal.StructureToPtr(data, new IntPtr(_pointer.Address + _position), deleteContents);
 
-			Position += dataSize;
+			_position += dataSize;
 		}
 
 		/// <summary>
@@ -1343,148 +1296,25 @@ namespace Gorgon.IO
 				throw new NotSupportedException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
 			}
 
-			if (_data == IntPtr.Zero)
+			if (_pointer == null)
 			{
 				throw new ObjectDisposedException("GorgonDataStream");
 			}
 
-			if (dataSize + Position > _length)
+			if (dataSize + Position > _pointer.Size)
 			{
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 #endif
 
-			T value = (T)Marshal.PtrToStructure(_pointerOffset, typeT);
-			Position += dataSize;
+			T value = (T)Marshal.PtrToStructure(new IntPtr(_pointer.Address + _position), typeT);
+			_position += dataSize;
 
 			return value;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
-		/// </summary>
-		/// <param name="data">An array that will be wrapped by the stream.</param>
-		/// <param name="index">Index inside of the source array to start reading from.</param>
-		/// <param name="count">Number of elements to read.</param>
-		/// <param name="status">A flag indicating if the buffer is read only, write only or both.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> or <paramref name="count"/> parameters are less than 0.
-		/// <para>-or-</para>
-		/// <para>
-		/// Thrown when the index parameter is larger than the source array.
-		/// </para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the <paramref name="index"/> plus the <paramref name="count"/> parameters total to larger than the size of the array.
-		/// <para>-or-</para>
-		/// <para>
-		/// Thrown when the <paramref name="data"/> array does not contain elements that are value types, or primitive types.
-		/// </para>
-		/// <para>
-		/// -or-
-		/// </para>
-		/// <para>
-		/// Thrown when the <paramref name="data"/> array elements are value types, but do not use the <see cref="StructLayoutAttribute"/>, or the layout is not <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>
-		/// </para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This constructor is meant to wrap and pin an array for reading/writing via this stream. The items in the array must be value types or primitive types. Value types must be decorated with the 
-		/// <see cref="StructLayoutAttribute"/> attribute with a layout of either <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.
-		/// </para>
-		/// <para>
-		/// The data stream does not check for multiple types within the array, so it is important that the developer ensure that all array elements are of the same type. If the array contains a mix of element types 
-		/// then the <see cref="Length"/> of the stream will be incorrect, and the results will be undefined.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// A pointer to the first array element specified by <paramref name="index"/> will be pinned and released upon disposal of the stream, this will impact garbage collection performance. It is 
-		/// recommended that any operation that requires this constructor be performed quickly to minimize disruption to the garbage collector.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonDataStream(Array data, int index, int count, StreamAccess status = StreamAccess.ReadWrite)
-		{
-			if (data == null)
-			{
-				throw new ArgumentNullException("data");
-			}
-
-			if ((index < 0) || (index >= data.Length))
-			{
-				throw new ArgumentOutOfRangeException("index", string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, data.Length));
-			}
-
-			if (count < 0)
-			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_STREAM_COUNT_OUT_OF_RANGE, count));
-			}
-
-			if (index + count > data.Length)
-			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_OFFSET_COUNT_TOO_LARGE);
-			}
-
-			Type elementType = data.GetType().GetElementType();
-
-			Debug.Assert(elementType != null, "Could not get the array element type.");
-
-			if ((!elementType.IsValueType) && (!elementType.IsPrimitive))
-			{
-				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE, "data");
-			}
-			
-			// If the element is a value type, ensure that we have struct layout.
-			if ((elementType.IsValueType) && ((elementType.StructLayoutAttribute == null) || ((!elementType.IsExplicitLayout) && (!elementType.IsLayoutSequential))))
-			{
-				throw new ArgumentException(Resources.GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID, "data");
-			}
-
-			// Pin the array.
-			_handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
-			_length = count * Marshal.SizeOf(elementType);
-			_pointerOffset = _data;
-			StreamAccess = status;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDataStream" /> class.
-		/// </summary>
-		/// <param name="data">An array that will be wrapped by the stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the <paramref name="data"/> array does not contain elements that are value types, or primitive types.
-		/// <para>
-		/// -or-
-		/// </para>
-		/// <para>
-		/// Thrown when the <paramref name="data"/> array elements are value types, but do not use the <see cref="StructLayoutAttribute"/>, or the layout is not <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>
-		/// </para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// This constructor is meant to wrap and pin an array for reading/writing via this stream. The items in the array must be value types or primitive types. Value types must be decorated with the 
-		/// <see cref="StructLayoutAttribute"/> attribute with a layout of either <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.
-		/// </para>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// A pointer to the first array element in the array will be pinned and released upon disposal of the stream, this will impact garbage collection performance. It is 
-		/// recommended that any operation that requires this constructor be performed quickly to minimize disruption to the garbage collector.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public GorgonDataStream(Array data)
-			: this(data, 0, data.Length)
-		{
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
@@ -1495,6 +1325,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		public GorgonDataStream(int capacity)
 		{
+			_ownsPointer = true;
 			AllocateBuffer(capacity.Max(0));
 		}
 
@@ -1509,7 +1340,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter has a value of <see cref="IntPtr.Zero"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		public GorgonDataStream(IntPtr source, int size)
+		public GorgonDataStream(IntPtr source, long size)
 		{
 			if (source == IntPtr.Zero)
 			{
@@ -1522,10 +1353,8 @@ namespace Gorgon.IO
 			}
 
 			_ownsPointer = false;
-			_data = source;
-			_pointerOffset = source;
+			_pointer = new GorgonPointerAlias(source, size);
 			_position = 0;
-			_length = size;
 			StreamAccess = StreamAccess.ReadWrite;
 		}
 
@@ -1540,7 +1369,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter has a value of <see cref="IntPtr.Zero"/>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 0.</exception>
-		public GorgonDataStream(void* source, int size)
+		public GorgonDataStream(void* source, long size)
 		{
 			if (source == null)
 			{
@@ -1553,10 +1382,29 @@ namespace Gorgon.IO
 			}
 
 			_ownsPointer = false;
-			_data = new IntPtr(source);
-			_pointerOffset = _data;
+			_pointer = new GorgonPointerAlias(source, size);
 			_position = 0;
-			_length = size;
+			StreamAccess = StreamAccess.ReadWrite;
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
+		/// </summary>
+		/// <param name="pointer">The <see cref="IGorgonPointer"/> to wrap within this stream.</param>
+		/// <remarks>
+		/// This constructor will take an <see cref="IGorgonPointer"/>, and wrap it within this stream object. The stream will <b>not</b> own the <see cref="IGorgonPointer"/>, and consequently, will 
+		/// not be responsible for freeing the memory it may have allocated. To free the memory, the code that created the <see cref="IGorgonPointer"/> must call its dispose method.
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		public GorgonDataStream(IGorgonPointer pointer)
+		{
+			if (pointer == null)
+			{
+				throw new ArgumentNullException("pointer");
+			}
+
+			_ownsPointer = false;
+			_pointer = pointer;
 			StreamAccess = StreamAccess.ReadWrite;
 		}
 

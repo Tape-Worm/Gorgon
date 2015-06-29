@@ -25,8 +25,8 @@
 #endregion
 
 using System.Drawing;
-using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Native;
 using SlimMath;
 
 namespace Gorgon.Graphics.Example
@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Initial orientation.
-		private Matrix _orientation = Matrix.Identity;
+		private Matrix _orientation;
 		#endregion
 
 		#region Methods.
@@ -85,7 +85,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="buffer">Buffer to populate.</param>
 		/// <param name="columns">Number of columns for the plane.</param>
 		/// <param name="rows">Number of rows for the plane.</param>
-		private unsafe void GetIndices(int *buffer, int columns, int rows)
+		private static unsafe void GetIndices(int *buffer, int columns, int rows)
 		{
 			int columnWrap = columns + 1;
 
@@ -133,25 +133,25 @@ namespace Gorgon.Graphics.Example
 
 			unsafe
 			{
-				using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
-				using (var indexData = new GorgonDataStream(IndexCount * sizeof(int)))
+				using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount))
+				using (IGorgonPointer indexData = new GorgonPointerTyped<int>(IndexCount))
 				{
-					GetVertices((Vertex3D *)vertexData.BasePointer, size, textureCoordinates, columns, rows);
-					GetIndices((int*)indexData.BasePointer, columns, rows);
+					GetVertices((Vertex3D *)vertexData.Address, size, textureCoordinates, columns, rows);
+					GetIndices((int*)indexData.Address, columns, rows);
 
-					CalculateTangents((Vertex3D *)vertexData.BasePointer, (int *)indexData.BasePointer);
+					CalculateTangents((Vertex3D *)vertexData.Address, (int *)indexData.Address);
 
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("PlaneVB", new GorgonBufferSettings
 					                                                              {
 						                                                              Usage = BufferUsage.Immutable,
-																					  SizeInBytes = (int)vertexData.Length
+																					  SizeInBytes = (int)vertexData.Size
 					                                                              }, vertexData);
 					
 					IndexBuffer = graphics.Buffers.CreateIndexBuffer("PlaneIB", new GorgonIndexBufferSettings
 					                                                            {
 						                                                            Usage = BufferUsage.Immutable,
 																					Use32BitIndices = true,
-																					SizeInBytes = (int)indexData.Length
+																					SizeInBytes = (int)indexData.Size
 					                                                            }, indexData);
 				}
 			}

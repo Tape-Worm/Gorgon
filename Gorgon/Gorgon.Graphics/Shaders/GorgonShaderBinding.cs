@@ -35,6 +35,7 @@ using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
+using Gorgon.Native;
 using Shaders = SharpDX.D3DCompiler;
 
 namespace Gorgon.Graphics
@@ -534,9 +535,9 @@ namespace Gorgon.Graphics
                 throw new ArgumentNullException("shaderData");
             }
 
-            using (var memoryStream = new GorgonDataStream(shaderData))
+            using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(shaderData))
             {
-                return FromStream<T>(name, entryPoint, memoryStream, shaderData.Length, macros, isDebug);
+                return FromStream<T>(name, entryPoint, new GorgonDataStream(pointer), shaderData.Length, macros, isDebug);
             }
         }
 

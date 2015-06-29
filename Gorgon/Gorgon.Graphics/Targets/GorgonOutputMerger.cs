@@ -31,7 +31,6 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
-using Gorgon.IO;
 using Gorgon.Native;
 using D3D = SharpDX.Direct3D11;
 
@@ -1723,7 +1722,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
-        public GorgonRenderTargetBuffer CreateRenderTarget(string name, GorgonRenderTargetBufferSettings settings, GorgonDataStream initialData = null)
+        public GorgonRenderTargetBuffer CreateRenderTarget(string name, GorgonRenderTargetBufferSettings settings, IGorgonPointer initialData = null)
         {
             if (_graphics.IsDeferred)
             {

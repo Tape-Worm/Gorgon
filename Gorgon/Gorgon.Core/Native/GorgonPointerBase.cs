@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core.Properties;
 using Gorgon.IO;
@@ -96,7 +97,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Property to return whether the pointer has been disposed or not.
 		/// </summary>
-		public unsafe bool Disposed
+		public unsafe bool IsDisposed
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
@@ -139,6 +140,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Read<T>(long offset, out T value)
 			where T : struct
 		{
@@ -168,6 +185,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public T Read<T>(long offset)
 			where T : struct
 		{
@@ -179,6 +212,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Read<T>(out T value)
 			where T : struct
 		{
@@ -202,6 +251,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public T Read<T>()
 			where T : struct
 		{
@@ -229,6 +294,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Write<T>(long offset, ref T value)
 			where T : struct
 		{
@@ -257,7 +338,23 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc cref="Write{T}(long, ref T)"/>
+		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Write<T>(long offset, T value)
 			where T : struct
 		{
@@ -265,6 +362,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Write<T>(ref T value)
 			where T : struct
 		{
@@ -287,7 +400,23 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc cref="Write{T}(ref T)"/>
+		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void Write<T>(T value)
 			where T : struct
 		{
@@ -295,6 +424,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void ReadRange<T>(long offset, T[] array, int index, int count)
 			where T : struct
 		{
@@ -350,6 +495,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void ReadRange<T>(T[] array, int index, int count)
 			where T : struct
 		{
@@ -398,6 +559,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void ReadRange<T>(long offset, T[] array)
 			where T : struct
 		{
@@ -411,6 +588,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void ReadRange<T>(T[] array)
 			where T : struct
 		{
@@ -424,6 +617,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void WriteRange<T>(long offset, T[] array, int index, int count)
 			where T : struct
 		{
@@ -478,6 +687,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void WriteRange<T>(long offset, T[] array)
 			where T : struct
 		{
@@ -491,6 +716,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void WriteRange<T>(T[] array)
 			where T : struct
 		{
@@ -504,6 +745,22 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc/>
+		/// <note type="caution">
+		/// <para>
+		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
+		/// results.
+		/// </para> 
+		/// </note>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void WriteRange<T>(T[] array, int index, int count)
 			where T : struct
 		{
@@ -560,7 +817,7 @@ namespace Gorgon.Native
 				throw new ArgumentNullException("buffer");
 			}
 
-			if ((Disposed) || (buffer.Disposed))
+			if ((IsDisposed) || (buffer.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
@@ -613,7 +870,7 @@ namespace Gorgon.Native
 				throw new ArgumentNullException("buffer");
 			}
 
-			if ((Disposed) || (buffer.Disposed))
+			if ((IsDisposed) || (buffer.IsDisposed))
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
 			}
@@ -854,35 +1111,11 @@ namespace Gorgon.Native
 		}
 
 		/// <inheritdoc/>
-		public GorgonDataStream ToDataStream()
-		{
-			unsafe
-			{
-				if (_notDisposed == 0)
-				{
-					throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
-				}
-
-				if (Size > Int32.MaxValue)
-				{
-					throw new InvalidOperationException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT);	
-				}
-
-				return new GorgonDataStream(_pointer, (int)Size);
-			}
-		}
-
-		/// <inheritdoc/>
 		public MemoryStream CopyToMemoryStream()
 		{
 			if (_notDisposed == 0)
 			{
 				throw new ObjectDisposedException(Resources.GOR_ERR_DATABUFF_PTR_DISPOSED);
-			}
-
-			if (Size > Int32.MaxValue)
-			{
-				throw new InvalidOperationException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT);	
 			}
 
 			long size = Size;

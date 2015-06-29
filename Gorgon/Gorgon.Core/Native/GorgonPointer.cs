@@ -49,21 +49,10 @@ namespace Gorgon.Native
 	/// data to the memory pointed at by the internal pointer. With these methods the object can read and write primitive types, arrays, and generic value types.
 	/// </para>
 	/// <para>
-	/// When reading or writing generic value types, or arrays with value types as elements, it is important to ensure that the value type meets the following criteria:
-	/// </para>
-	/// <list type="bullet">
-	///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
-	///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
-	/// </list>
-	/// <para>
-	/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
-	/// reading/writing from the raw memory behind the type, the values may not be the expected places.
-	/// </para>
-	/// <para>
 	/// <note type="important">
 	/// <para>
 	/// This object allocates unmanaged memory. Since this memory is outside of the scope of the .NET garbage collector, it will be kept around until this object is finalized and could lead to memory leakage. Always 
-	/// call the <see cref="GorgonPointerBase.Dispose"/> method when an instance of this object is no longer needed.
+	/// call the <see cref="GorgonPointerBase.Dispose()"/> method when an instance of this object is no longer needed.
 	/// </para>
 	/// </note>
 	/// </para>
@@ -123,7 +112,7 @@ namespace Gorgon.Native
 		///   <note type="important">
 		///     <para>
 		///		Creating a pointer with this method allocates unmanaged memory. The .NET garbage collector is unable to track this memory, and will not free it until the pointer object is ready for finalization.
-		///		This can lead to memory leaks if handled improperly. The best practice is to allocate the memory using this method, and then call <see cref="GorgonPointerBase.Dispose" /> on the pointer object when 
+		///		This can lead to memory leaks if handled improperly. The best practice is to allocate the memory using this method, and then call <see cref="GorgonPointerBase.Dispose()" /> on the pointer object when 
 		///		done with it.
 		///		</para>
 		///   </note>

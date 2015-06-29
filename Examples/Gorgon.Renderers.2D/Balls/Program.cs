@@ -92,7 +92,7 @@ namespace Gorgon.Graphics.Example
 			else
 			{
 				// Otherwise, format the file name.
-				path += resourceItem.FormatFileName();
+				path += resourceItem.FormatPath(Path.DirectorySeparatorChar);
 			}
 
 			// Ensure that we have an absolute path.

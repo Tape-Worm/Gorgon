@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Native;
 using SlimMath;
 
 namespace Gorgon.Graphics.Example
@@ -41,7 +42,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Initial orientation.
-		private Matrix _orientation = Matrix.Identity;
+		private Matrix _orientation;
 		// A list of previously performed splits.
 		private readonly Dictionary<Int64, int> _cachedSplits = new Dictionary<long, int>();
 		private readonly List<Vector3> _vertices = new List<Vector3>();
@@ -382,28 +383,28 @@ namespace Gorgon.Graphics.Example
 
 			unsafe
 			{
-				using (var vertexData = new GorgonDataStream(vertexList.ToArray()))
-				using (var indexData = new GorgonDataStream(indexList.ToArray()))
+				using (IGorgonPointer vertexData = new GorgonPointerPinned<Vertex3D>(vertexList.ToArray()))
+				using (IGorgonPointer indexData = new GorgonPointerPinned<int>(indexList.ToArray()))
 				{
 					VertexCount = vertexList.Count;
 					IndexCount = indexList.Count;
 					TriangleCount = IndexCount / 3;
 
-					CalculateTangents((Vertex3D*)vertexData.BasePointer, (int*)indexData.BasePointer);
+					CalculateTangents((Vertex3D*)vertexData.Address, (int*)indexData.Address);
 
 					VertexBuffer = graphics.Buffers.CreateVertexBuffer("IcoSphereVertexBuffer",
 						                                                new GorgonBufferSettings
 						                                                {
-																			SizeInBytes = (int)vertexData.Length,
+																			SizeInBytes = (int)vertexData.Size,
 																			Usage = BufferUsage.Immutable
 						                                                },
 						                                                vertexData);
-					IndexBuffer = graphics.Buffers.CreateIndexBuffer("IcoSphereIndexbuffer",
+					IndexBuffer = graphics.Buffers.CreateIndexBuffer("IcoSphereIndexBuffer",
 						                                                new GorgonIndexBufferSettings
 						                                                {
 																			Usage = BufferUsage.Immutable,
 																			Use32BitIndices = true,
-																			SizeInBytes = (int)indexData.Length
+																			SizeInBytes = (int)indexData.Size
 						                                                },
 						                                                indexData);
 				}

@@ -212,7 +212,7 @@ namespace Gorgon.Graphics
         /// Function to create the resources for the buffer.
         /// </summary>
         /// <param name="data">The initial data for the buffer.</param>
-        private void CreateResources(GorgonDataStream data)
+        private void CreateResources(IGorgonPointer data)
         {
             var desc = new D3D.BufferDescription
             {
@@ -290,12 +290,7 @@ namespace Gorgon.Graphics
 			// Create and initialize the buffer.
 	        if (data != null)
             {
-                long position = data.Position;
-
-                using (var dxStream = new DX.DataStream(data.BaseIntPtr, data.Length - position, true, true))
-                {
-                    D3DResource = D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
-                }
+                D3DResource = D3DBuffer = new D3D.Buffer(Graphics.D3DDevice, new IntPtr(data.Address), desc);
             }
             else
             {
@@ -691,7 +686,7 @@ namespace Gorgon.Graphics
         /// </summary>
         /// <param name="data">Data to write.</param>
         /// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-        internal void Initialize(GorgonDataStream data)
+        internal void Initialize(IGorgonPointer data)
         {
             GorgonApplication.Log.Print("Creating {0} Buffer '{1}'...", LoggingLevel.Verbose, BufferType, Name);
 

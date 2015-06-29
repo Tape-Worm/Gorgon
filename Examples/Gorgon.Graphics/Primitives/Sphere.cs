@@ -169,39 +169,39 @@ namespace Gorgon.Graphics.Example
 
 		    unsafe
 		    {
-			    using (var vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size))
-				using (var normalData = new GorgonDataStream(VertexCount * 2 * Vector4.SizeInBytes))
-				using (var indexData = new GorgonDataStream(IndexCount * DirectAccess.SizeOf<int>()))
-				{
-					GetVertices((Vertex3D *)vertexData.BasePointer, (int *)indexData.BasePointer, normalData.BasePointer, radius, textureCoordinates, ringCount, segmentCount);
+			    using (IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
+			                          normalData = new GorgonPointerTyped<Vector4>(VertexCount * 2),
+			                          indexData = new GorgonPointerTyped<int>(IndexCount))
+			    {
+				    GetVertices((Vertex3D*)vertexData.Address, (int*)indexData.Address, (void*)normalData.Address, radius, textureCoordinates, ringCount, segmentCount);
 
-					VertexBuffer = graphics.Buffers.CreateVertexBuffer("SphereVertexBuffer",
-					                                                   new GorgonBufferSettings
-					                                                   {
-						                                                   Usage = BufferUsage.Immutable,
-						                                                   SizeInBytes = (int)vertexData.Length
-					                                                   },
-					                                                   vertexData);
+				    VertexBuffer = graphics.Buffers.CreateVertexBuffer("SphereVertexBuffer",
+				                                                       new GorgonBufferSettings
+				                                                       {
+					                                                       Usage = BufferUsage.Immutable,
+					                                                       SizeInBytes = (int)vertexData.Size
+				                                                       },
+				                                                       vertexData);
 
-					IndexBuffer = graphics.Buffers.CreateIndexBuffer("SphereIndexBuffer",
-					                                                 new GorgonIndexBufferSettings
-					                                                 {
-						                                                 Usage = BufferUsage.Immutable,
-						                                                 Use32BitIndices = true,
-						                                                 SizeInBytes = (int)indexData.Length
-					                                                 },
-					                                                 indexData);
+				    IndexBuffer = graphics.Buffers.CreateIndexBuffer("SphereIndexBuffer",
+				                                                     new GorgonIndexBufferSettings
+				                                                     {
+					                                                     Usage = BufferUsage.Immutable,
+					                                                     Use32BitIndices = true,
+					                                                     SizeInBytes = (int)indexData.Size
+				                                                     },
+				                                                     indexData);
 
-					Normals = graphics.Buffers.CreateVertexBuffer("NormalsBuffer",
-					                                              new GorgonBufferSettings
-					                                              {
-						                                              Usage = BufferUsage.Immutable,
-						                                              SizeInBytes = (int)normalData.Length
-					                                              },
-					                                              normalData);
-				}
+				    Normals = graphics.Buffers.CreateVertexBuffer("NormalsBuffer",
+				                                                  new GorgonBufferSettings
+				                                                  {
+					                                                  Usage = BufferUsage.Immutable,
+					                                                  SizeInBytes = (int)normalData.Size
+				                                                  },
+				                                                  normalData);
+			    }
 		    }
-		}
+	    }
 		#endregion
 
 		#region IDisposable Members

@@ -65,7 +65,7 @@ namespace Gorgon.Native
 	/// </para>
 	/// <note type="important">
 	/// <para>
-	/// Since this object pins a managed value to a fixed location in memory, it is required that users call the <see cref="GorgonPointerBase.Dispose"/> method as soon as the object no longer needs to be pinned. 
+	/// Since this object pins a managed value to a fixed location in memory, it is required that users call the <see cref="GorgonPointerBase.Dispose()"/> method as soon as the object no longer needs to be pinned. 
 	/// Failure to dispose this object will result in a memory leak since the garbage collector can no longer move or reclaim the the value that is pinned.
 	/// </para>
 	/// </note>
@@ -151,25 +151,9 @@ namespace Gorgon.Native
 		/// access it via a pointer.
 		/// </para>
 		/// <para>
-		/// The type indicated by <typeparamref name="T" /> is used to determine the amount of memory used by the array along with the <paramref name="count" /> parameter. This type is subject to the following
-		/// constraints:
-		/// </para>
-		/// <list type="bullet">
-		///   <item>
-		///     <description>The type must be decorated with the <see cref="LayoutKind" />.</description>
-		///   </item>
-		///   <item>
-		///     <description>The layout for the value type must be <see cref="LayoutKind.Explicit" />, or <see cref="MarshalAsAttribute" />.</description>
-		///   </item>
-		/// </list>
-		/// <para>
-		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when
-		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
-		/// </para>
-		/// <para>
 		///   <note type="important">
 		///     <para>
-		///		A call to <see cref="GorgonPointerBase.Dispose" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
 		///		</para>
 		///   </note>
 		/// </para>
@@ -247,7 +231,7 @@ namespace Gorgon.Native
 		/// <para>
 		///   <note type="important">
 		///     <para>
-		///		A call to <see cref="GorgonPointerBase.Dispose" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
 		///		</para>
 		///   </note>
 		/// </para>
@@ -289,7 +273,7 @@ namespace Gorgon.Native
 		/// <para>
 		///   <note type="important">
 		///     <para>
-		///		A call to <see cref="GorgonPointerBase.Dispose" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
 		///		</para>
 		///   </note>
 		/// </para>
@@ -340,7 +324,7 @@ namespace Gorgon.Native
 		/// <para>
 		///   <note type="important">
 		///     <para>
-		///		A call to <see cref="GorgonPointerBase.Dispose" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
 		///		</para>
 		///   </note>
 		/// </para>

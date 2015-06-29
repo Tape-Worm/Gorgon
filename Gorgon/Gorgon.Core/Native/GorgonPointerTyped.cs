@@ -25,6 +25,7 @@
 #endregion
 
 using System.Runtime.InteropServices;
+using Gorgon.Math;
 
 namespace Gorgon.Native
 {
@@ -64,7 +65,7 @@ namespace Gorgon.Native
 	/// <note type="important">
 	/// <para>
 	/// This object allocates unmanaged memory. Since this memory is outside of the scope of the .NET garbage collector, it will be kept around until this object is finalized and could lead to memory leakage. Always 
-	/// call the <see cref="GorgonPointerBase.Dispose"/> method when an instance of this object is no longer needed.
+	/// call the <see cref="GorgonPointerBase.Dispose()"/> method when an instance of this object is no longer needed.
 	/// </para>
 	/// </note>
 	/// </para>
@@ -93,6 +94,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPointerTyped{T}"/> class.
 		/// </summary>
+		/// <param name="count">The number of items of the type <typeparamref name="T"/> to be stored in unmanaged memory.</param>
 		/// <param name="alignment">[Optional] The alignment of the memory, in bytes.</param>
 		/// <remarks>
 		/// <para>
@@ -102,25 +104,29 @@ namespace Gorgon.Native
 		/// The <paramref name="alignment" /> parameter is meant to offset the block of memory so that it is set up for optimal access for the CPU. This value should be a power of two.
 		/// </para>
 		/// <para>
-		/// The type indicated by <typeparamref name="T" /> is used to determine the amount of memory to allocate to store a single item of that type. This type is subject to the following constraints:
+		/// The optional <paramref name="count"/> parameter determines the amount of data stored in unmanaged memory. The object will take this count and multiply it by the size of <typeparamref name="T"/> to get 
+		/// the number of bytes held in unmanaged memory. 
 		/// </para>
-		/// <list type="bullet">
-		///   <item>
-		///     <description>The type must be decorated with the <see cref="StructLayoutAttribute" />.</description>
-		///   </item>
-		///   <item>
-		///     <description>The layout for the value type must be <see cref="LayoutKind.Sequential" />, or <see cref="LayoutKind.Explicit" />.</description>
-		///   </item>
-		/// </list>
 		/// <para>
-		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when
-		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// <note type="tip">
+		/// <para>
+		/// The <paramref name="count"/> parameter is the number of <i>items</i> of type <typeparamref name="T"/>, <u>not</u> the number of bytes. 
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// If the <paramref name="count"/> is set to greater than 1, then the programmer must ensure that the unmanaged memory is actually large enough to hold the data, otherwise a buffer overrun will occur and 
+		/// memory corruption will follow.
+		/// </para>
+		/// </note>
 		/// </para>
 		/// <para>
 		///   <note type="important">
 		///     <para>
 		///		Creating a pointer with this method allocates unmanaged memory. The .NET garbage collector is unable to track this memory, and will not free it until the pointer object is ready for finalization.
-		///		This can lead to memory leaks if handled improperly. The best practice is to allocate the memory using this method, and then call <see cref="GorgonPointerBase.Dispose" /> on the pointer object when done 
+		///		This can lead to memory leaks if handled improperly. The best practice is to allocate the memory using this method, and then call <see cref="GorgonPointerBase.Dispose()" /> on the pointer object when done 
 		///		with it.
 		///		</para>
 		///   </note>
@@ -129,8 +135,8 @@ namespace Gorgon.Native
 		/// This code was derived from the <c>Utilities.AllocateMemory</c> function from <a href="https://github.com/sharpdx/SharpDX/blob/master/Source/SharpDX/Utilities.cs">SharpDX</a> by Alexandre Mutel.
 		/// </para>
 		/// </remarks>
-		public GorgonPointerTyped(int alignment = 16)
-			: base(DirectAccess.SizeOf<T>(), alignment)
+		public GorgonPointerTyped(int count = 1, int alignment = 16)
+			: base(DirectAccess.SizeOf<T>() * count.Max(1), alignment)
 		{
 		}
 

@@ -27,11 +27,45 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Gorgon.Core.Properties;
 
 namespace Gorgon.Native
 {
-	/// <inheritdoc/>
+	/// <summary>
+	/// Wraps unmanaged native memory pointed at by a pointer and provides safe access to that pointer.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This aliases an unsafe <c>void *</c> pointer or <see cref="IntPtr"/> to unmanaged native memory. It provides better thread safety than the <see cref="Gorgon.IO.GorgonDataStream"/> object and gives safe access 
+	/// when dereferencing the pointer to read or write data.
+	/// </para>
+	/// <para>
+	/// Since this pointer type only aliases a source pointer, it will not take ownership of that pointer. Therefore, the responsibility of cleaning up the memory allocated for the pointer lies solely with the code 
+	/// that created the memory in the first place. That is, a call to <see cref="GorgonPointerBase.Dispose()"/> has no effect on this type, and as such, is not necessary.
+	/// </para>
+	/// <para>
+	/// This type is more dangerous than other types since it does not know the size of the allocated memory referenced by the pointer, and relies on the programmer to give this information. Thus, it is important that 
+	/// the size information be correct when passing it to this type. For a safer version of this pointer type, use the <see cref="GorgonPointerAliasTyped{T}"/> object. 
+	/// </para>
+	/// <para>
+	/// Like the <see cref="Gorgon.IO.GorgonDataStream"/> object, it provides several methods to <see cref="O:Gorgon.Native.IGorgonPointer.Read">read</see>/<see cref="O:Gorgon.Native.IGorgonPointer.Write">write</see> 
+	/// data to the memory pointed at by the internal pointer. With these methods the object can read and write primitive types, arrays, and generic value types.
+	/// </para>
+	/// <para>
+	/// <note type="caution">
+	/// <para>
+	/// None of the methods for this object allow for marshalling (i.e. members of a type with the <see cref="MarshalAsAttribute"/>). Passing data that requires marshalling, such as reference types, will not work and 
+	/// will give undefined results. Only primitive types, or value types that have value types (this rule still applies to the value type fields as well) or primitive types for its fields should be used.
+	/// </para>
+	/// </note>
+	/// </para>
+	/// </remarks>
+	/// <seealso cref="Gorgon.IO.GorgonDataStream"/>
+	/// <seealso cref="GorgonPointer"/>
+	/// <seealso cref="GorgonPointerTyped{T}"/>
+	/// <seealso cref="GorgonPointerPinned{T}"/>
+	/// <seealso cref="GorgonPointerAliasTyped{T}"/>
 	public class GorgonPointerAlias
 		: GorgonPointerBase
 	{
@@ -60,10 +94,8 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonPointerBase" /> class.
 		/// </summary>
-		/// <param name="pointer">The pointer to unmanaged native memory.</param>
+		/// <param name="pointer">The native pointer to unmanaged native memory.</param>
 		/// <param name="size">Size of the data allocated to the unmanaged memory, in bytes.</param>
-		/// <exception cref="System.ArgumentNullException">pointer</exception>
-		/// <exception cref="System.ArgumentException">size</exception>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer" /> is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size" /> parameter is less than one.</exception>
 		/// <remarks>
@@ -71,8 +103,8 @@ namespace Gorgon.Native
 		/// This takes a <c>void *</c> pointer to unmanaged memory, and aliases it to this object. This allows for safe use of the pointer when reading and writing the memory being pointed at.
 		/// </para>
 		/// <para>
-		/// When the <see cref="GorgonPointerBase" /> aliases an existing pointer, it merely provides access to the pointer. It is not responsible for the pointer, and thus will not free or allocate memory on its
-		/// behalf. The responsibility of freeing memory assigned to a pointer is placed on the caller of this object.
+		/// When the <see cref="GorgonPointerAlias" /> aliases an existing pointer, it merely provides access to the pointer. It is not responsible for the pointer, and thus will not free or allocate memory on its
+		/// behalf. The responsibility of freeing memory assigned to a pointer is placed on the code that allocated the memory in the first place.
 		/// </para>
 		/// <para>
 		/// The memory pointed at by the pointer should be at least 1 byte in length and this should be reflected in the <paramref name="size" /> parameter, otherwise an exception will be thrown.
@@ -80,12 +112,13 @@ namespace Gorgon.Native
 		/// <para>
 		///   <note type="warning">
 		///     <para>
-		/// Ensure that the <paramref name="size" /> parameter is correct when using this method. The object has no way to determine how much memory is allocated and therefore, if the size is too large, a
-		/// buffer overrun may occur when reading or writing.
-		/// </para>
+		///		Ensure that the <paramref name="size" /> parameter is correct when using this method. The object has no way to determine how much memory is allocated and therefore, if the size is too large, a
+		///		buffer overrun may occur when reading or writing.
+		///		</para>
 		///   </note>
-		/// </para></remarks>
-		public unsafe GorgonPointerAlias(void* pointer, int size)
+		/// </para>
+		/// </remarks>
+		public unsafe GorgonPointerAlias(void* pointer, long size)
 		{
 			if (pointer == null)
 			{
@@ -102,35 +135,33 @@ namespace Gorgon.Native
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPointerAlias"/> class.
+		/// Initializes a new instance of the <see cref="GorgonPointerBase" /> class.
 		/// </summary>
-		/// <param name="pointer">The <see cref="IntPtr" /> representing a pointer to unmanaged native memory.</param>
+		/// <param name="pointer">The <see cref="IntPtr"/> to unmanaged native memory.</param>
 		/// <param name="size">Size of the data allocated to the unmanaged memory, in bytes.</param>
-		/// <exception cref="System.ArgumentNullException">pointer</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">size</exception>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer" /> is equal to <see cref="IntPtr.Zero" />.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> is set to <see cref="IntPtr.Zero"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size" /> parameter is less than one.</exception>
 		/// <remarks>
 		/// <para>
-		/// This takes a <see cref="IntPtr" /> representing a pointer to unmanaged memory, and aliases it to this object. This allows for safe use of the pointer when reading and writing the memory being
-		/// pointed at.
+		/// This takes an <see cref="IntPtr"/> to unmanaged memory, and aliases it to this object. This allows for safe use of the pointer when reading and writing the memory being pointed at.
 		/// </para>
 		/// <para>
-		/// When the <see cref="GorgonPointerBase" /> aliases an existing pointer, it merely provides access to the pointer. It is not responsible for the pointer, and thus will not free or allocate memory on its
-		/// behalf. The responsibility of freeing memory assigned to a pointer is placed on the caller of this object.
+		/// When the <see cref="GorgonPointerAlias" /> aliases an existing pointer, it merely provides access to the pointer. It is not responsible for the pointer, and thus will not free or allocate memory on its
+		/// behalf. The responsibility of freeing memory assigned to a pointer is placed on the code that allocated the memory in the first place.
 		/// </para>
 		/// <para>
-		/// The memory pointed at by the <see cref="IntPtr" /> should be at least 1 byte in length and this should be reflected in the <paramref name="size" /> parameter, otherwise an exception will be thrown.
+		/// The memory pointed at by the pointer should be at least 1 byte in length and this should be reflected in the <paramref name="size" /> parameter, otherwise an exception will be thrown.
 		/// </para>
 		/// <para>
 		///   <note type="warning">
 		///     <para>
-		/// Ensure that the <paramref name="size" /> parameter is correct when using this method. The object has no way to determine how much memory is allocated and therefore, if the size is too large, a
-		/// buffer overrun may occur when reading or writing.
-		/// </para>
+		///		Ensure that the <paramref name="size" /> parameter is correct when using this method. The object has no way to determine how much memory is allocated and therefore, if the size is too large, a
+		///		buffer overrun may occur when reading or writing.
+		///		</para>
 		///   </note>
-		/// </para></remarks>
-		public GorgonPointerAlias(IntPtr pointer, int size)
+		/// </para>
+		/// </remarks>
+		public GorgonPointerAlias(IntPtr pointer, long size)
 		{
 			if (pointer == IntPtr.Zero)
 			{

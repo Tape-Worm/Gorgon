@@ -104,23 +104,26 @@ namespace Gorgon.Native
 		/// Property to return whether the pointer has been disposed or not.
 		/// </summary>
 		/// <remarks>
-		/// This property is used to determine if the memory has been released by the object.
+		/// This property is used to determine if the memory has been released by the <see cref="IGorgonPointer"/>.
 		/// </remarks>
-		bool Disposed
+		bool IsDisposed
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return the address of the pointer.
+		/// Property to return the address represented by the <see cref="IGorgonPointer"/>.
 		/// </summary>
+		/// <remarks>
+		/// This is the address to the unmanaged memory block. It is provided for information only, and should not be manipulated directly as memory corruption could occur.
+		/// </remarks>
 		long Address
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return the size of the data pointed at by this pointer, in bytes.
+		/// Property to return the size, in bytes, of the unmanaged memory block that is pointed at by this <see cref="IGorgonPointer"/>.
 		/// </summary>
 		long Size
 		{
@@ -133,7 +136,7 @@ namespace Gorgon.Native
 		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
 		/// <param name="offset">The offset within unmanaged memory to start reading from, in bytes.</param>
 		/// <param name="value">The value retrieved from unmanaged memory.</param>
-		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the buffer.</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
 		/// <para>
@@ -146,19 +149,6 @@ namespace Gorgon.Native
 		/// <para>
 		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
 		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
-		/// </para>
-		/// <note type="caution">
-		/// <para>
-		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
-		/// results.
-		/// </para> 
-		/// </note>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
-		/// </para>
-		/// </note>
 		/// </para>
 		/// </remarks>
 		void Read<T>(long offset, out T value)
@@ -183,10 +173,10 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <typeparam name="T"><inheritdoc cref="Read{T}(long,out T)"/></typeparam>
 		/// <param name="value"><inheritdoc cref="Read{T}(long,out T)"/></param>
-		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the buffer.</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This is equivalent to calling <c>Read&lt;T&gt;(0, out value)</c>, except that it does not perform any addition to the pointer with an offset. Thus making this method <i>slightly</i> more 
+		/// This is equivalent to calling <c>Read&lt;T&gt;(0, out value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
 		/// <inheritdoc cref="Read{T}(long,out T)"/>
@@ -199,10 +189,10 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <typeparam name="T"><inheritdoc cref="Read{T}(long,out T)"/></typeparam>
 		/// <returns><inheritdoc cref="Read{T}(long)"/></returns>
-		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the buffer.</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This is equivalent to calling <c>T value = Read&lt;T&gt;(0)</c>, except that it does not perform any addition to the pointer with an offset. Thus making this method <i>slightly</i> more 
+		/// This is equivalent to calling <c>T value = Read&lt;T&gt;(0)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
 		/// <inheritdoc cref="Read{T}(long,out T)"/>
@@ -216,7 +206,7 @@ namespace Gorgon.Native
 		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
 		/// <param name="offset">The offset within unmanaged memory to start writing into, in bytes.</param>
 		/// <param name="value">The value to write to unmanaged memory.</param>
-		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the buffer.</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
 		/// <para>
@@ -229,19 +219,6 @@ namespace Gorgon.Native
 		/// <para>
 		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
 		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
-		/// </para>
-		/// <note type="caution">
-		/// <para>
-		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
-		/// results.
-		/// </para> 
-		/// </note>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
-		/// </para>
-		/// </note>
 		/// </para>
 		/// </remarks>
 		void Write<T>(long offset, ref T value)
@@ -259,7 +236,7 @@ namespace Gorgon.Native
 		/// <exception cref="InvalidOperationException"><inheritdoc cref="Write{T}(long,ref T)"/></exception>
 		/// <remarks>
 		/// <para>
-		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. Thus making this method <i>slightly</i> more 
+		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
 		/// <inheritdoc cref="Write{T}(long,ref T)"/>
@@ -275,7 +252,7 @@ namespace Gorgon.Native
 		/// Function to read a range of values from unmanaged memory, at the specified offset, into an array.
 		/// </summary>
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
-		/// <param name="offset">Offset within the buffer to start reading from, in bytes.</param>
+		/// <param name="offset">Offset within the unmanaged memory to start reading from, in bytes.</param>
 		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
 		/// <param name="index">The index in the array to start at.</param>
 		/// <param name="count">The number of items to fill the array with.</param>
@@ -283,7 +260,7 @@ namespace Gorgon.Native
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the buffer.</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
 		/// </exception>
@@ -298,19 +275,6 @@ namespace Gorgon.Native
 		/// <para>
 		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
 		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
-		/// </para>
-		/// <note type="caution">
-		/// <para>
-		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
-		/// results.
-		/// </para> 
-		/// </note>
-		/// <para>
-		/// <note type="caution">
-		/// <para>
-		/// For performance reasons, exceptions are only thrown from this method when the library is compiled as <b>DEBUG</b>. In <b>RELEASE</b> mode, no inputs will be validated and no exceptions will be thrown.
-		/// </para>
-		/// </note>
 		/// </para>
 		/// </remarks>
 		void ReadRange<T>(long offset, T[] array, int index, int count)
@@ -328,7 +292,7 @@ namespace Gorgon.Native
 		/// <exception cref="ArgumentException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
 		/// <remarks>
 		/// <para>
-		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. Thus making this method <i>slightly</i> more 
+		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
 		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
@@ -343,7 +307,7 @@ namespace Gorgon.Native
 		/// <param name="offset"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
 		/// <param name="array"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
 		/// <exception cref="ArgumentNullException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
-		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the buffer.
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
 		/// </exception>
@@ -359,10 +323,10 @@ namespace Gorgon.Native
 		/// <typeparam name="T"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></typeparam>
 		/// <param name="array"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
 		/// <exception cref="ArgumentNullException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
-		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the buffer.</exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
-		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. Thus making this method <i>slightly</i> more 
+		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
 		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
@@ -371,172 +335,257 @@ namespace Gorgon.Native
 			where T : struct;
 
 		/// <summary>
-		/// Function to write a range of values from an array into this buffer.
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
 		/// </summary>
 		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
-		/// <param name="offset">Offset within the buffer to start writing, in bytes.</param>
-		/// <param name="array">The array to copy into the buffer.</param>
+		/// <param name="offset">Offset, in bytes, within the unmanaged memory to start writing into.</param>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
 		/// <param name="index">The index in the array to start copying from.</param>
-		/// <param name="count">The number of items to in the array to copy into the buffer.</param>
+		/// <param name="count">The number of items to in the array to copy.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the buffer.</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
 		/// </exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void WriteRange<T>(long offset, T[] array, int index, int count)
 			where T : struct;
 
 		/// <summary>
-		/// Function to write a range of values from an array into this buffer.
+		/// <inheritdoc cref="WriteRange{T}(long,T[],int,int)"/>
 		/// </summary>
-		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
-		/// <param name="offset">Offset within the buffer to start writing, in bytes.</param>
-		/// <param name="array">The array to copy into the buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the buffer.
+		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></typeparam>
+		/// <param name="offset"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></param>
+		/// <param name="array"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than zero.</para>
 		/// </exception>
 		/// <remarks>
-		/// TODO:
+		/// <inheritdoc cref="WriteRange{T}(long,T[],int,int)"/>
 		/// </remarks>
 		void WriteRange<T>(long offset, T[] array)
 			where T : struct;
 
 		/// <summary>
-		/// Function to write a range of values from an array into the beginning of this buffer.
+		/// Function to write a range of values into the beginning of unmanaged memory, from an array.
 		/// </summary>
-		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
-		/// <param name="array">The array to copy into the buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the buffer.</exception>
-		/// <remarks>
-		/// TODO:
-		/// </remarks>
-		void WriteRange<T>(T[] array)
-			where T : struct;
-
-		/// <summary>
-		/// Function to write a range of values from an array into the beginning of this buffer.
-		/// </summary>
-		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
-		/// <param name="array">The array to copy into the buffer.</param>
-		/// <param name="index">The index in the array to start copying from.</param>
-		/// <param name="count">The number of items to in the array to copy into the buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></typeparam>
+		/// <param name="array"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
+		/// <param name="index"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
+		/// <param name="count"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></exception>
+		/// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> is too large for the buffer.</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
 		/// </exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <inheritdoc cref="WriteRange{T}(long, T[], int, int)"/>
 		/// </remarks>
 		void WriteRange<T>(T[] array, int index, int count)
 			where T : struct;
 
 		/// <summary>
-		/// Function to copy data from the specified buffer into this buffer. 
+		/// <inheritdoc cref="WriteRange{T}(T[], int, int)"/>
 		/// </summary>
-		/// <param name="buffer">The buffer to copy the data from.</param>
-		/// <param name="sourceOffset">The offset in the source buffer to start copying from, in bytes.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source buffer.</param>
-		/// <param name="destinationOffset">[Optional] The offset in this buffer to start copying to, in bytes.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></typeparam>
+		/// <param name="array"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <inheritdoc cref="WriteRange{T}(T[], int, int)"/>
+		/// </remarks>
+		void WriteRange<T>(T[] array)
+			where T : struct;
+
+		/// <summary>
+		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
+		/// </summary>
+		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
+		/// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
+		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
+		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="sourceSize"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="buffer"/>.
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="source"/>.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the destination buffer.</para>
+		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the destination pointer.</para>
 		/// </exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="sourceOffset"/> and <paramref name="destinationOffset"/>.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
-		void CopyFrom(IGorgonPointer buffer, long sourceOffset, int sourceSize, long destinationOffset = 0);
+		void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0);
 
 		/// <summary>
-		/// Function to copy data from the specified buffer into this buffer. 
+		/// <inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/>
 		/// </summary>
-		/// <param name="buffer">The buffer to copy the data from.</param>
-		/// <param name="sourceSize">The number of bytes to copy from the source buffer.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <param name="source"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></param>
+		/// <param name="sourceSize"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="buffer"/> or the destination buffer.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
-		void CopyFrom(IGorgonPointer buffer, int sourceSize);
+		void CopyFrom(IGorgonPointer source, int sourceSize);
 
 		/// <summary>
-		/// Function to copy data from unmanaged memory pointed at by the <see cref="IntPtr"/> into this buffer.
+		/// Function to copy data from unmanaged memory pointed at by a <see cref="IntPtr"/> into the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// </summary>
-		/// <param name="source">The pointer to copy the data from.</param>
-		/// <param name="size">The number of bytes to copy from the source buffer.</param>
-		/// <param name="destinationOffset">[Optional] The offset in this buffer to start copying to, in bytes.</param>
+		/// <param name="source">The <see cref="IntPtr"/> to unmanaged memory to copy the data from.</param>
+		/// <param name="size">The number of bytes to copy from the source.</param>
+		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <see cref="IntPtr.Zero"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destinationOffset"/> parameter is less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination buffer.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// This copies memory directly from unmanaged memory represented by an <see cref="IntPtr"/> into this <see cref="IGorgonPointer"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="destinationOffset"/> and the 
+		/// <paramref name="source"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// The <paramref name="size"/> parameter is provided by the programmer, and should be less than, or equal to (in bytes) the actual size of unmanaged memory pointed at by <paramref name="source"/>. If 
+		/// this value is too large, memory corruption will happen.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		void CopyMemory(IntPtr source, int size, long destinationOffset = 0);
 
 		/// <summary>
-		/// Function to copy data from unmanaged memory pointed at by the pointer into this buffer.
+		/// Function to copy data from unmanaged memory pointed at by an unsafe pointer into the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// </summary>
-		/// <param name="source">The pointer to copy the data from.</param>
-		/// <param name="size">The number of bytes to copy from the source buffer.</param>
-		/// <param name="destinationOffset">[Optional] The offset in this buffer to start copying to, in bytes.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <see cref="IntPtr.Zero"/>.</exception>
+		/// <param name="source">The unsafe pointer to unmanaged memory to copy the data from.</param>
+		/// <param name="size"><see cref="CopyMemory(System.IntPtr,int,long)"/></param>
+		/// <param name="destinationOffset"><see cref="CopyMemory(System.IntPtr,int,long)"/></param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destinationOffset"/> parameter is less than zero.</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination buffer.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</exception>
 		/// <remarks>
-		/// TODO:
+		/// <para>
+		/// This copies memory directly from unmanaged memory represented by an unsafe pointer (<c>void *</c>) into this <see cref="IGorgonPointer"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="destinationOffset"/> and the 
+		/// <paramref name="source"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// The <paramref name="size"/> parameter is provided by the programmer, and should be less than, or equal to (in bytes) the actual size of unmanaged memory pointed at by <paramref name="source"/>. If 
+		/// this value is too large, memory corruption will happen.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		unsafe void CopyMemory(void* source, int size, long destinationOffset = 0);
 
 		/// <summary>
-		/// Function to fill this buffer with the specified byte value.
+		/// Function to fill the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with the specified byte value.
 		/// </summary>
-		/// <param name="value">The value to fill the buffer with.</param>
+		/// <param name="value">The value to fill the unmanaged memory with.</param>
 		/// <param name="size">The number of bytes to fill.</param>
-		/// <param name="offset">[Optional] The offset to start filling at, in bytes.</param>
+		/// <param name="offset">[Optional] The offset, in bytes, within unmanaged memory to start filling.</param>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> is less than zero.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> + the <paramref name="size"/> exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/></exception>
 		void Fill(byte value, int size, long offset = 0);
 
 		/// <summary>
-		/// Function to fill this buffer with the specified byte value.
+		/// Function to fill all the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with the specified byte value.
 		/// </summary>
-		/// <param name="value">The value to fill the buffer with.</param>
+		/// <param name="value"><inheritdoc cref="Fill(byte,int,long)"/></param>
 		void Fill(byte value);
 
 		/// <summary>
-		/// Function to fill this buffer with zeroes.
+		/// Function to fill the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with a zero value.
 		/// </summary>
 		/// <param name="size">The number of bytes to fill.</param>
-		/// <param name="offset">[Optional] The offset to start filling at, in bytes.</param>
+		/// <param name="offset">[Optional] The offset, in bytes, within unmanaged memory to start filling with zeroes.</param>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> is less than zero.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> + the <paramref name="size"/> exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/></exception>
 		void Zero(int size, long offset = 0);
 
 		/// <summary>
-		/// Function to fill this buffer with zeroes.
+		/// Function to fill all the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with a zero value.
 		/// </summary>
 		void Zero();
 
 		/// <summary>
-		/// Function to create a new <see cref="GorgonDataStream"/> from this pointer.
+		/// Function to copy the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> into a <see cref="MemoryStream"/>
 		/// </summary>
-		/// <returns>The data stream wrapping this pointer.</returns>
-		/// <exception cref="InvalidOperationException">Thrown when the <see cref="Size"/> is larger than 2GB when running as an x86 application.</exception>
-		GorgonDataStream ToDataStream();
-
-		/// <summary>
-		/// Function to copy the memory pointed at by this object into a <see cref="MemoryStream"/>
-		/// </summary>
-		/// <returns>The <see cref="MemoryStream"/> containing a copy of the data in memory that is pointed at by this object.</returns>
+		/// <returns>The <see cref="MemoryStream"/> containing a copy of the data in memory that is pointed at by this <see cref="IGorgonPointer"/>.</returns>
 		MemoryStream CopyToMemoryStream();
 	}
 }

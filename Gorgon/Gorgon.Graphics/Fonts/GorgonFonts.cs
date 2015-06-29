@@ -31,6 +31,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics
 {
@@ -184,9 +185,9 @@ namespace Gorgon.Graphics
 		/// </exception>
         public GorgonFont FromMemory(string name, byte[] fontData)
         {
-            using (var memoryStream = new GorgonDataStream(fontData))
+            using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(fontData))
             {
-                return FromStream(name, memoryStream);
+                return FromStream(name, new GorgonDataStream(pointer));
             }
         }
 

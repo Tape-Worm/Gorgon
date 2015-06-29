@@ -31,6 +31,7 @@ using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics
 {
@@ -790,9 +791,9 @@ namespace Gorgon.Graphics
 				throw new ArgumentNullException("data");
 			}
 			
-			using (var memoryStream = new GorgonDataStream(data))
+			using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(data))
 			{
-				return FromStream<T>(name, memoryStream, data.Length, codec);
+				return FromStream<T>(name, new GorgonDataStream(pointer), data.Length, codec);
 			}
 		}
 

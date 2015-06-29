@@ -31,7 +31,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Collections.Specialized;
 using Gorgon.Graphics;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Properties;
@@ -744,12 +743,12 @@ namespace Gorgon.Renderers
 			int spriteIndexBufferSize = sizeof(int) * _cache.CacheSize * 6;
 
 			// Set up our index buffer.
-			using (var ibData = new GorgonDataStream(spriteIndexBufferSize))
+			using (IGorgonPointer ibData = new GorgonPointer(spriteIndexBufferSize))
 			{
 				unsafe
 				{
 					ushort index = 0;
-					var buffer = (int*)ibData.BasePointer;
+					var buffer = (int*)ibData.Address;
 					for (int i = 0; i < _cache.CacheSize; i++)
 					{
 						*(buffer++) = index;
@@ -766,7 +765,7 @@ namespace Gorgon.Renderers
 				DefaultIndexBuffer = Graphics.ImmediateContext.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings
 					{
 						IsOutput = false,
-						SizeInBytes = (int)ibData.Length,
+						SizeInBytes = (int)ibData.Size,
 						Usage = BufferUsage.Immutable,
 						Use32BitIndices = true
 					}, ibData);

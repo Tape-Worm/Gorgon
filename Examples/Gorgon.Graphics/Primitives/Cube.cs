@@ -25,8 +25,8 @@
 #endregion
 
 using System.Drawing;
-using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Native;
 using SlimMath;
 
 namespace Gorgon.Graphics.Example
@@ -36,7 +36,7 @@ namespace Gorgon.Graphics.Example
 	{
 		#region Variables.
 		// Initial orientation.
-		private Matrix _orientation = Matrix.Identity;
+		private Matrix _orientation;
 		#endregion
 
 		#region Methods.
@@ -147,10 +147,10 @@ namespace Gorgon.Graphics.Example
 			unsafe
 			{
 				using (
-					GorgonDataStream vertexData = new GorgonDataStream(VertexCount * Vertex3D.Size),
-					                 indexData = new GorgonDataStream(IndexCount * sizeof(int)))
+					IGorgonPointer vertexData = new GorgonPointerTyped<Vertex3D>(VertexCount),
+					                 indexData = new GorgonPointerTyped<int>(IndexCount))
 				{
-					var vertices = (Vertex3D*)vertexData.BasePointer;
+					var vertices = (Vertex3D*)vertexData.Address;
 					// Front.
 					GetVertices(vertices, Vector3.UnitY, -Vector3.UnitZ, size, textureCoordinates, columnsPerFace, rowsPerFace);
 					// Bottom.
@@ -164,7 +164,7 @@ namespace Gorgon.Graphics.Example
 					// Right
 					GetVertices(vertices + (faceVertexCount * 5), Vector3.UnitY, Vector3.UnitX, size, textureCoordinates, columnsPerFace, rowsPerFace);
 
-					var indices = (int*)indexData.BasePointer;
+					var indices = (int*)indexData.Address;
 					GetIndices(indices, 0, columnsPerFace, rowsPerFace);
 					GetIndices(indices + faceIndexCount, faceVertexCount, columnsPerFace, rowsPerFace);
 					GetIndices(indices + (faceIndexCount * 2), faceVertexCount * 2, columnsPerFace, rowsPerFace);
@@ -178,7 +178,7 @@ namespace Gorgon.Graphics.Example
 					                                                   new GorgonBufferSettings
 					                                                   {
 						                                                   Usage = BufferUsage.Immutable,
-						                                                   SizeInBytes = (int)vertexData.Length
+						                                                   SizeInBytes = (int)vertexData.Size
 					                                                   },
 					                                                   vertexData);
 
@@ -188,7 +188,7 @@ namespace Gorgon.Graphics.Example
 					                                                 {
 						                                                 Usage = BufferUsage.Immutable,
 						                                                 Use32BitIndices = true,
-						                                                 SizeInBytes = (int)indexData.Length
+						                                                 SizeInBytes = (int)indexData.Size
 					                                                 },
 					                                                 indexData);
 				}
