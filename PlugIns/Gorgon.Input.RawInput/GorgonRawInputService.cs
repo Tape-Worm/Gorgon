@@ -374,12 +374,12 @@ namespace Gorgon.Input.Raw
 
             if (windowHandle == IntPtr.Zero)
             {
-	            if (GorgonApplication.ApplicationForm == null)
+	            if (GorgonApplication.MainForm == null)
 	            {
 		            throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
 	            }
 
-	            windowHandle = GorgonApplication.ApplicationForm.Handle;
+	            windowHandle = GorgonApplication.MainForm.Handle;
             }
 
 			_hookedWindow = windowHandle;

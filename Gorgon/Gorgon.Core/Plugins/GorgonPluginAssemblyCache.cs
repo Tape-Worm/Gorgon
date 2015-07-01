@@ -41,7 +41,7 @@ using Gorgon.Diagnostics;
 namespace Gorgon.Plugins
 {
 	/// <inheritdoc/>
-	public class GorgonPluginAssemblyCache
+	public sealed class GorgonPluginAssemblyCache
 		: IGorgonPluginAssemblyCache
 	{
 		#region Constants.

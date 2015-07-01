@@ -921,9 +921,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_TIME_QPC_NOT_AVAILABLE" xml:space="preserve">
     <value>The QPC timer is not supported on this system.</value>
   </data>
-  <data name="GOR_ERR_TIMING_NO_TIMER" xml:space="preserve">
-    <value>No timer has been assigned to the timing data.</value>
-  </data>
   <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
     <value>The mode must be either [Read] or [Write].</value>
   </data>
@@ -1016,5 +1013,11 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_DATABUFF_PTR_DISPOSED" xml:space="preserve">
     <value>Pointer has been disposed.</value>
+  </data>
+  <data name="GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP" xml:space="preserve">
+    <value>Cannot remove an idle loop when there is no form or application context.</value>
+  </data>
+  <data name="GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD" xml:space="preserve">
+    <value>The application can only start from a single thread.</value>
   </data>
 </root>

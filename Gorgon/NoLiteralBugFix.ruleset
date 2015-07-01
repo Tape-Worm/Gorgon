@@ -1,14 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Microsoft Extended Correctness Rules no literals" Description="Same as the expanded ruleset, only without literal checking.  It's horrendously broken (and is documented at http://connect.microsoft.com/VisualStudio/feedback/details/521030/).  So it's disabled for now.&#xD;&#xA;&#xD;&#xA;These rules expand on the basic correctness rules to maximize the logic and framework usage errors that are reported. Extra emphasis is placed on specific scenarios such as COM interop and mobile applications. Consider including this rule set if one of these scenarios applies to your project or to find additional problems in your project." ToolsVersion="11.0">
+<RuleSet Name="Microsoft Extended Correctness Rules no literals" Description="Same as the expanded ruleset, only without literal checking.  It's horrendously broken (and is documented at http://connect.microsoft.com/VisualStudio/feedback/details/521030/).  So it's disabled for now.&#xD;&#xA;It also removes some really annoying warnings about implementing IDisposable properly.  Not even Microsoft does it in the way this thing recommends these days.&#xD;&#xA;&#xD;&#xA;These rules expand on the basic correctness rules to maximize the logic and framework usage errors that are reported. Extra emphasis is placed on specific scenarios such as COM interop and mobile applications. Consider including this rule set if one of these scenarios applies to your project or to find additional problems in your project." ToolsVersion="12.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
+    <Rule Id="CA1008" Action="None" />
     <Rule Id="CA1032" Action="Warning" />
     <Rule Id="CA1033" Action="None" />
+    <Rule Id="CA1049" Action="Error" />
     <Rule Id="CA1054" Action="Warning" />
     <Rule Id="CA1055" Action="Warning" />
     <Rule Id="CA1056" Action="Warning" />
     <Rule Id="CA1057" Action="Warning" />
     <Rule Id="CA1060" Action="None" />
+    <Rule Id="CA1063" Action="None" />
     <Rule Id="CA1402" Action="Warning" />
     <Rule Id="CA1406" Action="Warning" />
     <Rule Id="CA1407" Action="Warning" />

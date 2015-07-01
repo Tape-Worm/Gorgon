@@ -166,11 +166,29 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot remove an idle loop when there is no form or application context..
+        /// </summary>
+        internal static string GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP {
+            get {
+                return ResourceManager.GetString("GOR_ERR_APPLICATION_CANNOT_REMOVE_IDLE_LOOP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot run an application without either a main form, or a idle method..
         /// </summary>
         internal static string GOR_ERR_APPLICATION_NOCONTEXT {
             get {
                 return ResourceManager.GetString("GOR_ERR_APPLICATION_NOCONTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The application can only start from a single thread..
+        /// </summary>
+        internal static string GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD {
+            get {
+                return ResourceManager.GetString("GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD", resourceCulture);
             }
         }
         
@@ -730,15 +748,6 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_ERR_TIME_QPC_NOT_AVAILABLE {
             get {
                 return ResourceManager.GetString("GOR_ERR_TIME_QPC_NOT_AVAILABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to No timer has been assigned to the timing data..
-        /// </summary>
-        internal static string GOR_ERR_TIMING_NO_TIMER {
-            get {
-                return ResourceManager.GetString("GOR_ERR_TIMING_NO_TIMER", resourceCulture);
             }
         }
         

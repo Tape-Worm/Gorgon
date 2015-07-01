@@ -367,7 +367,7 @@ namespace Gorgon.Input
 		/// Function to bind the device to a window.
 		/// </summary>
 		/// <param name="boundWindow">Window to bind with.</param>
-		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonApplication.ApplicationForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
+		/// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to <paramref name="boundWindow"/> will use the <see cref="GorgonApplication.MainForm">main Gorgon Application Form</see>.  If there is no Form bound with the application, then an exception will be thrown.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the boundWindow parameter and the Gorgon.ApplicationForm property are both NULL (<i>Nothing</i> in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the top level form cannot be determined.</para>
@@ -383,12 +383,12 @@ namespace Gorgon.Input
 
 			if (boundWindow == null)
 			{
-			    if (GorgonApplication.ApplicationForm == null)
+			    if (GorgonApplication.MainForm == null)
 			    {
 			        throw new ArgumentException(Resources.GORINP_NO_WINDOW_TO_BIND, "boundWindow");
 			    }
 
-			    boundWindow = GorgonApplication.ApplicationForm;
+			    boundWindow = GorgonApplication.MainForm;
 			}
 
 			GorgonApplication.Log.Print("Binding input device object {1} to window 0x{0}.", LoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);

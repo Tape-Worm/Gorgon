@@ -80,7 +80,7 @@ namespace Gorgon.Graphics
                 return Create2DRenderer(graphics, window, window.ClientSize.Width, window.ClientSize.Height);
             }
 
-            window = GorgonApplication.ApplicationForm;
+            window = GorgonApplication.MainForm;
 
             if (window == null)
             {

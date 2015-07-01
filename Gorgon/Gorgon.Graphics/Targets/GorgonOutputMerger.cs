@@ -593,7 +593,7 @@ namespace Gorgon.Graphics
             // Default to using the default Gorgon application window.
             if (settings.Window == null)
             {
-                settings.Window = GorgonApplication.ApplicationForm;
+                settings.Window = GorgonApplication.MainForm;
 
                 // No application window, then we're out of luck.
                 if (settings.Window == null)

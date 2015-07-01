@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using Gorgon.Core;
-using Gorgon.Core.Properties;
 using Gorgon.UI;
 
 namespace Gorgon.Timing
@@ -377,9 +375,6 @@ namespace Gorgon.Timing
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// This value must be assigned before calling the <see cref="Update"/> or <see cref="Reset"/> methods.
-		/// </para>
-		/// <para>
 		/// This value cannot be set to <b>null</b> (<i>Nothing</i> in VB.Net).
 		/// </para>
 		/// </remarks>
@@ -412,22 +407,19 @@ namespace Gorgon.Timing
 		/// should be called is when you have a custom application loop that needs timing.
 		/// </para>
 		/// <para>
-		/// Ensure that the <see cref="Timer"/> property is assigned with an appropriate <see cref="IGorgonTimer"/> before calling this method, otherwise and exception will be thrown 
-		/// when in DEBUG mode. If in release mode, and no timer is assigned, then the application will likely crash (this is done for performance reasons).
+		/// Ensure that the <see cref="Timer"/> property is assigned with an appropriate <see cref="IGorgonTimer"/> before calling this method, or no meaningful data will be collected.
 		/// </para>
 		/// </remarks>
-		/// <exception cref="GorgonException"><b>[DEBUG Only]</b> Thrown when a call is made to this method before assigning the <see cref="Timer"/> property.</exception>
 		public static void Update()
 		{
 			double theTime;				// Time value.
 			double frameDelta;			// Frame delta.
 
-#if DEBUG
+			// If we've not assigned a timer yet, then just leave, we can't gather anything meaningful without one.
 			if (_timer == null)
 			{
-				throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR_ERR_TIMING_NO_TIMER);
+				return;
 			}
-#endif
 
 			do
 			{
@@ -538,29 +530,12 @@ namespace Gorgon.Timing
 		/// <para>
 		/// Values set by the user (e.g. <see cref="MaxAverageCount"/>, etc...) will not be reset.
 		/// </para>
-		/// <para>
-		/// Ensure that the <see cref="Timer"/> property is assigned with an appropriate <see cref="IGorgonTimer"/> before calling this method, otherwise 
-		/// and exception will be thrown.
-		/// </para>
 		/// </remarks>
-		/// <exception cref="GorgonException">Thrown when a call is made to this method before assigning the <see cref="Timer"/> property.</exception>
 		public static void Reset()
 		{
-			if (_timer == null)
-			{
-				throw new GorgonException(GorgonResult.NotInitialized, Resources.GOR_ERR_TIMING_NO_TIMER);
-			}
-
 			if (_appTimer == null)
 			{
-				if (_timer.IsHighResolution)
-				{
-					_appTimer = new GorgonTimerQpc();
-				}
-				else
-				{
-					_appTimer = new GorgonTimerMultimedia();
-				}
+				_appTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
 			}
 
 			HighestFPS = float.MinValue;
@@ -580,6 +555,12 @@ namespace Gorgon.Timing
 			_lastTimerValue = 0.0;
 			_averageFPSTotal = 0.0f;
 			_averageScaledDeltaTotal = 0.0f;
+
+			if (_timer == null)
+			{
+				return;
+			}
+
 			_timer.Reset();
 		}
 
