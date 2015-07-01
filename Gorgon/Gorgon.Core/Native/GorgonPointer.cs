@@ -75,16 +75,15 @@ namespace Gorgon.Native
 	{
 		#region Methods.
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
+		/// Function to call when the <see cref="IGorgonPointer" /> needs to deallocate memory or release handles.
 		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected unsafe override void Dispose(bool disposing)
+		protected unsafe override void Cleanup()
 		{
-			if (SetDisposed())
+			if (DataPointer == null)
 			{
 				return;
 			}
-			
+
 			Marshal.FreeHGlobal(((IntPtr*)DataPointer)[-1]);
 			GC.RemoveMemoryPressure(Size);
 
@@ -163,7 +162,7 @@ namespace Gorgon.Native
 		/// </summary>
 		~GorgonPointer()
 		{
-			Dispose(false);
+			Cleanup();
 		}
 		#endregion
 	}

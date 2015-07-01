@@ -50,8 +50,6 @@ namespace Gorgon.Plugins
 		#endregion
 
 		#region Variables.
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// Search paths for the plugin assemblies.
 		private readonly Lazy<GorgonPluginPathCollection> _paths = new Lazy<GorgonPluginPathCollection>(() =>
 		                                                                                                {
@@ -537,40 +535,37 @@ namespace Gorgon.Plugins
 
 		#region IDisposable Members
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
+		/// <remarks>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// This method must be called, or the application domain that is created to interrogate assembly types will live until the end of the application. This could lead to memory bloat or worse. 
+		/// </para>
+		/// <para>
+		/// Because the application domain is unloaded on a separate thread, it may deadlock with the finalizer thread and thus we cannot count on the finalizer to clean evict the stale app domain on our 
+		/// behalf.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void Dispose()
 		{
-			if (_disposed)
+			if ((_discoveryDomain == null) || (_discoveryDomain.IsValueCreated))
 			{
 				return;
 			}
 
+			_log.Print("Unloading temporary application domain.", LoggingLevel.Intermediate);
+
+			AssemblyResolver = null;
 			_verifier = null;
 
-			if (disposing)
-			{
-				AssemblyResolver = null;
-
-				if ((_discoveryDomain != null) && (_discoveryDomain.IsValueCreated))
-				{
-					_log.Print("Unloading temporary application domain.", LoggingLevel.Intermediate);
-					AppDomain.Unload(_discoveryDomain.Value);
-				}
-			}
-			
+			// App domains get unloaded on a separate thread. So we have to manually call dispose to unload the thread,
+			// otherwise we'll get a deadlock if we try to do this in the finalizer thread.
+			AppDomain.Unload(_discoveryDomain.Value);
 			_discoveryDomain = null;
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

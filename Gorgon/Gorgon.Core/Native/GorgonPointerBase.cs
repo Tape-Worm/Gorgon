@@ -30,7 +30,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Gorgon.Core.Properties;
-using Gorgon.IO;
 
 namespace Gorgon.Native
 {
@@ -134,10 +133,15 @@ namespace Gorgon.Native
 		/// <remarks>
 		/// Implementors should use this to indicate whether the object is already in the process of being disposed or not.
 		/// </remarks>
-		protected bool SetDisposed()
+		private bool SetDisposed()
 		{
 			return Interlocked.Exchange(ref _notDisposed, 0) == 0;
 		}
+
+		/// <summary>
+		/// Function to call when the <see cref="IGorgonPointer"/> needs to deallocate memory or release handles.
+		/// </summary>
+		protected abstract void Cleanup();
 
 		/// <inheritdoc/>
 		/// <remarks>
@@ -1144,17 +1148,16 @@ namespace Gorgon.Native
 
 		#region IDisposable Members
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected abstract void Dispose(bool disposing);
-
-		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
-			Dispose(true);
+			if (SetDisposed())
+			{
+				return;
+			}
+
+			Cleanup();
 			GC.SuppressFinalize(this);
 		}
 		#endregion

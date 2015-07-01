@@ -70,23 +70,12 @@ namespace Gorgon.Native
 		: GorgonPointerBase
 	{
 		#region Methods.
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected unsafe override void Dispose(bool disposing)
+		/// <inheritdoc/>
+		protected override unsafe void Cleanup()
 		{
+			// This is just here to shut the compiler up.
 			DataPointer = null;
 			Size = 0;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		[SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Justification = "Nothing to dispose. Doesn't own pointer"), EditorBrowsable(EditorBrowsableState.Never)]
-		public new void Dispose()
-		{
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 

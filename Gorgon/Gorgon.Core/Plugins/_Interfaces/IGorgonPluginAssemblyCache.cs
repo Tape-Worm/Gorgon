@@ -65,12 +65,21 @@ namespace Gorgon.Plugins
 	/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
 	/// </para>
 	/// <para>
-	/// This object may use a separate app domain to interrogate a potential plugin assembly, and because of this, it is essential to call the <see cref="IDisposable.Dispose"/> 
-	/// method when shutting down this object.
-	/// </para>
-	/// <para>
 	/// In some cases, a plugin assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. 
 	/// In these cases use the <see cref="AssemblyResolver"/> property to assign a method that will attempt to resolve any dependency assemblies.
+	/// </para>
+	/// <para>
+	/// <note type="Important">
+	/// <para>
+	/// This object may use a separate app domain to interrogate a potential plugin assembly, and because of this, it is essential to call the <see cref="IDisposable.Dispose"/> 
+	/// method when shutting down this object. Failure to do so will leave the application domain resident until the application shuts down, and multiple <see cref="IGorgonPluginAssemblyCache"/> instances 
+	/// may create more and more application domains for type interrogation. This could lead to a memory leak.
+	/// </para> 
+	/// <para>
+	/// This happens because we cannot unload an application domain from a finalizer since the application domain unload functionality runs on a separate thread. This conflicts with the finalizer thread 
+	/// and may cause a deadlock. Thus it is essential that <see cref="IDisposable.Dispose"/> be called on this object as soon as its usefulness is at an end.
+	/// </para>
+	/// </note>
 	/// </para>
 	/// </remarks>
 	public interface IGorgonPluginAssemblyCache : IDisposable

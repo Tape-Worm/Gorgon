@@ -145,7 +145,7 @@ namespace Gorgon.Native
 		/// </summary>
 		~GorgonPointerTyped()
 		{
-			Dispose(false);
+			Cleanup();
 		}
 		#endregion
 	}

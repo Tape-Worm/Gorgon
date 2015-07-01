@@ -115,8 +115,6 @@ namespace Gorgon.IO
 		#region Variables.
 		// The pointer to unmanaged memory.
 		private IGorgonPointer _pointer;
-		// Flag to indicate that the object was disposed.
-		private bool _disposed;
 		// Position in the buffer.
 		private long _position;
 		// Flag to indicate that we own this pointer.
@@ -325,7 +323,7 @@ namespace Gorgon.IO
 		protected override void Dispose(bool disposing)
 		{
 			// We suppress the base call to Dispose because Stream's Dispose(bool) does nothing.
-			if ((_disposed) || (!_ownsPointer) || (_pointer == null) || (_pointer.IsDisposed))
+			if ((!_ownsPointer) || (_pointer == null) || (_pointer.IsDisposed))
 			{
 				return;
 			}
@@ -333,7 +331,6 @@ namespace Gorgon.IO
 			// Destroy the buffer.
 			_pointer.Dispose();
 			_pointer = null;
-			_disposed = true;
 		}
 
 		/// <summary>
@@ -1406,14 +1403,6 @@ namespace Gorgon.IO
 			_ownsPointer = false;
 			_pointer = pointer;
 			StreamAccess = StreamAccess.ReadWrite;
-		}
-
-		/// <summary>
-		/// Releases unmanaged resources and performs other cleanup operations before the <see cref="GorgonDataStream"/> is reclaimed by garbage collection.
-		/// </summary>
-		~GorgonDataStream()
-		{
-			Dispose(false);
 		}
 		#endregion
 	}
