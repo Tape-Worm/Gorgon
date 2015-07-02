@@ -111,7 +111,7 @@ namespace CodecPlugIn
 			using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
 				// Load our plug-in.
-				string plugInPath = GorgonApplication.ApplicationDirectory + "TVImageCodec.dll";
+				string plugInPath = GorgonApplication.StartupPath + "TVImageCodec.dll";
 
 				if (!File.Exists(plugInPath))
 				{
@@ -230,7 +230,7 @@ namespace CodecPlugIn
 				ConvertImage();
 
                 // Set up our idle time processing.
-                GorgonApplication.ApplicationIdleLoopMethod = () =>
+                GorgonApplication.IdleMethod = () =>
                                                    {
                                                        _2D.Clear(Color.White);
 

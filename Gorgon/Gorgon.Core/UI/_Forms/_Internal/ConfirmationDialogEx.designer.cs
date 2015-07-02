@@ -58,6 +58,7 @@ namespace Gorgon.UI
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfirmationDialogEx));
 			this.checkToAll = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).BeginInit();
 			this.SuspendLayout();
@@ -79,30 +80,21 @@ namespace Gorgon.UI
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ControlDark;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-			this.buttonOK.Location = new System.Drawing.Point(11, 78);
+			resources.ApplyResources(this.buttonOK, "buttonOK");
 			// 
 			// checkToAll
 			// 
-			this.checkToAll.AutoSize = true;
+			resources.ApplyResources(this.checkToAll, "checkToAll");
 			this.checkToAll.BackColor = System.Drawing.Color.White;
-			this.checkToAll.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.checkToAll.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkToAll.Location = new System.Drawing.Point(0, 131);
 			this.checkToAll.Name = "checkToAll";
-			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-			this.checkToAll.Size = new System.Drawing.Size(243, 19);
-			this.checkToAll.TabIndex = 12;
-			this.checkToAll.Text = Resources.GOR_TEXT_TO_ALL;
 			this.checkToAll.UseVisualStyleBackColor = false;
 			// 
 			// ConfirmationDialogEx
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(243, 150);
+			resources.ApplyResources(this, "$this");
 			this.Controls.Add(this.checkToAll);
-			this.Location = new System.Drawing.Point(0, 0);
 			this.MessageHeight = 256;
-			this.MinimumSize = new System.Drawing.Size(249, 174);
 			this.Name = "ConfirmationDialogEx";
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.buttonCancel, 0);

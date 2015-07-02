@@ -296,7 +296,7 @@ namespace Gorgon.Editor
 
             RecentFiles = new List<string>();
 			_userDisabledPlugIns = new List<string>();
-            PlugInDirectory = GorgonApplication.ApplicationDirectory + "PlugIns";
+            PlugInDirectory = GorgonApplication.StartupPath + "PlugIns";
 
 			// Set the default scratch location.
 			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)

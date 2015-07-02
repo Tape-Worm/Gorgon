@@ -217,7 +217,7 @@ namespace Gorgon.Editor
 				using (var stream = File.Open(_settings.ThemeDirectory.FormatDirectory(Path.DirectorySeparatorChar) + "Darktheme.Xml", FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					var serializer = new XmlSerializer(typeof(EditorTheme));
-					((FlatForm)MainForm).Theme = (EditorTheme)serializer.Deserialize(stream);
+					((GorgonFlatForm)MainForm).Theme = (EditorTheme)serializer.Deserialize(stream);
 				}
 
 				// Set up the default pane.

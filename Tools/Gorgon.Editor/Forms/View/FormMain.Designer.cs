@@ -613,7 +613,7 @@ namespace Gorgon.Editor
 			// 
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Border = true;
+			this.ShowBorder = true;
 			this.BorderSize = 3;
 			this.Name = "FormMain";
 			this.ResizeHandleSize = 4;

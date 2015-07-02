@@ -343,7 +343,7 @@ namespace Gorgon.Examples
 				_surface = new DrawingSurface(panelDisplay);
 
 				// Set up our idle loop.
-				GorgonApplication.ApplicationIdleLoopMethod += Idle;
+				GorgonApplication.IdleMethod += Idle;
 			}
 			catch (Exception ex)
 			{

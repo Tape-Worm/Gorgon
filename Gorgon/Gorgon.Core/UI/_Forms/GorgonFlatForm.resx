@@ -1,0 +1,551 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="labelClose.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="labelClose.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="labelClose.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Marlett, 16px</value>
+  </data>
+  <data name="labelClose.Location" type="System.Drawing.Point, System.Drawing">
+    <value>70, 0</value>
+  </data>
+  <data name="labelClose.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="labelClose.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 24</value>
+  </data>
+  <data name="labelClose.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="labelClose.Text" xml:space="preserve">
+    <value>r</value>
+  </data>
+  <data name="labelClose.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>154, 17</value>
+  </metadata>
+  <data name="labelClose.ToolTip" xml:space="preserve">
+    <value>Close the window</value>
+  </data>
+  <data name="&gt;&gt;labelClose.Name" xml:space="preserve">
+    <value>labelClose</value>
+  </data>
+  <data name="&gt;&gt;labelClose.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelClose.Parent" xml:space="preserve">
+    <value>panelWinIcons</value>
+  </data>
+  <data name="&gt;&gt;labelClose.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="labelMaxRestore.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelMaxRestore.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="labelMaxRestore.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Marlett, 16px</value>
+  </data>
+  <data name="labelMaxRestore.Location" type="System.Drawing.Point, System.Drawing">
+    <value>35, 0</value>
+  </data>
+  <data name="labelMaxRestore.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="labelMaxRestore.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 24</value>
+  </data>
+  <data name="labelMaxRestore.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="labelMaxRestore.Text" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="labelMaxRestore.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="labelMaxRestore.ToolTip" xml:space="preserve">
+    <value>Maximize the window</value>
+  </data>
+  <data name="&gt;&gt;labelMaxRestore.Name" xml:space="preserve">
+    <value>labelMaxRestore</value>
+  </data>
+  <data name="&gt;&gt;labelMaxRestore.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelMaxRestore.Parent" xml:space="preserve">
+    <value>panelWinIcons</value>
+  </data>
+  <data name="&gt;&gt;labelMaxRestore.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="labelMinimize.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelMinimize.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="labelMinimize.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Marlett, 16px</value>
+  </data>
+  <data name="labelMinimize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="labelMinimize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="labelMinimize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>35, 24</value>
+  </data>
+  <data name="labelMinimize.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="labelMinimize.Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="labelMinimize.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleCenter</value>
+  </data>
+  <data name="labelMinimize.ToolTip" xml:space="preserve">
+    <value>Minimize the window</value>
+  </data>
+  <data name="&gt;&gt;labelMinimize.Name" xml:space="preserve">
+    <value>labelMinimize</value>
+  </data>
+  <data name="&gt;&gt;labelMinimize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelMinimize.Parent" xml:space="preserve">
+    <value>panelWinIcons</value>
+  </data>
+  <data name="&gt;&gt;labelMinimize.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="labelCaption.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="labelCaption.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
+  </data>
+  <data name="labelCaption.Location" type="System.Drawing.Point, System.Drawing">
+    <value>24, 0</value>
+  </data>
+  <data name="labelCaption.Size" type="System.Drawing.Size, System.Drawing">
+    <value>358, 24</value>
+  </data>
+  <data name="labelCaption.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="labelCaption.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>MiddleLeft</value>
+  </data>
+  <data name="&gt;&gt;labelCaption.Name" xml:space="preserve">
+    <value>labelCaption</value>
+  </data>
+  <data name="&gt;&gt;labelCaption.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelCaption.Parent" xml:space="preserve">
+    <value>panelCaptionArea</value>
+  </data>
+  <data name="&gt;&gt;labelCaption.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="panelCaptionArea.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="panelWinIcons.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="panelWinIcons.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
+  </data>
+  <data name="panelWinIcons.ColumnCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="panelWinIcons.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="panelWinIcons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>382, 0</value>
+  </data>
+  <data name="panelWinIcons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="panelWinIcons.RowCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="panelWinIcons.Size" type="System.Drawing.Size, System.Drawing">
+    <value>105, 24</value>
+  </data>
+  <data name="panelWinIcons.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;panelWinIcons.Name" xml:space="preserve">
+    <value>panelWinIcons</value>
+  </data>
+  <data name="&gt;&gt;panelWinIcons.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;panelWinIcons.Parent" xml:space="preserve">
+    <value>panelCaptionArea</value>
+  </data>
+  <data name="&gt;&gt;panelWinIcons.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="panelWinIcons.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="labelClose" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="labelMaxRestore" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelMinimize" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Absolute,35,Absolute,35,Absolute,35" /&gt;&lt;Rows Styles="Percent,100" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="pictureIcon.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="pictureIcon.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="pictureIcon.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="pictureIcon.Size" type="System.Drawing.Size, System.Drawing">
+    <value>24, 24</value>
+  </data>
+  <data name="pictureIcon.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
+    <value>CenterImage</value>
+  </data>
+  <data name="pictureIcon.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;pictureIcon.Name" xml:space="preserve">
+    <value>pictureIcon</value>
+  </data>
+  <data name="&gt;&gt;pictureIcon.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pictureIcon.Parent" xml:space="preserve">
+    <value>panelCaptionArea</value>
+  </data>
+  <data name="&gt;&gt;pictureIcon.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="panelCaptionArea.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="panelCaptionArea.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="panelCaptionArea.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="panelCaptionArea.Size" type="System.Drawing.Size, System.Drawing">
+    <value>487, 24</value>
+  </data>
+  <data name="panelCaptionArea.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;panelCaptionArea.Name" xml:space="preserve">
+    <value>panelCaptionArea</value>
+  </data>
+  <data name="&gt;&gt;panelCaptionArea.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;panelCaptionArea.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;panelCaptionArea.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <metadata name="popupSysMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="itemRestore.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemRestore.Text" xml:space="preserve">
+    <value>&amp;Restore</value>
+  </data>
+  <data name="itemMove.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemMove.Text" xml:space="preserve">
+    <value>&amp;Move</value>
+  </data>
+  <data name="itemSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemSize.Text" xml:space="preserve">
+    <value>&amp;Size</value>
+  </data>
+  <data name="itemMinimize.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        vAAADrwBlbxySQAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAWElEQVQ4T6XK
+        wQ2AQAwDwWspFJD0X5WBAx6BfWB4jJSsPCT9gtGB0YHRgdGB0YHRgdGB0YHR8QhVpSlLed1TKjO3Sd+3
+        ZxcR6pbT8d/37fkCowOjA+N7GiubWOe7NxlZEgAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="itemMinimize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemMinimize.Text" xml:space="preserve">
+    <value>Mi&amp;nimize</value>
+  </data>
+  <data name="itemMaximize.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
+        vAAADrwBlbxySQAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAAAmklEQVQ4T6XM
+        Ow4DIRADUG4E7XIAKraBFjruL27gjPORMmQUhWzxxNiycAAuMcsdZrnDLHeY5Y6PYoyBb9a9CtRbR+/U
+        cL9Fk7s9u3WvApVaQHNO966UglqqTPReBcpnBq0f5Jxx5lMmeq8CpZRA6wevft2rQDFGWI54iCgTvVeB
+        vPcIwYOvD+GBN3ux7lX4h1nuMMsdZvk7uBuE/sn/DHarBAAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="itemMaximize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemMaximize.Text" xml:space="preserve">
+    <value>Ma&amp;ximize</value>
+  </data>
+  <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>176, 6</value>
+  </data>
+  <data name="itemClose.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt, style=Bold</value>
+  </data>
+  <data name="itemClose.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Alt+F4</value>
+  </data>
+  <data name="itemClose.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 26</value>
+  </data>
+  <data name="itemClose.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="popupSysMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>180, 194</value>
+  </data>
+  <data name="&gt;&gt;popupSysMenu.Name" xml:space="preserve">
+    <value>popupSysMenu</value>
+  </data>
+  <data name="&gt;&gt;popupSysMenu.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ContextMenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="_panelContent.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="_panelContent.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 24</value>
+  </data>
+  <data name="_panelContent.Size" type="System.Drawing.Size, System.Drawing">
+    <value>487, 432</value>
+  </data>
+  <data name="_panelContent.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;_panelContent.Name" xml:space="preserve">
+    <value>_panelContent</value>
+  </data>
+  <data name="&gt;&gt;_panelContent.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;_panelContent.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;_panelContent.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>11, 25</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>487, 456</value>
+  </data>
+  <data name="$this.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 11.25pt</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
+  </data>
+  <data name="&gt;&gt;itemRestore.Name" xml:space="preserve">
+    <value>itemRestore</value>
+  </data>
+  <data name="&gt;&gt;itemRestore.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;itemMove.Name" xml:space="preserve">
+    <value>itemMove</value>
+  </data>
+  <data name="&gt;&gt;itemMove.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;itemSize.Name" xml:space="preserve">
+    <value>itemSize</value>
+  </data>
+  <data name="&gt;&gt;itemSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;itemMinimize.Name" xml:space="preserve">
+    <value>itemMinimize</value>
+  </data>
+  <data name="&gt;&gt;itemMinimize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;itemMaximize.Name" xml:space="preserve">
+    <value>itemMaximize</value>
+  </data>
+  <data name="&gt;&gt;itemMaximize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Name" xml:space="preserve">
+    <value>toolStripMenuItem1</value>
+  </data>
+  <data name="&gt;&gt;toolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;itemClose.Name" xml:space="preserve">
+    <value>itemClose</value>
+  </data>
+  <data name="&gt;&gt;itemClose.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolTip.Name" xml:space="preserve">
+    <value>toolTip</value>
+  </data>
+  <data name="&gt;&gt;toolTip.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolTip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>GorgonFlatForm</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

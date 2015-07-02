@@ -82,7 +82,7 @@ namespace Gorgon.Editor
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.Border = true;
+			this.ShowBorder = true;
 			this.BorderColor = System.Drawing.Color.SteelBlue;
 			this.ClientSize = new System.Drawing.Size(546, 363);
 			this.Controls.Add(this.buttonCancel);

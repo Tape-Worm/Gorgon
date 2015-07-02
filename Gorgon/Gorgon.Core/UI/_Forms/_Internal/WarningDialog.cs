@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Drawing;
 
 namespace Gorgon.UI
 {
@@ -146,7 +145,7 @@ namespace Gorgon.UI
 		/// Function to perform the actual drawing of the message.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-		protected override void DrawDialog(Graphics g)
+		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
 		    // Get size.
 			float maxTextHeight = AdjustSize(g,0);

@@ -34,7 +34,7 @@ namespace Gorgon.Editor
 	/// Form to allow entry of a new name for an object.
 	/// </summary>
 	public partial class NewNameDialog 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Methods.
 		/// <summary>

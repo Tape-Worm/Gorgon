@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -433,7 +434,7 @@ namespace Gorgon.Graphics
 		        // If the actual control has changed parents, update the top level control.
 		        if (sender == Settings.Window)
 		        {
-		            var newTopLevelParent = GorgonApplication.GetTopLevelControl(Settings.Window);
+			        var newTopLevelParent = Settings.Window.GetAncestor<Control>() ?? Settings.Window;
 
 		            if (newTopLevelParent != _topLevelControl)
 		            {
@@ -455,7 +456,7 @@ namespace Gorgon.Graphics
 		            _parentForm.ResizeEnd -= _parentForm_ResizeEnd;
 		        }
 
-		        _parentForm = GorgonApplication.GetTopLevelForm(Settings.Window);
+		        _parentForm = Settings.Window.FindForm();
 
 		        if (_parentForm == null)
 		        {
@@ -524,7 +525,10 @@ namespace Gorgon.Graphics
 			// Attempt to get the parent form if we don't have one yet.
 			if (_parentForm == null)
 			{
-				_parentForm = GorgonApplication.GetTopLevelForm(Settings.Window);
+				_parentForm = Settings.Window.FindForm();
+
+				Debug.Assert(_parentForm != null, "Unable to find the form for the control!");
+
 				_parentForm.ResizeBegin += _parentForm_ResizeBegin;
 				_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 			}
@@ -1026,8 +1030,8 @@ namespace Gorgon.Graphics
 			Settings = settings;
 
 			// Get the parent form for our window.
-			_parentForm = GorgonApplication.GetTopLevelForm(settings.Window);
-			_topLevelControl = GorgonApplication.GetTopLevelControl(settings.Window);
+			_parentForm = settings.Window.FindForm();
+			_topLevelControl = Settings.Window.GetAncestor<Control>() ?? settings.Window;
 			settings.Window.ParentChanged += Window_ParentChanged;
 
 			if (_topLevelControl != settings.Window)

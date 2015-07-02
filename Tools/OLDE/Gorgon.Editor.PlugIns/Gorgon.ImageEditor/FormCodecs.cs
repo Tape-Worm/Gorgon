@@ -37,7 +37,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 	/// Main UI for the codec loader.
 	/// </summary>
 	partial class FormCodecs 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Variables.
 		

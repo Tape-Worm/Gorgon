@@ -625,8 +625,6 @@ namespace Gorgon.Graphics
 
             CreateStates();
 
-			GorgonApplication.AddTrackedObject(this);
-
 			GorgonApplication.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
@@ -769,9 +767,6 @@ namespace Gorgon.Graphics
                         GIFactory.Dispose();
                         GIFactory = null;
                     }
-
-                    // Remove us from the object tracker.
-					GorgonApplication.RemoveTrackedObject(this);
                 }
 
 				GorgonApplication.Log.Print("Gorgon Graphics Context shut down successfully", LoggingLevel.Simple);

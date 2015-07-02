@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
+using SharpDX;
 using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -783,14 +784,14 @@ namespace Gorgon.Graphics
 				}
 
 				_blendFactor = value;
-				Graphics.Context.OutputMerger.BlendFactor = value.SharpDXColor4;
+				Graphics.Context.OutputMerger.BlendFactor = new Color4(value.Red, value.Green, value.Blue, value.Alpha);
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the blending sample mask.
 		/// </summary>
-		/// <remarks>A sample mask determines which samples get updated in all the active render targets. The mapping of bits in a sample mask to samples in a multisample render target is the responsibility of an individual application. A sample mask is always applied; it is independent of whether multisampling is enabled, and does not depend on whether an application uses multisample render targets.</remarks>
+		/// <remarks>A sample mask determines which samples get updated in all the active render targets. The mapping of bits in a sample mask to samples in a multi sample render target is the responsibility of an individual application. A sample mask is always applied; it is independent of whether multisampling is enabled, and does not depend on whether an application uses multisample render targets.</remarks>
 		public uint BlendSampleMask
 		{
 			get
@@ -822,7 +823,7 @@ namespace Gorgon.Graphics
             _sampleMask = 0xFFFFFFFF;
 
             Graphics.Context.OutputMerger.BlendSampleMask = (int)_sampleMask;
-            Graphics.Context.OutputMerger.BlendFactor = _blendFactor.SharpDXColor4;
+	        Graphics.Context.OutputMerger.BlendFactor = new Color4(_blendFactor.Red, _blendFactor.Green, _blendFactor.Blue, _blendFactor.Alpha);
 
             States = GorgonBlendStates.DefaultStates;
         }

@@ -693,7 +693,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 
 			try
 			{
-				GorgonApplication.ApplicationIdleLoopMethod = null;
+				GorgonApplication.IdleMethod = null;
 
 				if (_renderer != renderer)
 				{
@@ -737,7 +737,7 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 
 				_renderer.Target = _swapChain;
 
-				GorgonApplication.ApplicationIdleLoopMethod = Idle;
+				GorgonApplication.IdleMethod = Idle;
 			}
 			finally
 			{

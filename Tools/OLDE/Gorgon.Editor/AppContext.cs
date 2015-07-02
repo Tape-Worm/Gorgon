@@ -214,7 +214,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		private void InitializeInput()
 		{
-			string inputPlugInPath = Path.Combine(GorgonApplication.ApplicationDirectory, "Gorgon.Input.Raw.dll");
+			string inputPlugInPath = Path.Combine(GorgonApplication.StartupPath, "Gorgon.Input.Raw.dll");
 
 			_splash.UpdateVersion(Resources.GOREDIT_TEXT_LOAD_RAW_INPUT);
 

@@ -39,7 +39,7 @@ namespace Gorgon.Editor
     /// Handles the preferences and plug-ins management for the application.
     /// </summary>
 	partial class FormPreferences 
-        : FlatForm
+        : GorgonFlatForm
     {
         #region Variables.
         private IList<PreferencePanel> _prefPanels;               // A list of our loaded preference panels.

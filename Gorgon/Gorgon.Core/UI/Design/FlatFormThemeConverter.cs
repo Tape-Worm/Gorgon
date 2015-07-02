@@ -34,7 +34,7 @@ namespace Gorgon.UI.Design
 	/// <summary>
 	/// Type converter for the theme type.
 	/// </summary>
-	class FlatFormThemeConverter
+	class GorgonFlatFormThemeConverter
 		: ExpandableObjectConverter
 	{
 		#region Methods.
@@ -76,7 +76,7 @@ namespace Gorgon.UI.Design
 		/// </returns>
 		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			return destinationType == typeof(string) ? Resources.GOR_FLAT_THEME_TEXT : base.ConvertTo(context, culture, value, destinationType);
+			return destinationType == typeof(string) ? Resources.GOR_TEXT_FLAT_THEME : base.ConvertTo(context, culture, value, destinationType);
 		}
 
 		/// <summary>
@@ -102,9 +102,8 @@ namespace Gorgon.UI.Design
 		/// </returns>
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
-			return TypeDescriptor.GetProperties(typeof(FlatFormTheme));
+			return TypeDescriptor.GetProperties(typeof(GorgonFlatFormTheme));
 		}
-
 		#endregion
 	}
 }

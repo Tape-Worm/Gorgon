@@ -50,7 +50,7 @@ namespace Gorgon.Editor
 	/// A file selector window for retrieving files from the mounted scratch area.
 	/// </summary>
 	partial class FormEditorFileSelector 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Classes
 		/// <summary>

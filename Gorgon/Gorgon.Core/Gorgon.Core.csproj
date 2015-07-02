@@ -148,6 +148,7 @@
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
     <Compile Include="GorgonCancelEventArgs.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
+    <Compile Include="Graphics\GorgonColor.cs" />
     <Compile Include="IO\GorgonChunk.cs" />
     <Compile Include="IO\GorgonChunkCollection.cs" />
     <Compile Include="IO\GorgonChunkFile.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
+    <Compile Include="UI\_Extensions\GorgonControlExtensions.cs" />
     <Compile Include="_Extensions\GorgonExceptionExtensions.cs" />
     <Compile Include="_Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Diagnostics\_Extensions\GorgonDebugExtensions.cs" />
@@ -219,50 +221,50 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\BaseDialog.cs">
+    <Compile Include="UI\_Forms\_Internal\BaseDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\BaseDialog.designer.cs">
+    <Compile Include="UI\_Forms\_Internal\BaseDialog.designer.cs">
       <DependentUpon>BaseDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ConfirmationDialog.cs">
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ConfirmationDialog.designer.cs">
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialog.designer.cs">
       <DependentUpon>ConfirmationDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ConfirmationDialogEx.cs">
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ConfirmationDialogEx.designer.cs">
+    <Compile Include="UI\_Forms\_Internal\ConfirmationDialogEx.designer.cs">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\Design\FlatFormThemeConverter.cs" />
-    <Compile Include="UI\FlatForm.cs">
+    <Compile Include="UI\_Forms\GorgonFlatForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\FlatForm.Designer.cs">
-      <DependentUpon>FlatForm.cs</DependentUpon>
+    <Compile Include="UI\_Forms\GorgonFlatForm.Designer.cs">
+      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\FlatFormTheme.cs" />
-    <Compile Include="UI\WarningDialog.cs">
+    <Compile Include="UI\GorgonFlatFormTheme.cs" />
+    <Compile Include="UI\_Forms\_Internal\WarningDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\WarningDialog.designer.cs">
+    <Compile Include="UI\_Forms\_Internal\WarningDialog.designer.cs">
       <DependentUpon>WarningDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\ErrorDialog.cs">
+    <Compile Include="UI\_Forms\_Internal\ErrorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\ErrorDialog.designer.cs">
+    <Compile Include="UI\_Forms\_Internal\ErrorDialog.designer.cs">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\GorgonAlignment.cs" />
+    <Compile Include="UI\_Enums\Alignment.cs" />
     <Compile Include="UI\GorgonDialogs.cs" />
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UI\GorgonSelectablePanel.cs">
+    <Compile Include="UI\_Controls\GorgonSelectablePanel.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>
@@ -272,23 +274,23 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\BaseDialog.resx">
+    <EmbeddedResource Include="UI\_Forms\_Internal\BaseDialog.resx">
       <DependentUpon>BaseDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\ConfirmationDialog.resx">
+    <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialog.resx">
       <DependentUpon>ConfirmationDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\ConfirmationDialogEx.resx">
+    <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialogEx.resx">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\FlatForm.resx">
-      <DependentUpon>FlatForm.cs</DependentUpon>
+    <EmbeddedResource Include="UI\_Forms\GorgonFlatForm.resx">
+      <DependentUpon>GorgonFlatForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\WarningDialog.resx">
+    <EmbeddedResource Include="UI\_Forms\_Internal\WarningDialog.resx">
       <DependentUpon>WarningDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UI\ErrorDialog.resx">
+    <EmbeddedResource Include="UI\_Forms\_Internal\ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

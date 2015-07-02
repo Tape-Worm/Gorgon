@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2014 Michael Winsor
+// Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,57 +20,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, April 6, 2014 9:43:26 PM
+// Created: Monday, September 3, 2012 8:10:46 PM
 // 
 #endregion
 
 using System;
-using Gorgon.UI;
 
-namespace Gorgon.Editor.FontEditorPlugIn
+namespace Gorgon.Animation
 {
 	/// <summary>
-	/// Text editor window for the preview text.
+	/// An attribute to define a property on an animated object as being animated.
 	/// </summary>
-	public partial class FormEditPreviewText 
-		: GorgonFlatForm
+    /// <remarks>Assign this attribute to any property that should be animated.</remarks>
+    [Obsolete("TEMP: This is just here to keep the compiler happy until I figure out what I'm going to do with this API.")]
+	[AttributeUsage(AttributeTargets.Property)]
+	public class AnimatedPropertyAttribute
+		: Attribute
 	{
-		#region Properties.
+		#region Properties
 		/// <summary>
-		/// Property to set or return the preview text.
+		/// Property to return the data type.
 		/// </summary>
-		public string PreviewText
+		public Type DataType
 		{
-			get
-			{
-				return textPreview.Text;
-			}
-			set
-			{
-				textPreview.Text = value;
-			}
+			get;
+			private set;
 		}
-		#endregion
 
-		#region Methods.
 		/// <summary>
-		/// Handles the TextChanged event of the textPreview control.
+		/// Property to return the name to display.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void textPreview_TextChanged(object sender, EventArgs e)
+		public string DisplayName
 		{
-			buttonOK.Enabled = textPreview.TextLength > 0;
+			get;
+			private set;
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FormEditPreviewText"/> class.
+		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
 		/// </summary>
-		public FormEditPreviewText()
+		public AnimatedPropertyAttribute()
 		{
-			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="AnimatedPropertyAttribute" /> class.
+		/// </summary>
+		/// <param name="displayName">The display name for this property.</param>
+		/// <param name="dataType">Type of the data that this property represents.</param>
+		public AnimatedPropertyAttribute(string displayName, Type dataType)
+		{
+			DisplayName = displayName;
+			DataType = dataType;
 		}
 		#endregion
 	}

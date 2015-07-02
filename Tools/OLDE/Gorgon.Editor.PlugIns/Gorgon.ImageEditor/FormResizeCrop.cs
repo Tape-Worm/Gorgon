@@ -36,7 +36,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 	/// UI to determine whether to crop or resize an image.
 	/// </summary>
 	partial class FormResizeCrop 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Value Types.
 		/// <summary>

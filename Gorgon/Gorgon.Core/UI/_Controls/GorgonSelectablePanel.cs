@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Design;
 using Gorgon.Native;
@@ -36,14 +35,15 @@ using Gorgon.Native;
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// A panel that can receive keyboard focus.
+	/// A <see cref="Panel"/> that can receive keyboard focus.
 	/// </summary>
 	[ToolboxItem(true), ToolboxBitmap(typeof(GorgonApplication), "Resources.GorgonSelectablePanel.bmp")]
 	public class GorgonSelectablePanel
 		: Panel
 	{
 		#region Variables.
-		private bool _showFocus = true;			// Show focus flag.
+		// Show focus flag.
+		private bool _showFocus = true;			
 		#endregion
 
 		#region Properties.
@@ -139,6 +139,7 @@ namespace Gorgon.UI
 		}
 
 	    /// <summary>
+	    /// Function to process window messages.
         /// </summary>
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
 	    protected override void WndProc(ref Message m)

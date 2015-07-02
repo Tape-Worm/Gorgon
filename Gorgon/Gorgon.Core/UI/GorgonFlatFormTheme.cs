@@ -43,16 +43,16 @@ using Gorgon.UI.Design;
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// A theme to apply to flat forms.
+	/// Color modification values for the <see cref="GorgonFlatForm"/>.
 	/// </summary>
-	/// <remarks>A flat form theme is a means to apply multiple color settings to a <see cref="FlatForm"/> window.  Themes can be loaded from an xml file or set manually via code.  
+	/// <remarks>A flat form theme is a means to apply multiple color settings to a <see cref="GorgonFlatForm"/> window.  Themes can be loaded from an xml file or set manually via code.  
 	/// By assigning a theme to a flat form, the colors for that window are automatically set by the colors in the window.
 	/// <para>
 	/// The theme object inherits from the ToolStrip renderer class and will be applied as a visual style for tool bars and menus as well.
 	/// </para>
 	/// </remarks>
-	[TypeConverter(typeof(FlatFormThemeConverter)), Serializable]
-	public class FlatFormTheme
+	[TypeConverter(typeof(GorgonFlatFormThemeConverter)), Serializable]
+	public class GorgonFlatFormTheme
 		: ToolStripRenderer, IXmlSerializable
 	{
 		#region Variables.
@@ -864,11 +864,11 @@ namespace Gorgon.UI
 		/// Function to load this theme from a stream containing XML data.
 		/// </summary>
 		/// <param name="stream">Stream to load from.</param>
-		/// <returns>The <see cref="FlatForm"/> theme deserialized from XML.</returns>
+		/// <returns>The <see cref="GorgonFlatForm"/> theme deserialized from XML.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the stream is write-only.</exception>
 		/// <exception cref="EndOfStreamException">Thrown when the stream position cannot read beyond the stream length.</exception>
-		public static FlatFormTheme Load(Stream stream)
+		public static GorgonFlatFormTheme Load(Stream stream)
 		{
 			if (stream == null)
 			{
@@ -885,8 +885,8 @@ namespace Gorgon.UI
 				throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
 			}
 
-			var serializer = new XmlSerializer(typeof(FlatFormTheme));
-			return (FlatFormTheme)serializer.Deserialize(stream);
+			var serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
+			return (GorgonFlatFormTheme)serializer.Deserialize(stream);
 		}
 
 		/// <summary>
@@ -907,16 +907,16 @@ namespace Gorgon.UI
 				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, "stream");
 			}
 
-			var serializer = new XmlSerializer(typeof(FlatFormTheme));
+			var serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));
 			serializer.Serialize(stream, this);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FlatFormTheme"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFlatFormTheme"/> class.
 		/// </summary>
-		public FlatFormTheme()
+		public GorgonFlatFormTheme()
 		{
 			ForeColor = Color.FromKnownColor(KnownColor.WindowText);
 			DisabledColor = Color.FromKnownColor(KnownColor.DimGray);

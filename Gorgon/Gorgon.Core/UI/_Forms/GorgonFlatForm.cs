@@ -21,9 +21,6 @@
 // THE SOFTWARE.
 // 
 // Created: Sunday, March 3, 2013 9:50:51 PM
-// 
-// This object was adapted from the CodeProject article: Metro UI (Zune like) Interface (form).
-// This article can be found at http://www.codeproject.com/Articles/138661/Metro-UI-Zune-like-Interface-form#xx3740425xx
 //
 #endregion
 
@@ -41,25 +38,34 @@ using Gorgon.Design;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI.Design;
+using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// A form that provides a flattened interface look.
+	/// A form that provides a flattened interface look similar to Windows 8/Windows X.
 	/// </summary>
 	/// <remarks>
-	/// This is an overload to the standard windows form that mimics the flat style of the old Microsoft Zune application, and, to some degree, Windows 8 windows on 
-	/// operating systems that don't use flat style forms.
 	/// <para>
-    /// To use the form, merely create a new Windows Form in Visual Studio and then change the inheritance from <c>System.Windows.Forms.Form</c> to <c>GorgonLibrary.UI.FlatForm</c>. 
+	/// This is an overload to the standard windows form that mimics the flat style of Windows 8 windows on operating systems that don't use flat style forms natively.
+	/// </para>
+	/// <para>
+    /// To use the form, merely create a new Windows <see cref="Form"/> in Visual Studio and then change the inheritance from <c>System.Windows.Forms.Form</c> to <c>Gorgon.UI.GorgonFlatForm</c>. 
     /// Once this is done the form will change to the flat style.
 	/// </para>
 	/// <para>
 	/// This form uses the client area of the window to handle the caption, and system buttons (close, minimize, etc...), so it is possible to add new buttons, images, etc.. into 
 	/// the caption of the window for a truly customized look.
 	/// </para>
+	/// <para>
+	/// To add controls to the form, just add your controls to the <see cref="ContentArea"/> panel on the form.
+	/// </para>
+	/// <para>
+	/// Users may also customize the colors of the flat form by adding a <see cref="GorgonFlatFormTheme"/> to the <see cref="Theme"/> property.
+	/// </para>
 	/// </remarks>
-	public partial class FlatForm : Form
+	public partial class GorgonFlatForm
+		: Form
 	{
 		#region Enums.
 		/// <summary>
@@ -116,7 +122,7 @@ namespace Gorgon.UI
 		private FormWindowState _windowState = FormWindowState.Normal;
 		private FormWindowState _prevMinState = FormWindowState.Normal;
 		private Rectangle _restoreRect;
-		private FlatFormTheme _theme = new FlatFormTheme();
+		private GorgonFlatFormTheme _theme = new GorgonFlatFormTheme();
 		private int _captionHeight;
 		[AccessedThroughProperty("ContentArea")]
 		private Panel _panelContent;
@@ -163,10 +169,8 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
+		/// Property to set or return the background color for the <see cref="GorgonFlatForm"/>.
 		/// </summary>
-		/// <PermissionSet>
-		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		/// </PermissionSet>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new Color BackColor
 		{
@@ -182,11 +186,8 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Gets or sets the foreground color of the control.
+		/// Property to set or return the foreground color of the <see cref="GorgonFlatForm"/>.
 		/// </summary>
-		/// <PermissionSet>
-		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		/// </PermissionSet>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new Color ForeColor
 		{
@@ -202,8 +203,12 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to return the content area.
+		/// Property to return the <see cref="Panel"/> that contains the controls in the form client area.
 		/// </summary>
+		/// <remarks>
+		/// When designing a <see cref="GorgonFlatForm"/>, this <see cref="Panel"/> is where controls that occupy the client area will live. This keeps a separation between the non-client area (i.e. 
+		/// the caption, icons, etc...) and the controls the user is meant to interact with.
+		/// </remarks>
 		[Browsable(false)]
 		public Panel ContentArea
 		{
@@ -214,14 +219,17 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to set or return the current theme for the window.
+		/// Property to set or return the current <see cref="GorgonFlatFormTheme"/> for the window.
 		/// </summary>
+		/// <remarks>
+		/// Setting a theme will set all the colors on the <see cref="GorgonFlatForm"/> at once. All toolbars and menus will automatically be updated to the new theme as well.
+		/// </remarks>
 		[Browsable(true), 
 		LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), 
-		TypeConverter(typeof(FlatFormThemeConverter)),
+		TypeConverter(typeof(GorgonFlatFormThemeConverter)),
 		DesignerSerializationVisibility(DesignerSerializationVisibility.Content),
 		RefreshProperties(RefreshProperties.All)]
-		public FlatFormTheme Theme
+		public GorgonFlatFormTheme Theme
 		{
 			get
 			{
@@ -231,7 +239,7 @@ namespace Gorgon.UI
 			{
 				if (value == null)
 				{
-					value = new FlatFormTheme();
+					value = new GorgonFlatFormTheme();
 				}
 				
 				if (_theme != null)
@@ -251,15 +259,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Gets or sets the border style of the form.
+		/// Property to set or return the border style of the form.
 		/// </summary>
-		/// <returns>A <see cref="T:System.Windows.Forms.FormBorderStyle" /> that represents the style of border to display for the form. The default is FormBorderStyle.Sizable.</returns>
-		///   <PermissionSet>
-		///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
-		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   </PermissionSet>
+		/// <remarks>
+		/// This property is disabled since the flat form uses its own border drawing. Setting this value will do nothing.
+		/// </remarks>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new FormBorderStyle FormBorderStyle
 		{
@@ -279,7 +283,7 @@ namespace Gorgon.UI
 		/// </summary>
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_BORDER_DESC"), DefaultValue(false), 
 		RefreshProperties(RefreshProperties.All)]
-		public bool Border
+		public bool ShowBorder
 		{
 			get
 			{
@@ -296,7 +300,9 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the size of the border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <b>true</b>.</remarks>
+		/// <remarks>
+		/// This is only valid when the <see cref="Resizable"/> property is set to <b>true</b>.
+		/// </remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
@@ -331,7 +337,9 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
-		/// <remarks>This is only valid when <see cref="Gorgon.UI.FlatForm.Resizable">Resizable</see> is set to <b>true</b>.</remarks>
+		/// <remarks>
+		/// This is only valid when the <see cref="Resizable"/> property is set to <b>true</b>.
+		/// </remarks>
 		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
@@ -341,8 +349,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Hidden control box property.
+		/// Property to set or return whether the control box on the form is visible or not.
 		/// </summary>
+		/// <remarks>
+		/// This property is disabled for the <see cref="GorgonFlatForm"/>, setting it will do nothing and it will always return <b>true</b>.
+		/// </remarks>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new bool ControlBox
 		{
@@ -357,8 +368,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Hidden help button box property.
+		/// Property to set or return whether the help icon on the form is visible or not.
 		/// </summary>
+		/// <remarks>
+		/// This property is disabled for the <see cref="GorgonFlatForm"/>, setting it will do nothing and it will always return <b>false</b>.
+		/// </remarks>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new bool HelpButton
 		{
@@ -373,8 +387,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to set or return whether to show the icon for the form.
+		/// Property to set or return whether to show the icon for the <see cref="GorgonFlatForm"/>.
 		/// </summary>
+		/// <remarks>
+		/// This is the window icon on the upper-left corner where the system menu for the window is displayed.
+		/// </remarks>
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), LocalDescription(typeof(Resources), "PROP_SHOWICON_DESC")]
 		public new bool ShowIcon
 		{
@@ -390,7 +407,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to set or return whether the window caption, including the system menu, max/min buttons and the close button are visible.
+		/// Property to set or return whether the window caption, system menu, max/min buttons and the close button are visible.
 		/// </summary>
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_WINDOWSTYLE"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
 		public bool ShowWindowCaption
@@ -407,8 +424,8 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
+		/// Property to set or return the caption for the <see cref="GorgonFlatForm"/>.
 		/// </summary>
-		/// <returns>The text associated with this control.</returns>
 		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
 		public override string Text
 		{
@@ -443,9 +460,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Property to return the sizing grip style.
+		/// Property to set or return the sizing grip style.
 		/// </summary>
-		/// <remarks>This is not used for the Zune style window.</remarks>
+		/// <remarks>
+		/// This property is disabled for the <see cref="GorgonFlatForm"/>, setting it will do nothing and it will always return <see cref="System.Windows.Forms.SizeGripStyle.Hide"/>.
+		/// </remarks>
 		[Browsable(false)]
 		public new SizeGripStyle SizeGripStyle
 		{
@@ -464,6 +483,7 @@ namespace Gorgon.UI
 		/// Gets the location and size of the form in its normal window state.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Drawing.Rectangle" /> that contains the location and size of the form in the normal window state.</returns>
+		[Browsable(false)]
 		public new Rectangle RestoreBounds
 		{
 			get
@@ -475,13 +495,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Gets or sets a value that indicates whether form is minimized, maximized, or normal.
 		/// </summary>
-		/// <returns>A <see cref="T:System.Windows.Forms.FormWindowState" /> that represents whether form is minimized, maximized, or normal. The default is FormWindowState.Normal.</returns>
-		/// <PermissionSet>
-		///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
-		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
-		/// </PermissionSet>
+		/// <returns>A <see cref="T:System.Windows.Forms.FormWindowState" /> that represents whether form is minimized, maximized, or normal. The default is <see cref="System.Windows.Forms.FormWindowState.Normal"/>.</returns>
 		public new FormWindowState WindowState
 		{
 			get
@@ -563,7 +577,7 @@ namespace Gorgon.UI
 				}
 
 				stream = dialog.OpenFile();
-				var currentTheme = (FlatFormTheme)_themeProperty.GetValue(this);
+				var currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
 
 				if (currentTheme == null)
 				{
@@ -613,7 +627,7 @@ namespace Gorgon.UI
 					return;
 				}
 
-				var currentTheme = (FlatFormTheme)_themeProperty.GetValue(this);
+				var currentTheme = (GorgonFlatFormTheme)_themeProperty.GetValue(this);
 
 				if (currentTheme == null)
 				{
@@ -625,7 +639,7 @@ namespace Gorgon.UI
 				Image checkDisabled = currentTheme.MenuCheckDisabledImage;
 
 				stream = dialog.OpenFile();
-				var newTheme = FlatFormTheme.Load(stream);
+				var newTheme = GorgonFlatFormTheme.Load(stream);
 
 				// Restore the previous images.
 				newTheme.MenuCheckEnabledImage = checkEnabled;
@@ -661,7 +675,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			_themeProperty = TypeDescriptor.GetProperties(typeof(FlatForm))
+			_themeProperty = TypeDescriptor.GetProperties(typeof(GorgonFlatForm))
 			                               .Cast<PropertyDescriptor>()
 			                               .First(item => string.Equals(item.Name, "Theme", StringComparison.OrdinalIgnoreCase));
 
@@ -691,7 +705,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			using (Graphics g = CreateGraphics())
+			using (DrawingGraphics g = CreateGraphics())
 			{
 				_captionHeight = TextRenderer.MeasureText(g, labelCaption.Text, Font).Height + 8;
 			}
@@ -1049,6 +1063,7 @@ namespace Gorgon.UI
 					itemMove.Enabled = false;
 					itemSize.Enabled = false;
 					labelMaxRestore.Text = Resources.GOR_TEXT_FLATFORM_MAX_ICON;
+					toolTip.SetToolTip(labelMaxRestore, Resources.GOR_TEXT_FLATFORM_MAXIMIZE_TIP);
 					break;
 				case FormWindowState.Minimized:
 					itemRestore.Enabled = true;
@@ -1059,6 +1074,7 @@ namespace Gorgon.UI
 					break;
 				case FormWindowState.Normal:
 					labelMaxRestore.Text = Resources.GOR_TEXT_FLATFORM_RESTORE_ICON;
+					toolTip.SetToolTip(labelMaxRestore, Resources.GOR_TEXT_FLATFORM_RESTORE_TIP);
 					itemMove.Enabled = true;
 					itemSize.Enabled = true;
 					itemRestore.Enabled = false;
@@ -1070,31 +1086,12 @@ namespace Gorgon.UI
 	        LayoutWindowControls();
 		}
 
-	    /// <summary>
-		/// Processes a command key.
-		/// </summary>
-		/// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the Win32 message to process.</param>
-		/// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that represents the key to process.</param>
-		/// <returns>
-		/// true if the keystroke was processed and consumed by the control; otherwise, false to allow further processing.
-		/// </returns>
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-		{
-		    if (keyData != (Keys.Alt | Keys.Space))
-		    {
-			    return base.ProcessCmdKey(ref msg, keyData);
-		    }
-
-		    ShowSysMenu();
-		    return true;
-		}
-
 		/// <summary>
-		/// Handles the MouseMove event of the ZuneForm control.
+		/// Handles the MouseMove event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_MouseMove(object sender, MouseEventArgs e)
+		private void Form_MouseMove(object sender, MouseEventArgs e)
 		{
 			try
 			{
@@ -1147,15 +1144,15 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the Activated event of the ZuneForm control.
+		/// Handles the Activated event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Activated(object sender, EventArgs e)
+		private void Form_Activated(object sender, EventArgs e)
 		{
 			if (base.WindowState == FormWindowState.Minimized)
 			{
-				_windowState = _prevMinState;	
+				_windowState = _prevMinState;
 			}
 
 			Theme_PropertyChangedEvent(this, EventArgs.Empty);
@@ -1167,11 +1164,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the Deactivate event of the ZuneForm control.
+		/// Handles the Deactivate event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Deactivate(object sender, EventArgs e)
+		private void Form_Deactivate(object sender, EventArgs e)
 		{
 			Theme_PropertyChangedEvent(this, EventArgs.Empty);
 
@@ -1182,41 +1179,11 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Window procedure override.
-		/// </summary>
-		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
-		protected override void WndProc(ref Message m)
-		{
-			switch ((WindowMessages)m.Msg)
-			{
-				case WindowMessages.EnterSizeMove:
-					if (DesignMode)
-					{
-						return;
-					}
-
-					// If we're resizing, then begin resizing.
-					OnResizeBegin(EventArgs.Empty);
-					break;
-				case WindowMessages.ExitSizeMove:
-					if (DesignMode)
-					{
-						return;
-					}
-
-					// If we're resizing, then stop.
-					OnResizeEnd(EventArgs.Empty);
-					break;
-			}
-			base.WndProc(ref m);
-		}
-
-		/// <summary>
-		/// Handles the MouseDown event of the ZuneForm control.
+		/// Handles the MouseDown event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_MouseDown(object sender, MouseEventArgs e)
+		private void Form_MouseDown(object sender, MouseEventArgs e)
 		{
 			if (DesignMode)
 			{
@@ -1238,7 +1205,7 @@ namespace Gorgon.UI
 				{
 					return;
 				}
-				
+
 				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize) && (WindowState == FormWindowState.Normal))
 				{
 					Win32API.ReleaseCapture();
@@ -1303,18 +1270,18 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the Load event of the ZuneForm control.
+		/// Handles the Load event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Load(object sender, EventArgs e)
+		private void Form_Load(object sender, EventArgs e)
 		{
 			try
 			{
 				BuildDesignerVerbs();
 
 				ToolStripManager.Renderer = _theme;
-				
+
 				labelCaption_TextChanged(this, EventArgs.Empty);
 				ValidateWindowControls();
 
@@ -1347,9 +1314,9 @@ namespace Gorgon.UI
 			{
 				return;
 			}
-			
+
 			_iconImage = new Bitmap(24, 24, PixelFormat.Format32bppArgb);
-			using (Graphics g = Graphics.FromImage(_iconImage))
+			using (DrawingGraphics g = DrawingGraphics.FromImage(_iconImage))
 			{
 				g.DrawIcon(Icon, new Rectangle(0, 0, 24, 24));
 			}
@@ -1368,18 +1335,18 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the Resize event of the ZuneForm control.
+		/// Handles the Resize event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Resize(object sender, EventArgs e)
+		private void Form_Resize(object sender, EventArgs e)
 		{
 			try
 			{
-			    if ((DesignMode) || (_currentPadding == null))
-			    {
-			        return;
-			    }
+				if ((DesignMode) || (_currentPadding == null))
+				{
+					return;
+				}
 
 				switch (WindowState)
 				{
@@ -1395,7 +1362,7 @@ namespace Gorgon.UI
 					case FormWindowState.Normal:
 						if (base.WindowState == FormWindowState.Minimized)
 						{
-							_windowState = FormWindowState.Normal;	
+							_windowState = FormWindowState.Normal;
 						}
 
 						_restoreRect = DesktopBounds;
@@ -1416,9 +1383,9 @@ namespace Gorgon.UI
 		/// Function to draw the border for the window.
 		/// </summary>
 		/// <param name="graphics">Graphics interface to use.</param>
-		private void DrawBorder(Graphics graphics)
+		private void DrawBorder(DrawingGraphics graphics)
 		{
-			if ((WindowState != FormWindowState.Normal) || (!Border) || (_borderWidth <= 0))
+			if ((WindowState != FormWindowState.Normal) || (!ShowBorder) || (_borderWidth <= 0))
 			{
 				return;
 			}
@@ -1431,21 +1398,21 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the Paint event of the ZuneForm control.
+		/// Handles the Paint event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Paint(object sender, PaintEventArgs e)
+		private void Form_Paint(object sender, PaintEventArgs e)
 		{
 			DrawBorder(e.Graphics);
 		}
 
 		/// <summary>
-		/// Handles the PaddingChanged event of the ZuneForm control.
+		/// Handles the PaddingChanged event of the <see cref="GorgonFlatForm"/> control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_PaddingChanged(object sender, EventArgs e)
+		private void Form_PaddingChanged(object sender, EventArgs e)
 		{
 			// Only store the current padding for the first time.
 			if (_currentPadding == null)
@@ -1493,7 +1460,7 @@ namespace Gorgon.UI
 				labelMaxRestore.ForeColor = _theme.ForeColorInactive;
 				labelClose.ForeColor = _theme.ForeColorInactive;
 				_panelContent.ForeColor = _theme.ForeColorInactive;
-				
+
 				ApplyTheme();
 
 				Invalidate(true);
@@ -1521,8 +1488,63 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function called to allow sub-classed windows to apply the theme to controls that are not necessarily themeable.
+		/// Function to process a command key.
 		/// </summary>
+		/// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the Win32 message to process.</param>
+		/// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that represents the key to process.</param>
+		/// <returns>
+		/// <b>true</b> if the keystroke was processed and consumed by the control; otherwise, <b>false</b> to allow further processing.
+		/// </returns>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+		    if (keyData != (Keys.Alt | Keys.Space))
+		    {
+			    return base.ProcessCmdKey(ref msg, keyData);
+		    }
+
+		    ShowSysMenu();
+		    return true;
+		}
+
+		/// <summary>
+		/// Function to process window messages.
+		/// </summary>
+		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
+		protected override void WndProc(ref Message m)
+		{
+			switch ((WindowMessages)m.Msg)
+			{
+				case WindowMessages.EnterSizeMove:
+					if (DesignMode)
+					{
+						return;
+					}
+
+					// If we're resizing, then begin resizing.
+					OnResizeBegin(EventArgs.Empty);
+					break;
+				case WindowMessages.ExitSizeMove:
+					if (DesignMode)
+					{
+						return;
+					}
+
+					// If we're resizing, then stop.
+					OnResizeEnd(EventArgs.Empty);
+					break;
+			}
+			base.WndProc(ref m);
+		}
+
+		/// <summary>
+		/// Function to allow themes to be applied to child controls/windows that do not support <see cref="GorgonFlatFormTheme"/>.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// While the <see cref="GorgonFlatForm"/> is themeable, most controls are not. And while many controls will inherit the color scheme of their parent window, some will use their own. This method, when 
+		/// overridden in your application will allow you to change the color scheme of those child controls (or windows) that don't support theming.
+		/// </para>
+		/// </remarks>
 		protected virtual void ApplyTheme()
 		{
 		}
@@ -1530,9 +1552,9 @@ namespace Gorgon.UI
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FlatForm"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFlatForm"/> class.
 		/// </summary>
-		public FlatForm()
+		public GorgonFlatForm()
 		{
 			ResizeHandleSize = 6;
 			Resizable = true;

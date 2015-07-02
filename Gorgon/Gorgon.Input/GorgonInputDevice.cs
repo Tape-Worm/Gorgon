@@ -394,7 +394,7 @@ namespace Gorgon.Input
 			GorgonApplication.Log.Print("Binding input device object {1} to window 0x{0}.", LoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);
 
 			BoundControl = boundWindow;
-			BoundTopLevelForm = GorgonApplication.GetTopLevelForm(BoundControl);
+			BoundTopLevelForm = BoundControl.FindForm();
 
 		    if (BoundTopLevelForm == null)
 		    {

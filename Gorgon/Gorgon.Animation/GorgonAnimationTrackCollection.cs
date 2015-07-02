@@ -85,13 +85,17 @@ namespace Gorgon.Animation
 		internal void EnumerateTracks()
 		{
 			if (_animation.AnimationController == null)
+			{
 				return;
+			}
 
 			// Enumerate tracks from the owner object animated properties list.
 			foreach (var item in _animation.AnimationController.AnimatedProperties)
 			{
-				if (Contains(item.Value.DisplayName))		// Don't add tracks that are already here.
+				if (Contains(item.Value.DisplayName)) // Don't add tracks that are already here.
+				{
 					continue;
+				}
 
 				switch (item.Value.DataType.FullName.ToUpperInvariant())
 				{
@@ -131,12 +135,12 @@ namespace Gorgon.Animation
 					case "SLIMMATH.VECTOR4":
 						Add(new GorgonTrackVector4<T>(item.Value));
 						break;
-					case "GORGONLIBRARY.GRAPHICS.GORGONTEXTURE2D":
+					case "GORGON.GRAPHICS.GORGONTEXTURE2D":
 						// We need grab an additional property for texture animation.
 						var property = new GorgonAnimatedProperty(_animation.AnimationController.AnimatedObjectType.GetProperty("TextureRegion"));
 						Add(new GorgonTrackTexture2D<T>(item.Value, property));
 						break;
-					case "GORGONLIBRARY.GRAPHICS.GORGONCOLOR":
+					case "GORGON.GRAPHICS.GORGONCOLOR":
 						Add(new GorgonTrackGorgonColor<T>(item.Value));
 						break;
 				}

@@ -33,7 +33,7 @@ using System.Windows.Forms;
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// Base form for common dialogs.
+	/// The base form for Gorgon dialogs.
 	/// </summary>
 	internal partial class BaseDialog 
         : Form
@@ -195,7 +195,7 @@ namespace Gorgon.UI
 		/// Function to perform the actual drawing of the dialog.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-		protected virtual void DrawDialog(Graphics g)
+		protected virtual void DrawDialog(System.Drawing.Graphics g)
 		{
 		    // Get size.
 			float maxTextHeight = AdjustSize(g, 0);
@@ -212,7 +212,7 @@ namespace Gorgon.UI
 		/// <param name="g">Graphics interface.</param>
 		/// <param name="margin">Places a margin at the bottom of the form.</param>
 		/// <returns>The new maximum height of the client area.</returns>
-		protected float AdjustSize(Graphics g, int margin) 
+		protected float AdjustSize(System.Drawing.Graphics g, int margin) 
 		{
 		    g.PageUnit = GraphicsUnit.Pixel;
 			SizeF textDimensions = g.MeasureString(_message, Font, _maxTextSize.Width);
@@ -248,7 +248,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="g">Graphics interface.</param>
 		/// <param name="maxTextHeight">Maximum height that the text will fit into.</param>
-		protected void DrawMessage(Graphics g, float maxTextHeight)
+		protected void DrawMessage(System.Drawing.Graphics g, float maxTextHeight)
 		{
 		    int borderHeight = buttonOK.Top - 5;
 

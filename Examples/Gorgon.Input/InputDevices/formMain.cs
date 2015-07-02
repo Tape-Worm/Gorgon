@@ -553,7 +553,7 @@ namespace Gorgon.Examples
 				          };
 
 				// Set up our idle method.
-				GorgonApplication.ApplicationIdleLoopMethod = Idle;
+				GorgonApplication.IdleMethod = Idle;
 			}
 			catch (Exception ex)
 			{

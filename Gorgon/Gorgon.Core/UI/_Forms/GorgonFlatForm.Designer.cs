@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace Gorgon.UI
 {
-	partial class FlatForm
+	partial class GorgonFlatForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -41,7 +41,7 @@ namespace Gorgon.UI
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FlatForm));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GorgonFlatForm));
 			this.labelClose = new System.Windows.Forms.Label();
 			this.labelMaxRestore = new System.Windows.Forms.Label();
 			this.labelMinimize = new System.Windows.Forms.Label();
@@ -67,17 +67,9 @@ namespace Gorgon.UI
 			// 
 			// labelClose
 			// 
-			this.labelClose.AutoSize = true;
-			this.labelClose.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelClose.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelClose.Location = new System.Drawing.Point(70, 0);
-			this.labelClose.Margin = new System.Windows.Forms.Padding(0);
+			resources.ApplyResources(this.labelClose, "labelClose");
 			this.labelClose.Name = "labelClose";
-			this.labelClose.Size = new System.Drawing.Size(35, 24);
-			this.labelClose.TabIndex = 2;
-			this.labelClose.Text = "r";
-			this.labelClose.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelClose, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_CLOSE_TIP);
+			this.toolTip.SetToolTip(this.labelClose, resources.GetString("labelClose.ToolTip"));
 			this.labelClose.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelClose_MouseDown);
 			this.labelClose.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelClose.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -85,17 +77,9 @@ namespace Gorgon.UI
 			// 
 			// labelMaxRestore
 			// 
-			this.labelMaxRestore.AutoSize = true;
-			this.labelMaxRestore.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelMaxRestore.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelMaxRestore.Location = new System.Drawing.Point(35, 0);
-			this.labelMaxRestore.Margin = new System.Windows.Forms.Padding(0);
+			resources.ApplyResources(this.labelMaxRestore, "labelMaxRestore");
 			this.labelMaxRestore.Name = "labelMaxRestore";
-			this.labelMaxRestore.Size = new System.Drawing.Size(35, 24);
-			this.labelMaxRestore.TabIndex = 1;
-			this.labelMaxRestore.Text = "2";
-			this.labelMaxRestore.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelMaxRestore, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MAXIMIZE_TIP);
+			this.toolTip.SetToolTip(this.labelMaxRestore, resources.GetString("labelMaxRestore.ToolTip"));
 			this.labelMaxRestore.Click += new System.EventHandler(this.labelMaxRestore_Click);
 			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
 			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
@@ -103,17 +87,9 @@ namespace Gorgon.UI
 			// 
 			// labelMinimize
 			// 
-			this.labelMinimize.AutoSize = true;
-			this.labelMinimize.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelMinimize.Font = new System.Drawing.Font("Marlett", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-			this.labelMinimize.Location = new System.Drawing.Point(0, 0);
-			this.labelMinimize.Margin = new System.Windows.Forms.Padding(0);
+			resources.ApplyResources(this.labelMinimize, "labelMinimize");
 			this.labelMinimize.Name = "labelMinimize";
-			this.labelMinimize.Size = new System.Drawing.Size(35, 24);
-			this.labelMinimize.TabIndex = 0;
-			this.labelMinimize.Text = "0";
-			this.labelMinimize.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.toolTip.SetToolTip(this.labelMinimize, global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MINIMIZE_TIP);
+			this.toolTip.SetToolTip(this.labelMinimize, resources.GetString("labelMinimize.ToolTip"));
 			this.labelMinimize.Click += new System.EventHandler(this.labelMinimize_Click);
 			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelMinimize_MouseEnter);
 			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelMinimize_MouseLeave);
@@ -121,13 +97,8 @@ namespace Gorgon.UI
 			// 
 			// labelCaption
 			// 
-			this.labelCaption.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelCaption.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelCaption.Location = new System.Drawing.Point(24, 0);
+			resources.ApplyResources(this.labelCaption, "labelCaption");
 			this.labelCaption.Name = "labelCaption";
-			this.labelCaption.Size = new System.Drawing.Size(358, 24);
-			this.labelCaption.TabIndex = 3;
-			this.labelCaption.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.labelCaption.FontChanged += new System.EventHandler(this.labelCaption_TextChanged);
 			this.labelCaption.TextChanged += new System.EventHandler(this.labelCaption_TextChanged);
 			this.labelCaption.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
@@ -136,51 +107,29 @@ namespace Gorgon.UI
 			// 
 			// panelCaptionArea
 			// 
-			this.panelCaptionArea.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			resources.ApplyResources(this.panelCaptionArea, "panelCaptionArea");
 			this.panelCaptionArea.Controls.Add(this.labelCaption);
 			this.panelCaptionArea.Controls.Add(this.panelWinIcons);
 			this.panelCaptionArea.Controls.Add(this.pictureIcon);
-			this.panelCaptionArea.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panelCaptionArea.Location = new System.Drawing.Point(0, 0);
-			this.panelCaptionArea.Margin = new System.Windows.Forms.Padding(0);
 			this.panelCaptionArea.Name = "panelCaptionArea";
-			this.panelCaptionArea.Size = new System.Drawing.Size(487, 24);
-			this.panelCaptionArea.TabIndex = 4;
 			this.panelCaptionArea.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.panelCaptionArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.panelCaptionArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
 			// 
 			// panelWinIcons
 			// 
-			this.panelWinIcons.AutoSize = true;
-			this.panelWinIcons.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.panelWinIcons.ColumnCount = 3;
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
-			this.panelWinIcons.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+			resources.ApplyResources(this.panelWinIcons, "panelWinIcons");
 			this.panelWinIcons.Controls.Add(this.labelClose, 2, 0);
 			this.panelWinIcons.Controls.Add(this.labelMaxRestore, 1, 0);
 			this.panelWinIcons.Controls.Add(this.labelMinimize, 0, 0);
-			this.panelWinIcons.Dock = System.Windows.Forms.DockStyle.Right;
-			this.panelWinIcons.Location = new System.Drawing.Point(382, 0);
-			this.panelWinIcons.Margin = new System.Windows.Forms.Padding(0);
 			this.panelWinIcons.Name = "panelWinIcons";
-			this.panelWinIcons.RowCount = 1;
-			this.panelWinIcons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.panelWinIcons.Size = new System.Drawing.Size(105, 24);
-			this.panelWinIcons.TabIndex = 6;
 			this.panelWinIcons.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseDown);
 			this.panelWinIcons.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelWinIcons_MouseMove);
 			// 
 			// pictureIcon
 			// 
-			this.pictureIcon.Dock = System.Windows.Forms.DockStyle.Left;
-			this.pictureIcon.Location = new System.Drawing.Point(0, 0);
-			this.pictureIcon.Margin = new System.Windows.Forms.Padding(0);
+			resources.ApplyResources(this.pictureIcon, "pictureIcon");
 			this.pictureIcon.Name = "pictureIcon";
-			this.pictureIcon.Size = new System.Drawing.Size(24, 24);
-			this.pictureIcon.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-			this.pictureIcon.TabIndex = 4;
 			this.pictureIcon.TabStop = false;
 			this.pictureIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureIcon_MouseDown);
 			// 
@@ -196,59 +145,49 @@ namespace Gorgon.UI
             this.toolStripMenuItem1,
             this.itemClose});
 			this.popupSysMenu.Name = "popupSysMenu";
-			this.popupSysMenu.Size = new System.Drawing.Size(178, 166);
+			resources.ApplyResources(this.popupSysMenu, "popupSysMenu");
 			// 
 			// itemRestore
 			// 
 			this.itemRestore.Image = global::Gorgon.Core.Properties.Resources.Restore;
 			this.itemRestore.Name = "itemRestore";
-			this.itemRestore.Size = new System.Drawing.Size(177, 26);
-			this.itemRestore.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_RESTORE;
+			resources.ApplyResources(this.itemRestore, "itemRestore");
 			this.itemRestore.Click += new System.EventHandler(this.itemRestore_Click);
 			// 
 			// itemMove
 			// 
 			this.itemMove.Name = "itemMove";
-			this.itemMove.Size = new System.Drawing.Size(177, 26);
-			this.itemMove.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MOVE;
+			resources.ApplyResources(this.itemMove, "itemMove");
 			this.itemMove.Click += new System.EventHandler(this.itemMove_Click);
 			// 
 			// itemSize
 			// 
 			this.itemSize.Name = "itemSize";
-			this.itemSize.Size = new System.Drawing.Size(177, 26);
-			this.itemSize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_SIZE;
+			resources.ApplyResources(this.itemSize, "itemSize");
 			this.itemSize.Click += new System.EventHandler(this.itemSize_Click);
 			// 
 			// itemMinimize
 			// 
-			this.itemMinimize.Image = ((System.Drawing.Image)(resources.GetObject("itemMinimize.Image")));
+			resources.ApplyResources(this.itemMinimize, "itemMinimize");
 			this.itemMinimize.Name = "itemMinimize";
-			this.itemMinimize.Size = new System.Drawing.Size(177, 26);
-			this.itemMinimize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MINIMIZE;
 			this.itemMinimize.Click += new System.EventHandler(this.itemMinimize_Click);
 			// 
 			// itemMaximize
 			// 
-			this.itemMaximize.Image = ((System.Drawing.Image)(resources.GetObject("itemMaximize.Image")));
+			resources.ApplyResources(this.itemMaximize, "itemMaximize");
 			this.itemMaximize.Name = "itemMaximize";
-			this.itemMaximize.Size = new System.Drawing.Size(177, 26);
-			this.itemMaximize.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_MAXIMIZE;
 			this.itemMaximize.Click += new System.EventHandler(this.itemMaximize_Click);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(174, 6);
+			resources.ApplyResources(this.toolStripMenuItem1, "toolStripMenuItem1");
 			// 
 			// itemClose
 			// 
-			this.itemClose.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+			resources.ApplyResources(this.itemClose, "itemClose");
 			this.itemClose.Image = global::Gorgon.Core.Properties.Resources.Close;
 			this.itemClose.Name = "itemClose";
-			this.itemClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.itemClose.Size = new System.Drawing.Size(177, 26);
-			this.itemClose.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_FLATFORM_CLOSE;
 			this.itemClose.Click += new System.EventHandler(this.itemClose_Click);
 			// 
 			// toolTip
@@ -260,35 +199,29 @@ namespace Gorgon.UI
 			// 
 			// _panelContent
 			// 
-			this._panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._panelContent.Location = new System.Drawing.Point(0, 24);
+			resources.ApplyResources(this._panelContent, "_panelContent");
 			this._panelContent.Name = "_panelContent";
-			this._panelContent.Size = new System.Drawing.Size(487, 432);
-			this._panelContent.TabIndex = 5;
 			this._panelContent.MouseDown += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseDown);
 			this._panelContent.MouseMove += new System.Windows.Forms.MouseEventHandler(this._panelContent_MouseMove);
 			// 
-			// FlatForm
+			// GorgonFlatForm
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 25F);
+			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(487, 456);
 			this.Controls.Add(this._panelContent);
 			this.Controls.Add(this.panelCaptionArea);
 			this.DoubleBuffered = true;
-			this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-			this.Name = "FlatForm";
-			this.Activated += new System.EventHandler(this.ZuneForm_Activated);
-			this.Deactivate += new System.EventHandler(this.ZuneForm_Deactivate);
-			this.Load += new System.EventHandler(this.ZuneForm_Load);
+			this.Name = "GorgonFlatForm";
+			this.Activated += new System.EventHandler(this.Form_Activated);
+			this.Deactivate += new System.EventHandler(this.Form_Deactivate);
+			this.Load += new System.EventHandler(this.Form_Load);
 			this.EnabledChanged += new System.EventHandler(this.FlatForm_EnabledChanged);
-			this.PaddingChanged += new System.EventHandler(this.ZuneForm_PaddingChanged);
-			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ZuneForm_Paint);
-			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseDown);
-			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseMove);
-			this.Resize += new System.EventHandler(this.ZuneForm_Resize);
+			this.PaddingChanged += new System.EventHandler(this.Form_PaddingChanged);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form_Paint);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form_MouseDown);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form_MouseMove);
+			this.Resize += new System.EventHandler(this.Form_Resize);
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
 			this.panelWinIcons.ResumeLayout(false);

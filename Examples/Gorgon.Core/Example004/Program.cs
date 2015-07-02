@@ -72,7 +72,7 @@ namespace Gorgon.Examples
 		/// <returns>The list of plugin assemblies.</returns>
 		static IEnumerable<string> GetPluginAssemblies()
 		{
-			return Directory.EnumerateFiles(GorgonApplication.ApplicationDirectory, "Example004.*Plugin.dll");
+			return Directory.EnumerateFiles(GorgonApplication.StartupPath, "Example004.*Plugin.dll");
 		}
 
 		/// <summary>

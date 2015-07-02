@@ -314,8 +314,8 @@ namespace Gorgon.Editor
 			                                 1280,
 			                                 720);
 
-			PlugInDirectory = (GorgonApplication.ApplicationDirectory + "PlugIns").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
-			ThemeDirectory = (GorgonApplication.ApplicationDirectory + "Themes").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			PlugInDirectory = (GorgonApplication.StartupPath + "PlugIns").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			ThemeDirectory = (GorgonApplication.StartupPath + "Themes").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 
 			// Set the default scratch location.
 			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)

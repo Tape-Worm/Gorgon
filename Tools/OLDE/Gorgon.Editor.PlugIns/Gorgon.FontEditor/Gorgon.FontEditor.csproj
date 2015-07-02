@@ -176,10 +176,6 @@
     <None Include="Resources\font_document_16x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Gorgon\Gorgon.Animation\Gorgon.Animation.csproj">
-      <Project>{7ee86743-18e9-4667-9bcb-989d5c926922}</Project>
-      <Name>Gorgon.Animation</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>

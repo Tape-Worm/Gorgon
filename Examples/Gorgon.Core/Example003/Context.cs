@@ -63,13 +63,13 @@ namespace Gorgon.Examples
 
 			((formMain)MainForm).Clear();
 
-			if (GorgonApplication.ApplicationIdleLoopMethod == Program.Idle)
+			if (GorgonApplication.IdleMethod == Program.Idle)
 			{
-				GorgonApplication.ApplicationIdleLoopMethod = Program.NewIdle;
+				GorgonApplication.IdleMethod = Program.NewIdle;
 			}
 			else
 			{
-				GorgonApplication.ApplicationIdleLoopMethod = Program.Idle;
+				GorgonApplication.IdleMethod = Program.Idle;
 			}
 		}
 

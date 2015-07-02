@@ -25,13 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
 using Gorgon.Diagnostics;
@@ -42,7 +40,7 @@ using Gorgon.Timing;
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// An application object for windows <see cref="Form"/> applications.
+	/// An application class for windows <see cref="Form"/> applications.
 	/// </summary> 
 	/// <remarks>
 	/// <para>
@@ -52,7 +50,7 @@ namespace Gorgon.UI
 	/// <para>
 	/// One of the key components to this class is the introduction of a proper Idle loop. This allows an application to perform operations while the windows message pump is in an idle state. This is useful 
 	/// for things like games, or applications that require constant interaction with other systems. To set an idle loop you may pass a method to execute in one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
-	/// overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="ApplicationIdleLoopMethod"/>.
+	/// overloads. Or, if you choose, you may assign an idle method to execute at any point in the application life cycle by assigning a method to the <see cref="IdleMethod"/>.
 	/// </para> 
 	/// <para>
 	/// Like the <see cref="Application"/> class, this class also provides the ability to pass a windows <see cref="Form"/>, or <see cref="ApplicationContext"/> to one of the <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> 
@@ -66,18 +64,6 @@ namespace Gorgon.UI
 	/// </para>
 	/// <para>
 	/// If this is not suitable, one of the other <see cref="O:Gorgon.UI.GorgonApplication.Run">Run</see> overloads will allow you to finely control the life cycle of your application.
-	/// </para>
-	/// </note>
-	/// </para>
-	/// <para>
-	/// This object can also be used to track the life cycle of <see cref="IDisposable"/> objects for the lifetime of the application by using the <see cref="AddTrackedObject"/> method. When the application shuts 
-	/// down, the registered <see cref="IDisposable"/> objects will be automatically disposed. 
-	/// </para>
-	/// <para>
-	/// <note type="tip">
-	/// <para>
-	/// If the application doesn't need to track a specific <see cref="IDisposable"/> object anymore, then a call to the <see cref="RemoveTrackedObject"/> method will remove it from the registration list and the 
-	/// application will not dispose of it automatically.
 	/// </para>
 	/// </note>
 	/// </para>
@@ -136,8 +122,6 @@ namespace Gorgon.UI
 		#endregion
 
 		#region Variables.
-		// Tracked objects.
-        private static readonly GorgonDisposableObjectCollection _trackedObjects = new GorgonDisposableObjectCollection();
 		// Main application form.
         private static Form _mainForm;
 		// Flag to indicate that the application needs to close.
@@ -162,7 +146,56 @@ namespace Gorgon.UI
 
 		#region Properties.
 		/// <summary>
-		/// Property to return if the main <see cref="MainForm"/> has focus.
+		/// Property to set or return the current <see cref="CultureInfo"/> for the application.
+		/// </summary>
+		/// <remarks>
+		/// This is a pass through for the <see cref="Application.CurrentCulture"/> property.
+		/// </remarks>
+		/// <seealso cref="Application.CurrentCulture"/>
+		public static CultureInfo CurrentCulture
+		{
+			get
+			{
+				return Application.CurrentCulture;
+			}
+			set
+			{
+				Application.CurrentCulture = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the current <see cref="InputLanguage"/> for the application.
+		/// </summary>
+		/// <remarks>
+		/// This is a pass through for the <see cref="Application.CurrentInputLanguage"/> property.
+		/// </remarks>
+		/// <seealso cref="Application.CurrentInputLanguage"/>
+		public static InputLanguage CurrentInputLanguage
+		{
+			get
+			{
+				return Application.CurrentInputLanguage;
+			}
+		}
+
+		/// <summary>
+		/// Property to return a read-only list of all the forms that are open in the application.
+		/// </summary>
+		/// <remarks>
+		/// This is a pass through for the <see cref="Application.OpenForms"/> property.
+		/// </remarks>
+		/// <seealso cref="Application.OpenForms"/>
+		public static FormCollection OpenForms
+		{
+			get
+			{
+				return Application.OpenForms;
+			}
+		}
+
+		/// <summary>
+		/// Property to return if the application is running in the foreground or background.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -174,7 +207,7 @@ namespace Gorgon.UI
 		/// this property will always return <b>true</b>. 
 		/// </para>
 		/// </remarks>
-		public static bool HasFocus
+		public static bool IsForeground
 		{
 			get
 			{
@@ -182,11 +215,6 @@ namespace Gorgon.UI
 				{
 					return false;
 				}
-
-			    if (AllowBackground)
-			    {
-			        return true;
-			    }
 
 			    return (MainForm.WindowState != FormWindowState.Minimized) && (MainForm.ContainsFocus);
 			}
@@ -250,7 +278,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// When set to <b>true</b>, this will allow an application to process messages and execute the <see cref="ApplicationIdleLoopMethod"/> while the application is unfocused or minimized. If it 
+		/// When set to <b>true</b>, this will allow an application to process messages and execute the <see cref="IdleMethod"/> while the application is unfocused or minimized. If it 
 		/// is set to <b>false</b>, the application will pause until it regains focus again. 
 		/// </para>
 		/// <para>
@@ -299,7 +327,7 @@ namespace Gorgon.UI
 		/// Thrown when an attempt to set this property to <b>null</b> (<i>Nothing</i> in VB.Net) is made and there is no <see cref="MainForm"/> or <see cref="ApplicationContext"/> 
 		/// attached to the application.
 		/// </exception>
-		public static Func<bool> ApplicationIdleLoopMethod
+		public static Func<bool> IdleMethod
 		{
 			get
 			{
@@ -341,7 +369,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This does not include the name of the assembly that is executing, only the directory that the application was executed from.
 		/// </remarks>
-		public static string ApplicationDirectory
+		public static string StartupPath
 		{
 			get
 			{
@@ -355,7 +383,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This includes the file name of the assembly that is executing as well as the directory that the application was executed from.
 		/// </remarks>
-		public static string ApplicationPath
+		public static string ExecutablePath
 		{
 			get
 			{
@@ -454,14 +482,16 @@ namespace Gorgon.UI
 			MSG message;	// Windows message to retrieve.
 
 			// We have nothing to execute, so just leave.
-			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
+			if ((IdleMethod == null) || (!IsRunning))
 			{
 				return;
 			}
 
 			// Check for application focus. If we didn't assign a main form, or one was not assigned to the application context, then 
 			// run regardless since we have an idle method to execute.
-			while (((HasFocus) || (MainForm == null)) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
+
+			while ((appShouldProcess) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.
 			    if (!_applicationTimer.IsValueCreated)
@@ -471,7 +501,7 @@ namespace Gorgon.UI
 
 				GorgonTiming.Update();
 				
-				if (!ApplicationIdleLoopMethod())
+				if (!IdleMethod())
 				{
 					// Force an exit from the thread.
 					Quit();
@@ -557,7 +587,7 @@ namespace Gorgon.UI
 				MainForm.Show();
 			}
 
-			if ((ApplicationIdleLoopMethod != null) && (!_quitSignalled))
+			if ((IdleMethod != null) && (!_quitSignalled))
 			{
 				Log.Print("Application loop starting...", LoggingLevel.Simple);
 				Application.Idle += Application_Idle;
@@ -577,6 +607,8 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private static void Application_ThreadExit(object sender, EventArgs e)
 		{
+			Application.ThreadExit -= Application_ThreadExit;
+
 			// This will only allow one thread to actually call this.
 			// It also has the added benefit of unassigning the exit handler when the application shuts down.
 			EventHandler exitHandler = Interlocked.Exchange(ref ThreadExit, null);
@@ -585,8 +617,7 @@ namespace Gorgon.UI
 			{
 				exitHandler(sender, e);
 			}
-
-			Application.ThreadExit -= Application_ThreadExit;
+			
 		}
 
 		/// <summary>
@@ -596,6 +627,8 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private static void Application_ApplicationExit(object sender, EventArgs e)
 		{
+			Application.ApplicationExit -= Application_ApplicationExit;
+
 			// This will only allow one thread to actually call this.
 			// It also has the added benefit of unassigning the exit handler when the application shuts down.
 			EventHandler exitHandler = Interlocked.Exchange(ref Exit, null);
@@ -604,12 +637,10 @@ namespace Gorgon.UI
 			{
 				exitHandler(sender, e);
 			}
-
-			Application.ApplicationExit -= Application_ApplicationExit;
 		}
 
 		/// <summary>
-		/// Function to clean up after an application exits.
+		/// Function to clean up events and other objects after an application exits.
 		/// </summary>
 		private static void CleanUp()
 		{
@@ -621,19 +652,14 @@ namespace Gorgon.UI
 			Application.ApplicationExit -= Application_ApplicationExit;
 			Application.ThreadExit -= Application_ThreadExit;
 
-			if (ApplicationIdleLoopMethod != null)
+			if (IdleMethod != null)
 			{
 				Application.Idle -= Application_Idle;
 				Log.Print("Application loop stopped.", LoggingLevel.Simple);
 			}
 
-			if (_trackedObjects != null)
-			{
-				_trackedObjects.Clear();
-			}
-
 			// Reset the low resolution timer period on application end.
-			if ((GorgonTiming.Timer != null) && (GorgonTiming.Timer is GorgonTimerMultimedia))
+			if ((_applicationTimer.IsValueCreated) && (_applicationTimer.Value is GorgonTimerMultimedia))
 			{
 				GorgonTimerMultimedia.EndTiming();
 			}
@@ -648,21 +674,42 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to a list of objects being tracked by a type value.
+		/// Function to add a message filter to intercept application messages.
 		/// </summary>
-		/// <typeparam name="T">Type to search for.</typeparam>
-		/// <returns>A list of objects that match the type.</returns>
-		public static IList<T> GetTrackedObjectsOfType<T>()
-			where T : IDisposable
+		/// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
+		/// <remarks>
+		/// <para>
+		/// This is a pass through for the <see cref="Application.AddMessageFilter"/> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Application.AddMessageFilter"/>
+		public static void AddMessageFilter(IMessageFilter filter)
 		{
-			return (from trackedObject in _trackedObjects
-				   where trackedObject is T
-				   select (T)trackedObject).ToArray();
+			Application.AddMessageFilter(filter);
 		}
 
 		/// <summary>
-		/// Function to quit the application.
+		/// Function to remove a message filter added with the <see cref="AddMessageFilter"/> method.
 		/// </summary>
+		/// <param name="filter">A <see cref="IMessageFilter"/> used to intercept an application message.</param>
+		/// <remarks>
+		/// <para>
+		/// This is a pass through for the <see cref="Application.RemoveMessageFilter"/> method.
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="Application.RemoveMessageFilter"/>
+		public static void RemoveMessageFilter(IMessageFilter filter)
+		{
+			Application.RemoveMessageFilter(filter);
+		}
+
+		/// <summary>
+		/// Function that will signal the application to begin shutdown.
+		/// </summary>
+		/// <remarks>
+		/// This will signal the application to tell it that it is time to shut down. This shut down will not happen immediately as the application needs to finish up whatever processing it is doing 
+		/// before exiting.
+		/// </remarks>
 		public static void Quit()
 		{
 			_quitSignalled = true;
@@ -675,14 +722,44 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to run a Gorgon application.
+		/// <inheritdoc cref="Run(System.Func{bool})"/>
 		/// </summary>
-		/// <param name="context">Application context to use.</param>
-		/// <param name="loop">[Optional] Idle loop method for the application.</param>
-		/// <remarks>This method requires an application context, but the <paramref name="loop"/> parameter is optional.</remarks>
+		/// <param name="context">The <see cref="System.Windows.Forms.ApplicationContext"/> to use for this application.</param>
+		/// <param name="idleMethod">[Optional] A method to execute while the application is idle.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(ApplicationContext context, Func<bool> loop = null)
+		/// <exception cref="System.InvalidOperationException"><inheritdoc cref="Run(System.Func{bool})"/></exception>
+		/// <remarks>
+		/// <para>
+		/// This method begins execution of the application by starting its messaging pump and processing application messages. 
+		/// </para>
+		/// <para>
+		/// This particular overload takes a <see cref="System.Windows.Forms.ApplicationContext"/> which allows for more fine grained control over the lifetime 
+		/// of the application.
+		/// </para>
+		/// <para>
+		/// The <paramref name="idleMethod"/> is called while the application is idle (i.e. not processing messages). User code may execute within this method 
+		/// to allow for processing while the application is not doing anything.
+		/// </para>
+		/// <para>
+		/// <note type="tip">
+		/// <para>
+		/// The <paramref name="idleMethod"/> takes a <see cref="Func{TResult}"/> that returns a <see cref="bool"/> value. When this value is <b>true</b>, the application will continue processing as normal, 
+		/// but when it returns <b>false</b>, the application will exit. 
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Only one thread may call this method at any given time. If this method is executed by a thread, and another attempts to execute it, an exception will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="System.Windows.Forms.ApplicationContext"/>
+		/// <seealso cref="IsRunning"/>
+		/// <seealso cref="IdleMethod"/>
+		public static void Run(ApplicationContext context, Func<bool> idleMethod = null)
 		{
 		    if (context == null)
 		    {
@@ -699,9 +776,9 @@ namespace Gorgon.UI
 				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
 			}
 
-		    if (loop != null)
+		    if (idleMethod != null)
 		    {
-		        ApplicationIdleLoopMethod = loop;
+		        IdleMethod = idleMethod;
 		    }
 
 			ApplicationContext = context;
@@ -730,14 +807,44 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to run a Gorgon application.
+		/// <inheritdoc cref="Run(System.Func{bool})"/>
 		/// </summary>
-		/// <param name="mainForm">Form to use as the main form for the application.</param>
-		/// <param name="loop">[Optional] Idle loop method for the application.</param>
-		/// <remarks>A form is required to use this method, but the <paramref name="loop"/> parameter is optional.</remarks>
+		/// <param name="mainForm">The main application <see cref="Form"/> to use for this application.</param>
+		/// <param name="idleMethod"><inheritdoc cref="Run(System.Windows.Forms.ApplicationContext,System.Func{bool})"/></param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(Form mainForm, Func<bool> loop = null)
+		/// <exception cref="System.InvalidOperationException"><inheritdoc cref="Run(System.Func{bool})"/></exception>
+		/// <remarks>
+		/// <para>
+		/// This method begins execution of the application by starting its messaging pump and processing application messages. 
+		/// </para>
+		/// <para>
+		/// This overload uses the <paramref name="mainForm"/> passed to it as the main application form. When this window closes, the application will shut down. 
+		/// </para>
+		/// <para>
+		/// The <paramref name="idleMethod"/> is called while the application is idle (i.e. not processing messages). User code may execute within this method to allow for processing while the application 
+		/// is not doing anything.
+		/// </para>
+		/// <para>
+		/// <note type="tip">
+		/// <para>
+		/// The <paramref name="idleMethod"/> takes a <see cref="Func{TResult}"/> that returns a <see cref="bool"/> value. When this value is <b>true</b>, the application will continue processing as normal, 
+		/// but when it returns <b>false</b>, the application will exit. 
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Only one thread may call this method at any given time. If this method is executed by a thread, and another attempts to execute it, an exception will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="System.Windows.Forms.ApplicationContext"/>
+		/// <seealso cref="IsRunning"/>
+		/// <seealso cref="IdleMethod"/>
+		/// <seealso cref="MainForm"/>
+		public static void Run(Form mainForm, Func<bool> idleMethod = null)
 		{
 			if (mainForm == null)
 			{
@@ -754,9 +861,9 @@ namespace Gorgon.UI
 				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
 			}
 
-			if (loop != null)
+			if (idleMethod != null)
 			{
-				ApplicationIdleLoopMethod = loop;
+				IdleMethod = idleMethod;
 			}
 
 			_mainForm = mainForm;
@@ -785,16 +892,41 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to run a Gorgon application.
+		/// Function to begin execution of a <see cref="GorgonApplication"/>.
 		/// </summary>
-		/// <param name="loop">Idle loop method for the application.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(Func<bool> loop)
+		/// <param name="idleMethod">A method to execute while the application is idle.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="idleMethod"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
+		/// <remarks>
+		/// <para>
+		/// This method begins execution of the application by starting its messaging pump and processing application messages. 
+		/// </para>
+		/// <para>
+		/// This overload only uses the <see cref="IdleMethod"/> for its execution. This is called when the application has no messages to process in its message pump. Because of this, there is no indication 
+		/// of whether the application is in the foreground or background as it is really always running in the background. When this method is chosen, the <see cref="IsForeground"/> property will always return 
+		/// <b>false</b>. Applications that use this should take care to balance the CPU usage of the <paramref name="idleMethod"/>. 
+		/// </para>
+		/// <para>
+		/// The <paramref name="idleMethod"/> takes a <see cref="Func{TResult}"/> that returns a <see cref="bool"/> value. When this value is <b>true</b>, the application will continue processing as normal, 
+		/// but when it returns <b>false</b>, the application will exit. 
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Only one thread may call this method at any given time. If this method is executed by a thread, and another attempts to execute it, an exception will be thrown.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		/// <seealso cref="IsForeground"/>
+		/// <seealso cref="System.Windows.Forms.ApplicationContext"/>
+		/// <seealso cref="IsRunning"/>
+		/// <seealso cref="IdleMethod"/>
+		public static void Run(Func<bool> idleMethod)
 		{
-			if (loop == null)
+			if (idleMethod == null)
 			{
-				throw new ArgumentNullException("loop");
+				throw new ArgumentNullException("idleMethod");
 			}
 
 			if (IsRunning)
@@ -807,7 +939,7 @@ namespace Gorgon.UI
 				throw new InvalidOperationException(Resources.GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD);
 			}
 
-			ApplicationIdleLoopMethod = loop;
+			IdleMethod = idleMethod;
 
 			try
 			{
@@ -830,98 +962,6 @@ namespace Gorgon.UI
 				CleanUp();
 				Interlocked.Decrement(ref _runAtomic);
 			}
-		}
-
-		/// <summary>
-		/// Function to add an object for tracking by the main Gorgon interface.
-		/// </summary>
-		/// <param name="trackedObject">Object to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
-		public static void AddTrackedObject(IDisposable trackedObject)
-		{
-		    if (trackedObject == null)
-		    {
-		        throw new ArgumentNullException("trackedObject");
-		    }
-
-		    _trackedObjects.Add(trackedObject);
-		}
-
-		/// <summary>
-		/// Function to remove a tracked object from the Gorgon interface.
-		/// </summary>
-		/// <param name="trackedObject">Object to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>This will -not- destroy the tracked object.</remarks>
-		public static void RemoveTrackedObject(IDisposable trackedObject)
-		{
-			if (trackedObject == null)
-			{
-				throw new ArgumentNullException("trackedObject");
-			}
-
-			_trackedObjects.Remove(trackedObject);
-		}
-
-		/// <summary>
-		/// Function to return the top level control that contains the child control.
-		/// </summary>
-		/// <param name="childControl">The child control that's nested within a container control.</param>
-		/// <returns>The container control that contains the control, or the control pointed at by <paramref name="childControl"/> if the control has no parent.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public static Control GetTopLevelControl(Control childControl)
-		{
-			if (childControl == null)
-			{
-				throw new ArgumentNullException("childControl");
-			}
-
-			Control parent = childControl;
-
-			while (parent.Parent != null)
-			{
-				parent = parent.Parent;
-			}
-
-			return parent;
-		}
-
-		/// <summary>
-		/// Function to return the top level form that contains the child control.
-		/// </summary>
-		/// <param name="childControl">The child control that's nested within a base windows form.</param>
-		/// <returns>The windows form that contains the control, or <b>null</b> (<i>Nothing</i> in VB.Net) if the control is not embedded on a form at some level.</returns>
-		/// <remarks>If the childControl is a form, then the method will return the childControl instance.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public static Form GetTopLevelForm(Control childControl)
-		{
-		    if (childControl == null)
-		    {
-		        throw new ArgumentNullException("childControl");
-		    }
-
-		    var result = childControl as Form;
-
-		    if (result != null)
-		    {
-		        return result;
-		    }
-
-		    Control parent = childControl.Parent;
-
-			while (parent != null)
-			{
-				result = parent as Form;
-				if (result != null)
-				{
-					break;
-				}
-
-				parent = parent.Parent;
-			}
-
-			return result;
 		}
 		#endregion
 

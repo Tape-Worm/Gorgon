@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Gorgon.Animation.Properties;
 using Gorgon.Collections;
 using Gorgon.IO;
@@ -541,9 +542,9 @@ namespace Gorgon.Animation
 			AnimatedObjectType = typeof(T);
 
 			AnimatedProperties = (from property in AnimatedObjectType.GetProperties()
-			                      let attribs = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), true) as IList<AnimatedPropertyAttribute>
-			                      where attribs != null && attribs.Count == 1
-			                      select new GorgonAnimatedProperty(property, attribs[0].DisplayName, attribs[0].DataType))
+			                      let attrib = property.GetCustomAttribute<AnimatedPropertyAttribute>(true)
+			                      where attrib != null
+			                      select new GorgonAnimatedProperty(property, attrib.DisplayName, attrib.DataType))
 				.ToDictionary(key => key.Property.Name, value => value);
 		}
 		#endregion

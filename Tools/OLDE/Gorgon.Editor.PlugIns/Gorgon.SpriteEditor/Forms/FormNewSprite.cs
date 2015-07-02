@@ -39,7 +39,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 	/// Interface used to create a new sprite.
 	/// </summary>
 	public partial class FormNewSprite 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Properties.
 		/// <summary>

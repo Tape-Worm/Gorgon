@@ -1126,7 +1126,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_CANNOT_COMPRESS);
 			}
 
-			string texConvPath = GorgonApplication.ApplicationDirectory + "texconv.exe";
+			string texConvPath = GorgonApplication.StartupPath + "texconv.exe";
 
 			// If we can't find our converter, then we're out of luck.
 			if (!File.Exists(texConvPath))
@@ -1256,7 +1256,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 				return null;
 			}
 
-			string texConvPath = GorgonApplication.ApplicationDirectory + "texconv.exe";
+			string texConvPath = GorgonApplication.StartupPath + "texconv.exe";
 
 			// If we can't find our converter, then we're out of luck.
 			if (!File.Exists(texConvPath))
@@ -1677,7 +1677,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentPanel OnInitialize()
         {
-	        CanChangeBCImages = File.Exists(GorgonApplication.ApplicationDirectory + "texconv.exe");
+	        CanChangeBCImages = File.Exists(GorgonApplication.StartupPath + "texconv.exe");
 
 	        _contentPanel = new GorgonImageContentPanel(this, GetRawInput());
 

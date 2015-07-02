@@ -112,7 +112,7 @@ namespace Gorgon.Examples
 			// If we have a numeric value, then use the resource section.
 			if (int.TryParse(icon, out iconIndexValue))
 			{
-				string directory = (GorgonApplication.ApplicationDirectory + "Images" + Path.DirectorySeparatorChar + category).FormatDirectory(Path.DirectorySeparatorChar);
+				string directory = (GorgonApplication.StartupPath + "Images" + Path.DirectorySeparatorChar + category).FormatDirectory(Path.DirectorySeparatorChar);
 				string fileName = "E" + icon + "_128x128.png".FormatFileName();
 				string filePath = directory + fileName;
 

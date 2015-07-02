@@ -34,7 +34,7 @@ namespace Gorgon.Editor
 	/// Custom extensions to the flat form.
 	/// </summary>
 	public class EditorTheme
-		: FlatFormTheme
+		: GorgonFlatFormTheme
 	{
 		#region Variables.
 		// The background color of the property panel.

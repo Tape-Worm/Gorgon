@@ -65,48 +65,30 @@ namespace Gorgon.UI
 			// 
 			// buttonOK
 			// 
-			this.buttonOK.AutoSize = true;
-			this.buttonOK.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			resources.ApplyResources(this.buttonOK, "buttonOK");
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Silver;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
-			this.buttonOK.Image = ((System.Drawing.Image)(resources.GetObject("buttonOK.Image")));
-			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(167, 92);
-			this.buttonOK.Margin = new System.Windows.Forms.Padding(4);
 			this.buttonOK.Name = "buttonOK";
-			this.buttonOK.Size = new System.Drawing.Size(55, 30);
-			this.buttonOK.TabIndex = 10;
-			this.buttonOK.Text = global::Gorgon.Core.Properties.Resources.GOR_TEXT_OK;
-			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.buttonOK.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			// 
 			// pictureDialog
 			// 
-			this.pictureDialog.Location = new System.Drawing.Point(2, 2);
+			resources.ApplyResources(this.pictureDialog, "pictureDialog");
 			this.pictureDialog.Name = "pictureDialog";
-			this.pictureDialog.Size = new System.Drawing.Size(48, 48);
-			this.pictureDialog.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-			this.pictureDialog.TabIndex = 11;
 			this.pictureDialog.TabStop = false;
 			// 
 			// BaseDialog
 			// 
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(245, 134);
+			resources.ApplyResources(this, "$this");
 			this.Controls.Add(this.pictureDialog);
 			this.Controls.Add(this.buttonOK);
-			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.KeyPreview = true;
-			this.Margin = new System.Windows.Forms.Padding(4);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.MinimumSize = new System.Drawing.Size(249, 158);
 			this.Name = "BaseDialog";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();

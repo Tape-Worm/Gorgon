@@ -45,7 +45,7 @@ namespace Gorgon.Editor
 		// Flag to indicate that the caption is visible.
 		private bool _captionVisible = true;
 		// The theme used by the parent for this control.
-		private FlatFormTheme _theme;
+		private GorgonFlatFormTheme _theme;
 		// Control used to receive rendering.
 		private Control _renderControl;
 		// The panel where content will be placed.
@@ -231,7 +231,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to apply theme settings to any child controls that may need it.
 		/// </summary>
-		protected virtual void ApplyTheme(FlatFormTheme theme)
+		protected virtual void ApplyTheme(GorgonFlatFormTheme theme)
 		{
 		}
 
@@ -316,7 +316,7 @@ namespace Gorgon.Editor
 		/// Property to set or return the current theme for the application.
 		/// </summary>
 		[Browsable(false)]
-		public FlatFormTheme CurrentTheme
+		public GorgonFlatFormTheme CurrentTheme
 		{
 			get
 			{

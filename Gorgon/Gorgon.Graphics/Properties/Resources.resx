@@ -120,9 +120,6 @@
   <data name="GORGFX_BUFFER_IMMUTABLE" xml:space="preserve">
     <value>This buffer is immutable and this cannot be updated.</value>
   </data>
-  <data name="GORGFX_COLOR_TOSTR" xml:space="preserve">
-    <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}</value>
-  </data>
   <data name="GORGFX_FEATURE_LEVEL_UNKNOWN" xml:space="preserve">
     <value>Must supply a known feature level.</value>
   </data>

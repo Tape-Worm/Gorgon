@@ -44,8 +44,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example002", "..\Examples\G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example003", "..\Examples\Gorgon.Core\Example003\Example003.csproj", "{CD211613-DE0D-4D09-9D3E-60ACFA893791}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon.Animation\Gorgon.Animation.csproj", "{7EE86743-18E9-4667-9BCB-989D5C926922}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "..\Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Core", "Gorgon.Core", "{9A8C2588-028B-42F6-92B4-EA4AF2B8489B}"
@@ -206,10 +204,6 @@ Global
 		{CD211613-DE0D-4D09-9D3E-60ACFA893791}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD211613-DE0D-4D09-9D3E-60ACFA893791}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD211613-DE0D-4D09-9D3E-60ACFA893791}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EE86743-18E9-4667-9BCB-989D5C926922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EE86743-18E9-4667-9BCB-989D5C926922}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EE86743-18E9-4667-9BCB-989D5C926922}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EE86743-18E9-4667-9BCB-989D5C926922}.Release|Any CPU.Build.0 = Release|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.ActiveCfg = Release|Any CPU

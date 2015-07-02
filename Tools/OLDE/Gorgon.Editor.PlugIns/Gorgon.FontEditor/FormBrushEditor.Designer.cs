@@ -288,7 +288,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.Border = true;
+			this.ShowBorder = true;
 			this.BorderColor = System.Drawing.Color.SteelBlue;
 			this.CancelButton = this.buttonCancel;
 			this.ClientSize = new System.Drawing.Size(612, 439);

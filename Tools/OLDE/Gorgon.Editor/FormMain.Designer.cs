@@ -803,7 +803,7 @@ namespace Gorgon.Editor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Border = true;
+			this.ShowBorder = true;
 			this.ClientSize = new System.Drawing.Size(1092, 769);
 			this.Controls.Add(this.panelEditor);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.UI;
+using SharpDX;
 using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -95,11 +95,11 @@ namespace Gorgon.Graphics
         {
             if (deferred != null)
             {
-                deferred.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
+				deferred.Context.ClearRenderTargetView(D3DView, new Color4(color.Red, color.Green, color.Blue, color.Alpha));
                 return;
             }
 
-		    Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
+			Resource.Graphics.Context.ClearRenderTargetView(D3DView, new Color4(color.Red, color.Green, color.Blue, color.Alpha));
         }
 
         /// <summary>

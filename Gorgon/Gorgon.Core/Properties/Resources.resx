@@ -633,24 +633,6 @@ Code: 0x{2}</value>
     <value>Cannot read types from the assembly '{0}'
 {1}</value>
   </data>
-  <data name="GOR_TEXT_CAPTION_CONFIRM" xml:space="preserve">
-    <value>Confirmation</value>
-  </data>
-  <data name="GOR_TEXT_CAPTION_ERROR" xml:space="preserve">
-    <value>Error</value>
-  </data>
-  <data name="GOR_TEXT_CAPTION_INFO" xml:space="preserve">
-    <value>Information</value>
-  </data>
-  <data name="GOR_TEXT_CAPTION_WARNING" xml:space="preserve">
-    <value>Warning</value>
-  </data>
-  <data name="GOR_TEXT_CANCEL" xml:space="preserve">
-    <value>&amp;Cancel</value>
-  </data>
-  <data name="GOR_TEXT_DETAILS" xml:space="preserve">
-    <value>&amp;Details</value>
-  </data>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
   </data>
@@ -678,17 +660,8 @@ Code: 0x{2}</value>
   <data name="GOR_EXCEPT_TARGET_SITE" xml:space="preserve">
     <value>Target Site</value>
   </data>
-  <data name="GOR_TEXT_NO" xml:space="preserve">
-    <value>&amp;No</value>
-  </data>
-  <data name="GOR_TEXT_OK" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
   <data name="GOR_TEXT_TO_ALL" xml:space="preserve">
     <value>&amp;Apply selection to all items?</value>
-  </data>
-  <data name="GOR_TEXT_YES" xml:space="preserve">
-    <value>&amp;Yes</value>
   </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
@@ -699,12 +672,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_TIME_CANNOT_END" xml:space="preserve">
     <value>Cannot end the timer period.</value>
   </data>
-  <data name="GOR_TEXT_FLATFORM_CLOSE" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_CLOSE_TIP" xml:space="preserve">
-    <value>Close the window</value>
-  </data>
   <data name="GOR_TEXT_FLATFORM_MAXIMIZE" xml:space="preserve">
     <value>Ma&amp;ximize</value>
   </data>
@@ -714,23 +681,11 @@ Code: 0x{2}</value>
   <data name="GOR_TEXT_FLATFORM_MAX_ICON" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="GOR_TEXT_FLATFORM_MINIMIZE" xml:space="preserve">
-    <value>Mi&amp;nimize</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_MINIMIZE_TIP" xml:space="preserve">
-    <value>Minimize the window</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_MOVE" xml:space="preserve">
-    <value>&amp;Move</value>
-  </data>
   <data name="GOR_TEXT_FLATFORM_RESTORE" xml:space="preserve">
     <value>&amp;Restore</value>
   </data>
   <data name="GOR_TEXT_FLATFORM_RESTORE_ICON" xml:space="preserve">
     <value>1</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_SIZE" xml:space="preserve">
-    <value>&amp;Size</value>
   </data>
   <data name="GOR_ERR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
     <value>Version type string could not be converted to a version type.</value>
@@ -801,7 +756,7 @@ Code: 0x{2}</value>
   <data name="PROP_THEME_WINICONHILIGHT_DESC" xml:space="preserve">
     <value>Sets the color to use when a window icon (Minimize, Maximize and Restore) is high lighted.</value>
   </data>
-  <data name="GOR_FLAT_THEME_TEXT" xml:space="preserve">
+  <data name="GOR_TEXT_FLAT_THEME" xml:space="preserve">
     <value>(Theme)</value>
   </data>
   <data name="PROP_THEME_FORECOLOR_DESC" xml:space="preserve">
@@ -1019,5 +974,14 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_APPLICATION_RUN_ONLY_FROM_ONE_THREAD" xml:space="preserve">
     <value>The application can only start from a single thread.</value>
+  </data>
+  <data name="GOR_TOSTR_GORGONCOLOR" xml:space="preserve">
+    <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}</value>
+  </data>
+  <data name="GOR_EXCEPT_STACK_TRACE" xml:space="preserve">
+    <value>Stack trace</value>
+  </data>
+  <data name="GOR_TEXT_FLATFORM_RESTORE_TIP" xml:space="preserve">
+    <value>Restore the window to the original dimensions</value>
   </data>
 </root>

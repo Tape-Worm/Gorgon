@@ -26,7 +26,6 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace Gorgon.UI
@@ -38,7 +37,8 @@ namespace Gorgon.UI
 		: BaseDialog
 	{		
 		#region Variables.
-		private bool _showCancel;								// Don't show the cancel button.
+		// Don't show the cancel button.
+		private bool _showCancel;								
 		#endregion
 
 		#region Properties.
@@ -134,7 +134,7 @@ namespace Gorgon.UI
 		/// Function to perform the actual drawing of the dialog.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-		protected override void DrawDialog(Graphics g)
+		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
 		    // Get size.
 			float maxTextHeight = AdjustSize(g,0);

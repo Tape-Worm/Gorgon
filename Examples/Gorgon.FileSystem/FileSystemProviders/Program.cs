@@ -50,7 +50,7 @@ namespace Gorgon.Examples
 	/// that was mounted as the root of the VFS.  This allows for a certain level of security to keep users from writing or reading
 	/// areas outside of the intended directory structure.  
 	/// 
-	/// Gorgon's VFS is modeled after the PhysFS project (http://icculus.org/physfs/).
+	/// Gorgon's VFS is modelled after the PhysFS project (http://icculus.org/physfs/).
 	/// 
 	/// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
 	/// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the

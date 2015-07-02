@@ -41,7 +41,7 @@ namespace Gorgon.Editor
 	/// Primary application window.
 	/// </summary>
 	sealed partial class FormMain 
-		: FlatForm, IMainFormView
+		: GorgonFlatForm, IMainFormView
 	{
 		#region Variables.
 		// The log file for the application.

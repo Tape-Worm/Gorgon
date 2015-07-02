@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using DrawingGraphics = System.Drawing.Graphics;
 using System.Windows.Forms;
 
 namespace Gorgon.Examples
@@ -38,13 +39,20 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
-        private bool _disposed;                                 // Flag to indicate that the object was disposed.
-        private BufferedGraphicsContext _graphicsContext;		// Buffered graphics context.
-        private BufferedGraphics _buffer;						// Buffered graphics page.
-        private Image _mouseImage;								// Image to use for double buffering our mouse.
-        private Graphics _imageGraphics;						// Graphics interface for the mouse double buffer image.
-        private Graphics _graphics;								// GDI+ graphics interface.
-        private Color _clearColor = Color.White;                // Color to clear the surface with.
+		// Flag to indicate that the object was disposed.
+        private bool _disposed;
+		// Buffered graphics context.
+        private BufferedGraphicsContext _graphicsContext;
+		// Buffered graphics page.
+        private BufferedGraphics _buffer;
+		// Image to use for double buffering our mouse.
+        private Image _mouseImage;
+		// Graphics interface for the mouse double buffer image.
+        private DrawingGraphics _imageGraphics;
+		// GDI+ graphics interface.
+        private DrawingGraphics _graphics;
+		// Color to clear the surface with.
+	    private readonly Color _clearColor; 
         #endregion
 
 		#region Properties.
@@ -103,10 +111,10 @@ namespace Gorgon.Examples
         /// <param name="displayControl">The control that will be used as the display.</param>
         private void CreateDoubleBufferSurface(Control displayControl)
         {
-            _graphics = Graphics.FromHwnd(displayControl.Handle);
+            _graphics = DrawingGraphics.FromHwnd(displayControl.Handle);
 
             _mouseImage = new Bitmap(displayControl.ClientSize.Width, displayControl.ClientSize.Height, PixelFormat.Format32bppArgb);
-            _imageGraphics = Graphics.FromImage(_mouseImage);
+            _imageGraphics = DrawingGraphics.FromImage(_mouseImage);
 
             _graphicsContext = BufferedGraphicsManager.Current;
             _buffer = _graphicsContext.Allocate(_imageGraphics, new Rectangle(0, 0, _mouseImage.Width, _mouseImage.Height));

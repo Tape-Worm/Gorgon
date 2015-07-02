@@ -65,8 +65,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Types\GorgonTrackTexture2D.cs" />
-    <Compile Include="Types\GorgonKeyTexture2D.cs" />
     <Compile Include="Types\GorgonKeyByte.cs" />
     <Compile Include="Types\GorgonKeyGorgonColor.cs" />
     <Compile Include="Types\GorgonKeyInt16.cs" />
@@ -101,10 +99,6 @@
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Gorgon.Graphics\Gorgon.Graphics.csproj">
-      <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
-      <Name>Gorgon.Graphics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

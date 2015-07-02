@@ -842,20 +842,20 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stack trace.
+        /// </summary>
+        internal static string GOR_EXCEPT_STACK_TRACE {
+            get {
+                return ResourceManager.GetString("GOR_EXCEPT_STACK_TRACE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Target Site.
         /// </summary>
         internal static string GOR_EXCEPT_TARGET_SITE {
             get {
                 return ResourceManager.GetString("GOR_EXCEPT_TARGET_SITE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (Theme).
-        /// </summary>
-        internal static string GOR_FLAT_THEME_TEXT {
-            get {
-                return ResourceManager.GetString("GOR_FLAT_THEME_TEXT", resourceCulture);
             }
         }
         
@@ -869,74 +869,11 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Cancel.
+        ///   Looks up a localized string similar to (Theme).
         /// </summary>
-        internal static string GOR_TEXT_CANCEL {
+        internal static string GOR_TEXT_FLAT_THEME {
             get {
-                return ResourceManager.GetString("GOR_TEXT_CANCEL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Confirmation.
-        /// </summary>
-        internal static string GOR_TEXT_CAPTION_CONFIRM {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_CAPTION_CONFIRM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        internal static string GOR_TEXT_CAPTION_ERROR {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_CAPTION_ERROR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Information.
-        /// </summary>
-        internal static string GOR_TEXT_CAPTION_INFO {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_CAPTION_INFO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warning.
-        /// </summary>
-        internal static string GOR_TEXT_CAPTION_WARNING {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_CAPTION_WARNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Details.
-        /// </summary>
-        internal static string GOR_TEXT_DETAILS {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_DETAILS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Close.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_CLOSE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_CLOSE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Close the window.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_CLOSE_TIP {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_CLOSE_TIP", resourceCulture);
+                return ResourceManager.GetString("GOR_TEXT_FLAT_THEME", resourceCulture);
             }
         }
         
@@ -968,33 +905,6 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mi&amp;nimize.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_MINIMIZE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_MINIMIZE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Minimize the window.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_MINIMIZE_TIP {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_MINIMIZE_TIP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Move.
-        /// </summary>
-        internal static string GOR_TEXT_FLATFORM_MOVE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_MOVE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to &amp;Restore.
         /// </summary>
         internal static string GOR_TEXT_FLATFORM_RESTORE {
@@ -1013,11 +923,11 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Size.
+        ///   Looks up a localized string similar to Restore the window to the original dimensions.
         /// </summary>
-        internal static string GOR_TEXT_FLATFORM_SIZE {
+        internal static string GOR_TEXT_FLATFORM_RESTORE_TIP {
             get {
-                return ResourceManager.GetString("GOR_TEXT_FLATFORM_SIZE", resourceCulture);
+                return ResourceManager.GetString("GOR_TEXT_FLATFORM_RESTORE_TIP", resourceCulture);
             }
         }
         
@@ -1027,24 +937,6 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_TEXT_LOAD_THEME {
             get {
                 return ResourceManager.GetString("GOR_TEXT_LOAD_THEME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;No.
-        /// </summary>
-        internal static string GOR_TEXT_NO {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_NO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;OK.
-        /// </summary>
-        internal static string GOR_TEXT_OK {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_OK", resourceCulture);
             }
         }
         
@@ -1076,20 +968,20 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Yes.
-        /// </summary>
-        internal static string GOR_TEXT_YES {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_YES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0} (*.{1}).
         /// </summary>
         internal static string GOR_TOSTR_FILE_EXTENSION {
             get {
                 return ResourceManager.GetString("GOR_TOSTR_FILE_EXTENSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}.
+        /// </summary>
+        internal static string GOR_TOSTR_GORGONCOLOR {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_GORGONCOLOR", resourceCulture);
             }
         }
         

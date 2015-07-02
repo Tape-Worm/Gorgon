@@ -42,7 +42,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
     /// An editor that will create a brush for a font.
     /// </summary>
     partial class FormBrushEditor 
-        : FlatForm
+        : GorgonFlatForm
 	{
 		#region Classes.
 		/// <summary>
@@ -366,7 +366,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 				}
 				else
 				{
-					GorgonApplication.ApplicationIdleLoopMethod = null;
+					GorgonApplication.IdleMethod = null;
 				}
 			}
 			catch (Exception ex)
@@ -391,7 +391,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			panelTextureEditor.SetupRenderer(null);
 
 			Gorgon.AllowBackground = false;
-			GorgonApplication.ApplicationIdleLoopMethod = _previousIdle;
+			GorgonApplication.IdleMethod = _previousIdle;
 
 			// Remember our previous selection for the primary color attribute.
 			_primaryAttr = colorSolidBrush.PrimaryAttribute;
@@ -496,8 +496,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			: this()
 	    {
 		    _currentContent = fontContent;
-			_previousIdle = GorgonApplication.ApplicationIdleLoopMethod;
-			GorgonApplication.ApplicationIdleLoopMethod = null;
+			_previousIdle = GorgonApplication.IdleMethod;
+			GorgonApplication.IdleMethod = null;
 		    Gorgon.AllowBackground = true;		// Enable background rendering because the application will appear to have lost focus when this dialog is present.
 			SolidBrush = new GorgonGlyphSolidBrush();
 	        GradientBrush = new GorgonGlyphLinearGradientBrush

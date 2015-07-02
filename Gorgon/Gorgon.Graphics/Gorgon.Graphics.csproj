@@ -62,6 +62,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs">
       <SubType>Code</SubType>
@@ -108,7 +109,6 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonBox.cs" />
     <Compile Include="GorgonBufferFormats.cs" />
-    <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="IO\GorgonCodecPlugIn.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />

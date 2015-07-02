@@ -26,7 +26,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq;
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics;

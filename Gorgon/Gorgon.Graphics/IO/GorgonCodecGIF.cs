@@ -166,7 +166,7 @@ namespace Gorgon.IO
 
 		#region Methods.
 		/// <summary>
-		/// Function to add custom metadata to the frame.
+		/// Function to add custom meta data to the frame.
 		/// </summary>
 		/// <param name="encoder">Encoder being used to encode the image.</param>
 		/// <param name="frame">Frame to encode.</param>
@@ -283,7 +283,9 @@ namespace Gorgon.IO
 
 			for (int i = 0; i < size; i++)
 			{
-				paletteColors[i] = Palette[i].SharpDXColor4;
+				GorgonColor color = Palette[i];
+
+				paletteColors[i] = new DX.Color4(color.Red, color.Green, color.Blue, color.Alpha);
 			}
 
 			palette = new Palette(wic.Factory);

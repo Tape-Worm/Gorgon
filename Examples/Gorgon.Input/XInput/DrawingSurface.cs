@@ -30,6 +30,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Timing;
+using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.Examples
 {
@@ -40,20 +41,34 @@ namespace Gorgon.Examples
 		: IDisposable
 	{
 		#region Variables.
-		private Control _control;						// Control we're drawing on.
-		private bool _disposed;							// Flag to indicate that the object was disposed.
-		private Graphics _controlGraphics;				// Graphics interface for the control.
-		private Graphics _surfaceGraphics;				// Graphics interface for the surface.
-		private Image _sufaceBuffer;					// Buffer for the surface.
-		private Image _drawing;							// Image that will contain the drawing.
-		private Graphics _imageGraphics;				// Graphics interface for the drawing image.
-		private BufferedGraphicsContext _context;		// Buffered context.
-		private BufferedGraphics _buffer;				// Buffered graphics.
-		private float _cursorFlash = 256.0f;			// Cursor flash direction.
-		private float _cursorTint;						// Cursor tinting.
-		private Image _cursor;							// Cursor image.
-		private ColorMatrix _colorMatrix;				// Color matrix.
-		private ImageAttributes _cursorAttribs;			// Cursor image attributes.
+		// Control we're drawing on.
+		private readonly Control _control;
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;
+		// Graphics interface for the control.
+		private DrawingGraphics _controlGraphics;
+		// Graphics interface for the surface.
+		private DrawingGraphics _surfaceGraphics;
+		// Buffer for the surface.
+		private Image _surfaceBuffer;
+		// Image that will contain the drawing.
+		private Image _drawing;
+		// Graphics interface for the drawing image.
+		private DrawingGraphics _imageGraphics;
+		// Buffered context.
+		private BufferedGraphicsContext _context;
+		// Buffered graphics.
+		private BufferedGraphics _buffer;
+		// Cursor flash direction.
+		private float _cursorFlash = 256.0f;
+		// Cursor tinting.
+		private float _cursorTint;
+		// Cursor image.
+		private readonly Image _cursor;
+		// Color matrix.
+		private readonly ColorMatrix _colorMatrix;
+		// Cursor image attributes.
+		private ImageAttributes _cursorAttribs;			
 		#endregion
 
 		#region Properties.
@@ -91,7 +106,7 @@ namespace Gorgon.Examples
 
 			// Copy the old image into the new buffer.
 			tempImage = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, _drawing.PixelFormat);
-			_imageGraphics = Graphics.FromImage(tempImage);
+			_imageGraphics = DrawingGraphics.FromImage(tempImage);
 			if (_drawing != null)
 			{								
 				_imageGraphics.DrawImage(_drawing, Point.Empty);
@@ -133,10 +148,10 @@ namespace Gorgon.Examples
 				_controlGraphics = null;
 			}
 
-			if (_sufaceBuffer != null)
+			if (_surfaceBuffer != null)
 			{
-				_sufaceBuffer.Dispose();
-				_sufaceBuffer = null;
+				_surfaceBuffer.Dispose();
+				_surfaceBuffer = null;
 			}
 
 			if (!clearDrawing)
@@ -167,9 +182,9 @@ namespace Gorgon.Examples
 		{
 			CleanUp(clearDrawing);
 
-			_sufaceBuffer = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, PixelFormat.Format32bppArgb);
-			_controlGraphics = Graphics.FromHwnd(_control.Handle);
-			_surfaceGraphics = Graphics.FromImage(_sufaceBuffer);
+			_surfaceBuffer = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, PixelFormat.Format32bppArgb);
+			_controlGraphics = DrawingGraphics.FromHwnd(_control.Handle);
+			_surfaceGraphics = DrawingGraphics.FromImage(_surfaceBuffer);
 			
 			_context = BufferedGraphicsManager.Current;
 			_buffer = _context.Allocate(_surfaceGraphics, _control.ClientRectangle);
@@ -180,7 +195,7 @@ namespace Gorgon.Examples
 			}
 
 			_drawing = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, PixelFormat.Format32bppArgb);
-			_imageGraphics = Graphics.FromImage(_drawing);
+			_imageGraphics = DrawingGraphics.FromImage(_drawing);
 		}
 
 		/// <summary>

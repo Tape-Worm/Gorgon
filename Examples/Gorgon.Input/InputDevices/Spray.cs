@@ -27,19 +27,22 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using DrawingGraphics = System.Drawing.Graphics;
 using Gorgon.Core;
 
 namespace Gorgon.Examples
 {
     /// <summary>
-    /// This object is resposible for drawing the spray effect on the display surface.
+    /// This object is responsible for drawing the spray effect on the display surface.
     /// </summary>
     class Spray
         : IDisposable
     {
         #region Variables.
-        private bool _disposed;                 // Flag to indicate that the object was disposed.
-        private Graphics _graphics;             // Graphics interface.
+		// Flag to indicate that the object was disposed.
+        private bool _disposed;                 
+		// Graphics interface.
+        private DrawingGraphics _graphics;             
         #endregion
 
         #region Properties.
@@ -66,7 +69,7 @@ namespace Gorgon.Examples
             }
             
             var newBuffer = new Bitmap(newSize.Width, newSize.Height, PixelFormat.Format32bppArgb);
-            _graphics = Graphics.FromImage(newBuffer);
+            _graphics = DrawingGraphics.FromImage(newBuffer);
 
             if (Surface != null)
             {
@@ -107,7 +110,7 @@ namespace Gorgon.Examples
         public Spray(Size size)
         {
             Surface = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
-            _graphics = Graphics.FromImage(Surface);
+            _graphics = DrawingGraphics.FromImage(Surface);
         }
         #endregion
 

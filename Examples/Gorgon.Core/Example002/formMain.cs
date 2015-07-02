@@ -30,6 +30,7 @@ using System.Drawing.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.UI;
+using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.Examples
 {
@@ -39,9 +40,12 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private Graphics _formGraphics;		// GDI+ form graphics interface.
-		private Graphics _graphics;			// GDI+ graphics interface.
-		private Bitmap _bitmap;				// Image for our form.
+		// GDI+ form graphics interface.
+		private DrawingGraphics _formGraphics;
+		// GDI+ graphics interface.
+		private DrawingGraphics _graphics;
+		// Image for our form.
+		private Bitmap _bitmap;				
 		#endregion
 
 		#region Properties.
@@ -70,7 +74,7 @@ namespace Gorgon.Examples
 			{
 				_formGraphics = panelGraphics.CreateGraphics();
 				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
-				_graphics = Graphics.FromImage(_bitmap);
+				_graphics = DrawingGraphics.FromImage(_bitmap);
 				_graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 				_graphics.Clear(Color.Black);				
 			}
@@ -103,7 +107,7 @@ namespace Gorgon.Examples
 
 				_formGraphics = panelGraphics.CreateGraphics();
 				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
-				_graphics = Graphics.FromImage(_bitmap);
+				_graphics = DrawingGraphics.FromImage(_bitmap);
 				_graphics.Clear(Color.Black);
 			}
 			catch (Exception ex)

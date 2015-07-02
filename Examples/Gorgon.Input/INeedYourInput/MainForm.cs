@@ -449,7 +449,7 @@ namespace Gorgon.Examples
 					                                                     monitor.Bounds.Top + (monitor.WorkingArea.Height / 2) - args.Height / 2);
 					                                Cursor.Position = PointToScreen(Point.Round(_mouse.Position));
 				                                };
-				GorgonApplication.ApplicationIdleLoopMethod = Gorgon_Idle;
+				GorgonApplication.IdleMethod = Gorgon_Idle;
 			}
 			catch (Exception ex)
 			{

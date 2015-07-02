@@ -33,7 +33,7 @@ namespace Gorgon.Editor
     /// A dialog for selecting a color.
     /// </summary>
     public partial class ColorDialog 
-        : FlatForm
+        : GorgonFlatForm
     {
         #region Variables.
 

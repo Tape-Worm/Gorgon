@@ -35,7 +35,7 @@ namespace Gorgon.Editor
 	/// A dialog to handle picking an alpha value for a color.
 	/// </summary>
 	public partial class AlphaChannelDialog
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Properties.
 		/// <summary>

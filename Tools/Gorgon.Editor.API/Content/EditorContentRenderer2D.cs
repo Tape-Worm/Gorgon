@@ -229,7 +229,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		public void StopRendering()
 		{
-			GorgonApplication.ApplicationIdleLoopMethod = null;
+			GorgonApplication.IdleMethod = null;
 		}
 
 		/// <summary>
@@ -237,7 +237,7 @@ namespace Gorgon.Editor
 		/// </summary>
 		public void StartRendering()
 		{
-			GorgonApplication.ApplicationIdleLoopMethod = () =>
+			GorgonApplication.IdleMethod = () =>
 			                                   {
 												   // Reset the render target.
 				                                   Renderer.Target = SwapChain;

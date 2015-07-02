@@ -541,8 +541,6 @@ namespace Gorgon.Input
 			{
 				if (disposing)
 				{
-					GorgonApplication.RemoveTrackedObject(this);
-
 					// Destroy any outstanding device instances.
 					DestroyDevices();
 				}

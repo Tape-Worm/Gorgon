@@ -57,7 +57,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to set or return the current theme for the application.
 		/// </summary>
-		FlatFormTheme CurrentTheme
+		GorgonFlatFormTheme CurrentTheme
 		{
 			get;
 			set;

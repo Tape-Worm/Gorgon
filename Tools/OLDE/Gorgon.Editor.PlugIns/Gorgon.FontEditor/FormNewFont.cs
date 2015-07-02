@@ -39,7 +39,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	/// Font creation form.
 	/// </summary>
 	partial class FormNewFont 
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Variables.
 		private Font _font;						// Font used for preview.

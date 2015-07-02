@@ -235,7 +235,7 @@ namespace Gorgon.Examples
 				_sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
 			};
 
-			GorgonApplication.ApplicationIdleLoopMethod = Idle;
+			GorgonApplication.IdleMethod = Idle;
 		}
 
 		/// <summary>

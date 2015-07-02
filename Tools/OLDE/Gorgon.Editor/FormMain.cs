@@ -47,7 +47,7 @@ namespace Gorgon.Editor
 	/// Main application object.
 	/// </summary>
 	partial class FormMain
-		: FlatForm
+		: GorgonFlatForm
 	{
 		#region Value Types.
 		// ReSharper disable FieldCanBeMadeReadOnly.Local

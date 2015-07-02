@@ -294,7 +294,7 @@ namespace Gorgon.Editor
 
 			if (contentObject.HasRenderer)
 			{
-				GorgonApplication.ApplicationIdleLoopMethod = IdleLoop;
+				GorgonApplication.IdleMethod = IdleLoop;
 			}
 	    }
 
@@ -501,7 +501,7 @@ namespace Gorgon.Editor
 			Current = null;
 
 			// Turn off any idle time activity during the load.
-			GorgonApplication.ApplicationIdleLoopMethod = null;
+			GorgonApplication.IdleMethod = null;
 
 			if (ContentPanelUnloadAction != null)
 			{

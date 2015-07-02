@@ -37,13 +37,13 @@ namespace Gorgon.Timing
 	/// and peaks, lows and averages for those values.
 	/// </para>
 	/// <para>
-	/// This object will automatically gather data if your application has an <see cref="GorgonApplication.ApplicationIdleLoopMethod"/> assigned.  Otherwise, if a custom idle time polling method is 
+	/// This object will automatically gather data if your application has an <see cref="GorgonApplication.IdleMethod"/> assigned.  Otherwise, if a custom idle time polling method is 
 	/// used, then the user should call assign a timer to the <see cref="Timer"/> property, then call <see cref="Reset"/> before starting the application loop. Once the loop is running, the loop should 
 	/// <see cref="Update"/> at the beginning of the idle loop.
 	/// </para>
 	/// </remarks>
 	/// <example>
-	/// The application loop usage with the <see cref="GorgonApplication.ApplicationIdleLoopMethod"/> assigned by one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods:
+	/// The application loop usage with the <see cref="GorgonApplication.IdleMethod"/> assigned by one of the <see cref="O:Gorgon.UI.GorgonApplication.Run"/> methods:
 	/// <code>
 	///	public static bool MyLoop()
 	/// {

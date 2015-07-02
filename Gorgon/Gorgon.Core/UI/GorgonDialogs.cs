@@ -34,8 +34,11 @@ using Gorgon.Core.Properties;
 namespace Gorgon.UI
 {
 	/// <summary>
-	/// Enumeration for confirmation results.
+	/// Confirmation dialog result values.
 	/// </summary>
+	/// <remarks>
+	/// The <c>Yes</c> and <c>No</c> fields can be OR'd with the <c>ToAll</c> field to indicate "Yes to all", or "No to all".
+	/// </remarks>
 	[Flags]
 	public enum ConfirmationResult
 	{
@@ -62,7 +65,7 @@ namespace Gorgon.UI
 	}
 
 	/// <summary>
-	/// Static class representing various User Interface utilities.
+	/// Class used to display various dialog types with enhanced abilities over that of the standard <see cref="MessageBox"/> class.
 	/// </summary>
 	public static class GorgonDialogs
 	{
@@ -76,12 +79,14 @@ namespace Gorgon.UI
 		{
 			var result = new StringBuilder(8192);
 
-		    if (string.IsNullOrEmpty(stackTrace))
+			if (string.IsNullOrEmpty(stackTrace))
+			{
 				return string.Empty;
+			}
 
 			string[] lines = stackTrace.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
-			result.Append("\nStack trace:\n");
+			result.AppendFormat("\n{0}\n", Resources.GOR_EXCEPT_STACK_TRACE);
 
 			for (int i = lines.Length - 1; i >= 0; i--)
 			{
@@ -196,64 +201,86 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to display the enhanced error dialog.
+		/// <inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/>
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Supplementary error message.</param>
-		/// <param name="caption">Caption for the error box.</param>
-		/// <param name="innerException">Exception that was thrown.</param>
-		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane, <b>false</b> to leave it closed.</param>
-		public static void ErrorBox(Form owner, string message, string caption, Exception innerException, bool autoShowDetails = false)
+		/// <param name="owner"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <param name="message"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <param name="caption">The caption for the error box.</param>
+		/// <param name="exception">The exception that was thrown.</param>
+		/// <param name="autoShowDetails"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <remarks>
+		/// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
+		/// <para>
+		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears.
+		/// </para>
+		/// <para>
+		/// If the <paramref name="message"/> parameter is <b>null</b> (<i>Nothing in VB.Net</i>) or an empty string, then the <see cref="Exception.Message"/> property is used to display the error message.
+		/// </para>
+		/// </remarks>
+		public static void ErrorBox(Form owner, string message, string caption, Exception exception, bool autoShowDetails = false)
 		{
-			if (string.IsNullOrWhiteSpace(message))
+			if (string.IsNullOrEmpty(message))
 			{
-				message = innerException != null ? innerException.Message : Resources.GOR_EXCEPT_NO_MSG;
+				message = exception != null ? exception.Message : Resources.GOR_EXCEPT_NO_MSG;
 			}
 
-			ErrorBox(owner, message, caption, GetDetailsFromException(innerException), autoShowDetails);
+			ErrorBox(owner, message, caption, GetDetailsFromException(exception), autoShowDetails);
 		}
 
 		/// <summary>
-		/// Function to display the enhanced error dialog.
+		/// <inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/>
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="innerException">Exception that was thrown.</param>
-		public static void ErrorBox(Form owner, Exception innerException)
+		/// <param name="owner"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <param name="exception"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,System.Exception,bool)"/></param>
+		/// <remarks>
+		/// <para>
+		/// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
+		/// </para>
+		/// </remarks>
+		public static void ErrorBox(Form owner, Exception exception)
 		{
-			ErrorBox(owner, null, null, innerException);
+			ErrorBox(owner, null, null, exception);
 		}
 
 		/// <summary>
 		/// Function to display the enhanced error dialog.
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="description">Error description.</param>
-		/// <param name="caption">[Optional] Caption for the error box.</param>
-		/// <param name="details">[Optional] Details for the error.</param>
-		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
-		public static void ErrorBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="message">The error message to display.</param>
+		/// <param name="caption">[Optional] The caption for the error box.</param>
+		/// <param name="details">[Optional] The detailed information about the error.</param>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane when the window is made visible, <b>false</b> to leave it closed.</param>
+		/// <remarks>
+		/// <para>
+		/// This will display an enhanced error dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
+		/// are <b>null</b> (<i>Nothing</i> in VB.Net), or empty, then the details button will not show.
+		/// </para>
+		/// <para>
+		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 
+		/// has information passed to it.
+		/// </para>
+		/// </remarks>
+		public static void ErrorBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
 		{
 			ErrorDialog errorDialog = null;
 
 			try
 			{
-				if (string.IsNullOrEmpty(caption))
-				{
-					caption = Resources.GOR_TEXT_CAPTION_ERROR;
-				}
-
 				errorDialog = new ErrorDialog
 				              {
-					              Message = description,
+					              Message = message,
 					              ErrorDetails = details,
-					              Text = caption,
 								  ShowDetailPanel = (autoShowDetails) && (!string.IsNullOrEmpty(details))
 				              };
 
+				if (!string.IsNullOrEmpty(caption))
+				{
+					errorDialog.Text = caption;
+				}
+
 				errorDialog.ShowDialog(owner);
 
-				// If the owner form is <b>null</b> or not available, center on screen.
+				// If the owner form is null or not available, center on screen.
 				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 				{
 					errorDialog.StartPosition = FormStartPosition.CenterScreen;
@@ -269,19 +296,17 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Function to display an information box.
+		/// Function to display the enhanced information dialog.
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">[Optional] Caption for the dialog.</param>
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="message">The informational message to display.</param>
+		/// <param name="caption">[Optional] The caption for the dialog.</param>
+		/// <remarks>
+		/// This will display an enhanced information dialog that is capable of showing more text than the standard <see cref="MessageBox"/>.
+		/// </remarks>
 		public static void InfoBox(Form owner, string message, string caption = "")
 		{
 			BaseDialog dialog = null;
-
-			if (string.IsNullOrWhiteSpace(caption))
-			{
-				caption = Resources.GOR_TEXT_CAPTION_INFO;
-			}
 
 			try
 			{
@@ -302,9 +327,12 @@ namespace Gorgon.UI
 			        dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
 			    }
 
-			    dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_TEXT_CAPTION_INFO;
+				if (!string.IsNullOrEmpty(caption))
+				{
+					dialog.Text = caption;
+				}
 
-			    dialog.ShowDialog(owner);
+				dialog.ShowDialog(owner);
 			}
 			finally
 			{
@@ -318,29 +346,37 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Function to display the enhanced warning dialog.
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="description">Error description.</param>
-		/// <param name="caption">[Optional] Caption for the error box.</param>
-		/// <param name="details">[Optional] Details for the error.</param>
-		/// <param name="autoShowDetails">[Optional] <b>true</b> to automatically open the details pane, <b>false</b> to leave it closed.</param>
-		/// <remarks>If the <paramref name="details"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
-		public static void WarningBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="message">The warning message to display.</param>
+		/// <param name="caption">[Optional] The caption for the warning box.</param>
+		/// <param name="details">[Optional] The details for the warning.</param>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane when the window is made visible, <b>false</b> to leave it closed.</param>
+		/// <remarks>
+		/// <para>
+		/// This will show an enhanced warning dialog with a details button. This button will expand the window to show the <paramref name="details"/> passed to the method. If the <paramref name="details"/> 
+		/// are <b>null</b> (<i>Nothing</i> in VB.Net), or empty, then the details button will not show.
+		/// </para>
+		/// <para>
+		/// If <paramref name="autoShowDetails"/> is set to <b>true</b>, then the details pane will automatically be shown when the window appears. This only applies when the <paramref name="details"/> parameter 
+		/// has information passed to it.
+		/// </para>
+		/// </remarks>
+		public static void WarningBox(Form owner, string message, string caption = "", string details = "", bool autoShowDetails = false)
 		{
-			if (string.IsNullOrEmpty(caption))
-			{
-				caption = Resources.GOR_TEXT_CAPTION_WARNING;
-			}
-
 			WarningDialog warningDialog = null;
 			try
 			{
 				warningDialog = new WarningDialog
 				                {
-					                Message = description,
+					                Message = message,
 					                WarningDetails = details,
-					                Text = caption,
 					                ShowDetailPanel = (autoShowDetails) && (!string.IsNullOrEmpty(details))
 				                };
+
+				if (!string.IsNullOrEmpty(caption))
+				{
+					warningDialog.Text = caption;
+				}
 
 				// If the owner form is <b>null</b> or not available, center on screen.
 				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
@@ -362,27 +398,44 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Function to display a confirmation dialog.
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">[Optional] Caption for the dialog.</param>
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="message">The confirmation message to display.</param>
+		/// <param name="caption">[Optional] The caption for the dialog.</param>
 		/// <param name="allowCancel">[Optional] <b>true</b> to show a Cancel button, <b>false</b> to hide.</param>
-		/// <param name="allowToAll">[Optional] <b>true</b> to show a 'To all' option, <b>false</b> to hide.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
+		/// <param name="allowToAll">[Optional] <b>true</b> to show a To all checkbox, <b>false</b> to hide.</param>
+		/// <returns>
+		/// A flag from the <see cref="ConfirmationResult"/> enumeration. If the <paramref name="allowToAll"/> parameter is <b>true</b>, then this result may be combined with <see cref="ConfirmationResult.ToAll"/>.
+		/// </returns>
+		/// <remarks>
+		/// <para>
+		/// This will display a confirmation dialog with an optional Cancel button, and an optional "To all" checkbox.
+		/// </para>
+		/// <para>
+		/// If the "Yes" button is clicked, this method will return the <see cref="ConfirmationResult.Yes"/> flag, or if the "No" button is clicked, this method will return the <see cref="ConfirmationResult.No"/> 
+		/// flag.
+		/// </para>
+		/// <para>
+		/// When the <paramref name="allowToAll"/> parameter is set to <b>true</b>, this method may return <see cref="ConfirmationResult.Yes"/> or <see cref="ConfirmationResult.No"/> OR'd with the 
+		/// <see cref="ConfirmationResult.ToAll"/> flag when the "to all" checkbox is checked. This is meant to indicate "Yes to all", or "No to all".
+		/// </para>
+		/// <para>
+		/// Setting the <paramref name="allowCancel"/> parameter to <b>true</b> will display a cancel button and will allow the method to return the <see cref="ConfirmationResult.Cancel"/> flag. This flag is 
+		/// exclusive and is not combined with the <see cref="ConfirmationResult.ToAll"/> flag under any circumstances.
+		/// </para>
+		/// </remarks>
 		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption = "", bool allowCancel = false, bool allowToAll = false)
 		{
 			ConfirmationDialog confirm = null;
 			ConfirmationResult result;
 
-			if (string.IsNullOrEmpty(caption))
-			{
-				caption = Resources.GOR_TEXT_CAPTION_CONFIRM;
-			}
-
 			try
 			{
 				confirm = allowToAll ? new ConfirmationDialogEx() : new ConfirmationDialog();
 
-				confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_TEXT_CAPTION_CONFIRM;
+				if (!string.IsNullOrEmpty(caption))
+				{
+					confirm.Text = caption;
+				}
 
 				confirm.Message = message;
 				confirm.ShowCancel = allowCancel;
