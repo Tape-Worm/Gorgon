@@ -1014,4 +1014,7 @@ Code: 0x{2}</value>
   <data name="GOR_RESULT_DESC_NOT_INITIALIZED" xml:space="preserve">
     <value>Initialization is required before continuing this operation.</value>
   </data>
+  <data name="GOR_TOSTR_RANGE" xml:space="preserve">
+    <value>Min: {0}  Max: {1}  Range: {2}</value>
+  </data>
 </root>

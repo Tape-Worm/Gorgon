@@ -37,6 +37,15 @@ namespace Gorgon.Core
 	/// <summary>
 	/// A random number generator for floating point and integer values.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This class expands upon the functionality of the <see cref="Random"/> class by providing <see cref="float"/> random numbers, and ranges for <see cref="double"/> and <see cref="float"/> random numbers.
+	/// </para>
+	/// <para>
+	/// It also provides a simplex noise implementation for generation of repeatable random noise.
+	/// </para> 
+	/// </remarks>
+	/// <seealso cref="Random"/>
 	public static class GorgonRandom
     {
         #region Constants.
@@ -238,8 +247,8 @@ namespace Gorgon.Core
 		/// Function to generate 2 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector2"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc/></returns>
-		/// <remarks><inheritdoc/></remarks>
+		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
+		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
 		public static float SimplexNoise(Vector2 value)
 		{
 			Vector3 noiseContrib = Vector3.Zero;
@@ -316,8 +325,8 @@ namespace Gorgon.Core
 		/// Function to generate 3 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector3"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc/></returns>
-		/// <remarks><inheritdoc/></remarks>
+		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
+		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
 		public static float SimplexNoise(Vector3 value)
 		{
 			Vector4 contrib = Vector4.Zero;			// Noise contributions from the four corners
@@ -472,8 +481,8 @@ namespace Gorgon.Core
 		/// Function to generate 4 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector4"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc/></returns>
-		/// <remarks><inheritdoc/></remarks>
+		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
+		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
 		public static float SimplexNoise(Vector4 value)
 		{
 			// Noise contributions from the five corners
