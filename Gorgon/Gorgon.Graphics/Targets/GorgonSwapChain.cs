@@ -133,7 +133,7 @@ namespace Gorgon.Graphics
 	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
 	/// </para>	
 	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
-	/// This functionality can be disabled with the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
+	/// This functionality can be disabled with the <see cref="P:Gorgon.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
 	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is <b>false</b> in this scenario, then the behaviour when switching between applications will be undefined.  
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
@@ -209,7 +209,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether we're in stand by mode.
 		/// </summary>
-		/// <remarks>Stand by mode is entered when the <see cref="M:GorgonLibrary.Graphics.GorgonSwapChain.Flip">Flip</see> method detects that the window is occluded.</remarks>
+		/// <remarks>Stand by mode is entered when the <see cref="M:Gorgon.Graphics.GorgonSwapChain.Flip">Flip</see> method detects that the window is occluded.</remarks>
 		public bool IsInStandBy
 		{
 			get;
@@ -798,7 +798,7 @@ namespace Gorgon.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
@@ -817,7 +817,7 @@ namespace Gorgon.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="isWindowed"><b>true</b> to use windowed mode, <b>false</b> to use full screen mode.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
@@ -837,7 +837,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="isWindowed"><b>true</b> to use windowed mode, <b>false</b> to use full screen mode.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
         /// <para>-or-</para>
@@ -874,8 +874,8 @@ namespace Gorgon.Graphics
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
 		/// <param name="isWindowed"><b>true</b> to switch to windowed mode, <b>false</b> to switch to full screen.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
-		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
+		/// <remarks>If the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
         /// <para>Thrown when the <see cref="Gorgon.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// </exception>

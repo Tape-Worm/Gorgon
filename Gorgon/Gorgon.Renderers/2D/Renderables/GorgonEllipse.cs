@@ -38,7 +38,7 @@ namespace Gorgon.Renderers
 	/// A renderable object for drawing an ellipse on the screen.
 	/// </summary>
 	/// <remarks>
-	/// Unlike other primitive types: line, rectangle, etc... the ellipse starts with its <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Anchor">anchor</see> set to center the around the position.
+	/// Unlike other primitive types: line, rectangle, etc... the ellipse starts with its <see cref="P:Gorgon.Renderers.GorgonMoveable.Anchor">anchor</see> set to center the around the position.
 	/// </remarks>
 	public class GorgonEllipse
 		: GorgonMoveable
@@ -427,7 +427,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <param name="pointIndex">Index of the point.</param>
 		/// <param name="color">Color to set.</param>
-		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and <see cref="P:GorgonLibrary.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</remarks>
+		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and <see cref="P:Gorgon.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</remarks>
 		public void SetPointColor(int pointIndex, GorgonColor color)
 		{
 			_colors[pointIndex] = color;
@@ -437,7 +437,7 @@ namespace Gorgon.Renderers
         /// Function to return a color for an individual point on the ellipse.
         /// </summary>
         /// <param name="pointIndex">Index of the point.</param>
-        /// <returns>The color of the point on the index.  The <paramref name="pointIndex"/> parameter must be between 0 and <see cref="P:GorgonLibrary.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</returns>
+        /// <returns>The color of the point on the index.  The <paramref name="pointIndex"/> parameter must be between 0 and <see cref="P:Gorgon.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</returns>
 	    public GorgonColor GetPointColor(int pointIndex)
         {
             return _colors[pointIndex];

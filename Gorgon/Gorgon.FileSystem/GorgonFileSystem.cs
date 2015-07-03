@@ -771,7 +771,7 @@ namespace Gorgon.IO
 		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <remarks>To create a 0 byte file, pass an empty array into the data parameter.</remarks>
 		public void WriteFile(GorgonFileSystemFileEntry file, byte[] data)
 		{
@@ -812,7 +812,7 @@ namespace Gorgon.IO
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para></exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
         /// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="data"/> parameter will only add a file entry (if it does not already exist) to the virtual directory, but will not create 
         /// it on the actual physical file system.  To create a 0 byte file, pass an empty array into the data parameter.</remarks>
 		public GorgonFileSystemFileEntry WriteFile(string path, byte[] data)
@@ -840,7 +840,7 @@ namespace Gorgon.IO
 		/// <remarks>Some file system providers cannot write, and will throw an exception if this is the case.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
@@ -886,7 +886,7 @@ namespace Gorgon.IO
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para>
 		/// </exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
+        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is <b>false</b>.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
 		public GorgonFileSystemStream OpenStream(string path, bool writeable)
@@ -930,7 +930,7 @@ namespace Gorgon.IO
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
 		/// <remarks>This method will create a directory in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
+		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public GorgonFileSystemDirectory CreateDirectory(string path)
 		{
@@ -972,7 +972,7 @@ namespace Gorgon.IO
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
 		/// <remarks>This method will remove a file in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
+		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public void DeleteFile(GorgonFileSystemFileEntry file)
 		{
@@ -1010,7 +1010,7 @@ namespace Gorgon.IO
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> parameter was not found.</exception>
 		/// <remarks>This method will remove a file in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
+		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public void DeleteFile(string path)
 		{
@@ -1042,7 +1042,7 @@ namespace Gorgon.IO
 	    /// <exception cref="System.ArgumentException">Thrown if the <paramref name="directory"/> belongs to another file system.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="directory"/> was not found.</exception>
         /// <remarks>This method will remove a directory in the virtual file system and in the writable area of the physical file system.
-	    /// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
+	    /// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 	    /// </remarks>
 	    public void DeleteDirectory(GorgonFileSystemDirectory directory)
 	    {
@@ -1119,7 +1119,7 @@ namespace Gorgon.IO
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory specified in <paramref name="path"/> was not found.</exception>
 		/// <remarks>This method will remove a directory in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:GorgonLibrary.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
+		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
 		/// </remarks>
 		public void DeleteDirectory(string path)
 		{

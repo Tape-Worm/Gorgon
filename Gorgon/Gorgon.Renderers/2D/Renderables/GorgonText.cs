@@ -203,7 +203,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the offset for the shadow.
 		/// </summary>
-		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <b>true</b>.</remarks>
+		/// <remarks>This value only applies when <see cref="P:Gorgon.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <b>true</b>.</remarks>
 		[AnimatedProperty]
 		public Vector2 ShadowOffset
 		{
@@ -250,7 +250,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the shadow opacity.
 		/// </summary>
-		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <b>true</b>.</remarks>
+		/// <remarks>This value only applies when <see cref="P:Gorgon.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is <b>true</b>.</remarks>
 		[AnimatedProperty]
 		public float ShadowOpacity
 		{
@@ -294,7 +294,7 @@ namespace Gorgon.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the alignment of the text within the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle.</see>/.
+		/// Property to set or return the alignment of the text within the <see cref="P:Gorgon.Renderers.GorgonText.TextRectangle">TextRectangle.</see>/.
 		/// </summary>
 		/// <remarks>If the TextRectangle property is NULL (<i>Nothing</i> in VB.Net), then this value has no effect.</remarks>
 		public Alignment Alignment
@@ -319,7 +319,7 @@ namespace Gorgon.Renderers
 		/// Property to set or return whether word wrapping is enabled.
 		/// </summary>
 		/// <remarks>
-		/// This uses the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle</see> to determine where the cutoff boundary is for word wrapping.  
+		/// This uses the <see cref="P:Gorgon.Renderers.GorgonText.TextRectangle">TextRectangle</see> to determine where the cutoff boundary is for word wrapping.  
 		/// If a character is positioned outside of the region, then the previous space character is located and the region is broken at that point.  Note that the left position 
 		/// of the rectangle is not taken into consideration when performing a word wrap, and consequently the user will be responsible for calculating the word wrap boundary.
 		/// <para>Only the space character is considered when performing word wrapping.  Other whitespace or control characters are not considered break points in the string.</para>
@@ -371,8 +371,8 @@ namespace Gorgon.Renderers
 		/// <remarks>
 		/// This defines the range used when aligning text horizontally and/or vertically.  For example, if the alignment is set to center horizontally, then the width of this rectangle is 
 		/// used to determine the horizontal center point.  Likewise for vertically aligned text.
-		/// <para>If <see cref="P:GorgonLibrary.Renderers.GorgonText.WordWrap">WordWrap</see> is set to <b>true</b>, then this determines how far, in pixels, a line of text can go before it will be wrapped.</para>
-		/// <para>This property will clip the text to the rectangle if the <see cref="P:GorgonLibrary.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to <b>true</b>.</para>
+		/// <para>If <see cref="P:Gorgon.Renderers.GorgonText.WordWrap">WordWrap</see> is set to <b>true</b>, then this determines how far, in pixels, a line of text can go before it will be wrapped.</para>
+		/// <para>This property will clip the text to the rectangle if the <see cref="P:Gorgon.Renderers.GorgonText.ClipToRectangle">ClipToRectangle</see> property is set to <b>true</b>.</para>
 		/// <para>Setting this value to NULL (<i>Nothing</i> in VB.Net) will disable alignment, word wrapping and clipping.</para>
 		/// </remarks>
 		public RectangleF? TextRectangle
@@ -394,7 +394,7 @@ namespace Gorgon.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return whether to clip the text to the <see cref="P:GorgonLibrary.Renderers.GorgonText.TextRectangle">TextRectangle</see>.
+		/// Property to set or return whether to clip the text to the <see cref="P:Gorgon.Renderers.GorgonText.TextRectangle">TextRectangle</see>.
 		/// </summary>
 		/// <remarks>If the TextRectangle property is NULL (<i>Nothing</i> in VB.Net), this value will have no effect.</remarks>
 		public bool ClipToRectangle
@@ -1731,7 +1731,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
 		/// or the <see cref="GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		/// <see cref="P:Gorgon.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		public BlendingMode BlendingMode
 		{
 			get

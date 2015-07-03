@@ -34,11 +34,11 @@ namespace Gorgon.Renderers
 	/// A 2 dimensional bounding circle.
 	/// </summary>
 	/// <remarks>This is used to provide a bounding circle for a sprite, or other renderable that has a collider property.
-	/// <para>The <see cref="P:GorgonLibrary.Renderers.Gorgon2DBoundingCircle.Center">Center</see> and <see cref="P:GorgonLibrary.Renderers.Gorgon2DBoundingCircle.Radius">Radius</see> properties are 
+	/// <para>The <see cref="P:Gorgon.Renderers.Gorgon2DBoundingCircle.Center">Center</see> and <see cref="P:Gorgon.Renderers.Gorgon2DBoundingCircle.Radius">Radius</see> properties are 
 	/// used to make adjustments to the bounding circle, and are in the same coordinate space as the renderable (i.e. the coordinate 0, 0 is the upper-left of the renderable).</para>
-	/// <para>To get screen space coordinates for the center and radius use the <see cref="P:GorgonLibrary.Renderers.Gorgon2DBoundingCircle.ColliderCenter">ColliderCenter</see> and 
-	/// the <see cref="P:GorgonLibrary.Renderers.Gorgon2DBoundingCircle.ColliderRadius">ColliderRadius</see> properties.</para>
-	/// <para>A <see cref="P:GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> is not required to use this, and in such a case, the ColliderRadius and ColliderCenter properties will 
+	/// <para>To get screen space coordinates for the center and radius use the <see cref="P:Gorgon.Renderers.Gorgon2DBoundingCircle.ColliderCenter">ColliderCenter</see> and 
+	/// the <see cref="P:Gorgon.Renderers.Gorgon2DBoundingCircle.ColliderRadius">ColliderRadius</see> properties.</para>
+	/// <para>A <see cref="P:Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> is not required to use this, and in such a case, the ColliderRadius and ColliderCenter properties will 
 	/// be the same as the Center and Radius properties (i.e. in screen space).</para>
 	/// </remarks>
 	public class Gorgon2DBoundingCircle

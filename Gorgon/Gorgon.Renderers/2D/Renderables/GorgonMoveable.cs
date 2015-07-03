@@ -64,7 +64,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the scale of the renderable.
 		/// </summary>
-		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
+		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:Gorgon.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
 		[AnimatedProperty]

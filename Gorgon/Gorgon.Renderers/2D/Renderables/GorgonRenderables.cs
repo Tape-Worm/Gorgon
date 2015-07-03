@@ -369,7 +369,7 @@ namespace Gorgon.Renderers
 		/// <param name="point3">Third point in the triangle.</param>
 		/// <param name="filled"><b>true</b> to create a filled triangle, <b>false</b> to create an unfilled triangle.</param>
 		/// <returns>A new triangle primitive object.</returns>
-		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:GorgonLibrary.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
+		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:Gorgon.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         public GorgonTriangle CreateTriangle(string name, GorgonPolygonPoint point1, GorgonPolygonPoint point2, GorgonPolygonPoint point3, bool filled)

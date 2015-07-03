@@ -368,15 +368,15 @@ namespace Gorgon.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:Gorgon.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para>
 		/// <para>Fonts may only be created on the immediate context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or settings parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.TextureSize">settings.TextureSize</see> width or height is larger than can be handled by the current feature level.</para>
+		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonFontSettings.TextureSize">settings.TextureSize</see> width or height is larger than can be handled by the current feature level.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.DefaultCharacter">settings.DefaultCharacter</see> cannot be located in the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Characters">settings.Characters</see> list.</para>
+		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonFontSettings.DefaultCharacter">settings.DefaultCharacter</see> cannot be located in the <see cref="P:Gorgon.Graphics.GorgonFontSettings.Characters">settings.Characters</see> list.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, GorgonFontSettings settings)

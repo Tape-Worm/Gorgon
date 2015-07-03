@@ -33,7 +33,7 @@ using Gorgon.Input.Properties;
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// Event parameters for the <see cref="E:GorgonLibrary.Input.GorgonCustomHID.DataChanged">DataChanged</see> event.
+	/// Event parameters for the <see cref="E:Gorgon.Input.GorgonCustomHID.DataChanged">DataChanged</see> event.
 	/// </summary>
 	public class GorgonCustomHIDDataChangedEventArgs
 		: EventArgs

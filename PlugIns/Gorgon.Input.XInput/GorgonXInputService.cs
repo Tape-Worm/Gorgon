@@ -129,7 +129,7 @@ namespace Gorgon.Input.XInput
 		/// <param name="window">Window to bind with.</param>
 		/// <param name="joystickName">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickName)
 		{
 		    var deviceName = joystickName as GorgonXInputDeviceInfo;

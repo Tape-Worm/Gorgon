@@ -1544,8 +1544,8 @@ namespace Gorgon.Graphics
 		/// <remarks>
 		/// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="Gorgon.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
 		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
-        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <b>true</b>, and 
-        /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
+        /// To achieve this, create the depth/stencil with <see cref="P:Gorgon.Graphics.GorgonDepthStencil2DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <b>true</b>, and 
+        /// give the <see cref="P:Gorgon.Graphics.GorgonDepthStencil2DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
         /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
         /// </para>
         /// <para>A <see cref="Gorgon.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
@@ -1600,8 +1600,8 @@ namespace Gorgon.Graphics
         /// <remarks>
         /// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="Gorgon.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
         /// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
-        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <b>true</b>, and 
-        /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
+        /// To achieve this, create the depth/stencil with <see cref="P:Gorgon.Graphics.GorgonDepthStencil1DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to <b>true</b>, and 
+        /// give the <see cref="P:Gorgon.Graphics.GorgonDepthStencil1DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
         /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
         /// </para>
         /// <para>A <see cref="Gorgon.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
@@ -1651,7 +1651,7 @@ namespace Gorgon.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// <para>-or-</para>
@@ -1661,13 +1661,13 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the current video device is a SM2_a_b video device and the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Flags">Flags</see> property is not equal to RenderTarget.</para>
+		/// <para>Thrown if the current video device is a SM2_a_b video device and the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Flags">Flags</see> property is not equal to RenderTarget.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
 		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
 		/// <para>Passing default settings for the <see cref="Gorgon.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (<i>Nothing</i> in VB.Net) to 
-		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
+		/// the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
         /// <para>If the multisampling quality in the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
         /// what the maximum quality for the sample count for the video device should be, call the <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
 		/// <para>This method should not be called from a deferred graphics context.</para>
@@ -1715,11 +1715,11 @@ namespace Gorgon.Graphics
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:Gorgon.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
         /// <para>-or-</para>
-        /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.SizeInBytes">SizeInBytes</see> property is less than 4.</para>
+        /// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonRenderTargetBufferSettings.SizeInBytes">SizeInBytes</see> property is less than 4.</para>
         /// <para>-or-</para>
-        /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
+        /// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonRenderTargetBufferSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
@@ -1767,7 +1767,7 @@ namespace Gorgon.Graphics
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:Gorgon.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
         /// <para>-or-</para>
         /// <para>Thrown when the Width value is 0 or greater than the maximum size for a texture that a video device can support.</para>
         /// <para>-or-</para>
@@ -1821,14 +1821,14 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+		/// <exception cref="GorgonException">Thrown when there is no <see cref="P:Gorgon.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
 		/// <para>-or-</para>
         /// <para>-or-</para>
         /// <para>Thrown when the Width or Height values are 0 or greater than the maximum size for a texture that a video device can support.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
         /// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
@@ -1874,7 +1874,7 @@ namespace Gorgon.Graphics
         /// <remarks>This allows graphics data to be rendered on to a <see cref="Gorgon.Graphics.GorgonTexture3D">3D texture</see>.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <exception cref="GorgonException">Thrown when there is no <see cref="P:Gorgon.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
         /// <para>-or-</para>
         /// <para>Thrown when the Width, Height or Depth values is 0 or greater than the maximum size for a texture that a video device can support.</para>
         /// <para>-or-</para>

@@ -464,7 +464,7 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Property to set or return whether this renderable can write to the depth buffer.
 			/// </summary>
-			/// <remarks>This value is only effective when <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsDepthBufferEnabled">IsDepthBufferEnabled</see> is <b>true</b>.
+			/// <remarks>This value is only effective when <see cref="P:Gorgon.Renderers.Gorgon2D.IsDepthBufferEnabled">IsDepthBufferEnabled</see> is <b>true</b>.
 			/// <para>Note that the renderable will still take the depth buffer into account even when this is <b>false</b>.  That is, it will read the depth buffer and mask 
 			/// depth areas that are less than the current depth value.</para>
 			/// </remarks>
@@ -681,8 +681,8 @@ namespace Gorgon.Renderers
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
 		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="Gorgon.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		/// or the <see cref="P:Gorgon.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="P:Gorgon.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		public BlendingMode BlendingMode
 		{
 			get
@@ -748,7 +748,7 @@ namespace Gorgon.Renderers
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
 		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-		/// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
+		/// <para>This value will not take effect until <see cref="P:Gorgon.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>

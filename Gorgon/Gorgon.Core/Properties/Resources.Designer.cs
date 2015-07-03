@@ -535,7 +535,7 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not create the plug-in.  &apos;{0}&apos; in assembly &apos;{1}&apos; is not inherited from type &apos;GorgonLibrary.PlugIns.GorgonPlugIn&apos;..
+        ///   Looks up a localized string similar to Could not create the plug-in.  &apos;{0}&apos; in assembly &apos;{1}&apos; is not inherited from type &apos;{2}&apos;..
         /// </summary>
         internal static string GOR_ERR_PLUGIN_CANNOT_CREATE {
             get {
@@ -865,6 +865,96 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_LOG_EXCEPTION {
             get {
                 return ResourceManager.GetString("GOR_LOG_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Access is denied..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_ACCESS_DENIED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_ACCESS_DENIED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error during binding..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_BIND {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_BIND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error during creation..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_CREATE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_CREATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error during the enumeration process..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_ENUMERATE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_ENUMERATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while reading..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_READ {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_READ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while writing..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_WRITE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_WRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error interfacing with the driver..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_DRIVER_ERROR {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_DRIVER_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested format is not supported..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file format is not supported..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_INVALID_FILE_FORMAT {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_INVALID_FILE_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initialization is required before continuing this operation..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_NOT_INITIALIZED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_NOT_INITIALIZED", resourceCulture);
             }
         }
         

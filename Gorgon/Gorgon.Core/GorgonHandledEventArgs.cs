@@ -29,7 +29,7 @@ using System;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// A base handled event argument.
+	/// Event arguments used when an event can indicate to other events that it has been handled by another subscriber.
 	/// </summary>
 	public class GorgonHandledEventArgs
 		: EventArgs

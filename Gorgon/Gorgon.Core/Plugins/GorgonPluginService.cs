@@ -297,7 +297,7 @@ namespace Gorgon.Plugins
 						if (activator == null)
 						{
 							throw new GorgonException(GorgonResult.CannotCreate,
-							                          string.Format(Resources.GOR_ERR_PLUGIN_CANNOT_CREATE, pluginType.FullName, pluginType.Assembly.FullName));
+							                          string.Format(Resources.GOR_ERR_PLUGIN_CANNOT_CREATE, pluginType.FullName, pluginType.Assembly.FullName, typeof(GorgonPlugin).FullName));
 						}
 
 						_log.Print("Found plugin '{0}' in the assembly '{1}'.", LoggingLevel.Verbose, pluginType.FullName, assemblyItem.Value.FullName);

@@ -621,7 +621,7 @@ Code: 0x{2}</value>
     <value>The data stream encapsulates a pointer that it does not own and cannot be resized.</value>
   </data>
   <data name="GOR_ERR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
-    <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type 'GorgonLibrary.PlugIns.GorgonPlugIn'.</value>
+    <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type '{2}'.</value>
   </data>
   <data name="GOR_ERR_PLUGIN_CANNOT_FIND_FILE" xml:space="preserve">
     <value>The could not find the assembly file '{0}' on any of the plug-in search paths.</value>
@@ -983,5 +983,35 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_TEXT_FLATFORM_RESTORE_TIP" xml:space="preserve">
     <value>Restore the window to the original dimensions</value>
+  </data>
+  <data name="GOR_RESULT_DESC_ACCESS_DENIED" xml:space="preserve">
+    <value>Access is denied.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_BIND" xml:space="preserve">
+    <value>There was an error during binding.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_CREATE" xml:space="preserve">
+    <value>There was an error during creation.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_ENUMERATE" xml:space="preserve">
+    <value>There was an error during the enumeration process.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_READ" xml:space="preserve">
+    <value>There was an error while reading.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_WRITE" xml:space="preserve">
+    <value>There was an error while writing.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_DRIVER_ERROR" xml:space="preserve">
+    <value>There was an error interfacing with the driver.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The requested format is not supported.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_INVALID_FILE_FORMAT" xml:space="preserve">
+    <value>The file format is not supported.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_NOT_INITIALIZED" xml:space="preserve">
+    <value>Initialization is required before continuing this operation.</value>
   </data>
 </root>

@@ -81,7 +81,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// When the font uses points for its height, the user must be aware of DPI scaling issues that may arise.
-		/// <para>This will affect the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Size">Size</see> value in that it will alter the meaning of the units.</para>
+		/// <para>This will affect the <see cref="P:Gorgon.Graphics.GorgonFontSettings.Size">Size</see> value in that it will alter the meaning of the units.</para>
 		/// <para>The default value is Points.</para></remarks>
 		public FontHeightMode FontHeightMode
 		{
@@ -101,7 +101,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to set or return the font size.
 		/// </summary>
-		/// <remarks>This is affected by the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontHeightMode">FontHeightMode</see>.  If the FontHeightMode is set to Points, then this unit is a point size height for the font. 
+		/// <remarks>This is affected by the <see cref="P:Gorgon.Graphics.GorgonFontSettings.FontHeightMode">FontHeightMode</see>.  If the FontHeightMode is set to Points, then this unit is a point size height for the font. 
 		/// Otherwise, this represents the font height in pixels.</remarks>
 		public float Size
 		{

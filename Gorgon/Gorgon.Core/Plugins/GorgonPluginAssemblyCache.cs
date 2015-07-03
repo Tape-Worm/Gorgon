@@ -129,7 +129,7 @@ namespace Gorgon.Plugins
 
 			// Create our domain.
 			_log.Print("Creating temporary application domain.", LoggingLevel.Intermediate);
-			return AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
+			return AppDomain.CreateDomain("Gorgon.PlugIns.Discovery", evidence, setup);
 		}
 
 		/// <summary>

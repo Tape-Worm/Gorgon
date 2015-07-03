@@ -72,7 +72,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <remarks>
         /// Set the property to <b>true</b> to avoid lossy compression which may introduce artifacts to the image.  Setting this value to <b>true</b> 
-        /// will cause the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.ImageQuality">ImageQuality</see> property to be ignored.
+        /// will cause the <see cref="P:Gorgon.IO.GorgonCodecHDP.ImageQuality">ImageQuality</see> property to be ignored.
         /// <para>This property is only used when encoding the image.</para>
         /// <para>The default value is <b>false</b>.</para>
         /// </remarks>
@@ -87,7 +87,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <remarks>
         /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
-        /// lowest quality and 1.0f will give the highest.  If the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.UseLosslessCompression">UseLosslessCompression</see> 
+        /// lowest quality and 1.0f will give the highest.  If the <see cref="P:Gorgon.IO.GorgonCodecHDP.UseLosslessCompression">UseLosslessCompression</see> 
         /// property is set to <b>true</b>, then this property will be ignored.
         /// <para>This property is only used when encoding the image.</para>
         /// <para>The default value is 1.0f.</para>

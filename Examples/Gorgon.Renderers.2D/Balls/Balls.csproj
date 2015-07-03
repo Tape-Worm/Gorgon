@@ -8,9 +8,9 @@
     <ProjectGuid>{8A074000-EA1B-4D08-9B1D-A9369AA27544}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Graphics.Example</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>Balls</AssemblyName>
-    <StartupObject>Gorgon.Graphics.Example.Program</StartupObject>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
     <ApplicationIcon>AmigaBoingBallSmoothShaded256.ico</ApplicationIcon>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AmigaBoingBallSmoothShaded256.ico" />
+    <None Include="Resources\Examples.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

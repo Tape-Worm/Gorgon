@@ -67,7 +67,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new 2D graphics interface.</returns>
 		/// <remarks>This method creates an internal swap chain and uses that for the display.  To have more control over the initial render target, use the <see cref="Create2DRenderer(Gorgon.Graphics.GorgonOutputMerger,Gorgon.Graphics.GorgonRenderTargetView,int)">Create2DRenderer(GorgonRenderTarget)</see> extension overload.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -109,7 +109,7 @@ namespace Gorgon.Graphics
 		/// at a given time.  Any performance increase from this value depends upon multiple factors such as available RAM, video driver, video card, etc...</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.
-		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
+		/// <para>Thrown when the <paramref name="window"/> parameter is NULL (<i>Nothing</i> in VB.Net), and the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="format"/> parameter cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// </exception>

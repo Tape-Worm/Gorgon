@@ -34,10 +34,10 @@ namespace Gorgon.Renderers
 	/// A 2 dimensional axis aligned bounding box collider.
 	/// </summary>
 	/// <remarks>This is used to provide an axis aligned bounding box for a sprite, or other renderable that has a collider property.
-	/// <para>The <see cref="P:GorgonLibrary.Renderers.Gorgon2DAABB.Location">Location</see> and <see cref="P:GorgonLibrary.Renderers.Gorgon2DAABB.Size">Size</see> properties are 
+	/// <para>The <see cref="P:Gorgon.Renderers.Gorgon2DAABB.Location">Location</see> and <see cref="P:Gorgon.Renderers.Gorgon2DAABB.Size">Size</see> properties are 
 	/// used to make adjustments to the bounding box, and are in the same coordinate space as the renderable (i.e. the coordinate 0, 0 is the upper-left of the renderable).</para>
-	/// <para>To get screen space coordinates for the location and size use the <see cref="P:GorgonLibrary.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> property.</para>
-	/// <para>A <see cref="P:GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> is not required to use this, and in such a case, the ColliderBoundaries property will 
+	/// <para>To get screen space coordinates for the location and size use the <see cref="P:Gorgon.Renderers.Gorgon2DCollider.ColliderBoundaries">ColliderBoundaries</see> property.</para>
+	/// <para>A <see cref="P:Gorgon.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> is not required to use this, and in such a case, the ColliderBoundaries property will 
 	/// be the same as the Location and Size properties (i.e. in screen space).</para>
 	/// </remarks>
 	// ReSharper disable once InconsistentNaming

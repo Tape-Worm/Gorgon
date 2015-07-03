@@ -1065,8 +1065,8 @@ namespace Gorgon.Renderers
         /// Property to set or return a pre-defined blending states for the renderable.
         /// </summary>
         /// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="Gorgon.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
-        /// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-        /// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+        /// or the <see cref="P:Gorgon.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+        /// <see cref="P:Gorgon.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
         public BlendingMode BlendingMode
         {
             get
@@ -1144,7 +1144,7 @@ namespace Gorgon.Renderers
         /// Property to set or return the range of alpha values to reject on this renderable.
         /// </summary>
         /// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
-        /// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
+        /// <para>This value will not take effect until <see cref="P:Gorgon.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to <b>true</b>.</para>
         /// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
         /// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
         /// in order to take advantage of alpha testing.</para>
@@ -1341,7 +1341,7 @@ namespace Gorgon.Renderers
         /// Property to set or return the scale of the renderable.
         /// </summary>
         /// <remarks>
-        /// This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
+        /// This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:Gorgon.Renderers.GorgonMoveable.Size">Size</see> property.
         /// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
         /// </remarks>
         [AnimatedProperty]
@@ -1569,7 +1569,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <remarks>
 		/// Call this method to assign a texture that's been deferred.  If a sprite is created/loaded before its texture has been loaded, then the 
-		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:GorgonLibrary.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
+		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:Gorgon.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
 		/// property to the name of the texture.  Once the texture with the right name is loaded, call this method to get the sprite to update its texture value from the deferred name.
 		/// <para>If loading a sprite from a data source, then this method will be called upon load.  If the texture is not bound successfully (i.e. Texture == null), then it will set the deferred name 
 		/// to the texture name stored in the sprite data.</para>

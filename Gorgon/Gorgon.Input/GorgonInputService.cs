@@ -229,7 +229,7 @@ namespace Gorgon.Input
 		/// <param name="keyboardInfo">Name of the keyboard device to create.</param>
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para></remarks>		
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para></remarks>		
 		protected abstract GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardInfo);
 
 		/// <summary>
@@ -239,7 +239,7 @@ namespace Gorgon.Input
 		/// <param name="pointingDeviceInfo">Name of the pointing device device to create.</param>
 		/// <returns>A new pointing device interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>
 		protected abstract GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceInfo);
 
@@ -249,7 +249,7 @@ namespace Gorgon.Input
 		/// <param name="window">Window to bind with.</param>
 		/// <param name="joystickInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected abstract GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickInfo);
 
@@ -260,7 +260,7 @@ namespace Gorgon.Input
 		/// <param name="hidInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
 		/// <returns>A new custom HID interface.</returns>
 		/// <remarks>Implementors must implement this method if they wish to return data from a undefined (custom) device.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
 		protected abstract GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo);
@@ -287,8 +287,8 @@ namespace Gorgon.Input
 		/// <param name="hidName">Name of the HID to use.</param>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new custom HID interface.</returns>
-		/// <remarks>Data from a custom HID will be returned via the <see cref="P:GorgonLibrary.Input.GorgonCustomHID.Data">Data</see> property.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
+		/// <remarks>Data from a custom HID will be returned via the <see cref="P:Gorgon.Input.GorgonCustomHID.Data">Data</see> property.
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>		
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
@@ -336,7 +336,7 @@ namespace Gorgon.Input
 		/// <param name="keyboardName">The name of the keyboard to use.</param>
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="keyboardName"/> will use the system keyboard (i.e. data from all keyboards will be tracked by the same interface).
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>		
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a keyboard with the <paramref name="keyboardName"/> could not be found.</exception>
 		public GorgonKeyboard CreateKeyboard(Control window, string keyboardName)
@@ -373,7 +373,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>
 		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		public GorgonKeyboard CreateKeyboard(Control window)
 		{
 			return CreateKeyboard(window, string.Empty);
@@ -386,7 +386,7 @@ namespace Gorgon.Input
 		/// <param name="pointingDeviceName">The name of the pointing device to use.</param>
 		/// <returns>A new pointing device interface.</returns>
 		/// <remarks>Passing an empty string for <paramref name="pointingDeviceName"/> will use the system pointing device (i.e. data from all pointing devices will be tracked by the same interface).
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
+		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a pointing device with the <paramref name="pointingDeviceName"/> could not be found.</exception>
 		public GorgonPointingDevice CreatePointingDevice(Control window, string pointingDeviceName)
@@ -436,7 +436,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">Window to bind with.</param>		
 		/// <returns>A new pointing device interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the pointing device could not be found.</exception>
 		public GorgonPointingDevice CreatePointingDevice(Control window)
 		{
@@ -449,7 +449,7 @@ namespace Gorgon.Input
 		/// <param name="window">Window to bind with.</param>
 		/// <param name="joystickName">Name of the joystick to use.</param>		
 		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
+		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="joystickName"/> is empty.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="joystickName"/> is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a joystick with the <paramref name="joystickName"/> could not be found.</exception>

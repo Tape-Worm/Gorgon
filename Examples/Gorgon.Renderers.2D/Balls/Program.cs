@@ -31,15 +31,16 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Graphics.Example.Properties;
+using Gorgon.Examples.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
+using Gorgon.Graphics;
 using SlimMath;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main class for the application.

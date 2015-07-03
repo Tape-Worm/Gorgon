@@ -201,7 +201,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Function to save the settings to a file.
 		/// </summary>
-		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (<i>Nothing</i> in VB.Net).</remarks>
+		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:Gorgon.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (<i>Nothing</i> in VB.Net).</remarks>
 		/// <exception cref="GorgonException">Thrown when the file being saved is not of the same format as an Gorgon application setting file.</exception>
 		void Save();
 	}

@@ -163,7 +163,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// Set this to <b>true</b> to tell the swap chain to -not- resize the client window when the swap chain back buffer is not the same size.
-		/// <para>This is only applied when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">Window</see> property is set to a windows form object, otherwise it is ignored.</para>
+		/// <para>This is only applied when the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.Window">Window</see> property is set to a windows form object, otherwise it is ignored.</para>
 		/// <para>The default value is <b>false</b>.</para></remarks>
 		public bool NoClientResize
 		{
@@ -174,7 +174,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the window that is bound with the swap chain.
 		/// </summary>
-		/// <remarks>Leaving this value as NULL (<i>Nothing</i> in VB.Net) will use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon default application window.</see></remarks>
+		/// <remarks>Leaving this value as NULL (<i>Nothing</i> in VB.Net) will use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon default application window.</see></remarks>
 		public Control Window
 		{
 			get;

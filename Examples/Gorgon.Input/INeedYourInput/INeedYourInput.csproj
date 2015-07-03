@@ -8,7 +8,7 @@
     <ProjectGuid>{0498130A-C954-434E-A02E-4E2733358717}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>INeedYourInput</AssemblyName>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <StartupObject>Gorgon.Examples.Program</StartupObject>

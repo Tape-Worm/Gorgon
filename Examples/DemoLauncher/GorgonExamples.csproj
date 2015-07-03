@@ -7,7 +7,7 @@
     <ProjectGuid>{E89B97E7-2431-4A00-A3E1-E82EB8400BA5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.Examples</RootNamespace>
+    <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>GorgonExamples</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -113,7 +113,9 @@
     <Content Include="Images\2D Renderer\E0_128x128.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Examples.xml" />
+    <Content Include="Resources\Examples.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Resources\Default_128x128.png" />
     <None Include="Images\GorgonLibrary.Common\E4_128x128.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

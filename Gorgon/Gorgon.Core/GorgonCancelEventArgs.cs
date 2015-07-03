@@ -29,7 +29,7 @@ using System;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// A base cancel event argument.
+	/// Event parameters used when an event allows cancellation.
 	/// </summary>
 	public class GorgonCancelEventArgs
 		: EventArgs

@@ -1300,7 +1300,7 @@ namespace Gorgon.Graphics
 			/// <returns>The number of scan lines.</returns>
 			/// <remarks>
 			/// This will compute the number of scan lines for an image that uses the format that this information describes.  If the format is 
-			/// <see cref="P:GorgonLibrary.Graphics.GorgonBufferFormatInfo.FormatData.IsCompressed">compressed</see>, then this method will 
+			/// <see cref="P:Gorgon.Graphics.GorgonBufferFormatInfo.FormatData.IsCompressed">compressed</see>, then this method will 
 			/// compute the scanline count based on the maximum size between 1 and a block size multiple of 4.  If the format is not compressed, 
 			/// then it will just return the height value passed in.
 			/// </remarks>

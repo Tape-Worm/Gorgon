@@ -77,7 +77,7 @@ namespace Gorgon.Renderers
 	/// <remarks>This is the interface that renders 2D graphics such as sprites, lines, circles, etc...  This object is also a factory for various types of 2D renderable objects such as a <see cref="Gorgon.Renderers.GorgonSprite">Sprite</see>.
 	/// <para>This renderer also handles state management for the various 2D objects through the exposed properties on the renderer object and automatically through the states from the properties on each object being rendered.</para>
 	/// <para>A developer can initialize this object with any render target as the default render target, or one will be created automatically when this object is initialized.  
-	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.  
+	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:Gorgon.Renderers.Gorgon2D.Target">Target</see> property.  
 	/// It is important to use the 2D interface Target property as it will perform state checking to keep rendering consistent.
 	/// </para>
 	/// </remarks>
@@ -320,7 +320,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <remarks>Changing this will constrain the view to the area passed in.  By defining a new viewport the display area will be stretched or shrunk to accomodate 
 		/// the size of the view and consequently all rendered data in the view will be scaled appropriately.
-		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
+		/// <para>This will not allow for clipping to a rectangle.  Use the <see cref="P:Gorgon.Renderers.Gorgon2D.ClipRegion">ClipRegion</see> property instead.</para>
 		/// </remarks>
 		public GorgonViewport? Viewport
 		{
@@ -406,7 +406,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return whether to use alpha testing for this renderable.
 		/// </summary>
-		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
+		/// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values in <see cref="P:Gorgon.Renderers.GorgonRenderable.AlphaTestValues">AlphaTestValues</see> and rejects the pixel if it is not.
 		/// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
@@ -466,8 +466,8 @@ namespace Gorgon.Renderers
 		/// Property to set or return the active render target view.
 		/// </summary>
 		/// <remarks>
-		/// Changing the current render target will reset the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Viewport">Viewport</see> 
-		/// and the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see>.
+		/// Changing the current render target will reset the <see cref="P:Gorgon.Renderers.Gorgon2D.Viewport">Viewport</see> 
+		/// and the <see cref="P:Gorgon.Renderers.Gorgon2D.ClipRegion">ClipRegion</see>.
 		/// </remarks>
 		public GorgonRenderTargetView Target
 		{

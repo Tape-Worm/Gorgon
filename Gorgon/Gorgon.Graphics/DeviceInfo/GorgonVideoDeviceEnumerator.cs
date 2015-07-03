@@ -47,7 +47,7 @@ namespace Gorgon.Graphics
 	/// </summary>
 	/// <remarks>Use this to retrieve a list of video devices available on the system. A video device may be a discreet video card, or a device on the motherboard. 
 	/// Retrieve the video device information by calling the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator.Enumerate">Enumerate</see> method and the 
-	/// <see cref="P:GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.VideoDevices">VideoDevices</see> property will be populated with video device information.  From 
+	/// <see cref="P:Gorgon.Graphics.GorgonVideoDeviceEnumerator.VideoDevices">VideoDevices</see> property will be populated with video device information.  From 
 	/// there you can pass a <see cref="Gorgon.Graphics.GorgonVideoDevice">GorgonVideoDevice</see> object into the <see cref="Gorgon.Graphics.GorgonGraphics">
 	/// GorgonGraphics</see> constructor to use a specific video device.
 	/// <para>This interface will allow enumeration of the WARP/Reference devices.  WARP is a high performance software device that will emulate much of the functionality 

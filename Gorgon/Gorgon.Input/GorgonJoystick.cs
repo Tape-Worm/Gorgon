@@ -128,7 +128,7 @@ namespace Gorgon.Input
 	/// A joystick/gamepad interface.
 	/// </summary>
 	/// <remarks>This is not like the other input interfaces in that the data in this object is a snapshot of its state and not polled automatically.  
-	/// The user must call the <see cref="M:GorgonLibrary.Input.GorgonJoystick.Poll">Poll</see> method in order to update the state of the device.
+	/// The user must call the <see cref="M:Gorgon.Input.GorgonJoystick.Poll">Poll</see> method in order to update the state of the device.
 	/// <para>Note that while this object supports 6 axis devices, it will be limited to the number of axes present on the physical device, thus some values will always return 0.</para>
 	/// </remarks>
 	public abstract class GorgonJoystick
@@ -1019,8 +1019,8 @@ namespace Gorgon.Input
 		/// <param name="motorIndex">Index of the motor to start.</param>
 		/// <param name="value">Value to set.</param>
 		/// <remarks>This will activate the vibration motor(s) in the joystick/gamepad.  The <paramref name="motorIndex"/> should be within the 
-		/// <see cref="P:GorgonLibrary.Input.GorgonJoystick.JoystickCapabilities.VibrationMotorCount">VibrationMotorCount</see>, or else an exception will be thrown.  Check the
-		/// <see cref="P:GorgonLibrary.Input.GorgonJoystick.JoystickCapabilities.ExtraCapabilities">ExtraCapabilities</see> property to see if vibration is supported by the device.
+		/// <see cref="P:Gorgon.Input.GorgonJoystick.JoystickCapabilities.VibrationMotorCount">VibrationMotorCount</see>, or else an exception will be thrown.  Check the
+		/// <see cref="P:Gorgon.Input.GorgonJoystick.JoystickCapabilities.ExtraCapabilities">ExtraCapabilities</see> property to see if vibration is supported by the device.
 		/// </remarks>
 		/// <exception cref="GorgonException">Thrown when the device has not been initialized.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the motorIndex parameter is less than 0 or greater than or equal to the VibrationMotorCount range.</exception>

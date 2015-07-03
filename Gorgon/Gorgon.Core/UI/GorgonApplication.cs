@@ -203,8 +203,10 @@ namespace Gorgon.UI
 		/// <see cref="FormWindowState.Minimized"/>, and the window, or one of its child controls, currently has input focus.
 		/// </para>
 		/// <para>
-		/// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. Otherwise, if the <see cref="AllowBackground"/> property is set to <b>true</b>, then 
-		/// this property will always return <b>true</b>. 
+		/// If the <see cref="AllowBackground"/> property is set to <b>true</b>, then this property will always return <b>true</b>. 
+		/// </para>
+		/// <para>
+		/// If no <see cref="MainForm"/> is assigned, then this property will always return <b>false</b>. 
 		/// </para>
 		/// </remarks>
 		public static bool IsForeground
@@ -407,8 +409,13 @@ namespace Gorgon.UI
 		/// Property to return the main windows <see cref="Form"/> for the application.
 		/// </summary>
 		/// <remarks>
+		/// <para>
+		/// This property can be used to retrieve the <see cref="Form"/> that is the primary form for the application. When this form closes, the application will shut down.
+		/// </para>
+		/// <para>
 		/// This value is set when the <see cref="Run(System.Windows.Forms.Form,System.Func{bool})"/> is used to run the application, or a form has been assigned to the <see cref="System.Windows.Forms.ApplicationContext.MainForm"/> 
 		/// property.
+		/// </para>
 		/// </remarks>
 		public static Form MainForm
 		{

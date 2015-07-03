@@ -30,7 +30,7 @@ using System.Runtime.Serialization;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// Primary exception used for Gorgon.
+	/// A custom exception that allows the passing of a <see cref="GorgonResult"/> code.
 	/// </summary>
 	[Serializable]
 	public class GorgonException
@@ -68,7 +68,7 @@ namespace Gorgon.Core
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
 		/// </summary>
 		/// <param name="errorMessage">Error message to display.</param>
 		/// <param name="innerException">Inner exception to pass through.</param>
@@ -79,7 +79,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="GorgonException"/> class.
 		/// </summary>
 		/// <param name="errorMessage">Error message to display.</param>
 		public GorgonException(string errorMessage)
@@ -89,7 +89,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Serialized constructor.
+		/// Initializes a new instance of the <see cref="GorgonException" /> class with serialized data.
 		/// </summary>
 		/// <param name="info">Serialization info.</param>
 		/// <param name="context">Serialization context.</param>

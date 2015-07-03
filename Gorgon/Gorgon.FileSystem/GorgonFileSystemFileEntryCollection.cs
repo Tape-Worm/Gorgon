@@ -136,8 +136,7 @@ namespace Gorgon.IO
 
 				if ((value.Directory != null) && (value.Directory != _parent))
 				{
-					throw new GorgonException(GorgonResult.CannotBind,
-					                          string.Format(Resources.GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY, value.Name, value.Directory.FullPath));
+					throw new ArgumentException(string.Format(Resources.GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY, value.Name, value.Directory.FullPath), "fileName");
 				}
 
 				file.Directory = null;

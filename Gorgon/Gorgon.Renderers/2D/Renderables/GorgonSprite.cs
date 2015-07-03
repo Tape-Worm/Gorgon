@@ -712,7 +712,7 @@ namespace Gorgon.Renderers
 		/// </summary>
 		/// <remarks>
 		/// Call this method to assign a texture that's been deferred.  If a sprite is created/loaded before its texture has been loaded, then the 
-		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:GorgonLibrary.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
+		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:Gorgon.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
 		/// property to the name of the texture.  Once the texture with the right name is loaded, call this method to get the sprite to update its texture value from the deferred name.
 		/// <para>If loading a sprite from a data source, then this method will be called upon load.  If the texture is not bound successfully (i.e. Texture == null), then it will set the deferred name 
 		/// to the texture name stored in the sprite data.</para>

@@ -33,8 +33,7 @@ namespace Gorgon.Core
 	/// Abstract implementation of the <see cref="IGorgonNamedObject"/> interface. 
 	/// </summary>
 	/// <remarks>
-	/// This abstract concrete implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a 
-	/// name.
+	/// This abstract implementation of <see cref="IGorgonNamedObject"/> is provided as a convenience when an object requires a name.
 	/// </remarks>
 	public abstract class GorgonNamedObject
 		: IGorgonNamedObject
@@ -45,12 +44,10 @@ namespace Gorgon.Core
         #endregion
 
         #region Methods.
-        /// <summary>
-		/// Serves as a hash method for a particular type.
+		/// <summary>
+		/// Returns a hash code for this instance.
 		/// </summary>
-		/// <returns>
-		/// A hash code for the current <see cref="GorgonNamedObject"/>.
-		/// </returns>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
 		public override int GetHashCode()
         {
 	        return string.IsNullOrWhiteSpace(Name) ? 0 : 281.GenerateHash(Name);

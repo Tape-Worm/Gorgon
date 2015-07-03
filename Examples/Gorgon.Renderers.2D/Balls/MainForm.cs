@@ -26,7 +26,7 @@
 
 using System.Windows.Forms;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// Main application form.

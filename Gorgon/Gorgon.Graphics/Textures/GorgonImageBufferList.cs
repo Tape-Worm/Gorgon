@@ -69,7 +69,7 @@ namespace Gorgon.Graphics
 		/// Property to return the buffer for the given mip map level and depth slice.
 		/// </summary>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
-		/// <remarks>To get the array length, or the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData.Settings">Settings</see> property.
+		/// <remarks>To get the array length, or the mip map count, use the <see cref="P:Gorgon.Graphics.GorgonImageData.Settings">Settings</see> property.
 		/// <para>To get the depth slice count, use the <see cref="Gorgon.Graphics.GorgonImageData.GetDepthCount">GetDepthCount</see> method.</para>
 		/// <para>The <paramref name="arrayIndexDepthSlice"/> parameter is used as an array index if the image is 1D or 2D.  If it is a 3D image, then the value indicates a depth slice.</para>
 		/// </remarks>

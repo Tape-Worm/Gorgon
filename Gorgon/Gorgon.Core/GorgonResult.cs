@@ -30,44 +30,45 @@ using Gorgon.Core.Properties;
 namespace Gorgon.Core
 {
 	/// <summary>
-	/// A defined error message to be packaged with <see cref="GorgonException"/>.
+	/// An error code message that is usually sent along with a <see cref="GorgonException"/>.
 	/// </summary>
 	public struct GorgonResult
 		: IGorgonNamedObject, IEquatable<GorgonResult>
 	{
 		#region Predefined error codes.
-		private const int ErrorBase = 0x7FF000;		// Base error code.
+		// Base error code.
+		private const int ErrorBase = 0x7FF000;
 
 		/// <summary>
-		/// Library was not initialized.
+		/// Initialization is required before continuing this operation.
 		/// </summary>
 		public static GorgonResult NotInitialized
 		{
 			get
 			{
-				return new GorgonResult("NotInitialized", ErrorBase + 1, "The library was not initialized.");
+				return new GorgonResult("NotInitialized", ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 			}
 		}
 
 		/// <summary>
-		/// Error creating an object.
+		/// There was an error during creation.
 		/// </summary>
 		public static GorgonResult CannotCreate
 		{
 			get
 			{
-				return new GorgonResult("CannotCreate", ErrorBase + 2, "Error while trying to create an object.");
+				return new GorgonResult("CannotCreate", ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
 			}
 		}
 
 		/// <summary>
-		/// Error while writing data.
+		/// There was an error while writing.
 		/// </summary>
 		public static GorgonResult CannotWrite
 		{
 			get
 			{
-				return new GorgonResult("CannotWrite", ErrorBase + 0xa, "Error while writing data.");
+				return new GorgonResult("CannotWrite", ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
 			}
 		}
 
@@ -78,67 +79,67 @@ namespace Gorgon.Core
 		{
 			get
 			{
-				return new GorgonResult("AccessDenied", ErrorBase + 3, "Access is denied.");
+				return new GorgonResult("AccessDenied", ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
 			}
 		}
 
 		/// <summary>
-		/// Error accessing driver.
+		/// There was an error interfacing with the driver.
 		/// </summary>
 		public static GorgonResult DriverError
 		{
 			get
 			{
-				return new GorgonResult("DriverError", ErrorBase + 4, "Error while accessing driver.");
+				return new GorgonResult("DriverError", ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
 			}
 		}
 
 		/// <summary>
-		/// Error while reading data.
+		/// There was an error while reading.
 		/// </summary>
 		public static GorgonResult CannotRead
 		{
 			get
 			{
-				return new GorgonResult("CannotRead", ErrorBase + 5, "Error while reading data.");
+				return new GorgonResult("CannotRead", ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
 			}
 		}
 
 		/// <summary>
-		/// Error trying to bind.
+		/// There was an error during binding.
 		/// </summary>
 		public static GorgonResult CannotBind
 		{
 			get
 			{
-				return new GorgonResult("CannotBind", ErrorBase + 6, "Error trying to bind to object.");
+				return new GorgonResult("CannotBind", ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
 			}
 		}
 
 		/// <summary>
-		/// Error trying to enumerate objects.
+		/// There was an error during the enumeration process.
 		/// </summary>
 		public static GorgonResult CannotEnumerate
 		{
 			get
 			{
-				return new GorgonResult("CannotEnumerate", ErrorBase + 7, "Unable to perform enumeration.");
+				return new GorgonResult("CannotEnumerate", ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
 			}
 		}
 
 		/// <summary>
-		/// Format is not supported.
+		/// The requested format is not supported.
 		/// </summary>
 		public static GorgonResult FormatNotSupported
 		{
 			get
 			{
-				return new GorgonResult("FormatNotSupported", ErrorBase + 8, "The requested format is not supported.");
+				return new GorgonResult("FormatNotSupported", ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
 			}
 		}
 
 		/// <summary>
-		/// File format is not supported.
+		/// The file format is not supported.
 		/// </summary>
 		public static GorgonResult InvalidFileFormat
 		{
@@ -147,28 +148,20 @@ namespace Gorgon.Core
 				return new GorgonResult("InvalidFileFormat", ErrorBase + 9, "The file format is not supported.");
 			}
 		}
-
-		/// <summary>
-		/// Error while trying to perform a rollback operation.
-		/// </summary>
-		public static GorgonResult CannotRollback
-		{
-			get
-			{
-				return new GorgonResult("CannotWrite", ErrorBase + 0xb, "Unable to perform rollback operation.");
-			}
-		}
 		#endregion
 
 		#region Variables.
-		private readonly string _description;				// Description of th error.
-		private readonly int _code;							// Error code.
-		private readonly string _name;						// Name of the error.
+		// Description of th error.
+		private readonly string _description;
+		// Error code.
+		private readonly int _code;
+		// Name of the error.
+		private readonly string _name;						
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the error message to sent with the exception.
+		/// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
 		public string Description
 		{
@@ -179,7 +172,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// Property to set or return the error code to send with the exception.
+		/// Property to set or return the error code to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
 		public int Code
 		{
@@ -281,9 +274,9 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonResult"/> struct.
 		/// </summary>
-		/// <param name="name">Name for the error.</param>
-		/// <param name="code">The code.</param>
-		/// <param name="description">The description.</param>
+		/// <param name="name">The name of the error.</param>
+		/// <param name="code">The numeric code assigned to the error.</param>
+		/// <param name="description">The full description of the error.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
 		public GorgonResult(string name, int code, string description)

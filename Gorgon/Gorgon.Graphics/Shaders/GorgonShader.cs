@@ -76,7 +76,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return whether to include debug information in the shader or not.
 		/// </summary>
 		/// <remarks>
-		/// This property has no effect when the shader is a <see cref="P:GorgonLibrary.Graphics.GorgonShader.IsBinary">binary shader</see> (i.e. no source code).
+		/// This property has no effect when the shader is a <see cref="P:Gorgon.Graphics.GorgonShader.IsBinary">binary shader</see> (i.e. no source code).
 		/// <para>After changing this property, use the <see cref="Gorgon.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
 		/// </remarks>
 		public bool IsDebug

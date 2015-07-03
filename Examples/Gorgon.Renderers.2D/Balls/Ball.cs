@@ -25,8 +25,9 @@
 #endregion
 
 using SlimMath;
+using Gorgon.Graphics;
 
-namespace Gorgon.Graphics.Example
+namespace Gorgon.Examples
 {
 	/// <summary>
 	/// A ball for bouncing.
