@@ -26,33 +26,34 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
-using Gorgon.UI;
 
 namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// Object representing keyboard data.
 	/// </summary>
-	internal class RawKeyboard
+	class RawKeyboard
 		: GorgonKeyboard
 	{
 		#region Variables.
-		private readonly MessageFilter _messageFilter;	                // Window message filter.
-		private RAWINPUTDEVICE _device;									// Input device.
-		private readonly IntPtr _deviceHandle = IntPtr.Zero;			// Device handle.
-		private bool _isBound;											// Flag to indicate that we're bound.
+		// Window message filter.
+		private readonly MessageFilter _messageFilter;	                
+		// Input device.
+		private RAWINPUTDEVICE _device;									
+		// Device handle.
+		private readonly IntPtr _deviceHandle;
+		// Flag to indicate that we're bound.
+		private bool _isBound;											
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve and parse the raw keyboard data.
 		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event argments.</param>
-		private void GetRawData(object sender, RawInputKeyboardEventArgs e)
+		/// <param name="e">Event arguments.</param>
+		private void GetRawData(RawInputKeyboardEventArgs e)
 		{
 		    var state = KeyState.Down;				// Key state.
 
@@ -80,10 +81,10 @@ namespace Gorgon.Input.Raw
 			}
 
 			// Get the key code.
-			var keyCode = (KeyboardKeys)e.KeyboardData.VirtualKey;
+			var keyCode = (KeyboardKey)e.KeyboardData.VirtualKey;
 
 			// Check for left/right versions.
-			KeyboardKeys version = ((e.KeyboardData.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
+			KeyboardKey version = ((e.KeyboardData.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKey.RightVersion : KeyboardKey.LeftVersion;
 
 		    if ((e.KeyboardData.Message == WindowMessages.KeyUp) || (e.KeyboardData.Message == WindowMessages.SysKeyUp) ||
 		        (e.KeyboardData.Message == WindowMessages.IMEKeyUp))
@@ -94,24 +95,24 @@ namespace Gorgon.Input.Raw
 		    // Determine right or left, and unifier key.
 			switch (keyCode)
 			{
-				case KeyboardKeys.ControlKey:	// CTRL.
-			        keyCode = (version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion
-			                      ? KeyboardKeys.RControlKey
-			                      : KeyboardKeys.LControlKey;
+				case KeyboardKey.ControlKey:	// CTRL.
+			        keyCode = (version & KeyboardKey.RightVersion) == KeyboardKey.RightVersion
+			                      ? KeyboardKey.RControlKey
+			                      : KeyboardKey.LControlKey;
 
-			        KeyStates[KeyboardKeys.ControlKey] = state;
+			        KeyStates[KeyboardKey.ControlKey] = state;
 					break;
-				case KeyboardKeys.Menu:			// ALT.
-			        keyCode = (version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion
-			                      ? KeyboardKeys.RMenu
-			                      : KeyboardKeys.LMenu;
+				case KeyboardKey.Menu:			// ALT.
+			        keyCode = (version & KeyboardKey.RightVersion) == KeyboardKey.RightVersion
+			                      ? KeyboardKey.RMenu
+			                      : KeyboardKey.LMenu;
 
-					KeyStates[KeyboardKeys.Menu] = state;
+					KeyStates[KeyboardKey.Menu] = state;
 					break;
-				case KeyboardKeys.ShiftKey:		// Shift.
-			        keyCode = e.KeyboardData.MakeCode == 0x36 ? KeyboardKeys.RShiftKey : KeyboardKeys.LShiftKey;
+				case KeyboardKey.ShiftKey:		// Shift.
+			        keyCode = e.KeyboardData.MakeCode == 0x36 ? KeyboardKey.RShiftKey : KeyboardKey.LShiftKey;
 
-					KeyStates[KeyboardKeys.ShiftKey] = state;
+					KeyStates[KeyboardKey.ShiftKey] = state;
 					break;
 			}
 
@@ -142,7 +143,7 @@ namespace Gorgon.Input.Raw
 
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputKeyboardData += GetRawData;
+				_messageFilter.RawInputKeyboardData = GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -160,7 +161,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_KEYBOARD);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD);
 		    }
 
 			_isBound = true;
@@ -173,7 +174,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputKeyboardData -= GetRawData;
+				_messageFilter.RawInputKeyboardData = null;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -184,7 +185,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_KEYBOARD);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD);
 		    }
 
 			_isBound = false;
@@ -192,19 +193,11 @@ namespace Gorgon.Input.Raw
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RawKeyboard"/> class.
-		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
-		/// <param name="deviceName">Name of the device.</param>
-		/// <param name="handle">The handle to the device.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawKeyboard(GorgonRawInputService owner, string deviceName, IntPtr handle)
-			: base(owner, deviceName)
+		/// <inheritdoc/>
+		internal RawKeyboard(GorgonRawInputService owner, IRawInputKeyboardInfo info)
+			: base(owner, info)
 		{
-			GorgonApplication.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
-
-			_deviceHandle = handle;
+			_deviceHandle = info.Handle;
 			_messageFilter = owner.MessageFilter;
 		}
 		#endregion

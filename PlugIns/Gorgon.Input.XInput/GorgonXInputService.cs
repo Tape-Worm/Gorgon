@@ -35,111 +35,77 @@ using XI = SharpDX.XInput;
 namespace Gorgon.Input.XInput
 {
 	/// <summary>
-	/// Object representing the main interface to the input library.
+	/// The service for XInput controllers.
 	/// </summary>
-	internal class GorgonXInputService
+	class GorgonXInputService
 		: GorgonInputService
 	{
 		#region Methods.
-		/// <summary>
-		/// Function to enumerate the pointing devices on the system.
-		/// </summary>
-		/// <returns>A list of pointing device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> OnEnumerateMice()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
+			return new GorgonNamedObjectDictionary<IGorgonMouseInfo>();
 		}
 
-		/// <summary>
-		/// Function to enumerate the keyboard devices on the system.
-		/// </summary>
-		/// <returns>A list of keyboard device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> OnEnumerateKeyboards()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
+			return new GorgonNamedObjectDictionary<IGorgonKeyboardInfo>();
 		}
 
-		/// <summary>
-		/// Function to enumerate the joystick devices attached to the system.
-		/// </summary>
-		/// <returns>A list of joystick device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> OnEnumerateJoysticks()
 		{
 			// Enumerate all controllers.
-			var result = new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false);
+			var result = new GorgonNamedObjectDictionary<IGorgonJoystickInfo>(false);
 			result.AddRange((from xiDeviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
 			                 where xiDeviceIndex != XI.UserIndex.Any
 			                 orderby xiDeviceIndex
-			                 select new GorgonXInputDeviceInfo(string.Format("{0}: XInput Controller", (int)xiDeviceIndex + 1),
-			                                                   string.Format("XInput_{0}", xiDeviceIndex),
-			                                                   new XI.Controller(xiDeviceIndex),
-			                                                   (int)xiDeviceIndex))
+			                 select
+				                 new XInputJoystickInfo(Guid.NewGuid(),
+				                                        string.Format(Resources.GORINP_XINP_DEVICE_NAME, (int)xiDeviceIndex + 1),
+				                                        new XI.Controller(xiDeviceIndex),
+				                                        (int)xiDeviceIndex))
 				                .OrderBy(item => item.Name));
 
 			return result;
 		}
 
-		/// <summary>
-		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
-		/// </summary>
-		/// <returns>
-		/// A list of custom HID types.
-		/// </returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
+			return new GorgonNamedObjectDictionary<IGorgonHumanInterfaceDeviceInfo>();
 		}
 
-		/// <summary>
-		/// Creates the custom HID impl.
-		/// </summary>
-		/// <param name="window">The window.</param>
-		/// <param name="hidName">Name of the hid.</param>
-		/// <returns></returns>
-		protected override GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidName)
+		/// <inheritdoc/>
+		protected override GorgonCustomHID OnCreateHumanInterfaceDevice(Control window, IGorgonHumanInterfaceDeviceInfo deviceInfo)
 		{
 			throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
-		/// <summary>
-		/// Creates the keyboard impl.
-		/// </summary>
-		/// <param name="window">The window.</param>
-		/// <param name="keyboardName">Name of the keyboard.</param>
-		/// <returns></returns>
-		protected override GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardName)
+		/// <inheritdoc/>
+		protected override GorgonKeyboard OnCreateKeyboard(Control window, IGorgonKeyboardInfo keyboardInfo)
 		{
             throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
-		/// <summary>
-		/// Creates the pointing device impl.
-		/// </summary>
-		/// <param name="window">The window.</param>
-		/// <param name="pointingDeviceName">Name of the pointing device.</param>
-		/// <returns></returns>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceName)
+		/// <inheritdoc/>
+		protected override GorgonPointingDevice OnCreateMouse(Control window, IGorgonMouseInfo pointingDeviceInfo)
 		{
             throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
-		/// <summary>
-		/// Function to create a joystick interface.
-		/// </summary>
-		/// <param name="window">Window to bind with.</param>
-		/// <param name="joystickName">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
-		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
-		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickName)
+		/// <inheritdoc/>
+		protected override GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo deviceInfo)
 		{
-		    var deviceName = joystickName as GorgonXInputDeviceInfo;
+		    var xinputDeviceInfo = deviceInfo as IXInputJoystickInfo;
 
-		    if (deviceName == null)
+		    if (xinputDeviceInfo == null)
 		    {
                 throw new InvalidCastException(Resources.GORINP_XINP_NOT_XINPUT_JOYSTICK);
 		    }
 
-		    return new XInputController(this, deviceName.Index, joystickName.Name, deviceName.Controller);
+			return new XInputController(this, xinputDeviceInfo);
 		}
 		#endregion
 
@@ -148,7 +114,7 @@ namespace Gorgon.Input.XInput
 		/// Initializes a new instance of the <see cref="GorgonXInputService"/> class.
 		/// </summary>
 		public GorgonXInputService()
-			: base("Gorgon XBox 360 Controller Input")
+			: base(Resources.GORINP_XINP_SERVICEDESC)
 		{
 		}
 		#endregion

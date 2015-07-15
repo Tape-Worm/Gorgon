@@ -123,12 +123,10 @@ namespace Gorgon.Input.Raw
 			ResetButtons();
 		}
 
-        /// <summary>
-		/// Function to unbind the device from a window.
-		/// </summary>
-		protected override void UnbindWindow()
+		/// <inheritdoc/>
+		protected override void OnBeforeUnbind()
 		{
-			base.UnbindWindow();
+			base.OnBeforeUnbind();
 
 			if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
 			{
@@ -163,7 +161,7 @@ namespace Gorgon.Input.Raw
 
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputPointingDeviceData += GetRawData;
+				_messageFilter.RawInputPointingDeviceData = GetRawData;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -181,7 +179,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_POINTING_DEVICE);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_BIND_POINTING_DEVICE);
 		    }
 
 			if (!Exclusive)
@@ -201,7 +199,7 @@ namespace Gorgon.Input.Raw
 
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputPointingDeviceData -= GetRawData;
+				_messageFilter.RawInputPointingDeviceData = null;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -212,7 +210,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_UNBIND_POINTING_DEVICE);
 		    }
 
 			_isBound = false;
@@ -221,9 +219,8 @@ namespace Gorgon.Input.Raw
 		/// <summary>
 		/// Function to retrieve and parse the raw pointing device data.
 		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
 		/// <param name="e">Event data to examine.</param>
-		private void GetRawData(object sender, RawInputPointingDeviceEventArgs e)
+		private void GetRawData(RawInputPointingDeviceEventArgs e)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
@@ -409,18 +406,11 @@ namespace Gorgon.Input.Raw
 	    #endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RawPointingDevice"/> class.
-		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
-		/// <param name="deviceName">Device name.</param>
-		/// <param name="handle">The handle to the device.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawPointingDevice(GorgonRawInputService owner, string deviceName, IntPtr handle)
-			: base(owner, deviceName)
+		/// <inheritdoc/>
+		internal RawPointingDevice(GorgonRawInputService owner, IRawInputMouseInfo info)
+			: base(owner, info)
 		{
-			GorgonApplication.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
-			_deviceHandle = handle;
+			_deviceHandle = info.Handle;
 			if (GorgonTimerQpc.SupportsQpc())
 			{
 				_doubleClicker = new GorgonTimerQpc();
@@ -429,6 +419,7 @@ namespace Gorgon.Input.Raw
 			{
 				_doubleClicker = new GorgonTimerMultimedia();
 			}
+
 			_doubleClicker.Reset();
 			_messageFilter = owner.MessageFilter;
 		}

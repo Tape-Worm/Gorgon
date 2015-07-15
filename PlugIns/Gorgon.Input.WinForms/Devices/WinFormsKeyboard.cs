@@ -27,10 +27,6 @@
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Diagnostics;
-using Gorgon.Input.WinForms.Properties;
-using Gorgon.UI;
 
 namespace Gorgon.Input.WinForms
 {
@@ -61,7 +57,7 @@ namespace Gorgon.Input.WinForms
 		/// <param name="uMapType">Mapping type.</param>
 		/// <returns>The scan code.</returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto), SuppressUnmanagedCodeSecurity]
-		private static extern int MapVirtualKey(KeyboardKeys uCode, int uMapType);
+		private static extern int MapVirtualKey(KeyboardKey uCode, int uMapType);
 
 		/// <summary>
 		/// Function to process the keyboard state.
@@ -75,7 +71,7 @@ namespace Gorgon.Input.WinForms
 		        return;
 		    }
 
-		    KeyboardKeys keyCode;
+		    KeyboardKey keyCode;
             if (!_mapper.KeyMapping.TryGetValue(keyEventArgs.KeyCode, out keyCode))
 		    {
 		        return;
@@ -84,44 +80,44 @@ namespace Gorgon.Input.WinForms
 		    // Check for modifiers.
 			switch(keyCode)
 			{
-				case KeyboardKeys.ControlKey:
+				case KeyboardKey.ControlKey:
 			        if ((GetKeyState(Keys.LControlKey) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.LControlKey;
+			            keyCode = KeyboardKey.LControlKey;
 			        }
 
 			        if ((GetKeyState(Keys.RControlKey) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.RControlKey;
+			            keyCode = KeyboardKey.RControlKey;
 			        }
 
-			        KeyStates[KeyboardKeys.ControlKey] = state;
+			        KeyStates[KeyboardKey.ControlKey] = state;
 					break;
-				case KeyboardKeys.Menu:
+				case KeyboardKey.Menu:
 			        if ((GetKeyState(Keys.LMenu) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.LMenu;
+			            keyCode = KeyboardKey.LMenu;
 			        }
 
 			        if ((GetKeyState(Keys.RMenu) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.RMenu;
+			            keyCode = KeyboardKey.RMenu;
 			        }
 
-			        KeyStates[KeyboardKeys.Menu] = state;
+			        KeyStates[KeyboardKey.Menu] = state;
 					break;
-				case KeyboardKeys.ShiftKey:
+				case KeyboardKey.ShiftKey:
 			        if ((GetKeyState(Keys.LShiftKey) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.LShiftKey;
+			            keyCode = KeyboardKey.LShiftKey;
 			        }
 
 			        if ((GetKeyState(Keys.RShiftKey) & 0x80) == 0x80)
 			        {
-			            keyCode = KeyboardKeys.RShiftKey;
+			            keyCode = KeyboardKey.RShiftKey;
 			        }
 
-			        KeyStates[KeyboardKeys.ShiftKey] = state;
+			        KeyStates[KeyboardKey.ShiftKey] = state;
 					break;
 			}
 
@@ -197,15 +193,10 @@ namespace Gorgon.Input.WinForms
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WinFormsKeyboard"/> class.
-		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal WinFormsKeyboard(GorgonInputService owner)
-			: base(owner, Resources.GORINP_WIN_KEYBOARD_DESC)
+		/// <inheritdoc/>
+		internal WinFormsKeyboard(GorgonInputService owner, IGorgonKeyboardInfo keyboardInfo)
+			: base(owner, keyboardInfo)
 		{
-			GorgonApplication.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
 		}
 		#endregion
 	}

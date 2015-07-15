@@ -58,14 +58,15 @@
     </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.dll" />
-      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.xml" />
-      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll" />
-      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.xml" />
-    </DocumentationSources>
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.dll" />
+<DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.xml" />
+<DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll" />
+<DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.xml" /></DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
       <NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>

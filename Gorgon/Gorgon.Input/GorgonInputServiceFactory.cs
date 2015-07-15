@@ -74,7 +74,7 @@ namespace Gorgon.Input
 				                               {
 					                               GorgonInputService service = item.CreateInputService();
 
-												   service.EnumerateDevices();
+					                               service.Log = _log;
 
 					                               return service;
 				                               }));
@@ -100,7 +100,7 @@ namespace Gorgon.Input
 
 			if (string.IsNullOrWhiteSpace(servicePluginName))
 			{
-				throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "servicePluginName");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "servicePluginName");
 			}
 
 			GorgonInputServicePlugin plugin = _pluginService.GetPlugin<GorgonInputServicePlugin>(servicePluginName);
@@ -114,7 +114,7 @@ namespace Gorgon.Input
 
 			GorgonInputService service = plugin.CreateInputService();
 
-			service.EnumerateDevices();
+			service.Log = _log;
 
 			return service;
 		}
@@ -132,7 +132,14 @@ namespace Gorgon.Input
 		{
 			return pluginAssembly == null
 				       ? GetAllServices()
-				       : _pluginService.GetPlugins<GorgonInputServicePlugin>(pluginAssembly).Select(item => item.CreateInputService());
+				       : _pluginService.GetPlugins<GorgonInputServicePlugin>(pluginAssembly).Select(item =>
+				                                                                                    {
+																										GorgonInputService service = item.CreateInputService();
+
+					                                                                                    service.Log = _log;
+
+					                                                                                    return service;
+				                                                                                    });
 		}
 		#endregion
 

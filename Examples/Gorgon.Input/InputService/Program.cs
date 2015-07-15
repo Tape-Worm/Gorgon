@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
@@ -107,7 +108,7 @@ namespace Gorgon.Examples
 		/// Function to load in the input plugins.
 		/// </summary>
 		/// <returns>A list of input plugins.</returns>
-		static IList<Tuple<GorgonInputServicePlugin, GorgonInputService>> GetInputPlugIns()
+		static IList<Tuple<GorgonInputServicePlugin, IGorgonInputService>> GetInputPlugIns()
 		{
 			// Access our plugin cache.
 			using (IGorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
@@ -121,7 +122,7 @@ namespace Gorgon.Examples
 
 				if (files.Length == 0)
 				{
-					return new Tuple<GorgonInputServicePlugin, GorgonInputService>[0];
+					return new Tuple<GorgonInputServicePlugin, IGorgonInputService>[0];
 				}
 
 				// Find our plugins in the DLLs.
@@ -142,12 +143,17 @@ namespace Gorgon.Examples
 				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
 
 				// Create our input service factory.
-				var serviceFactory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+				IGorgonInputServiceFactory serviceFactory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
 
 				// Retrieve the list of plugins from the input service factory.
 				IEnumerable<GorgonInputServicePlugin> inputPlugIns = pluginService.GetPlugins<GorgonInputServicePlugin>();
 
-				return inputPlugIns.Select(plugin => new Tuple<GorgonInputServicePlugin, GorgonInputService>(plugin, serviceFactory.CreateService(plugin.Name))).ToArray();
+				// TODO: This is temporary while developing refactored input service.
+#warning Fix this when the input service is refactored.		
+				return (from plugin in inputPlugIns
+				        let service = serviceFactory.CreateService(plugin.Name)
+				        where service != null
+				        select new Tuple<GorgonInputServicePlugin, IGorgonInputService>(plugin, service)).ToArray();
 			}
 		}
 
@@ -196,24 +202,23 @@ namespace Gorgon.Examples
 			        // Enumerate the devices available on the system.
 				    try
 				    {
-					    plugIn.Item2.EnumerateDevices();
+					    IReadOnlyList<IGorgonKeyboardInfo2> keyboards = plugIn.Item2.EnumerateKeyboards();
+					    IReadOnlyList<IGorgonMouseInfo2> mice = plugIn.Item2.EnumerateMice();
+						IReadOnlyList<IGorgonJoystickInfo2> joysticks = new IGorgonJoystickInfo2[0];//plugIn.Item2.EnumerateJoysticks();
 
 						// The XBox Controller plugin always registers multiple devices, even when none
 						// are physically attached to the system.  So in this case, we'll disregard those.
 						Console.WriteLine("{0}", plugIn.Item1.Description);
 						Console.ForegroundColor = ConsoleColor.Gray;
 						Console.WriteLine("\t{0} keyboards, {1} mice, {2} joysticks found.",
-										  plugIn.Item2.KeyboardDevices.Count,
-										  plugIn.Item2.PointingDevices.Count,
-										  plugIn.Item2.JoystickDevices.Count(item => item.IsConnected));
-
-						// Note that we're checking for connected joysticks, this is because a joystick
-						// like the XBox Controller is always present, but in a disconnected state.
+										  keyboards.Count,
+										  mice.Count,
+										  joysticks.Count(item => item.IsConnected));
 				    }
 				    catch (Exception ex)
 				    {
 					    Console.ForegroundColor = ConsoleColor.Red;
-					    Console.WriteLine("Cannot enumerate {0}. Error:\n{1}", plugIn.Item2.Name, ex.Message.Ellipses(Console.WindowWidth - 4));
+					    Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Item2.GetType().FullName, ex.Message.Ellipses(Console.WindowWidth - 4));
 				    }
 			    }
 			    Console.ResetColor();

@@ -235,15 +235,10 @@ namespace Gorgon.Input.WinForms
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="WinFormsPointingDevice"/> class.
-		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal WinFormsPointingDevice(GorgonInputService owner)
-			: base(owner, Resources.GORINP_WIN_MOUSE_DESC)
+		/// <inheritdoc/>
+		internal WinFormsPointingDevice(GorgonInputService owner, IGorgonMouseInfo pointingDeviceInfo)
+			: base(owner, pointingDeviceInfo)
 		{
-			GorgonApplication.Log.Print("Windows forms input pointing device interface created.", LoggingLevel.Verbose);
 		}
 		#endregion
 	}

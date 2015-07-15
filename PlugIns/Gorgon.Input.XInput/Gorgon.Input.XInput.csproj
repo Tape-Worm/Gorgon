@@ -57,8 +57,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SharpDX">
-      <HintPath>..\..\Dependencies\SharpDX_262\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX, Version=2.6.2.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dependencies\SharpDX_263\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,6 +69,8 @@
     <Compile Include="GorgonXInputPlugIn.cs" />
     <Compile Include="GorgonXInputService.cs" />
     <Compile Include="GorgonXInputDeviceInfo.cs" />
+    <Compile Include="Info\XInputJoystickInfo.cs" />
+    <Compile Include="Info\_Interfaces\IXInputJoystickInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\XInput.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

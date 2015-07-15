@@ -456,7 +456,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    {
 			switch (e.Key)
 			{
-				case KeyboardKeys.Space:
+				case KeyboardKey.Space:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -479,7 +479,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 						ClipMouseUp(sender, args);
 					}
 					break;
-				case KeyboardKeys.NumPad3:
+				case KeyboardKey.NumPad3:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -515,7 +515,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad1:
+				case KeyboardKey.NumPad1:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -551,7 +551,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad9:
+				case KeyboardKey.NumPad9:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -587,7 +587,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad7:
+				case KeyboardKey.NumPad7:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -623,8 +623,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad6:
-				case KeyboardKeys.Right:
+				case KeyboardKey.NumPad6:
+				case KeyboardKey.Right:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -657,8 +657,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad4:
-				case KeyboardKeys.Left:
+				case KeyboardKey.NumPad4:
+				case KeyboardKey.Left:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -692,8 +692,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad2:
-				case KeyboardKeys.Down:
+				case KeyboardKey.NumPad2:
+				case KeyboardKey.Down:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -726,8 +726,8 @@ namespace Gorgon.Editor.FontEditorPlugIn
 					                                            1));
 					Cursor.Position = panelTextures.PointToScreen(new Point((int)_mousePosition.X, (int)_mousePosition.Y));
 					break;
-				case KeyboardKeys.NumPad8:
-				case KeyboardKeys.Up:
+				case KeyboardKey.NumPad8:
+				case KeyboardKey.Up:
 					if (_content.CurrentState != DrawState.ClipGlyph)
 					{
 						return;
@@ -1131,19 +1131,19 @@ namespace Gorgon.Editor.FontEditorPlugIn
 				// This avoids ugly flashing on the panel with the numeric controls.
 			    switch (e.Key)
 			    {
-				    case KeyboardKeys.Up:
-					case KeyboardKeys.Down:
-					case KeyboardKeys.Left:
-					case KeyboardKeys.Right:
-					case KeyboardKeys.NumPad1:
-					case KeyboardKeys.NumPad2:
-					case KeyboardKeys.NumPad3:
-					case KeyboardKeys.NumPad4:
-					case KeyboardKeys.NumPad6:
-					case KeyboardKeys.NumPad7:
-					case KeyboardKeys.NumPad8:
-					case KeyboardKeys.NumPad9:
-					case KeyboardKeys.Space:
+				    case KeyboardKey.Up:
+					case KeyboardKey.Down:
+					case KeyboardKey.Left:
+					case KeyboardKey.Right:
+					case KeyboardKey.NumPad1:
+					case KeyboardKey.NumPad2:
+					case KeyboardKey.NumPad3:
+					case KeyboardKey.NumPad4:
+					case KeyboardKey.NumPad6:
+					case KeyboardKey.NumPad7:
+					case KeyboardKey.NumPad8:
+					case KeyboardKey.NumPad9:
+					case KeyboardKey.Space:
 					    return;
 			    }
 		    }
@@ -1152,13 +1152,13 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			{
 				switch (e.Key)
 				{
-					case KeyboardKeys.Left:
+					case KeyboardKey.Left:
 						buttonPrevTexture.PerformClick();
 						break;
-					case KeyboardKeys.Right:
+					case KeyboardKey.Right:
 						buttonNextTexture.PerformClick();
 						break;
-					case KeyboardKeys.Enter:
+					case KeyboardKey.Enter:
 						if (_selectedGlyph == null)
 						{
 							return;
@@ -1175,13 +1175,13 @@ namespace Gorgon.Editor.FontEditorPlugIn
 						}
 						
 						break;
-					case KeyboardKeys.F4:
+					case KeyboardKey.F4:
 						if (!e.Alt)
 						{
 							ParentForm.Close();
 						}
 						break;
-					case KeyboardKeys.Escape:
+					case KeyboardKey.Escape:
 						if (_selectedGlyph == null)
 						{
 							return;

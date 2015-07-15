@@ -319,50 +319,50 @@ namespace Gorgon.Graphics.Example
 			Matrix rotMatrix;
 			Vector3 cameraDir = Vector3.Zero;
 
-			if (_keyboard.KeyStates[KeyboardKeys.Left] == KeyState.Down)
+			if (_keyboard.KeyStates[KeyboardKey.Left] == KeyState.Down)
 			{
 				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKeys.Right] == KeyState.Down)
+			if (_keyboard.KeyStates[KeyboardKey.Right] == KeyState.Down)
 			{
 				_cameraRotation.X += 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKeys.Up] == KeyState.Down)
+			if (_keyboard.KeyStates[KeyboardKey.Up] == KeyState.Down)
 			{
 				_cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKeys.Down] == KeyState.Down)
+			if (_keyboard.KeyStates[KeyboardKey.Down] == KeyState.Down)
 			{
 				_cameraRotation.Y += 40.0f * GorgonTiming.Delta;
-			} else if (_keyboard.KeyStates[KeyboardKeys.PageUp] == KeyState.Down)
+			} else if (_keyboard.KeyStates[KeyboardKey.PageUp] == KeyState.Down)
 			{
 				_cameraRotation.Z -= 40.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.PageDown] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.PageDown] == KeyState.Down)
 			{
 				_cameraRotation.Z += 40.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.D] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.D] == KeyState.Down)
 			{
 				cameraDir.X = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.A] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.A] == KeyState.Down)
 			{
 				cameraDir.X = -2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.W] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.W] == KeyState.Down)
 			{
 				cameraDir.Z = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.S] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.S] == KeyState.Down)
 			{
 				cameraDir.Z = -2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.Q] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.Q] == KeyState.Down)
 			{
 				cameraDir.Y = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKeys.E] == KeyState.Down)
+			else if (_keyboard.KeyStates[KeyboardKey.E] == KeyState.Down)
 			{
 				cameraDir.Y = -2.0f * GorgonTiming.Delta;
 			}
@@ -652,12 +652,12 @@ namespace Gorgon.Graphics.Example
 
 				_input = inputFactory.CreateService("Gorgon.Input.GorgonRawPlugIn");
 				_keyboard = _input.CreateKeyboard(_form);
-				_mouse = _input.CreatePointingDevice(_form);
+				_mouse = _input.CreateMouse(_form);
 			}
 
 			_keyboard.KeyDown += (sender, args) =>
 			                     {
-				                     if (args.Key == KeyboardKeys.L)
+				                     if (args.Key == KeyboardKey.L)
 				                     {
 					                     _lock = !_lock;
 				                     }

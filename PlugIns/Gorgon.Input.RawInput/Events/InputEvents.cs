@@ -30,9 +30,9 @@ using Gorgon.Native;
 namespace Gorgon.Input.Raw
 {
 	/// <summary>
-	/// Object representing event arguments for the raw input keyboard events.
+	/// Event arguments for the raw input keyboard events.
 	/// </summary>
-	internal class RawInputKeyboardEventArgs
+	class RawInputKeyboardEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -57,7 +57,7 @@ namespace Gorgon.Input.Raw
 
 		#region Constructor.
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="RawInputKeyboardEventArgs"/> class.
 		/// </summary>
 		/// <param name="device">The device that sent the event.</param>
 		/// <param name="data">Raw input data to pass.</param>
@@ -70,9 +70,9 @@ namespace Gorgon.Input.Raw
 	}
 
 	/// <summary>
-	/// Object representing event arguments for the raw input pointing device events.
+	/// Event arguments for the raw input pointing device events.
 	/// </summary>
-	internal class RawInputPointingDeviceEventArgs
+	class RawInputPointingDeviceEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -97,7 +97,7 @@ namespace Gorgon.Input.Raw
 
 		#region Constructor.
 		/// <summary>
-		/// Constructor.
+		/// Initializes a new instance of the <see cref="RawInputPointingDeviceEventArgs"/> class.
 		/// </summary>
 		/// <param name="device">The device that sent the event.</param>
 		/// <param name="data">Raw input data to pass.</param>
@@ -105,57 +105,6 @@ namespace Gorgon.Input.Raw
 		{
 			Handle = device;
 			PointingDeviceData = data;
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// Object representing event arguments for the raw input HID events.
-	/// </summary>
-	internal class RawInputHIDEventArgs
-		: EventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the handle to the device that is receiving the event notification.
-		/// </summary>
-		public IntPtr Handle
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the raw input HID data.
-		/// </summary>
-		public RAWINPUTHID HIDData
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the HID buffer data.
-		/// </summary>
-		public byte[] HIDBuffer
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="device">The device that sent the event.</param>
-		/// <param name="data">Raw input data to pass.</param>
-		/// <param name="hidBuffer">HID buffer data.</param>
-		public RawInputHIDEventArgs(IntPtr device, ref RAWINPUTHID data, byte[] hidBuffer)
-		{
-			Handle = device;
-			HIDData = data;
-			HIDBuffer = hidBuffer;
 		}
 		#endregion
 	}

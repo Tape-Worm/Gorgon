@@ -117,33 +117,51 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORINP_RAW_CANNOT_BIND_HID" xml:space="preserve">
+  <data name="GORINP_RAW_DESC_KEYBOARD" xml:space="preserve">
+    <value>{0} ({1} key {2} keyboard)</value>
+  </data>
+  <data name="GORINP_RAW_DESC_MOUSE" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="GORINP_RAW_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
+    <value>The buffer for raw input device information is too small: {0} bytes.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD" xml:space="preserve">
+    <value>Cannot bind the keyboard to the window. There is already a keyboard exclusively attached to the window.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_MOUSE" xml:space="preserve">
+    <value>Cannot bind the mouse to the window. There is already a mouse exclusively attached to the window.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_HID" xml:space="preserve">
     <value>Failed to bind the HID.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_BIND_KEYBOARD" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD" xml:space="preserve">
     <value>Failed to bind the keyboard device.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_BIND_POINTING_DEVICE" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_POINTING_DEVICE" xml:space="preserve">
     <value>Failed to bind the pointing device.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_GET_JOYSTICK_CAPS" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_GET_DEVICE_HANDLE" xml:space="preserve">
+    <value>Could not retrieve the device handle. Unknown device information type.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_GET_JOYSTICK_CAPS" xml:space="preserve">
     <value>Cannot read capabilities from joystick ID [{0}].
 Error code: 0x{1}</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_READ_DATA" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_READ_DATA" xml:space="preserve">
     <value>Error reading raw input data.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_READ_JOYSTICK_DATA" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_READ_JOYSTICK_DATA" xml:space="preserve">
     <value>Cannot read data from joystick ID [{0}].
 Error code: 0x{1}</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_UNBIND_HID" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_HID" xml:space="preserve">
     <value>Failed to unbind the HID.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_UNBIND_KEYBOARD" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD" xml:space="preserve">
     <value>Failed to unbind the keyboard device.</value>
   </data>
-  <data name="GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE" xml:space="preserve">
+  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_POINTING_DEVICE" xml:space="preserve">
     <value>Failed to unbind the pointing device.</value>
   </data>
   <data name="GORINP_RAW_HIDINFO_NOT_RAW" xml:space="preserve">
@@ -160,5 +178,14 @@ Error code: 0x{1}</value>
   </data>
   <data name="GORINP_RAW_NO_WINDOW_TO_BIND" xml:space="preserve">
     <value>Raw input requires a window to bind with in order to received event data.</value>
+  </data>
+  <data name="GORINP_RAW_SERVICEDESC" xml:space="preserve">
+    <value>Gorgon raw input service</value>
+  </data>
+  <data name="GORINP_RAW_SYSTEM_KEYBOARD" xml:space="preserve">
+    <value>System keyboard</value>
+  </data>
+  <data name="GORINP_RAW_SYSTEM_MOUSE" xml:space="preserve">
+    <value>System mouse</value>
   </data>
 </root>

@@ -26,10 +26,8 @@
 
 using System;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
-using Gorgon.UI;
 
 namespace Gorgon.Input.Raw
 {
@@ -40,46 +38,17 @@ namespace Gorgon.Input.Raw
 		: GorgonCustomHID
 	{
 		#region Variables.
-		private readonly GorgonRawInputDeviceInfo _deviceData;		// Device data.
-		private readonly MessageFilter _messageFilter;		        // Window message filter.
-		private RAWINPUTDEVICE _device;								// Input device.
-		private bool _isBound;										// Flag to indicate that the device was bound.
+		// Device data.
+		private readonly IRawInputHumanInterfaceDeviceInfo _deviceData;
+		// Window message filter.;		
+		private readonly MessageFilter _messageFilter;
+		// Input device.
+		private RAWINPUTDEVICE _device;
+		// Flag to indicate that the device was bound.
+		private bool _isBound;										
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve and parse the raw keyboard data.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event argments.</param>
-		private void GetRawData(object sender, RawInputHIDEventArgs e)
-		{
-		    if ((BoundControl == null) || (BoundControl.Disposing))
-		    {
-		        return;
-		    }
-
-		    if (_deviceData.Handle != e.Handle)
-		    {
-		        return;
-		    }
-
-		    if ((Exclusive) && (!Acquired))
-			{
-				// Attempt to recapture.
-			    if (BoundControl.Focused)
-			    {
-			        Acquired = true;
-			    }
-			    else
-			    {
-			        return;
-			    }
-			}
-
-			SetData("BinaryData", e.HIDData);
-		}
-
 		/// <summary>
 		/// Function to bind the input device.
 		/// </summary>
@@ -94,7 +63,7 @@ namespace Gorgon.Input.Raw
 
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputHIDData += GetRawData;
+				
 			}
 
 			_device.UsagePage = _deviceData.UsagePage;
@@ -112,7 +81,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_HID);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_BIND_HID);
 		    }
 
 			_isBound = true;
@@ -125,7 +94,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputHIDData -= GetRawData;
+				
 			}
 
 			_device.UsagePage = _deviceData.UsagePage;
@@ -136,7 +105,7 @@ namespace Gorgon.Input.Raw
 			// Attempt to register the device.
 		    if (!Win32API.RegisterRawInputDevices(_device))
 		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_HID);
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_UNBIND_HID);
 		    }
 
 			_isBound = false;
@@ -144,18 +113,11 @@ namespace Gorgon.Input.Raw
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RawHIDDevice"/> class.
-		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
-		/// <param name="deviceData">The HID device name object.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawHIDDevice(GorgonRawInputService owner, GorgonRawInputDeviceInfo deviceData)
-			: base(owner, deviceData.Name)
+		/// <inheritdoc/>
+		internal RawHIDDevice(GorgonRawInputService owner, IRawInputHumanInterfaceDeviceInfo deviceInfo)
+			: base(owner, deviceInfo)
 		{
-			GorgonApplication.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
-
-			_deviceData = deviceData;
+			_deviceData = deviceInfo;
 			_messageFilter = owner.MessageFilter;
 			SetData("BinaryData", new byte[0]);
 		}

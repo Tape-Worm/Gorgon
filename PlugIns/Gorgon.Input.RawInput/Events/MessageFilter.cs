@@ -33,28 +33,34 @@ using Gorgon.Native;
 namespace Gorgon.Input.Raw
 {
 	/// <summary>
-	/// Object representing a message loop filter.
+	/// Processor for raw input messages.
 	/// </summary>
-	internal class MessageFilter
+	class MessageFilter
 		: IMessageFilter
 	{
-		#region Events.
+		#region Variables.
+		// Size of the input data in bytes.
+		private readonly int _headerSize = DirectAccess.SizeOf<RAWINPUTHEADER>();	
+		#endregion
+
+		#region Properties.
 		/// <summary>
-		/// Event fired when a raw input keyboard event occours.
+		/// Event fired when a raw input keyboard event occurs.
 		/// </summary>
-		public event EventHandler<RawInputKeyboardEventArgs> RawInputKeyboardData;
+		public Action<RawInputKeyboardEventArgs> RawInputKeyboardData
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Event fired when a pointing device event occurs.
 		/// </summary>
-		public event EventHandler<RawInputPointingDeviceEventArgs> RawInputPointingDeviceData;
-		/// <summary>
-		/// Event fired when an HID event occurs.
-		/// </summary>
-		public event EventHandler<RawInputHIDEventArgs> RawInputHIDData;
-		#endregion
-
-		#region Variables.
-		private readonly int _headerSize = DirectAccess.SizeOf<RAWINPUTHEADER>();	// Size of the input data in bytes.
+		public Action<RawInputPointingDeviceEventArgs> RawInputPointingDeviceData
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region IMessageFilter Members
@@ -74,7 +80,7 @@ namespace Gorgon.Input.Raw
 
 	        if (result == -1)
 	        {
-	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
 	        }
 
 	        // Get actual data.
@@ -88,7 +94,7 @@ namespace Gorgon.Input.Raw
 	        if ((result == -1)
 	            || (result != dataSize))
 	        {
-	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
 	        }
 
 	        var rawInput = *((RAWINPUT*)rawInputPtr);
@@ -98,39 +104,23 @@ namespace Gorgon.Input.Raw
 	            case RawInputType.Mouse:
 	                if (RawInputPointingDeviceData != null) 
 	                {
-	                    RawInputPointingDeviceData(this,
-	                                               new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
+	                    RawInputPointingDeviceData(new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
 	                                                                                   ref rawInput.Union.Mouse));
 	                }
 	                break;
 	            case RawInputType.Keyboard:
 	                if (RawInputKeyboardData != null)
 	                {
-	                    RawInputKeyboardData(this,
-	                                         new RawInputKeyboardEventArgs(rawInput.Header.Device,
+	                    RawInputKeyboardData(new RawInputKeyboardEventArgs(rawInput.Header.Device,
 	                                                                       ref rawInput.Union.Keyboard));
 	                }
 	                break;
-	            default:
-	                if (RawInputHIDData != null)
-	                {
-	                    var HIDData = new byte[rawInput.Union.HID.Size * rawInput.Union.HID.Count];
-	                    var hidDataPtr = rawInputPtr + _headerSize + 8;
-
-	                    fixed(byte* buffer = &HIDData[0])
-	                    {
-	                        DirectAccess.MemoryCopy(buffer, hidDataPtr, HIDData.Length);
-	                    }
-
-	                    RawInputHIDData(this,
-	                                    new RawInputHIDEventArgs(rawInput.Header.Device, ref rawInput.Union.HID, HIDData));
-	                }
-	                break;
+				default:
+			        return true;
 	        }
 
 	        return false;
 	    }
-
 	    #endregion
 	}
 }

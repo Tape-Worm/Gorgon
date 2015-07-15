@@ -146,6 +146,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Core.Test", "..\Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputService", "..\Examples\Gorgon.Input\InputService\InputService.csproj", "{26B09EBD-0140-4274-92EF-6E674FBDBB22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.Test", "..\Test\Gorgon.Input.Test\Gorgon.Input.Test.csproj", "{C8CD2997-3E01-4822-9437-28FEB1035DA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -314,6 +316,10 @@ Global
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8CD2997-3E01-4822-9437-28FEB1035DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8CD2997-3E01-4822-9437-28FEB1035DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8CD2997-3E01-4822-9437-28FEB1035DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8CD2997-3E01-4822-9437-28FEB1035DA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -366,5 +372,6 @@ Global
 		{1AA24833-7C23-4BB9-BC95-81A97FF43880} = {095E1088-8F2F-4D52-9FA4-E5DE469FC039}
 		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F} = {5B52FB0A-CA5A-4F61-86E7-13F822514F77}
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22} = {E110A495-36C7-44AB-9748-A8C29EFA276C}
+		{C8CD2997-3E01-4822-9437-28FEB1035DA5} = {5B52FB0A-CA5A-4F61-86E7-13F822514F77}
 	EndGlobalSection
 EndGlobal

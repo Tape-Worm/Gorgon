@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using Gorgon.Diagnostics;
 using Gorgon.Input.XInput;
 
 namespace Gorgon.Input
@@ -70,6 +71,12 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Methods.
+		/// <inheritdoc/>
+		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
+		{
+			return null;
+		}
+
 		/// <summary>
 		/// Function to create and return a <see cref="GorgonInputService" />.
 		/// </summary>

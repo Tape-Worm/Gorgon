@@ -70,7 +70,14 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonRawPlugIn.cs" />
     <Compile Include="GorgonRawInputDeviceInfo.cs" />
-    <Compile Include="GorgonWMMDeviceInfo.cs" />
+    <Compile Include="Info\RawInputHumanInterfaceDeviceInfo.cs" />
+    <Compile Include="Info\RawInputMouseInfo.cs" />
+    <Compile Include="Info\RawInputKeyboardInfo.cs" />
+    <Compile Include="Info\MultimediaJoystickInfo.cs" />
+    <Compile Include="Info\_Interfaces\IMultimediaJoystickInfo.cs" />
+    <Compile Include="Info\_Interfaces\IRawInputHumanInterfaceDeviceInfo.cs" />
+    <Compile Include="Info\_Interfaces\IRawInputMouseInfo.cs" />
+    <Compile Include="Info\_Interfaces\IRawInputKeyboardInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\RawKeyboard.cs" />
     <Compile Include="Devices\RawPointingDevice.cs" />
@@ -86,6 +93,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="_2\Devices\InputDeviceTypeEqualityComparer.cs" />
+    <Compile Include="_2\Devices\RawInputKeyboardInfo2.cs" />
+    <Compile Include="_2\Devices\RawInputMouseInfo2.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IRawInputKeyboardInfo2.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IRawInputMouseInfo2.cs" />
+    <Compile Include="_2\GorgonRawInputService2.cs" />
+    <Compile Include="_2\Native\RawInputMessageHooker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

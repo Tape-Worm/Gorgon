@@ -292,13 +292,13 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 
 			switch (keyboardEventArgs.Key)
 			{
-				case KeyboardKeys.Left:
+				case KeyboardKey.Left:
 					buttonPrevMipLevel.PerformClick();
 					break;
-				case KeyboardKeys.Right:
+				case KeyboardKey.Right:
 					buttonNextMipLevel.PerformClick();
 					break;
-				case KeyboardKeys.PageUp:
+				case KeyboardKey.PageUp:
 					if ((keyboardEventArgs.Shift)
 						&& (_content.ImageType == ImageType.ImageCube))
 					{
@@ -315,7 +315,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 
 					buttonPrevArrayIndex.PerformClick();
 					break;
-				case KeyboardKeys.PageDown:
+				case KeyboardKey.PageDown:
 					if ((keyboardEventArgs.Shift)
 						&& (_content.ImageType == ImageType.ImageCube))
 					{

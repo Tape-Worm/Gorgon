@@ -166,8 +166,8 @@ namespace Gorgon.Input
 		: EventArgs
 	{
 		#region Variables.
-		private readonly KeyboardKeys _key;						// Key that is pressed.
-		private readonly KeyboardKeys _modifierKey;				// Other keys being held down.
+		private readonly KeyboardKey _key;						// Key that is pressed.
+		private readonly KeyboardKey _modifierKey;				// Other keys being held down.
 		private readonly int _scan;							    // Scan code information.
 		private readonly GorgonKeyboard.KeyCharMap _character;	// Character that the key represents.
 		#endregion
@@ -187,7 +187,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return key that is pressed.
 		/// </summary>
-		public KeyboardKeys Key
+		public KeyboardKey Key
 		{
 			get
 			{
@@ -198,7 +198,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the keys that are being held down during the event.
 		/// </summary>
-		public KeyboardKeys ModifierKeys
+		public KeyboardKey ModifierKeys
 		{
 			get
 			{
@@ -213,7 +213,7 @@ namespace Gorgon.Input
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Alt) == KeyboardKeys.Alt;
+				return (_modifierKey & KeyboardKey.Alt) == KeyboardKey.Alt;
 			}
 		}
 
@@ -224,7 +224,7 @@ namespace Gorgon.Input
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Control) == KeyboardKeys.Control;
+				return (_modifierKey & KeyboardKey.Control) == KeyboardKey.Control;
 			}
 		}
 
@@ -235,7 +235,7 @@ namespace Gorgon.Input
 		{
 			get
 			{
-				return (_modifierKey & KeyboardKeys.Shift) == KeyboardKeys.Shift;
+				return (_modifierKey & KeyboardKey.Shift) == KeyboardKey.Shift;
 			}
 		}
 
@@ -259,7 +259,7 @@ namespace Gorgon.Input
 		/// <param name="modifierKey">Keys that are held down during the event.</param>
 		/// <param name="character">Character that the key represents.</param>
 		/// <param name="scanData">Scan code data.</param>
-		public KeyboardEventArgs(KeyboardKeys key, KeyboardKeys modifierKey, GorgonKeyboard.KeyCharMap character, int scanData)
+		public KeyboardEventArgs(KeyboardKey key, KeyboardKey modifierKey, GorgonKeyboard.KeyCharMap character, int scanData)
 		{
 			_key = key;
 			_modifierKey = modifierKey;

@@ -94,32 +94,32 @@ namespace Gorgon.Examples
 		{
 			switch (e.Key)
 			{
-				case KeyboardKeys.Escape:
+				case KeyboardKey.Escape:
 					Close();			// Close
 					break;
-				case KeyboardKeys.F:
+				case KeyboardKey.F:
 					_screen.UpdateSettings(!_screen.Settings.IsWindowed);
 					break;
-				case KeyboardKeys.Down:
+				case KeyboardKey.Down:
 					_radius -= 1.0f;
 					if (_radius < 2.0f)
 						_radius = 2.0f;
 					break;
-				case KeyboardKeys.Up:
+				case KeyboardKey.Up:
 					_radius += 1.0f;
 					if (_radius > 10.0f)
 						_radius = 10.0f;
 					break;
-				case KeyboardKeys.F1:
+				case KeyboardKey.F1:
 					_blendMode = BlendingMode.Modulate;
 					break;
-				case KeyboardKeys.F2:
+				case KeyboardKey.F2:
 					_blendMode = BlendingMode.Additive;
 					break;
-				case KeyboardKeys.F3:
+				case KeyboardKey.F3:
 					_blendMode = BlendingMode.None;
 					break;
-				case KeyboardKeys.C:
+				case KeyboardKey.C:
 					// Fill the back up image with white.
 					using (var imageLock = _backupImage.Lock(BufferLockFlags.Write))
 					{
@@ -130,7 +130,7 @@ namespace Gorgon.Examples
 					_backBuffer.CopySubResource(_backupImage,
 			            new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height));
 			        break;
-				case KeyboardKeys.J:
+				case KeyboardKey.J:
 					if (_input.JoystickDevices.Count != 0)
 					{
 						// Disable if we go beyond the end of the list.
@@ -350,7 +350,7 @@ namespace Gorgon.Examples
 
 				// Create mouse, keyboard and joystick interfaces.
 				_keyboard = _input.CreateKeyboard(this);
-				_mouse = _input.CreatePointingDevice(this);
+				_mouse = _input.CreateMouse(this);
 				_joystickList = _input.JoystickDevices.Select(item => _input.CreateJoystick(this, item.Name)).ToArray();
 
 				// Create the graphics interface.

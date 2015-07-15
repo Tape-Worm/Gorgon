@@ -39,102 +39,58 @@ namespace Gorgon.Input.WinForms
 		: GorgonInputService
 	{
 		#region Methods.
-		/// <summary>
-		/// Function to enumerate the pointing devices on the system.
-		/// </summary>
-		/// <returns>A list of pointing device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumeratePointingDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> OnEnumerateMice()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false)
+			return new GorgonNamedObjectDictionary<IGorgonMouseInfo>(false)
 			       {
-				       new GorgonWinFormsInputDeviceInfo("System Mouse", InputDeviceType.PointingDevice, "SysMouse", "SysMouse")
+					   new WinFormsMouseInfo()
 			       };
 		}
 
-		/// <summary>
-		/// Function to enumerate the keyboard devices on the system.
-		/// </summary>
-		/// <returns>A list of keyboard device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> OnEnumerateKeyboards()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>(false)
+			return new GorgonNamedObjectDictionary<IGorgonKeyboardInfo>(false)
 			       {
-				       new GorgonWinFormsInputDeviceInfo("System Keyboard", InputDeviceType.Keyboard, "SysKeyboard", "SysKeyboard")
+					   new WinFormsKeyboardInfo()
 			       };
 		}
 
-		/// <summary>
-		/// Function to enumerate the joystick devices attached to the system.
-		/// </summary>
-		/// <returns>A list of joystick device names.</returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> OnEnumerateJoysticks()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
+			return new GorgonNamedObjectDictionary<IGorgonJoystickInfo>();
 		}
 
-		/// <summary>
-		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
-		/// </summary>
-		/// <returns>
-		/// A list of custom HID types.
-		/// </returns>
-		protected override IGorgonNamedObjectReadOnlyDictionary<GorgonInputDeviceInfo> EnumerateCustomHIDs()
+		/// <inheritdoc/>
+		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices()
 		{
-			return new GorgonNamedObjectDictionary<GorgonInputDeviceInfo>();
+			return new GorgonNamedObjectDictionary<IGorgonHumanInterfaceDeviceInfo>();
 		}
 
-		/// <summary>
-		/// Function to create a custom HID interface.
-		/// </summary>
-		/// <param name="window">Window to bind with.</param>
-		/// <param name="hidInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the HID information.</param>
-		/// <returns>
-		/// A new custom HID interface.
-		/// </returns>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
-		protected override GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo)
+		/// <inheritdoc/>
+		protected override GorgonCustomHID OnCreateHumanInterfaceDevice(Control window, IGorgonHumanInterfaceDeviceInfo hidInfo)
 		{
-			throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
+			throw new NotSupportedException(Resources.GORINP_ERR_KEYBOARD_MOUSE_ONLY);
 		}
 
-		/// <summary>
-		/// Function to create a keyboard interface.
-		/// </summary>
-		/// <param name="keyboardInfo">Name of the keyboard device to create.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new keyboard interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
-		protected override GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardInfo)
+		/// <inheritdoc/>
+		protected override GorgonKeyboard OnCreateKeyboard(Control window, IGorgonKeyboardInfo keyboardInfo)
 		{
-			return new WinFormsKeyboard(this);
+			return new WinFormsKeyboard(this, keyboardInfo);
 		}
 
-		/// <summary>
-		/// Function to create a pointing device interface.
-		/// </summary>
-		/// <param name="pointingDeviceInfo">Name of the pointing device device to create.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new pointing device interface.</returns>
-		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
-		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
-		/// </remarks>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceInfo)
+		/// <inheritdoc/>
+		protected override GorgonPointingDevice OnCreateMouse(Control window, IGorgonMouseInfo pointingDeviceInfo)
 		{
-			return new WinFormsPointingDevice(this);
+			return new WinFormsPointingDevice(this, pointingDeviceInfo);
 		}
 
-		/// <summary>
-		/// Function to create a joystick interface.
-		/// </summary>
-		/// <param name="joystickInfo">A <see cref="Gorgon.Input.GorgonInputDeviceInfo">GorgonDeviceName</see> object containing the joystick information.</param>
-		/// <param name="window">Window to bind with.</param>
-		/// <returns>A new joystick interface.</returns>
-		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:Gorgon.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickInfo)
+		/// <inheritdoc/>
+		protected override GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo joystickInfo)
 		{
-            throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
+            throw new NotSupportedException(Resources.GORINP_ERR_KEYBOARD_MOUSE_ONLY);
 		}
 		#endregion
 

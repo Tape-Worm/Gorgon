@@ -719,6 +719,7 @@ Created: $CREATED_MONTH$/$CREATED_DAY$/$CREATED_YEAR$ $CREATED_TIME$&#xD;
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ABGR/@EntryIndexedValue">ABGR</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=API/@EntryIndexedValue">API</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ARGB/@EntryIndexedValue">ARGB</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=AT/@EntryIndexedValue">AT</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=BC/@EntryIndexedValue">BC</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=BGRA/@EntryIndexedValue">BGRA</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=BMP/@EntryIndexedValue">BMP</s:String>
@@ -751,6 +752,7 @@ Created: $CREATED_MONTH$/$CREATED_DAY$/$CREATED_YEAR$ $CREATED_TIME$&#xD;
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=HQ/@EntryIndexedValue">HQ</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=HTML/@EntryIndexedValue">HTML</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=HWND/@EntryIndexedValue">HWND</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ICO/@EntryIndexedValue">ICO</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ID/@EntryIndexedValue">ID</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=IME/@EntryIndexedValue">IME</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=IO/@EntryIndexedValue">IO</s:String>
@@ -777,6 +779,7 @@ Created: $CREATED_MONTH$/$CREATED_DAY$/$CREATED_YEAR$ $CREATED_TIME$&#xD;
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UAV/@EntryIndexedValue">UAV</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=URI/@EntryIndexedValue">URI</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=USB/@EntryIndexedValue">USB</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UUID/@EntryIndexedValue">UUID</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UV/@EntryIndexedValue">UV</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WARP/@EntryIndexedValue">WARP</s:String>
@@ -784,6 +787,7 @@ Created: $CREATED_MONTH$/$CREATED_DAY$/$CREATED_YEAR$ $CREATED_TIME$&#xD;
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WVP/@EntryIndexedValue">WVP</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XML/@EntryIndexedValue">XML</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XR/@EntryIndexedValue">XR</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=XT/@EntryIndexedValue">XT</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ZIP/@EntryIndexedValue">ZIP</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=EnumMember/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb"&gt;&lt;ExtraRule Prefix="" Suffix="" Style="AaBb_AaBb" /&gt;&lt;ExtraRule Prefix="" Suffix="" Style="AaBb_aaBb" /&gt;&lt;/Policy&gt;</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/PredefinedNamingRules/=Locals/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="aaBb"&gt;&lt;ExtraRule Prefix="" Suffix="" Style="AaBb" /&gt;&lt;/Policy&gt;</s:String>

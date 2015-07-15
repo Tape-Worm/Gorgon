@@ -26,8 +26,11 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Security;
+using Gorgon.Input.Raw.Properties;
 
 namespace Gorgon.Native
 {
@@ -47,7 +50,7 @@ namespace Gorgon.Native
 	/// </para>
 	/// </remarks>
 	[SuppressUnmanagedCodeSecurity]
-	internal static class Win32API
+	static class Win32API
 	{
 		#region Methods.
 		/// <summary>
@@ -239,13 +242,30 @@ namespace Gorgon.Native
 		/// <returns>The device information structure.</returns>
 		public static unsafe RID_DEVICE_INFO GetDeviceInfo(IntPtr deviceHandle)
 		{
-			int dataSize = DirectAccess.SizeOf<RID_DEVICE_INFO>();
+			int dataSize = 0;
+			int errCode = GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, IntPtr.Zero, ref dataSize);
+
+			if ((errCode != -1) && (errCode != 0))
+			{
+				throw new Win32Exception(Marshal.GetLastWin32Error());
+			}
+
+			if (errCode == -1)
+			{
+				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
+			}
 
 			byte* data = stackalloc byte[dataSize];
+			errCode = GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize);
 
-			if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize) < 0)
+			if (errCode < -1)
 			{
-				throw new Win32Exception();
+				throw new Win32Exception(Marshal.GetLastWin32Error());
+			}
+			
+			if (errCode == -1)
+			{
+				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
 			}
 
 			RID_DEVICE_INFO result;
@@ -291,6 +311,13 @@ namespace Gorgon.Native
 			return result;
 		}
 
+		/// <summary>
+		/// Function to retrieve keyboard type information.
+		/// </summary>
+		/// <param name="nTypeFlag">The type of info.</param>
+		/// <returns>The requested information.</returns>
+		[DllImport("User32.dll", CharSet = CharSet.Ansi)]
+		public static extern int GetKeyboardType(int nTypeFlag);
 		#endregion
 
 		#region Constructor.

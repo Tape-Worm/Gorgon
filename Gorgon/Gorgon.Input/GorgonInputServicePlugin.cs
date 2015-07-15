@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Diagnostics;
 using Gorgon.Plugins;
 
 namespace Gorgon.Input
@@ -42,6 +43,8 @@ namespace Gorgon.Input
 		#region Variables.
 		// The lazily created input service.
 		private readonly Lazy<GorgonInputService> _inputService;
+		// The lazily created input service.
+		private readonly Lazy<IGorgonInputService> _inputService2;
 		#endregion
 
 		#region Properties.
@@ -68,6 +71,15 @@ namespace Gorgon.Input
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return the log file to use with the plug in.
+		/// </summary>
+		public IGorgonLog Log
+		{
+			get;
+			internal set;
+		}
 		#endregion
 
 		#region Methods.
@@ -85,6 +97,22 @@ namespace Gorgon.Input
 		{
 			return _inputService.Value;
 		}
+
+		/// <summary>
+		/// Function to create and return a <see cref="GorgonInputService"/>.
+		/// </summary>
+		/// <param name="log">The logging interface to use for debug logging.</param>
+		/// <returns>The interface for the input factory.</returns>
+		protected abstract IGorgonInputService OnCreateInputService2(IGorgonLog log);
+
+		/// <summary>
+		/// Function to create and return an input service.
+		/// </summary>
+		/// <returns>The interface for the input factory.</returns>
+		internal IGorgonInputService CreateInputService2()
+		{
+			return _inputService2.Value;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -96,6 +124,8 @@ namespace Gorgon.Input
 			: base(description)
 		{			
 			_inputService = new Lazy<GorgonInputService>(OnCreateInputService);
+			_inputService2 = new Lazy<IGorgonInputService>(() => OnCreateInputService2(Log));
+			Log = new GorgonLogDummy();
 		}
 		#endregion		
 	}

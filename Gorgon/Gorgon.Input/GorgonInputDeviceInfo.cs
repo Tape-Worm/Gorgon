@@ -30,50 +30,23 @@ using Gorgon.Input.Properties;
 
 namespace Gorgon.Input
 {
-	/// <summary>
-	/// Input device type.
-	/// </summary>
-	[Flags]
-	public enum InputDeviceType
-	{
-		/// <summary>
-		/// No device type.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Keyboard input device.
-		/// </summary>
-		Keyboard = 1,
-		/// <summary>
-		/// Pointing input device.
-		/// </summary>
-		PointingDevice = 2,
-		/// <summary>
-		/// Joystick/gamepad input device.
-		/// </summary>
-		Joystick = 4,
-		/// <summary>
-		/// Generic HID input device.
-		/// </summary>
-		HID = 8
-	}
 
 	/// <summary>
 	/// Name of an input device object.
 	/// </summary>
 	/// <remarks>Devices are often associated by strings, handles, GUIDs, or even integer IDs by the operating system and whatever back end library (Raw Input, DirectInput, WinForms, etc...) is being used, Gorgon uses this object to wrap up the handle and provide 
-	/// user friendly information about the device, such as its name, <see cref="Gorgon.Input.GorgonInputDeviceInfo.HIDPath">HID path</see>, and <see cref="Gorgon.Input.GorgonInputDeviceInfo.ClassName">class name</see>.
+	/// user friendly information about the device, such as its name, <see cref="Gorgon.Input.GorgonInputDeviceInfo.HumanInterfaceDevicePath">HID path</see>, and <see cref="Gorgon.Input.GorgonInputDeviceInfo.ClassName">class name</see>.
 	/// <para>Implementors of input plug-ins must implement this in the plug-in and return a handle of whatever type is required by the back end input library.  For example, DirectInput uses GUIDs to ID the devices, so the implementor must 
 	/// use a <see cref="System.Guid"/> type as a handle.  See the GoronRawInputDeviceName.cs file for an example of how to do this.</para>
 	/// </remarks>
 	public abstract class GorgonInputDeviceInfo
-		: GorgonNamedObject
+		: IGorgonInputDeviceInfo
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return the internal ID for the factory.
 		/// </summary>
-		internal Guid UUID
+		public Guid UUID
 		{
 			get;
 			private set;
@@ -82,7 +55,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the HID path to the device.
 		/// </summary>
-		public string HIDPath
+		public string HumanInterfaceDevicePath
 		{
 			get;
 			private set;
@@ -124,7 +97,7 @@ namespace Gorgon.Input
 		/// </returns>
 		public override string ToString()
 		{
-			return Name;
+			return string.Format("{0}: {1}", InputDeviceType, Name);
 		}
 		#endregion
 
@@ -136,25 +109,56 @@ namespace Gorgon.Input
 		/// <param name="deviceType">The type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
-        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/>, <paramref name="className"/> or <paramref name="hidPath"/> are NULL or empty.</exception>
-		/// <exception cref="System.ArgumentNullException"></exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="className"/> or <paramref name="hidPath"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/>, <paramref name="className"/> or <paramref name="hidPath"/> parameters empty.</exception>
 		protected GorgonInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath)
-			: base(name)
 		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (className == null)
+			{
+				throw new ArgumentNullException("className");
+			}
+
+			if (hidPath == null)
+			{
+				throw new ArgumentNullException("hidPath");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
 		    if (string.IsNullOrWhiteSpace(className))
 		    {
-                throw new ArgumentException(Resources.GORINP_PARAMETER_NULL_EMPTY, "className");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "className");
 		    }
 
 		    if (string.IsNullOrWhiteSpace(hidPath))
 		    {
-                throw new ArgumentException(Resources.GORINP_PARAMETER_NULL_EMPTY, "hidPath");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "hidPath");
 		    }
 
+			Name = name;
 		    InputDeviceType = deviceType;
 			ClassName = className;
-			HIDPath = hidPath;
+			HumanInterfaceDevicePath = hidPath;
 			UUID = Guid.NewGuid();
+		}
+		#endregion
+
+		#region IGorgonNamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		public string Name
+		{
+			get;
+			private set;
 		}
 		#endregion
 	}

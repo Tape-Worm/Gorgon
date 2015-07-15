@@ -25,9 +25,11 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
@@ -79,7 +81,7 @@ namespace Gorgon.Examples
 	/// In this example, if a joystick is detected it will be noted on the display panel and pressing the primary button will 
 	/// draw a spray effect to the display panel.
     /// 
-    /// Joystick axis infomation usually returns values much larger than the available display area, usually between a negative
+    /// Joystick axis information usually returns values much larger than the available display area, usually between a negative
     /// and positive value and with the y-axis flipped.  So when we gather the information, we need to flip the y-axis and 
     /// transform the coordinates into screen space via the JoystickTransformed property.
 	/// </remarks>
@@ -88,7 +90,7 @@ namespace Gorgon.Examples
 		#region Variables.
         private Spray _spray;                                   // The spray effect.
         private MouseCursor _cursor;                            // Our mouse cursor.
-		private GorgonInputService _service;					// Our input service.
+		private IGorgonInputService _service;					// Our input service.
 		private GorgonPointingDevice _mouse;					// Our mouse interface.
 		private GorgonJoystick _joystick;						// A joystick interface.
 		private GorgonKeyboard _keyboard;						// Our keyboard interface.
@@ -119,7 +121,7 @@ namespace Gorgon.Examples
                 _joystick.Poll();
 
                 // Ensure that the joystick is connected and the button is pressed.
-	            if (!_joystick.IsConnected)
+	            if (!_joystick.Info.IsConnected)
 	            {
 		            return screenPosition;
 	            }
@@ -127,18 +129,18 @@ namespace Gorgon.Examples
 	            // Get our joystick data and constrain it.
 	            // First get the normalized joystick value.
 	            // Do this by first shifting the coordinates to the minimum range value.
-	            var stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
-		            _joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
+	            var stickNormalized = new PointF(_joystick.Axis[JoystickAxis.XAxis] - (float)_joystick.Info.AxisRanges[JoystickAxis.XAxis].Minimum,
+		            _joystick.Axis[JoystickAxis.YAxis] - (float)_joystick.Info.AxisRanges[JoystickAxis.YAxis].Minimum);
 	            // Then normalize.
-	            stickNormalized = new PointF(stickNormalized.X / (_joystick.Capabilities.XAxisRange.Range + 1), 
-		            stickNormalized.Y / (_joystick.Capabilities.YAxisRange.Range + 1));
+	            stickNormalized = new PointF(stickNormalized.X / (_joystick.Info.AxisRanges[JoystickAxis.XAxis].Range + 1), 
+		            stickNormalized.Y / (_joystick.Info.AxisRanges[JoystickAxis.YAxis].Range + 1));
 
 	            // Now transform the normalized point into display space.
 	            screenPosition = new Point((int)(stickNormalized.X * (panelDisplay.ClientSize.Width - 1)) 
 		            , (panelDisplay.ClientSize.Height - 1) - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
 
 					
-	            if (_joystick.Button[0].IsPressed)
+	            if (_joystick.Button[0] == JoystickButtonState.Down)
 	            {
 		            // Spray the screen.
 		            _currentCursor = Resources.hand_pointer_icon;
@@ -214,15 +216,15 @@ namespace Gorgon.Examples
             }
 
             // Display the proper joystick text.
-            if (_joystick.IsConnected)
+            if (_joystick.Info.IsConnected)
             {
                 labelJoystick.Text = string.Format("{0} connected.  Position: {1}x{2} (Raw {4}x{5}).  Primary button {3}"
                                             , _joystick.Name
                                             , joystickTransformed.X
                                             , joystickTransformed.Y
-                                            , (_joystick.Button[0].IsPressed ? "pressed" : "not pressed (press the button to spray).")
-                                            , _joystick.X
-                                            , _joystick.Y);
+                                            , (_joystick.Button[0] == JoystickButtonState.Down ? "pressed" : "not pressed (press the button to spray).")
+                                            , _joystick.Axis[JoystickAxis.XAxis]
+											, _joystick.Axis[JoystickAxis.YAxis]);
             }
             else
             {
@@ -262,29 +264,29 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    /// <param name="key">Key that's currently pressed.</param>
 	    /// <param name="shift">Shifted keys.</param>
-	    private void UpdateKeyboardLabel(KeyboardKeys key, KeyboardKeys shift)
+	    private void UpdateKeyboardLabel(KeyboardKey key, KeyboardKey shift)
 		{
-			var shiftKey = KeyboardKeys.None;
+			var shiftKey = KeyboardKey.None;
 
-			if ((KeyboardKeys.Alt & shift) == KeyboardKeys.Alt)
+			if ((KeyboardKey.Alt & shift) == KeyboardKey.Alt)
 			{
-				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LMenu : KeyboardKeys.RMenu;
+				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LMenu : KeyboardKey.RMenu;
 			}
 
-			if ((shift & KeyboardKeys.Control) == KeyboardKeys.Control)
+			if ((shift & KeyboardKey.Control) == KeyboardKey.Control)
 			{
-				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LControlKey : KeyboardKeys.RControlKey;
+				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LControlKey : KeyboardKey.RControlKey;
 			}
 
-			if ((shift & KeyboardKeys.Shift) == KeyboardKeys.Shift)
+			if ((shift & KeyboardKey.Shift) == KeyboardKey.Shift)
 			{
-				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LShiftKey : KeyboardKeys.RShiftKey;
+				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LShiftKey : KeyboardKey.RShiftKey;
 			}
 
 
 			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)"
 												, key
-												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
+												, ((shiftKey != KeyboardKey.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
                                                 , _keyboard.Name);				
 		}
 
@@ -329,7 +331,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="KeyboardEventArgs" /> instance containing the event data.</param>
 		private void _keyboard_KeyUp(object sender, KeyboardEventArgs e)
 		{
-			UpdateKeyboardLabel(KeyboardKeys.None, e.ModifierKeys);
+			UpdateKeyboardLabel(KeyboardKey.None, e.ModifierKeys);
 		}
 
 		/// <summary>
@@ -340,7 +342,7 @@ namespace Gorgon.Examples
 		private void _keyboard_KeyDown(object sender, KeyboardEventArgs e)
 		{
 			// If we press "P", then switch between polling and events.
-			if (e.Key == KeyboardKeys.P)
+			if (e.Key == KeyboardKey.P)
 			{
 				_usePolling = !_usePolling;
 				if (_usePolling)
@@ -360,7 +362,7 @@ namespace Gorgon.Examples
 			}
 
 			// Exit the application.
-			if (e.Key == KeyboardKeys.Escape)
+			if (e.Key == KeyboardKey.Escape)
 			{
 				Close();
 				return;
@@ -399,8 +401,9 @@ namespace Gorgon.Examples
         /// </summary>
         private void CreateMouse()
         {
+	        return;
             // Create the device from the factory.
-            _mouse = _service.CreatePointingDevice(panelDisplay);
+            //_mouse = _service.CreateMouse(panelDisplay);
 
             // Set up the mouse for use.
             _mouse.Enabled = true;
@@ -427,8 +430,9 @@ namespace Gorgon.Examples
         /// </summary>
         private void CreateKeyboard()
         {
+	        return;
             // Create our device.
-            _keyboard = _service.CreateKeyboard(panelDisplay);
+            //_keyboard = _service.CreateKeyboard(panelDisplay);
 
             // Enable the devices.
             _keyboard.Enabled = true;
@@ -436,22 +440,22 @@ namespace Gorgon.Examples
             _keyboard.KeyDown += _keyboard_KeyDown;
             _keyboard.KeyUp += _keyboard_KeyUp;
 
-			UpdateKeyboardLabel(KeyboardKeys.None, KeyboardKeys.None);
+			UpdateKeyboardLabel(KeyboardKey.None, KeyboardKey.None);
         }
 
         /// <summary>
         /// Function to create the joystick device.
         /// </summary>
-        private void CreateJoystick()
+        private void CreateJoystick(IReadOnlyList<IGorgonJoystickInfo2> joystickDevices)
         {
             // If we have a joystick controller, then let's activate it.
-	        if (_service.JoystickDevices.Count <= 0)
+	        if (joystickDevices.Count <= 0)
 	        {
 		        return;
 	        }
 
 	        // Find the first one that's active.
-	        var activeDevice = (from joystick in _service.JoystickDevices
+			var activeDevice = (from joystick in joystickDevices
 		        where joystick.IsConnected
 		        select joystick).FirstOrDefault();
 
@@ -462,7 +466,9 @@ namespace Gorgon.Examples
 
 	        // Note that joysticks from Raw Input are always exclusive access,
 	        // so setting _joystick.Exclusive = true; does nothing.
-	        _joystick = _service.CreateJoystick(panelDisplay, activeDevice.Name);
+			// TODO: Needs to be refactored.
+#warning Fix this later.
+//	        _joystick = _service.CreateJoystick(panelDisplay, null);
 
 	        // Show our joystick information.
 	        labelJoystick.Text = string.Empty;
@@ -512,22 +518,21 @@ namespace Gorgon.Examples
 
 				// Create our input factory.
 				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
-				var factory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+				IGorgonInputServiceFactory factory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
 				_service = factory.CreateService(pluginName);
 
-				// Get our device info.
-				// This function is called when the factory is created.
-				// However, I'm calling it here just to show that it exists.
-				_service.EnumerateDevices();
+				// Ensure that we have the necessary input devices.
+				IReadOnlyList<IGorgonMouseInfo2> mice = _service.EnumerateMice();
 
-				// Validate, even though it's highly unlikely we'll run into these.
-				if (_service.PointingDevices.Count == 0)
+				if (mice.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no mice detected on this computer.  The application requires a mouse.");
 					GorgonApplication.Quit();
 				}
 
-				if (_service.KeyboardDevices.Count == 0)
+				IReadOnlyList<IGorgonKeyboardInfo2> keyboards = _service.EnumerateKeyboards();
+
+				if (keyboards.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "There were no keyboards detected on this computer.  The application requires a keyboard.");
 					GorgonApplication.Quit();
@@ -536,7 +541,7 @@ namespace Gorgon.Examples
 				// Get our input devices.				
 				CreateMouse();
 				CreateKeyboard();
-				CreateJoystick();
+				CreateJoystick(new IGorgonJoystickInfo2[0]);
 
 				// When the display area changes size, update the spray effect
 				// and limit the mouse.
