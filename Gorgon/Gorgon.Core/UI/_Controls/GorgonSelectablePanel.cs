@@ -144,8 +144,23 @@ namespace Gorgon.UI
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
 	    protected override void WndProc(ref Message m)
 	    {
+		    WindowMessages message = (WindowMessages)m.Msg;
+
+		    switch (message)
+		    {
+				case WindowMessages.LeftButtonDown:
+				case WindowMessages.RightButtonDown:
+				case WindowMessages.MiddleButtonDown:
+				    if (!Focused)
+				    {
+					    Focus();
+				    }
+
+				    break;
+		    }
+
             // Turn off mouse wheel scrolling if auto scroll is on.
-	        if ((m.Msg == (int)WindowMessages.MouseWheel) && (AutoScroll) && (AutoScrollMinSize.Height > 0))
+	        if ((message == WindowMessages.MouseWheel) && (AutoScroll) && (AutoScrollMinSize.Height > 0))
 	        {
 	            return;
 	        }

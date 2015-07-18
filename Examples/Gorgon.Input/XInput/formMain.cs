@@ -98,7 +98,7 @@ namespace Gorgon.Examples
 			var label = (Label)panel.Controls["labelController" + index];			
 
 			// Update the label visibility for the controller.
-			if (joystick.IsConnected)
+			if (joystick.Info.IsConnected)
 			{
 				if (!panel.Visible)
 				{
@@ -107,7 +107,7 @@ namespace Gorgon.Examples
 			}
 			else
 			{
-				label.Text = string.Format("{0} ({1})", joystick.Name, _service.JoystickDevices[joystick.Name].ClassName);
+				label.Text = string.Format("{0} ({1})", joystick.Name, joystick.Info.ClassName);
 
 				// Turn off the other ones since we don't want to clutter 
 				// up the screen.

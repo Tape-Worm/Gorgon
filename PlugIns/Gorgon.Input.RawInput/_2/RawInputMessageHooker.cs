@@ -72,6 +72,10 @@ namespace Gorgon.Input.Raw
 
 			IntPtr currentWndProc = Win32API.GetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc);
 
+			// We only unhook our own procedure, if someone else hooks after us, and does not clean up, then there's nothing 
+			// we can do, and rather than bring down a mess of procedures inappropriately, it's best if we just leave it be.
+			// It may still be active on the window, but for all intents and purposes, it should be harmless and cause a tiny 
+			// bit of unnecessary overhead in the worst case.
 			if (currentWndProc == _newWndProc)
 			{
 				Win32API.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc, _oldWndProc);

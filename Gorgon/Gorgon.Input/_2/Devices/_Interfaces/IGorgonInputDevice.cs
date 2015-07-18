@@ -36,6 +36,28 @@ namespace Gorgon.Input
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the unique identifier for this device.
+		/// </summary>
+		/// <remarks>
+		/// This unique identifier is for Gorgon's internal usage. It will change every time a new device is created, and as such may not be suitable for use outside of Gorgon.
+		/// </remarks>
+		Guid UUID
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether the device uses polling exclusively to operate, or can receive event data from the service.
+		/// </summary>
+		/// <remarks>
+		/// Devices in Gorgon can either be polled, or triggered by events from the operating system. However, some devices only use polling. If that is the case, this property will return <b>true</b>.
+		/// </remarks>
+		bool IsPolled
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the window that this input device is bound with.
 		/// </summary>
 		/// <remarks>

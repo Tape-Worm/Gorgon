@@ -1,8 +1,32 @@
-﻿using System;
+﻿#region MIT
+// 
+// Gorgon.
+// Copyright (C) 2015 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Saturday, July 18, 2015 4:37:48 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Gorgon.Input
 {
@@ -11,14 +35,34 @@ namespace Gorgon.Input
 		: IGorgonInputService
 	{
 		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
+		// A list of forwarder methods used to send data to a registered keyboard device.
+		private readonly Dictionary<Guid, Action<GorgonKeyboardData>> _keyboardForwarders = new Dictionary<Guid, Action<GorgonKeyboardData>>();
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to forward keyboard data on to the appropriate device.
+		/// </summary>
+		/// <param name="device">The device to send the data to.</param>
+		/// <param name="data">Data to send to the device.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		protected void SendKeyboardData(IGorgonInputDevice device, ref GorgonKeyboardData data)
+		{
+			if (device == null)
+			{
+				throw new ArgumentNullException("device");
+			}
+
+			Action<GorgonKeyboardData> forwarder;
+
+			if (!_keyboardForwarders.TryGetValue(device.UUID, out forwarder))
+			{
+				return;
+			}
+
+			forwarder(data);
+		}
+
 		/// <summary>
 		/// Function to acquire or unacquire a device.
 		/// </summary>
@@ -35,11 +79,14 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="device">The device that is being bound to the window.</param>
 		/// <param name="deviceInfo">Information about the device being bound to the window.</param>
+		/// <param name="parentForm">The parent form for the window.</param>
+		/// <param name="window">The window that the device is being bound with.</param>
+		/// <param name="exclusive"><b>true</b> if the device is being registered as exclusive, <b>false</b> if not.</param>
 		/// <remarks>
 		/// Plug in implementors will use this method to ensure that required functionality is present when a device is bound to a window. This method will be called when the <see cref="IGorgonInputDevice.BindWindow"/> 
 		/// method is called.
 		/// </remarks>
-		protected abstract internal void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo);
+		protected internal abstract void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, bool exclusive);
 
 		/// <summary>
 		/// Function to unregister a device when it unbinds from a window.
@@ -50,7 +97,7 @@ namespace Gorgon.Input
 		/// Plug in implementors will use this method to ensure that any clean up required for functionality is present when a device is unbound from a window. This method will be called when the 
 		/// <see cref="IGorgonInputDevice.UnbindWindow"/>  method is called.
 		/// </remarks>
-		protected abstract internal void UnregisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo);
+		protected internal abstract void UnregisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo);
 
 		/// <summary>
 		/// Function to perform enumeration of keyboard devices.
@@ -87,10 +134,40 @@ namespace Gorgon.Input
 		/// </para>
 		/// </remarks>
 		protected abstract IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks();
-		#endregion
 
-		#region Constructor/Finalizer.
+		/// <summary>
+		/// Function to register a keyboard forwarder method with the input service.
+		/// </summary>
+		/// <param name="device">The keyboard device to communicate with.</param>
+		/// <remarks>
+		/// This method will register the forwarder method on the <see cref="GorgonKeyboard2"/> device so that the service can pass messages to it when they come in.
+		/// </remarks>
+		internal void RegisterKeyboardForwarder(GorgonKeyboard2 device)
+		{
+			if (_keyboardForwarders.ContainsKey(device.UUID))
+			{
+				return;
+			}
 
+			_keyboardForwarders.Add(device.UUID, device.ParseData);
+		}
+
+		/// <summary>
+		/// Function to unregister a device forwarder method from the input service.
+		/// </summary>
+		/// <param name="device">The device to communicate with.</param>
+		/// <remarks>
+		/// This method will remove the forwarder method on the <see cref="IGorgonInputDevice"/> device so that the service can stop passing messages to it when they come in.
+		/// </remarks>
+		internal void UnregisterDeviceForwarder(IGorgonInputDevice device)
+		{
+			if (!_keyboardForwarders.ContainsKey(device.UUID))
+			{
+				return;
+			}
+
+			_keyboardForwarders.Remove(device.UUID);
+		}
 		#endregion
 
 		#region IGorgonInputService Members

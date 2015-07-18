@@ -169,14 +169,14 @@ namespace Gorgon.Input
 		private readonly KeyboardKey _key;						// Key that is pressed.
 		private readonly KeyboardKey _modifierKey;				// Other keys being held down.
 		private readonly int _scan;							    // Scan code information.
-		private readonly GorgonKeyboard.KeyCharMap _character;	// Character that the key represents.
+		private readonly GorgonKeyCharMap _character;	// Character that the key represents.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the character that the key represents.
 		/// </summary>
-		public GorgonKeyboard.KeyCharMap CharacterMapping
+		public GorgonKeyCharMap CharacterMapping
 		{
 			get
 			{
@@ -259,7 +259,7 @@ namespace Gorgon.Input
 		/// <param name="modifierKey">Keys that are held down during the event.</param>
 		/// <param name="character">Character that the key represents.</param>
 		/// <param name="scanData">Scan code data.</param>
-		public KeyboardEventArgs(KeyboardKey key, KeyboardKey modifierKey, GorgonKeyboard.KeyCharMap character, int scanData)
+		public KeyboardEventArgs(KeyboardKey key, KeyboardKey modifierKey, GorgonKeyCharMap character, int scanData)
 		{
 			_key = key;
 			_modifierKey = modifierKey;

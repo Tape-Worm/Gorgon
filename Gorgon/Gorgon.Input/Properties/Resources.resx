@@ -126,6 +126,9 @@
   <data name="GORINP_ERR_CANNOT_ENUM_DEVICES_PRESENT" xml:space="preserve">
     <value>Cannot enumerate the devices when input device objects are active.</value>
   </data>
+  <data name="GORINP_ERR_DEVICE_NEEDS_FORWARDER" xml:space="preserve">
+    <value>The device is not polled and requires a forwarder method. Did you forget to override RegisterForwarder?</value>
+  </data>
   <data name="GORINP_ERR_HID_PROPERTY_NULL" xml:space="preserve">
     <value>The HID property '{0}' is NULL.</value>
   </data>
@@ -156,9 +159,6 @@
   <data name="GORINP_KEYBOARD_NOT_FOUND" xml:space="preserve">
     <value>Could not find the keyboard '{0}'.</value>
   </data>
-  <data name="GORINP_KEYCHARMAP_TOSTR" xml:space="preserve">
-    <value>Virtual Key: {0}, Character: {1}, Shift+Character: {2}</value>
-  </data>
   <data name="GORINP_KEY_NOT_FOUND" xml:space="preserve">
     <value>Keyboard key '{0}' has not been assigned to a mapping.</value>
   </data>
@@ -173,5 +173,8 @@
   </data>
   <data name="GORINP_TOSTR_JOYSTICKAXIS" xml:space="preserve">
     <value>Joystick axis: {0}, Range: {1} - {2}.</value>
+  </data>
+  <data name="GORINP_TOSTR_KEYCHARMAP" xml:space="preserve">
+    <value>Virtual Key: {0}, Character: {1}, Shift+Character: {2}</value>
   </data>
 </root>

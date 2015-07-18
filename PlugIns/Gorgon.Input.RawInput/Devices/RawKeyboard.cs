@@ -159,10 +159,15 @@ namespace Gorgon.Input.Raw
 		    _device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
-		    if (!Win32API.RegisterRawInputDevices(_device))
-		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD);
-		    }
+			if (!Win32API.RegisterRawInputDevices(new[]
+			                                      {
+				                                      _device
+			                                      },
+			                                      1,
+			                                      DirectAccess.SizeOf<RAWINPUTDEVICE>()))
+			{
+				throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD);
+			}
 
 			_isBound = true;
 		}
@@ -183,10 +188,15 @@ namespace Gorgon.Input.Raw
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.
-		    if (!Win32API.RegisterRawInputDevices(_device))
-		    {
-		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD);
-		    }
+			if (!Win32API.RegisterRawInputDevices(new[]
+			                                      {
+				                                      _device
+			                                      },
+			                                      1,
+			                                      DirectAccess.SizeOf<RAWINPUTDEVICE>()))
+			{
+				throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD);
+			}
 
 			_isBound = false;
 		}

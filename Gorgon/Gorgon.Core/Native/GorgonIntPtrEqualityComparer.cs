@@ -20,30 +20,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, June 25, 2015 11:15:24 AM
+// Created: Wednesday, July 15, 2015 11:36:46 PM
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 
-namespace Gorgon.IO
+namespace Gorgon.Core.Native
 {
 	/// <summary>
-	/// An equality comparer for the <see cref="GorgonFileExtension"/> type.
+	/// An equality comparer for the <see cref="IntPtr"/> type.
 	/// </summary>
-	public class GorgonFileExtensionEqualityComparer
-		: IEqualityComparer<GorgonFileExtension>
+	public class GorgonIntPtrEqualityComparer
+		: IEqualityComparer<IntPtr>
 	{
-		#region IEqualityComparer<GorgonFileExtension> Members
+		#region IEqualityComparer<IntPtr> Members
 		/// <summary>
 		/// Determines whether the specified objects are equal.
 		/// </summary>
-		/// <param name="x">The first object of type <see cref="GorgonFileExtension"/> to compare.</param>
-		/// <param name="y">The second object of type <see cref="GorgonFileExtension"/> to compare.</param>
+		/// <param name="x">The first object of type <see cref="IntPtr"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="IntPtr"/> to compare.</param>
 		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-		public bool Equals(GorgonFileExtension x, GorgonFileExtension y)
+		public bool Equals(IntPtr x, IntPtr y)
 		{
-			return GorgonFileExtension.Equals(ref x, ref y);
+			return x == y;
 		}
 
 		/// <summary>
@@ -51,7 +52,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
 		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public int GetHashCode(GorgonFileExtension obj)
+		public int GetHashCode(IntPtr obj)
 		{
 			return obj.GetHashCode();
 		}

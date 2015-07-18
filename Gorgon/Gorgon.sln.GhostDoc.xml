@@ -10,6 +10,7 @@
     </IgnoreExtensions>
     <IgnoreFiles>
       <IgnoreFile>.\Gorgon.Core\GlobalSuppressions.cs</IgnoreFile>
+      <IgnoreFile>.\Gorgon.Input\_2\Native\Win32Api.cs</IgnoreFile>
       <IgnoreFile>..\Test\Gorgon.Core.Test\NativeTests.cs</IgnoreFile>
     </IgnoreFiles>
   </SpellChecker>

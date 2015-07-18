@@ -88,6 +88,15 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The device is not polled and requires a forwarder method. Did you forget to override RegisterForwarder?.
+        /// </summary>
+        internal static string GORINP_ERR_DEVICE_NEEDS_FORWARDER {
+            get {
+                return ResourceManager.GetString("GORINP_ERR_DEVICE_NEEDS_FORWARDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The HID property &apos;{0}&apos; is NULL..
         /// </summary>
         internal static string GORINP_ERR_HID_PROPERTY_NULL {
@@ -187,15 +196,6 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Virtual Key: {0}, Character: {1}, Shift+Character: {2}.
-        /// </summary>
-        internal static string GORINP_KEYCHARMAP_TOSTR {
-            get {
-                return ResourceManager.GetString("GORINP_KEYCHARMAP_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be NULL or empty..
         /// </summary>
         internal static string GORINP_PARAMETER_NULL_EMPTY {
@@ -228,6 +228,15 @@ namespace Gorgon.Input.Properties {
         internal static string GORINP_TOSTR_JOYSTICKAXIS {
             get {
                 return ResourceManager.GetString("GORINP_TOSTR_JOYSTICKAXIS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Virtual Key: {0}, Character: {1}, Shift+Character: {2}.
+        /// </summary>
+        internal static string GORINP_TOSTR_KEYCHARMAP {
+            get {
+                return ResourceManager.GetString("GORINP_TOSTR_KEYCHARMAP", resourceCulture);
             }
         }
     }

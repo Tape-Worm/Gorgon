@@ -1,4 +1,4 @@
-﻿#region MIT
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -20,38 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, June 17, 2015 10:28:29 PM
+// Created: Wednesday, July 15, 2015 8:59:32 PM
 // 
 #endregion
 
 using System.Collections.Generic;
+using System.Windows.Forms;
 
-namespace Gorgon.Graphics
+namespace Gorgon.Input
 {
 	/// <summary>
-	/// An equality comparer for the <see cref="GorgonKerningPair"/> value type.
+	/// An equality comparer for the <see cref="Keys"/> enumeration.
 	/// </summary>
-	public class GorgonKerningPairEqualityComparer
-		: IEqualityComparer<GorgonKerningPair>
+	class GorgonKeysEqualityComparer
+		: IEqualityComparer<Keys>
 	{
-		#region IEqualityComparer<GorgonKerningPair> Members
+		#region IEqualityComparer<Keys> Members
 		/// <summary>
 		/// Determines whether the specified objects are equal.
 		/// </summary>
-		/// <param name="x">The first object of type <see cref="GorgonKerningPair"/> to compare.</param>
-		/// <param name="y">The second object of type <see cref="GorgonKerningPair"/> to compare.</param>
+		/// <param name="x">The first object of type <see cref="KeyboardKey"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="KeyboardKey"/> to compare.</param>
 		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
-		public bool Equals(GorgonKerningPair x, GorgonKerningPair y)
+		public bool Equals(Keys x, Keys y)
 		{
-			return GorgonKerningPair.Equals(ref x, ref y);
+			return x == y;
 		}
 
 		/// <summary>
 		/// Returns a hash code for this instance.
 		/// </summary>
-		/// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+		/// <param name="obj">The <see cref="KeyboardKey" /> for which a hash code is to be returned.</param>
 		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
-		public int GetHashCode(GorgonKerningPair obj)
+		public int GetHashCode(Keys obj)
 		{
 			return obj.GetHashCode();
 		}

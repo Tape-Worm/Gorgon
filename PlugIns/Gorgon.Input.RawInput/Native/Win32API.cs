@@ -222,19 +222,6 @@ namespace Gorgon.Native
             return IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
         }
 
-	    /// <summary>
-		/// Function to register a raw input device.
-		/// </summary>
-		/// <param name="device">Device information.</param>
-		/// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
-		public static bool RegisterRawInputDevices(RAWINPUTDEVICE device)
-		{
-			var devices = new RAWINPUTDEVICE[1];		// Raw input devices.
-
-			devices[0] = device;
-			return RegisterRawInputDevices(devices, 1, DirectAccess.SizeOf<RAWINPUTDEVICE>());
-		}
-
 		/// <summary>
 		/// Function to retrieve device information.
 		/// </summary>

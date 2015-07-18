@@ -108,7 +108,7 @@ namespace Gorgon.Graphics
 		// Codec for PNG files.
 		private readonly GorgonCodecPNG _pngCodec = new GorgonCodecPNG();
 		// Kerning pairs.
-		private readonly Dictionary<GorgonKerningPair, int> _kernPairs = new Dictionary<GorgonKerningPair, int>(new GorgonKerningPairEqualityComparer());
+		private readonly Dictionary<GorgonKerningPair, int> _kernPairs = new Dictionary<GorgonKerningPair, int>();
 		#endregion
 
 		#region Properties.

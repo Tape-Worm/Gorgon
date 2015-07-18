@@ -41,7 +41,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// <para>
 	/// An input service provides access to the various input devices attached to the computer, such as a keyboard, mouse, and/or gaming devices. A <see cref="IGorgonInputService"/> plug in may contain 1 or more 
-	/// interfaces for providing access to the aforementioned devices. If support is not present for a device type, then TODO: PUT PROPERTY NAMES HERE will return <b>false</b>.
+	/// interfaces for providing access to the aforementioned devices.
 	/// </para>
 	/// </remarks>
 	public interface IGorgonInputServiceFactory
