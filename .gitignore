@@ -18,6 +18,7 @@ bld/
 Docs/Help/
 Test/*
 !Test/Gorgon.Core.Test/
+!Test/Gorgon.Input.Test/
 
 # Roslyn cache directories
 *.ide/
