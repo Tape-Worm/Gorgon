@@ -46,7 +46,7 @@ namespace Gorgon.UI
 		{
 			if (control == null)
 			{
-				throw new ArgumentNullException("control");
+				throw new ArgumentNullException(nameof(control));
 			}
 
 			Control parent = control.Parent;
@@ -76,7 +76,7 @@ namespace Gorgon.UI
 		{
 			if (control == null)
 			{
-				throw new ArgumentNullException("control");
+				throw new ArgumentNullException(nameof(control));
 			}
 
 			Control parent = control.Parent;
@@ -111,7 +111,7 @@ namespace Gorgon.UI
 		{
 			if (control == null)
 			{
-				throw new ArgumentNullException("control");
+				throw new ArgumentNullException(nameof(control));
 			}
 
 			return control.FindForm() as T;

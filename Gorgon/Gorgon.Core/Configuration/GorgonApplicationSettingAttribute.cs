@@ -61,13 +61,7 @@ namespace Gorgon.Configuration
 		/// <remarks>
 		/// This will be set to <c>true</c> when the <see cref="DefaultValue"/> is assigned. Otherwise, it will return <c>false</c>.
 		/// </remarks>
-		public bool HasDefault
-		{
-			get
-			{
-				return _hasDefault;
-			}
-		}
+		public bool HasDefault => _hasDefault;
 
 		/// <summary>
 		/// Property to return the section for the setting.
@@ -76,13 +70,7 @@ namespace Gorgon.Configuration
 		/// Sections are for formatting/namespace purposes in the XML file. For example, if the section name was called "Display", then any properties with the section name would appear under the "Display" section 
 		/// element in the XML file.
 		/// </remarks>
-		public string Section
-		{
-			get
-			{
-				return _section;
-			}
-		}
+		public string Section => _section;
 
 		/// <summary>
 		/// Property to set or return a new name for the setting.
@@ -132,12 +120,12 @@ namespace Gorgon.Configuration
 		{
 			if (section == null)
 			{
-				throw new ArgumentNullException("section");
+				throw new ArgumentNullException(nameof(section));
 			}
 
 			if (string.IsNullOrWhiteSpace(section))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "section");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(section));
 			}
 
 			_section = section;

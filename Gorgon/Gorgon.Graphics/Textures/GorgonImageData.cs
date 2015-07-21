@@ -88,26 +88,14 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the pointer to the beginning of the internal buffer.
         /// </summary>
-        public IntPtr BufferPointer
-        {
-            get
-            {
-                return _imageData.BaseIntPtr;
-            }            
-        }
+        public IntPtr BufferPointer => _imageData.BaseIntPtr;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return an unsafe pointer to the beginning of the internal buffer.
         /// </summary>
-        public unsafe void *UnsafePointer
-        {
-            get
-            {
-                return _imageData.BasePointer;
-            }
-        }
+        public unsafe void *UnsafePointer => _imageData.BasePointer;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the settings for the image.
         /// </summary>
         public IImageSettings Settings
@@ -233,7 +221,7 @@ namespace Gorgon.Graphics
 		{
 			if (texture == null)
 			{
-				throw new ArgumentNullException("texture");
+				throw new ArgumentNullException(nameof(texture));
 			}
 
 			int arrayCount = texture.Settings.ArrayCount.Min(Settings.ArrayCount);
@@ -274,25 +262,25 @@ namespace Gorgon.Graphics
 
 		    if (texture == null)
 			{
-				throw new ArgumentNullException("texture");
+				throw new ArgumentNullException(nameof(texture));
 			}
 
             if (texture.Settings.Format != Settings.Format)
             {
                 throw new ArgumentException(
                     string.Format(Resources.GORGFX_IMAGE_FORMAT_MISMATCH, texture.Settings.Format, Settings.Format),
-                    "texture");
+                    nameof(texture));
             }
 
             if (texture.Settings.ImageType != Settings.ImageType)
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType),
-                    "texture");
+                    nameof(texture));
             }
 
             if (texture.Settings.Usage == BufferUsage.Immutable)
             {
-                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, nameof(texture));
             }
 
 			int arrayCount = Settings.ArrayCount.Min(texture.Settings.ArrayCount);
@@ -527,12 +515,12 @@ namespace Gorgon.Graphics
         {
             if (images == null)
             {
-                throw new ArgumentNullException("images");
+                throw new ArgumentNullException(nameof(images));
             }
 
             if (images.Count == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "images");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(images));
             }
 
             if (options == null)
@@ -620,7 +608,7 @@ namespace Gorgon.Graphics
         {
             if (image == null)
             {
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
             }
 
             if (options == null)
@@ -756,7 +744,7 @@ namespace Gorgon.Graphics
 
             if (texture.Settings.Usage == BufferUsage.Immutable)
             {
-                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, nameof(texture));
             }
 
             // If the texture is a volume texture, then set the array index to 0.
@@ -772,13 +760,13 @@ namespace Gorgon.Graphics
 
             if (arrayIndex >= texture.Settings.ArrayCount)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex",
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, texture.Settings.ArrayCount));
             }
 
             if (mipLevel >= texture.Settings.MipCount)
             {
-                throw new ArgumentOutOfRangeException("mipLevel",
+                throw new ArgumentOutOfRangeException(nameof(mipLevel),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, texture.Settings.MipCount));
             }
 
@@ -829,7 +817,7 @@ namespace Gorgon.Graphics
 
             if (texture.Settings.Usage == BufferUsage.Immutable)
             {
-                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, nameof(texture));
             }
 
             if (texture.Settings.Usage != BufferUsage.Staging)
@@ -1074,7 +1062,7 @@ namespace Gorgon.Graphics
 		    if ((mipLevel < 0)
 		        || (mipLevel >= Settings.MipCount))
 		    {
-		        throw new ArgumentOutOfRangeException("mipLevel",
+		        throw new ArgumentOutOfRangeException(nameof(mipLevel),
 		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
 		    }
 
@@ -1124,12 +1112,12 @@ namespace Gorgon.Graphics
 		{
 			if (filePath == null)
 			{
-				throw new ArgumentNullException("filePath");
+				throw new ArgumentNullException(nameof(filePath));
 			}
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
 			}
 
 			using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -1180,12 +1168,12 @@ namespace Gorgon.Graphics
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (codec == null)
 			{
-				throw new ArgumentNullException("codec");
+				throw new ArgumentNullException(nameof(codec));
 			}
 
 			if (!stream.CanWrite)
@@ -1275,7 +1263,7 @@ namespace Gorgon.Graphics
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -1348,17 +1336,17 @@ namespace Gorgon.Graphics
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             
             if (codec == null)
 			{
-				throw new ArgumentNullException("codec");
+				throw new ArgumentNullException(nameof(codec));
 			}
 
             if ((size <= 0) || (size > stream.Length))
             {
-                throw new ArgumentOutOfRangeException("size", string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, size, 1, stream.Length));
+                throw new ArgumentOutOfRangeException(nameof(size), string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, size, 1, stream.Length));
             }
 
 			if (!stream.CanRead)
@@ -1577,14 +1565,14 @@ namespace Gorgon.Graphics
 	    {
 			if (dest == null)
 			{
-				throw new ArgumentNullException("dest");
+				throw new ArgumentNullException(nameof(dest));
 			}
 
 			if ((dest.Settings.Format != Settings.Format)
 			    || (dest.Settings.Width != Settings.Width)
 			    || (dest.Settings.Height != Settings.Height))
 			{
-				throw new ArgumentException(Resources.GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH, "dest");
+				throw new ArgumentException(Resources.GORGFX_IMAGE_CANNOT_COPY_IMAGE_DATA_MISMATCH, nameof(dest));
 			}
 
 			for (int array = 0; array < Settings.ArrayCount.Min(dest.Settings.ArrayCount); array++)
@@ -1749,12 +1737,12 @@ namespace Gorgon.Graphics
 		{
 			if (width <= 0)
 			{
-				throw new ArgumentOutOfRangeException("width");
+				throw new ArgumentOutOfRangeException(nameof(width));
 			}
 
 			if (height <= 0)
 			{
-				throw new ArgumentOutOfRangeException("height");
+				throw new ArgumentOutOfRangeException(nameof(height));
 			}
 
 			// Well, that was easy...
@@ -1860,7 +1848,7 @@ namespace Gorgon.Graphics
         {
             if (format == BufferFormat.Unknown)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), "format");
+                throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), nameof(format));
             }
 
             // We have the same format, why convert?
@@ -1960,7 +1948,7 @@ namespace Gorgon.Graphics
         {
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if (settings.Format == BufferFormat.Unknown)
@@ -1975,7 +1963,7 @@ namespace Gorgon.Graphics
             // Validate the image size.
             if ((data != null) && (SizeInBytes > dataSize))
             {
-                throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_SIZE_MISMATCH, "dataSize");
+                throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_SIZE_MISMATCH, nameof(dataSize));
             }
 
             Initialize(data, false);

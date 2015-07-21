@@ -25,7 +25,6 @@
 #endregion
 
 using System.Drawing;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using SlimMath;
@@ -42,7 +41,7 @@ namespace Gorgon.Graphics.Example
 		// Flag to indicate that the object was disposed.
 		private bool _disposed;
 		// Initial orientation.
-		private Matrix _orientation = Matrix.Identity;
+		private Matrix _orientation;
 		#endregion
 
 		#region Properties.
@@ -58,7 +57,6 @@ namespace Gorgon.Graphics.Example
 		public GorgonVertexBuffer Normals
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -218,10 +216,7 @@ namespace Gorgon.Graphics.Example
 
 			if (disposing)
 			{
-				if (Normals != null)
-				{
-					Normals.Dispose();
-				}
+				Normals?.Dispose();
 			}
 
 			_disposed = true;

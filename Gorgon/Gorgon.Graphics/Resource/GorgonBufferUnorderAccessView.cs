@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.UI;
@@ -58,7 +57,6 @@ namespace Gorgon.Graphics
 		public int ElementStart
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -67,7 +65,6 @@ namespace Gorgon.Graphics
 		public int ElementCount
 		{
 			get;
-			private set;
 		}
         
         /// <summary>
@@ -76,7 +73,6 @@ namespace Gorgon.Graphics
         public bool IsRaw
         {
             get;
-            private set;
         }
 		#endregion
 

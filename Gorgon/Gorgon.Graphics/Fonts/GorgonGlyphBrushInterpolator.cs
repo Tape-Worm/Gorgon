@@ -44,7 +44,6 @@ namespace Gorgon.Graphics.Fonts
 		public float Weight
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -53,7 +52,6 @@ namespace Gorgon.Graphics.Fonts
 		public GorgonColor Color
 		{
 			get;
-			private set;
 		}
 		#endregion
 

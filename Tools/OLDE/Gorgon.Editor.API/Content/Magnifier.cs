@@ -200,7 +200,7 @@ namespace Gorgon.Editor
 		private void CalculateCaptionHeight()
 		{
 			Vector2 size = _renderer.Drawing.MeasureString(ZoomWindowFont,
-			                                               string.Format("{0}: {1:0.0}x", ZoomWindowText, _zoom),
+			                                               $"{ZoomWindowText}: {_zoom:0.0}x",
 			                                               false,
 			                                               new SizeF(ZoomWindowSize.X - 2, 30));
 
@@ -263,7 +263,7 @@ namespace Gorgon.Editor
 
 		    _renderer.Drawing.FilledRectangle(new RectangleF(ZoomWindowLocation.X + 1, ZoomWindowLocation.Y + 1, _windowSize.X - 2, _captionHeight - 2), GorgonColor.White);
 			_renderer.Drawing.DrawString(ZoomWindowFont ?? _renderer.Graphics.Fonts.DefaultFont,
-										 string.Format("{0}: {1:0.0}x", ZoomWindowText, _zoom),
+			                             $"{ZoomWindowText}: {_zoom:0.0}x",
 			                             (Point)ZoomWindowLocation,
 			                             GorgonColor.Black);
 
@@ -325,12 +325,12 @@ namespace Gorgon.Editor
 		{
 			if (renderer == null)
 			{
-				throw new ArgumentNullException("renderer");
+				throw new ArgumentNullException(nameof(renderer));
 			}
 
 			if (texture == null)
 			{
-				throw new ArgumentNullException("texture");
+				throw new ArgumentNullException(nameof(texture));
 			}
 
 			_windowSize = new Vector2(128, 128);

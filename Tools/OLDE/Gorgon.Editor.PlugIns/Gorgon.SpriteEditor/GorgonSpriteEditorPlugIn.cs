@@ -157,7 +157,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 			Settings = new GorgonSpritePlugInSettings();
 			Settings.Load();
 
-			FileExtensions.Add(new GorgonFileExtension("gorSprite", string.Format("{0} (*.gorSprite)", Resources.GORSPR_CONTENT_EXTENSION_DESC)));
+			FileExtensions.Add(new GorgonFileExtension("gorSprite", $"{Resources.GORSPR_CONTENT_EXTENSION_DESC} (*.gorSprite)"));
 		}
 		#endregion
 

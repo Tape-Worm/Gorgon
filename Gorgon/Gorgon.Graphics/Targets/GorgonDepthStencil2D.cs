@@ -74,7 +74,6 @@ namespace Gorgon.Graphics
 		public new GorgonDepthStencil2DSettings Settings
 		{
 			get;
-			private set;
 		}
 		#endregion
 

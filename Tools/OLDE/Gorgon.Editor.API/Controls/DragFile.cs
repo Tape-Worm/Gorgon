@@ -42,19 +42,13 @@ namespace Gorgon.Editor
 		internal TreeNodeFile FileNode
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return the editor file being dragged.
 		/// </summary>
-		public EditorFile EditorFile
-		{
-			get
-			{
-				return FileNode.EditorFile;
-			}
-		}
+		public EditorFile EditorFile => FileNode.EditorFile;
+
 		#endregion
 
         #region Methods.

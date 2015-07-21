@@ -46,7 +46,6 @@ namespace Gorgon.Graphics
         public BufferFormat Format
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -155,23 +154,23 @@ namespace Gorgon.Graphics
 			    || (buffer.Data == null)
 			    || (buffer.Data.Length == 0))
 			{
-				throw new ArgumentNullException("buffer");	
+				throw new ArgumentNullException(nameof(buffer));	
 			}
 
 			if ((buffer == this)
 				|| (buffer.Data.BasePointer == Data.BasePointer))
 			{
-				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_CANT_BE_SAME, "buffer");
+				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_CANT_BE_SAME, nameof(buffer));
 			}
 
 			if (buffer.Format != Format)
 			{
-				throw new ArgumentException(Resources.GORGFX_IMAGE_MUST_BE_SAME_FORMAT, "buffer");
+				throw new ArgumentException(Resources.GORGFX_IMAGE_MUST_BE_SAME_FORMAT, nameof(buffer));
 			}
 
             if (!sourceBufferDims.Contains(srcRegion))
             {
-                throw new ArgumentOutOfRangeException("sourceRegion");
+                throw new ArgumentOutOfRangeException(nameof(sourceRegion));
             }
 
             // If we try to place this image outside of the target buffer, then do nothing.

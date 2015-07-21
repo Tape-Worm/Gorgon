@@ -55,7 +55,6 @@ namespace Gorgon.IO
 		protected GorgonFileSystemFileEntry FileEntry
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -63,52 +62,28 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports reading; otherwise, false.</returns>
-		public override bool CanRead
-		{
-			get 
-			{
-				return _baseStream.CanRead;
-			}
-		}
+		public override bool CanRead => _baseStream.CanRead;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports writing; otherwise, false.</returns>
-		public override bool CanWrite
-		{
-			get 
-			{
-				return _baseStream.CanWrite;
-			}
-		}
+		public override bool CanWrite => _baseStream.CanWrite;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
-		public override bool CanSeek
-		{
-			get 
-			{
-				return _baseStream.CanSeek;
-			}
-		}
+		public override bool CanSeek => _baseStream.CanSeek;
 
 		/// <summary>
 		/// Gets a value that determines whether the current stream can time out.
 		/// </summary>
 		/// <value></value>
 		/// <returns>A value that determines whether the current stream can time out.</returns>
-		public override bool CanTimeout
-		{
-			get
-			{
-				return _baseStream.CanTimeout;
-			}
-		}
+		public override bool CanTimeout => _baseStream.CanTimeout;
 
 		/// <summary>
 		/// When overridden in a derived class, gets the length in bytes of the stream.
@@ -117,13 +92,7 @@ namespace Gorgon.IO
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
 		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length
-		{
-			get
-			{
-				return _baseStream.Length;
-			}
-		}
+		public override long Length => _baseStream.Length;
 
 		/// <summary>
 		/// When overridden in a derived class, gets or sets the position within the current stream.
@@ -193,12 +162,7 @@ namespace Gorgon.IO
 		/// <param name="provider">A new file system provider for the file.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
 		protected void UpdateFileInfo(long? fileSize, int? fileOffset, DateTime? createDate, string physicalPath, GorgonFileSystemProvider provider)
 		{
-		    if (FileEntry == null)
-		    {
-		        return;
-		    }
-
-			FileEntry.Update(fileSize, fileOffset, createDate, null, physicalPath, provider);
+			FileEntry?.Update(fileSize, fileOffset, createDate, null, physicalPath, provider);
 		}
 
 		/// <summary>
@@ -423,9 +387,9 @@ namespace Gorgon.IO
 		public GorgonFileSystemStream(GorgonFileSystemFileEntry file, Stream baseStream)
 		{
 			if (file == null)
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			if (baseStream == null)
-				throw new ArgumentNullException("baseStream");
+				throw new ArgumentNullException(nameof(baseStream));
 
 			CloseUnderlyingStream = true;
 			_baseStream = baseStream;

@@ -115,15 +115,9 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether there is an outline for this font.
 		/// </summary>
-		public bool HasOutline
-		{
-			get
-			{
-				return Settings.OutlineSize > 0 && (Settings.OutlineColor1.Alpha > 0 || Settings.OutlineColor2.Alpha > 0);
-			}
-		}
+		public bool HasOutline => Settings.OutlineSize > 0 && (Settings.OutlineColor1.Alpha > 0 || Settings.OutlineColor2.Alpha > 0);
 
-        /// <summary>
+		/// <summary>
         /// Property to return whether the object was disposed or not.
         /// </summary>
         public bool IsDisposed
@@ -135,14 +129,8 @@ namespace Gorgon.Graphics
         /// <summary>
 		/// Property to return a list of kerning pairs.
 		/// </summary>
-		public IReadOnlyDictionary<GorgonKerningPair, int> KerningPairs
-		{
-	        get
-	        {
-		        return _kernPairs;
-	        }
-		}
-		
+		public IReadOnlyDictionary<GorgonKerningPair, int> KerningPairs => _kernPairs;
+
 		/// <summary>
 		/// Property to return the font settings.
 		/// </summary>
@@ -158,7 +146,6 @@ namespace Gorgon.Graphics
 		public GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -929,7 +916,7 @@ namespace Gorgon.Graphics
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -1097,12 +1084,12 @@ namespace Gorgon.Graphics
 
 			if (settings == null)
 			{
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 			}
 
 			if (string.IsNullOrWhiteSpace(settings.FontFamilyName))
 			{
-				throw new ArgumentException(Resources.GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY, "settings");
+				throw new ArgumentException(Resources.GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY, nameof(settings));
 			}
 
 			if ((settings.TextureSize.Width >= Graphics.Textures.MaxWidth) 

@@ -50,13 +50,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public override GlyphBrushType BrushType
-		{
-			get
-			{
-				return GlyphBrushType.LinearGradient;
-			}
-		}
+		public override GlyphBrushType BrushType => GlyphBrushType.LinearGradient;
 
 		/// <summary>
 		/// Property to set or return the starting color to use for the gradient.
@@ -162,7 +156,6 @@ namespace Gorgon.Graphics
 		public IList<GorgonGlyphBrushInterpolator> Interpolation
 		{
 			get;
-			private set;
 		}
 		#endregion
 

@@ -191,21 +191,14 @@ namespace Gorgon.Graphics
         public GorgonGraphics ImmediateContext
         {
             get;
-            private set;
         }
 
         /// <summary>
         /// Property to return whether this context is deferred or not.
         /// </summary>
-        public bool IsDeferred
-        {
-            get
-            {
-                return ImmediateContext != this;
-            }
-        }
+        public bool IsDeferred => ImmediateContext != this;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the input geometry interface.
         /// </summary>
         /// <remarks>
@@ -279,7 +272,6 @@ namespace Gorgon.Graphics
         public GorgonVideoDevice VideoDevice
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -411,7 +403,7 @@ namespace Gorgon.Graphics
         {
             if (trackedObject == null)
             {
-                throw new ArgumentNullException("trackedObject");
+                throw new ArgumentNullException(nameof(trackedObject));
             }
 
             _trackedObjects.Add(trackedObject);
@@ -427,7 +419,7 @@ namespace Gorgon.Graphics
         {
             if (trackedObject == null)
             {
-                throw new ArgumentNullException("trackedObject");
+                throw new ArgumentNullException(nameof(trackedObject));
             }
 
             _trackedObjects.Remove(trackedObject);

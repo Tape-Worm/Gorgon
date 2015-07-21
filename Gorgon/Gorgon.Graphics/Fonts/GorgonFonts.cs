@@ -128,17 +128,17 @@ namespace Gorgon.Graphics
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (stream.Length == 0)
             {
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "stream");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(stream));
             }
 
 			var font = new GorgonFont(_graphics, name, new GorgonFontSettings());
@@ -213,12 +213,12 @@ namespace Gorgon.Graphics
 
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
             }
             
             try
@@ -344,7 +344,7 @@ namespace Gorgon.Graphics
 		{
             if (font == null)
             {
-                throw new ArgumentNullException("font");
+                throw new ArgumentNullException(nameof(font));
             }
 
 			var settings = new GorgonFontSettings
@@ -388,22 +388,22 @@ namespace Gorgon.Graphics
 
             if (fontName == null)
             {
-                throw new ArgumentNullException("fontName");
+                throw new ArgumentNullException(nameof(fontName));
             }
 
             if (string.IsNullOrWhiteSpace("fontName"))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fontName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fontName));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if (string.IsNullOrWhiteSpace(settings.FontFamilyName))
             {
-                throw new ArgumentException(Resources.GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY, "settings");
+                throw new ArgumentException(Resources.GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY, nameof(settings));
             }
 
 			var result = new GorgonFont(_graphics, fontName, settings);

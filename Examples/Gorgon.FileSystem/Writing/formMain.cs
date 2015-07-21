@@ -155,8 +155,8 @@ namespace Gorgon.Examples
 		private void UpdateInfo()
         {
 	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text)
-		                         ? string.Format("Using original text from {0}", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true))
-		                         : string.Format("Using modified text from {0}", _writePath.Ellipses(100, true));
+		                         ? $"Using original text from {Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true)}"
+		                         : $"Using modified text from {_writePath.Ellipses(100, true)}";
         }
 
 		/// <summary>
@@ -200,8 +200,8 @@ namespace Gorgon.Examples
 
 				LoadText();
 
-				labelFileSystem.Text = string.Format("{0} mounted as '/'.", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true));
-				labelWriteLocation.Text = string.Format("{0} mounted as '/'", _writePath.Ellipses(100, true));
+				labelFileSystem.Text = $"{Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true)} mounted as '/'.";
+				labelWriteLocation.Text = $"{_writePath.Ellipses(100, true)} mounted as '/'";
 			}
 			catch (Exception ex)
 			{

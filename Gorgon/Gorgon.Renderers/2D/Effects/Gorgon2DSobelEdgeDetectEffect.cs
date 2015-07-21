@@ -56,24 +56,12 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Property to return the size of a texel.
 			/// </summary>
-			public Vector2 TexelSize
-			{
-				get
-				{
-					return (Vector2)_texelThreshold;
-				}
-			}
+			public Vector2 TexelSize => (Vector2)_texelThreshold;
 
 			/// <summary>
 			/// Property to return the threshold for the effect.
 			/// </summary>
-			public float Threshold
-			{
-				get
-				{
-					return _texelThreshold.Z;
-				}
-			}
+			public float Threshold => _texelThreshold.Z;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Settings"/> struct.

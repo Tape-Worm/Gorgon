@@ -51,41 +51,22 @@ namespace Gorgon.Input
 		public Keys ModifierKeys
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return if ALT is pressed or not.
 		/// </summary>
-		public bool Alt
-		{
-			get
-			{
-				return (ModifierKeys & Keys.Alt) == Keys.Alt;
-			}
-		}
+		public bool Alt => (ModifierKeys & Keys.Alt) == Keys.Alt;
 
 		/// <summary>
 		/// Property to return if Ctrl is pressed or not.
 		/// </summary>
-		public bool Ctrl
-		{
-			get
-			{
-				return (ModifierKeys & Keys.Control) == Keys.Control;
-			}
-		}
+		public bool Ctrl => (ModifierKeys & Keys.Control) == Keys.Control;
 
 		/// <summary>
 		/// Property to return if Shift is pressed or not.
 		/// </summary>
-		public bool Shift
-		{
-			get
-			{
-				return (ModifierKeys & Keys.Shift) == Keys.Shift;
-			}
-		}
+		public bool Shift => (ModifierKeys & Keys.Shift) == Keys.Shift;
 
 		/// <summary>
 		/// Property to return the scan code data.

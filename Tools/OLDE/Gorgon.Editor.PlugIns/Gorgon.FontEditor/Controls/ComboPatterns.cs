@@ -67,13 +67,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// N/A
 		/// </summary>
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
-		public new bool Sorted
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public new bool Sorted => true;
 
 		/// <summary>
 		/// Property to set or return the current style.

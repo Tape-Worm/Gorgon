@@ -66,13 +66,8 @@ namespace Gorgon.Input.Raw
         /// <summary>
         /// Property to return whether the device is connected or not.
         /// </summary>
-        public override bool IsConnected
-        {
-            get 
-            {
-                return true;
-            }
-        }
+        public override bool IsConnected => true;
+
 		#endregion
 
 		#region Constructor/Destructor.

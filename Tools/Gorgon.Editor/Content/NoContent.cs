@@ -36,24 +36,13 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return whether this content has properties that can be manipulated in the properties tab.
 		/// </summary>
-		public override bool HasProperties
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool HasProperties => false;
 
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
-		public override string ContentType
-		{
-			get
-			{
-				return "Default Content";
-			}
-		}
+		public override string ContentType => "Default Content";
+
 		#endregion
 
 		#region Constructor.

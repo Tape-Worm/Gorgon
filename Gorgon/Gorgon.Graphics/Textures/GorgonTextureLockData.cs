@@ -57,7 +57,6 @@ namespace Gorgon.Graphics
         public GorgonGraphics Graphics
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -66,7 +65,6 @@ namespace Gorgon.Graphics
         public GorgonTexture Texture
         {
             get;
-            private set;
         }
         #endregion
 

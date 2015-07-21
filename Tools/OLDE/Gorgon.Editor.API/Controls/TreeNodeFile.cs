@@ -46,13 +46,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.File;
-			}
-		}
+		public override NodeType NodeType => NodeType.File;
 
 		/// <summary>
 		/// Gets or sets the foreground color of the tree node.
@@ -106,24 +100,13 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the file associated with this node.
 		/// </summary>
-		public GorgonFileSystemFileEntry File
-		{
-			get
-			{
-				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetFile(Name);
-			}
-		}
+		public GorgonFileSystemFileEntry File => ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetFile(Name);
 
 		/// <summary>
 		/// Property to return the editor file for this node.
 		/// </summary>
-		public EditorFile EditorFile
-		{
-			get
-			{
-				return _editorFile;
-			}
-		}
+		public EditorFile EditorFile => _editorFile;
+
 		#endregion
 
 		#region Methods.

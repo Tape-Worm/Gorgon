@@ -164,12 +164,12 @@ namespace Gorgon.Graphics
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
 
             if (values.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
             }
             
             using(IGorgonPointer pointer = new GorgonPointerPinned<T>(values))
@@ -215,17 +215,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if (name.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Size == 0)))
@@ -275,7 +275,7 @@ namespace Gorgon.Graphics
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Size == 0)))
@@ -373,12 +373,12 @@ namespace Gorgon.Graphics
         {
             if (values == null)
             {
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             }
 
             if (values.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
             }
 
             using (IGorgonPointer pointer = new GorgonPointerPinned<T>(values))
@@ -428,7 +428,7 @@ namespace Gorgon.Graphics
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
 			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
@@ -473,12 +473,12 @@ namespace Gorgon.Graphics
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (data.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
             }
 
             int size = data.Length * DirectAccess.SizeOf<T>();
@@ -522,7 +522,7 @@ namespace Gorgon.Graphics
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if ((settings.Usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Size == 0)))
@@ -562,12 +562,12 @@ namespace Gorgon.Graphics
         {
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 
             if (data.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
             }
 
             int size = data.Length * DirectAccess.SizeOf<T>();
@@ -612,7 +612,7 @@ namespace Gorgon.Graphics
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             if (settings.SizeInBytes < 1)

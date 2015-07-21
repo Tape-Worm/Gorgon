@@ -108,13 +108,8 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return a description of the file system provider.
         /// </summary>
-        public virtual string Description
-        {
-            get
-            {
-	            return Resources.GORFS_FOLDER_FS_DESC;
-            }
-        }
+        public virtual string Description => Resources.GORFS_FOLDER_FS_DESC;
+
 		#endregion
 
 		#region Methods.
@@ -270,13 +265,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		public string Name
-		{
-			get 
-			{
-				return GetType().FullName;
-			}
-		}
+		public string Name => GetType().FullName;
+
 		#endregion
 	}
 }

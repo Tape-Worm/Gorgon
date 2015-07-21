@@ -171,12 +171,12 @@ namespace Gorgon.Editor
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			Name = name;
@@ -188,13 +188,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 
 		#region IEquatable<DependencyProperty> Members

@@ -38,13 +38,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public override GlyphBrushType BrushType
-		{
-			get
-			{
-				return GlyphBrushType.Solid;
-			}
-		}
+		public override GlyphBrushType BrushType => GlyphBrushType.Solid;
 
 		/// <summary>
 		/// Property to set or return the color for the brush.

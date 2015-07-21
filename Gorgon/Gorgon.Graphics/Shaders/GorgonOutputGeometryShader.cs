@@ -61,7 +61,6 @@ namespace Gorgon.Graphics
 		public int RasterizedStream
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -80,7 +79,7 @@ namespace Gorgon.Graphics
             D3DShader = new D3D.GeometryShader(Graphics.D3DDevice, byteCode, _elements, _elementSizes, RasterizedStream)
                 {
 #if DEBUG
-                    DebugName = string.Format("Gorgon Geometry Shader '{0}'", Name)
+                    DebugName = $"Gorgon Geometry Shader '{Name}'"
 #endif
                 };
         }

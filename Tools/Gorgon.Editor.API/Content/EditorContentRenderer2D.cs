@@ -59,7 +59,6 @@ namespace Gorgon.Editor
 		protected GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -142,12 +141,12 @@ namespace Gorgon.Editor
 		{
 			if (graphics == null)
 			{
-				throw new ArgumentNullException("graphics");
+				throw new ArgumentNullException(nameof(graphics));
 			}
 
 			if (content == null)
 			{
-				throw new ArgumentNullException("content");
+				throw new ArgumentNullException(nameof(content));
 			}
 
 			Graphics = graphics;
@@ -164,7 +163,6 @@ namespace Gorgon.Editor
 		public IContentData Content
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

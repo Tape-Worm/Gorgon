@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
             D3DShader = new D3D.DomainShader(Graphics.D3DDevice, byteCode)
                 {
 #if DEBUG
-                    DebugName = string.Format("Gorgon Domain Shader '{0}'", Name)
+                    DebugName = $"Gorgon Domain Shader '{Name}'"
 #endif
                 };
         }

@@ -455,24 +455,13 @@ namespace Gorgon.Graphics
 			/// <summary>
 			/// Property to return the number of sampler slots.
 			/// </summary>
-			public int Count
-			{
-				get
-				{
-					return _states.Length;
-				}
-			}
+			public int Count => _states.Length;
 
 			/// <summary>
 			/// Property to return whether this list is read-only or not.
 			/// </summary>
-			public bool IsReadOnly
-			{
-				get
-				{
-					return false;
-				}
-			}
+			public bool IsReadOnly => false;
+
 			#endregion
 
 			#region Methods.
@@ -516,12 +505,12 @@ namespace Gorgon.Graphics
 			{
 				if (array == null)
 				{
-					throw new ArgumentNullException("array");
+					throw new ArgumentNullException(nameof(array));
 				}
 
 				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
 				{
-					throw new ArgumentOutOfRangeException("arrayIndex");
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 				}
 
 				int count = (array.Length - arrayIndex).Min(_states.Length);
@@ -593,13 +582,7 @@ namespace Gorgon.Graphics
 			/// <summary>
 			/// Property to return the number of buffers.
 			/// </summary>
-			public int Count
-			{
-				get
-				{
-					return _buffers.Length;
-				}
-			}
+			public int Count => _buffers.Length;
 
 			/// <summary>
 			/// Property to set or return a constant buffer at the specified index.
@@ -685,12 +668,12 @@ namespace Gorgon.Graphics
 			{
 				if (name == null)
 				{
-					throw new ArgumentNullException("name");
+					throw new ArgumentNullException(nameof(name));
 				}
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 				}
 
 				for (int i = 0; i < _buffers.Length; i++)
@@ -795,7 +778,7 @@ namespace Gorgon.Graphics
 			{
 				if (item == null)
 				{
-					throw new ArgumentNullException("item");
+					throw new ArgumentNullException(nameof(item));
 				}
 				
 				return Array.IndexOf(_buffers, item);
@@ -828,13 +811,8 @@ namespace Gorgon.Graphics
 			/// <summary>
 			/// Property to return whether this list is read only or not.
 			/// </summary>
-			public bool IsReadOnly
-			{
-				get
-				{
-					return false;
-				}
-			}
+			public bool IsReadOnly => false;
+
 			#endregion
 
 			#region Methods.
@@ -869,7 +847,7 @@ namespace Gorgon.Graphics
 			{
 				if (item == null)
 				{
-					throw new ArgumentNullException("item");
+					throw new ArgumentNullException(nameof(item));
 				}
 
 				return _buffers.Contains(item);
@@ -886,12 +864,12 @@ namespace Gorgon.Graphics
 			{
 				if (array == null)
 				{
-					throw new ArgumentNullException("array");
+					throw new ArgumentNullException(nameof(array));
 				}
 
 				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
 				{
-					throw new ArgumentOutOfRangeException("arrayIndex");
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 				}
 
 				int count = (array.Length - arrayIndex).Min(_buffers.Length);
@@ -1029,7 +1007,7 @@ namespace Gorgon.Graphics
             {
                 if (item == null)
                 {
-                    throw new ArgumentNullException("item");
+                    throw new ArgumentNullException(nameof(item));
                 }
 
                 return Array.IndexOf(_resources, item);
@@ -1045,7 +1023,7 @@ namespace Gorgon.Graphics
 			{
 				if (resource == null)
 				{
-					throw new ArgumentNullException("resource");
+					throw new ArgumentNullException(nameof(resource));
 				}
 
 				for (int i = 0; i < _resources.Length; i++)
@@ -1071,12 +1049,12 @@ namespace Gorgon.Graphics
 			{
 				if (name == null)
 				{
-					throw new ArgumentNullException("name");
+					throw new ArgumentNullException(nameof(name));
 				}
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 				}
 
 				for (int i = 0; i < _resources.Length; i++)
@@ -1216,24 +1194,13 @@ namespace Gorgon.Graphics
 			/// <summary>
 			/// Property to return the number of resource view slots.
 			/// </summary>
-			public int Count
-			{
-				get
-				{
-					return _resources.Length;
-				}
-			}
+			public int Count => _resources.Length;
 
 			/// <summary>
 			/// Property to return whether the list is read-only or not.
 			/// </summary>
-			public bool IsReadOnly
-			{
-				get
-				{
-					return false;
-				}
-			}
+			public bool IsReadOnly => false;
+
 			#endregion
 
 			#region Methods.
@@ -1277,12 +1244,12 @@ namespace Gorgon.Graphics
 			{
                 if (array == null)
                 {
-                    throw new ArgumentNullException("array");
+                    throw new ArgumentNullException(nameof(array));
                 }
 
                 if ((arrayIndex < 0) || (arrayIndex >= array.Length))
                 {
-                    throw new ArgumentOutOfRangeException("arrayIndex");
+                    throw new ArgumentOutOfRangeException(nameof(arrayIndex));
                 }
 
 			    int count = (array.Length - arrayIndex).Min(_resources.Length);
@@ -1419,7 +1386,6 @@ namespace Gorgon.Graphics
 		protected GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -1449,7 +1415,6 @@ namespace Gorgon.Graphics
 		public virtual ShaderConstantBuffers ConstantBuffers
 		{
 			get;
-			private set;
 		}
 		
 		/// <summary>
@@ -1457,13 +1422,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public virtual TextureSamplerState TextureSamplers
-		{
-			get
-			{
-				return _samplers;
-			}
-		}
+		public virtual TextureSamplerState TextureSamplers => _samplers;
 
 		/// <summary>
 		/// Property to return the list of resources for the shaders.
@@ -1475,7 +1434,6 @@ namespace Gorgon.Graphics
 		public virtual ShaderResourceViews Resources
 		{
 			get;
-			private set;
 		}
 		#endregion
 

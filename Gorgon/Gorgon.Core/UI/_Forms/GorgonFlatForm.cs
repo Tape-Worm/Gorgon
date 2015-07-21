@@ -210,13 +210,7 @@ namespace Gorgon.UI
 		/// the caption, icons, etc...) and the controls the user is meant to interact with.
 		/// </remarks>
 		[Browsable(false)]
-		public Panel ContentArea
-		{
-			get
-			{
-				return _panelContent;
-			}
-		}
+		public Panel ContentArea => _panelContent;
 
 		/// <summary>
 		/// Property to set or return the current <see cref="GorgonFlatFormTheme"/> for the window.
@@ -484,13 +478,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <returns>A <see cref="T:System.Drawing.Rectangle" /> that contains the location and size of the form in the normal window state.</returns>
 		[Browsable(false)]
-		public new Rectangle RestoreBounds
-		{
-			get
-			{
-				return _restoreRect;
-			}
-		}
+		public new Rectangle RestoreBounds => _restoreRect;
 
 		/// <summary>
 		/// Gets or sets a value that indicates whether form is minimized, maximized, or normal.
@@ -592,14 +580,8 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-				if (stream != null)
-				{
-					stream.Dispose();
-				}
-				if (dialog != null)
-				{
-					dialog.Dispose();
-				}
+				stream?.Dispose();
+				dialog?.Dispose();
 			}
 		}
 
@@ -653,14 +635,8 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-				if (stream != null)
-				{
-					stream.Dispose();
-				}
-				if (dialog != null)
-				{
-					dialog.Dispose();
-				}
+				stream?.Dispose();
+				dialog?.Dispose();
 			}
 		}
 
@@ -1012,7 +988,7 @@ namespace Gorgon.UI
 				return;
 			}
 
-			int maxSizeForContainer = (panelWinIcons.Height.Max(_iconImage != null ? _iconImage.Height + 8 : 8).Max(_captionHeight));
+			int maxSizeForContainer = (panelWinIcons.Height.Max(_iconImage?.Height + 8 ?? 8).Max(_captionHeight));
 
 			panelCaptionArea.Height = maxSizeForContainer;
 

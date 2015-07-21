@@ -99,7 +99,6 @@ namespace Gorgon.Graphics
 		public int MipSlice
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -108,7 +107,6 @@ namespace Gorgon.Graphics
 		public int ArrayCount
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -117,7 +115,6 @@ namespace Gorgon.Graphics
 		public int FirstArrayIndex
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -246,7 +243,7 @@ namespace Gorgon.Graphics
 
 			D3DView = new D3D.DepthStencilView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
 			{
-				DebugName = string.Format("{0} '{1}' Depth Stencil View", Resource.ResourceType, Resource.Name)
+				DebugName = $"{Resource.ResourceType} '{Resource.Name}' Depth Stencil View"
 			};
 		}
 

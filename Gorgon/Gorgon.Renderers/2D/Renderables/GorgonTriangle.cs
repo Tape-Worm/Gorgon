@@ -50,37 +50,19 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		protected internal override PrimitiveType PrimitiveType
-		{
-			get 
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
+		protected internal override PrimitiveType PrimitiveType => PrimitiveType.TriangleList;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override int IndexCount
-		{
-			get 
-			{
-				return 0;
-			}
-		}
+		protected internal override int IndexCount => 0;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		public override GorgonIndexBuffer IndexBuffer
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public override GorgonIndexBuffer IndexBuffer => null;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
 		[AnimatedProperty]
@@ -338,7 +320,7 @@ namespace Gorgon.Renderers
 		    if ((pointIndex < 0)
 		        || (pointIndex > 2))
 		    {
-		        throw new ArgumentOutOfRangeException("pointIndex");
+		        throw new ArgumentOutOfRangeException(nameof(pointIndex));
 		    }
 
 			_points[pointIndex] = point;
@@ -357,7 +339,7 @@ namespace Gorgon.Renderers
             if ((pointIndex < 0)
                 || (pointIndex > 2))
             {
-                throw new ArgumentOutOfRangeException("pointIndex");
+                throw new ArgumentOutOfRangeException(nameof(pointIndex));
             }
 
 			return _points[pointIndex];

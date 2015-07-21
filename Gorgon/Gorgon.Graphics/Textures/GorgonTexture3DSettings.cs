@@ -56,13 +56,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of image data.
 		/// </summary>
-		public ImageType ImageType
-		{
-			get
-			{
-				return ImageType.Image3D;
-			}
-		}
+		public ImageType ImageType => ImageType.Image3D;
 
 		/// <summary>
 		/// Property to set or return whether this is a cube texture.
@@ -220,15 +214,10 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether the size of the texture is a power of 2 or not.
 		/// </summary>
-		public bool IsPowerOfTwo
-		{
-			get
-			{
-				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
-				       ((Height == 0) || (Height & (Height - 1)) == 0) &&
-				       ((Depth == 0) || (Depth & (Depth - 1)) == 0);
-			}
-		}
+		public bool IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0) &&
+		                            ((Height == 0) || (Height & (Height - 1)) == 0) &&
+		                            ((Depth == 0) || (Depth & (Depth - 1)) == 0);
+
 		#endregion
 
 		#region Methods.

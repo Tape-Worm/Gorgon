@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
             D3DShader = new D3D.ComputeShader(Graphics.D3DDevice, byteCode)
                 {
 #if DEBUG
-                    DebugName = string.Format("Gorgon Compute Shader '{0}'", Name)
+                    DebugName = $"Gorgon Compute Shader '{Name}'"
 #endif
                 };
         }

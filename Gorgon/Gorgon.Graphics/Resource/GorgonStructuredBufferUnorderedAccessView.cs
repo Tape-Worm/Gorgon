@@ -76,7 +76,6 @@ namespace Gorgon.Graphics
         public UnorderedAccessViewType ViewType
         {
             get;
-            private set;
         }
 
         /// <summary>

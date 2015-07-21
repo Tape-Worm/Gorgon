@@ -212,15 +212,9 @@ namespace Gorgon.Graphics.Example
 
             if (disposing)
             {
-                if (VertexBuffer != null)
-                {
-                    VertexBuffer.Dispose();
-                }
+	            VertexBuffer?.Dispose();
 
-                if (IndexBuffer != null)
-                {
-                    IndexBuffer.Dispose();
-                }
+	            IndexBuffer?.Dispose();
             }
 
             _disposed = true;

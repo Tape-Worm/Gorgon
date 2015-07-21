@@ -79,13 +79,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether this node is a leaf node.
 		/// </summary>
-		public bool IsLeaf
-		{
-			get
-			{
-				return ((Left == null) && (Right == null));
-			}
-		}
+		public bool IsLeaf => ((Left == null) && (Right == null));
+
 		#endregion
 
 		#region Methods.
@@ -193,7 +188,7 @@ namespace Gorgon.Graphics
 		{
 			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
 			{
-				throw new ArgumentOutOfRangeException("dimensions", Resources.GORGFX_FONT_GLYPH_NODE_TOO_LARGE);
+				throw new ArgumentOutOfRangeException(nameof(dimensions), Resources.GORGFX_FONT_GLYPH_NODE_TOO_LARGE);
 			}
 
 			// Do nothing here.

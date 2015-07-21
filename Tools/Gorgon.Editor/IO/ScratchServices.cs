@@ -38,7 +38,6 @@ namespace Gorgon.Editor
 		public IScratchArea ScratchArea
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -47,7 +46,6 @@ namespace Gorgon.Editor
 		public IScratchLocator ScratchLocator
 		{
 			get;
-			private set;
 		}
 		#endregion
 

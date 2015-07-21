@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using SlimMath;
 using Gorgon.Graphics;
+using SlimMath;
 
 namespace Gorgon.Examples
 {

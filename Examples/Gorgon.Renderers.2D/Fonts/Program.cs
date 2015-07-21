@@ -65,7 +65,7 @@ namespace Fonts
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException("The resource was not specified.", "resourceItem");
+				throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
 			}
 
 			path = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -224,15 +224,9 @@ namespace Fonts
 			finally
 			{
 				// Perform clean up.
-				if (_renderer != null)
-				{
-					_renderer.Dispose();
-				}
+				_renderer?.Dispose();
 
-				if (_graphics != null)
-				{
-					_graphics.Dispose();
-				}
+				_graphics?.Dispose();
 			}
 		}
 	}

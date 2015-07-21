@@ -58,13 +58,7 @@ namespace Gorgon.Editor
 		/// Property to return the display panel.
 		/// </summary>
         [Browsable(false)]
-		public Panel PanelDisplay
-		{
-			get
-			{
-				return _panelContentDisplay;
-			}
-		}
+		public Panel PanelDisplay => _panelContentDisplay;
 
 		/// <summary>
 		/// Property to set or return the content object to be manipulated by this interface.
@@ -73,7 +67,6 @@ namespace Gorgon.Editor
 		public IContentData Content
 		{
             get;
-			private set;
 		}
 
 	    /// <summary>
@@ -250,11 +243,11 @@ namespace Gorgon.Editor
 		{
 			if (Content == null)
 			{
-				labelCaption.Text = string.Format("{0} - {1}", base.Text, Resources.GOREDIT_TEXT_UNTITLED);
+				labelCaption.Text = $"{base.Text} - {Resources.GOREDIT_TEXT_UNTITLED}";
 				return;
 			}
 
-			labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Content.Name, Content.HasChanges ? "*" : string.Empty);
+			labelCaption.Text = $"{base.Text} - {Content.Name}{(Content.HasChanges ? "*" : string.Empty)}";
 		}
 
 		/// <summary>
@@ -284,7 +277,7 @@ namespace Gorgon.Editor
 		{
 			if (content == null)
 			{
-				throw new ArgumentNullException("content");
+				throw new ArgumentNullException(nameof(content));
 			}
 
 			// Done in both places to keep the designer happy.
@@ -359,13 +352,7 @@ namespace Gorgon.Editor
 		/// Property to set or return whether the control uses an external renderer.
 		/// </summary>
 		[Browsable(false)]
-		public bool UsesRenderer
-		{
-			get
-			{
-				return Renderer != null;
-			}
-		}
+		public bool UsesRenderer => Renderer != null;
 
 		/// <summary>
 		/// Property to set or return the control that will receive rendering.

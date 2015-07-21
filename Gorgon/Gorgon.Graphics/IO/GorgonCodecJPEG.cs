@@ -54,15 +54,9 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the data formats for the image.
 		/// </summary>
-		public override IEnumerable<BufferFormat> SupportedFormats
-		{
-			get
-			{
-				return _supportedFormats;
-			}
-		}
+		public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
 
-        /// <summary>
+	    /// <summary>
         /// Property to set or return the quality of an image compressed with lossy compression.
         /// </summary>
         /// <remarks>

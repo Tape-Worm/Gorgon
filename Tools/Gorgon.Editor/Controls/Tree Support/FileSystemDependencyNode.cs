@@ -38,13 +38,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Dependency;
-			}
-		}
+		public override NodeType NodeType => NodeType.Dependency;
 
 		/// <summary>
 		/// Gets or sets the foreground color of the tree node.

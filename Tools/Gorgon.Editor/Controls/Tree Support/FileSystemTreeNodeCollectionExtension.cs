@@ -75,7 +75,7 @@ namespace Gorgon.Editor
 		{
 			if (directory == null)
 			{
-				throw new ArgumentNullException("directory");
+				throw new ArgumentNullException(nameof(directory));
 			}
 
 			// Find check to ensure the node is unique.
@@ -133,7 +133,7 @@ namespace Gorgon.Editor
 		{
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			// Find check to ensure the node is unique.

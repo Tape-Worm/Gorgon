@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
@@ -228,7 +227,7 @@ namespace Gorgon.Examples
             }
             else
             {
-                labelJoystick.Text = string.Format("{0} not connected.", _joystick.Name);
+                labelJoystick.Text = $"{_joystick.Name} not connected.";
             }
         }
 
@@ -251,12 +250,8 @@ namespace Gorgon.Examples
 
             _mousePosition = new Point((int)position.X, (int)_mouse.Position.Y);
 
-            labelMouse.Text = string.Format("{0}: {1}x{2}.  Button: {3}.  Using {4} for data retrieval.",
-                                _mouse.Name,
-                                position.X.ToString("0.#"),
-                                position.Y.ToString("0.#"),
-                                button,
-                                (_usePolling ? "Polling" : "Events"));
+            labelMouse.Text =
+	            $"{_mouse.Name}: {position.X.ToString("0.#")}x{position.Y.ToString("0.#")}.  Button: {button}.  Using {(_usePolling ? "Polling" : "Events")} for data retrieval.";
         }
 
 	    /// <summary>
@@ -390,10 +385,7 @@ namespace Gorgon.Examples
 				_mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
 			}
 
-            if (_spray != null)
-            {
-                _spray.Resize(panelDisplay.ClientSize);
-            }
+			_spray?.Resize(panelDisplay.ClientSize);
 		}
 
         /// <summary>
@@ -569,10 +561,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				if (assemblies != null)
-				{
-					assemblies.Dispose();
-				}
+				assemblies?.Dispose();
 			}
 		}
 

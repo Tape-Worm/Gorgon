@@ -148,25 +148,22 @@ namespace Gorgon.Examples
 				result.Name = captionAttr.Value;
 			}
 
-			if (exePathAttr != null)
+			// Ensure that we can launch this executable.
+			if (!string.IsNullOrEmpty(exePathAttr?.Value))
 			{
-				// Ensure that we can launch this executable.
-				if (!string.IsNullOrEmpty(exePathAttr.Value))
+				string exePath = Path.GetFullPath(Settings.Default.ExePath).FormatDirectory(Path.DirectorySeparatorChar);
+				string exeDirectory = Path.GetDirectoryName(exePathAttr.Value);
+				string exeFilename = Path.GetFileName(exePathAttr.Value);
+
+				if ((!string.IsNullOrWhiteSpace(exeDirectory))
+				    && (!string.IsNullOrWhiteSpace(exeFilename))
+				    && (exeFilename.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)))
 				{
-					string exePath = Path.GetFullPath(Settings.Default.ExePath).FormatDirectory(Path.DirectorySeparatorChar);
-					string exeDirectory = Path.GetDirectoryName(exePathAttr.Value);
-					string exeFilename = Path.GetFileName(exePathAttr.Value);
+					exePath = exePath + exeDirectory.FormatDirectory(Path.DirectorySeparatorChar) + exeFilename;
 
-					if ((!string.IsNullOrWhiteSpace(exeDirectory))
-					    && (!string.IsNullOrWhiteSpace(exeFilename))
-						&& (exeFilename.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)))
+					if (File.Exists(exePath))
 					{
-						exePath = exePath + exeDirectory.FormatDirectory(Path.DirectorySeparatorChar) + exeFilename;
-
-						if (File.Exists(exePath))
-						{
-							result.ExePath = exePath;
-						}
+						result.ExePath = exePath;
 					}
 				}
 			}

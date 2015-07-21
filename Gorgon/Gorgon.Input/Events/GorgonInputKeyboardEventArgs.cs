@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Input
 {
@@ -63,41 +59,22 @@ namespace Gorgon.Input
 		public KeyboardKey ModifierKeys
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return if ALT is pressed or not.
 		/// </summary>
-		public bool Alt
-		{
-			get
-			{
-				return (ModifierKeys & KeyboardKey.Alt) == KeyboardKey.Alt;
-			}
-		}
+		public bool Alt => (ModifierKeys & KeyboardKey.Alt) == KeyboardKey.Alt;
 
 		/// <summary>
 		/// Property to return if Ctrl is pressed or not.
 		/// </summary>
-		public bool Ctrl
-		{
-			get
-			{
-				return (ModifierKeys & KeyboardKey.Control) == KeyboardKey.Control;
-			}
-		}
+		public bool Ctrl => (ModifierKeys & KeyboardKey.Control) == KeyboardKey.Control;
 
 		/// <summary>
 		/// Property to return if Shift is pressed or not.
 		/// </summary>
-		public bool Shift
-		{
-			get
-			{
-				return (ModifierKeys & KeyboardKey.Shift) == KeyboardKey.Shift;
-			}
-		}
+		public bool Shift => (ModifierKeys & KeyboardKey.Shift) == KeyboardKey.Shift;
 
 		/// <summary>
 		/// Property to return the scan code data.

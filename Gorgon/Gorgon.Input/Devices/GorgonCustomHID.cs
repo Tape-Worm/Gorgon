@@ -46,13 +46,8 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the name of the changed property.
 		/// </summary>
-		public string PropertyName
-		{
-			get
-			{
-				return _property.Name;
-			}
-		}
+		public string PropertyName => _property.Name;
+
 		#endregion
 
 		#region Methods.
@@ -110,13 +105,8 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the user organized data for the device.
 		/// </summary>
-		public IGorgonNamedObjectReadOnlyDictionary<GorgonCustomHIDProperty> Data
-		{
-			get
-			{
-				return _properties;
-			}
-		}
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonCustomHIDProperty> Data => _properties;
+
 		#endregion
 
 		#region Methods.
@@ -139,12 +129,12 @@ namespace Gorgon.Input
 		{
 			if (propertyName == null)
 			{
-				throw new ArgumentNullException("propertyName");
+				throw new ArgumentNullException(nameof(propertyName));
 			}
 
 			if (string.IsNullOrWhiteSpace(propertyName))
 			{
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(propertyName));
 			}
 
 			if (Data[propertyName] == null)
@@ -163,10 +153,7 @@ namespace Gorgon.Input
 		        _properties.Add(new GorgonCustomHIDProperty(propertyName, value));
 		    }
 
-		    if (DataChanged != null)
-		    {
-		        DataChanged(this, new GorgonCustomHIDDataChangedEventArgs(Data[propertyName]));
-		    }
+			DataChanged?.Invoke(this, new GorgonCustomHIDDataChangedEventArgs(Data[propertyName]));
 		}
 		#endregion
 

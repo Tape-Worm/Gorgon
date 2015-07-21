@@ -137,7 +137,7 @@ namespace Gorgon.Reflection
 		{
 			if (propertyInfo == null)
 			{
-				throw new ArgumentNullException("propertyInfo");
+				throw new ArgumentNullException(nameof(propertyInfo));
 			}
 
 			if (propertyInfo.DeclaringType == null)
@@ -223,7 +223,7 @@ namespace Gorgon.Reflection
 		{
 			if (propertyInfo == null)
 			{
-				throw new ArgumentNullException("propertyInfo");
+				throw new ArgumentNullException(nameof(propertyInfo));
 			}
 
 			if (propertyInfo.DeclaringType == null)
@@ -309,7 +309,7 @@ namespace Gorgon.Reflection
 		{
 			if (type == null)
 			{
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 
 			if (type.IsInterface)

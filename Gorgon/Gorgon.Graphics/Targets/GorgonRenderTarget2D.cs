@@ -56,20 +56,14 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return whether this target is attached to a swap chain or not.
         /// </summary>
-        public bool IsSwapChain
-        {
-            get
-            {
-                return _swapChain != null;
-            }
-        }
+        public bool IsSwapChain => _swapChain != null;
+
 	    /// <summary>
 	    /// Property to return the settings for this render target.
 	    /// </summary>
 	    public new GorgonRenderTarget2DSettings Settings
 	    {
 		    get;
-		    private set;
 	    }
 
 	    /// <summary>

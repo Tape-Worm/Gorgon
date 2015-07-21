@@ -1224,7 +1224,7 @@ namespace Gorgon.Editor
 		private void LocalizeStrings()
 		{
 			textSearch.CueText = APIResources.GOREDIT_TEXT_SEARCH;
-			label1.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_FILE);
+			label1.Text = $"{APIResources.GOREDIT_TEXT_FILE}:";
 			itemViewDetails.Text = APIResources.GOREDIT_TEXT_DETAIL_VIEW;
 			itemViewLarge.Text = APIResources.GOREDIT_TEXT_THUMBNAIL_VIEW;
 			columnFileName.Text = APIResources.GOREDIT_TEXT_NAME;

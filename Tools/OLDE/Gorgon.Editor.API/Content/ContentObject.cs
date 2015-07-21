@@ -136,7 +136,6 @@ namespace Gorgon.Editor
 		public ContentTypeDescriptor TypeDescriptor
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -157,7 +156,6 @@ namespace Gorgon.Editor
 	    public ContentDependencies Dependencies
 	    {
 		    get;
-		    private set;
 	    }
 
 		/// <summary>
@@ -224,15 +222,9 @@ namespace Gorgon.Editor
         /// Property to return whether the content has been initialized or not.
         /// </summary>
         [Browsable(false)]
-        public bool IsInitialized
-        {
-            get
-            {
-                return ContentControl != null;
-            }
-        }
+        public bool IsInitialized => ContentControl != null;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
         [Browsable(false)]
@@ -502,7 +494,7 @@ namespace Gorgon.Editor
 	    {
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)
@@ -526,7 +518,7 @@ namespace Gorgon.Editor
 	    {
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)
@@ -560,7 +552,7 @@ namespace Gorgon.Editor
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -591,7 +583,7 @@ namespace Gorgon.Editor
         {
             if (propertyName == null)
             {
-                throw new ArgumentNullException("propertyName");
+                throw new ArgumentNullException(nameof(propertyName));
             }
 
             if (string.IsNullOrWhiteSpace("propertyName"))
@@ -613,7 +605,7 @@ namespace Gorgon.Editor
 	    {
 			if (propertyName == null)
 			{
-				throw new ArgumentNullException("propertyName");
+				throw new ArgumentNullException(nameof(propertyName));
 			}
 
 			if (string.IsNullOrWhiteSpace("propertyName"))
@@ -647,7 +639,7 @@ namespace Gorgon.Editor
         {
             if (propertyName == null)
             {
-                throw new ArgumentNullException("propertyName");
+                throw new ArgumentNullException(nameof(propertyName));
             }
 
             if (string.IsNullOrWhiteSpace("propertyName"))
@@ -799,14 +791,9 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Name;
-			}
-		}
-		#endregion
+		string IGorgonNamedObject.Name => Name;
+
+	    #endregion
 
 		#region IDisposable Members
 		/// <summary>

@@ -42,7 +42,6 @@ namespace Gorgon.Input.Raw
 		public int ID
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -208,7 +207,6 @@ namespace Gorgon.Input.Raw
 		public IReadOnlyList<GorgonRange> VibrationMotorRanges
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
@@ -224,35 +222,17 @@ namespace Gorgon.Input.Raw
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public string HumanInterfaceDevicePath
-		{
-			get
-			{
-				return "GamingDevice";
-			}
-		}
+		public string HumanInterfaceDevicePath => "GamingDevice";
 
 		/// <inheritdoc/>
-		public string ClassName
-		{
-			get
-			{
-				return "Gaming device";
-			}
-		}
+		public string ClassName => "Gaming device";
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Joystick;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Joystick;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -260,7 +240,6 @@ namespace Gorgon.Input.Raw
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

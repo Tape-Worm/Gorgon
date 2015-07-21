@@ -747,88 +747,46 @@ namespace Gorgon.IO
 		public IList<GorgonColor> Palette
 		{
 			get;
-			private set;
 		}
 
 
 		/// <summary>
 		/// Property to return the friendly description of the format.
 		/// </summary>
-		public override string CodecDescription
-		{
-			get 
-			{
-				return Resources.GORGFX_IMAGE_DDS_CODEC_DESC;
-			}
-		}
+		public override string CodecDescription => Resources.GORGFX_IMAGE_DDS_CODEC_DESC;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the abbreviated name of the codec (e.g. PNG).
 		/// </summary>
-		public override string Codec
-		{
-			get 
-			{
-				return "DDS";
-			}
-		}
-		#endregion
+		public override string Codec => "DDS";
+
+	    #endregion
 
 		#region Methods.
         /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats
-        {
-            get
-            {
-                return _supportedFormats;
-            }
-        }
+        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
-        public override bool SupportsArray
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsArray => true;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
-        public override bool SupportsMipMaps
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsMipMaps => true;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
-        public override bool SupportsDepth
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsDepth => true;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return whether the image codec supports block compression.
 		/// </summary>
-	    public override bool SupportsBlockCompression
-	    {
-		    get
-		    {
-			    return true;
-		    }
-	    }
+	    public override bool SupportsBlockCompression => true;
 
 	    /// <summary>
 		/// Function to create a FOURCC value.
@@ -1877,7 +1835,7 @@ namespace Gorgon.IO
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)
@@ -1936,7 +1894,7 @@ namespace Gorgon.IO
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)

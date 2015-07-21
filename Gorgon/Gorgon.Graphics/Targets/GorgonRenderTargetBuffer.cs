@@ -50,7 +50,6 @@ namespace Gorgon.Graphics
 		public new GorgonRenderTargetBufferSettings Settings
 		{
 			get;
-			private set;
 		}
 		#endregion
 

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
@@ -51,7 +50,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    private class BrushTypeComboItem
 	    {
 			#region Variables.
-			private readonly string _text = string.Empty;			// Item text.
+			private readonly string _text;			// Item text.
 			#endregion
 
 			#region Properties.
@@ -61,7 +60,6 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			public GlyphBrushType BrushType
 			{
 				get;
-				private set;
 			}
 			#endregion
 

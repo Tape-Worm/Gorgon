@@ -464,35 +464,17 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Property to return the width.
 		/// </summary>
-		public int Width
-		{
-			get
-			{
-				return Right - Left;
-			}
-		}
+		public int Width => Right - Left;
 
 		/// <summary>
 		/// Property to return the height.
 		/// </summary>
-		public int Height
-		{
-			get
-			{
-				return Bottom - Top;
-			}
-		}
+		public int Height => Bottom - Top;
 
 		/// <summary>
 		/// Property to return the size of the rectangle.
 		/// </summary>
-		public Size Size
-		{
-			get
-			{
-				return new Size(Width, Height);
-			}
-		}
+		public Size Size => new Size(Width, Height);
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RECT"/> struct.

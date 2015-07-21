@@ -39,13 +39,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public override GlyphBrushType BrushType
-		{
-			get
-			{
-				return GlyphBrushType.Hatched;
-			}
-		}
+		public override GlyphBrushType BrushType => GlyphBrushType.Hatched;
 
 		/// <summary>
 		/// Property to set or return the style to use for the hatching pattern.

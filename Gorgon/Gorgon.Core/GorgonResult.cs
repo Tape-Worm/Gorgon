@@ -42,112 +42,53 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Initialization is required before continuing this operation.
 		/// </summary>
-		public static GorgonResult NotInitialized
-		{
-			get
-			{
-				return new GorgonResult("NotInitialized", ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
-			}
-		}
+		public static GorgonResult NotInitialized => new GorgonResult("NotInitialized", ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 
 		/// <summary>
 		/// There was an error during creation.
 		/// </summary>
-		public static GorgonResult CannotCreate
-		{
-			get
-			{
-				return new GorgonResult("CannotCreate", ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
-			}
-		}
+		public static GorgonResult CannotCreate => new GorgonResult("CannotCreate", ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
 
 		/// <summary>
 		/// There was an error while writing.
 		/// </summary>
-		public static GorgonResult CannotWrite
-		{
-			get
-			{
-				return new GorgonResult("CannotWrite", ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
-			}
-		}
+		public static GorgonResult CannotWrite => new GorgonResult("CannotWrite", ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
 
 		/// <summary>
 		/// Access is denied.
 		/// </summary>
-		public static GorgonResult AccessDenied
-		{
-			get
-			{
-				return new GorgonResult("AccessDenied", ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
-			}
-		}
+		public static GorgonResult AccessDenied => new GorgonResult("AccessDenied", ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
 
 		/// <summary>
 		/// There was an error interfacing with the driver.
 		/// </summary>
-		public static GorgonResult DriverError
-		{
-			get
-			{
-				return new GorgonResult("DriverError", ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
-			}
-		}
+		public static GorgonResult DriverError => new GorgonResult("DriverError", ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
 
 		/// <summary>
 		/// There was an error while reading.
 		/// </summary>
-		public static GorgonResult CannotRead
-		{
-			get
-			{
-				return new GorgonResult("CannotRead", ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
-			}
-		}
+		public static GorgonResult CannotRead => new GorgonResult("CannotRead", ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
 
 		/// <summary>
 		/// There was an error during binding.
 		/// </summary>
-		public static GorgonResult CannotBind
-		{
-			get
-			{
-				return new GorgonResult("CannotBind", ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
-			}
-		}
+		public static GorgonResult CannotBind => new GorgonResult("CannotBind", ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
 
 		/// <summary>
 		/// There was an error during the enumeration process.
 		/// </summary>
-		public static GorgonResult CannotEnumerate
-		{
-			get
-			{
-				return new GorgonResult("CannotEnumerate", ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
-			}
-		}
+		public static GorgonResult CannotEnumerate => new GorgonResult("CannotEnumerate", ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
 
 		/// <summary>
 		/// The requested format is not supported.
 		/// </summary>
-		public static GorgonResult FormatNotSupported
-		{
-			get
-			{
-				return new GorgonResult("FormatNotSupported", ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
-			}
-		}
+		public static GorgonResult FormatNotSupported => new GorgonResult("FormatNotSupported", ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
 
 		/// <summary>
 		/// The file format is not supported.
 		/// </summary>
-		public static GorgonResult InvalidFileFormat
-		{
-			get
-			{
-				return new GorgonResult("InvalidFileFormat", ErrorBase + 9, "The file format is not supported.");
-			}
-		}
+		public static GorgonResult InvalidFileFormat => new GorgonResult("InvalidFileFormat", ErrorBase + 9, "The file format is not supported.");
+
 		#endregion
 
 		#region Variables.
@@ -163,35 +104,18 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
-		public string Description
-		{
-			get
-			{
-				return _description;
-			}
-		}
+		public string Description => _description;
 
 		/// <summary>
 		/// Property to set or return the error code to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
-		public int Code
-		{
-			get
-			{
-				return _code;
-			}
-		}
+		public int Code => _code;
 
 		/// <summary>
 		/// Property to return the name of the error.
 		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return _name;
-			}
-		}
+		public string Name => _name;
+
 		#endregion
 
 		#region Methods.
@@ -283,22 +207,22 @@ namespace Gorgon.Core
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (description == null)
 			{
-				throw new ArgumentNullException("description");
+				throw new ArgumentNullException(nameof(description));
 			}
 
 			if (string.IsNullOrEmpty(description))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "description");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(description));
 			}
 
 			_name = name;

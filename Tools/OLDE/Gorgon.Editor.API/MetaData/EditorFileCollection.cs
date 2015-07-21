@@ -182,25 +182,14 @@ namespace Gorgon.Editor
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count
-		{
-			get
-			{
-				return _files.Count;
-			}
-		}
+		public int Count => _files.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<EditorFile>.IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection<EditorFile>.IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.
@@ -214,7 +203,7 @@ namespace Gorgon.Editor
 		{
 			if (item == null)
 			{
-				throw new ArgumentNullException("item");
+				throw new ArgumentNullException(nameof(item));
 			}
 
 			if (_files.ContainsKey(item.FilePath))
@@ -270,7 +259,7 @@ namespace Gorgon.Editor
 		{
 			if (item == null)
 			{
-				throw new ArgumentNullException("item");
+				throw new ArgumentNullException(nameof(item));
 			}
 
 			return _files.ContainsKey(item.FilePath) && _files.Remove(item.FilePath);
@@ -315,25 +304,14 @@ namespace Gorgon.Editor
 		/// Gets a value indicating whether access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe).
 		/// </summary>
 		/// <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
-		bool ICollection.IsSynchronized
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection.IsSynchronized => false;
 
 		/// <summary>
 		/// Gets an object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.
 		/// </summary>
 		/// <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</returns>
-		object ICollection.SyncRoot
-		{
-			get
-			{
-				return _syncLock;
-			}
-		}
+		object ICollection.SyncRoot => _syncLock;
+
 		#endregion
 
 		#region Methods.

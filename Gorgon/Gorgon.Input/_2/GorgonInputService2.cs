@@ -35,32 +35,26 @@ namespace Gorgon.Input
 		: IGorgonInputService
 	{
 		#region Variables.
-		// A list of forwarder methods used to send data to a registered keyboard device.
-		private readonly Dictionary<Guid, Action<GorgonKeyboardData>> _keyboardForwarders = new Dictionary<Guid, Action<GorgonKeyboardData>>();
+		// A list of routers used to send data to a registered keyboard device.
+		private readonly Dictionary<Guid, IGorgonDeviceRouting<GorgonKeyboardData>> _keyboardRouters = new Dictionary<Guid, IGorgonDeviceRouting<GorgonKeyboardData>>();
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to forward keyboard data on to the appropriate device.
+		/// Function to route keyboard data on to the appropriate device.
 		/// </summary>
-		/// <param name="device">The device to send the data to.</param>
+		/// <param name="uuid">The unique ID for the device.</param>
 		/// <param name="data">Data to send to the device.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="device"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		protected void SendKeyboardData(IGorgonInputDevice device, ref GorgonKeyboardData data)
+		protected void RouteKeyboardData(Guid uuid, ref GorgonKeyboardData data)
 		{
-			if (device == null)
-			{
-				throw new ArgumentNullException("device");
-			}
+			IGorgonDeviceRouting<GorgonKeyboardData> router;
 
-			Action<GorgonKeyboardData> forwarder;
-
-			if (!_keyboardForwarders.TryGetValue(device.UUID, out forwarder))
+			if (!_keyboardRouters.TryGetValue(uuid, out router))
 			{
 				return;
 			}
 
-			forwarder(data);
+			router.ParseData(ref data);
 		}
 
 		/// <summary>
@@ -138,35 +132,46 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to register a keyboard forwarder method with the input service.
 		/// </summary>
+		/// <param name="uuid">The unique ID for the device object.</param>
 		/// <param name="device">The keyboard device to communicate with.</param>
 		/// <remarks>
 		/// This method will register the forwarder method on the <see cref="GorgonKeyboard2"/> device so that the service can pass messages to it when they come in.
 		/// </remarks>
-		internal void RegisterKeyboardForwarder(GorgonKeyboard2 device)
+		internal void RegisterKeyboardForwarder<T>(Guid uuid, IGorgonDeviceRouting<T> device)
+			where T : struct
 		{
-			if (_keyboardForwarders.ContainsKey(device.UUID))
+			switch (device.DeviceType)
 			{
-				return;
-			}
+				case InputDeviceType.Keyboard:
+					if (_keyboardRouters.ContainsKey(uuid))
+					{
+						return;
+					}
 
-			_keyboardForwarders.Add(device.UUID, device.ParseData);
+					_keyboardRouters.Add(uuid, (IGorgonDeviceRouting<GorgonKeyboardData>)device);
+					break;
+				case InputDeviceType.Mouse:
+					break;
+				case InputDeviceType.Joystick:
+					break;
+			}
 		}
 
 		/// <summary>
 		/// Function to unregister a device forwarder method from the input service.
 		/// </summary>
-		/// <param name="device">The device to communicate with.</param>
+		/// <param name="uuid">The unique ID for the device object.</param>
 		/// <remarks>
 		/// This method will remove the forwarder method on the <see cref="IGorgonInputDevice"/> device so that the service can stop passing messages to it when they come in.
 		/// </remarks>
-		internal void UnregisterDeviceForwarder(IGorgonInputDevice device)
+		internal void UnregisterDeviceForwarder(Guid uuid)
 		{
-			if (!_keyboardForwarders.ContainsKey(device.UUID))
+			if (!_keyboardRouters.ContainsKey(uuid))
 			{
 				return;
 			}
 
-			_keyboardForwarders.Remove(device.UUID);
+			_keyboardRouters.Remove(uuid);
 		}
 		#endregion
 

@@ -112,24 +112,12 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override int IndexCount
-		{
-			get
-			{
-				return 6;
-			}
-		}
+		protected internal override int IndexCount => 6;
 
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		protected internal override PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
+		protected internal override PrimitiveType PrimitiveType => PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to set or return whether this sprite is loaded from a version 1.x Gorgon sprite file.
@@ -408,7 +396,7 @@ namespace Gorgon.Renderers
 		{
 			if (filePath == null)
 			{
-				throw new ArgumentNullException("filePath");
+				throw new ArgumentNullException(nameof(filePath));
 			}
 
 			if (string.IsNullOrWhiteSpace(filePath))
@@ -467,7 +455,7 @@ namespace Gorgon.Renderers
 		{		
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)
@@ -580,7 +568,7 @@ namespace Gorgon.Renderers
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -778,25 +766,13 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the number of vertices to process.
 		/// </summary>
-		int I2DCollisionObject.VertexCount
-		{
-			get
-			{
-				// Always 4 for a sprite.
-				return 4;
-			}
-		}
+		int I2DCollisionObject.VertexCount => 4;
 
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2DVertex[] I2DCollisionObject.Vertices
-		{
-			get
-			{
-				return Vertices;
-			}
-		}
+		Gorgon2DVertex[] I2DCollisionObject.Vertices => Vertices;
+
 		#endregion
     }
 }

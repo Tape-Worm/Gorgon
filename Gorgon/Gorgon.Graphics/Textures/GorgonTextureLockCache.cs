@@ -126,10 +126,10 @@ namespace Gorgon.Graphics
         #endregion
 
         #region Variables.
-        private static readonly object _syncLock = new object();        // Lock used for threading.
-        private bool _disposed;                                         // Flag to indicate that the object was disposed.
-        private Dictionary<LockCacheKey, GorgonTextureLockData> _locks; // List of locks that are currently open on the resource.
-        private GorgonTexture _texture;                                 // Texture that has the locks.
+        private static readonly object _syncLock = new object();					// Lock used for threading.
+        private bool _disposed;														// Flag to indicate that the object was disposed.
+        private readonly Dictionary<LockCacheKey, GorgonTextureLockData> _locks;	// List of locks that are currently open on the resource.
+        private readonly GorgonTexture _texture;									// Texture that has the locks.
         #endregion
 
         #region Methods.
@@ -253,11 +253,14 @@ namespace Gorgon.Graphics
 
             if (disposing)
             {
-                // Destroy all the open locks.
-                while (_locks.Count > 0)
-                {
-                    _locks.First().Value.Dispose();
-                }
+	            lock (_syncLock)
+	            {
+		            // Destroy all the open locks.
+		            while (_locks.Count > 0)
+		            {
+			            _locks.First().Value.Dispose();
+		            }
+	            }
             }
 
             _disposed = true;

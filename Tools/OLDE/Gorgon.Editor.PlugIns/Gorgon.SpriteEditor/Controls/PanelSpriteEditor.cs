@@ -940,7 +940,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 				                    NumberStyles.Float,
 				                    NumberFormatInfo.InvariantInfo);
 
-				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORSPR_TEXT_ZOOM, selectedItem.Text);
+				dropDownZoom.Text = $"{Resources.GORSPR_TEXT_ZOOM}: {selectedItem.Text}";
 
 				if (menuItemToWindow.Checked)
 				{
@@ -996,7 +996,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn.Controls
 			numericZoomWindowSize.Value = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSize;
 			checkZoomSnap.Checked = GorgonSpriteEditorPlugIn.Settings.ZoomWindowSnap;
 
-			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORSPR_TEXT_ZOOM, menuItem100.Text);
+			dropDownZoom.Text = $"{Resources.GORSPR_TEXT_ZOOM}: {menuItem100.Text}";
 		}
 
 		/// <summary>

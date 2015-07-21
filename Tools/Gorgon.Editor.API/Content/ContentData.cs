@@ -119,14 +119,9 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Name;
-			}
-		}
-		#endregion
+		string IGorgonNamedObject.Name => Name;
+
+	    #endregion
 
 		#region IDisposable Members
 		/// <summary>
@@ -182,7 +177,6 @@ namespace Gorgon.Editor
 		public IContentSerializer Serializer
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

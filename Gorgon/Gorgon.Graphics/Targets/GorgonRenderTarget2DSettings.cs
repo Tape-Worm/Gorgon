@@ -38,13 +38,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of render target.
 		/// </summary>
-		public RenderTargetType RenderTargetType
-		{
-			get
-			{
-				return RenderTargetType.Target2D;
-			}
-		}
+		public RenderTargetType RenderTargetType => RenderTargetType.Target2D;
 
 		/// <summary>
 		/// Property to set or return the format of the backing texture for the render target.
@@ -169,13 +163,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of render target data.
 		/// </summary>
-		public ImageType ImageType
-		{
-			get
-			{
-				return IsTextureCube ? ImageType.ImageCube : ImageType.Image2D;
-			}
-		}
+		public ImageType ImageType => IsTextureCube ? ImageType.ImageCube : ImageType.Image2D;
 
 		/// <summary>
 		/// Property to set or return the width of a render target.
@@ -239,14 +227,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether the size of the render target is a power of 2 or not.
 		/// </summary>
-		public bool IsPowerOfTwo
-		{
-			get
-			{
-				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
-				       ((Height == 0) || (Height & (Height - 1)) == 0);
-			}
-		}
+		public bool IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0) &&
+		                            ((Height == 0) || (Height & (Height - 1)) == 0);
 
 		/// <summary>
 		/// Property to set or return the number of images there are in the render target backing texture.

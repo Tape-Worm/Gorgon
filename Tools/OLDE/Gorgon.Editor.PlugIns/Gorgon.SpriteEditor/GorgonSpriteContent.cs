@@ -276,13 +276,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		LocalDisplayName(typeof(Resources), "PROP_TEXTURE_SAMPLER_NAME"),
 		LocalDescription(typeof(Resources), "PROP_TEXTURE_SAMPLER_DESC"),
 		TypeConverter(typeof(TextureSamplerTypeConverter))]
-		public GorgonRenderable.TextureSamplerState TextureSampler
-		{
-			get
-			{
-				return Sprite == null ? null : Sprite.TextureSampler;
-			}
-		}
+		public GorgonRenderable.TextureSamplerState TextureSampler => Sprite == null ? null : Sprite.TextureSampler;
 
 		/// <summary>
 		/// Property to return the depth states for the sprite.
@@ -291,13 +285,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		LocalCategory(typeof(Resources), "CATEGORY_BEHAVIOR"),
 		LocalDisplayName(typeof(Resources), "PROP_SPRITE_DEPTH_NAME"),
 		LocalDescription(typeof(Resources), "PROP_SPRITE_DEPTH_DESC")]
-		public GorgonRenderable.DepthStencilStates Depth
-		{
-			get
-			{
-				return Sprite == null ? null : Sprite.DepthStencil;
-			}
-		}
+		public GorgonRenderable.DepthStencilStates Depth => Sprite == null ? null : Sprite.DepthStencil;
 
 		/// <summary>
 		/// Property to return the stencil states for the sprite.
@@ -306,13 +294,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		LocalCategory(typeof(Resources), "CATEGORY_BEHAVIOR"),
 		LocalDisplayName(typeof(Resources), "PROP_SPRITE_STENCIL_NAME"),
 		LocalDescription(typeof(Resources), "PROP_SPRITE_STENCIL_DESC")]
-		public GorgonRenderable.DepthStencilStates Stencil
-		{
-			get
-			{
-				return Sprite == null ? null : Sprite.DepthStencil;
-			}
-		}
+		public GorgonRenderable.DepthStencilStates Stencil => Sprite == null ? null : Sprite.DepthStencil;
 
 		/// <summary>
 		/// Property to set or return the blending state(s) for the sprite.
@@ -321,13 +303,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
 		LocalDisplayName(typeof(Resources), "PROP_SPRITE_BLENDING_NAME"),
 		LocalDescription(typeof(Resources), "PROP_SPRITE_BLENDING_DESC")]
-		public GorgonRenderable.BlendState Blending
-		{
-			get
-			{
-				return Sprite == null ? null : Sprite.Blending;
-			}
-		}
+		public GorgonRenderable.BlendState Blending => Sprite == null ? null : Sprite.Blending;
 
 		/// <summary>
 		/// Property to set or return the size of the sprite.
@@ -523,37 +499,19 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// Property to return whether this content has properties that can be manipulated in the properties tab.
 		/// </summary>
 		[Browsable(false)]
-		public override bool HasProperties
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool HasProperties => true;
 
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
 		[Browsable(false)]
-		public override string ContentType
-		{
-			get
-			{
-				return Resources.GORSPR_CONTENT_TYPE;
-			}
-		}
+		public override string ContentType => Resources.GORSPR_CONTENT_TYPE;
 
 		/// <summary>
 		/// Property to return whether the content object supports a renderer interface.
 		/// </summary>
 		[Browsable(false)]
-		public override bool HasRenderer
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool HasRenderer => true;
 
 		/// <summary>
 		/// Property to return the renderer interface.

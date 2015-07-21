@@ -52,7 +52,6 @@ namespace Gorgon.Editor
             public EditorPlugIn PlugIn
             {
                 get;
-                private set;
             }
 
             /// <summary>
@@ -61,7 +60,6 @@ namespace Gorgon.Editor
             public IPlugInSettingsUI SettingsUI
             {
                 get;
-                private set;
             }
             #endregion
 
@@ -104,7 +102,7 @@ namespace Gorgon.Editor
         protected internal override void LocalizeControls()
         {
             Text = Resources.GOREDIT_TEXT_PLUGIN_PREFS;
-            labelPlugIns.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_PLUGINS);
+            labelPlugIns.Text = $"{Resources.GOREDIT_TEXT_PLUGINS}:";
         }
 
         /// <summary>

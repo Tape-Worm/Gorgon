@@ -114,24 +114,13 @@ namespace Gorgon.Collections.Specialized
 		/// <summary>
 		/// Gets a collection containing the keys in the <see cref="T:System.Collections.Generic.Dictionary`2" />.
 		/// </summary>
-		public new IEnumerable<TK> Keys
-		{
-			get
-			{
-				return base.Keys;
-			}
-		}
+		public new IEnumerable<TK> Keys => base.Keys;
 
 		/// <summary>
 		/// Gets a collection containing the values in the <see cref="T:System.Collections.Generic.Dictionary`2" />.
 		/// </summary>
-		public new IEnumerable<TV> Values
-		{
-			get
-			{
-				return base.Values;
-			}
-		}
+		public new IEnumerable<TV> Values => base.Values;
+
 		#endregion
 	}
 }

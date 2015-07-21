@@ -68,21 +68,18 @@ namespace Gorgon.Input.Raw
 		public int ProductID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int VendorID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int Version
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -91,31 +88,23 @@ namespace Gorgon.Input.Raw
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.HumanInterfaceDevice;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.HumanInterfaceDevice;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -125,7 +114,6 @@ namespace Gorgon.Input.Raw
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -134,21 +122,18 @@ namespace Gorgon.Input.Raw
 		public IntPtr Handle
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsage Usage
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsagePage UsagePage
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

@@ -14,13 +14,7 @@
 			set;
 		}
 
-		public string MyReadOnlyProperty
-		{
-			get
-			{
-				return MyWriteOnlyProperty.ToString();
-			}
-		}
+		public string MyReadOnlyProperty => MyWriteOnlyProperty.ToString();
 
 		public string MyReadOnlyAutoProperty
 		{

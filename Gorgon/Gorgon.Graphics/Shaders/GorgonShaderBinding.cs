@@ -159,7 +159,6 @@ namespace Gorgon.Graphics
 		public GorgonHullShaderState HullShader
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -170,7 +169,6 @@ namespace Gorgon.Graphics
 		public GorgonDomainShaderState DomainShader
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -484,12 +482,12 @@ namespace Gorgon.Graphics
 
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 			// Create the effect.
@@ -532,7 +530,7 @@ namespace Gorgon.Graphics
         {
             if (shaderData == null)
             {
-                throw new ArgumentNullException("shaderData");
+                throw new ArgumentNullException(nameof(shaderData));
             }
 
             using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(shaderData))
@@ -580,32 +578,32 @@ namespace Gorgon.Graphics
             
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (entryPoint == null)
             {
-                throw new ArgumentNullException("entryPoint");
+                throw new ArgumentNullException(nameof(entryPoint));
             }
 
             if (size < 1)
             {
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
             }
 
             if (string.IsNullOrWhiteSpace("name"))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace("entryPoint"))
             {
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "entryPoint");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
             }           
 			
 			long streamPosition = stream.Position;
@@ -672,12 +670,12 @@ namespace Gorgon.Graphics
 
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
             }
 
 			try
@@ -744,22 +742,22 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 			
 			if (entryPoint == null)
 			{
-				throw new ArgumentNullException("entryPoint");
+				throw new ArgumentNullException(nameof(entryPoint));
 			}
 
 			if (string.IsNullOrWhiteSpace(entryPoint))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "entryPoint");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
 			}
 			
 			if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (typeof(T) == typeof(GorgonOutputGeometryShader))
@@ -833,7 +831,7 @@ namespace Gorgon.Graphics
             
             if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (streamOutputElements == null)
@@ -843,12 +841,12 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (streamOutputElements.Count == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "streamOutputElements");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(streamOutputElements));
 			}
 
             if (autoStride)

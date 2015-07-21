@@ -27,7 +27,7 @@
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Gorgon.Input.Native
+namespace Gorgon.Native
 {
 	/// <summary>
 	/// Win32 API function calls.

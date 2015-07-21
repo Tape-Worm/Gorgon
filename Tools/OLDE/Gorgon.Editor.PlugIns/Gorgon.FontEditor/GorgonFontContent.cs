@@ -514,15 +514,9 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
-        public override bool HasProperties
-        {
-            get 
-            {
-                return true;
-            }
-        }
+        public override bool HasProperties => true;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the renderer.
 		/// </summary>
         [Browsable(false)]
@@ -546,26 +540,15 @@ namespace Gorgon.Editor.FontEditorPlugIn
         /// Property to return the type of content.
         /// </summary>
 		[Browsable(false)]
-        public override string ContentType
-        {
-            get 
-            {
-                return Resources.GORFNT_CONTENT_TYPE;
-            }
-        }		
+        public override string ContentType => Resources.GORFNT_CONTENT_TYPE;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the content object supports a renderer interface.
         /// </summary>
         [Browsable(false)]
-        public override bool HasRenderer
-        {
-            get 
-            {
-                return true;
-            }
-        }
-        #endregion
+        public override bool HasRenderer => true;
+
+	    #endregion
 
         #region Methods.
 		/// <summary>

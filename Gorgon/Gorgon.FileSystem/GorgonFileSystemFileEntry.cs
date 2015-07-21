@@ -40,13 +40,7 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the file system that owns this file.
         /// </summary>
-        public GorgonFileSystem FileSystem
-        {
-            get
-            {
-	            return Directory == null ? null : Directory.FileSystem;
-            }
-        }
+        public GorgonFileSystem FileSystem => Directory?.FileSystem;
 
 		/// <summary>
 		/// Property to return the file system that can access this file.

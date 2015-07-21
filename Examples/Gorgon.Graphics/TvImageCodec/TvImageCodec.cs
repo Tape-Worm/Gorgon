@@ -91,83 +91,42 @@ namespace Gorgon.Graphics.Example
         /// <summary>
         /// Property to return the friendly description of the format.
         /// </summary>
-        public override string CodecDescription
-        {
-            get
-            {
-                return "TV image";
-            }
-        }
+        public override string CodecDescription => "TV image";
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the abbreviated name of the codec (e.g. PNG).
         /// </summary>
-        public override string Codec
-        {
-            get
-            {
-                return "TV";
-            }
-        }
+        public override string Codec => "TV";
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the data formats supported by the codec.
         /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats
-        {
-            get
-            {
-                return _supportedFormats;
-            }
-        }
+        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
         /// <remarks>This tv format doesn't support volume textures.</remarks>
-        public override bool SupportsDepth
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsDepth => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
         /// <remarks>This tv format doesn't support texture arrays.</remarks>
-        public override bool SupportsArray
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsArray => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
         /// <remarks>This tv format doesn't support mip mapping.</remarks>
-        public override bool SupportsMipMaps
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsMipMaps => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports block compression.
         /// </summary>
-        public override bool SupportsBlockCompression
-        {
-            get
-            {
-                return false;
-            }
-        }
-        #endregion
+        public override bool SupportsBlockCompression => false;
+
+	    #endregion
 
         #region Methods.
         /// <summary>
@@ -179,7 +138,7 @@ namespace Gorgon.Graphics.Example
         {
             if (!stream.CanRead)
             {
-                throw new ArgumentException(@"Stream is write only.", "stream");
+                throw new ArgumentException(@"Stream is write only.", nameof(stream));
             }
 
             if (stream.Position + TvHeader.SizeInBytes >= stream.Length)
@@ -200,14 +159,14 @@ namespace Gorgon.Graphics.Example
             // Ensure we've got the correct data.
             if (header.MagicValueData != MagicValue)
             {
-                throw new ArgumentException(@"The image data is not a tv image.", "stream");
+                throw new ArgumentException(@"The image data is not a tv image.", nameof(stream));
             }
 
             // Ensure the width/height are valid.
             if ((header.Width < 0)
                 || (header.Height < 0))
             {
-                throw new ArgumentException(@"The image in this stream has an invalid width/height.", "stream");
+                throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream));
             }
 
             settings.Width = header.Width;
@@ -298,7 +257,7 @@ namespace Gorgon.Graphics.Example
         {
 	        if (imageData.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
 	        {
-				throw new ArgumentException(@"The image format must be R8G8B8A8_UIntNormal", "imageData");    
+				throw new ArgumentException(@"The image format must be R8G8B8A8_UIntNormal", nameof(imageData));    
 	        }
 
 			// First, we'll need to set up our header metadata.
@@ -403,7 +362,7 @@ namespace Gorgon.Graphics.Example
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)
@@ -439,12 +398,9 @@ namespace Gorgon.Graphics.Example
             }
             finally
             {
-                if (reader != null)
-                {
-                    reader.Dispose();
-                }
+	            reader?.Dispose();
 
-                // Restore the stream to its original placement.
+	            // Restore the stream to its original placement.
                 stream.Position = position;
             }
         }
@@ -467,7 +423,7 @@ namespace Gorgon.Graphics.Example
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)

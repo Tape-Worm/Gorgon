@@ -53,13 +53,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type returned/set by the property.
 		/// </summary>
-		public Type PropertyType
-		{
-			get
-			{
-				return _descriptor.PropertyType;
-			}
-		}
+		public Type PropertyType => _descriptor.PropertyType;
 
 		/// <summary>
 		/// Property to set or return whether the property is read only.

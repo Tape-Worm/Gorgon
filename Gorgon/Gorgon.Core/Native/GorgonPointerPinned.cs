@@ -104,7 +104,6 @@ namespace Gorgon.Native
 		public long PinnedOffset
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -159,22 +158,22 @@ namespace Gorgon.Native
 		{
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (array.Length == 0)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS, "array");
+				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS, nameof(array));
 			}
 
 			if (index < 0)
 			{
-				throw new ArgumentOutOfRangeException("index", Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
 			}
 
 			if (count < 1)
 			{
-				throw new ArgumentOutOfRangeException("count", String.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 1));
+				throw new ArgumentOutOfRangeException(nameof(count), String.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 1));
 			}
 
 			if (index + count > array.Length)

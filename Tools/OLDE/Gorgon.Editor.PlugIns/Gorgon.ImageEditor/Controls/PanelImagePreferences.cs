@@ -397,7 +397,7 @@ namespace Gorgon.Editor.ImageEditorPlugIn.Controls
 			columnPath.Text = Resources.GORIMG_TEXT_CODEC_PATH;
 			buttonAddCodec.Text = Resources.GORIMG_ACC_ADD_CODEC;
 			buttonRemoveCodec.Text = Resources.GORIMG_ACC_REMOVE_CODEC;
-			dialogOpen.Filter = string.Format("{0} (*.dll)|*.dll", Resources.GORIMG_DLG_CODEC_FILTER);
+			dialogOpen.Filter = $"{Resources.GORIMG_DLG_CODEC_FILTER} (*.dll)|*.dll";
 			dialogOpen.Title = Resources.GORIMG_DLG_LOAD_CODEC;
 			labelImageCodecs.Text = Resources.GORIMG_TEXT_IMAGE_CODEC_PLUGINS;
 			labelCannotEdit.Text = Resources.GORIMG_TEXT_CANNOT_EDIT;

@@ -52,36 +52,19 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the type of buffer.
         /// </summary>
-        public override BufferType BufferType
-        {
-            get
-            {
-                return BufferType.Constant;
-            }
-        }
+        public override BufferType BufferType => BufferType.Constant;
 
 		/// <summary>
 		/// Property to return the settings.
 		/// </summary>
-		public new GorgonConstantBufferSettings Settings
-		{
-			get
-			{
-				return (GorgonConstantBufferSettings)base.Settings;
-			}
-		}
+		public new GorgonConstantBufferSettings Settings => (GorgonConstantBufferSettings)base.Settings;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the default shader view for this buffer.
         /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
-	    public override GorgonShaderView DefaultShaderView
-	    {
-	        get
-	        {
-	            return null;
-	        }
-	    }
+	    public override GorgonShaderView DefaultShaderView => null;
+
 		#endregion
 
 		#region Methods.

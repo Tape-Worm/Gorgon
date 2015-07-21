@@ -138,12 +138,12 @@ namespace Gorgon.Graphics
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (name.Length == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			Name = name;
@@ -154,13 +154,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the name of the named object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 
 		#region IEquatable<GorgonShaderMacro> Members

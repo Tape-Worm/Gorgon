@@ -52,13 +52,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public override GlyphBrushType BrushType
-		{
-			get
-			{
-				return GlyphBrushType.Texture;
-			}
-		}
+		public override GlyphBrushType BrushType => GlyphBrushType.Texture;
 
 		/// <summary>
 		/// Property to set or return the wrapping mode for the gradient fill.
@@ -197,7 +191,7 @@ namespace Gorgon.Graphics
 		{
 			if (textureImage == null)
 			{
-				throw new ArgumentNullException("textureImage");	
+				throw new ArgumentNullException(nameof(textureImage));	
 			}
 
 			if ((textureImage.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB)

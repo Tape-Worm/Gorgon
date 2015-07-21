@@ -43,13 +43,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return whether the content provides a view or not.
 		/// </summary>
-		public override bool HasView
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool HasView => true;
+
 		#endregion
 
 		#region Methods.

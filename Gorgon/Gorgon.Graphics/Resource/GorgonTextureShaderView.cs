@@ -57,7 +57,6 @@ namespace Gorgon.Graphics
 		public int MipStart
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -66,7 +65,6 @@ namespace Gorgon.Graphics
 		public int MipCount
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -76,7 +74,6 @@ namespace Gorgon.Graphics
 		public int ArrayStart
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -88,7 +85,6 @@ namespace Gorgon.Graphics
 		public int ArrayCount
 		{
 			get;
-			private set;
 		}
 
         /// <summary>
@@ -97,7 +93,6 @@ namespace Gorgon.Graphics
 	    public bool IsCube
 	    {
 	        get;
-	        private set;
 	    }
 		#endregion
 

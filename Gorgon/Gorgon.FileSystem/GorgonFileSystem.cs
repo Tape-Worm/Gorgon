@@ -166,19 +166,13 @@ namespace Gorgon.IO
 		public GorgonFileSystemDirectory RootDirectory
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return the list of providers available to this file system.
 		/// </summary>
-		public IReadOnlyDictionary<string, GorgonFileSystemProvider> Providers
-		{
-			get
-			{
-				return _providers;
-			}
-		}
+		public IReadOnlyDictionary<string, GorgonFileSystemProvider> Providers => _providers;
+
 		#endregion
 
 		#region Methods.
@@ -393,12 +387,12 @@ namespace Gorgon.IO
 		{
 			if (path == null)
 			{
-				throw new ArgumentNullException("path");
+				throw new ArgumentNullException(nameof(path));
 			}
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
 			}
 
 			path = path.FormatDirectory('/');
@@ -410,14 +404,14 @@ namespace Gorgon.IO
 
 			if (path == "/")
 			{
-				throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, "/"), "path");
+				throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, "/"), nameof(path));
 			}
 
 			string[] directories = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (directories.Length == 0)
 			{
-				throw new ArgumentException(string.Format(Resources.GORFS_PATH_INVALID, path), "path");
+				throw new ArgumentException(string.Format(Resources.GORFS_PATH_INVALID, path), nameof(path));
 			}
 
 			GorgonFileSystemDirectory directory = RootDirectory;
@@ -425,7 +419,7 @@ namespace Gorgon.IO
 			{
                 if (directory.Files.Contains(item))
                 {
-					throw new ArgumentException(string.Format(Resources.GORFS_FILE_EXISTS, item), "path");
+					throw new ArgumentException(string.Format(Resources.GORFS_FILE_EXISTS, item), nameof(path));
                 }
 
 				if (directory.Directories.Contains(item))
@@ -479,7 +473,7 @@ namespace Gorgon.IO
 
 		    if (directory == null)
 		    {
-		        throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName), "path");
+		        throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName), nameof(path));
 		    }
 
 		    if (directory.Directories.Contains(fileName))
@@ -513,12 +507,12 @@ namespace Gorgon.IO
 		{
 		    if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemDirectory startDirectory = GetDirectory(path);
@@ -566,12 +560,12 @@ namespace Gorgon.IO
 		{
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemDirectory start = GetDirectory(path);
@@ -617,12 +611,12 @@ namespace Gorgon.IO
 		{
 		    if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 		    if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
@@ -637,7 +631,7 @@ namespace Gorgon.IO
             // Check for file name.
 		    if (string.IsNullOrWhiteSpace(filename))
 		    {
-		        throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path), "path");
+		        throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path), nameof(path));
 		    }
 
             // Start search.
@@ -662,7 +656,7 @@ namespace Gorgon.IO
 		{
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
@@ -745,7 +739,7 @@ namespace Gorgon.IO
 
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			using (GorgonFileSystemStream stream = OpenStream(file, false))
@@ -777,12 +771,12 @@ namespace Gorgon.IO
 		{
             if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			if (data == null)
 			{
-				throw new ArgumentNullException("data");
+				throw new ArgumentNullException(nameof(data));
 			}
 
 			lock(_syncLock)
@@ -848,7 +842,7 @@ namespace Gorgon.IO
 
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
             if (file.FileSystem != this)
@@ -936,12 +930,12 @@ namespace Gorgon.IO
 		{
 		    if (path == null)
 		    {
-		        throw new ArgumentNullException("path");
+		        throw new ArgumentNullException(nameof(path));
 		    }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 		    lock(_syncLock)
@@ -978,7 +972,7 @@ namespace Gorgon.IO
 		{
             if (file == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             }
 
             if (file.FileSystem != this)
@@ -1016,12 +1010,12 @@ namespace Gorgon.IO
 		{
 		    if (path == null)
 		    {
-		        throw new ArgumentNullException("path");
+		        throw new ArgumentNullException(nameof(path));
 		    }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemFileEntry file = GetFile(path);
@@ -1050,7 +1044,7 @@ namespace Gorgon.IO
 
             if (directory == null)
             {
-                throw new ArgumentNullException("directory");
+                throw new ArgumentNullException(nameof(directory));
             }
 
             if (directory.FileSystem != this)
@@ -1125,12 +1119,12 @@ namespace Gorgon.IO
 		{
 	        if (path == null)
 		    {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 		    }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
             }
 
 	        lock(_syncLock)
@@ -1300,7 +1294,7 @@ namespace Gorgon.IO
 		{
 			if (physicalPath == null)
             {
-                throw new ArgumentNullException("physicalPath");
+                throw new ArgumentNullException(nameof(physicalPath));
             }
 
             if (string.IsNullOrWhiteSpace(mountPath))
@@ -1310,7 +1304,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(physicalPath))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "physicalPath");
+                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(physicalPath));
             }
 
 			lock(_syncLock)
@@ -1416,7 +1410,7 @@ namespace Gorgon.IO
 		{
 			if (provider == null)
 			{
-				throw new ArgumentNullException("provider");
+				throw new ArgumentNullException(nameof(provider));
 			}
 
 			_providers[provider.Name] = provider;
@@ -1440,7 +1434,7 @@ namespace Gorgon.IO
 		{
 			if (providers == null)
 			{
-				throw new ArgumentNullException("providers");
+				throw new ArgumentNullException(nameof(providers));
 			}
 
 			if (log != null)

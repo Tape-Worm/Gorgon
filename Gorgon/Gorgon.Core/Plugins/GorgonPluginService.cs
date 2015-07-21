@@ -61,17 +61,11 @@ namespace Gorgon.Plugins
 		public IGorgonPluginAssemblyCache PluginAssemblyCache
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public int LoadedPluginCount
-		{
-			get
-			{
-				return !_loadedPlugins.IsValueCreated ? 0 : _loadedPlugins.Value.Count;
-			}
-		}
+		public int LoadedPluginCount => !_loadedPlugins.IsValueCreated ? 0 : _loadedPlugins.Value.Count;
+
 		#endregion
 
 		#region Methods.
@@ -180,12 +174,12 @@ namespace Gorgon.Plugins
 		{
 			if (pluginName == null)
 			{
-				throw new ArgumentNullException("pluginName");
+				throw new ArgumentNullException(nameof(pluginName));
 			}
 
 			if (string.IsNullOrWhiteSpace(pluginName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(pluginName));
 			}
 
 			if (!_constructors.IsValueCreated)
@@ -357,12 +351,12 @@ namespace Gorgon.Plugins
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			while (true)
@@ -384,10 +378,7 @@ namespace Gorgon.Plugins
 
 					var disposer = plugin as IDisposable;
 
-					if (disposer != null)
-					{
-						disposer.Dispose();
-					}
+					disposer?.Dispose();
 
 					_loadedPlugins.Value.Remove(plugin);
 
@@ -413,7 +404,7 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyCache == null)
 			{
-				throw new ArgumentNullException("assemblyCache");
+				throw new ArgumentNullException(nameof(assemblyCache));
 			}
 
 			PluginAssemblyCache = assemblyCache;

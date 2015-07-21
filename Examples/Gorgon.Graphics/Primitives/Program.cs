@@ -723,85 +723,37 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
-				if (_materialBuffer != null)
-				{
-					_materialBuffer.Dispose();
-				}
+				_materialBuffer?.Dispose();
 
-				if (_normalEarfMap != null)
-				{
-					_normalEarfMap.Dispose();
-				}
+				_normalEarfMap?.Dispose();
 
-				if (_normalMap != null)
-				{
-					_normalMap.Dispose();
-				}
+				_normalMap?.Dispose();
 
-				if (_specEarfMap != null)
-				{
-					_specEarfMap.Dispose();
-				}
+				_specEarfMap?.Dispose();
 
-				if (_specMap != null)
-				{
-					_specMap.Dispose();
-				}
+				_specMap?.Dispose();
 
-				if (_cloudMap != null)
-				{
-					_cloudMap.Dispose();
-				}
+				_cloudMap?.Dispose();
 
-				if (_clouds != null)
-				{
-					_clouds.Dispose();
-				}
+				_clouds?.Dispose();
 
-				if (_sphere != null)
-				{
-					_sphere.Dispose();
-				}
-					
-				if (_light != null)
-				{
-					_light.Dispose();
-				}
+				_sphere?.Dispose();
 
-				if (_cube != null)
-				{
-					_cube.Dispose();
-				}
+				_light?.Dispose();
 
-				if (_plane != null)
-				{
-					_plane.Dispose();
-				}
+				_cube?.Dispose();
 
-				if (_triangle != null)
-				{
-					_triangle.Dispose();
-				}
+				_plane?.Dispose();
 
-				if (_wvp != null)
-				{
-					_wvp.Dispose();
-				}
+				_triangle?.Dispose();
 
-				if (_renderer2D != null)
-				{
-					_renderer2D.Dispose();
-				}
+				_wvp?.Dispose();
 
-				if (_swapChain != null)
-				{
-					_swapChain.Dispose();
-				}
+				_renderer2D?.Dispose();
 
-				if (_graphics != null)
-				{
-					_graphics.Dispose();
-				}
+				_swapChain?.Dispose();
+
+				_graphics?.Dispose();
 			}
 		}
 	}

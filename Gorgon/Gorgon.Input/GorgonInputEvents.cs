@@ -49,90 +49,43 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return buttons that were pressed during mouse movement.
 		/// </summary>
-		public PointingDeviceButtons Buttons
-		{
-			get
-			{
-				return _button;
-			}
-		}
+		public PointingDeviceButtons Buttons => _button;
 
 		/// <summary>
 		/// Property to return the buttons that are being held down during the event.
 		/// </summary>
-		public PointingDeviceButtons ShiftButtons
-		{
-			get
-			{
-				return _shiftButtons;
-			}
-		}
+		public PointingDeviceButtons ShiftButtons => _shiftButtons;
 
 		/// <summary>
 		/// Property to return the position of the mouse.
 		/// </summary>
-		public PointF Position
-		{
-			get
-			{
-				return _position;
-			}
-		}
+		public PointF Position => _position;
 
 		/// <summary>
 		/// Property to return the wheel position.
 		/// </summary>
-		public int WheelPosition
-		{
-			get
-			{
-				return _wheelPosition;
-			}
-		}
+		public int WheelPosition => _wheelPosition;
 
 		/// <summary>
 		/// Property to return the amount that the mouse has moved since it last moved.
 		/// </summary>
-		public PointF RelativePosition
-		{
-			get
-			{
-				return _relative;
-			}
-		}
+		public PointF RelativePosition => _relative;
 
 		/// <summary>
 		/// Property to return the amount that the wheel has moved since the last update.
 		/// </summary>
-		public int WheelDelta
-		{
-			get
-			{
-				return _wheelDelta;
-			}
-		}
+		public int WheelDelta => _wheelDelta;
 
 		/// <summary>
 		/// Property to return if we've double clicked.
 		/// </summary>
-		public bool DoubleClick
-		{
-			get
-			{
-				return (_clickCount > 1);
-			}
-		}
+		public bool DoubleClick => (_clickCount > 1);
 
 		/// <summary>
 		/// Property to return the number of full clicks.
 		/// </summary>
-		public int ClickCount
-		{
-			get
-			{
-				return _clickCount;
-			}
-		}
+		public int ClickCount => _clickCount;
+
 		#endregion
 
 		#region Constructor/Destructor.
@@ -176,79 +129,38 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the character that the key represents.
 		/// </summary>
-		public GorgonKeyCharMap CharacterMapping
-		{
-			get
-			{
-				return _character;
-			}
-		}
+		public GorgonKeyCharMap CharacterMapping => _character;
 
 		/// <summary>
 		/// Property to return key that is pressed.
 		/// </summary>
-		public KeyboardKey Key
-		{
-			get
-			{
-				return _key;
-			}
-		}
+		public KeyboardKey Key => _key;
 
 		/// <summary>
 		/// Property to return the keys that are being held down during the event.
 		/// </summary>
-		public KeyboardKey ModifierKeys
-		{
-			get
-			{
-				return _modifierKey;
-			}
-		}
+		public KeyboardKey ModifierKeys => _modifierKey;
 
 		/// <summary>
 		/// Property to return if ALT is pressed or not.
 		/// </summary>
-		public bool Alt
-		{
-			get
-			{
-				return (_modifierKey & KeyboardKey.Alt) == KeyboardKey.Alt;
-			}
-		}
+		public bool Alt => (_modifierKey & KeyboardKey.Alt) == KeyboardKey.Alt;
 
 		/// <summary>
 		/// Property to return if Ctrl is pressed or not.
 		/// </summary>
-		public bool Ctrl
-		{
-			get
-			{
-				return (_modifierKey & KeyboardKey.Control) == KeyboardKey.Control;
-			}
-		}
+		public bool Ctrl => (_modifierKey & KeyboardKey.Control) == KeyboardKey.Control;
 
 		/// <summary>
 		/// Property to return if Shift is pressed or not.
 		/// </summary>
-		public bool Shift
-		{
-			get
-			{
-				return (_modifierKey & KeyboardKey.Shift) == KeyboardKey.Shift;
-			}
-		}
+		public bool Shift => (_modifierKey & KeyboardKey.Shift) == KeyboardKey.Shift;
 
 		/// <summary>
 		/// Property to return the scan code data.
 		/// </summary>
-		public int ScanCodeData
-		{
-			get
-			{
-				return _scan;
-			}
-		}
+		public int ScanCodeData => _scan;
+
 		#endregion
 
 		#region Constructor/Destructor.

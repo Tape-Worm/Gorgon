@@ -71,24 +71,12 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return the total physical RAM available in bytes.
 		/// </summary>
-		public static long TotalPhysicalRAM
-		{
-			get
-			{
-				return Win32API.TotalPhysicalRAM;
-			}
-		}
+		public static long TotalPhysicalRAM => Win32API.TotalPhysicalRAM;
 
 		/// <summary>
 		/// Property to return the available physical RAM in bytes.
 		/// </summary>
-		public static long AvailablePhysicalRAM
-		{
-			get
-			{
-				return Win32API.AvailablePhysicalRAM;
-			}			
-		}
+		public static long AvailablePhysicalRAM => Win32API.AvailablePhysicalRAM;
 
 		/// <summary>
 		/// Property to return the platform that this instance of Gorgon was compiled for.
@@ -97,13 +85,7 @@ namespace Gorgon.Diagnostics
 		/// When the application that uses this class is run on a 64 bit version of windows, on a 64 bit machine, and the application is running as 64 bit, then this value will return 
 		/// <see cref="Diagnostics.PlatformArchitecture.x64"/>, otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
 		/// </remarks>
-		public static PlatformArchitecture PlatformArchitecture
-		{
-			get
-			{
-			    return Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
-			}
-		}
+		public static PlatformArchitecture PlatformArchitecture => Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
 		/// <summary>
 		/// Property to return the architecture of the Operating System that Gorgon is running on.
@@ -112,125 +94,59 @@ namespace Gorgon.Diagnostics
 		/// When the application that uses this class is run on a 64 bit version of windows, and on a 64 bit machine then this value will return <see cref="Diagnostics.PlatformArchitecture.x64"/>, 
 		/// otherwise it will return <see cref="Diagnostics.PlatformArchitecture.x86"/>.
 		/// </remarks>
-		public static PlatformArchitecture OperatingSystemArchitecture
-		{
-			get
-			{
-			    return Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
-			}
-		}
+		public static PlatformArchitecture OperatingSystemArchitecture => Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
 		/// <summary>
 		/// Property to return the name for the computer.
 		/// </summary>
-		public static string ComputerName
-		{
-			get
-			{
-				return Environment.MachineName;
-			}
-		}
+		public static string ComputerName => Environment.MachineName;
 
 		/// <summary>
 		/// Property to return the platform for the Operating System.
 		/// </summary>
-		public static PlatformID OperatingSystemPlatform
-		{
-			get
-			{
-				return Environment.OSVersion.Platform;
-			}
-		}
+		public static PlatformID OperatingSystemPlatform => Environment.OSVersion.Platform;
 
 		/// <summary>
 		/// Property to return the version of the operating system.
 		/// </summary>
-		public static Version OperatingSystemVersion
-		{
-			get
-			{
-				return Environment.OSVersion.Version;
-			}
-		}
+		public static Version OperatingSystemVersion => Environment.OSVersion.Version;
 
 		/// <summary>
 		/// Property to return the operating system version as a formatted text string.
 		/// </summary>
 		/// <remarks>This includes the platform, version number and service pack.</remarks>
-		public static string OperatingSystemVersionText
-		{
-			get
-			{
-				
-				return Environment.OSVersion.VersionString;
-			}
-		}
+		public static string OperatingSystemVersionText => Environment.OSVersion.VersionString;
 
 		/// <summary>
 		/// Property to return the service pack that is applied to the operating system.
 		/// </summary>
-		public static string OperatingSystemServicePack
-		{
-			get
-			{
-				return Environment.OSVersion.ServicePack;
-			}
-		}
+		public static string OperatingSystemServicePack => Environment.OSVersion.ServicePack;
 
 		/// <summary>
 		/// Property to return the number of processors in the computer.
 		/// </summary>
-		public static int ProcessorCount
-		{
-			get
-			{				
-				return Environment.ProcessorCount;
-			}
-		}
+		public static int ProcessorCount => Environment.ProcessorCount;
 
 		/// <summary>
 		/// Property to return the system directory for the operating system.
 		/// </summary>
-		public static string SystemDirectory
-		{
-			get
-			{
-				return Environment.SystemDirectory;
-			}
-		}
+		public static string SystemDirectory => Environment.SystemDirectory;
 
 		/// <summary>
 		/// Property to return a list of machine specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> MachineEnvironmentVariables
-		{
-			get
-			{
-				return _machineVariables;
-			}
-		}
+		public static IReadOnlyDictionary<string, string> MachineEnvironmentVariables => _machineVariables;
 
 		/// <summary>
 		/// Property to return a list of user specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> UserEnvironmentVariables
-		{
-			get
-			{
-				return _userVariables;
-			}
-		}
+		public static IReadOnlyDictionary<string, string> UserEnvironmentVariables => _userVariables;
 
 		/// <summary>
 		/// Property to return a list of process specific environment variables.
 		/// </summary>
-		public static IReadOnlyDictionary<string, string> ProcessEnvironmentVariables
-		{
-			get
-			{
-				return _processVariables;
-			}
-		}
+		public static IReadOnlyDictionary<string, string> ProcessEnvironmentVariables => _processVariables;
+
 		#endregion
 
 		#region Methods.

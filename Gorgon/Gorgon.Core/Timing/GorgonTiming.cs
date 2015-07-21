@@ -556,12 +556,7 @@ namespace Gorgon.Timing
 			_averageFPSTotal = 0.0f;
 			_averageScaledDeltaTotal = 0.0f;
 
-			if (_timer == null)
-			{
-				return;
-			}
-
-			_timer.Reset();
+			_timer?.Reset();
 		}
 
 		/// <summary>

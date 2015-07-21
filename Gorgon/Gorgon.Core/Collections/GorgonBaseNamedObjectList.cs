@@ -53,13 +53,7 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Property to return the list of items in the underlying collection.
 		/// </summary>
-		protected IList<T> Items
-		{
-			get
-			{
-				return _list;
-			}
-		}
+		protected IList<T> Items => _list;
 
 		/// <summary>
 		/// Property to return whether the keys are case sensitive.
@@ -67,7 +61,6 @@ namespace Gorgon.Collections
 		public bool KeysAreCaseSensitive
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -260,13 +253,7 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// The number of elements contained in the list.
 		/// </returns>
-		public int Count
-		{
-			get
-			{
-				return _list.Count;
-			}
-		}
+		public int Count => _list.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the list is read-only.
@@ -275,13 +262,8 @@ namespace Gorgon.Collections
 		/// <returns>true if the list is read-only; otherwise, false.
 		/// </returns>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.
@@ -388,26 +370,16 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Gets or sets the element at the specified index.
 		/// </summary>
-		T IReadOnlyList<T>.this[int index]
-		{
-			get
-			{
-				return _list[index];
-			}
-		}
+		T IReadOnlyList<T>.this[int index] => _list[index];
+
 		#endregion
 
 		#region IGorgonNamedObjectReadOnlyList<T> Members
 		/// <summary>
 		/// Property to return an item in this list by its name.
 		/// </summary>
-		T IGorgonNamedObjectReadOnlyList<T>.this[string name]
-		{
-			get
-			{
-				return GetItemByName(name);
-			}
-		}
+		T IGorgonNamedObjectReadOnlyList<T>.this[string name] => GetItemByName(name);
+
 		#endregion
 
 		#region IGorgonNamedObjectList<T> Members
@@ -415,13 +387,8 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Property to set or return an item within this list by its name.
 		/// </summary>
-		T IGorgonNamedObjectList<T>.this[string name]
-		{
-			get
-			{
-				return GetItemByName(name);
-			}
-		}
+		T IGorgonNamedObjectList<T>.this[string name] => GetItemByName(name);
+
 		#endregion
 
 		#region Methods.

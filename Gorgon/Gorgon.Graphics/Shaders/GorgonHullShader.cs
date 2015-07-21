@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
             D3DShader = new D3D.HullShader(Graphics.D3DDevice, byteCode)
                 {
 #if DEBUG
-                    DebugName = string.Format("Gorgon Hull Shader '{0}'", Name)
+                    DebugName = $"Gorgon Hull Shader '{Name}'"
 #endif
                 };
         }

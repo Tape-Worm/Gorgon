@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -128,56 +129,31 @@ namespace Gorgon.IO
 		public StreamAccess StreamAccess
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
 		/// </summary>
 		/// <returns><b>true</b> if the stream supports reading; otherwise, <b>false</b>.</returns>
-		public override bool CanRead
-		{
-			get
-			{
-				return ((StreamAccess == StreamAccess.ReadOnly) || (StreamAccess == StreamAccess.ReadWrite));
-			}
-		}
+		public override bool CanRead => ((StreamAccess == StreamAccess.ReadOnly) || (StreamAccess == StreamAccess.ReadWrite));
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
 		/// </summary>
 		/// <returns>This property will always return <b>true</b> for this type.</returns>
-		public override bool CanSeek
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool CanSeek => true;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
 		/// </summary>
 		/// <returns><b>true</b> if the stream supports writing; otherwise, <b>false</b>.</returns>
-		public override bool CanWrite
-		{
-			get
-			{
-				return ((StreamAccess == StreamAccess.WriteOnly) || (StreamAccess == StreamAccess.ReadWrite));
-			}
-		}
+		public override bool CanWrite => ((StreamAccess == StreamAccess.WriteOnly) || (StreamAccess == StreamAccess.ReadWrite));
 
 		/// <summary>
 		/// When overridden in a derived class, gets the length in bytes of the stream.
 		/// </summary>
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
-		public override long Length
-		{
-			get
-			{
-				return _pointer == null ? 0 : _pointer.Size;
-			}
-		}
+		public override long Length => _pointer?.Size ?? 0;
 
 		/// <summary>
 		/// When overridden in a derived class, gets or sets the position within the current stream.
@@ -230,13 +206,7 @@ namespace Gorgon.IO
 		/// offset by the current <see cref="Position"/>, use the <see cref="PositionIntPtr"/> property.
 		/// </remarks>
 		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
-		public IntPtr BaseIntPtr
-		{
-			get
-			{
-				return new IntPtr(_pointer.Address);
-			}
-		}
+		public IntPtr BaseIntPtr => new IntPtr(_pointer.Address);
 
 		/// <summary>
 		/// Property to return the native pointer to the unmanaged memory wrapped by the stream, and offset by the current <see cref="Position"/> in the stream.
@@ -245,13 +215,7 @@ namespace Gorgon.IO
 		/// This value returns the same value as the <see cref="BasePointer"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
 		/// </remarks>
 		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
-		public void* PositionPointer
-		{
-			get
-			{
-				return (void *)(_pointer.Address + _position);
-			}
-		}
+		public void* PositionPointer => (void *)(_pointer.Address + _position);
 
 		/// <summary>
 		/// Property to return the <see cref="IntPtr"/> which wraps the native pointer to the unmanaged memory wrapped by the stream, and offset by the current <see cref="Position"/> in the stream.
@@ -260,13 +224,7 @@ namespace Gorgon.IO
 		/// This value returns the same value as the <see cref="BaseIntPtr"/>, but offset by the number of bytes indicated by <see cref="Position"/>.
 		/// </remarks>
 		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
-		public IntPtr PositionIntPtr
-		{
-			get
-			{
-				return new IntPtr(_pointer.Address + _position);
-			}
-		}
+		public IntPtr PositionIntPtr => new IntPtr(_pointer.Address + _position);
 
 		/// <summary>
 		/// Property to return the native pointer to the unmanaged memory wrapped by the stream.
@@ -276,13 +234,8 @@ namespace Gorgon.IO
 		/// <see cref="Position"/>, use the <see cref="PositionPointer"/> property.
 		/// </remarks>
 		[Obsolete("TODO: This property is going away. People who use this are going to experience crashes.")]
-		public void* BasePointer
-		{
-			get
-			{
-				return (void *)(_pointer.Address);
-			}
-		}
+		public void* BasePointer => (void *)(_pointer.Address);
+
 		#endregion
 
 		#region Methods.
@@ -319,7 +272,7 @@ namespace Gorgon.IO
 		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream" /> and optionally releases the managed resources.
 		/// </summary>
 		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2215:Dispose methods should call base class dispose", Justification = "Base Stream does nothing in Dispose(bool). Why call it?")]
+		[SuppressMessage("Microsoft.Usage", "CA2215:Dispose methods should call base class dispose", Justification = "Base Stream does nothing in Dispose(bool). Why call it?")]
 		protected override void Dispose(bool disposing)
 		{
 			// We suppress the base call to Dispose because Stream's Dispose(bool) does nothing.
@@ -450,7 +403,7 @@ namespace Gorgon.IO
 
 			if (((!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName), "value");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName), nameof(value));
 			}
 
 			int size = type.StructLayoutAttribute.Size <= 0 ? Marshal.SizeOf(type) * count : type.StructLayoutAttribute.Size * count;
@@ -521,7 +474,7 @@ namespace Gorgon.IO
 
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			if ((offset < 0) || (offset >= buffer.Length))
@@ -591,11 +544,11 @@ namespace Gorgon.IO
 #if DEBUG
 					if (offset < 0)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_BOS);
 					}
 					if (offset > _pointer.Size)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_EOS);
 					}
 #endif
 					newPosition = offset;
@@ -605,11 +558,11 @@ namespace Gorgon.IO
 #if DEBUG
 					if (newPosition < 0)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_BOS);
 					}
 					if (newPosition > _pointer.Size)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_EOS);
 					}
 #endif
 					break;
@@ -619,11 +572,11 @@ namespace Gorgon.IO
 #if DEBUG
 					if (newPosition < 0)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_BOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_BOS);
 					}
 					if (newPosition > _pointer.Size)
 					{
-						throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_STREAM_EOS);
+						throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_STREAM_EOS);
 					}
 #endif
 					break;
@@ -682,7 +635,7 @@ namespace Gorgon.IO
 
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			if ((offset < 0) || (offset >= buffer.Length))
@@ -827,7 +780,7 @@ namespace Gorgon.IO
 
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			if ((offset < 0) || (offset >= buffer.Length))
@@ -874,7 +827,7 @@ namespace Gorgon.IO
 		{
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			WriteRange(buffer, 0, buffer.Length);
@@ -950,7 +903,7 @@ namespace Gorgon.IO
 
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			if ((offset < 0) || (offset >= buffer.Length))
@@ -1341,7 +1294,7 @@ namespace Gorgon.IO
 		{
 			if (source == IntPtr.Zero)
 			{
-				throw new ArgumentNullException("source", Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
+				throw new ArgumentNullException(nameof(source), Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
 			}
 
 			if (size < 0)
@@ -1370,7 +1323,7 @@ namespace Gorgon.IO
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source", Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
+				throw new ArgumentNullException(nameof(source), Resources.GOR_ERR_DATASTREAM_POINTER_IS_NULL);
 			}
 
 			if (size < 0)
@@ -1397,7 +1350,7 @@ namespace Gorgon.IO
 		{
 			if (pointer == null)
 			{
-				throw new ArgumentNullException("pointer");
+				throw new ArgumentNullException(nameof(pointer));
 			}
 
 			_ownsPointer = false;

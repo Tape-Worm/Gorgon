@@ -76,7 +76,7 @@ namespace Gorgon.Core
 		{
 			if (ex == null)
 			{
-				throw new ArgumentNullException("ex");
+				throw new ArgumentNullException(nameof(ex));
 			}
 
 			return new GorgonException(result, message, ex);
@@ -94,7 +94,7 @@ namespace Gorgon.Core
 		{
 			if (ex == null)
 			{
-				throw new ArgumentNullException("ex");
+				throw new ArgumentNullException(nameof(ex));
 			}
 
 			return new GorgonException(result, ex);
@@ -112,7 +112,7 @@ namespace Gorgon.Core
 		{
 			if (ex == null)
 			{
-				throw new ArgumentNullException("ex");
+				throw new ArgumentNullException(nameof(ex));
 			}
 
 			return new GorgonException(message, ex);

@@ -26,7 +26,6 @@
 
 using System.ComponentModel;
 using System.Windows.Forms;
-using Gorgon.Core.Properties;
 
 namespace Gorgon.UI
 {

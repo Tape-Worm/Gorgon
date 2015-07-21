@@ -53,20 +53,14 @@ namespace Gorgon.Editor
 		public GorgonFileExtensionCollection FileExtensions
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return the type of plug-in.
 		/// </summary>
 		/// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
-		public override PlugInType PlugInType
-		{
-			get 
-			{
-				return PlugInType.Content;
-			}
-		}
+		public override PlugInType PlugInType => PlugInType.Content;
+
 		#endregion
 
 		#region Methods.

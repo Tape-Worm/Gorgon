@@ -40,12 +40,6 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// We'll use this property to advertise the text color.
 		/// </summary>
-		public override ConsoleColor TextColor
-		{
-			get 
-			{
-				return ConsoleColor.Blue;
-			}
-		}
+		public override ConsoleColor TextColor => ConsoleColor.Blue;
 	}
 }

@@ -116,7 +116,6 @@ namespace Gorgon.Editor
 		internal GorgonSprite SelectionSprite
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -892,12 +891,12 @@ namespace Gorgon.Editor
 		{
 			if (renderer == null)
 			{
-				throw new ArgumentNullException("renderer");
+				throw new ArgumentNullException(nameof(renderer));
 			}
 
 			if (renderControl == null)
 			{
-				throw new ArgumentNullException("renderControl");
+				throw new ArgumentNullException(nameof(renderControl));
 			}
 
 			_scale = new Vector2(1);

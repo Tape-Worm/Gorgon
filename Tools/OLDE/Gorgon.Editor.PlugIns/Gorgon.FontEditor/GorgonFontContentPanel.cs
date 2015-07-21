@@ -32,7 +32,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.Graphics;
@@ -191,15 +190,9 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the mid point for the render panel.
 		/// </summary>
-	    private Vector2 PanelMidPoint
-	    {
-		    get
-		    {
-			    return new Vector2(panelTextures.ClientSize.Width * 0.5f, panelTextures.ClientSize.Height * 0.5f);
-		    }
-	    }
+	    private Vector2 PanelMidPoint => new Vector2(panelTextures.ClientSize.Width * 0.5f, panelTextures.ClientSize.Height * 0.5f);
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the currently selected texture.
 		/// </summary>
 	    private GorgonTexture2D CurrentTexture
@@ -1251,9 +1244,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
             {
                 if (GorgonDialogs.ConfirmBox(ParentForm,
                                              string.Format(Resources.GORFNT_DLG_REMOVE_TEXTURE_PROMPT,
-                                                           string.Format("{0} (0x{1})",
-                                                                         _selectedGlyph.Character,
-                                                                         ((ushort)_selectedGlyph.Character).FormatHex()),
+                                                           $"{_selectedGlyph.Character} (0x{((ushort)_selectedGlyph.Character).FormatHex()})",
                                                                          _selectedGlyph.Texture.Name))
                     == ConfirmationResult.No)
                 {
@@ -1892,7 +1883,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 				dropDownZoom.Enabled = (_content.CurrentState == DrawState.DrawFontTextures);
 
-				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_TEXT_TEXTURE, _currentTextureIndex + 1, _textures.Length);
+				labelTextureCount.Text = $"{Resources.GORFNT_TEXT_TEXTURE}: {_currentTextureIndex + 1}/{_textures.Length}";
 
 				panelToolbar.Visible = _content.CurrentState != DrawState.ClipGlyph;
 
@@ -1998,7 +1989,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
             {
 				buttonPrevTexture.Enabled = false;
 				buttonNextTexture.Enabled = false;
-                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_TEXT_TEXTURE);
+                labelTextureCount.Text = $"{Resources.GORFNT_TEXT_TEXTURE}: 0/0";
             }
 
 			itemShadowOffset.Enabled = itemShadowOpacity.Enabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
@@ -2021,42 +2012,16 @@ namespace Gorgon.Editor.FontEditorPlugIn
                         }
 
                         labelSelectedGlyphInfo.Text =
-                            string.Format("{0}: {1}x{2}  {3}: {4} (U+{5}), {6}: {7}x{8}-{9}x{10} ({11}: {12}, {13})",
-                                          Resources.GORFNT_TEXT_CURSOR_POSITION,
-                                          _mousePosition.X,
-                                          _mousePosition.Y,
-                                          Resources.GORFNT_TEXT_SELECTED_GLYPH,
-                                          _selectedGlyph.Character,
-                                          ((ushort)_selectedGlyph.Character).FormatHex(),
-                                          Resources.GORFNT_TEXT_REGION,
-                                          _glyphClipper.ClipRegion.Left,
-										  _glyphClipper.ClipRegion.Top,
-										  _glyphClipper.ClipRegion.Right,
-										  _glyphClipper.ClipRegion.Bottom,
-                                          Resources.GORFNT_TEXT_SIZE,
-										  _glyphClipper.ClipRegion.Width,
-										  _glyphClipper.ClipRegion.Height);
+	                        $"{Resources.GORFNT_TEXT_CURSOR_POSITION}: {_mousePosition.X}x{_mousePosition.Y}  {Resources.GORFNT_TEXT_SELECTED_GLYPH}: {_selectedGlyph.Character} (U+{((ushort)_selectedGlyph.Character).FormatHex()}), {Resources.GORFNT_TEXT_REGION}: {_glyphClipper.ClipRegion.Left}x{_glyphClipper.ClipRegion.Top}-{_glyphClipper.ClipRegion.Right}x{_glyphClipper.ClipRegion.Bottom} ({Resources.GORFNT_TEXT_SIZE}: {_glyphClipper.ClipRegion.Width}, {_glyphClipper.ClipRegion.Height})";
                         break;
                     case DrawState.DrawFontTextures:
-		                labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2})",
-																    Resources.GORFNT_TEXT_SELECTED_GLYPH,
-		                                                            _selectedGlyph.Character,
-		                                                            ((ushort)_selectedGlyph.Character).FormatHex())
-		                                                    .Replace("&", "&&");
+		                labelSelectedGlyphInfo.Text = $"{Resources.GORFNT_TEXT_SELECTED_GLYPH}: {_selectedGlyph.Character} (U+{((ushort)_selectedGlyph.Character).FormatHex()})"
+			                .Replace("&", "&&");
                         break;
                     default:
-					    labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7}, {8} {9}: {10}",
-						    Resources.GORFNT_TEXT_SELECTED_GLYPH,
-						    _selectedGlyph.Character,
-						    ((ushort)_selectedGlyph.Character).FormatHex(),
-						    Resources.GORFNT_TEXT_LOCATION,
-						    _selectedGlyph.GlyphCoordinates.X,
-						    _selectedGlyph.GlyphCoordinates.Y,
-						    Resources.GORFNT_TEXT_SIZE,
-						    _selectedGlyph.GlyphCoordinates.Width,
-						    _selectedGlyph.GlyphCoordinates.Height,
-						    Resources.GORFNT_TEXT_ADVANCEMENT,
-						    _selectedGlyph.Advance).Replace("&", "&&");
+					    labelSelectedGlyphInfo.Text =
+						    $"{Resources.GORFNT_TEXT_SELECTED_GLYPH}: {_selectedGlyph.Character} (U+{((ushort)_selectedGlyph.Character).FormatHex()}) {Resources.GORFNT_TEXT_LOCATION}: {_selectedGlyph.GlyphCoordinates.X}, {_selectedGlyph.GlyphCoordinates.Y} {Resources.GORFNT_TEXT_SIZE}: {_selectedGlyph.GlyphCoordinates.Width}, {_selectedGlyph.GlyphCoordinates.Height} {Resources.GORFNT_TEXT_ADVANCEMENT}: {_selectedGlyph.Advance}"
+							    .Replace("&", "&&");
 		                _hoverGlyph = null;
                         break;
                 }
@@ -2073,18 +2038,9 @@ namespace Gorgon.Editor.FontEditorPlugIn
                     separatorGlyphInfo.Visible = true;
                 }
 
-                labelHoverGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: {10}",
-					Resources.GORFNT_TEXT_GLYPH,
-                    _hoverGlyph.Character,
-                    ((ushort)_hoverGlyph.Character).FormatHex(),
-					Resources.GORFNT_TEXT_LOCATION,
-                    _hoverGlyph.GlyphCoordinates.X,
-                    _hoverGlyph.GlyphCoordinates.Y,
-					Resources.GORFNT_TEXT_SIZE,
-                    _hoverGlyph.GlyphCoordinates.Width,
-                    _hoverGlyph.GlyphCoordinates.Height,
-					Resources.GORFNT_TEXT_ADVANCEMENT,
-                    _hoverGlyph.Advance).Replace("&", "&&");
+                labelHoverGlyphInfo.Text =
+	                $"{Resources.GORFNT_TEXT_GLYPH}: {_hoverGlyph.Character} (U+{((ushort)_hoverGlyph.Character).FormatHex()}) {Resources.GORFNT_TEXT_LOCATION}: {_hoverGlyph.GlyphCoordinates.X}, {_hoverGlyph.GlyphCoordinates.Y} {Resources.GORFNT_TEXT_SIZE}: {_hoverGlyph.GlyphCoordinates.Width},{_hoverGlyph.GlyphCoordinates.Height} {Resources.GORFNT_TEXT_ADVANCEMENT}: {_hoverGlyph.Advance}"
+		                .Replace("&", "&&");
             }
             else
             {
@@ -2228,7 +2184,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 				                           NumberStyles.Float,
 				                           NumberFormatInfo.InvariantInfo);
 
-				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_TEXT_ZOOM, selectedItem.Text);
+				dropDownZoom.Text = $"{Resources.GORFNT_TEXT_ZOOM}: {selectedItem.Text}";
 
 				if (menuItemToWindow.Checked)
 				{
@@ -2987,30 +2943,30 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		{
 			Text = Resources.GORFNT_TITLE;
 		    menuItemRemoveGlyphImage.Text = Resources.GORFNT_ACC_TEXT_RESET_GLYPH_IMAGE;
-		    labelGlyphOffsetLeft.Text = string.Format("{0}:", Resources.GORFNT_TEXT_LEFT_OFFSET);
-		    labelGlyphOffsetTop.Text = string.Format("{0}:", Resources.GORFNT_TEXT_TOP_OFFSET);
-		    labelGlyphAdvance.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ADVANCEMENT);
+		    labelGlyphOffsetLeft.Text = $"{Resources.GORFNT_TEXT_LEFT_OFFSET}:";
+		    labelGlyphOffsetTop.Text = $"{Resources.GORFNT_TEXT_TOP_OFFSET}:";
+		    labelGlyphAdvance.Text = $"{Resources.GORFNT_TEXT_ADVANCEMENT}:";
 		    buttonResetGlyphOffset.Text = Resources.GORFNT_TEXT_RESET_OFFSET;
             tipButtons.SetToolTip(buttonResetGlyphOffset, Resources.GORFNT_TIP_RESET_OFFSET);
 		    buttonResetGlyphAdvance.Text = Resources.GORFNT_TEXT_RESET_ADVANCE;
             tipButtons.SetToolTip(buttonResetGlyphAdvance, Resources.GORFNT_TIP_RESET_ADVANCE);
 		    buttonKernOK.Text = Resources.GORFNT_ACC_TEXT_UPDATE;
 		    buttonKernCancel.Text = Resources.GORFNT_ACC_TEXT_RESET;
-		    labelKerningSecondaryGlyph.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SECONDARY_GLYPH);
-		    labelKerningOffset.Text = string.Format("{0}:", Resources.GORFNT_TEXT_KERNING_OFFSET);
+		    labelKerningSecondaryGlyph.Text = $"{Resources.GORFNT_TEXT_SECONDARY_GLYPH}:";
+		    labelKerningOffset.Text = $"{Resources.GORFNT_TEXT_KERNING_OFFSET}:";
 		    buttonGlyphClipOK.Text = Resources.GORFNT_ACC_TEXT_UPDATE;
 		    tipButtons.SetToolTip(buttonGlyphClipOK, Resources.GORFNT_TIP_ACCEPT_GLYPH_REGION);
             buttonGlyphClipCancel.Text = Resources.GORFNT_ACC_TEXT_RESET;
             tipButtons.SetToolTip(buttonGlyphClipCancel, Resources.GORFNT_TIP_CANCEL_GLYPH_REGION);
-		    labelZoomWindowSize.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ZOOM_WINSIZE);
-		    labelZoomAmount.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ZOOM_AMOUNT);
+		    labelZoomWindowSize.Text = $"{Resources.GORFNT_TEXT_ZOOM_WINSIZE}:";
+		    labelZoomAmount.Text = $"{Resources.GORFNT_TEXT_ZOOM_AMOUNT}:";
 		    checkZoomSnap.Text = Resources.GORFNT_TEXT_SNAP_ZOOM;
-		    labelGlyphLeft.Text = string.Format("{0}:", Resources.GORFNT_TEXT_LEFT);
-		    labelGlyphTop.Text = string.Format("{0}:", Resources.GORFNT_TEXT_TOP);
-            labelGlyphWidth.Text = string.Format("{0}:", Resources.GORFNT_TEXT_WIDTH);
-		    labelGlyphHeight.Text = string.Format("{0}:", Resources.GORFNT_TEXT_HEIGHT);
+		    labelGlyphLeft.Text = $"{Resources.GORFNT_TEXT_LEFT}:";
+		    labelGlyphTop.Text = $"{Resources.GORFNT_TEXT_TOP}:";
+            labelGlyphWidth.Text = $"{Resources.GORFNT_TEXT_WIDTH}:";
+		    labelGlyphHeight.Text = $"{Resources.GORFNT_TEXT_HEIGHT}:";
 		    buttonEditPreviewText.Text = Resources.GORFNT_TEXT_EDIT_PREVIEW_TEXT;
-		    labelFindGlyph.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FIND_GLYPH);
+		    labelFindGlyph.Text = $"{Resources.GORFNT_TEXT_FIND_GLYPH}:";
 		    buttonSearchGlyph.Text = Resources.GORFNT_TEXT_SEARCH_GLYPH;
 			buttonEditGlyph.Text = Resources.GORFNT_TEXT_EDIT_SELECTED_GLYPH;
 		    buttonGoHome.Text = Resources.GORFNT_TEXT_GO_BACK;
@@ -3028,9 +2984,9 @@ namespace Gorgon.Editor.FontEditorPlugIn
 			itemPreviewShadowEnable.Text = Resources.GORFNT_ACC_TEXT_ENABLE_SHADOW;
 			itemShadowOpacity.Text = Resources.GORFNT_ACC_TEXT_SHADOW_OPACITY;
 			itemShadowOffset.Text = Resources.GORFNT_ACC_TEXT_SHADOW_OFFSET;
-			labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
-			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_TEXT_TEXTURE);
-			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_TEXT_ZOOM, Resources.GORFNT_TEXT_TO_WINDOW);
+			labelPreviewText.Text = $"{Resources.GORFNT_TEXT_PREVIEW_TEXT}:";
+			labelTextureCount.Text = $"{Resources.GORFNT_TEXT_TEXTURE}: 0/0";
+			dropDownZoom.Text = $"{Resources.GORFNT_TEXT_ZOOM}: {Resources.GORFNT_TEXT_TO_WINDOW}";
 			menuItemToWindow.Text = Resources.GORFNT_TEXT_TO_WINDOW;
 			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);

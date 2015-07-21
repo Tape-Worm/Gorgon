@@ -61,13 +61,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return whether the extension is empty or not.
 		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return string.IsNullOrWhiteSpace(Extension);
-			}
-		}
+		public bool IsEmpty => string.IsNullOrWhiteSpace(Extension);
+
 		#endregion
 
 		#region Operators.
@@ -210,7 +205,7 @@ namespace Gorgon.IO
 		{
 			if (extension == null)
 			{
-				throw new ArgumentNullException("extension");
+				throw new ArgumentNullException(nameof(extension));
 			}
 
 			if (extension.StartsWith(".", StringComparison.Ordinal))
@@ -220,7 +215,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(extension))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "extension");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(extension));
 			}
 
 			Extension = extension;
@@ -318,13 +313,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the name of the object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Extension;
-			}
-		}
+		string IGorgonNamedObject.Name => Extension;
+
 		#endregion
 	}
 }

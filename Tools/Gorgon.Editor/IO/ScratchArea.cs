@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
@@ -114,13 +113,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the scratch file directory path.
 		/// </summary>
-		public string ScratchDirectory
-		{
-			get
-			{
-				return string.IsNullOrWhiteSpace(_settings.ScratchPath) ? string.Empty : _settings.ScratchPath;
-			}
-		}
+		public string ScratchDirectory => string.IsNullOrWhiteSpace(_settings.ScratchPath) ? string.Empty : _settings.ScratchPath;
+
 		#endregion
 
 		#region Methods.
@@ -345,12 +339,12 @@ namespace Gorgon.Editor
 		{
 			if (directoryPath == null)
 			{
-				throw new ArgumentNullException("directoryPath");
+				throw new ArgumentNullException(nameof(directoryPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(directoryPath))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "directoryPath");
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(directoryPath));
 			}
 
 			try
@@ -448,7 +442,7 @@ namespace Gorgon.Editor
 		{
 			if (fileSystem == null)
 			{
-				throw new ArgumentNullException("fileSystem");
+				throw new ArgumentNullException(nameof(fileSystem));
 			}
 
 			if (!string.IsNullOrWhiteSpace(_fileSystem.WriteLocation))

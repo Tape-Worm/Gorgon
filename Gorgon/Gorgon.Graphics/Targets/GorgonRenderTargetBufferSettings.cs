@@ -39,13 +39,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of render target.
 		/// </summary>
-		public RenderTargetType RenderTargetType
-		{
-			get
-			{
-				return RenderTargetType.Buffer;
-			}
-		}
+		public RenderTargetType RenderTargetType => RenderTargetType.Buffer;
 
 		/// <summary>
 		/// Property to set or return the format for the default render target view.

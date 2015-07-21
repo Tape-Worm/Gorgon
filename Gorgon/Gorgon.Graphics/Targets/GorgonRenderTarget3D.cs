@@ -55,7 +55,6 @@ namespace Gorgon.Graphics
 		public new GorgonRenderTarget3DSettings Settings
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

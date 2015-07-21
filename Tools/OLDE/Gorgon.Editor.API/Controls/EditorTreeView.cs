@@ -108,7 +108,7 @@ namespace Gorgon.Editor
 		{
 			if (directory == null)
 			{
-				throw new ArgumentNullException("directory");
+				throw new ArgumentNullException(nameof(directory));
 			}
 
             // Find check to ensure the node is unique.
@@ -166,7 +166,7 @@ namespace Gorgon.Editor
 		{
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
             // Find check to ensure the node is unique.
@@ -313,14 +313,9 @@ namespace Gorgon.Editor
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   </PermissionSet>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new TreeViewDrawMode DrawMode
-        {
-            get
-            {
-                return TreeViewDrawMode.OwnerDrawAll;
-            }
-        }
-        #endregion
+        public new TreeViewDrawMode DrawMode => TreeViewDrawMode.OwnerDrawAll;
+
+	    #endregion
 
         #region Methods.
 		/// <summary>

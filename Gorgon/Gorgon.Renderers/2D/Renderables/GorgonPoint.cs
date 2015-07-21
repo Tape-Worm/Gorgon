@@ -56,7 +56,6 @@ namespace Gorgon.Renderers
 		public Gorgon2D Gorgon2D
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -152,79 +151,37 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
-		GorgonVertexBufferBinding IRenderable.VertexBufferBinding
-		{
-			get 
-			{
-				return Gorgon2D.DefaultVertexBufferBinding;
-			}
-		}
+		GorgonVertexBufferBinding IRenderable.VertexBufferBinding => Gorgon2D.DefaultVertexBufferBinding;
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		GorgonIndexBuffer IRenderable.IndexBuffer
-		{
-			get
-			{
-			    return _isUnitPoint ? null : Gorgon2D.DefaultIndexBuffer;
-			}
-		}
+		GorgonIndexBuffer IRenderable.IndexBuffer => _isUnitPoint ? null : Gorgon2D.DefaultIndexBuffer;
 
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		PrimitiveType IRenderable.PrimitiveType
-		{
-			get
-			{
-			    return _isUnitPoint ? PrimitiveType.PointList : PrimitiveType.TriangleList;
-			}
-		}
+		PrimitiveType IRenderable.PrimitiveType => _isUnitPoint ? PrimitiveType.PointList : PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2DVertex[] IRenderable.Vertices
-		{
-			get 
-			{
-				return _vertices;
-			}
-		}
+		Gorgon2DVertex[] IRenderable.Vertices => _vertices;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		int IRenderable.IndexCount
-		{
-			get
-			{
-			    return _isUnitPoint ? 0 : 6;
-			}
-		}
+		int IRenderable.IndexCount => _isUnitPoint ? 0 : 6;
 
 		/// <summary>
 		/// Property to set or return the number of vertices to add to the base starting index.
 		/// </summary>
-		int IRenderable.BaseVertexCount
-		{
-			get
-			{
-			    return _isUnitPoint ? 1 : 0;
-			}
-		}
+		int IRenderable.BaseVertexCount => _isUnitPoint ? 1 : 0;
 
 		/// <summary>
 		/// Property to return the number of vertices for the renderable.
 		/// </summary>
-		int IRenderable.VertexCount
-		{
-			get
-			{
-			    return _isUnitPoint ? 1 : 4;
-			}
-		}
+		int IRenderable.VertexCount => _isUnitPoint ? 1 : 4;
 
 		/// <summary>
 		/// Property to set or return depth/stencil buffer states for this renderable.

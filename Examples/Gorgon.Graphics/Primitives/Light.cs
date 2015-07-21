@@ -93,9 +93,9 @@ namespace Gorgon.Graphics.Example
 		{
 			var data = (LightData*)_lightStore.BasePointer;
 
-			for (int i = 0; i < _lightData.Length; ++i)
+			foreach (LightData light in _lightData)
 			{
-				*(data++) = _lightData[i];
+				*(data++) = light;
 			}
 
 			_buffer.Update(_lightData);
@@ -191,15 +191,9 @@ namespace Gorgon.Graphics.Example
 
 			if (disposing)
 			{
-				if (_lightStore != null)
-				{
-					_lightStore.Dispose();
-				}
+				_lightStore?.Dispose();
 
-				if (_buffer != null)
-				{
-					_buffer.Dispose();
-				}
+				_buffer?.Dispose();
 			}
 
 			_disposed = true;

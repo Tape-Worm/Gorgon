@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using SlimMath;
@@ -349,9 +348,9 @@ namespace Gorgon.Graphics.Example
 			var vertexList = new List<Vertex3D>();
 			var indexList = new List<int>();
 
-			for (int i = 0; i < _vertices.Count; ++i)
+			foreach (Vector3 vector in _vertices)
 			{
-				Vector3 position = _vertices[i];
+				Vector3 position = vector;
 				Vector3 normal = position;
 				Vector2 uv = Vector2.Zero;
 

@@ -205,7 +205,6 @@ namespace Gorgon.Input
 		public IGorgonJoystickInfo Info
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -242,7 +241,6 @@ namespace Gorgon.Input
 		public IList<JoystickButtonState> Button
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -282,7 +280,7 @@ namespace Gorgon.Input
 				                new KeyValuePair<int, int>((int)JoystickAxis.XAxis,
 				                                           (Info.AxisRanges[JoystickAxis.XAxis].Range / 2) - Info.AxisRanges[JoystickAxis.XAxis].Maximum),
 				                new KeyValuePair<int, int>((int)JoystickAxis.YAxis,
-				                                           (Info.AxisRanges[JoystickAxis.YAxis].Range / 2) - Info.AxisRanges[JoystickAxis.YAxis].Maximum),
+				                                           (Info.AxisRanges[JoystickAxis.YAxis].Range / 2) - Info.AxisRanges[JoystickAxis.YAxis].Maximum)
 			                };
 
 			var axes = new List<KeyValuePair<int, int>>
@@ -437,7 +435,7 @@ namespace Gorgon.Input
 				|| (motorIndex < 0) 
 				|| (motorIndex >= Info.VibrationMotorRanges.Count))
 			{
-				throw new ArgumentOutOfRangeException("motorIndex", string.Format(Resources.GORINP_JOYSTICK_MOTOR_NOT_FOUND, motorIndex));
+				throw new ArgumentOutOfRangeException(nameof(motorIndex), string.Format(Resources.GORINP_JOYSTICK_MOTOR_NOT_FOUND, motorIndex));
 			}
 
 			if (Info.VibrationMotorRanges[motorIndex].Contains(value))

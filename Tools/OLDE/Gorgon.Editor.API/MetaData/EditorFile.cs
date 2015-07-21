@@ -128,7 +128,6 @@ namespace Gorgon.Editor
 		public Dictionary<string, string> Attributes
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -176,7 +175,7 @@ namespace Gorgon.Editor
 		{
 			if (node == null)
 			{
-				throw new ArgumentNullException("node");
+				throw new ArgumentNullException(nameof(node));
 			}
 
 			XAttribute plugInAttr = node.Attribute(EditorFilePlugInTypeAttr);
@@ -240,7 +239,7 @@ namespace Gorgon.Editor
 		{
 			if (string.IsNullOrWhiteSpace(newName))
 			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS, "newName");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_FILE_PATH_INVALID_CHARS, nameof(newName));
 			}
 
 			FilePath = newName;
@@ -256,12 +255,12 @@ namespace Gorgon.Editor
 		{
 			if (filePath == null)
 			{
-				throw new ArgumentNullException("filePath");
+				throw new ArgumentNullException(nameof(filePath));
 			}
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
 			}
 
 			_filePath = filePath;
@@ -275,13 +274,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return _filePath;
-			}
-		}
+		string IGorgonNamedObject.Name => _filePath;
+
 		#endregion
 
 		#region ICloneable<EditorFile> Members

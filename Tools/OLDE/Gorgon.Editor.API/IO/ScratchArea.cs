@@ -149,14 +149,9 @@ namespace Gorgon.Editor
 			/// <summary>
 			/// Property to set or return whether the operation is cancelled or not.
 			/// </summary>
-			public bool IsCancelled
-			{
-				get
-				{
-					return FileConflictResult == ConfirmationResult.Cancel || DirectoryConflictResult == ConfirmationResult.Cancel ||
-					       CancelToken.IsCancellationRequested;
-				}
-			}
+			public bool IsCancelled => FileConflictResult == ConfirmationResult.Cancel || DirectoryConflictResult == ConfirmationResult.Cancel ||
+			                           CancelToken.IsCancellationRequested;
+
 			#endregion
 		}
 
@@ -198,13 +193,8 @@ namespace Gorgon.Editor
 			/// <summary>
 			/// Property to set or return whether the operation is cancelled or not.
 			/// </summary>
-			public bool IsCancelled
-			{
-				get
-				{
-					return ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
-				}
-			}
+			public bool IsCancelled => ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
+
 			#endregion
 		}
 
@@ -237,13 +227,7 @@ namespace Gorgon.Editor
             /// <summary>
             /// Property to set or return whether the operation is cancelled or not.
             /// </summary>
-            public bool IsCancelled
-            {
-                get
-                {
-                    return ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
-                }
-            }
+            public bool IsCancelled => ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
 
 	        /// <summary>
 	        /// The current conflict result.
@@ -485,8 +469,7 @@ namespace Gorgon.Editor
                 Tuple<string, string> file = settings.Files[i];
 		        var progressValue = (int)(((i + settings.Directories.Count + 1) / totalEntries) * 100M);
 
-		        settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", APIResources.GOREDIT_TEXT_COPYING,
-		                                                            file.Item2.Ellipses(45, true)));
+		        settings.ProcessForm.UpdateStatusText($"{APIResources.GOREDIT_TEXT_COPYING} '{file.Item2.Ellipses(45, true)}'");
 
 		        try
 		        {
@@ -638,7 +621,7 @@ namespace Gorgon.Editor
                     continue;
                 }
 
-                string newFileName = string.Format("{0}{1}", newDirectory, file.Name.FormatFileName());
+                string newFileName = $"{newDirectory}{file.Name.FormatFileName()}";
 
                 if (File.Exists(newFileName))
                 {
@@ -659,8 +642,7 @@ namespace Gorgon.Editor
                 }
 
                 // Update the process dialog.
-                settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", APIResources.GOREDIT_TEXT_COPYING,
-                                                                    newFileName.Ellipses(45, true)));
+                settings.ProcessForm.UpdateStatusText($"{APIResources.GOREDIT_TEXT_COPYING} '{newFileName.Ellipses(45, true)}'");
 
                 if (Export(file, newDirectory, true))
                 {
@@ -678,7 +660,7 @@ namespace Gorgon.Editor
                     return;
                 }
 
-                newDirectory = string.Format("{0}{1}", destinationPath, subDirectory.Name);
+                newDirectory = $"{destinationPath}{subDirectory.Name}";
 
                 // Recursively copy everything.
                 ExportFilesAndDirectoriesThread(subDirectory, newDirectory, settings);
@@ -702,8 +684,7 @@ namespace Gorgon.Editor
             string destPath = (destination + directory.Name).FormatDirectory('/');
             GorgonFileSystemDirectory newDirectory = ScratchFiles.GetDirectory(destPath);
 
-            settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", APIResources.GOREDIT_TEXT_COPYING,
-                                                                directory.FullPath.Ellipses(45, true)));
+            settings.ProcessForm.UpdateStatusText($"{APIResources.GOREDIT_TEXT_COPYING} '{directory.FullPath.Ellipses(45, true)}'");
 
             // If there's a file with the same name, then give us an error.
             if (ScratchFiles.GetFile(destination.FormatDirectory('/') + directory.Name) != null)
@@ -741,8 +722,8 @@ namespace Gorgon.Editor
                     while (newDirectory != null)
                     {
                         destPath =
-                            string.Format("{0}{1} ({2})", destination, directory.Name, ++nameCounter)
-                                    .FormatDirectory('/');
+	                        $"{destination}{directory.Name} ({++nameCounter})"
+		                        .FormatDirectory('/');
                         newDirectory = ScratchFiles.GetDirectory(destPath);
                     }
 
@@ -770,8 +751,7 @@ namespace Gorgon.Editor
 
                 string destFilePath = destPath + file.Name;
 
-                settings.ProcessForm.UpdateStatusText(string.Format("{0} '{1}'", APIResources.GOREDIT_TEXT_COPYING,
-                                                                    file.FullPath.Ellipses(45, true)));
+                settings.ProcessForm.UpdateStatusText($"{APIResources.GOREDIT_TEXT_COPYING} '{file.FullPath.Ellipses(45, true)}'");
 
                 // If the file exists, prompt to overwrite.
                 if (newDirectory.Files.Contains(file.Name))
@@ -796,7 +776,7 @@ namespace Gorgon.Editor
                         // Find an unoccupied name.
                         while (newDirectory.Files.Contains(newName))
                         {
-                            newName = string.Format("{0} ({1}){2}", file.BaseFileName, ++nameCounter, file.Extension);
+                            newName = $"{file.BaseFileName} ({++nameCounter}){file.Extension}";
                         }
 
                         destFilePath = newDirectory.FullPath + newName;
@@ -869,7 +849,7 @@ namespace Gorgon.Editor
 
             if (directory == null)
             {
-                throw new ArgumentNullException("directory");
+                throw new ArgumentNullException(nameof(directory));
             }
 
             if (string.IsNullOrWhiteSpace(destinationPath))
@@ -936,7 +916,7 @@ namespace Gorgon.Editor
 
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			if (string.IsNullOrWhiteSpace(destination))
@@ -978,7 +958,7 @@ namespace Gorgon.Editor
 
             if (file == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             }
 
             if (string.IsNullOrWhiteSpace(destination))
@@ -1027,11 +1007,7 @@ namespace Gorgon.Editor
 
                         while (existingFile != null)
                         {
-                            newPath = string.Format("{0}{1} ({2}){3}",
-                                                    destDirectoryPath,
-                                                    Path.GetFileNameWithoutExtension(destFileName),
-                                                    ++nameCounter,
-                                                    Path.GetExtension(destFileName));
+                            newPath = $"{destDirectoryPath}{Path.GetFileNameWithoutExtension(destFileName)} ({++nameCounter}){Path.GetExtension(destFileName)}";
 
                             existingFile = ScratchFiles.GetFile(newPath);
                         }
@@ -1082,7 +1058,7 @@ namespace Gorgon.Editor
 
             if (directory == null)
             {
-                throw new ArgumentNullException("directory");
+                throw new ArgumentNullException(nameof(directory));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -1151,7 +1127,7 @@ namespace Gorgon.Editor
 	    {
             if (parent == null)
             {
-                throw new ArgumentNullException("parent");
+                throw new ArgumentNullException(nameof(parent));
             }
 
             if (string.IsNullOrWhiteSpace(newName))
@@ -1185,7 +1161,7 @@ namespace Gorgon.Editor
 		{
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			newName = Path.GetFileName(newName);
@@ -1292,7 +1268,7 @@ namespace Gorgon.Editor
 
 			if (directory == null)
 			{
-				throw new ArgumentNullException("directory");
+				throw new ArgumentNullException(nameof(directory));
 			}
 
 			if (string.IsNullOrWhiteSpace(destinationPath))
@@ -1357,7 +1333,7 @@ namespace Gorgon.Editor
 
 			if (directory == null)
 			{
-				throw new ArgumentNullException("directory");
+				throw new ArgumentNullException(nameof(directory));
 			}
 
 			if (string.IsNullOrWhiteSpace(destinationPath))
@@ -1445,7 +1421,7 @@ namespace Gorgon.Editor
                 Directory.CreateDirectory(directory);
             }
 
-            string newPath = string.Format("{0}{1}", directory, fileName);
+            string newPath = $"{directory}{fileName}";
 
             if ((!overwriteIfExists) && (File.Exists(newPath)))
             {
@@ -1455,7 +1431,7 @@ namespace Gorgon.Editor
 	        try
 	        {
 		        // Open the destination file for writing.
-		        using (var outStream = new FileStream(string.Format("{0}{1}", directory, fileName),
+		        using (var outStream = new FileStream($"{directory}{fileName}",
 		                                              FileMode.Create,
 		                                              FileAccess.Write,
 		                                              FileShare.None))

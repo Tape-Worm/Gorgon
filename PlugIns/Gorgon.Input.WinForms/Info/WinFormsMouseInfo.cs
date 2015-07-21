@@ -15,7 +15,7 @@ namespace Gorgon.Input.WinForms
 		public WinFormsMouseInfo()
 		{
 			UUID = Guid.Empty;
-			Name = Resources.GORINP_WINFORMS_MOUSE_NAME;
+			Name = Resources.GORINP_WINFORMS_MOUSE_DESC;
 			ClassName = "Mouse";
 			HumanInterfaceDevicePath = "SystemMouse";
 
@@ -30,21 +30,18 @@ namespace Gorgon.Input.WinForms
 		public int ButtonCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int SamplingRate
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public bool HasHorizontalWheel
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -53,31 +50,23 @@ namespace Gorgon.Input.WinForms
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Mouse;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Mouse;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -85,7 +74,6 @@ namespace Gorgon.Input.WinForms
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

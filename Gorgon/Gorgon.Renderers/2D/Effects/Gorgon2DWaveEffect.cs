@@ -85,13 +85,7 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Property to return the type of wave.
 			/// </summary>
-			public WaveType WaveType
-			{
-				get
-				{
-					return (WaveType)_waveType;
-				}
-			}
+			public WaveType WaveType => (WaveType)_waveType;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Settings"/> struct.

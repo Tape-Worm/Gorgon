@@ -61,14 +61,12 @@ namespace Gorgon.Input.XInput
 		public int ID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public XI.Controller Controller
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -90,7 +88,7 @@ namespace Gorgon.Input.XInput
 															 new KeyValuePair<int, GorgonRange>((int)JoystickAxis.XAxis2, new GorgonRange(-32768, 32767)), 
 															 new KeyValuePair<int, GorgonRange>((int)JoystickAxis.YAxis2, new GorgonRange(-32768, 32767)), 
 															 new KeyValuePair<int, GorgonRange>((int)JoystickAxis.Throttle, new GorgonRange(0, 255)), 
-															 new KeyValuePair<int, GorgonRange>((int)JoystickAxis.Rudder, new GorgonRange(0, 255)), 
+															 new KeyValuePair<int, GorgonRange>((int)JoystickAxis.Rudder, new GorgonRange(0, 255)) 
 			                                             });
 			
 			VibrationMotorRanges = new[]
@@ -104,13 +102,7 @@ namespace Gorgon.Input.XInput
 
 		#region IGorgonJoystickInfo Members
 		/// <inheritdoc/>
-		public bool IsConnected
-		{
-			get
-			{
-				return Controller.IsConnected;
-			}
-		}
+		public bool IsConnected => Controller.IsConnected;
 
 		/// <inheritdoc/>
 		public int ButtonCount
@@ -123,14 +115,12 @@ namespace Gorgon.Input.XInput
 		public int ManufacturerID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int ProductID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
@@ -160,35 +150,17 @@ namespace Gorgon.Input.XInput
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public string HumanInterfaceDevicePath
-		{
-			get
-			{
-				return "GamePad";
-			}
-		}
+		public string HumanInterfaceDevicePath => "GamePad";
 
 		/// <inheritdoc/>
-		public string ClassName
-		{
-			get
-			{
-				return "Game Pad";
-			}
-		}
+		public string ClassName => "Game Pad";
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Joystick;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Joystick;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -196,7 +168,6 @@ namespace Gorgon.Input.XInput
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

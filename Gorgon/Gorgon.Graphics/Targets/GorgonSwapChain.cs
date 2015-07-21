@@ -180,13 +180,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the default depth/stencil buffer for this swap chain.
 		/// </summary>
-		public GorgonDepthStencil2D DepthStencilBuffer
-		{
-			get
-			{
-				return _renderTarget == null ? null : _renderTarget.DepthStencilBuffer;
-			}
-		}
+		public GorgonDepthStencil2D DepthStencilBuffer => _renderTarget == null ? null : _renderTarget.DepthStencilBuffer;
 
 		/// <summary>
 		/// Property to return the graphics interface that owns this object.
@@ -237,13 +231,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the default viewport associated with this render target.
 		/// </summary>
-		public GorgonViewport Viewport
-		{
-			get
-			{
-			    return _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
-			}
-		}
+		public GorgonViewport Viewport => _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
 
 		/// <summary>
 		/// Property to return the settings for this swap chain.
@@ -251,7 +239,6 @@ namespace Gorgon.Graphics
 		public GorgonSwapChainSettings Settings
 		{
 			get;
-			private set;
 		}
 		#endregion
 

@@ -39,42 +39,25 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool SupportsGameDevices => false;
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsPointingDevices => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsKeyboardDevices => true;
+
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
 		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
 		{
-			return null;
+			return new GorgonWinFormsInputService2();
 		}
 
 		/// <summary>

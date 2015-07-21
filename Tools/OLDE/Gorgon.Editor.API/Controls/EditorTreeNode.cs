@@ -176,13 +176,8 @@ namespace Gorgon.Editor
 		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
 		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
 		///   </PermissionSet>
-		public new Rectangle Bounds
-		{
-			get
-			{
-				return TreeView != null ? new Rectangle(0, base.Bounds.Top, TreeView.ClientSize.Width, base.Bounds.Height) : base.Bounds;
-			}
-		}
+		public new Rectangle Bounds => TreeView != null ? new Rectangle(0, base.Bounds.Top, TreeView.ClientSize.Width, base.Bounds.Height) : base.Bounds;
+
 		#endregion
 
 		#region Methods.

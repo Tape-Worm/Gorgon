@@ -138,12 +138,12 @@ namespace Gorgon.IO
 		{
 			if (physicalPath == null)
 			{
-				throw new ArgumentNullException("physicalPath");
+				throw new ArgumentNullException(nameof(physicalPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(physicalPath))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "physicalPath");
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(physicalPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(mountLocation))

@@ -459,7 +459,7 @@ namespace Gorgon.Diagnostics
 		{
 			if (collection == null)
 			{
-				throw new ArgumentNullException("collection");
+				throw new ArgumentNullException(nameof(collection));
 			}
 
 			if ((index < 0) || (index >= collection.Count))

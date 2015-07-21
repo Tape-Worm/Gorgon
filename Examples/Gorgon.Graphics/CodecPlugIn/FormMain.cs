@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Example.Properties;
 using Gorgon.IO;
@@ -167,10 +166,7 @@ namespace CodecPlugIn
 			catch
 			{
 				// Clean up the new texture should we have an exception (this shouldn't happen, better safe than sorry).
-				if (newTexture != null)
-				{
-					newTexture.Dispose();
-				}
+				newTexture?.Dispose();
 
 				throw;
 			}

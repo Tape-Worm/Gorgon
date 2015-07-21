@@ -94,7 +94,7 @@ namespace Gorgon.Examples
 
 			try
 			{                
-				if ((e.Node == null) || (!(e.Node.Tag is GorgonFileSystemFileEntry)))
+				if (!(e.Node?.Tag is GorgonFileSystemFileEntry))
 				{
 					splitFileSystem.Panel2.Controls.Add(_instructions);
 					return;

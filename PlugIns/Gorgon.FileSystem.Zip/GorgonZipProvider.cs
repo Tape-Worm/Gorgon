@@ -39,22 +39,15 @@ namespace Gorgon.IO.Zip
 	public class GorgonZipProvider
 		: GorgonFileSystemProvider
     {
-        #region Variables.
-        private readonly string _description = string.Empty;             // The description of the provider.
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return a description of the file system provider.
         /// </summary>        
         public override string Description
         {
-            get
-            {
-                return _description;
-            }
+	        get;
         }
-        #endregion
+		#endregion
 
 		#region Methods.
 		/// <summary>
@@ -134,12 +127,12 @@ namespace Gorgon.IO.Zip
 		{
 		    if (physicalPath == null)
 		    {
-		        throw new ArgumentNullException("physicalPath");
+		        throw new ArgumentNullException(nameof(physicalPath));
 		    }
 
 		    if (string.IsNullOrWhiteSpace(physicalPath))
 		    {
-		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, "physicalPath");
+		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
 		    }
 
 			var headerBytes = new byte[4];
@@ -160,7 +153,7 @@ namespace Gorgon.IO.Zip
         /// <param name="description">The description of the provider.</param>
 		internal GorgonZipProvider(string description)
 		{
-            _description = description;
+            Description = description;
             PreferredExtensions.Add(new GorgonFileExtension("Zip", Resources.GORFS_FILE_DESC));
 		}
 		#endregion

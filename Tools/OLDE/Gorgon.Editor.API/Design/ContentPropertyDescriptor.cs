@@ -42,44 +42,26 @@ namespace Gorgon.Editor
 		public ContentProperty ContentProperty
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// When overridden in a derived class, gets the type of the component this property is bound to.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Type"/> that represents the type of component this property is bound to. When the <see cref="M:System.ComponentModel.PropertyDescriptor.GetValue(System.Object)"/> or <see cref="M:System.ComponentModel.PropertyDescriptor.SetValue(System.Object,System.Object)"/> methods are invoked, the object specified might be an instance of this type.</returns>
-		public override Type ComponentType
-		{
-			get 
-			{
-				return typeof(ContentProperty);
-			}
-		}
+		public override Type ComponentType => typeof(ContentProperty);
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether this property is read-only.
 		/// </summary>
 		/// <returns>true if the property is read-only; otherwise, false.</returns>
-		public override bool IsReadOnly
-		{
-			get 
-			{
-				return Attributes.Matches(ReadOnlyAttribute.Yes);
-			}
-		}
+		public override bool IsReadOnly => Attributes.Matches(ReadOnlyAttribute.Yes);
 
 		/// <summary>
 		/// When overridden in a derived class, gets the type of the property.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Type"/> that represents the type of the property.</returns>
-		public override Type PropertyType
-		{
-			get 
-			{
-				return ContentProperty.PropertyType;
-			}
-		}		
+		public override Type PropertyType => ContentProperty.PropertyType;
+
 		#endregion
 
 		#region Methods.

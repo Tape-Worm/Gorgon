@@ -59,7 +59,6 @@ namespace Gorgon.Graphics
 		public int MipIndex
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -69,7 +68,6 @@ namespace Gorgon.Graphics
 		public int ArrayOrDepthStart
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -81,7 +79,6 @@ namespace Gorgon.Graphics
 		public int ArrayOrDepthCount
 		{
 			get;
-			private set;
 		}
 		#endregion
 

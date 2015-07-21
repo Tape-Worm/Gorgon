@@ -75,55 +75,24 @@ namespace Gorgon.IO
 		public Stream ParentStream
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public override bool CanTimeout
-		{
-			get
-			{
-				return ParentStream.CanTimeout;
-			}
-		}
+		public override bool CanTimeout => ParentStream.CanTimeout;
 
-		/// <inheritdoc/>
-		public override bool CanRead
-        {
-            get 
-            {
-                return ParentStream.CanRead;
-            }
-        }
+	    /// <inheritdoc/>
+		public override bool CanRead => ParentStream.CanRead;
 
-		/// <inheritdoc/>
-		public override bool CanSeek
-        {
-            get 
-            {
-                return true;
-            }
-        }
+	    /// <inheritdoc/>
+		public override bool CanSeek => true;
 
-		/// <inheritdoc/>
-		public override bool CanWrite
-        {
-            get 
-            {
-                return ParentStream.CanWrite;
-            }
-        }
+	    /// <inheritdoc/>
+		public override bool CanWrite => ParentStream.CanWrite;
 
-		/// <inheritdoc/>
-		public override long Length
-        {
-            get 
-            {
-                return _streamLength;
-            }
-        }
+	    /// <inheritdoc/>
+		public override long Length => _streamLength;
 
-		/// <inheritdoc/>
+	    /// <inheritdoc/>
 		public override long Position
         {
             get
@@ -277,17 +246,17 @@ namespace Gorgon.IO
         {
 		    if (buffer == null)
 		    {
-			    throw new ArgumentNullException("buffer");
+			    throw new ArgumentNullException(nameof(buffer));
 		    }
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset");
+				throw new ArgumentOutOfRangeException(nameof(offset));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count");
+				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
 			if ((offset + count) > buffer.Length)
@@ -391,17 +360,17 @@ namespace Gorgon.IO
         {
 			if (buffer == null)
 			{
-				throw new ArgumentNullException("buffer");
+				throw new ArgumentNullException(nameof(buffer));
 			}
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset");
+				throw new ArgumentOutOfRangeException(nameof(offset));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count");
+				throw new ArgumentOutOfRangeException(nameof(count));
 			}
 
 			if ((offset + count) > buffer.Length)
@@ -452,17 +421,17 @@ namespace Gorgon.IO
         {
 	        if (parentStream == null)
 	        {
-		        throw new ArgumentNullException("parentStream");
+		        throw new ArgumentNullException(nameof(parentStream));
 	        }
 
 	        if ((streamStart < 0) || (streamSize < 0))
 	        {
-		        throw new ArgumentOutOfRangeException("streamStart", Resources.GOR_ERR_STREAM_POS_OUT_OF_RANGE);
+		        throw new ArgumentOutOfRangeException(nameof(streamStart), Resources.GOR_ERR_STREAM_POS_OUT_OF_RANGE);
 	        }
 
 	        if (!parentStream.CanSeek)
 	        {
-		        throw new ArgumentException(Resources.GOR_ERR_STREAM_PARENT_NEEDS_SEEK, "parentStream");
+		        throw new ArgumentException(Resources.GOR_ERR_STREAM_PARENT_NEEDS_SEEK, nameof(parentStream));
 	        }
 
 			_streamLength = streamSize;
@@ -482,7 +451,7 @@ namespace Gorgon.IO
 		/// </exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
 		public GorgonStreamWrapper(Stream parentStream, long streamStart)
-			: this(parentStream, streamStart, parentStream != null ? parentStream.Length - streamStart : 0)
+			: this(parentStream, streamStart, parentStream?.Length - streamStart ?? 0)
 	    {
 	    }
 
@@ -493,7 +462,7 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
 		public GorgonStreamWrapper(Stream parentStream)
-			: this(parentStream, 0, parentStream != null ? parentStream.Length : 0)
+			: this(parentStream, 0, parentStream?.Length ?? 0)
 	    {
 	    }
         #endregion

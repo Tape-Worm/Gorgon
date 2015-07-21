@@ -62,13 +62,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return whether the image codec supports image arrays.
 		/// </summary>
-		public override bool SupportsArray
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsArray => true;
 
 		/// <summary>
 		/// Property to set or return the delays between each frame in 1/10 of a second.
@@ -89,13 +83,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
-		public override bool SupportsMultipleFrames
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsMultipleFrames => true;
 
 		/// <summary>
 		/// Property to set or return whether all frames in a multi-frame image should be encoded/decoded or not.
@@ -130,7 +118,6 @@ namespace Gorgon.IO
 		public List<GorgonColor> Palette
 		{
 		    get;
-		    private set;
 		}
 
 		/// <summary>
@@ -310,12 +297,12 @@ namespace Gorgon.IO
         {
             if (filePath == null)
             {
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
             }
 
             using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -345,7 +332,7 @@ namespace Gorgon.IO
 
 	        if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)

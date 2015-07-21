@@ -89,7 +89,7 @@ namespace Gorgon.Graphics
 		{
 			if (glyph == null)
 			{
-				throw new ArgumentNullException("glyph");
+				throw new ArgumentNullException(nameof(glyph));
 			}
 
 			return _list.ContainsValue(glyph);
@@ -125,7 +125,7 @@ namespace Gorgon.Graphics
 		{
 			if (glyph == null)
 			{
-				throw new ArgumentNullException("glyph");
+				throw new ArgumentNullException(nameof(glyph));
 			}
 
 			return _list.IndexOfValue(glyph);
@@ -206,13 +206,8 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		///   </returns>
-		public int Count
-		{
-			get
-			{
-				return _list.Count;
-			}
-		}
+		public int Count => _list.Count;
+
 		#endregion
 
 		#region IReadOnlyList<GorgonGlyph> Members
@@ -220,13 +215,8 @@ namespace Gorgon.Graphics
 		/// Gets the element at the specified index.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
-		public GorgonGlyph this[int index]
-		{
-			get
-			{
-				return _list.Values[index];
-			}
-		}
+		public GorgonGlyph this[int index] => _list.Values[index];
+
 		#endregion
 	}
 }

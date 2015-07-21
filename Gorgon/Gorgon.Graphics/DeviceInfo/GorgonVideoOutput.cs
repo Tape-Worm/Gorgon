@@ -60,7 +60,6 @@ namespace Gorgon.Graphics
 		public string Name
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -123,7 +122,6 @@ namespace Gorgon.Graphics
 		public GorgonVideoDevice VideoDevice
 		{
 			get;
-			private set;
 		}
 		#endregion
 

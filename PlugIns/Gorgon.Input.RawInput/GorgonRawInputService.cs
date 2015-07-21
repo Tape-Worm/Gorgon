@@ -93,7 +93,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, "registryPath");
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -108,13 +108,10 @@ namespace Gorgon.Input.Raw
 				return null;
 			}
 
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}",
-			                                                                              regValue[0],
-			                                                                              regValue[1],
-			                                                                              regValue[2]),
+			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
 			                                                                false))
 			{
-				if ((deviceKey == null) || (deviceKey.GetValue("DeviceDesc") == null))
+				if (deviceKey?.GetValue("DeviceDesc") == null)
 				{
 					return null;
 				}
@@ -137,14 +134,9 @@ namespace Gorgon.Input.Raw
 					return null;
 				}
 
-				using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Control\Class\{0}", classGUID)))
+				using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}"))
 				{
-					if ((classKey == null) || (classKey.GetValue("Class") == null))
-					{
-						return null;
-					}
-
-					return classKey.GetValue("Class").ToString();
+					return classKey?.GetValue("Class") == null ? null : classKey.GetValue("Class").ToString();
 				}
 			}
 		}
@@ -158,7 +150,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, "registryPath");
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -173,13 +165,10 @@ namespace Gorgon.Input.Raw
 				return null;
 			}
 
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}",
-			                                                                              regValue[0],
-			                                                                              regValue[1],
-			                                                                              regValue[2]),
+			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
 			                                                                false))
 			{
-				if ((deviceKey == null) || (deviceKey.GetValue("DeviceDesc") == null))
+				if (deviceKey?.GetValue("DeviceDesc") == null)
 				{
 					return null;
 				}
@@ -299,7 +288,7 @@ namespace Gorgon.Input.Raw
 			        // Get the name.
 			        nameKey = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\" + key);
 
-			        return nameKey != null ? nameKey.GetValue("OEMName", defaultName).ToString() : defaultName;
+			        return nameKey?.GetValue("OEMName", defaultName).ToString() ?? defaultName;
 			    }
 			    else
 			    {
@@ -308,18 +297,9 @@ namespace Gorgon.Input.Raw
 			}
 			finally
 			{
-			    if (nameKey != null)
-			    {
-			        nameKey.Close();
-			    }
-			    if (lookup != null)
-			    {
-			        lookup.Close();
-			    }
-			    if (rootKey != null)
-			    {
-			        rootKey.Close();
-			    }
+				nameKey?.Close();
+				lookup?.Close();
+				rootKey?.Close();
 			}
 		}
 
@@ -419,7 +399,7 @@ namespace Gorgon.Input.Raw
             {
 	            if (GorgonApplication.MainForm == null)
 	            {
-		            throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, "windowHandle");
+		            throw new ArgumentException(Resources.GORINP_RAW_NO_WINDOW_TO_BIND, nameof(windowHandle));
 	            }
 
 	            windowHandle = GorgonApplication.MainForm.Handle;

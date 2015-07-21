@@ -28,12 +28,10 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
-using Gorgon.UI;
 
 namespace Gorgon.Input.Raw
 {

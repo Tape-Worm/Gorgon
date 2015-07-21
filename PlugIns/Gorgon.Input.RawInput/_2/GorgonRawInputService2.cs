@@ -96,56 +96,6 @@ namespace Gorgon.Input.Raw
 
 			return result;
 		}
-
-		/// <inheritdoc/>
-		protected override GorgonKeyboard OnCreateKeyboard(Control window, IGorgonKeyboardInfo keyboardInfo)
-		{
-            HookWindowProc(window.Handle);
-
-			if (keyboardInfo == null)
-			{
-				return new RawKeyboard(this,
-				                       new RawInputKeyboardInfo(Guid.Empty,
-				                                                Resources.GORINP_RAW_SYSTEM_KEYBOARD,
-				                                                "Keyboard",
-																"SystemKeyboard",
-				                                                IntPtr.Zero));
-			}
-
-			return new RawKeyboard(this, (IRawInputKeyboardInfo)keyboardInfo);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonPointingDevice OnCreateMouse(Control window, IGorgonMouseInfo pointingDeviceInfo)
-		{
-            HookWindowProc(window.Handle);
-
-			if (pointingDeviceInfo == null)
-			{
-				return new RawPointingDevice(this,
-				                             new RawInputMouseInfo(Guid.Empty,
-				                                                   Resources.GORINP_RAW_SYSTEM_MOUSE,
-				                                                   "Mouse",
-				                                                   "SystemMouse",
-				                                                   IntPtr.Zero));
-			}
-
-			return new RawPointingDevice(this, (IRawInputMouseInfo)pointingDeviceInfo);
-			
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo joystickInfo)
-		{
-			var multimediaJoystick = joystickInfo as IMultimediaJoystickInfo;
-
-			if (multimediaJoystick == null)
-			{
-				throw new InvalidCastException(Resources.GORINP_RAW_NOT_MM_JOYSTICK);
-			}
-
-			return new MultimediaJoystick(this, multimediaJoystick);
-		}
 */
 		#region Variables.
 		// The size, in bytes, of the raw input data header.
@@ -180,7 +130,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, "registryPath");
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -195,13 +145,10 @@ namespace Gorgon.Input.Raw
 				return null;
 			}
 
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}",
-																						  regValue[0],
-																						  regValue[1],
-																						  regValue[2]),
+			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
 																			false))
 			{
-				if ((deviceKey == null) || (deviceKey.GetValue("DeviceDesc") == null))
+				if (deviceKey?.GetValue("DeviceDesc") == null)
 				{
 					return null;
 				}
@@ -224,14 +171,9 @@ namespace Gorgon.Input.Raw
 					return null;
 				}
 
-				using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Control\Class\{0}", classGUID)))
+				using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}"))
 				{
-					if ((classKey == null) || (classKey.GetValue("Class") == null))
-					{
-						return null;
-					}
-
-					return classKey.GetValue("Class").ToString();
+					return classKey?.GetValue("Class") == null ? null : classKey.GetValue("Class").ToString();
 				}
 			}
 		}
@@ -245,7 +187,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, "registryPath");
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -260,13 +202,10 @@ namespace Gorgon.Input.Raw
 				return null;
 			}
 
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}",
-																						  regValue[0],
-																						  regValue[1],
-																						  regValue[2]),
+			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
 																			false))
 			{
-				if ((deviceKey == null) || (deviceKey.GetValue("DeviceDesc") == null))
+				if (deviceKey?.GetValue("DeviceDesc") == null)
 				{
 					return null;
 				}
@@ -406,7 +345,7 @@ namespace Gorgon.Input.Raw
 						return false;
 					}
 
-					SendKeyboardData(device, ref data);
+					RouteKeyboardData(device.UUID, ref data);
 					return true;
 			}
 

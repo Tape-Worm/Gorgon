@@ -41,7 +41,6 @@ namespace Gorgon.Input.WinForms
 		public IDictionary<Keys, KeyboardKey> KeyMapping
 		{
 			get;
-			private set;
 		}
 		#endregion
 

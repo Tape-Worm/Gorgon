@@ -68,7 +68,6 @@ namespace Gorgon.IO
         public GorgonFileSystem FileSystem
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -83,14 +82,9 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the registered types that can be loaded.
         /// </summary>
-        public IDictionary<Type, Func<Stream, IReadOnlyDictionary<GorgonEditorDependency, object>, object>> RegisteredEditorTypes
-        {
-            get
-            {
-                return _fileHandlers;
-            }
-        }
-        #endregion
+        public IDictionary<Type, Func<Stream, IReadOnlyDictionary<GorgonEditorDependency, object>, object>> RegisteredEditorTypes => _fileHandlers;
+
+	    #endregion
 
         #region Methods.
 
@@ -240,12 +234,12 @@ namespace Gorgon.IO
         {
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
             Type type = typeof(T);
@@ -294,7 +288,7 @@ namespace Gorgon.IO
         {
             if (fileSystem == null)
             {
-                throw new ArgumentNullException("fileSystem");    
+                throw new ArgumentNullException(nameof(fileSystem));    
             }
 
             FileSystem = fileSystem;

@@ -599,7 +599,7 @@ namespace Gorgon.Graphics
 
             if (image == null)
             {
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
             }
 
 			// If the image being passed is not a bitmap, then make it into one.

@@ -57,7 +57,6 @@ namespace Gorgon.Plugins
 		public string PlugInPath
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -66,7 +65,6 @@ namespace Gorgon.Plugins
 		public string Description
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -95,7 +93,6 @@ namespace Gorgon.Plugins
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

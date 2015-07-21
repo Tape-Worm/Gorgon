@@ -111,22 +111,22 @@ namespace Gorgon.IO
 			{
 				if (name == null)
 				{
-					throw new ArgumentNullException("name");
+					throw new ArgumentNullException(nameof(name));
 				}
 
 				if (type == null)
 				{
-					throw new ArgumentNullException("type");
+					throw new ArgumentNullException(nameof(type));
 				}
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+					throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 				}
 
 				if (string.IsNullOrWhiteSpace(type))
 				{
-					throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+					throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(type));
 				}
 
 				_name = name;
@@ -198,13 +198,8 @@ namespace Gorgon.IO
 		/// <remarks>Setting a dependency to NULL (<i>Nothing</i> in VB.Net) will remove it from the collection.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or the <paramref name="type"/> parameters are empty.</exception>
-        public GorgonEditorDependency this[string name, string type]
-		{
-			get
-			{
-				return _dependencies[new DependencyKey(name, type)];
-			}
-		}
+        public GorgonEditorDependency this[string name, string type] => _dependencies[new DependencyKey(name, type)];
+
 		#endregion
 
 		#region Methods.
@@ -269,25 +264,14 @@ namespace Gorgon.IO
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public int Count
-		{
-			get
-			{
-				return _dependencies.Count;
-			}
-		}
+		public int Count => _dependencies.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
 		/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-		bool ICollection<GorgonEditorDependency>.IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection<GorgonEditorDependency>.IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.
@@ -387,25 +371,14 @@ namespace Gorgon.IO
 		/// Gets a value indicating whether access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe).
 		/// </summary>
 		/// <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
-		bool ICollection.IsSynchronized
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection.IsSynchronized => false;
 
 		/// <summary>
 		/// Gets an object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.
 		/// </summary>
 		/// <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</returns>
-		object ICollection.SyncRoot
-		{
-			get
-			{
-				return _syncLock;
-			}
-		}
+		object ICollection.SyncRoot => _syncLock;
+
 		#endregion
 
 		#region Methods.

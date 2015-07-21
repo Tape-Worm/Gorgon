@@ -77,13 +77,7 @@ namespace Gorgon.Plugins
 
 		#region Properties.
 		/// <inheritdoc/>
-		public GorgonPluginPathCollection SearchPaths
-		{
-			get
-			{
-				return _paths.Value;
-			}
-		}
+		public GorgonPluginPathCollection SearchPaths => _paths.Value;
 
 		/// <inheritdoc/>
 		public Func<AppDomain, ResolveEventArgs, Assembly> AssemblyResolver
@@ -108,13 +102,8 @@ namespace Gorgon.Plugins
 		}
 
 		/// <inheritdoc/>
-		public IReadOnlyDictionary<string, Assembly> PluginAssemblies
-		{
-			get
-			{
-				return _assemblies.Value;
-			}
-		}
+		public IReadOnlyDictionary<string, Assembly> PluginAssemblies => _assemblies.Value;
+
 		#endregion
 
 		#region Methods.
@@ -153,7 +142,7 @@ namespace Gorgon.Plugins
 		{
 			var resolver = _resolver;
 
-			return resolver != null ? resolver(AppDomain.CurrentDomain, args) : null;
+			return resolver?.Invoke(AppDomain.CurrentDomain, args);
 		}
 
 		/// <summary>
@@ -288,12 +277,12 @@ namespace Gorgon.Plugins
 		{
 			if (pluginPath == null)
 			{
-				throw new ArgumentNullException("pluginPath");
+				throw new ArgumentNullException(nameof(pluginPath));
 			}
 			
 			if (string.IsNullOrWhiteSpace(pluginPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "pluginPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(pluginPath));
 			}
 
 			pluginPath = Path.GetFullPath(pluginPath);
@@ -378,7 +367,7 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyName == null)
 			{
-				throw new ArgumentNullException("assemblyName");
+				throw new ArgumentNullException(nameof(assemblyName));
 			}
 
 			// Function to load a list of type names from an assembly.
@@ -390,12 +379,12 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyFile == null)
 			{
-				throw new ArgumentNullException("assemblyFile");
+				throw new ArgumentNullException(nameof(assemblyFile));
 			}
 
 			if (string.IsNullOrWhiteSpace(assemblyFile))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyFile");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyFile));
 			}
 
 			return EnumeratePlugins(FindPluginAssembly(assemblyFile));
@@ -408,7 +397,7 @@ namespace Gorgon.Plugins
 
 			if (assemblyName == null)
 			{
-				throw new ArgumentNullException("assemblyName");
+				throw new ArgumentNullException(nameof(assemblyName));
 			}
 
 			try
@@ -433,12 +422,12 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyPath == null)
 			{
-				throw new ArgumentNullException("assemblyPath");
+				throw new ArgumentNullException(nameof(assemblyPath));
 			}
 
 			if (string.IsNullOrEmpty(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyPath));
 			}
 
 			AssemblyName assemblyName;
@@ -463,7 +452,7 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyName == null)
 			{
-				throw new ArgumentNullException("assemblyName");
+				throw new ArgumentNullException(nameof(assemblyName));
 			}
 
 			// Initialize the cached assemblies.
@@ -500,12 +489,12 @@ namespace Gorgon.Plugins
 		{
 			if (assemblyPath == null)
 			{
-				throw new ArgumentNullException("assemblyPath");
+				throw new ArgumentNullException(nameof(assemblyPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(assemblyPath))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(assemblyPath));
 			}
 
 			AssemblyName assemblyName = FindPluginAssembly(assemblyPath);

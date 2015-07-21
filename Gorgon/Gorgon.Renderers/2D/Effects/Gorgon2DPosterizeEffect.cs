@@ -57,13 +57,7 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Property to return whether to posterize the alpha channel.
 			/// </summary>
-			public bool PosterizeAlpha
-			{
-				get
-				{
-					return _posterizeAlpha != 0;
-				}
-			}
+			public bool PosterizeAlpha => _posterizeAlpha != 0;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Settings"/> struct.

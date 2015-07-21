@@ -82,15 +82,9 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to determine if the box is empty.
         /// </summary>
-	    public bool IsEmpty
-	    {
-            get
-            {
-                return Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
-            }
-	    }
+	    public bool IsEmpty => Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
 
-        /// <summary>
+		/// <summary>
         /// Property to set or return the left value for the box.
         /// </summary>
         public int Left
@@ -138,36 +132,19 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the right value of the box.
         /// </summary>
-        public int Right
-        {
-            get
-            {
-                return X + Width;
-            }
-        }
+        public int Right => X + Width;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the bottom value of the box.
         /// </summary>
-        public int Bottom
-        {
-            get
-            {
-                return Y + Height;
-            }
-        }
+        public int Bottom => Y + Height;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the back value of the box.
         /// </summary>
-        public int Back
-        {
-            get
-            {
-                return Z + Depth;
-            }
-        }
-        #endregion
+        public int Back => Z + Depth;
+
+		#endregion
 
         #region Methods.
         /// <summary>
@@ -331,22 +308,17 @@ namespace Gorgon.Graphics
 		/// Property to retrieve the resource region.
 		/// </summary>
 		/// <returns>The D3D resource region.</returns>
-		internal D3D.ResourceRegion Convert
-		{
-			get
-			{
-				return new D3D.ResourceRegion
-				{
-					Front = Front,
-					Back = Back,
-					Top = Top,
-					Left = Left,
-					Right = Right,
-					Bottom = Bottom
-				};
-			}
-		}
-        #endregion
+		internal D3D.ResourceRegion Convert => new D3D.ResourceRegion
+		                                       {
+			                                       Front = Front,
+			                                       Back = Back,
+			                                       Top = Top,
+			                                       Left = Left,
+			                                       Right = Right,
+			                                       Bottom = Bottom
+		                                       };
+
+		#endregion
 
         #region IEquatable<GorgonBox> Members
         /// <summary>

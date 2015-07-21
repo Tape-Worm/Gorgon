@@ -199,20 +199,11 @@ namespace Gorgon.Graphics.Example
 
 			if (disposing)
 			{
-				if (_cameraBuffer != null)
-				{
-					_cameraBuffer.Dispose();
-				}
+				_cameraBuffer?.Dispose();
 
-			    if (_worldBuffer != null)
-			    {
-			        _worldBuffer.Dispose();
-			    }
+				_worldBuffer?.Dispose();
 
-				if (_projViewBuffer != null)
-				{
-					_projViewBuffer.Dispose();
-				}
+				_projViewBuffer?.Dispose();
 			}
 
 			_disposed = true;

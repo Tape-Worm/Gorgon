@@ -45,13 +45,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.File;
-			}
-		}
+		public override NodeType NodeType => NodeType.File;
 
 		/// <summary>
 		/// Property to return the plug-in that is linked to the file attached to the node.
@@ -67,25 +61,14 @@ namespace Gorgon.Editor
 		/// Property to return the file associated with this node.
 		/// </summary>
 #warning Need to return an editor file, not a file system file.
-		public GorgonFileSystemFileEntry File
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public GorgonFileSystemFileEntry File => null;
 
 		/// <summary>
 		/// Property to return the editor file for this node.
 		/// </summary>
 #warning We can get rid of this if we get the above sorted out.
-		public object EditorFile
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public object EditorFile => null;
+
 		#endregion
 
 		#region Methods.

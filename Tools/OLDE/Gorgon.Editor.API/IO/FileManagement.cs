@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI;
@@ -273,12 +272,12 @@ namespace Gorgon.Editor
         {
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
             // We don't have a writer plug-in, at this point, that's not good.

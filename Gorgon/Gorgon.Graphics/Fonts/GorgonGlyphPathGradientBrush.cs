@@ -44,13 +44,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public override GlyphBrushType BrushType
-		{
-			get
-			{
-				return GlyphBrushType.PathGradient;
-			}
-		}
+		public override GlyphBrushType BrushType => GlyphBrushType.PathGradient;
 
 		/// <summary>
 		/// Property to set or return the wrapping mode for the gradient fill.
@@ -67,7 +61,6 @@ namespace Gorgon.Graphics
 		public IList<Vector2> Points
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -76,7 +69,6 @@ namespace Gorgon.Graphics
 		public IList<float> BlendFactors
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -85,7 +77,6 @@ namespace Gorgon.Graphics
 		public IList<float> BlendPositions
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -121,7 +112,6 @@ namespace Gorgon.Graphics
 		public IList<GorgonGlyphBrushInterpolator> Interpolation
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -130,7 +120,6 @@ namespace Gorgon.Graphics
 		public IList<GorgonColor> SurroundColors
 		{
 			get;
-			private set;
 		}
 		#endregion
 

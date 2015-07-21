@@ -50,7 +50,7 @@ namespace Gorgon.Graphics
         {
 	        if (target == null)
 	        {
-		        throw new ArgumentNullException("target");
+		        throw new ArgumentNullException(nameof(target));
 	        }
 
             var result = new Gorgon2D(target, vertexCacheSize, systemCreatedSwap);
@@ -84,7 +84,7 @@ namespace Gorgon.Graphics
 
             if (window == null)
             {
-                throw new ArgumentNullException("window");
+                throw new ArgumentNullException(nameof(window));
             }
 
             return Create2DRenderer(graphics, window, window.ClientSize.Width, window.ClientSize.Height);

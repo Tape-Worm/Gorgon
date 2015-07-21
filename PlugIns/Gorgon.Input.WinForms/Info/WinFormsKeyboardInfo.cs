@@ -26,7 +26,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
@@ -51,7 +50,7 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		public WinFormsKeyboardInfo()
 		{
-			Name = Resources.GORINP_WINFORMS_KEYBOARD_NAME;
+			Name = Resources.GORINP_WINFORMS_KEYBOARD_DESC;
 			UUID = Guid.Empty;
 			ClassName = "Keyboard";
 			HumanInterfaceDevicePath = "SystemKeyboard";
@@ -116,28 +115,24 @@ namespace Gorgon.Input.WinForms
 		public int KeyCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int IndicatorCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int FunctionKeyCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public KeyboardType KeyboardType
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -146,31 +141,23 @@ namespace Gorgon.Input.WinForms
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Keyboard;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -180,7 +167,6 @@ namespace Gorgon.Input.WinForms
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

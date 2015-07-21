@@ -52,7 +52,6 @@ namespace Gorgon.Diagnostics
 		public int ThreadID
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -70,24 +69,13 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return the name of the application that is being logged.
 		/// </summary>
-		public string LogApplication
-		{
-			get
-			{
-				return string.Empty;
-			}
-		}
+		public string LogApplication => string.Empty;
 
 		/// <summary>
 		/// Property to return whether or not the log is in a closed state.
 		/// </summary>
-		public bool IsClosed
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public bool IsClosed => true;
+
 		#endregion
 
 		#region Methods.

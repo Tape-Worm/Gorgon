@@ -74,12 +74,12 @@ namespace Gorgon.Plugins
 		{
             if (path == null)
             {
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 			
 			return Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
@@ -287,13 +287,7 @@ namespace Gorgon.Plugins
 		/// <returns>
 		/// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
 		///   </returns>
-		public int Count
-		{
-			get 
-			{
-				return _paths.Count;
-			}
-		}
+		public int Count => _paths.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether this instance is read only.
@@ -301,13 +295,8 @@ namespace Gorgon.Plugins
 		/// <value>
 		/// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
-		bool ICollection<string>.IsReadOnly
-		{
-			get 
-			{
-				return false;
-			}
-		}
+		bool ICollection<string>.IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.

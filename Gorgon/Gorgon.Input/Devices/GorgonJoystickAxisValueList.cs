@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Gorgon.Input.Properties;
 
@@ -127,7 +128,7 @@ namespace Gorgon.Input
 #if DEBUG
 				if ((index < 0) || (index >= _ranges.Length))
 				{
-					throw new ArgumentOutOfRangeException("index", Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
+					throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
 				}
 #endif
 
@@ -138,7 +139,7 @@ namespace Gorgon.Input
 #if DEBUG
 				if ((index < 0) || (index >= _ranges.Length))
 				{
-					throw new ArgumentOutOfRangeException("index", Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
+					throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
 				}
 #endif
 
@@ -175,22 +176,10 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the number of axis values in this list.
 		/// </summary>
-		public int Count
-		{
-			get
-			{
-				return _ranges.Length;
-			}
-		}
+		public int Count => _ranges.Length;
 
 		/// <inheritdoc/>
-		bool ICollection<int>.IsReadOnly
-		{
-			get
-			{
-				return true;
-			}
-		}
+		bool ICollection<int>.IsReadOnly => true;
 
 		/// <inheritdoc/>
 		bool ICollection<int>.Remove(int item)
@@ -209,7 +198,7 @@ namespace Gorgon.Input
 
 		#region IEnumerable Members
 		/// <inheritdoc/>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _ranges.GetEnumerator();
 		}

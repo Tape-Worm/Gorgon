@@ -89,39 +89,22 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the list of constant buffers for the vertex shader.
 		/// </summary>
-		public override ShaderConstantBuffers ConstantBuffers
-		{
-			get
-			{
-				return Graphics.Shaders.VertexShader.ConstantBuffers;
-			}
-		}
+		public override ShaderConstantBuffers ConstantBuffers => Graphics.Shaders.VertexShader.ConstantBuffers;
 
 		/// <summary>
 		/// Property to return the sampler states.
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override TextureSamplerState TextureSamplers
-		{
-			get
-			{
-				return Graphics.Shaders.VertexShader.TextureSamplers;
-			}
-		}
+		public override TextureSamplerState TextureSamplers => Graphics.Shaders.VertexShader.TextureSamplers;
 
 		/// <summary>
 		/// Property to return the list of textures for the shaders.
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override ShaderResourceViews Resources
-		{
-			get
-			{
-				return Graphics.Shaders.VertexShader.Resources;
-			}
-		}
+		public override ShaderResourceViews Resources => Graphics.Shaders.VertexShader.Resources;
+
 		#endregion
 
 		#region Methods.

@@ -522,7 +522,7 @@ namespace Gorgon.Editor
 	    {
 			if (contentObject == null)
 			{
-				throw new ArgumentNullException("contentObject");
+				throw new ArgumentNullException(nameof(contentObject));
 			}
 
 			LoadContent(contentObject, false);
@@ -566,7 +566,7 @@ namespace Gorgon.Editor
         {
             if (plugIn == null)
             {
-                throw new ArgumentNullException("plugIn");
+                throw new ArgumentNullException(nameof(plugIn));
             }
 
             // Perform any set up required on the content.
@@ -639,7 +639,7 @@ namespace Gorgon.Editor
 
 		    if (file == null)
 		    {
-		        throw new ArgumentNullException("file");
+		        throw new ArgumentNullException(nameof(file));
 		    }
 
 			if (!reload)

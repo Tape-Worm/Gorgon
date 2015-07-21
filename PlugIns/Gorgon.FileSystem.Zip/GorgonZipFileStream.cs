@@ -50,52 +50,28 @@ namespace Gorgon.IO.Zip
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports writing; otherwise, false.</returns>
-		public override bool CanWrite
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool CanWrite => false;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports reading; otherwise, false.</returns>
-		public override bool CanRead
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool CanRead => true;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
-		public override bool CanSeek
-		{
-			get
-			{
-				return _zipStream.CanSeek;
-			}
-		}
+		public override bool CanSeek => _zipStream.CanSeek;
 
 		/// <summary>
 		/// Gets a value that determines whether the current stream can time out.
 		/// </summary>
 		/// <value></value>
 		/// <returns>A value that determines whether the current stream can time out.</returns>
-		public override bool CanTimeout
-		{
-			get
-			{
-				return _zipStream.CanTimeout;
-			}
-		}
+		public override bool CanTimeout => _zipStream.CanTimeout;
 
 		/// <summary>
 		/// When overridden in a derived class, gets the length in bytes of the stream.
@@ -104,13 +80,7 @@ namespace Gorgon.IO.Zip
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
 		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length
-		{
-			get
-			{
-				return _length;
-			}
-		}
+		public override long Length => _length;
 
 		/// <summary>
 		/// When overridden in a derived class, gets or sets the position within the current stream.
@@ -217,12 +187,9 @@ namespace Gorgon.IO.Zip
 				return;
 			}
 
-		    if (_zipStream != null)
-		    {
-		        _zipStream.Dispose();
-		    }
+			_zipStream?.Dispose();
 
-            throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, file.PhysicalFileSystemPath));
+			throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, file.PhysicalFileSystemPath));
 		}
 
 		/// <summary>
@@ -241,12 +208,9 @@ namespace Gorgon.IO.Zip
 		{
 			if (disposing)
 			{
-			    if (_zipStream != null)
-			    {
-			        _zipStream.Dispose();
-			    }
+				_zipStream?.Dispose();
 
-			    _zipStream = null;
+				_zipStream = null;
 			}
 
 			base.Dispose(disposing);

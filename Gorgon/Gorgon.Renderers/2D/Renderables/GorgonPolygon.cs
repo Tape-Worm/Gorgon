@@ -168,7 +168,6 @@ namespace Gorgon.Renderers
 	    public Gorgon2D Gorgon2D
 	    {
 		    get;
-		    private set;
 	    }
 
         /// <summary>
@@ -491,20 +490,20 @@ namespace Gorgon.Renderers
 #if DEBUG
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset", string.Format(Resources.GOR2D_ARG_LESS_THAN_ZERO, offset));
+                throw new ArgumentOutOfRangeException(nameof(offset), string.Format(Resources.GOR2D_ARG_LESS_THAN_ZERO, offset));
             }
 
             if ((indexListOffset < 0)
                 || (indexListOffset >= indices.Length))
             {
-                throw new ArgumentOutOfRangeException("indexListOffset",
+                throw new ArgumentOutOfRangeException(nameof(indexListOffset),
                     string.Format(Resources.GOR2D_ARG_OUT_OF_RANGE, indexListOffset, 0, indices.Length - 1));
             }
 
             if  ((count > indices.Length)
                 || (count < 0))
             {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
 
             if (indexListOffset + count > indices.Length)
@@ -630,21 +629,21 @@ namespace Gorgon.Renderers
 #if DEBUG
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset",
+                throw new ArgumentOutOfRangeException(nameof(offset),
                     string.Format(Resources.GOR2D_ARG_LESS_THAN_ZERO, offset));
             }
 
             if ((vertexListOffset < 0)
                 || (vertexListOffset >= vertices.Length))
             {
-                throw new ArgumentOutOfRangeException("vertexListOffset",
+                throw new ArgumentOutOfRangeException(nameof(vertexListOffset),
                     string.Format(Resources.GOR2D_ARG_OUT_OF_RANGE, vertexListOffset, 0, vertices.Length - 1));
             }
 
             if ((count > vertices.Length)
                 || (count < 0))
             {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
 
             if (vertexListOffset + count > vertices.Length)
@@ -763,7 +762,7 @@ namespace Gorgon.Renderers
 		{
 			if (filePath == null)
 			{
-				throw new ArgumentNullException("filePath");
+				throw new ArgumentNullException(nameof(filePath));
 			}
 
 			if (string.IsNullOrWhiteSpace(filePath))
@@ -920,15 +919,9 @@ namespace Gorgon.Renderers
         /// Property to return a list of vertices to render.
         /// </summary>
         /// <remarks>This renderable isn't cached, so it will always return NULL.</remarks>
-        Gorgon2DVertex[] IRenderable.Vertices
-        {
-            get
-            {
-                return null;
-            }
-        }
+        Gorgon2DVertex[] IRenderable.Vertices => null;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the number of indices that make up this renderable.
         /// </summary>
         /// <remarks>
@@ -943,15 +936,9 @@ namespace Gorgon.Renderers
         /// <summary>
         /// Property to return the number of vertices to add to the base starting index.
         /// </summary>
-        int IRenderable.BaseVertexCount
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        int IRenderable.BaseVertexCount => 0;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the number of vertices for the renderable.
         /// </summary>
         public int VertexCount
@@ -1504,25 +1491,14 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the number of vertices for the renderable.
 		/// </summary>
-	    int I2DCollisionObject.VertexCount
-	    {
-		    get
-		    {
-			    return 4;
-		    }
-	    }
+	    int I2DCollisionObject.VertexCount => 4;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2DVertex[] I2DCollisionObject.Vertices
-		{
-			get
-			{
-				return _boundVertices;
-			}
-		}
-		#endregion
+		Gorgon2DVertex[] I2DCollisionObject.Vertices => _boundVertices;
+
+	    #endregion
 
 		#region IDeferredTextureLoad Members
 		/// <summary>
@@ -1640,7 +1616,7 @@ namespace Gorgon.Renderers
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -1727,7 +1703,7 @@ namespace Gorgon.Renderers
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)

@@ -36,14 +36,9 @@ namespace Gorgon.Input.WinForms
         /// <summary>
         /// Property to return whether the device is connected or not.
         /// </summary>
-        public override bool IsConnected
-        {
-            get 
-            {
-                return true;
-            }
-        }
-        #endregion
+        public override bool IsConnected => true;
+
+		#endregion
 
         #region Constructor/Destructor.
         /// <summary>

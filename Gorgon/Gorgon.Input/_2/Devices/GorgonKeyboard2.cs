@@ -29,7 +29,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
-using Gorgon.Input.Native;
+using Gorgon.Native;
 
 namespace Gorgon.Input
 {
@@ -37,7 +37,7 @@ namespace Gorgon.Input
 	/// The base class used to create keyboard interfaces.
 	/// </summary>
 	public sealed class GorgonKeyboard2
-		: GorgonInputDevice2, IGorgonKeyboard
+		: GorgonInputDevice2<GorgonKeyboardData>, IGorgonKeyboard, IGorgonDeviceRouting<GorgonKeyboardData>
 	{
 		#region Classes.
 		/// <summary>
@@ -126,26 +126,15 @@ namespace Gorgon.Input
             /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
             /// </summary>
             /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-            public int Count
-            {
-                get
-                {
-                    return _keys.Count;
-                }
-            }
+            public int Count => _keys.Count;
 
-            /// <summary>
+			/// <summary>
             /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
             /// </summary>
             /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
-            #endregion
+            public bool IsReadOnly => true;
+
+			#endregion
 
             #region Methods.
             /// <summary>
@@ -244,22 +233,12 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
-		public override bool IsPolled
-		{
-			get
-			{
-				return false;
-			}
-		}
-
 		/// <summary>
 		/// Property to return the key states.
 		/// </summary>
 		public KeyStateCollection KeyStates
 		{
 			get;
-            private set;
 		}
 		#endregion
 
@@ -324,14 +303,7 @@ namespace Gorgon.Input
 		/// <param name="scan">Scan code data.</param>
 		private void OnKeyDown(Keys key, int scan)
 		{
-			EventHandler<GorgonKeyboardEventArgs2> keyDown = KeyDown;
-
-		    if (keyDown == null)
-		    {
-		        return;
-		    }
-
-			keyDown(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
+			KeyDown?.Invoke(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
 		}
 
 		/// <summary>
@@ -341,72 +313,13 @@ namespace Gorgon.Input
 		/// <param name="scan">Scan code data.</param>
 		private void OnKeyUp(Keys key, int scan)
 		{
-			EventHandler<GorgonKeyboardEventArgs2> keyUp = KeyUp;
-
-		    if (keyUp == null)
-		    {
-		        return;
-		    }
-
-		    keyUp(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
-		}
-
-		/// <inheritdoc/>
-		protected override void RegisterForwarder(GorgonInputService2 service)
-		{
-			service.RegisterKeyboardForwarder(this);
+			KeyUp?.Invoke(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
 		}
 
 		/// <inheritdoc/>
 		protected override void OnAcquireStateChanged()
 		{
 			KeyStates.Reset();
-		}
-
-		/// <summary>
-		/// Function to parse data received from the input device.
-		/// </summary>
-		/// <param name="data">The data to parse.</param>
-		internal void ParseData(GorgonKeyboardData data)
-		{
-			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
-			{
-				return;
-			}
-
-			// Get the key code.
-			Keys keyCode = data.Key;
-
-			KeyState state = ((data.Flags & KeyboardDataFlags.KeyUp) == KeyboardDataFlags.KeyUp) ? KeyState.Up : KeyState.Down;
-
-			// Determine right or left, and unifier key.
-			switch (keyCode)
-			{
-				case Keys.ControlKey:	// CTRL.
-					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LControlKey : Keys.RControlKey;
-					KeyStates[Keys.ControlKey] = state;
-					break;
-				case Keys.Menu:			// ALT.
-					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LMenu : Keys.RMenu;
-					KeyStates[Keys.Menu] = state;
-					break;
-				case Keys.ShiftKey:		// Shift.
-					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LShiftKey : Keys.RShiftKey;
-					KeyStates[Keys.ShiftKey] = state;
-					break;
-			}
-
-			// Dispatch the key.
-			KeyStates[keyCode] = state;
-
-			if (state == KeyState.Down)
-			{
-				OnKeyDown(keyCode, data.ScanCode);
-			}
-			else
-			{
-				OnKeyUp(keyCode, data.ScanCode);
-			}
 		}
 		#endregion
 
@@ -440,7 +353,6 @@ namespace Gorgon.Input
 		public IGorgonKeyboardInfo2 Info
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -494,6 +406,54 @@ namespace Gorgon.Input
 			}
 		}
 		#endregion
+		#endregion
+
+		#region IGorgonDeviceRouting<GorgonKeyboardData> Members
+		/// <inheritdoc/>
+		InputDeviceType IGorgonDeviceRouting<GorgonKeyboardData>.DeviceType => InputDeviceType.Keyboard;
+
+		/// <inheritdoc/>
+		void IGorgonDeviceRouting<GorgonKeyboardData>.ParseData(ref GorgonKeyboardData data)
+		{
+			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
+			{
+				return;
+			}
+
+			// Get the key code.
+			Keys keyCode = data.Key;
+
+			KeyState state = ((data.Flags & KeyboardDataFlags.KeyUp) == KeyboardDataFlags.KeyUp) ? KeyState.Up : KeyState.Down;
+
+			// Determine right or left, and unifier key.
+			switch (keyCode)
+			{
+				case Keys.ControlKey:	// CTRL.
+					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LControlKey : Keys.RControlKey;
+					KeyStates[Keys.ControlKey] = state;
+					break;
+				case Keys.Menu:			// ALT.
+					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LMenu : Keys.RMenu;
+					KeyStates[Keys.Menu] = state;
+					break;
+				case Keys.ShiftKey:		// Shift.
+					keyCode = ((data.Flags & KeyboardDataFlags.LeftKey) == KeyboardDataFlags.LeftKey) ? Keys.LShiftKey : Keys.RShiftKey;
+					KeyStates[Keys.ShiftKey] = state;
+					break;
+			}
+
+			// Dispatch the key.
+			KeyStates[keyCode] = state;
+
+			if (state == KeyState.Down)
+			{
+				OnKeyDown(keyCode, data.ScanCode);
+			}
+			else
+			{
+				OnKeyUp(keyCode, data.ScanCode);
+			}
+		}
 		#endregion
 	}
 }

@@ -294,11 +294,11 @@ namespace Gorgon.Editor.FontEditorPlugIn
             labelZoomWindowSize.Text = Resources.GORFNT_TEXT_ZOOM_WINSIZE;
             labelZoomAmount.Text = Resources.GORFNT_TEXT_ZOOM_AMOUNT;
             checkShadowEnabled.Text = Resources.GORFNT_TEXT_ENABLE_SHADOW;
-            labelShadowOffset.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SHADOW_OFFSET);
-            labelShadowOpacity.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SHADOW_OPACITY);
-            labelTextColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_FOREGROUND_COLOR);
-            labelBackgroundColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_BACKGROUND_COLOR);
-            labelPreviewText.Text = string.Format("{0}:", Resources.GORFNT_TEXT_PREVIEW_TEXT);
+            labelShadowOffset.Text = $"{Resources.GORFNT_TEXT_SHADOW_OFFSET}:";
+            labelShadowOpacity.Text = $"{Resources.GORFNT_TEXT_SHADOW_OPACITY}:";
+            labelTextColor.Text = $"{Resources.GORFNT_TEXT_FOREGROUND_COLOR}:";
+            labelBackgroundColor.Text = $"{Resources.GORFNT_TEXT_BACKGROUND_COLOR}:";
+            labelPreviewText.Text = $"{Resources.GORFNT_TEXT_PREVIEW_TEXT}:";
 	        labelBlendMode.Text = Resources.GORFNT_TEXT_BLEND_MODE;
 	        comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_MOD);
 			comboBlendMode.Items.Add(Resources.GORFNT_TEXT_BLEND_ADD);

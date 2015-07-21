@@ -54,13 +54,8 @@ namespace Gorgon.Collections.Specialized
 		/// <summary>
 		/// Property to return an object by its index.
 		/// </summary>
-		public IDisposable this[int index]
-		{
-			get
-			{
-				return _objects[index];
-			}
-		}
+		public IDisposable this[int index] => _objects[index];
+
 		#endregion
 
 		#region Constructor.
@@ -142,25 +137,14 @@ namespace Gorgon.Collections.Specialized
 		/// <returns>
 		/// The number of elements contained in the collection.
 		///   </returns>
-		public int Count
-		{
-			get 
-			{
-				return _objects.Count;
-			}
-		}
+		public int Count => _objects.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the collection is read-only.
 		/// </summary>
 		/// <returns>true if the collection is read-only; otherwise, false.</returns>
-		bool ICollection<IDisposable>.IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection<IDisposable>.IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.

@@ -57,15 +57,9 @@ namespace Gorgon.Graphics
             /// <summary>
             /// Property to return the number of buffers.
             /// </summary>
-            public int Count
-            {
-                get
-                {
-                    return _unorderedViews.Length;
-                }
-            }
+            public int Count => _unorderedViews.Length;
 
-            /// <summary>
+	        /// <summary>
             /// Property to set or return a constant buffer at the specified index.
             /// </summary>
             /// <exception cref="GorgonException">Thrown when an unordered access view or its resource is already bound to another slot.</exception>
@@ -246,12 +240,12 @@ namespace Gorgon.Graphics
             {
                 if (name == null)
                 {
-                    throw new ArgumentNullException("name");
+                    throw new ArgumentNullException(nameof(name));
                 }
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                    throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
                 }
 
                 for (int i = 0; i < _unorderedViews.Length; i++)
@@ -292,7 +286,7 @@ namespace Gorgon.Graphics
             {
                 if (resource == null)
                 {
-                    throw new ArgumentNullException("resource");
+                    throw new ArgumentNullException(nameof(resource));
                 }
 
                 for (int i = 0; i < _unorderedViews.Length; i++)
@@ -404,7 +398,7 @@ namespace Gorgon.Graphics
             {
                 if (item == null)
                 {
-                    throw new ArgumentNullException("item");
+                    throw new ArgumentNullException(nameof(item));
                 }
 
                 return Array.IndexOf(_unorderedViews, item);
@@ -437,14 +431,9 @@ namespace Gorgon.Graphics
             /// <summary>
             /// Property to return whether this list is read only or not.
             /// </summary>
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return false;
-                }
-            }
-            #endregion
+            public bool IsReadOnly => false;
+
+	        #endregion
 
             #region Methods.
             /// <summary>
@@ -478,7 +467,7 @@ namespace Gorgon.Graphics
             {
                 if (item == null)
                 {
-                    throw new ArgumentNullException("item");
+                    throw new ArgumentNullException(nameof(item));
                 }
 
                 return _unorderedViews.Contains(item);
@@ -495,12 +484,12 @@ namespace Gorgon.Graphics
             {
                 if (array == null)
                 {
-                    throw new ArgumentNullException("array");
+                    throw new ArgumentNullException(nameof(array));
                 }
 
                 if ((arrayIndex < 0) || (arrayIndex >= array.Length))
                 {
-                    throw new ArgumentOutOfRangeException("arrayIndex");
+                    throw new ArgumentOutOfRangeException(nameof(arrayIndex));
                 }
 
                 int count = (array.Length - arrayIndex).Min(_unorderedViews.Length);
@@ -567,7 +556,6 @@ namespace Gorgon.Graphics
         public ShaderUnorderedAccessViews UnorderedAccessViews
         {
             get;
-            private set;
         }
         #endregion
 
@@ -681,7 +669,7 @@ namespace Gorgon.Graphics
 #if DEBUG
             if (!indirectArgsBuffer.Settings.AllowIndirectArguments)
             {
-                throw new ArgumentException(Properties.Resources.GORGFX_BUFFER_NOT_INDIRECT, "indirectArgsBuffer");
+                throw new ArgumentException(Properties.Resources.GORGFX_BUFFER_NOT_INDIRECT, nameof(indirectArgsBuffer));
             }
 #endif
             Graphics.Context.DispatchIndirect(indirectArgsBuffer.D3DBuffer, alignedOffset);

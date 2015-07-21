@@ -46,13 +46,8 @@ namespace Gorgon.Editor.Design
 		/// Gets a value indicating whether drop-down editors should be resizable by the user.
 		/// </summary>
 		/// <returns>true if drop-down editors are resizable; otherwise, false. </returns>
-		public override bool IsDropDownResizable
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool IsDropDownResizable => false;
+
 		#endregion
 
 		#region Methods.

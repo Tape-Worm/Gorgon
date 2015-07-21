@@ -48,7 +48,7 @@ namespace Gorgon.Core
 		{
 			if (theString == null)
 			{
-				throw new ArgumentNullException("theString");
+				throw new ArgumentNullException(nameof(theString));
 			}
 
 			if (theString.Length < 1)
@@ -79,7 +79,7 @@ namespace Gorgon.Core
 		{
 			if (theString == null)
 			{
-				throw new ArgumentNullException("theString");
+				throw new ArgumentNullException(nameof(theString));
 			}
 
 			if (theString.Length < 1)
@@ -111,7 +111,7 @@ namespace Gorgon.Core
 		{
 			if (theString == null)
 			{
-				throw new ArgumentNullException("theString");
+				throw new ArgumentNullException(nameof(theString));
 			}
 
 			if (theString.Length < 1)
@@ -142,7 +142,7 @@ namespace Gorgon.Core
 		{
 			if (theString == null)
 			{
-				throw new ArgumentNullException("theString");
+				throw new ArgumentNullException(nameof(theString));
 			}
 
 			if (theString.Length < 1)
@@ -175,7 +175,7 @@ namespace Gorgon.Core
 		{
 			if (document == null)
 			{
-				throw new ArgumentNullException("document");
+				throw new ArgumentNullException(nameof(document));
 			}
 
 			var serializedXML = new StringBuilder();

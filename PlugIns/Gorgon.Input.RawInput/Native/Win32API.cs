@@ -28,8 +28,8 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 using System.Security;
+using Gorgon.Input;
 using Gorgon.Input.Raw.Properties;
 
 namespace Gorgon.Native
@@ -52,6 +52,26 @@ namespace Gorgon.Native
 	[SuppressUnmanagedCodeSecurity]
 	static class Win32API
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the number of function keys on the keyboard.
+		/// </summary>
+		public static int FunctionKeyCount
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the keyboard type.
+		/// </summary>
+		public static KeyboardType KeyboardType
+		{
+			get;
+			private set;
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve the dead zone of the joystick.
@@ -304,7 +324,7 @@ namespace Gorgon.Native
 		/// <param name="nTypeFlag">The type of info.</param>
 		/// <returns>The requested information.</returns>
 		[DllImport("User32.dll", CharSet = CharSet.Ansi)]
-		public static extern int GetKeyboardType(int nTypeFlag);
+		private static extern int GetKeyboardType(int nTypeFlag);
 		#endregion
 
 		#region Constructor.
@@ -314,6 +334,41 @@ namespace Gorgon.Native
 		static Win32API()
 		{
 			Marshal.PrelinkAll(typeof(Win32API));
+
+			int keyboardType = GetKeyboardType(0);
+
+			switch (keyboardType)
+			{
+				case 1:
+					KeyboardType = KeyboardType.XT;
+					break;
+				case 2:
+					KeyboardType = KeyboardType.OlivettiICO;
+					break;
+				case 3:
+					KeyboardType = KeyboardType.AT;
+					break;
+				case 4:
+					KeyboardType = KeyboardType.Enhanced;
+					break;
+				case 5:
+					KeyboardType = KeyboardType.Nokia1050;
+					break;
+				case 6:
+					KeyboardType = KeyboardType.Nokia9140;
+					break;
+				case 7:
+					KeyboardType = KeyboardType.Japanese;
+					break;
+				case 81:
+					KeyboardType = KeyboardType.USB;
+					break;
+				default:
+					KeyboardType = KeyboardType.Unknown;
+					break;
+			}
+
+			FunctionKeyCount = GetKeyboardType(2);
 		}
 		#endregion
 	}

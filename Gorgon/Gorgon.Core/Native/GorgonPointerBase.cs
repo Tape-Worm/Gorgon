@@ -173,7 +173,7 @@ namespace Gorgon.Native
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (typeSize + offset > Size)
@@ -327,7 +327,7 @@ namespace Gorgon.Native
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (typeSize + offset > Size)
@@ -457,22 +457,22 @@ namespace Gorgon.Native
 
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (index < 0)
 			{
-				throw new ArgumentOutOfRangeException("index", Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
 			}
 
 			if (index + count > array.Length)
@@ -528,17 +528,17 @@ namespace Gorgon.Native
 
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
 			if (index < 0)
 			{
-				throw new ArgumentOutOfRangeException("index", Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
 			}
 
 			if (index + count > array.Length)
@@ -585,7 +585,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 #endif
 			ReadRange(offset, array, 0, array.Length);
@@ -614,7 +614,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 #endif
 			ReadRange(array, 0, array.Length);
@@ -650,22 +650,22 @@ namespace Gorgon.Native
 
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (index < 0)
 			{
-				throw new ArgumentOutOfRangeException("index", Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
 			}
 
 			if (index + count > array.Length)
@@ -713,7 +713,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 #endif
 			WriteRange(offset, array, 0, array.Length);
@@ -742,7 +742,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 #endif
 			WriteRange(array, 0, array.Length);
@@ -778,17 +778,17 @@ namespace Gorgon.Native
 
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (count < 0)
 			{
-				throw new ArgumentOutOfRangeException("count", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
 			if (index < 0)
 			{
-				throw new ArgumentOutOfRangeException("index", Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
 			}
 
 			if (index + count > array.Length)
@@ -818,7 +818,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 
 			if ((IsDisposed) || (source.IsDisposed))
@@ -828,27 +828,27 @@ namespace Gorgon.Native
 
 			if (sourceSize < 0)
 			{
-				throw new ArgumentOutOfRangeException("sourceSize", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));				
+				throw new ArgumentOutOfRangeException(nameof(sourceSize), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));				
 			}
 
 			if (sourceOffset < 0)
 			{
-				throw new ArgumentOutOfRangeException("sourceOffset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(sourceOffset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (destinationOffset < 0)
 			{
-				throw new ArgumentOutOfRangeException("destinationOffset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(destinationOffset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (sourceOffset + sourceSize > source.Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceOffset, sourceSize), "sourceOffset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceOffset, sourceSize), nameof(sourceOffset));
 			}
 
 			if (destinationOffset + sourceSize > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, sourceSize), "destinationOffset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, sourceSize), nameof(destinationOffset));
 			}
 #endif
 			unsafe
@@ -871,7 +871,7 @@ namespace Gorgon.Native
 #if DEBUG
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 
 			if ((IsDisposed) || (source.IsDisposed))
@@ -881,12 +881,12 @@ namespace Gorgon.Native
 
 			if (sourceSize < 0)
 			{
-				throw new ArgumentOutOfRangeException("sourceSize", string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
+				throw new ArgumentOutOfRangeException(nameof(sourceSize), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 0));
 			}
 
 			if ((sourceSize > source.Size) || (sourceSize > Size))
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, sourceSize), "sourceSize");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, sourceSize), nameof(sourceSize));
 			}
 #endif
 			unsafe
@@ -911,17 +911,17 @@ namespace Gorgon.Native
 
 			if (source == IntPtr.Zero)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 
 			if (destinationOffset < 0)
 			{
-				throw new ArgumentOutOfRangeException("destinationOffset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(destinationOffset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (destinationOffset + size > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, size), "destinationOffset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, size), nameof(destinationOffset));
 			}
 #endif
 			unsafe
@@ -949,17 +949,17 @@ namespace Gorgon.Native
 
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 
 			if (destinationOffset < 0)
 			{
-				throw new ArgumentOutOfRangeException("destinationOffset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(destinationOffset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (destinationOffset + size > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, size), "destinationOffset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destinationOffset, size), nameof(destinationOffset));
 			}
 #endif
 			if (size == 0)
@@ -983,12 +983,12 @@ namespace Gorgon.Native
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (offset + size > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, offset, size), "offset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, offset, size), nameof(offset));
 			}
 #endif
 
@@ -1054,12 +1054,12 @@ namespace Gorgon.Native
 
 			if (offset < 0)
 			{
-				throw new ArgumentOutOfRangeException("offset", Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(offset), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
 			}
 
 			if (offset + size > Size)
 			{
-				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, offset, size), "offset");
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, offset, size), nameof(offset));
 			}
 #endif
 

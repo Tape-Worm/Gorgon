@@ -66,35 +66,17 @@ namespace Gorgon.Renderers
 			/// <summary>
 			/// Flag to indicate that the average of the texel colors should be used.
 			/// </summary>
-			public bool UseAverage
-			{
-				get
-				{
-					return _useAverage != 0;
-				}
-			}
+			public bool UseAverage => _useAverage != 0;
 
 			/// <summary>
 			/// Flag to invert the texel colors.
 			/// </summary>
-			public bool Invert
-			{
-				get
-				{
-					return _invert != 0;
-				}
-			}
+			public bool Invert => _invert != 0;
 
 			/// <summary>
 			/// Flag to indicate that the alpha channel should be included.
 			/// </summary>
-			public bool UseAlpha
-			{
-				get
-				{
-					return _useAlpha != 0;
-				}
-			}
+			public bool UseAlpha => _useAlpha != 0;
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="Settings"/> struct.

@@ -50,7 +50,7 @@ namespace Gorgon.Editor
 		{
 			if (sourceObject == null)
 			{
-				throw new ArgumentNullException("sourceObject");
+				throw new ArgumentNullException(nameof(sourceObject));
 			}
 
 			_item = sourceObject;
@@ -61,13 +61,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the proxied item.
 		/// </summary>
-		public T Item
-		{
-			get
-			{
-				return _item.Value;
-			}
-		}
+		public T Item => _item.Value;
+
 		#endregion
 	}
 }

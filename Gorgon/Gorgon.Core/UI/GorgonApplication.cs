@@ -171,13 +171,7 @@ namespace Gorgon.UI
 		/// This is a pass through for the <see cref="Application.CurrentInputLanguage"/> property.
 		/// </remarks>
 		/// <seealso cref="Application.CurrentInputLanguage"/>
-		public static InputLanguage CurrentInputLanguage
-		{
-			get
-			{
-				return Application.CurrentInputLanguage;
-			}
-		}
+		public static InputLanguage CurrentInputLanguage => Application.CurrentInputLanguage;
 
 		/// <summary>
 		/// Property to return a read-only list of all the forms that are open in the application.
@@ -186,13 +180,7 @@ namespace Gorgon.UI
 		/// This is a pass through for the <see cref="Application.OpenForms"/> property.
 		/// </remarks>
 		/// <seealso cref="Application.OpenForms"/>
-		public static FormCollection OpenForms
-		{
-			get
-			{
-				return Application.OpenForms;
-			}
-		}
+		public static FormCollection OpenForms => Application.OpenForms;
 
 		/// <summary>
 		/// Property to return if the application is running in the foreground or background.
@@ -371,13 +359,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This does not include the name of the assembly that is executing, only the directory that the application was executed from.
 		/// </remarks>
-		public static string StartupPath
-		{
-			get
-			{
-				return Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar);
-			}
-		}
+		public static string StartupPath => Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar);
 
 		/// <summary>
 		/// Property to return the path for the currently running application.
@@ -385,13 +367,7 @@ namespace Gorgon.UI
 		/// <remarks>
 		/// This includes the file name of the assembly that is executing as well as the directory that the application was executed from.
 		/// </remarks>
-		public static string ExecutablePath
-		{
-			get
-			{
-				return Application.ExecutablePath;
-			}
-		}
+		public static string ExecutablePath => Application.ExecutablePath;
 
 		/// <summary>
 		/// Property to return if the <see cref="GorgonApplication"/> is in a running state or not.
@@ -417,13 +393,7 @@ namespace Gorgon.UI
 		/// property.
 		/// </para>
 		/// </remarks>
-		public static Form MainForm
-		{
-			get
-			{
-				return ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
-			}
-		}
+		public static Form MainForm => ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
 
 		/// <summary>
 		/// Property to set or return the current application context.
@@ -459,10 +429,7 @@ namespace Gorgon.UI
 			{
 				lock (_syncLock)
 				{
-					if (_log != null)
-					{
-						_log.Close();
-					}
+					_log?.Close();
 
 					if (value == null)
 					{
@@ -620,11 +587,7 @@ namespace Gorgon.UI
 			// It also has the added benefit of unassigning the exit handler when the application shuts down.
 			EventHandler exitHandler = Interlocked.Exchange(ref ThreadExit, null);
 
-			if (exitHandler != null)
-			{
-				exitHandler(sender, e);
-			}
-			
+			exitHandler?.Invoke(sender, e);
 		}
 
 		/// <summary>
@@ -640,10 +603,7 @@ namespace Gorgon.UI
 			// It also has the added benefit of unassigning the exit handler when the application shuts down.
 			EventHandler exitHandler = Interlocked.Exchange(ref Exit, null);
 
-			if (exitHandler != null)
-			{
-				exitHandler(sender, e);
-			}
+			exitHandler?.Invoke(sender, e);
 		}
 
 		/// <summary>
@@ -855,7 +815,7 @@ namespace Gorgon.UI
 		{
 			if (mainForm == null)
 			{
-				throw new ArgumentNullException("mainForm");
+				throw new ArgumentNullException(nameof(mainForm));
 			}
 
 			if (IsRunning)
@@ -933,7 +893,7 @@ namespace Gorgon.UI
 		{
 			if (idleMethod == null)
 			{
-				throw new ArgumentNullException("idleMethod");
+				throw new ArgumentNullException(nameof(idleMethod));
 			}
 
 			if (IsRunning)

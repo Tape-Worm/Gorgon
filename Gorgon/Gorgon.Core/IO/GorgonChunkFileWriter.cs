@@ -190,7 +190,7 @@ namespace Gorgon.IO
 		{
 			if (!stream.CanWrite)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(stream));
 			}
 
 			_appHeaderId = appHeaderId;

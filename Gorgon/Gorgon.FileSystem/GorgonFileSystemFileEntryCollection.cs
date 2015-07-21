@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO
@@ -68,24 +67,12 @@ namespace Gorgon.IO
 		/// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool IsReadOnly => false;
 
 		/// <summary>
 		/// Property to return whether the file entry names are case sensitive.
 		/// </summary>
-		public bool KeysAreCaseSensitive
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool KeysAreCaseSensitive => false;
 
 		/// <summary>
 		/// Property to set or return a file system file entry by name.
@@ -136,7 +123,7 @@ namespace Gorgon.IO
 
 				if ((value.Directory != null) && (value.Directory != _parent))
 				{
-					throw new ArgumentException(string.Format(Resources.GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY, value.Name, value.Directory.FullPath), "fileName");
+					throw new ArgumentException(string.Format(Resources.GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY, value.Name, value.Directory.FullPath), nameof(fileName));
 				}
 
 				file.Directory = null;
@@ -175,7 +162,7 @@ namespace Gorgon.IO
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
@@ -233,13 +220,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
-		public int Count
-		{
-			get
-			{
-				return _files.Count;
-			}
-		}
+		public int Count => _files.Count;
+
 		#endregion
 
 		#region Methods.
@@ -256,7 +238,7 @@ namespace Gorgon.IO
 		{
 			if (item == null)
 			{
-				throw new ArgumentNullException("item");
+				throw new ArgumentNullException(nameof(item));
 			}
 
 			if ((item.Directory != null) && (item.Directory != _parent))

@@ -263,7 +263,7 @@ namespace Gorgon.IO
 		{
 			if (value == null)
 			{
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 
 			if ((value.Length == 0) || (count <= 0))
@@ -378,7 +378,7 @@ namespace Gorgon.IO
 		{
 			if (value == null)
 			{
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 
 			WriteRange(value, 0, value.Length);

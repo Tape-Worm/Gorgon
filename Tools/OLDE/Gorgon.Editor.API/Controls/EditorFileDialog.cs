@@ -64,7 +64,6 @@ namespace Gorgon.Editor
 		public IList<string> FileTypes
 		{
 			get;
-			private set;
 		}
 
 	    /// <summary>

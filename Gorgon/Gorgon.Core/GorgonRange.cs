@@ -63,25 +63,14 @@ namespace Gorgon.Core
         /// <summary>
         /// Property to return whether the range is empty or not.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return ((Maximum.EqualsEpsilon(0.0)) && (Minimum.EqualsEpsilon(0.0)));
-            }
-        }
+        public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0)) && (Minimum.EqualsEpsilon(0.0)));
 
-        /// <summary>
+		/// <summary>
         /// Property to return the range between the two values.
         /// </summary>
-        public double Range
-        {
-            get
-            {
-                return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-            }
-        }
-        #endregion
+        public double Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+
+		#endregion
 
         #region Methods.
         /// <summary>
@@ -614,24 +603,13 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return Maximum == 0 && Minimum == 0;
-			}
-		}
+		public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
-		public decimal Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
+		public decimal Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+
 		#endregion
 
 		#region Methods.
@@ -1165,24 +1143,13 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
-			}
-		}
+		public bool IsEmpty => ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
-		public float Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
+		public float Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+
 		#endregion
 
 		#region Methods.
@@ -1716,24 +1683,13 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return Maximum == 0 && Minimum == 0;
-			}
-		}
+		public bool IsEmpty => Maximum == 0 && Minimum == 0;
 
 		/// <summary>
 		/// Property to return the range between the two values.
 		/// </summary>
-		public int Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
+		public int Range => (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+
 		#endregion
 
 		#region Methods.

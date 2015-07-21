@@ -65,10 +65,7 @@ namespace Gorgon.Editor
 		private void SetWindowText()
 		{
 			// Update the view to reflect the new file.
-			_view.SetWindowText(string.Format("{0} - {1}{2}",
-												_model.WindowText,
-												_model.CurrentFile.Name,
-												_model.CurrentFile.HasChanged ? "*" : string.Empty));
+			_view.SetWindowText($"{_model.WindowText} - {_model.CurrentFile.Name}{(_model.CurrentFile.HasChanged ? "*" : string.Empty)}");
 		}
 
 		/// <summary>
@@ -331,24 +328,13 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the current view bound to the controller.
 		/// </summary>
-		public IMainFormView View
-		{
-			get
-			{
-				return _view;
-			}
-		}
+		public IMainFormView View => _view;
 
 		/// <summary>
 		/// Property to return the current model bound to the controller.
 		/// </summary>
-		public IMainFormModel Model
-		{
-			get
-			{
-				return _model;
-			}
-		}
+		public IMainFormModel Model => _model;
+
 		#endregion
 
 		#region Methods.

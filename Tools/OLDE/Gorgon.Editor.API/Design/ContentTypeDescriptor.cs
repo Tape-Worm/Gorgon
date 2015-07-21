@@ -44,7 +44,6 @@ namespace Gorgon.Editor
 		public ContentObject Content
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -53,35 +52,18 @@ namespace Gorgon.Editor
 		/// <value>
 		/// 	<b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
-		public override bool IsReadOnly
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool IsReadOnly => true;
 
 		/// <summary>
 		/// Property to return the property at the specified index.
 		/// </summary>
-		public ContentProperty this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-		}
+		public ContentProperty this[int index] => GetItem(index);
 
 		/// <summary>
 		/// Property to return a property by its name.
 		/// </summary>
-		public ContentProperty this[string name]
-		{
-			get
-			{
-				return GetItemByName(name);
-			}
-		}
+		public ContentProperty this[string name] => GetItemByName(name);
+
 		#endregion
 
 		#region Methods.

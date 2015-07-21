@@ -650,7 +650,6 @@ namespace Gorgon.Graphics
 			public BufferFormat Format
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>

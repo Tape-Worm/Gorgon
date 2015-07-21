@@ -57,13 +57,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the maximum number of slots available for render targets.
 		/// </summary>
-		public int MaxRenderTargetViewSlots
-		{
-			get
-			{
-				return 8;
-			}
-		}
+		public int MaxRenderTargetViewSlots => 8;
 
 		/// <summary>
 		/// Property to set or return the depth/stencil buffer view that is bound to the pipeline.
@@ -429,7 +423,7 @@ namespace Gorgon.Graphics
 #if DEBUG
             if ((startSlot < 0) || (startSlot >= 8))
             {
-                throw new ArgumentOutOfRangeException("startSlot", Resources.GORGFX_UAV_SLOT_OUT_OF_RANGE);
+                throw new ArgumentOutOfRangeException(nameof(startSlot), Resources.GORGFX_UAV_SLOT_OUT_OF_RANGE);
             }
 
             if (views.Length > 8)
@@ -1322,7 +1316,7 @@ namespace Gorgon.Graphics
             // Ensure that the number of render targets is less than the maximum available render target slot count.
             if (views.Length > MaxRenderTargetViewSlots)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots),"views");
+                throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots),nameof(views));
             }
 #endif
 
@@ -1515,7 +1509,7 @@ namespace Gorgon.Graphics
 
 			if (!buffer.Settings.AllowIndirectArguments)
 			{
-				throw new ArgumentException(Resources.GORGFX_BUFFER_NOT_INDIRECT, "buffer");
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NOT_INDIRECT, nameof(buffer));
 			}
 #endif
 		    unchecked
@@ -1562,17 +1556,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 			
 			ValidateDepthStencilSettings(settings);
@@ -1618,17 +1612,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             ValidateDepthStencilSettings(settings);
@@ -1681,17 +1675,17 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
 			ValidateSwapChainSettings(settings);
@@ -1732,17 +1726,17 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             ValidateRenderTargetSettings(settings);
@@ -1784,17 +1778,17 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             ValidateRenderTargetSettings(settings);
@@ -1841,17 +1835,17 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
 			ValidateRenderTargetSettings(settings);
@@ -1891,17 +1885,17 @@ namespace Gorgon.Graphics
             
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
             {
-                throw new ArgumentNullException("settings");
+                throw new ArgumentNullException(nameof(settings));
             }
 
             ValidateRenderTargetSettings(settings);

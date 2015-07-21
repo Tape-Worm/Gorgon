@@ -56,14 +56,9 @@ namespace Gorgon.Editor.GorPackWriterPlugIn
 		/// <summary>
 		/// Property to return whether the plug-in supports writing compressed files.
 		/// </summary>
-		public override bool SupportsCompression
-		{
-			get 
-			{
-				return true;
-			}
-		}
-		#endregion
+		public override bool SupportsCompression => true;
+
+	    #endregion
 
 		#region Methods.
         /// <summary>

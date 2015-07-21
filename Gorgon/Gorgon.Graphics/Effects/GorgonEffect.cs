@@ -124,7 +124,6 @@ namespace Gorgon.Graphics
         protected GorgonEffectPassArray Passes
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -136,7 +135,6 @@ namespace Gorgon.Graphics
         protected internal IList<string> RequiredParameters
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -148,7 +146,6 @@ namespace Gorgon.Graphics
         public IDictionary<string, object> Parameters
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -157,7 +154,6 @@ namespace Gorgon.Graphics
         public GorgonGraphics Graphics
         {
             get;
-            private set;
         }
         #endregion
 
@@ -490,7 +486,7 @@ namespace Gorgon.Graphics
             // Check its required parameters.
             if ((RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, RequiredParameters[0]), "parameters");
+                throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, RequiredParameters[0]), nameof(parameters));
             }
 
             if ((parameters != null) && (parameters.Length > 0))
@@ -524,7 +520,7 @@ namespace Gorgon.Graphics
                 if ((missingList != null)
                     && (missingList.Length > 0))
                 {
-                    throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, missingList), "parameters");
+                    throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, missingList), nameof(parameters));
                 }
 
                 // Add/update the parameters.

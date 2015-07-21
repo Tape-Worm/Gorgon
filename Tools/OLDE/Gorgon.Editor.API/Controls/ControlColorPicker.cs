@@ -96,9 +96,9 @@ namespace Gorgon.Editor
 			panelColor.BottomRightColor = Color.FromArgb(sliderAlpha.Value.A, Color.Black);
 
 			if (!AlphaOnly)
-				labelColorInfo.Text = string.Format("R:{0}, G:{1}, B:{2}, A:{3}", current.R, current.G, current.B, current.A);
+				labelColorInfo.Text = $"R:{current.R}, G:{current.G}, B:{current.B}, A:{current.A}";
 			else
-				labelColorInfo.Text = string.Format("Alpha: {0}", current.A);
+				labelColorInfo.Text = $"Alpha: {current.A}";
 			labelColorInfo.Refresh();
 		}
 

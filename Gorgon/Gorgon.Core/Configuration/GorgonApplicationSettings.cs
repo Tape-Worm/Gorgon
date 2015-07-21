@@ -130,7 +130,6 @@ namespace Gorgon.Configuration
 			public PropertyInfo PropertyInfo
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -139,7 +138,6 @@ namespace Gorgon.Configuration
 			public bool HasDefault
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -148,7 +146,6 @@ namespace Gorgon.Configuration
 			public string PropertySection
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -157,7 +154,6 @@ namespace Gorgon.Configuration
 			public string PropertyName
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -166,7 +162,6 @@ namespace Gorgon.Configuration
 			public object DefaultValue
 			{
 				get;
-				private set;
 			}
 			/// <summary>
 			/// Property to return the getter for the property.
@@ -174,7 +169,6 @@ namespace Gorgon.Configuration
 			public PropertyGetter<GorgonApplicationSettings, object> Getter
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -183,19 +177,12 @@ namespace Gorgon.Configuration
 			public PropertySetter<GorgonApplicationSettings, object> Setter
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
 			/// Property to return whether the property points to an array type or not.
 			/// </summary>
-			public bool IsArray
-			{
-				get
-				{
-					return PropertyInfo.PropertyType.IsArray;
-				}
-			}
+			public bool IsArray => PropertyInfo.PropertyType.IsArray;
 
 			/// <summary>
 			/// Property to return whether this property holds a list.
@@ -203,7 +190,6 @@ namespace Gorgon.Configuration
 			public bool IsList
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -212,7 +198,6 @@ namespace Gorgon.Configuration
 			public bool IsDictionary
 			{
 				get;
-				private set;
 			}
 
 			/// <summary>
@@ -290,7 +275,6 @@ namespace Gorgon.Configuration
 		protected IGorgonLog Log
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -299,7 +283,6 @@ namespace Gorgon.Configuration
 		public string ApplicationName
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -397,9 +380,7 @@ namespace Gorgon.Configuration
 
 			if ((convertibleValue != null) || (formattableValue != null))
 			{
-				return convertibleValue != null
-					? convertibleValue.ToString(CultureInfo.InvariantCulture)
-					: formattableValue.ToString(null, CultureInfo.InvariantCulture);
+				return convertibleValue?.ToString(CultureInfo.InvariantCulture) ?? formattableValue.ToString(null, CultureInfo.InvariantCulture);
 			}
 
 			if (attrib == null)
@@ -731,7 +712,7 @@ namespace Gorgon.Configuration
 
 				if (property.IsDictionary)
 				{
-					if ((dictionaryKeyAttr == null) || (string.IsNullOrWhiteSpace(dictionaryKeyAttr.Value)))
+					if (string.IsNullOrWhiteSpace(dictionaryKeyAttr?.Value))
 					{
 						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_SETTING_INVALID_FILE, _path), new NullReferenceException());
 					}
@@ -1119,12 +1100,12 @@ namespace Gorgon.Configuration
 
 			if (applicationName == null)
 			{
-				throw new ArgumentNullException("applicationName");
+				throw new ArgumentNullException(nameof(applicationName));
 			}
 
 			if (string.IsNullOrWhiteSpace(applicationName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "applicationName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(applicationName));
 			}
 			
 			// Get the properties for this interface.

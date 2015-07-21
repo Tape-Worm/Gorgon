@@ -132,25 +132,14 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the file system for the scratch files.
 		/// </summary>
-		public GorgonFileSystem ScratchFileSystem
-		{
-			get
-			{
-				return ScratchArea.ScratchFiles;
-			}
-		}
+		public GorgonFileSystem ScratchFileSystem => ScratchArea.ScratchFiles;
 
 		/// <summary>
 		/// Property to return the type of plug-in.
 		/// </summary>
 		/// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
-		public override PlugInType PlugInType
-		{
-			get
-			{
-				return PlugInType.FileWriter;
-			}
-		}
+		public override PlugInType PlugInType => PlugInType.FileWriter;
+
 		#endregion
 
 		#region Methods.

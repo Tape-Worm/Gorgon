@@ -40,15 +40,9 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Directory;
-			}
-		}
+		public override NodeType NodeType => NodeType.Directory;
 
-        /// <summary>
+		/// <summary>
         /// Gets or sets the foreground color of the tree node.
         /// </summary>
         /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
@@ -80,13 +74,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the directory associated with this node.
 		/// </summary>
-		public virtual GorgonFileSystemDirectory Directory
-		{
-			get
-			{
-				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetDirectory(Name);
-			}
-		}
+		public virtual GorgonFileSystemDirectory Directory => ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetDirectory(Name);
+
 		#endregion
 
 		#region Methods.
@@ -143,13 +132,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Root | NodeType.Directory;
-			}
-		}
+		public override NodeType NodeType => NodeType.Root | NodeType.Directory;
 
 		/// <summary>
         /// Gets or sets the foreground color of the tree node.
@@ -177,13 +160,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the directory associated with this node.
 		/// </summary>
-		public override GorgonFileSystemDirectory Directory
-		{
-			get
-			{
-				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.RootDirectory;
-			}
-		}
+		public override GorgonFileSystemDirectory Directory => ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.RootDirectory;
 
 		/// <summary>
 		/// Gets or sets the name of the tree node.

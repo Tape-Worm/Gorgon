@@ -180,7 +180,7 @@ namespace Gorgon.Editor
 				return;
 			}
 
-			var item = e.Item as ToolStripMenuItem;
+			var item = (ToolStripMenuItem)e.Item;
 
 			if (item.Selected)
 			{

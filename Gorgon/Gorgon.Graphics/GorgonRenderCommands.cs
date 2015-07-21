@@ -55,7 +55,6 @@ namespace Gorgon.Graphics
         public GorgonGraphics Graphics
         {
             get;
-            private set;
         }
         #endregion
 

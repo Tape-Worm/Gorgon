@@ -124,7 +124,7 @@ namespace Gorgon.Native
 		{
 			if (size <= 0)
 			{
-				throw new ArgumentOutOfRangeException("size", Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(size), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
 			}
 
 			int mask = alignment.Max(1) - 1;
@@ -136,7 +136,7 @@ namespace Gorgon.Native
 			// On x86, we cannot allocate more than 2GB in one shot, so disallow it.
 			if ((GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x86) && (alignedSize > Int32.MaxValue))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_CANNOT_ALLOC_x86, "size");
+				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_CANNOT_ALLOC_x86, nameof(size));
 			}
 
 			// Get our memory.

@@ -250,35 +250,18 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
         /// Property to return whether to preserve the aspect ratio for the image.
         /// </summary>
-	    public bool PreserveAspectRatio
-	    {
-	        get
-	        {
-	            return checkPreserveAspect.Checked;
-	        }
-	    }
+	    public bool PreserveAspectRatio => checkPreserveAspect.Checked;
 
 		/// <summary>
 		/// Property to return the selected filter.
 		/// </summary>
-		public ImageFilter Filter
-		{
-			get
-			{
-				return comboFilter.SelectedItem == null ? ImageFilter.Point : ((FilterComboItem)comboFilter.SelectedItem).Filter;
-			}
-		}
+		public ImageFilter Filter => comboFilter.SelectedItem == null ? ImageFilter.Point : ((FilterComboItem)comboFilter.SelectedItem).Filter;
 
 		/// <summary>
 		/// Property to return the flag that indicates whether to crop or resize the image.
 		/// </summary>
-		public bool CropImage
-		{
-			get
-			{
-				return radioCrop.Checked;
-			}
-		}
+		public bool CropImage => radioCrop.Checked;
+
 		#endregion
 
 		#region Methods.
@@ -332,8 +315,8 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 			buttonOK.Text = Resources.GORIMG_ACC_TEXT_OK;
 			buttonCancel.Text = Resources.GORIMG_ACC_TEXT_CANCEL;
 
-			labelFilter.Text = string.Format("{0}:", Resources.GORIMG_TEXT_FILTER);
-			labelAnchor.Text = string.Format("{0}:", Resources.GORIMG_TEXT_ANCHOR);
+			labelFilter.Text = $"{Resources.GORIMG_TEXT_FILTER}:";
+			labelAnchor.Text = $"{Resources.GORIMG_TEXT_ANCHOR}:";
 
 		    checkPreserveAspect.Text = Resources.GORIMG_TEXT_PRESERVE_ASPECT;
 			

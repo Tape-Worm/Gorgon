@@ -51,24 +51,12 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		protected internal override PrimitiveType PrimitiveType
-		{
-		    get
-		    {
-                return IsFilled ? PrimitiveType.TriangleList : PrimitiveType.LineList;
-		    }
-		}
+		protected internal override PrimitiveType PrimitiveType => IsFilled ? PrimitiveType.TriangleList : PrimitiveType.LineList;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override int IndexCount
-		{
-		    get
-		    {
-		        return IsFilled ? 6 : 0;
-		    }
-		}
+		protected internal override int IndexCount => IsFilled ? 6 : 0;
 
 		/// <summary>
 		/// Property to set or return the thickness of the lines for a rectangle outline.

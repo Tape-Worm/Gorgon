@@ -74,7 +74,6 @@ namespace Gorgon.Input
 		public GorgonInputService InputService
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -426,10 +425,7 @@ namespace Gorgon.Input
 			// Having multiple threads in here could be disastrous, so this will help mitigate that.
 			var beforeUnbind = Interlocked.Exchange(ref BeforeUnbind, null);
 
-			if (beforeUnbind != null)
-			{
-				beforeUnbind(this, new GorgonBeforeInputUnbindEventArgs(_boundControl));
-			}
+			beforeUnbind?.Invoke(this, new GorgonBeforeInputUnbindEventArgs(_boundControl));
 		}
 
 		/// <summary>
@@ -502,7 +498,7 @@ namespace Gorgon.Input
 			{
 			    if (GorgonApplication.MainForm == null)
 			    {
-			        throw new ArgumentException(Resources.GORINP_ERR_NO_WINDOW_TO_BIND, "boundWindow");
+			        throw new ArgumentException(Resources.GORINP_ERR_NO_WINDOW_TO_BIND, nameof(boundWindow));
 			    }
 
 			    boundWindow = GorgonApplication.MainForm;
@@ -515,7 +511,7 @@ namespace Gorgon.Input
 
 		    if (BoundTopLevelForm == null)
 		    {
-		        throw new ArgumentException(Resources.GORINP_ERR_NO_WINDOW_TO_BIND, "boundWindow");
+		        throw new ArgumentException(Resources.GORINP_ERR_NO_WINDOW_TO_BIND, nameof(boundWindow));
 		    }
 
 		    BoundTopLevelForm.Activated += BoundForm_Activated;
@@ -537,7 +533,7 @@ namespace Gorgon.Input
 		{
 			if (owner == null)
 			{
-				throw new ArgumentNullException("owner");
+				throw new ArgumentNullException(nameof(owner));
 			}
 
 			InputService = owner;

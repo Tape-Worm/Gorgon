@@ -69,24 +69,13 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the type of buffer.
         /// </summary>
-        public override BufferType BufferType
-        {
-            get
-            {
-                return BufferType.Generic;
-            }
-        }
+        public override BufferType BufferType => BufferType.Generic;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
-        public new GorgonBufferSettings Settings
-        {
-            get
-            {
-                return (GorgonBufferSettings)base.Settings;
-            }
-        }
+        public new GorgonBufferSettings Settings => (GorgonBufferSettings)base.Settings;
+
 		#endregion
 
 		#region Methods.

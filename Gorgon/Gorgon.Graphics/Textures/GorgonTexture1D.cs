@@ -43,21 +43,14 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
-		public override ResourceType ResourceType
-		{
-			get
-			{
-				return ResourceType.Texture1D;
-			}
-		}
+		public override ResourceType ResourceType => ResourceType.Texture1D;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the settings for this texture.
         /// </summary>
         public new GorgonTexture1DSettings Settings
         {
             get;
-            private set;
         }
         #endregion
 

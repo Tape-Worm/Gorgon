@@ -58,20 +58,13 @@ namespace Gorgon.Graphics
 		public GorgonBufferFormatInfo.FormatData FormatInformation
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return the size of the texture, in bytes.
 		/// </summary>
 		/// <remarks>This will take into account whether the texture is a packed format, or compressed.</remarks>
-		public override int SizeInBytes
-		{
-			get
-			{
-				return GorgonImageData.GetSizeInBytes(Settings);
-			}
-		}
+		public override int SizeInBytes => GorgonImageData.GetSizeInBytes(Settings);
 
 		/// <summary>
 		/// Property to set or return the settings for the texture.
@@ -79,7 +72,6 @@ namespace Gorgon.Graphics
 		public ITextureSettings Settings
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -616,30 +608,30 @@ namespace Gorgon.Graphics
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT,
                     sourceTexture.Settings.Format,
-                    Settings.Format), "sourceTexture");
+                    Settings.Format), nameof(sourceTexture));
             }
 
             if ((sourceArrayIndex < 0) || (sourceArrayIndex >= sourceTexture.Settings.ArrayCount))
             {
-                throw new ArgumentOutOfRangeException("sourceArrayIndex",
+                throw new ArgumentOutOfRangeException(nameof(sourceArrayIndex),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, sourceArrayIndex, 0, sourceTexture.Settings.ArrayCount));
             }
 
             if ((sourceMipLevel < 0) || (sourceMipLevel >= sourceTexture.Settings.MipCount))
             {
-                throw new ArgumentOutOfRangeException("sourceMipLevel",
+                throw new ArgumentOutOfRangeException(nameof(sourceMipLevel),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, sourceMipLevel, 0, sourceTexture.Settings.MipCount));
             }
 
             if ((destArrayIndex < 0) || (destArrayIndex >= Settings.ArrayCount))
             {
-                throw new ArgumentOutOfRangeException("destArrayIndex",
+                throw new ArgumentOutOfRangeException(nameof(destArrayIndex),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destArrayIndex, 0, Settings.ArrayCount));
             }
 
             if ((destMipLevel < 0) || (destMipLevel >= Settings.MipCount))
             {
-                throw new ArgumentOutOfRangeException("destMipLevel",
+                throw new ArgumentOutOfRangeException(nameof(destMipLevel),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destMipLevel, 0, Settings.MipCount));
             }
 
@@ -748,13 +740,13 @@ namespace Gorgon.Graphics
 
             if ((arrayIndex < 0) || (arrayIndex >= Settings.ArrayCount))
             {
-                throw new ArgumentOutOfRangeException("arrayIndex",
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, Settings.ArrayCount));
             }
 
             if ((mipLevel < 0) || (mipLevel >= Settings.MipCount))
             {
-                throw new ArgumentOutOfRangeException("mipLevel",
+                throw new ArgumentOutOfRangeException(nameof(mipLevel),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
             }
 
@@ -770,13 +762,13 @@ namespace Gorgon.Graphics
 
             if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
             {
-                throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
+                throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, nameof(lockFlags));
             }
 
             if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
                 && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
             {
-                throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
+                throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, nameof(lockFlags));
             }
 
 	        if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
@@ -788,7 +780,7 @@ namespace Gorgon.Graphics
 	        if ((deferred != null) && (deferred.IsDeferred)
                 && ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
             {
-                throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
+                throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, nameof(lockFlags));
             }
 #endif
             if (deferred == null)
@@ -1026,12 +1018,12 @@ namespace Gorgon.Graphics
 		{
 			if (filePath == null)
 			{
-				throw new ArgumentNullException("filePath");
+				throw new ArgumentNullException(nameof(filePath));
 			}
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
 			}
 
 			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -1078,7 +1070,7 @@ namespace Gorgon.Graphics
 			if (texture.ResourceType != ResourceType)
 			{
 				throw new ArgumentException(
-					string.Format(Resources.GORGFX_TEXTURE_NOT_SAME_TYPE, texture.Name, texture.ResourceType, ResourceType), "texture");
+					string.Format(Resources.GORGFX_TEXTURE_NOT_SAME_TYPE, texture.Name, texture.ResourceType, ResourceType), nameof(texture));
 			}
 
 			if (Settings.Usage == BufferUsage.Immutable)
@@ -1099,13 +1091,13 @@ namespace Gorgon.Graphics
 		    {
 		        throw new ArgumentException(
 		            string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT, texture.Settings.Format, Settings.Format),
-		            "texture");
+		            nameof(texture));
 		    }
 
 		    if ((texture.Settings.Width != Settings.Width)
 		        || (texture.Settings.Height != Settings.Height))
 		    {
-		        throw new ArgumentException(Resources.GORGFX_TEXTURE_MUST_BE_SAME_SIZE, "texture");
+		        throw new ArgumentException(Resources.GORGFX_TEXTURE_MUST_BE_SAME_SIZE, nameof(texture));
 		    }
 #endif
             if (deferred == null)
@@ -1166,13 +1158,13 @@ namespace Gorgon.Graphics
 
             if ((destArrayIndex < 0) || (destArrayIndex >= Settings.ArrayCount))
             {
-                throw new ArgumentOutOfRangeException("destArrayIndex",
+                throw new ArgumentOutOfRangeException(nameof(destArrayIndex),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destArrayIndex, 0, Settings.ArrayCount));
             }
 
             if ((destMipLevel < 0) || (destMipLevel >= Settings.MipCount))
             {
-                throw new ArgumentOutOfRangeException("destMipLevel",
+                throw new ArgumentOutOfRangeException(nameof(destMipLevel),
                     string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destMipLevel, 0, Settings.MipCount));
             }
 #endif

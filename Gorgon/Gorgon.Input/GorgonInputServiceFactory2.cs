@@ -93,12 +93,12 @@ namespace Gorgon.Input
 		{
 			if (servicePluginName == null)
 			{
-				throw new ArgumentNullException("servicePluginName");
+				throw new ArgumentNullException(nameof(servicePluginName));
 			}
 
 			if (string.IsNullOrWhiteSpace(servicePluginName))
 			{
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "servicePluginName");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(servicePluginName));
 			}
 
 			GorgonInputServicePlugin plugin = _pluginService.GetPlugin<GorgonInputServicePlugin>(servicePluginName);
@@ -147,7 +147,7 @@ namespace Gorgon.Input
 		{
 			if (pluginService == null)
 			{
-				throw new ArgumentNullException("pluginService");
+				throw new ArgumentNullException(nameof(pluginService));
 			}
 
 			if (log != null)

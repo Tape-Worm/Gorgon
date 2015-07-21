@@ -138,7 +138,8 @@ namespace Gorgon.Examples
 				var rectPosition = new RectangleF(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
 				_2D.Drawing.FilledRectangle(rectPosition, Color.FromArgb(192, Color.Black));
 				_2D.Drawing.DrawLine(new Vector2(rectPosition.X, rectPosition.Bottom), new Vector2(rectPosition.Width, rectPosition.Bottom), Color.White);
-				_2D.Drawing.DrawString(_helpFont, string.Format("FPS: {0}\nFrame Delta: {1}ms.", GorgonTiming.FPS.ToString("0.0"), (GorgonTiming.Delta * 1000).ToString("0.0##")), Vector2.Zero, Color.White);
+				_2D.Drawing.DrawString(_helpFont,
+				                       $"FPS: {GorgonTiming.FPS.ToString("0.0")}\nFrame Delta: {(GorgonTiming.Delta * 1000).ToString("0.0##")}ms.", Vector2.Zero, Color.White);
 			}
 
 			_2D.Render();

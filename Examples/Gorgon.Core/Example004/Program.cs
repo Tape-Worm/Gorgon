@@ -167,7 +167,7 @@ namespace Gorgon.Examples
 
 						// Call our text color writer to print the text in the plugin color.
 						int writerIndex = keyValue.KeyChar - '0';
-						writers[writerIndex - 1].WriteString(string.Format("You pressed #{0}.", writerIndex));
+						writers[writerIndex - 1].WriteString($"You pressed #{writerIndex}.");
 					}
 
 					Console.CursorTop = cursorY;

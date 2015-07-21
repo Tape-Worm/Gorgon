@@ -243,12 +243,12 @@ namespace Gorgon.Editor
 			Text = Resources.GOREDIT_TEXT_EDITOR_PREFERENCES;
 			labelPaths.Text = Resources.GOREDIT_TEXT_EDITOR_PATHS;
 			labelOptions.Text = Resources.GOREDIT_TEXT_EDITOR_OPTIONS;
-			labelScratchLocation.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_SCRATCH_LOCATION);
-			labelPlugInLocation.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_PLUG_IN_LOCATION);
-			labelImageEditor.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_IMAGE_EDITOR);
+			labelScratchLocation.Text = $"{Resources.GOREDIT_TEXT_SCRATCH_LOCATION}:";
+			labelPlugInLocation.Text = $"{Resources.GOREDIT_TEXT_PLUG_IN_LOCATION}:";
+			labelImageEditor.Text = $"{Resources.GOREDIT_TEXT_IMAGE_EDITOR}:";
 			checkAutoLoadFile.Text = Resources.GOREDIT_TEXT_LOAD_LAST_FILE;
 		    checkAnimateLogo.Text = Resources.GOREDIT_TEXT_ANIMATE_LOGO;
-		    labelAnimateSpeed.Text = string.Format("{0}:", Resources.GOREDIT_TEXT_ANIMATE_SPEED);
+		    labelAnimateSpeed.Text = $"{Resources.GOREDIT_TEXT_ANIMATE_SPEED}:";
 
 			toolHelp.SetToolTip(imageScratchHelp, Resources.GOREDIT_TIP_SCRATCH_LOCATION);
 			toolHelp.SetToolTip(imagePlugInHelp, Resources.GOREDIT_TIP_PLUG_IN_LOCATION);

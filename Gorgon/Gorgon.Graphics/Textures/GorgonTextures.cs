@@ -81,13 +81,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the maximum number of array indices for 1D and 2D textures.
 		/// </summary>
-		public int MaxArrayCount
-		{
-			get
-			{
-				return 2048;
-			}
-		}
+		public int MaxArrayCount => 2048;
 
 		/// <summary>
 		/// Property to return the maximum width of a 1D or 2D texture.
@@ -128,35 +122,18 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the maximum width of a volume (3D) texture.
 		/// </summary>
-		public int Max3DWidth
-		{
-			get
-			{
-				return 2048;
-			}
-		}
+		public int Max3DWidth => 2048;
 
 		/// <summary>
 		/// Property to return the maximum height of a volume (3D) texture.
 		/// </summary>
-		public int Max3DHeight
-		{
-			get
-			{
-				return 2048;
-			}
-		}
+		public int Max3DHeight => 2048;
 
 		/// <summary>
 		/// Property to return the maximum depth of a texture.
 		/// </summary>
-		public int MaxDepth
-		{
-			get
-			{
-				return 2048;
-			}
-		}
+		public int MaxDepth => 2048;
+
 		#endregion
 
 		#region Methods.
@@ -524,12 +501,12 @@ namespace Gorgon.Graphics
 
             if (images == null)
             {
-                throw new ArgumentNullException("images");
+                throw new ArgumentNullException(nameof(images));
             }
 
             if (images.Count == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "images");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(images));
             }
 
             // If we only have 1 image, then use that one.
@@ -653,7 +630,7 @@ namespace Gorgon.Graphics
 
             if (image == null)
             {
-                throw new ArgumentNullException("image");
+                throw new ArgumentNullException(nameof(image));
             }
 
             if (options == null)
@@ -739,12 +716,12 @@ namespace Gorgon.Graphics
 		{
             if (filePath == null)
             {
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
             }
 
 			using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -788,7 +765,7 @@ namespace Gorgon.Graphics
 		{
 			if (data == null)
 			{
-				throw new ArgumentNullException("data");
+				throw new ArgumentNullException(nameof(data));
 			}
 			
 			using (IGorgonPointer pointer = new GorgonPointerPinned<byte>(data))
@@ -999,17 +976,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
 			{
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 			}
 
 			// We cannot create an immutable texture without some initialization data.
@@ -1053,17 +1030,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
 			{
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 			}
 
 			// We cannot create an immutable texture without some initialization data.
@@ -1107,17 +1084,17 @@ namespace Gorgon.Graphics
 
             if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
 			{
-				throw new ArgumentNullException("settings");
+				throw new ArgumentNullException(nameof(settings));
 			}
 
 			// We cannot create an immutable texture without some initialization data.
@@ -1166,22 +1143,22 @@ namespace Gorgon.Graphics
 
             if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (data == null)
 			{
-				throw new ArgumentNullException("data");
+				throw new ArgumentNullException(nameof(data));
 			}
 
 			if (data.Buffers.Count == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
 			}
 
 			// Get the settings from the image data.

@@ -158,13 +158,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 
 		#region IEquatable<DependencyProperty> Members

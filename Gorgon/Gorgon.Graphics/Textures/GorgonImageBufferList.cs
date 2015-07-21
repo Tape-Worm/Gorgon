@@ -194,13 +194,8 @@ namespace Gorgon.Graphics
 		/// Gets the element at the specified index in the read-only list.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">This list is read only.</exception>
-		GorgonImageBuffer IReadOnlyList<GorgonImageBuffer>.this[int index]
-		{
-			get
-			{
-				return this[index];
-			}
-		}
+		GorgonImageBuffer IReadOnlyList<GorgonImageBuffer>.this[int index] => this[index];
+
 		#endregion
 
 		#region IList<GorgonImageBuffer> Members
@@ -261,24 +256,13 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Gets the number of elements in the collection.
 		/// </summary>
-		public int Count
-		{
-			get
-			{
-				return _buffers.Length;
-			}
-		}
+		public int Count => _buffers.Length;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
-		bool ICollection<GorgonImageBuffer>.IsReadOnly
-		{
-			get
-			{
-				return true;
-			}
-		}
+		bool ICollection<GorgonImageBuffer>.IsReadOnly => true;
+
 		#endregion
 
 		#region Methods.

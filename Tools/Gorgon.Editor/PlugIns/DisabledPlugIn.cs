@@ -152,13 +152,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of the disabled plug-in.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 	}
 }

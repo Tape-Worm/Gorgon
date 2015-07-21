@@ -143,12 +143,12 @@ namespace Gorgon.Graphics
 		{
 			if (includeName == null)
 			{
-				throw new ArgumentNullException("includeName");
+				throw new ArgumentNullException(nameof(includeName));
 			}
 
 			if (string.IsNullOrWhiteSpace(includeName))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "includeName");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(includeName));
 			}
 
 			if (includeSourceFile == null)
@@ -165,13 +165,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the name of the include file.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 
 		#region IEquatable<GorgonShaderInclude> Members

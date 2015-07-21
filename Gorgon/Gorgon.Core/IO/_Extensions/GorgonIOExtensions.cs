@@ -83,22 +83,22 @@ namespace Gorgon.IO
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
 			}
 
 			if (destination == null)
 			{
-				throw new ArgumentNullException("destination");
+				throw new ArgumentNullException(nameof(destination));
 			}
 
 			if (!destination.CanWrite)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, "destination");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
 			}
 
 			if (stream.Length <= stream.Position)
@@ -173,7 +173,7 @@ namespace Gorgon.IO
 
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
@@ -293,7 +293,7 @@ namespace Gorgon.IO
 
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (encoding == null)
@@ -375,7 +375,7 @@ namespace Gorgon.IO
 				counter += bytesRead;
 			}
 
-			return result == null ? string.Empty : result.ToString();
+			return result?.ToString() ?? string.Empty;
 		}
 
         /// <summary>
@@ -637,7 +637,7 @@ namespace Gorgon.IO
 		{
 			if (chunkName == null)
 			{
-				throw new ArgumentNullException("chunkName");
+				throw new ArgumentNullException(nameof(chunkName));
 			}
 
 			byte[] chunkBytes = new byte[8];

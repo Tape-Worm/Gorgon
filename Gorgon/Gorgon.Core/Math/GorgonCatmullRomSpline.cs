@@ -52,7 +52,6 @@ namespace Gorgon.Math
         public IList<Vector4> Points
         {
             get;
-            private set;
         }
         #endregion
 

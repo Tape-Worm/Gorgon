@@ -69,35 +69,17 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		protected internal override PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return _isUnitLine ? PrimitiveType.LineList : PrimitiveType.TriangleList;
-			}
-		}
+		protected internal override PrimitiveType PrimitiveType => _isUnitLine ? PrimitiveType.LineList : PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override int IndexCount
-		{
-			get
-			{
-				return _isUnitLine ? 0 : 6;
-			}
-		}
+		protected internal override int IndexCount => _isUnitLine ? 0 : 6;
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		public override GorgonIndexBuffer IndexBuffer
-		{
-			get
-			{
-				return _isUnitLine ? null : Gorgon2D.DefaultIndexBuffer;
-			}
-		}
+		public override GorgonIndexBuffer IndexBuffer => _isUnitLine ? null : Gorgon2D.DefaultIndexBuffer;
 
 		/// <summary>
 		/// Property to set or return the thickness for the line.

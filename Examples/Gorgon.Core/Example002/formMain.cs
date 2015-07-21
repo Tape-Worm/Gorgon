@@ -52,13 +52,8 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Property to return the size of the graphics canvas.
 		/// </summary>
-		public Size GraphicsSize
-		{
-			get
-			{
-				return _bitmap.Size;
-			}
-		}
+		public Size GraphicsSize => _bitmap.Size;
+
 		#endregion
 
 		#region Methods.
@@ -125,14 +120,11 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
-			if (_graphics != null)
-				_graphics.Dispose();
+			_graphics?.Dispose();
 
-			if (_formGraphics != null)
-				_formGraphics.Dispose();
+			_formGraphics?.Dispose();
 
-			if (_bitmap != null)
-				_bitmap.Dispose();
+			_bitmap?.Dispose();
 		}
 
 		/// <summary>

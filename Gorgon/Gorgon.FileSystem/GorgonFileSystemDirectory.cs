@@ -52,30 +52,17 @@ namespace Gorgon.IO
         public GorgonFileSystem FileSystem
         {
             get;
-            private set;
         }
 
 		/// <summary>
 		/// Property to return the list of child directories for this directory.
 		/// </summary>
-		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemDirectory> Directories
-		{
-			get
-			{
-				return _directories;
-			}
-		}
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemDirectory> Directories => _directories;
 
 		/// <summary>
 		/// Property to return the list of files within this directory.
 		/// </summary>
-		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemFileEntry> Files
-		{
-			get
-			{
-				return _files;
-			}
-		}
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileSystemFileEntry> Files => _files;
 
 		/// <summary>
 		/// Property to return the parent directory for this directory.
@@ -83,7 +70,6 @@ namespace Gorgon.IO
 		public GorgonFileSystemDirectory Parent
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -185,7 +171,7 @@ namespace Gorgon.IO
 	    {
             if (file == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             }
 
             return Files.Any(item => item == file)

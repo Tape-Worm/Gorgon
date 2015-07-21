@@ -177,24 +177,13 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return a list of the disabled plug-ins.
 		/// </summary>
-		public IReadOnlyList<DisabledPlugIn> DisabledPlugIns
-		{
-			get
-			{
-				return _disabled;
-			}
-		}
+		public IReadOnlyList<DisabledPlugIn> DisabledPlugIns => _disabled;
 
 		/// <summary>
 		/// Property to return the collection of file system provider plug-ins.
 		/// </summary>
-		public IReadOnlyDictionary<string, GorgonFileSystemProviderPlugIn> FileSystemPlugIns
-		{
-			get
-			{
-				return _fileSystemPlugIns;
-			}
-		}
+		public IReadOnlyDictionary<string, GorgonFileSystemProviderPlugIn> FileSystemPlugIns => _fileSystemPlugIns;
+
 		#endregion
 		
 		#region Methods.
@@ -224,7 +213,7 @@ namespace Gorgon.Editor
 		{
 			if (plugIn == null)
 			{
-				throw new ArgumentNullException("plugIn");
+				throw new ArgumentNullException(nameof(plugIn));
 			}
 
 			// Plug-in is already disabled.

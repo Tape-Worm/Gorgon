@@ -63,7 +63,6 @@ namespace Gorgon.Editor
 		public string Type
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -146,17 +145,17 @@ namespace Gorgon.Editor
 		{
 			if (file == null)
 			{
-				throw new ArgumentNullException("file");
+				throw new ArgumentNullException(nameof(file));
 			}
 
 			if (type == null)
 			{
-				throw new ArgumentNullException("type");
+				throw new ArgumentNullException(nameof(type));
 			}
 
 			if (string.IsNullOrWhiteSpace(type))
 			{
-				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "type");
+				throw new ArgumentException(APIResources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(type));
 			}
 
 			Properties = new DependencyPropertyCollection();
@@ -169,14 +168,9 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return EditorFile.FilePath;
-			}
-		}
-		#endregion
+		string IGorgonNamedObject.Name => EditorFile.FilePath;
+
+	    #endregion
 
 		#region ICloneable<Dependency> Members
 		/// <summary>

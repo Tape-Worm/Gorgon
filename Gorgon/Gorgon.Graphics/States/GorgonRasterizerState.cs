@@ -354,13 +354,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the maximum number of viewport and scissor test rectangles allowed for the device.
 		/// </summary>
-		public int MaxViewportScissorTestCount
-		{
-			get
-			{
-				return 16;
-			}
-		}
+		public int MaxViewportScissorTestCount => 16;
+
 		#endregion
 
 		#region Methods.

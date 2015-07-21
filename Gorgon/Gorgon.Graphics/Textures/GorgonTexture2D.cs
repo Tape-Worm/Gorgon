@@ -45,21 +45,14 @@ namespace Gorgon.Graphics
         /// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
-		public override ResourceType ResourceType
-		{
-			get 
-			{
-				return ResourceType.Texture2D;
-			}
-		}
+		public override ResourceType ResourceType => ResourceType.Texture2D;
 
-	    /// <summary>
+		/// <summary>
 	    /// Property to return the settings for this texture.
 	    /// </summary>
 	    public new GorgonTexture2DSettings Settings
 	    {
 	        get;
-	        private set;
 	    }
 	    #endregion
 
@@ -173,13 +166,13 @@ namespace Gorgon.Graphics
 #if DEBUG
 			if (destination == null)
 			{
-				throw new ArgumentNullException("destination");	
+				throw new ArgumentNullException(nameof(destination));	
 			}
 
 			if ((destArrayIndex >= destination.Settings.ArrayCount)
 				&& (destArrayIndex < 0))
 			{
-				throw new ArgumentOutOfRangeException("destArrayIndex",
+				throw new ArgumentOutOfRangeException(nameof(destArrayIndex),
 					                                    string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE,
 					                                                0,
 					                                                destination.Settings.ArrayCount));
@@ -187,14 +180,14 @@ namespace Gorgon.Graphics
 
 			if ((destMipLevel < 0) || (destMipLevel >= destination.Settings.MipCount))
 			{
-				throw new ArgumentOutOfRangeException("destMipLevel", string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
+				throw new ArgumentOutOfRangeException(nameof(destMipLevel), string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
 					                                                destination.Settings.MipCount));
 			}
 
 			if ((srcArrayIndex >= Settings.ArrayCount)
 				&& (srcArrayIndex < 0))
 			{
-				throw new ArgumentOutOfRangeException("srcArrayIndex",
+				throw new ArgumentOutOfRangeException(nameof(srcArrayIndex),
 					                                    string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE,
 					                                                0,
 					                                                Settings.ArrayCount));
@@ -202,7 +195,7 @@ namespace Gorgon.Graphics
 
 			if ((srcMipLevel < 0) || (srcMipLevel >= Settings.MipCount))
 			{
-				throw new ArgumentOutOfRangeException("srcMipLevel", string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
+				throw new ArgumentOutOfRangeException(nameof(srcMipLevel), string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
 					                                                Settings.MipCount));
 			}
 
@@ -226,12 +219,12 @@ namespace Gorgon.Graphics
 				if (Settings.Format != destination.Settings.Format)
 				{
 					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME, Settings.Format),
-					                            "destination");
+					                            nameof(destination));
 				}
 
 				if (resolveFormat != Settings.Format)
 				{
-					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN), "resolveFormat");
+					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN), nameof(resolveFormat));
 				}
 			}
 			else if ((srcFormatInfo.IsTypeless) && (destFormatInfo.IsTypeless))
@@ -239,7 +232,7 @@ namespace Gorgon.Graphics
 				if (Settings.Format != destination.Settings.Format)
 				{
 					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME, Settings.Format),
-												"destination");
+												nameof(destination));
 				}
 
 				if ((resolveFormatInfo.Group != srcFormatInfo.Group)
@@ -247,7 +240,7 @@ namespace Gorgon.Graphics
 				{
 					throw new ArgumentException(
 						string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP, Settings.Format),
-						"resolveFormat");
+						nameof(resolveFormat));
 				}
 			} 
 			else if ((srcFormatInfo.IsTypeless) || (destFormatInfo.IsTypeless))
@@ -255,7 +248,7 @@ namespace Gorgon.Graphics
 				if (resolveFormatInfo.IsTypeless)
 				{
 					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS),
-					                            "resolveFormat");
+					                            nameof(resolveFormat));
 				}
 
 				if (srcFormatInfo.Group != destFormatInfo.Group)
@@ -264,7 +257,7 @@ namespace Gorgon.Graphics
 						string.Format(Resources.GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP,
 						              Settings.Format,
 						              destination.Settings.Format),
-						"destination");
+						nameof(destination));
 				}
 			}
 #endif

@@ -51,7 +51,7 @@ namespace Gorgon.Examples
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException("The resource was not specified.", "resourceItem");
+				throw new ArgumentException("The resource was not specified.", nameof(resourceItem));
 			}
 
 			path = path.FormatDirectory(Path.DirectorySeparatorChar);

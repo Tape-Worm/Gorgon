@@ -50,7 +50,6 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		public GorgonSpriteSettings Settings
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

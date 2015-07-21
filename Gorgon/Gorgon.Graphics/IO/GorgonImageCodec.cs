@@ -184,13 +184,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
-		public virtual bool SupportsMultipleFrames
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public virtual bool SupportsMultipleFrames => false;
 
 		/// <summary>
 		/// Property to set or return the usage for textures loaded with this codec.
@@ -424,17 +418,17 @@ namespace Gorgon.IO
 
 			if ((srcFormat != BufferFormat.B5G5R5A1_UIntNormal) && (srcFormat != BufferFormat.B5G6R5_UIntNormal))
 			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_NOT_16BPP, srcFormat), "srcFormat");
+				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_NOT_16BPP, srcFormat), nameof(srcFormat));
 			}
 
 			if (src == null)
 			{
-				throw new ArgumentNullException("src");
+				throw new ArgumentNullException(nameof(src));
 			}
 
 			if (dest == null)
 			{
-				throw new ArgumentNullException("dest");
+				throw new ArgumentNullException(nameof(dest));
 			}
 
 			for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
@@ -508,18 +502,18 @@ namespace Gorgon.IO
 
 			if (src == null)
 			{
-				throw new ArgumentNullException("src");
+				throw new ArgumentNullException(nameof(src));
 			}
 
 			if (dest == null)
 			{
-				throw new ArgumentNullException("dest");
+				throw new ArgumentNullException(nameof(dest));
 			}
 
             if (format == BufferFormat.Unknown)
             {
 	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown),
-	                                        "format");
+	                                        nameof(format));
             }
 
             var srcPtr = (uint*)src;
@@ -606,18 +600,18 @@ namespace Gorgon.IO
 		{
 			if (src == null)
 			{
-				throw new ArgumentNullException("src");
+				throw new ArgumentNullException(nameof(src));
 			}
 
 			if (dest == null)
 			{
-				throw new ArgumentNullException("dest");
+				throw new ArgumentNullException(nameof(dest));
 			}
 
 			if (format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown),
-											"format");
+											nameof(format));
 			}
 
 			int size = (src == dest) ? destPitch : (srcPitch.Min(destPitch));
@@ -994,13 +988,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Codec;
-			}
-		}
+		string IGorgonNamedObject.Name => Codec;
+
 		#endregion
 	}
 }

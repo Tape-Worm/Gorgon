@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
@@ -37,7 +38,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Enumeration for keyboard keys.
 	/// </summary>
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags", Justification = "Because these are VK codes, which you bastards wrote."), Flags]
+	[SuppressMessage("Microsoft.Usage", "CA2217:DoNotMarkEnumsWithFlags", Justification = "Because these are VK codes, which you bastards wrote."), Flags]
 	public enum KeyboardKey
 		: uint
 	{
@@ -620,26 +621,15 @@ namespace Gorgon.Input
             /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
             /// </summary>
             /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-            public int Count
-            {
-                get
-                {
-                    return _keys.Count;
-                }
-            }
+            public int Count => _keys.Count;
 
-            /// <summary>
+			/// <summary>
             /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
             /// </summary>
             /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
-            #endregion
+            public bool IsReadOnly => true;
+
+			#endregion
 
             #region Methods.
             /// <summary>
@@ -673,12 +663,12 @@ namespace Gorgon.Input
             {
 				if (array == null)
 				{
-					throw new ArgumentNullException("array");
+					throw new ArgumentNullException(nameof(array));
 				}
 
 				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
 				{
-					throw new ArgumentOutOfRangeException("arrayIndex");	
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));	
 				}
 
 	            int count = array.Length.Min(Count);
@@ -798,26 +788,15 @@ namespace Gorgon.Input
             /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
             /// </summary>
             /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-            public int Count
-            {
-                get
-                {
-                    return _keys.Count;
-                }
-            }
+            public int Count => _keys.Count;
 
-            /// <summary>
+			/// <summary>
             /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
             /// </summary>
             /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return true;
-                }
-            }
-            #endregion
+            public bool IsReadOnly => true;
+
+			#endregion
 
             #region Methods.
             /// <summary>
@@ -974,7 +953,6 @@ namespace Gorgon.Input
 		public KeyMapCollection KeyMappings
 		{
 			get;
-            private set;
 		}
 
 		/// <summary>
@@ -983,7 +961,6 @@ namespace Gorgon.Input
 		public KeyStateCollection KeyStates
 		{
 			get;
-            private set;
 		}
 		#endregion
 

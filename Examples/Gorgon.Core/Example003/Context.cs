@@ -27,7 +27,6 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -148,15 +147,13 @@ namespace Gorgon.Examples
 				// If we get an error, then leave the application.
 				GorgonDialogs.ErrorBox(MainForm, ex);
 
-				if (MainForm != null)
-					MainForm.Dispose();
+				MainForm?.Dispose();
 				MainForm = null;
 			}
 			finally
 			{
 				// We don't need this any more.
-				if (_splashScreen != null)
-					_splashScreen.Dispose();
+				_splashScreen?.Dispose();
 				_splashScreen = null;
 			}
 		}

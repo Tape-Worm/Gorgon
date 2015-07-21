@@ -53,14 +53,9 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the data formats for the image.
 		/// </summary>
-		public override IEnumerable<BufferFormat> SupportedFormats
-		{
-			get
-			{
-				return _supportedFormats;
-			}
-		}
-		#endregion
+		public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
+
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

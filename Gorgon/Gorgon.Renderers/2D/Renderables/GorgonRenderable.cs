@@ -909,7 +909,6 @@ namespace Gorgon.Renderers
 		public Gorgon2D Gorgon2D
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -1018,79 +1017,38 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
-		public virtual GorgonVertexBufferBinding VertexBufferBinding
-		{
-			get
-			{
-				return Gorgon2D.DefaultVertexBufferBinding;
-			}
-		}
+		public virtual GorgonVertexBufferBinding VertexBufferBinding => Gorgon2D.DefaultVertexBufferBinding;
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		public virtual GorgonIndexBuffer IndexBuffer
-		{
-			get
-			{
-				return Gorgon2D.DefaultIndexBuffer;
-			}
-		}
+		public virtual GorgonIndexBuffer IndexBuffer => Gorgon2D.DefaultIndexBuffer;
 
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		PrimitiveType IRenderable.PrimitiveType
-		{
-			get 
-			{
-				return PrimitiveType;
-			}
-		}
+		PrimitiveType IRenderable.PrimitiveType => PrimitiveType;
 
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		Gorgon2DVertex[] IRenderable.Vertices
-		{
-			get 
-			{
-				return Vertices;
-			}
-		}
+		Gorgon2DVertex[] IRenderable.Vertices => Vertices;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		int IRenderable.IndexCount
-		{
-			get 
-			{
-				return IndexCount;
-			}
-		}
+		int IRenderable.IndexCount => IndexCount;
 
 		/// <summary>
 		/// Property to return the number of vertices to add to the base starting index.
 		/// </summary>
-		int IRenderable.BaseVertexCount
-		{
-			get
-			{
-				return BaseVertexCount;
-			}
-		}
+		int IRenderable.BaseVertexCount => BaseVertexCount;
 
 		/// <summary>
 		/// Property to return the number of vertices for the renderable.
 		/// </summary>
-		int IRenderable.VertexCount
-		{
-			get
-			{
-				return VertexCount;
-			}
-		}
+		int IRenderable.VertexCount => VertexCount;
+
 		#endregion
 	}
 }

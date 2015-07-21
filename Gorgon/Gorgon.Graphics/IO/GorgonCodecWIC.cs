@@ -155,8 +155,7 @@ namespace Gorgon.IO
 		: GorgonImageCodec
 	{
 		#region Variables.
-		private readonly string _codec = string.Empty;			// Codec name.
-		private readonly string _description = string.Empty;	// Codec description.
+
 		private int _actualArrayCount;							// Array count.
 
         // Supported formats.
@@ -174,7 +173,6 @@ namespace Gorgon.IO
 		protected Guid SupportedFormat
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -209,10 +207,7 @@ namespace Gorgon.IO
 		/// </summary>
 		public override string Codec
 		{
-			get
-			{
-				return _codec;
-			}
+			get;
 		}
 
 		/// <summary>
@@ -220,66 +215,34 @@ namespace Gorgon.IO
 		/// </summary>
 		public override string CodecDescription
 		{
-			get
-			{
-				return _description;
-			}
+			get;
 		}
 
 		/// <summary>
 		/// Property to return whether the image codec supports block compression.
 		/// </summary>
-		public override bool SupportsBlockCompression
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool SupportsBlockCompression => false;
 
-        /// <summary>
+		/// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
-	    public override bool SupportsArray
-	    {
-	        get
-	        {
-	            return false;
-	        }
-	    }
+	    public override bool SupportsArray => false;
 
-        /// <summary>
+		/// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
-	    public override bool SupportsMipMaps
-	    {
-	        get
-	        {
-	            return false;
-	        }
-	    }
+	    public override bool SupportsMipMaps => false;
 
-        /// <summary>
+		/// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
-	    public override bool SupportsDepth
-	    {
-	        get
-	        {
-	            return false;
-	        }
-	    }
+	    public override bool SupportsDepth => false;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats
-        {
-            get
-            {
-                return _supportedFormats;
-            }
-        }
+        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
+
 		#endregion
 
 		#region Methods.
@@ -441,7 +404,7 @@ namespace Gorgon.IO
 					}
 
 					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
-					if ((paletteInfo != null) && (paletteInfo.Item1 != null))
+					if (paletteInfo?.Item1 != null)
 					{
 						using (var tempBitmap = new Bitmap(wic.Factory, frame, BitmapCreateCacheOption.CacheOnDemand))
 						{
@@ -599,10 +562,7 @@ namespace Gorgon.IO
 							catch
 							{
 								// If we run into a problem, dump the memory buffer.
-								if (result != null)
-								{
-									result.Dispose();
-								}
+								result?.Dispose();
 
 								throw;
 							}
@@ -696,16 +656,13 @@ namespace Gorgon.IO
 														frame.Palette = paletteInfo.Item1;
 													}
 
-													AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, (paletteInfo.Item1 != null) ? paletteInfo.Item1.Colors : null);
+													AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, paletteInfo.Item1?.Colors);
 													frame.WriteSource(converter);													
 												}
 											}
 											finally
 											{
-												if (paletteInfo.Item1 != null)
-												{
-													paletteInfo.Item1.Dispose();
-												}
+												paletteInfo.Item1?.Dispose();
 											}
 										}
 									}
@@ -744,7 +701,7 @@ namespace Gorgon.IO
 		{
 		    if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)
@@ -818,7 +775,7 @@ namespace Gorgon.IO
 		{
 		    if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)
@@ -890,8 +847,8 @@ namespace Gorgon.IO
 		{
 			DecodeFlags = WICFlags.None;
 			CodecUseAllFrames = true;
-			_codec = codec;
-			_description = description;
+			Codec = codec;
+			CodecDescription = description;
 			CodecCommonExtensions = extensions;
 			SupportedFormat = containerGUID;			
 		}

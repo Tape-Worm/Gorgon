@@ -65,13 +65,8 @@ namespace Gorgon.Collections.Specialized
 		/// <summary>
 		/// Property to return an item in this list by name.
 		/// </summary>
-		public T this[string name]
-		{
-			get
-			{
-				return GetItemByName(name);
-			}
-		}
+		public T this[string name] => GetItemByName(name);
+
 		#endregion
 
 		#region Methods.

@@ -54,13 +54,8 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the path to the scratch area for building the data.
 		/// </summary>
-		public string ScratchPath
-		{
-			get
-			{
-				return ScratchArea.ScratchPath;
-			}
-		}
+		public string ScratchPath => ScratchArea.ScratchPath;
+
 		#endregion
 
 		#region Constructor/Destructor.

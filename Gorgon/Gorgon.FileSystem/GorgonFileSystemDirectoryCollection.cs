@@ -49,13 +49,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return whether the directory names are case sensitive.
 		/// </summary>
-		public bool KeysAreCaseSensitive
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool KeysAreCaseSensitive => false;
 
 		/// <summary>
 		/// Property to set or return a directory by its name.
@@ -102,7 +96,7 @@ namespace Gorgon.IO
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
@@ -156,24 +150,12 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
-		public int Count
-		{
-			get
-			{
-				return _directories.Count;
-			}
-		}
+		public int Count => _directories.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
-		public bool IsReadOnly
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public bool IsReadOnly => true;
 
 		/// <summary>
 		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -210,7 +192,7 @@ namespace Gorgon.IO
 		{
 			if (item == null)
 			{
-				throw new ArgumentNullException("item");
+				throw new ArgumentNullException(nameof(item));
 			}
 
 			if (_directories.ContainsKey(item.Name))

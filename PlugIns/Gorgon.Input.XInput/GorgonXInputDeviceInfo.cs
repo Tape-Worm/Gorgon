@@ -73,7 +73,6 @@ namespace Gorgon.Input.XInput
 		public XI.Controller Controller
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

@@ -183,7 +183,7 @@ namespace Gorgon.Examples
 				    //
 				    // Note that a provider may have multiple preferred extensions.
 					var extensionList = (from preferred in _providers[i].PreferredExtensions
-				                         select string.Format("*.{0}", preferred.Extension)).ToArray();
+				                         select $"*.{preferred.Extension}").ToArray();
 
 				    if (extensionList.Length > 0)
 				    {

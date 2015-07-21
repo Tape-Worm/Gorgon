@@ -50,35 +50,18 @@ namespace Gorgon.IO
         /// <value>
         /// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
         /// </value>
-        public override bool IsReadOnly
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool IsReadOnly => true;
 
 		/// <summary>
 		/// Property to return a dependency property by its index.
 		/// </summary>
-		public GorgonEditorDependencyProperty this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-		}
+		public GorgonEditorDependencyProperty this[int index] => GetItem(index);
 
 		/// <summary>
 		/// Property to return a dependency property by its name.
 		/// </summary>
-		public GorgonEditorDependencyProperty this[string name]
-		{
-			get
-			{
-				return GetItem(name);
-			}
-		}
+		public GorgonEditorDependencyProperty this[string name] => GetItem(name);
+
 		#endregion
 
 		#region Methods.

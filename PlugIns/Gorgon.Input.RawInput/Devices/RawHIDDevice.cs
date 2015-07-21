@@ -25,8 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
-using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw

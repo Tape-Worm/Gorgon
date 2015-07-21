@@ -40,13 +40,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Dependency;
-			}
-		}
+		public override NodeType NodeType => NodeType.Dependency;
 
 		/// <summary>
 		/// Gets or sets the foreground color of the tree node.
@@ -95,7 +89,7 @@ namespace Gorgon.Editor
 				fileName = APIResources.GOREDIT_TEXT_UNKNOWN_FILE;
 			}
 
-			Text = string.Format("{0} ({1})", fileName, APIResources.GOREDIT_TEXT_BROKEN_LINK);
+			Text = $"{fileName} ({APIResources.GOREDIT_TEXT_BROKEN_LINK})";
 			
 			IsBroken = true;
 		}

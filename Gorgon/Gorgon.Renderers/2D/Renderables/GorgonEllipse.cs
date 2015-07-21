@@ -57,35 +57,17 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
-		protected internal override PrimitiveType PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
+		protected internal override PrimitiveType PrimitiveType => PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		protected internal override int IndexCount
-		{
-			get
-			{
-				return 0;
-			}
-		}
+		protected internal override int IndexCount => 0;
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		public override GorgonIndexBuffer IndexBuffer
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public override GorgonIndexBuffer IndexBuffer => null;
 
 		/// <summary>
 		/// Property to set or return whether the ellipse should be drawn as filled or as an outline.

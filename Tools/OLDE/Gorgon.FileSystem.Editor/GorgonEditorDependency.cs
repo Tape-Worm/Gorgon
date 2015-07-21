@@ -71,7 +71,6 @@ namespace Gorgon.IO
 		public string Path
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -125,13 +124,8 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Path;
-			}
-		}
-		#endregion
+		string IGorgonNamedObject.Name => Path;
+
+	    #endregion
 	}
 }

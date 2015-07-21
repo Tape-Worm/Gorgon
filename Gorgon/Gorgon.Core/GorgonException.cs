@@ -43,7 +43,6 @@ namespace Gorgon.Core
 		public GorgonResult ResultCode
 		{
 			get;
-			private set;
 		}
 		#endregion
 

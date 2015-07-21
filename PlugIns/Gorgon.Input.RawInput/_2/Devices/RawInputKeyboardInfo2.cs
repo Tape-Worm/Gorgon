@@ -41,67 +41,6 @@ namespace Gorgon.Input.Raw
 		private readonly string _deviceDescription;
 		#endregion
 
-		#region Methods.
-		/// <summary>
-		/// Function to get keyboard information for the system keyboard.
-		/// </summary>
-		private void GetSystemKeyboardInfo()
-		{
-			int keyboardType = Win32API.GetKeyboardType(0);
-
-			switch (keyboardType)
-			{
-				case 1:
-					KeyboardType = KeyboardType.XT;
-					KeyCount = 83;
-					IndicatorCount = 3;
-					break;
-				case 2:
-					KeyboardType = KeyboardType.OlivettiICO;
-					KeyCount = 102;
-					IndicatorCount = 3;
-					break;
-				case 3:
-					KeyboardType = KeyboardType.AT;
-					KeyCount = 84;
-					IndicatorCount = 3;
-					break;
-				case 4:
-					KeyboardType = KeyboardType.Enhanced;
-					KeyCount = 102;
-					IndicatorCount = 3;
-					break;
-				case 5:
-					KeyboardType = KeyboardType.Nokia1050;
-					KeyCount = -1;
-					IndicatorCount = -1;
-					break;
-				case 6:
-					KeyboardType = KeyboardType.Nokia9140;
-					KeyCount = -1;
-					IndicatorCount = -1;
-					break;
-				case 7:
-					KeyboardType = KeyboardType.Japanese;
-					KeyCount = -1;
-					IndicatorCount = -1;
-					break;
-				case 81:
-					KeyboardType = KeyboardType.USB;
-					KeyCount = -1;
-					IndicatorCount = -1;
-					break;
-				default:
-					KeyboardType = KeyboardType.Unknown;
-					KeyCount = -1;
-					IndicatorCount = -1;
-					break;
-			}
-
-			FunctionKeyCount = Win32API.GetKeyboardType(2);
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RawInputKeyboardInfo2"/> class.
@@ -118,7 +57,48 @@ namespace Gorgon.Input.Raw
 
 			Handle = handle;
 
-			GetSystemKeyboardInfo();
+			KeyboardType = Win32API.KeyboardType;
+			FunctionKeyCount = Win32API.FunctionKeyCount;
+
+			switch (KeyboardType)
+			{
+				case KeyboardType.XT:
+					KeyCount = 83;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.OlivettiICO:
+					KeyCount = 102;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.AT:
+					KeyCount = 84;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.Enhanced:
+					KeyCount = 102;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.Nokia1050:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.Nokia9140:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.Japanese:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.USB:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				default:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+			}
 
 			// Get the usage information for the device.			
 			if (handle == IntPtr.Zero)
@@ -146,28 +126,24 @@ namespace Gorgon.Input.Raw
 		public int KeyCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int IndicatorCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int FunctionKeyCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public KeyboardType KeyboardType
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -176,33 +152,20 @@ namespace Gorgon.Input.Raw
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public string Description
-		{
-			get
-			{
-				return string.Format(Resources.GORINP_RAW_DESC_KEYBOARD, _deviceDescription, KeyCount, KeyboardType);
-			}
-		}
+		public string Description => string.Format(Resources.GORINP_RAW_DESC_KEYBOARD, _deviceDescription, KeyCount, KeyboardType);
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Keyboard;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
+
 		#endregion
 
 		#region IRawInputKeyboardInfo Members
@@ -210,21 +173,18 @@ namespace Gorgon.Input.Raw
 		public IntPtr Handle
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsage Usage
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsagePage UsagePage
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

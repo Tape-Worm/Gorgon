@@ -313,9 +313,9 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
             itemRemoveNode.Text = buttonRemoveNode.Text = Resources.GORFNT_ACC_TEXT_REMOVE_NODE;
             buttonClearNodes.Text = Resources.GORFNT_ACC_TEXT_CLEAR_NODES;
             itemDuplicateNode.Text = buttonDuplicateNode.Text = Resources.GORFNT_ACC_TEXT_DUPLICATE_NODES;
-            labelAngle.Text = string.Format("{0}:", Resources.GORFNT_TEXT_ANGLE);
-            labelSelectedWeight.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SELECTED_WEIGHT);
-            labelSelectedColor.Text = string.Format("{0}:", Resources.GORFNT_TEXT_SELECTED_COLOR);
+            labelAngle.Text = $"{Resources.GORFNT_TEXT_ANGLE}:";
+            labelSelectedWeight.Text = $"{Resources.GORFNT_TEXT_SELECTED_WEIGHT}:";
+            labelSelectedColor.Text = $"{Resources.GORFNT_TEXT_SELECTED_COLOR}:";
             checkScaleAngle.Text = Resources.GORFNT_TEXT_SCALE_ANGLE;
             checkUseGamma.Text = Resources.GORFNT_TEXT_USE_GAMMA;
             labelPreview.Text = Resources.GORFNT_TEXT_PREVIEW;

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Runtime.Versioning;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw;
 using Gorgon.Input.Raw.Properties;
@@ -41,35 +40,18 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsGameDevices => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsPointingDevices => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool SupportsKeyboardDevices => true;
+
 		#endregion
 
 		#region Methods.

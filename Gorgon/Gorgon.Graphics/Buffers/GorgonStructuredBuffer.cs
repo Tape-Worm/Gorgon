@@ -46,35 +46,18 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of buffer.
 		/// </summary>
-		public override BufferType BufferType
-		{
-			get
-			{
-				return BufferType.Structured;
-			}
-		}
+		public override BufferType BufferType => BufferType.Structured;
 
 		/// <summary>
 		/// Property to return the settings for a structured shader buffer.
 		/// </summary>
-		public new GorgonStructuredBufferSettings Settings
-		{
-			get
-			{
-				return (GorgonStructuredBufferSettings)base.Settings;
-			}
-		}
+		public new GorgonStructuredBufferSettings Settings => (GorgonStructuredBufferSettings)base.Settings;
 
 		/// <summary>
 		/// Property to return the default shader view for this buffer.
 		/// </summary>
-		public override GorgonShaderView DefaultShaderView
-		{
-			get
-			{
-				return _defaultView;
-			}
-		}
+		public override GorgonShaderView DefaultShaderView => _defaultView;
+
 		#endregion
 
 		#region Methods.

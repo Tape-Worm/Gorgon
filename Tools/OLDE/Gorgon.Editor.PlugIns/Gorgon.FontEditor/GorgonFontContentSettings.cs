@@ -50,7 +50,6 @@ namespace Gorgon.Editor.FontEditorPlugIn
         public GorgonFontSettings Settings
         {
             get;
-            private set;
         }
         #endregion
 

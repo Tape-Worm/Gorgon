@@ -31,7 +31,6 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Editor.FontEditorPlugIn.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
@@ -411,11 +410,11 @@ namespace Gorgon.Editor.FontEditorPlugIn.Controls
 			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipY, Resources.GORFNT_TEXT_TILE_FLIP_VERT));
 			comboWrapMode.Items.Add(new WrapModeComboItem(WrapMode.TileFlipXY, Resources.GORFNT_TEXT_TILE_FLIP));
 
-			labelTexHeight.Text = string.Format("{0}:", Resources.GORFNT_TEXT_HEIGHT);
-			labelTexWidth.Text = string.Format("{0}:", Resources.GORFNT_TEXT_WIDTH);
-			labelTexLeft.Text = string.Format("{0}:", Resources.GORFNT_TEXT_LEFT);
-			labelTexTop.Text = string.Format("{0}:", Resources.GORFNT_TEXT_TOP);
-			labelWrapMode.Text = string.Format("{0}:", Resources.GORFNT_TEXT_WRAPPING_MODE);
+			labelTexHeight.Text = $"{Resources.GORFNT_TEXT_HEIGHT}:";
+			labelTexWidth.Text = $"{Resources.GORFNT_TEXT_WIDTH}:";
+			labelTexLeft.Text = $"{Resources.GORFNT_TEXT_LEFT}:";
+			labelTexTop.Text = $"{Resources.GORFNT_TEXT_TOP}:";
+			labelWrapMode.Text = $"{Resources.GORFNT_TEXT_WRAPPING_MODE}:";
 			buttonOpen.Text = Resources.GORFNT_TEXT_OPEN_TEXTURE;
 		}
 

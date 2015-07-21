@@ -88,12 +88,12 @@ namespace Gorgon.IO
 		{
 			if (providerPluginName == null)
 			{
-				throw new ArgumentNullException("providerPluginName");
+				throw new ArgumentNullException(nameof(providerPluginName));
 			}
 
 			if (string.IsNullOrWhiteSpace(providerPluginName))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "providerPluginName");
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(providerPluginName));
 			}
 
 			GorgonFileSystemProviderPlugIn plugin = _pluginService.GetPlugin<GorgonFileSystemProviderPlugIn>(providerPluginName);
@@ -137,7 +137,7 @@ namespace Gorgon.IO
 		{
 			if (pluginService == null)
 			{
-				throw new ArgumentNullException("pluginService");
+				throw new ArgumentNullException(nameof(pluginService));
 			}
 
 			if (log != null)

@@ -145,13 +145,7 @@ namespace Gorgon.Editor
         ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   </PermissionSet>
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public new TreeViewDrawMode DrawMode
-        {
-            get
-            {
-                return TreeViewDrawMode.OwnerDrawAll;
-            }
-        }
+        public new TreeViewDrawMode DrawMode => TreeViewDrawMode.OwnerDrawAll;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether lines are drawn between the tree nodes that are at the root of the tree view.
@@ -160,26 +154,15 @@ namespace Gorgon.Editor
 		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
 		/// </PermissionSet>
 		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public new bool ShowRootLines
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public new bool ShowRootLines => false;
 
 		/// <summary>
 		/// Gets the collection of tree nodes that are assigned to the tree view control.
 		/// </summary>
 		[Browsable(false)]
-		public new TreeNodeCollection Nodes
-		{
-			get
-			{
-				return base.Nodes;
-			}
-		}
-        #endregion
+		public new TreeNodeCollection Nodes => base.Nodes;
+
+		#endregion
 
         #region Methods.
 		/// <summary>

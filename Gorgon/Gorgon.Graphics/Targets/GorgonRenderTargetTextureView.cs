@@ -47,7 +47,6 @@ namespace Gorgon.Graphics
         public int MipSlice
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -57,7 +56,6 @@ namespace Gorgon.Graphics
         public int ArrayOrDepthCount
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -67,7 +65,6 @@ namespace Gorgon.Graphics
         public int FirstArrayOrDepthIndex
         {
             get;
-            private set;
         }
         #endregion
 
@@ -195,7 +192,7 @@ namespace Gorgon.Graphics
 
             D3DView = new D3D.RenderTargetView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
             {
-                DebugName = string.Format("{0} '{1}' Render Target View", Resource.ResourceType, Resource.Name)
+                DebugName = $"{Resource.ResourceType} '{Resource.Name}' Render Target View"
             };
         }
 

@@ -102,19 +102,13 @@ namespace Gorgon.Input.Raw
 	        switch (rawInput.Header.Type)
 	        {
 	            case RawInputType.Mouse:
-	                if (RawInputPointingDeviceData != null) 
-	                {
-	                    RawInputPointingDeviceData(new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
-	                                                                                   ref rawInput.Union.Mouse));
-	                }
-	                break;
+			        RawInputPointingDeviceData?.Invoke(new RawInputPointingDeviceEventArgs(rawInput.Header.Device,
+			                                                                               ref rawInput.Union.Mouse));
+			        break;
 	            case RawInputType.Keyboard:
-	                if (RawInputKeyboardData != null)
-	                {
-	                    RawInputKeyboardData(new RawInputKeyboardEventArgs(rawInput.Header.Device,
-	                                                                       ref rawInput.Union.Keyboard));
-	                }
-	                break;
+			        RawInputKeyboardData?.Invoke(new RawInputKeyboardEventArgs(rawInput.Header.Device,
+			                                                                   ref rawInput.Union.Keyboard));
+			        break;
 				default:
 			        return true;
 	        }

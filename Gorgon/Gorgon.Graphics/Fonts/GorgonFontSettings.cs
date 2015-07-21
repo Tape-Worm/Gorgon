@@ -301,7 +301,6 @@ namespace Gorgon.Graphics
 		public Dictionary<GorgonKerningPair, int> KerningPairs
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -313,7 +312,6 @@ namespace Gorgon.Graphics
 		public Dictionary<char, int> Advances
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -327,7 +325,6 @@ namespace Gorgon.Graphics
 		public Dictionary<char, Point> Offsets
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

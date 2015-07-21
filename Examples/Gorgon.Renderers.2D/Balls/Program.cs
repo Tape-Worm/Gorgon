@@ -32,12 +32,12 @@ using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
+using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Gorgon.Graphics;
 using SlimMath;
 
 namespace Gorgon.Examples
@@ -80,7 +80,7 @@ namespace Gorgon.Examples
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException(@"The resource was not specified.", "resourceItem");
+				throw new ArgumentException(@"The resource was not specified.", nameof(resourceItem));
 			}
 
 			path = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -556,15 +556,9 @@ namespace Gorgon.Examples
 		/// </summary>
 		private static void CleanUp()
 		{
-			if (_form != null)
-			{
-				_form.Dispose();
-			}
+			_form?.Dispose();
 
-			if (_graphics != null)
-			{
-				_graphics.Dispose();
-			}
+			_graphics?.Dispose();
 		}
 
 		/// <summary>

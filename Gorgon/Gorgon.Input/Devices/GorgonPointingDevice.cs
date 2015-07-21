@@ -119,13 +119,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the owner window client rectangle.
 		/// </summary>
-		protected Rectangle WindowRectangle
-		{
-			get
-			{
-			    return BoundControl == null ? Rectangle.Empty : new Rectangle(Point.Empty, BoundControl.ClientSize);
-			}
-		}
+		protected Rectangle WindowRectangle => BoundControl == null ? Rectangle.Empty : new Rectangle(Point.Empty, BoundControl.ClientSize);
 
 		/// <summary>
 		/// Property to return information about the keyboard device.

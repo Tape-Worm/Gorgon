@@ -32,7 +32,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using SlimMath;
 
 namespace Gorgon.Editor
 {
@@ -79,35 +78,18 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
-        public override bool HasProperties
-        {
-            get 
-            {
-                return false;
-            }
-        }
+        public override bool HasProperties => false;
 
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
-		public override string ContentType
-		{
-			get
-			{
-				return "Default Content";
-			}		
-		}
+		public override string ContentType => "Default Content";
 
 		/// <summary>
 		/// Property to return whether the content uses a renderer.
 		/// </summary>
-		public override bool HasRenderer
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool HasRenderer => true;
+
 		#endregion
 
 		#region Methods.

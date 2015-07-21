@@ -246,13 +246,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return whether any file system providers are loaded into the application or not.
 		/// </summary>
-		public bool HasFileSystemProviders
-		{
-			get
-			{
-				return _providers.Count > 0;
-			}
-		}
+		public bool HasFileSystemProviders => _providers.Count > 0;
 
 		/// <summary>
 		/// Property to return the default file type for a writer.
@@ -270,29 +264,8 @@ namespace Gorgon.Editor
 		/// This is useful to determining the (1 based) index to assign to a save file dialog if we currently have a file open.
 		/// <para>This value will be 0 if no file is currently loaded, or if no provider could be found for the currently loaded file.</para>
 		/// </remarks>
-		public int WriterCurrentExtensionIndex
-		{
-			get
-			{
-				// TODO: Change this to use the file system writer plug-ins.
-				/*if ((_providers.Count == 0)
-					|| (string.IsNullOrWhiteSpace(CurrentFile)))
-				{
-					return 0;
-				}
+		public int WriterCurrentExtensionIndex => 1;
 
-				string fileExtension = Path.GetExtension(CurrentFile);
-
-				if (string.IsNullOrWhiteSpace(fileExtension))
-				{
-					return 0;
-				}
-
-				var extension = new GorgonFileExtension(Path.GetExtension(CurrentFile));
-				return _providers.Keys.TakeWhile(currentExt => !extension.Equals(currentExt)).Count();*/
-				return 1;
-			}
-		}
 		#endregion
 
 		#region Methods.
@@ -311,12 +284,12 @@ namespace Gorgon.Editor
 		{
 			if (path == null)
 			{
-				throw new ArgumentNullException("path");
+				throw new ArgumentNullException(nameof(path));
 			}
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
 			}
 
 			try
@@ -381,12 +354,12 @@ namespace Gorgon.Editor
 		{
 			if (path == null)
 			{
-				throw new ArgumentNullException("path");
+				throw new ArgumentNullException(nameof(path));
 			}
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+				throw new ArgumentException(Resources.GOREDIT_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
 			}
 
 			path = Path.GetFullPath(path);
@@ -477,7 +450,7 @@ namespace Gorgon.Editor
 			// If no providers are found, then default to "All files".
 			if (_providers.Count == 0)
 			{
-				ReadFileTypes = string.Format("{0}|*.*", Resources.GOREDIT_DLG_ALL_FILES);
+				ReadFileTypes = $"{Resources.GOREDIT_DLG_ALL_FILES}|*.*";
 				return;
 			}
 

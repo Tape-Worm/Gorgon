@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
@@ -74,6 +75,7 @@ namespace Gorgon.IO
 	/// </note>
 	/// </remarks>
 	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
+	[SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable",Justification = "The stream wrapper does not need its dispose method called. Ever.")]
 	public abstract class GorgonChunkFile<T>
 	{
 		#region Constants.
@@ -108,7 +110,6 @@ namespace Gorgon.IO
 		internal GorgonChunkCollection ChunkList
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -117,7 +118,6 @@ namespace Gorgon.IO
 		public GorgonStreamWrapper Stream
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -126,13 +126,8 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// Use this property to determine if a chunk exists when reading a chunk file.
 		/// </remarks>
-		public IGorgonReadOnlyChunkCollection Chunks
-		{
-			get
-			{
-				return ChunkList;
-			}
-		}
+		public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
+
 		#endregion
 
 		#region Methods.
@@ -152,7 +147,7 @@ namespace Gorgon.IO
 			{
 				case ChunkTableID:
 				case FileFormatHeaderIDv0100:
-					throw new ArgumentException(string.Format(Resources.GOR_ERR_CHUNK_RESERVED, chunkId.FormatHex()),"chunkId");
+					throw new ArgumentException(string.Format(Resources.GOR_ERR_CHUNK_RESERVED, chunkId.FormatHex()),nameof(chunkId));
 			}
 		}
 
@@ -281,12 +276,12 @@ namespace Gorgon.IO
 		{
 			if (chunkName == null)
 			{
-				throw new ArgumentNullException("chunkName");
+				throw new ArgumentNullException(nameof(chunkName));
 			}
 
 			if (string.IsNullOrEmpty(chunkName))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "chunkName");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(chunkName));
 			}
 
 			return OpenChunk(chunkName.ChunkID());
@@ -307,12 +302,12 @@ namespace Gorgon.IO
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanSeek)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE,"stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE,nameof(stream));
 			}
 
 			ChunkList = new GorgonChunkCollection();

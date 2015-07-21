@@ -111,7 +111,6 @@ namespace Gorgon.Graphics
 		public GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -120,7 +119,6 @@ namespace Gorgon.Graphics
 		public GorgonShader Shader
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -135,13 +133,8 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the input elements for this layout.
         /// </summary>
-        public IEnumerable<GorgonInputElement> Elements
-        {
-            get
-            {
-                return _elements;
-            }
-        }
+        public IEnumerable<GorgonInputElement> Elements => _elements;
+
 		#endregion
 
 		#region Methods.
@@ -159,7 +152,7 @@ namespace Gorgon.Graphics
 		            element.Index == elementItem.Index && element.Slot == elementItem.Slot))
             {
 				throw new ArgumentException(
-					string.Format(Resources.GORGFX_LAYOUT_ELEMENT_IN_USE, element.Offset, element.Context), "element");
+					string.Format(Resources.GORGFX_LAYOUT_ELEMENT_IN_USE, element.Offset, element.Context), nameof(element));
             }
         }
 
@@ -190,7 +183,7 @@ namespace Gorgon.Graphics
 
 		    if (type == null)
 		    {
-		        throw new ArgumentNullException("type");
+		        throw new ArgumentNullException(nameof(type));
 		    }
 
 		    // Get only properties and fields, and sort by explicit ordering (then by offset).

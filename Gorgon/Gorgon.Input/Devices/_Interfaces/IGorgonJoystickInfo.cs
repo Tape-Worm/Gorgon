@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using Gorgon.Core;
 
@@ -93,7 +92,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// Use this value to retrieve the number of vibration motors the gaming device supports by checking its <see cref="IReadOnlyList{T}.Count"/> property.
+		/// Use this value to retrieve the number of vibration motors the gaming device supports by checking its <see cref="IReadOnlyCollection{T}.Count"/> property.
 		/// </para>
 		/// <para>
 		/// If the device does not support vibration, then this list will be empty.

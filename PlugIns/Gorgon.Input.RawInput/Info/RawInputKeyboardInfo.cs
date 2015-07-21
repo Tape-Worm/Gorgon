@@ -41,47 +41,39 @@ namespace Gorgon.Input.Raw
 		/// </summary>
 		private void GetSystemKeyboardInfo()
 		{
-			int keyboardType = Win32API.GetKeyboardType(0);
+			KeyboardType = Win32API.KeyboardType;
 
-			switch (keyboardType)
+			switch (KeyboardType)
 			{
-				case 1:
-					KeyboardType = KeyboardType.XT;
+				case KeyboardType.XT:
 					KeyCount = 83;
 					IndicatorCount = 3;
 					break;
-				case 2:
-					KeyboardType = KeyboardType.OlivettiICO;
+				case KeyboardType.OlivettiICO:
 					KeyCount = 102;
 					IndicatorCount = 3;
 					break;
-				case 3:
-					KeyboardType = KeyboardType.AT;
+				case KeyboardType.AT:
 					KeyCount = 84;
 					IndicatorCount = 3;
 					break;
-				case 4:
-					KeyboardType = KeyboardType.Enhanced;
+				case KeyboardType.Enhanced:
 					KeyCount = 102;
 					IndicatorCount = 3;
 					break;
-				case 5:
-					KeyboardType = KeyboardType.Nokia1050;
+				case KeyboardType.Nokia1050:
 					KeyCount = -1;
 					IndicatorCount = -1;
 					break;
-				case 6:
-					KeyboardType = KeyboardType.Nokia9140;
+				case KeyboardType.Nokia9140:
 					KeyCount = -1;
 					IndicatorCount = -1;
 					break;
-				case 7:
-					KeyboardType = KeyboardType.Japanese;
+				case KeyboardType.Japanese:
 					KeyCount = -1;
 					IndicatorCount = -1;
 					break;
-				case 81:
-					KeyboardType = KeyboardType.USB;
+				case KeyboardType.USB:
 					KeyCount = -1;
 					IndicatorCount = -1;
 					break;
@@ -92,7 +84,7 @@ namespace Gorgon.Input.Raw
 					break;
 			}
 
-			FunctionKeyCount = Win32API.GetKeyboardType(2);
+			FunctionKeyCount = Win32API.FunctionKeyCount;
 		}
 		#endregion
 
@@ -166,31 +158,23 @@ namespace Gorgon.Input.Raw
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Keyboard;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -200,7 +184,6 @@ namespace Gorgon.Input.Raw
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -209,21 +192,18 @@ namespace Gorgon.Input.Raw
 		public IntPtr Handle
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsage Usage
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public HIDUsagePage UsagePage
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

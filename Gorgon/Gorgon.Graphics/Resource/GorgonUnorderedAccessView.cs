@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.UI;
@@ -110,7 +109,7 @@ namespace Gorgon.Graphics
 
             if (values.Length != 4)
             {
-                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, "values");
+                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, nameof(values));
             }
 
             Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Int4(values));
@@ -156,7 +155,7 @@ namespace Gorgon.Graphics
 
             if (values.Length != 4)
             {
-                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, "values");
+                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, nameof(values));
             }
 
             Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Vector4(values));

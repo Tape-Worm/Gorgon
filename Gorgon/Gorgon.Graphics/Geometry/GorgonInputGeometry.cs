@@ -237,13 +237,7 @@ namespace Gorgon.Graphics
 			/// Property to return the number of available bindings.
 			/// </summary>
 			/// <remarks>On Shader Model 4 with a 4.1 profile and better, the number of bindings available is 32, otherwise it is 16.</remarks>
-			public int Count
-			{
-				get
-				{
-					return _bindings.Length;
-				}
-			}
+			public int Count => _bindings.Length;
 
 			/// <summary>
 			/// Property to set or return the vertex buffer binding for a given slot.
@@ -321,12 +315,12 @@ namespace Gorgon.Graphics
 			{
 				if (name == null)
 				{
-					throw new ArgumentNullException("name");
+					throw new ArgumentNullException(nameof(name));
 				}
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+					throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 				}
 
 				for (int i = 0; i < _bindings.Length; i++)
@@ -362,7 +356,7 @@ namespace Gorgon.Graphics
 			{
 				if (buffer == null)
 				{
-					throw new ArgumentNullException("buffer");
+					throw new ArgumentNullException(nameof(buffer));
 				}
 
 				for (int i = 0; i < _bindings.Length; i++)
@@ -573,12 +567,12 @@ namespace Gorgon.Graphics
 			{
 				if (array == null)
 				{
-					throw new ArgumentNullException("array");
+					throw new ArgumentNullException(nameof(array));
 				}
 
 				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
 				{
-					throw new ArgumentOutOfRangeException("arrayIndex");
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 				}
 
 				int count = (array.Length - arrayIndex).Min(_bindings.Length);
@@ -594,13 +588,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
 			///   </returns>
-			public bool IsReadOnly
-			{
-				get 
-				{
-					return false;
-				}
-			}
+			public bool IsReadOnly => false;
 
 			/// <summary>
 			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -647,7 +635,6 @@ namespace Gorgon.Graphics
 		public VertexBufferBindingList VertexBuffers
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -727,7 +714,7 @@ namespace Gorgon.Graphics
 #if DEBUG
 			if ((buffer != null) && ((offset >= buffer.SizeInBytes) || (offset < 0)))
 			{
-				throw new ArgumentOutOfRangeException("offset", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, offset, buffer.SizeInBytes));
+				throw new ArgumentOutOfRangeException(nameof(offset), string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, offset, buffer.SizeInBytes));
 			}
 #endif
 
@@ -767,12 +754,12 @@ namespace Gorgon.Graphics
 		{
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             if (shader == null)
             {
-                throw new ArgumentNullException("shader");
+                throw new ArgumentNullException(nameof(shader));
             }
 
             var layout = new GorgonInputLayout(_graphics, name, shader);
@@ -815,17 +802,17 @@ namespace Gorgon.Graphics
             
             if (shader == null)
             {
-                throw new ArgumentNullException("shader");
+                throw new ArgumentNullException(nameof(shader));
             }
 
 			if (elements == null)
 			{
-				throw new ArgumentNullException("elements");
+				throw new ArgumentNullException(nameof(elements));
 			}
 
 			if (elements.Count == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "elements");	
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(elements));	
 			}
 
 			var layout = new GorgonInputLayout(_graphics, name, shader);

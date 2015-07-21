@@ -52,7 +52,7 @@ namespace Gorgon.Renderers
         private Matrix _viewProjecton = Matrix.Identity;				// Projection view matrix.
         private Matrix _projection = Matrix.Identity;					// Projection matrix.
         private Matrix _view = Matrix.Identity;							// View matrix.
-        private RectangleF _viewDimensions = RectangleF.Empty;			// View projection dimensions.
+        private RectangleF _viewDimensions;								// View projection dimensions.
         private float _maxDepth;										// Maximum depth.
         private float _minDepth;                                        // Minimum depth.
         private readonly GorgonSprite _cameraIcon;						// Camera icon.
@@ -72,7 +72,6 @@ namespace Gorgon.Renderers
         public Gorgon2D Gorgon2D
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -380,59 +379,29 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the horizontal and vertical aspect ratio for the camera view area.
 		/// </summary>
-		public Vector2 AspectRatio
-		{
-			get
-			{
-				return new Vector2(TargetWidth / (float)TargetHeight, TargetHeight / (float)TargetWidth);
-			}
-		}
-		
-		/// <summary>
+		public Vector2 AspectRatio => new Vector2(TargetWidth / (float)TargetHeight, TargetHeight / (float)TargetWidth);
+
+	    /// <summary>
         /// Property to return the projection matrix for the camera.
         /// </summary>
-        public Matrix Projection
-        {
-            get
-            {
-                return _projection;
-            }
-        }
+        public Matrix Projection => _projection;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the view matrix for the camera.
         /// </summary>
-        public Matrix View
-        {
-            get
-            {
-                return _view;
-            }
-        }
+        public Matrix View => _view;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the combined view and projection matrix.
         /// </summary>
-        public Matrix ViewProjection
-        {
-            get
-            {
-                return _viewProjecton;
-            }
-        }
+        public Matrix ViewProjection => _viewProjecton;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the camera needs updating.
         /// </summary>
-        public bool NeedsUpdate
-        {
-            get
-            {
-                return _needsViewUpdate || _needsProjectionUpdate || _needsUpload;
-            }
-        }
+        public bool NeedsUpdate => _needsViewUpdate || _needsProjectionUpdate || _needsUpload;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the projection view dimensions for the camera.
 		/// </summary>
 		public RectangleF ViewDimensions

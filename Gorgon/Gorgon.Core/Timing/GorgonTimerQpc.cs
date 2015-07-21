@@ -77,13 +77,7 @@ namespace Gorgon.Timing
 		/// <summary>
 		/// Property to return the number of milliseconds elapsed since the timer was started.
 		/// </summary>
-		public double Milliseconds
-		{
-			get
-			{
-				return Microseconds / 1000;
-			}
-		}
+		public double Milliseconds => Microseconds / 1000;
 
 		/// <summary>
 		/// Property to return the number of microseconds elapsed since the timer was started.
@@ -100,46 +94,22 @@ namespace Gorgon.Timing
 		/// <summary>
 		/// Property to return the number of seconds elapsed since the timer was started.
 		/// </summary>
-		public double Seconds
-		{
-			get
-			{
-				return Milliseconds / 1000.0;
-			}
-		}
+		public double Seconds => Milliseconds / 1000.0;
 
 		/// <summary>
 		/// Property to return the number of minutes elapsed since the timer was started.
 		/// </summary>
-		public double Minutes
-		{
-			get
-			{
-				return Seconds / 60.0;
-			}
-		}
+		public double Minutes => Seconds / 60.0;
 
 		/// <summary>
 		/// Property to return the number of hours elapsed since the timer was started.
 		/// </summary>
-		public double Hours
-		{
-			get
-			{
-				return Minutes / 60.0;
-			}
-		}
+		public double Hours => Minutes / 60.0;
 
 		/// <summary>
 		/// Property to return the number of days elapsed since the timer was started.
 		/// </summary>
-		public double Days
-		{
-			get
-			{
-				return Hours / 24.0;
-			}
-		}
+		public double Days => Hours / 24.0;
 
 		/// <summary>
 		/// Property to return the number of ticks since the timer was started.
@@ -156,13 +126,8 @@ namespace Gorgon.Timing
 		/// <summary>
 		/// Property to return whether this timer has a resolution of less than 1 millisecond or not.
 		/// </summary>
-		public bool IsHighResolution
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public bool IsHighResolution => true;
+
 		#endregion
 
 		#region Methods.

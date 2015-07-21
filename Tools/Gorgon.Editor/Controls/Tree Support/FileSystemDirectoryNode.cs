@@ -39,25 +39,13 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Directory;
-			}
-		}
+		public override NodeType NodeType => NodeType.Directory;
 
 		/// <summary>
 		/// Property to return the directory associated with this node.
 		/// </summary>
-		public virtual GorgonFileSystemDirectory Directory
-		{
-			get
-			{
-#warning We need to link this to an editor folder object when we create one.
-				return null; //ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetDirectory(Name);
-			}
-		}
+		public virtual GorgonFileSystemDirectory Directory => null;
+
 		#endregion
 
 		#region Methods.

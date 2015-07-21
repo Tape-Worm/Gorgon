@@ -44,24 +44,13 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the index buffer settings.
 		/// </summary>
-		public new GorgonIndexBufferSettings Settings
-		{
-			get
-			{
-				return (GorgonIndexBufferSettings)base.Settings;
-			}
-		}
+		public new GorgonIndexBufferSettings Settings => (GorgonIndexBufferSettings)base.Settings;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the type of buffer.
         /// </summary>
-        public override BufferType BufferType
-        {
-            get
-            {
-                return BufferType.Index;
-            }
-        }
+        public override BufferType BufferType => BufferType.Index;
+
 		#endregion
 
 		#region Methods.

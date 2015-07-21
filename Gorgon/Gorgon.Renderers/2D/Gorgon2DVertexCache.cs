@@ -62,7 +62,6 @@ namespace Gorgon.Renderers
         public int CacheSize
         {
             get;
-            private set;
         }
 
         /// <summary>

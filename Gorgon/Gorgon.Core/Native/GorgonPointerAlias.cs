@@ -109,12 +109,12 @@ namespace Gorgon.Native
 		{
 			if (pointer == null)
 			{
-				throw new ArgumentNullException("pointer");
+				throw new ArgumentNullException(nameof(pointer));
 			}
 
 			if (size < 1)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, "size");
+				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(size));
 			}
 
 			DataPointer = (byte*)pointer;
@@ -152,12 +152,12 @@ namespace Gorgon.Native
 		{
 			if (pointer == IntPtr.Zero)
 			{
-				throw new ArgumentNullException("pointer");
+				throw new ArgumentNullException(nameof(pointer));
 			}
 
 			if (size < 1)
 			{
-				throw new ArgumentOutOfRangeException("size", Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+				throw new ArgumentOutOfRangeException(nameof(size), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
 			}
 			
 			unsafe

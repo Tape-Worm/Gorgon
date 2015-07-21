@@ -79,31 +79,23 @@ namespace Gorgon.Input.Raw
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType
-		{
-			get
-			{
-				return InputDeviceType.Keyboard;
-			}
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
+
 		#endregion
 
 		#region IGorgonNamedObject Members
@@ -113,7 +105,6 @@ namespace Gorgon.Input.Raw
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -124,7 +115,6 @@ namespace Gorgon.Input.Raw
 		public IntPtr Handle
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -133,7 +123,6 @@ namespace Gorgon.Input.Raw
 		public HIDUsage Usage
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -142,7 +131,6 @@ namespace Gorgon.Input.Raw
 		public HIDUsagePage UsagePage
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -151,21 +139,18 @@ namespace Gorgon.Input.Raw
 		public int ButtonCount
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public int SamplingRate
 		{
 			get;
-			private set;
 		}
 
 		/// <inheritdoc/>
 		public bool HasHorizontalWheel
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

@@ -104,7 +104,6 @@ namespace Gorgon.Graphics
 		internal int Index
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -113,7 +112,6 @@ namespace Gorgon.Graphics
 		public VideoDeviceType VideoDeviceType
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -340,7 +338,7 @@ namespace Gorgon.Graphics
                                             D3D.DeviceCreationFlags.Debug,
                                             D3DCommon.FeatureLevel.Level_11_0)
                     {
-                        DebugName = string.Format("{0} D3D11 Device", Name)
+                        DebugName = $"{Name} D3D11 Device"
                     };
 
                     using (var giDevice = device.QueryInterface<GI.Device1>())
@@ -361,7 +359,7 @@ namespace Gorgon.Graphics
                                             D3D.DeviceCreationFlags.Debug,
                                             GetFeatureLevel(featureLevel))
                     {
-                        DebugName = string.Format("{0} D3D11 Device", Name)
+                        DebugName = $"{Name} D3D11 Device"
                     };
 #else
 		            device = new D3D.Device(D3DCommon.DriverType.Warp,
@@ -382,7 +380,7 @@ namespace Gorgon.Graphics
                                             D3D.DeviceCreationFlags.Debug,
                                             GetFeatureLevel(featureLevel))
                     {
-                        DebugName = string.Format("{0} D3D11 Device", Name)
+                        DebugName = $"{Name} D3D11 Device"
                     };
 #else
                     device = new D3D.Device(adapter, D3D.DeviceCreationFlags.None, GetFeatureLevel(HardwareFeatureLevel));
@@ -804,7 +802,6 @@ namespace Gorgon.Graphics
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

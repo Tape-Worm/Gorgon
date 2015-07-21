@@ -30,7 +30,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.Editor.ImageEditorPlugIn.Controls;
 using Gorgon.Editor.ImageEditorPlugIn.Properties;
 using Gorgon.IO;
@@ -295,12 +294,12 @@ namespace Gorgon.Editor.ImageEditorPlugIn
         {
 	        if (editorFile == null)
 	        {
-		        throw new ArgumentNullException("editorFile");
+		        throw new ArgumentNullException(nameof(editorFile));
 	        }
 
             if (imageDataStream == null)
             {
-                throw new ArgumentNullException("imageDataStream");
+                throw new ArgumentNullException(nameof(imageDataStream));
             }
 
 			GetCodecs();
@@ -320,14 +319,9 @@ namespace Gorgon.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Property to return the content type for this image editor plug-in.
 		/// </summary>
-		public string ContentType
-		{
-			get
-			{
-				return Resources.GORIMG_CONTENT_TYPE;
-			}
-		}
-		#endregion
+		public string ContentType => Resources.GORIMG_CONTENT_TYPE;
+
+	    #endregion
 
 		#region IPlugInSettingsUI Members
 		/// <summary>

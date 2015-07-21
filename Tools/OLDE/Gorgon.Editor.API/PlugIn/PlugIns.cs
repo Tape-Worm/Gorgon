@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics;
@@ -92,36 +91,19 @@ namespace Gorgon.Editor
         /// <summary>
         /// Property to return the list of writer plug-ins.
         /// </summary>
-	    public static IReadOnlyDictionary<string, FileWriterPlugIn> WriterPlugIns
-	    {
-	        get
-	        {
-	            return _writerPlugIns;
-	        }
-	    }
+	    public static IReadOnlyDictionary<string, FileWriterPlugIn> WriterPlugIns => _writerPlugIns;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the list of reader plug-ins.
         /// </summary>
-	    public static IReadOnlyDictionary<string, GorgonFileSystemProviderPlugIn> ReaderPlugIns
-	    {
-	        get
-	        {
-	            return _readerPlugIns;
-	        }
-	    }
+	    public static IReadOnlyDictionary<string, GorgonFileSystemProviderPlugIn> ReaderPlugIns => _readerPlugIns;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the list of content plug-ins.
         /// </summary>
-	    public static IReadOnlyDictionary<string, ContentPlugIn> ContentPlugIns
-	    {
-	        get
-	        {
-	            return _contentPlugIns;
-	        }
-	    }
-        #endregion
+	    public static IReadOnlyDictionary<string, ContentPlugIn> ContentPlugIns => _contentPlugIns;
+
+		#endregion
 
         #region Methods.
         /// <summary>

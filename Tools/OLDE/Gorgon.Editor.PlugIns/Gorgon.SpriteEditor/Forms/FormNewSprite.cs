@@ -45,13 +45,7 @@ namespace Gorgon.Editor.SpriteEditorPlugIn
 		/// <summary>
 		/// Property to return the name of the sprite.
 		/// </summary>
-		public string SpriteName
-		{
-			get
-			{
-				return textName.Text.FormatFileName();
-			}
-		}
+		public string SpriteName => textName.Text.FormatFileName();
 
 		/// <summary>
 		/// Property to return the texture bound to the sprite.

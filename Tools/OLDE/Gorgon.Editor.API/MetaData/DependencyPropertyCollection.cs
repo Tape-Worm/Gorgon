@@ -49,13 +49,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return a dependency property by its index.
 		/// </summary>
-		public DependencyProperty this[int index]
-		{
-			get
-			{
-				return GetItem(index);
-			}
-		}
+		public DependencyProperty this[int index] => GetItem(index);
 
 		/// <summary>
 		/// Property to return a dependency property by its name.
@@ -130,7 +124,7 @@ namespace Gorgon.Editor
 		{
 			if (properties == null)
 			{
-				throw new ArgumentNullException("properties");
+				throw new ArgumentNullException(nameof(properties));
 			}
 
 			foreach (DependencyProperty property in properties)
@@ -193,7 +187,7 @@ namespace Gorgon.Editor
 		{
 			if ((index < 0) || (index >= Count))
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			RemoveItem(index);

@@ -48,13 +48,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to return the size of the vertex, in bytes.
 		/// </summary>
-		public static int Size
-		{
-			get
-			{
-				return DirectAccess.SizeOf<BoingerVertex>();
-			}
-		}
+		public static int Size => DirectAccess.SizeOf<BoingerVertex>();
 
 		/// <summary>
 		/// Vertex position.
@@ -547,10 +541,7 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
-				if (Graphics != null)
-				{
-					Graphics.Dispose();
-				}
+				Graphics?.Dispose();
 			}
 		}
 	}

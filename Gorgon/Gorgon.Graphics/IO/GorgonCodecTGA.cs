@@ -325,26 +325,14 @@ namespace Gorgon.IO
 	    /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats
-        {
-            get
-            {
-                return _supportedFormats;
-            }
-        }
+        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return whether the image codec supports block compression.
 		/// </summary>
-		public override bool SupportsBlockCompression
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool SupportsBlockCompression => false;
 
-        /// <summary>
+	    /// <summary>
 		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.
 		/// </summary>
 		/// <remarks>Setting this to <b>true</b> will set all alpha values to an opaque value if the image does not contain an alpha value greater than 0 for any pixel.
@@ -361,61 +349,32 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the friendly description of the format.
 		/// </summary>
-		public override string CodecDescription
-		{
-			get 
-			{
-				return Resources.GORGFX_IMAGE_TGA_CODEC_DESC;
-			}
-		}
+		public override string CodecDescription => Resources.GORGFX_IMAGE_TGA_CODEC_DESC;
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the abbreviated name of the codec (e.g. PNG).
 		/// </summary>
-		public override string Codec
-		{
-			get 
-			{
-				return "TGA";
-			}
-		}
-		#endregion
+		public override string Codec => "TGA";
+
+	    #endregion
 
 		#region Methods.
         /// <summary>
         /// Property to return whether the image codec supports image arrays.
         /// </summary>
-        public override bool SupportsArray
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsArray => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
-        public override bool SupportsMipMaps
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsMipMaps => false;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return whether the image codec supports a depth component for volume textures.
         /// </summary>
-        public override bool SupportsDepth
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool SupportsDepth => false;
 
-        /// <summary>
+	    /// <summary>
 		/// Function to read in the DDS header from a stream.
 		/// </summary>
 		/// <param name="stream">Stream containing the data.</param>
@@ -1212,7 +1171,7 @@ namespace Gorgon.IO
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)
@@ -1270,7 +1229,7 @@ namespace Gorgon.IO
 
 			if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!stream.CanRead)

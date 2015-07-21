@@ -515,12 +515,7 @@ namespace Gorgon.UI
 		/// </summary>
 		protected void OnPropertyChanged()
 		{
-			if (PropertyChanged == null)
-			{
-				return;
-			}
-
-			PropertyChanged(this, EventArgs.Empty);
+			PropertyChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -872,12 +867,12 @@ namespace Gorgon.UI
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanRead)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
 			}
 
 			if (stream.Position >= stream.Length)
@@ -899,12 +894,12 @@ namespace Gorgon.UI
 		{
 			if (stream == null)
 			{
-				throw new ArgumentNullException("stream");
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			if (!stream.CanWrite)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(stream));
 			}
 
 			var serializer = new XmlSerializer(typeof(GorgonFlatFormTheme));

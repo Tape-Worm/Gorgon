@@ -51,13 +51,7 @@ namespace Gorgon.Graphics.Example
 		/// <summary>
 		/// Property to return the world matrix.
 		/// </summary>
-		protected Matrix WorldMatrix
-		{
-			get
-			{
-				return _worldMatrix;
-			}			
-		}
+		protected Matrix WorldMatrix => _worldMatrix;
 
 		/// <summary>
 		/// Property to set or return the vertices for our object.

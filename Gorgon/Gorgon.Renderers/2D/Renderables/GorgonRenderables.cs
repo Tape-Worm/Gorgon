@@ -70,12 +70,12 @@ namespace Gorgon.Renderers
 
 		    if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 		    var result = (T)(Activator.CreateInstance(type,
@@ -112,7 +112,7 @@ namespace Gorgon.Renderers
 		{
             if (data == null)
             {
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             }
 			
 			using (var stream = new MemoryStream(data))
@@ -143,12 +143,12 @@ namespace Gorgon.Renderers
 		{
             if (filePath == null)
             {
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
             }
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(filePath));
             }
 
 			using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -215,12 +215,12 @@ namespace Gorgon.Renderers
 		{
 		    if (name == null)
 		    {
-		        throw new ArgumentNullException("name");
+		        throw new ArgumentNullException(nameof(name));
 		    }
 
 		    if (string.IsNullOrWhiteSpace(name))
 		    {
-		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 		    }
 
 			var result = new GorgonText(_gorgon2D, _cache, name, font)
@@ -250,12 +250,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 			return new GorgonSprite(_gorgon2D, name)
@@ -376,12 +376,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 		    var result = new GorgonTriangle(_gorgon2D, name)
@@ -410,12 +410,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             return new GorgonRectangle(_gorgon2D, name, filled)
@@ -456,12 +456,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 			return new GorgonLine(_gorgon2D, name)
@@ -486,12 +486,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 		    return new GorgonPoint(_gorgon2D, name)
@@ -517,12 +517,12 @@ namespace Gorgon.Renderers
 		{
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 		    return new GorgonEllipse(_gorgon2D, name)
@@ -596,12 +596,12 @@ namespace Gorgon.Renderers
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			var result = new GorgonPolygon(_gorgon2D, name, type)

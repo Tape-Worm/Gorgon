@@ -125,13 +125,7 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the clipping region.
 		/// </summary>
-		private RectangleF ClipRegion
-		{
-			get
-			{
-				return _textRect == null ? (RectangleF)Gorgon2D.DefaultViewport : _textRect.Value;
-			}
-		}
+		private RectangleF ClipRegion => _textRect == null ? (RectangleF)Gorgon2D.DefaultViewport : _textRect.Value;
 
 		/// <summary>
 		/// Property to set or return whether to allow the embedding of different colors in the <see cref="Text"/>.
@@ -409,7 +403,6 @@ namespace Gorgon.Renderers
 		public Gorgon2D Gorgon2D
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -1542,86 +1535,44 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the number of vertices for the renderable.
 		/// </summary>
-		int IRenderable.VertexCount
-		{
-			get
-			{
-				return _vertexCount;
-			}
-		}
+		int IRenderable.VertexCount => _vertexCount;
 
 		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
 		/// <value></value>
-		PrimitiveType IRenderable.PrimitiveType
-		{
-			get
-			{
-				return PrimitiveType.TriangleList;
-			}
-		}
+		PrimitiveType IRenderable.PrimitiveType => PrimitiveType.TriangleList;
 
 		/// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This is only matters when the renderable uses an index buffer.</remarks>
-		int IRenderable.IndexCount
-		{
-			get
-			{
-				return 6;
-			}
-		}
+		int IRenderable.IndexCount => 6;
 
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
 		/// <value></value>
-		GorgonVertexBufferBinding IRenderable.VertexBufferBinding
-		{
-			get
-			{
-				return Gorgon2D.DefaultVertexBufferBinding;
-			}
-		}
+		GorgonVertexBufferBinding IRenderable.VertexBufferBinding => Gorgon2D.DefaultVertexBufferBinding;
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
 		/// <value></value>
-		GorgonIndexBuffer IRenderable.IndexBuffer
-		{
-			get
-			{
-				return Gorgon2D.DefaultIndexBuffer;
-			}
-		}
+		GorgonIndexBuffer IRenderable.IndexBuffer => Gorgon2D.DefaultIndexBuffer;
 
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
 		/// <value></value>
-		Gorgon2DVertex[] IRenderable.Vertices
-		{
-			get
-			{
-				return _vertices;
-			}
-		}
+		Gorgon2DVertex[] IRenderable.Vertices => _vertices;
 
 		/// <summary>
 		/// Property to return the number of vertices to add to the base starting index.
 		/// </summary>
 		/// <value></value>
-		int IRenderable.BaseVertexCount
-		{
-			get
-			{
-				return 0;
-			}
-		}
+		int IRenderable.BaseVertexCount => 0;
 
 		/// <summary>
 		/// Property to set or return depth/stencil buffer states for this renderable.
@@ -2091,24 +2042,13 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the number of vertices to process.
 		/// </summary>
-		int I2DCollisionObject.VertexCount
-		{
-			get
-			{
-				return _colliderVertexCount;
-			}
-		}
+		int I2DCollisionObject.VertexCount => _colliderVertexCount;
 
 		/// <summary>
 		/// Property to return the list of vertices associated with the object.
 		/// </summary>
-		Gorgon2DVertex[] I2DCollisionObject.Vertices
-		{
-			get
-			{
-				return _vertices;
-			}
-		}
+		Gorgon2DVertex[] I2DCollisionObject.Vertices => _vertices;
+
 		#endregion
 	}
 }

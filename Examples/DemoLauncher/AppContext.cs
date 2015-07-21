@@ -118,10 +118,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				if (_splash != null)
-				{
-					_splash.Dispose();
-				}
+				_splash?.Dispose();
 				_splash = null;
 			}
 		}

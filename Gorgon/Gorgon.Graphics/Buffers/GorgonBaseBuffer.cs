@@ -129,7 +129,6 @@ namespace Gorgon.Graphics
         private D3D.CpuAccessFlags D3DCPUAccessFlags
         {
             get;
-            set;
         }
 
         /// <summary>
@@ -138,7 +137,6 @@ namespace Gorgon.Graphics
         private D3D.ResourceUsage D3DUsage
         {
             get;
-            set;
         }
 
 		/// <summary>
@@ -162,26 +160,14 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the type of data in the resource.
         /// </summary>
-        public override ResourceType ResourceType
-        {
-            get
-            {
-                return ResourceType.Buffer;
-            }
-        }
+        public override ResourceType ResourceType => ResourceType.Buffer;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the size of the resource, in bytes.
         /// </summary>
-        public override int SizeInBytes
-        {
-            get
-            {
-                return Settings.SizeInBytes;
-            }
-        }
+        public override int SizeInBytes => Settings.SizeInBytes;
 
-        /// <summary>
+	    /// <summary>
         /// Property to return the type of buffer.
         /// </summary>
         public abstract BufferType BufferType
@@ -195,7 +181,6 @@ namespace Gorgon.Graphics
         public IBufferSettings Settings
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -414,7 +399,7 @@ namespace Gorgon.Graphics
 #if DEBUG
             if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
             {
-                throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
+                throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, nameof(lockFlags));
             }
 #endif
             DX.DataStream lockStream;
@@ -494,7 +479,7 @@ namespace Gorgon.Graphics
             {
                 if (format == BufferFormat.Unknown)
                 {
-                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
+                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, nameof(format));
                 }
 
                 if (Settings.AllowRawViews)
@@ -621,7 +606,7 @@ namespace Gorgon.Graphics
             {
                 if (format == BufferFormat.Unknown)
                 {
-                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
+                    throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, nameof(format));
                 }
 
                 // Ensure the size of the data type fits the requested format.
@@ -775,7 +760,7 @@ namespace Gorgon.Graphics
 #if DEBUG
             if (buffer.SizeInBytes != SizeInBytes)
             {
-                throw new ArgumentException(Resources.GORGFX_BUFFER_SIZE_MISMATCH, "buffer");
+                throw new ArgumentException(Resources.GORGFX_BUFFER_SIZE_MISMATCH, nameof(buffer));
             }
 
             if (Settings.Usage == BufferUsage.Immutable)
@@ -1024,14 +1009,14 @@ namespace Gorgon.Graphics
 				|| ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard))
 				&& ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
 			{
-				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
+				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, nameof(lockFlags));
 			}
 
 	        if ((deferred != null) && (deferred.IsDeferred)
 				&& (((lockFlags & BufferLockFlags.NoOverwrite) != BufferLockFlags.NoOverwrite)
 					|| ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)))
 	        {
-		        throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
+		        throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, nameof(lockFlags));
 	        }
 #endif
 

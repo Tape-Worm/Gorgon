@@ -135,7 +135,7 @@ namespace Gorgon.UI
 					errorText.AppendFormat("\n{0}:  {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
 				}
 
-				if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
+				if (nextException.TargetSite?.DeclaringType != null)
 				{
 					errorText.AppendFormat("\n{0}:  {1}.{2}",
 										   Resources.GOR_EXCEPT_TARGET_SITE,
@@ -221,7 +221,7 @@ namespace Gorgon.UI
 		{
 			if (string.IsNullOrEmpty(message))
 			{
-				message = exception != null ? exception.Message : Resources.GOR_EXCEPT_NO_MSG;
+				message = exception?.Message ?? Resources.GOR_EXCEPT_NO_MSG;
 			}
 
 			ErrorBox(owner, message, caption, GetDetailsFromException(exception), autoShowDetails);
@@ -288,10 +288,7 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-				if (errorDialog != null)
-				{
-					errorDialog.Dispose();
-				}
+				errorDialog?.Dispose();
 			}
 		}
 
@@ -336,10 +333,7 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-			    if (dialog != null)
-			    {
-			        dialog.Dispose();
-			    }
+				dialog?.Dispose();
 			}
 		}
 
@@ -388,10 +382,7 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-				if (warningDialog != null)
-				{
-					warningDialog.Dispose();
-				}
+				warningDialog?.Dispose();
 			}
 		}
 
@@ -445,10 +436,7 @@ namespace Gorgon.UI
 			}
 			finally
 			{
-				if (confirm != null)
-				{
-					confirm.Dispose();
-				}
+				confirm?.Dispose();
 			}
 
 			return result;

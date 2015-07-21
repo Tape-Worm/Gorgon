@@ -53,13 +53,7 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Property to return the list of items in the underlying collection.
 		/// </summary>
-		protected IDictionary<string, T> Items
-		{
-			get
-			{
-				return _list;
-			}
-		}
+		protected IDictionary<string, T> Items => _list;
 
 		/// <summary>
 		/// Property to return whether the keys are case sensitive.
@@ -67,7 +61,6 @@ namespace Gorgon.Collections
 		public bool KeysAreCaseSensitive
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -198,24 +191,12 @@ namespace Gorgon.Collections
 		/// <returns>
 		/// The number of elements contained in the dictionary.
 		/// </returns>
-		public int Count
-		{
-			get
-			{
-				return _list.Count;
-			}
-		}
+		public int Count => _list.Count;
 
 		/// <summary>
 		/// Property to return whether the collection is read-only or not.
 		/// </summary>
-		bool ICollection<T>.IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection<T>.IsReadOnly => false;
 
 		/// <summary>
 		/// Adds an item to the dictionary.
@@ -286,13 +267,7 @@ namespace Gorgon.Collections
 		/// <b>true</b> if this instance is read only; otherwise, <b>false</b>.
 		/// </value>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public bool IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public bool IsReadOnly => false;
 
 		/// <summary>
 		/// Property to set or return an item in the dictionary by its name.
@@ -336,12 +311,12 @@ namespace Gorgon.Collections
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (!Contains(name))
@@ -357,13 +332,8 @@ namespace Gorgon.Collections
 		/// <summary>
 		/// Property to set or return an item in the dictionary by its name.
 		/// </summary>
-		T IGorgonNamedObjectReadOnlyDictionary<T>.this[string name]
-		{
-			get
-			{
-				return _list[name];
-			}
-		}
+		T IGorgonNamedObjectReadOnlyDictionary<T>.this[string name] => _list[name];
+
 		#endregion
 	}
 }

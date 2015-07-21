@@ -171,12 +171,12 @@ namespace Gorgon.Graphics
 		{
 			if (parameterName == null)
 			{
-				throw new ArgumentNullException("parameterName");
+				throw new ArgumentNullException(nameof(parameterName));
 			}
 
 			if (string.IsNullOrWhiteSpace(parameterName))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "parameterName");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(parameterName));
 			}
 
 			Name = parameterName;
@@ -188,13 +188,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the name of the parameter.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get
-			{
-				return Name;
-			}
-		}
+		string IGorgonNamedObject.Name => Name;
+
 		#endregion
 
 		#region IEquatable<GorgonEffectParameter> Members

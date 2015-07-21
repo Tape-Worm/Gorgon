@@ -38,13 +38,7 @@ namespace Gorgon.Editor
 		/// <summary>
 		/// Property to return the type of node.
 		/// </summary>
-		public override NodeType NodeType
-		{
-			get
-			{
-				return NodeType.Root;
-			}
-		}
+		public override NodeType NodeType => NodeType.Root;
 
 		/// <summary>
 		/// Gets or sets the text displayed in the label of the tree node.

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Gorgon.Input.Properties;
 
@@ -60,13 +61,8 @@ namespace Gorgon.Input
 
 		#region IGorgonJoystickAxisList Members
 		/// <inheritdoc/>
-		public IGorgonJoystickAxis this[JoystickAxis axis]
-		{
-			get
-			{
-				return _axes[axis];
-			}
-		}
+		public IGorgonJoystickAxis this[JoystickAxis axis] => _axes[axis];
+
 		#endregion
 
 		#region IReadOnlyList<IGorgonJoystickAxis> Members
@@ -78,7 +74,7 @@ namespace Gorgon.Input
 #if DEBUG
 				if ((index < 0) || (index >= _axisList.Count))
 				{
-					throw new ArgumentOutOfRangeException("index", Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
+					throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
 				}
 #endif
 				return _axes[_axisList[index]];
@@ -88,13 +84,7 @@ namespace Gorgon.Input
 
 		#region IReadOnlyCollection<IGorgonJoystickAxis> Members
 		/// <inheritdoc/>
-		public int Count
-		{
-			get
-			{
-				return _axisList.Count;
-			}
-		}
+		public int Count => _axisList.Count;
 
 		#endregion
 
@@ -109,9 +99,9 @@ namespace Gorgon.Input
 
 		#region IEnumerable Members
 		/// <inheritdoc/>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return ((System.Collections.IEnumerable)_axes.Values).GetEnumerator();
+			return ((IEnumerable)_axes.Values).GetEnumerator();
 		}
 		#endregion
 	}

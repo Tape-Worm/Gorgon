@@ -37,26 +37,21 @@ namespace Gorgon.Examples
 	class TextMultiColorWriter
 		: TextColorWriter
 	{
-        private readonly ConsoleColor _color = ConsoleColor.Black;           // Our color.
-
 		/// <summary>
 		/// We'll use this property to advertise the text color.
 		/// </summary>
 		public override ConsoleColor TextColor
 		{
-			get
-			{
-				return _color;
-			}
+			get;
 		}
 
-        /// <summary>
+		/// <summary>
         /// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
         /// </summary>
         /// <param name="color">The color to use when printing the text.</param>
 	    public TextMultiColorWriter(ConsoleColor color)
 	    {
-	        _color = color;
+	        TextColor = color;
 	    }
 	}
 }

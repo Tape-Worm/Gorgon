@@ -164,7 +164,6 @@ namespace Gorgon.Renderers
 		internal GorgonDisposableObjectCollection TrackedObjects
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -182,19 +181,12 @@ namespace Gorgon.Renderers
 	    public Gorgon2DOrthoCamera DefaultCamera
 	    {
 	        get;
-	        private set;
 	    }
 
 		/// <summary>
 		/// Property to return our default vertex buffer binding.
 		/// </summary>
-		public GorgonVertexBufferBinding DefaultVertexBufferBinding
-		{
-			get
-			{
-				return _defaultVertexBuffer;
-			}
-		}
+		public GorgonVertexBufferBinding DefaultVertexBufferBinding => _defaultVertexBuffer;
 
 		/// <summary>
 		/// Property to return our default index buffer.
@@ -240,14 +232,8 @@ namespace Gorgon.Renderers
 		/// Property to return the default view port.
 		/// </summary>
 		/// <remarks>This returns the default viewport that is bound to the currently active render target.</remarks>
-		public GorgonViewport DefaultViewport
-		{
-			get
-			{
-				return _currentTarget.Target == null ? _defaultTarget.Viewport : _currentTarget.Viewport;
-			}
-		}
-        
+		public GorgonViewport DefaultViewport => _currentTarget.Target == null ? _defaultTarget.Viewport : _currentTarget.Viewport;
+
 		/// <summary>
 		/// Property to return the default render target view.
 		/// </summary>
@@ -290,7 +276,6 @@ namespace Gorgon.Renderers
 		public GorgonDrawing Drawing
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -459,7 +444,6 @@ namespace Gorgon.Renderers
 		public GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -977,12 +961,12 @@ namespace Gorgon.Renderers
 		{
 		    if (name == null)
 		    {
-		        throw new ArgumentNullException("name");
+		        throw new ArgumentNullException(nameof(name));
 		    }
 
 		    if (string.IsNullOrWhiteSpace(name))
 		    {
-		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 		    }
 
 			if (viewDimensions == null)
@@ -1083,12 +1067,12 @@ namespace Gorgon.Renderers
 #if DEBUG
 			if (targets == null)
 			{
-				throw new ArgumentNullException("targets");
+				throw new ArgumentNullException(nameof(targets));
 			}
 
 			if (targets.Length == 0)
 			{
-				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "targets");	
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, nameof(targets));	
 			}
 #endif
 			// Bind the first target as our primary target so that clipping states and other 

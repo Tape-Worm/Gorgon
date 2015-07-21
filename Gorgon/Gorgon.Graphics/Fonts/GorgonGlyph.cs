@@ -45,7 +45,6 @@ namespace Gorgon.Graphics
 		public char Character
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -149,7 +148,7 @@ namespace Gorgon.Graphics
 		{
 			if (texture == null)
 			{
-				throw new ArgumentNullException("texture");
+				throw new ArgumentNullException(nameof(texture));
 			}
 
 			Character = character;
@@ -169,13 +168,8 @@ namespace Gorgon.Graphics
 		/// Property to return the name of this object.
 		/// </summary>
 		/// <value></value>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Character.ToString(CultureInfo.CurrentCulture);
-			}
-		}
+		string IGorgonNamedObject.Name => Character.ToString(CultureInfo.CurrentCulture);
+
 		#endregion
 	}
 }

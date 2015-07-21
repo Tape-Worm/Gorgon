@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Core;
 using Gorgon.Input.Properties;
 
 namespace Gorgon.Input
@@ -49,7 +48,6 @@ namespace Gorgon.Input
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -58,7 +56,6 @@ namespace Gorgon.Input
 		public string HumanInterfaceDevicePath
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -67,7 +64,6 @@ namespace Gorgon.Input
 		public virtual string ClassName
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -84,7 +80,6 @@ namespace Gorgon.Input
 		public InputDeviceType InputDeviceType
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -97,7 +92,7 @@ namespace Gorgon.Input
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("{0}: {1}", InputDeviceType, Name);
+			return $"{InputDeviceType}: {Name}";
 		}
 		#endregion
 
@@ -115,32 +110,32 @@ namespace Gorgon.Input
 		{
 			if (name == null)
 			{
-				throw new ArgumentNullException("name");
+				throw new ArgumentNullException(nameof(name));
 			}
 
 			if (className == null)
 			{
-				throw new ArgumentNullException("className");
+				throw new ArgumentNullException(nameof(className));
 			}
 
 			if (hidPath == null)
 			{
-				throw new ArgumentNullException("hidPath");
+				throw new ArgumentNullException(nameof(hidPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 		    if (string.IsNullOrWhiteSpace(className))
 		    {
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "className");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(className));
 		    }
 
 		    if (string.IsNullOrWhiteSpace(hidPath))
 		    {
-				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "hidPath");
+				throw new ArgumentException(Resources.GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(hidPath));
 		    }
 
 			Name = name;
@@ -158,7 +153,6 @@ namespace Gorgon.Input
 		public string Name
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

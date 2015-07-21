@@ -75,7 +75,7 @@ namespace Gorgon.Editor
 	    private void LocalizeControls()
         {
             Text = APIResources.GOREDIT_TEXT_PICK_ALPHA;
-            labelAlpha.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_ALPHA);
+            labelAlpha.Text = $"{APIResources.GOREDIT_TEXT_ALPHA}:";
             labelOldAlpha.Text = APIResources.GOREDIT_TEXT_OLD_ALPHA;
             labelNewAlpha.Text = APIResources.GOREDIT_TEXT_NEW_ALPHA;
             buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;

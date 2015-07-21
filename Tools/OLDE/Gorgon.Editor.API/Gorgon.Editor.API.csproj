@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GorgonLibrary.Editor</RootNamespace>
     <AssemblyName>Gorgon.Editor.API</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -109,9 +109,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\EditorTreeNode.cs" />
-    <Compile Include="Controls\EditorTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Controls\EditorTreeView.cs" />
     <Compile Include="Forms\ColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>

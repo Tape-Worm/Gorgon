@@ -221,10 +221,7 @@ namespace Gorgon.IO
 			}
 			finally
 			{
-				if (reader != null)
-				{
-					reader.Dispose();
-				}
+				reader?.Dispose();
 			}
 
 			_activeReader = new GorgonBinaryReader(new GorgonStreamWrapper(Stream, 0, _activeChunk.Size), true);
@@ -266,19 +263,19 @@ namespace Gorgon.IO
 
 			if (!Stream.CanRead)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, "stream");
+				throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
 			}
 
 			if (appSpecificIds == null)
 			{
-				throw new ArgumentNullException("appSpecificIds");
+				throw new ArgumentNullException(nameof(appSpecificIds));
 			}
 
 			_appSpecificIds = new HashSet<ulong>(appSpecificIds.Distinct().OrderByDescending(item => item));
 
 			if (_appSpecificIds.Count == 0)
 			{
-				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "appSpecificIds");
+				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(appSpecificIds));
 			}
 
 			Mode = ChunkFileMode.Read;

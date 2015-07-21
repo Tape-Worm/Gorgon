@@ -197,12 +197,12 @@ namespace Gorgon.Graphics
 		{
             if (GorgonBufferFormatInfo.GetInfo(format).BitDepth == 0)
             {
-	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), "format");
+	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), nameof(format));
             }
 
             if ((slot < 0) || (slot > 15))
             {
-				throw new ArgumentOutOfRangeException("slot", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 16));
+				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 16));
             }
             
             Context = context;
@@ -230,13 +230,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Context;
-			}
-		}
+		string IGorgonNamedObject.Name => Context;
+
 		#endregion
 
 		#region IEquatable<GorgonInputElement> Members

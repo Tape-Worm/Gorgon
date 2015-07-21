@@ -25,4 +25,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly", Scope = "type", Target = "Gorgon.IO.GorgonChunkWriter")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.IO.GorgonChunkFileWriter")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Scope = "type", Target = "Gorgon.IO.GorgonChunkFileReader")]
-[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1", Scope = "member", Target = "Gorgon.Math.GorgonCatmullRomSpline.#GetInterpolatedValue(System.Int32,System.Single)")]
+[assembly: SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1", Scope = "member", Target = "Gorgon.Math.GorgonCatmullRomSpline.#GetInterpolatedValue(System.Int32,System.Single)")]

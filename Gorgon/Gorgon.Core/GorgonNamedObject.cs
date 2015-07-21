@@ -76,12 +76,12 @@ namespace Gorgon.Core
 		{
 			if (name == null)
 			{
-			    throw new ArgumentNullException("name");
+			    throw new ArgumentNullException(nameof(name));
 			}
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 			_name = name;

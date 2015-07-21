@@ -64,13 +64,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether the shader is a binary object or not.
 		/// </summary>
-		public bool IsBinary
-		{
-			get
-			{
-				return (string.IsNullOrEmpty(SourceCode)) && (D3DByteCode != null);
-			}
-		}
+		public bool IsBinary => (string.IsNullOrEmpty(SourceCode)) && (D3DByteCode != null);
 
 		/// <summary>
 		/// Property to set or return whether to include debug information in the shader or not.
@@ -91,7 +85,6 @@ namespace Gorgon.Graphics
 		public ShaderType ShaderType
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -100,7 +93,6 @@ namespace Gorgon.Graphics
 		public string EntryPoint
 		{
 			get;
-			private set;
 		}
 		
 		/// <summary>
@@ -109,7 +101,6 @@ namespace Gorgon.Graphics
 		public GorgonGraphics Graphics
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -498,7 +489,7 @@ namespace Gorgon.Graphics
 
 		    if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
 		    {
-		        throw new ArgumentException(Resources.GORGFX_SHADER_NO_CODE, "binary");
+		        throw new ArgumentException(Resources.GORGFX_SHADER_NO_CODE, nameof(binary));
 		    }
 
 		    if (!binary)

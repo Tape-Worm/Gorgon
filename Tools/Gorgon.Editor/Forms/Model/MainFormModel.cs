@@ -58,7 +58,6 @@ namespace Gorgon.Editor
 		public GorgonLogFile LogFile
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -67,7 +66,6 @@ namespace Gorgon.Editor
 		public IEditorSettings EditorSettings
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -76,7 +74,6 @@ namespace Gorgon.Editor
 		public string WindowText
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

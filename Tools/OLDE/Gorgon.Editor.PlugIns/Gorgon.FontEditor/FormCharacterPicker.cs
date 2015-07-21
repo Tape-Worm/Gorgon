@@ -121,9 +121,7 @@ namespace Gorgon.Editor.FontEditorPlugIn
 				scrollVertical.Value = 0;
 			    if (listRanges.SelectedItems.Count > 0)
 			    {
-			        buttonSelectAll.Text = string.Format("{0} {1}",
-			                                             Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF,
-			                                             listRanges.SelectedItems[0].SubItems[1].Text);
+			        buttonSelectAll.Text = $"{Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF} {listRanges.SelectedItems[0].SubItems[1].Text}";
 			    }
 
 			    GetCharacterSets();
@@ -171,14 +169,11 @@ namespace Gorgon.Editor.FontEditorPlugIn
 
 		    if (string.IsNullOrEmpty(name))
 		    {
-		        name = string.Format("'{0}'", check.Text);
+		        name = $"'{check.Text}'";
 		    }
 
 		    tipChar.SetToolTip(check,
-		                       string.Format("U+0x{0} ({1}, {2})",
-		                                     Convert.ToUInt16(check.Text[0]).FormatHex(),
-		                                     Convert.ToUInt16(check.Text[0]),
-		                                     name));
+		                       $"U+0x{Convert.ToUInt16(check.Text[0]).FormatHex()} ({Convert.ToUInt16(check.Text[0])}, {name})");
 		}
 
 		/// <summary>
@@ -462,10 +457,10 @@ namespace Gorgon.Editor.FontEditorPlugIn
 	    private void LocalizeForm()
         {
             Text = Resources.GORFNT_DLG_CHARACTER_PICKER_CAPTION;
-            labelCharacters.Text = string.Format("{0}:", Resources.GORFNT_TEXT_CHARACTERS);
+            labelCharacters.Text = $"{Resources.GORFNT_TEXT_CHARACTERS}:";
             buttonOK.Text = Resources.GORFNT_ACC_TEXT_OK;
             buttonCancel.Text = Resources.GORFNT_ACC_TEXT_CANCEL;
-            buttonSelectAll.Text = string.Format("{0} ???", Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF);
+            buttonSelectAll.Text = $"{Resources.GORFNT_ACC_TEXT_SELECT_ALL_OF} ???";
         }
 
 		/// <summary>

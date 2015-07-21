@@ -219,7 +219,7 @@ namespace Gorgon.Editor
         /// </summary>
 	    private void LocalizeControls()
         {
-            labelValueCaption.Text = string.Format("{0}:", APIResources.GOREDIT_TEXT_VALUE);
+            labelValueCaption.Text = $"{APIResources.GOREDIT_TEXT_VALUE}:";
             buttonOK.Text = APIResources.GOREDIT_ACC_TEXT_OK;
             buttonCancel.Text = APIResources.GOREDIT_ACC_TEXT_CANCEL;
         }

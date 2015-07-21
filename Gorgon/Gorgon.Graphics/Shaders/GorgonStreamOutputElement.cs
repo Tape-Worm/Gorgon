@@ -192,27 +192,27 @@ namespace Gorgon.Graphics
 		{
 			if (context == null)
 			{
-				throw new ArgumentNullException("context");
+				throw new ArgumentNullException(nameof(context));
 			}
 
 			if (string.IsNullOrWhiteSpace(context))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "context");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(context));
 			}
 
             if ((slot < 0) || (slot > 3))
             {
-				throw new ArgumentOutOfRangeException("slot", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 4));
+				throw new ArgumentOutOfRangeException(nameof(slot), string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 4));
             }
 
 			if ((startComponent < 0) || (startComponent > 3))
 			{
-				throw new ArgumentOutOfRangeException("startComponent", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 4));
+				throw new ArgumentOutOfRangeException(nameof(startComponent), string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 4));
 			}
 
 			if ((componentCount < 1) || (componentCount > 4))
 			{
-				throw new ArgumentOutOfRangeException("componentCount");
+				throw new ArgumentOutOfRangeException(nameof(componentCount));
 			}
 
 			Stream = stream;
@@ -228,13 +228,8 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the name of this object.
 		/// </summary>
-		string IGorgonNamedObject.Name
-		{
-			get 
-			{
-				return Context;
-			}
-		}
+		string IGorgonNamedObject.Name => Context;
+
 		#endregion
 
 		#region IEquatable<GorgonStreamOutputElement> Members

@@ -97,25 +97,14 @@ namespace Gorgon.IO
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <value>The count.</value>
-		public int Count
-		{
-			get
-			{
-				return _list.Count;
-			}
-		}
+		public int Count => _list.Count;
 
 		/// <summary>
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
 		/// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
-		bool ICollection<IGorgonChunk>.IsReadOnly
-		{
-			get
-			{
-				return false;
-			}
-		}
+		bool ICollection<IGorgonChunk>.IsReadOnly => false;
+
 		#endregion
 
 		#region Methods.

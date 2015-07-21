@@ -205,13 +205,8 @@ namespace Gorgon.Renderers
 		/// <summary>
 		/// Property to return the resulting blurred image data as a texture.
 		/// </summary>
-		public GorgonTexture2D Output
-		{
-			get
-			{
-				return _vTarget;
-			}
-		}
+		public GorgonTexture2D Output => _vTarget;
+
 		#endregion
 
 		#region Methods.

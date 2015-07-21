@@ -75,7 +75,7 @@ namespace Gorgon.IO.GorPack
 		#endregion
 
 		#region Variables.
-        private readonly string _description = string.Empty;                        // Description of the provider.
+        private readonly string _description;										// Description of the provider.
 		private IDictionary<string, CompressedFileEntry> _compressedFiles;			// List of compressed files.
 		#endregion
 
@@ -83,14 +83,9 @@ namespace Gorgon.IO.GorPack
         /// <summary>
         /// Property to return a description of the file system provider.
         /// </summary>        
-        public override string Description
-        {
-            get
-            {
-                return _description;
-            }
-        }
-        #endregion
+        public override string Description => _description;
+
+		#endregion
 
         #region Methods.
         /// <summary>
@@ -132,8 +127,7 @@ namespace Gorgon.IO.GorPack
 			{
 			    var pathAttrib = directoryNode.Attribute("FullPath");
 
-                if ((pathAttrib == null)
-                    || (string.IsNullOrWhiteSpace(pathAttrib.Value)))
+                if (string.IsNullOrWhiteSpace(pathAttrib?.Value))
                 {
                     throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
                 }
@@ -185,17 +179,14 @@ namespace Gorgon.IO.GorPack
                         throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
                     }
 
-                    if (fileExtensionNode != null)
-                    {
-                        string fileExtension = fileExtensionNode.Value;
+					string fileExtension = fileExtensionNode?.Value;
 
-                        if ((!string.IsNullOrWhiteSpace(fileExtension)) && (!string.IsNullOrWhiteSpace(fileName)))
-                        {
-                            fileName += fileExtension;
-                        }
-                    }
-                    
-                    // If the file is compressed, then add it to a special list.
+					if (!string.IsNullOrWhiteSpace(fileExtension) && (!string.IsNullOrWhiteSpace(fileName)))
+					{
+						fileName += fileExtension;
+					}
+
+					// If the file is compressed, then add it to a special list.
                     if (fileCompressedSizeNode != null)
                     {
                         long compressedSize;
@@ -283,12 +274,12 @@ namespace Gorgon.IO.GorPack
 
 		    if (physicalPath == null)
 		    {
-		        throw new ArgumentNullException("physicalPath");
+		        throw new ArgumentNullException(nameof(physicalPath));
 		    }
 
 		    if (string.IsNullOrWhiteSpace(physicalPath))
 		    {
-		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, "physicalPath");
+		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
 		    }
 
 			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read), false))

@@ -89,7 +89,6 @@ namespace Gorgon.Input
 		internal ConcurrentDictionary<Guid, GorgonInputDevice> Devices
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -232,7 +231,7 @@ namespace Gorgon.Input
 		{
 			Type devType = typeof(T);
 			GorgonInputDevice device;
-			Guid guid = deviceInfo == null ? Guid.Empty : deviceInfo.UUID;
+			Guid guid = deviceInfo?.UUID ?? Guid.Empty;
 
 			if (!Devices.TryGetValue(guid, out device))
 			{
@@ -243,7 +242,7 @@ namespace Gorgon.Input
 
 			if (result == null)
 			{
-				throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "deviceInfo");
+				throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), nameof(deviceInfo));
 			}
 
 			return result;
@@ -482,7 +481,7 @@ namespace Gorgon.Input
 		{
 			if (deviceInfo == null)
 			{
-			    throw new ArgumentNullException("deviceInfo");
+			    throw new ArgumentNullException(nameof(deviceInfo));
 			}
 
 			var customHID = GetInputDevice<GorgonCustomHID>(deviceInfo);
@@ -525,7 +524,7 @@ namespace Gorgon.Input
 		{
 			if (window == null)
 			{
-				throw new ArgumentNullException("window");
+				throw new ArgumentNullException(nameof(window));
 			}
 
 			var keyboardDevice = GetInputDevice<GorgonKeyboard>(keyboardInfo);
@@ -572,7 +571,7 @@ namespace Gorgon.Input
 		{
 		    if (window == null)
 			{
-                throw new ArgumentNullException("window");
+                throw new ArgumentNullException(nameof(window));
 			}
 
 			// If this is the first pointing device that we've created, then reset the mouse cursor so that it's visible.
@@ -631,11 +630,11 @@ namespace Gorgon.Input
 		{
 			if (window == null)
 			{
-				throw new ArgumentNullException("window");
+				throw new ArgumentNullException(nameof(window));
 			}
             if (joystickDeviceInfo == null)
             {
-                throw new ArgumentNullException("joystickDeviceInfo");
+                throw new ArgumentNullException(nameof(joystickDeviceInfo));
             }
 
 			var joystickDevice = GetInputDevice<GorgonJoystick>(joystickDeviceInfo);

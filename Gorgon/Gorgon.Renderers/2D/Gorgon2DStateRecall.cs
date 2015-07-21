@@ -138,7 +138,6 @@ namespace Gorgon.Renderers
         public Gorgon2D Gorgon2D
         {
             get;
-            private set;
         }
 		#endregion
 

@@ -105,7 +105,7 @@ namespace Gorgon.IO
 		{
 			if (extension == null)
 			{
-				throw new ArgumentNullException("extension");
+				throw new ArgumentNullException(nameof(extension));
 			}
 
 			if (extension.StartsWith(".", StringComparison.Ordinal))

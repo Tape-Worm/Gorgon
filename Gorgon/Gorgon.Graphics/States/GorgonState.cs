@@ -46,13 +46,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the number of state objects cached.
 		/// </summary>
-		protected int StateCacheCount
-		{
-			get
-			{
-				return _cache.CacheCount;
-			}
-		}
+		protected int StateCacheCount => _cache.CacheCount;
 
 		/// <summary>
 		/// Property to return the graphics interface that owns this object.

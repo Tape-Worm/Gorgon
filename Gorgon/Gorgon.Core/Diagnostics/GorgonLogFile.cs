@@ -100,7 +100,6 @@ namespace Gorgon.Diagnostics
 		public string LogApplication
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -109,7 +108,6 @@ namespace Gorgon.Diagnostics
 		public string LogPath
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -217,7 +215,7 @@ namespace Gorgon.Diagnostics
 					Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
 				}
 
-				if ((inner.TargetSite != null) && (inner.TargetSite.DeclaringType != null))
+				if (inner.TargetSite?.DeclaringType != null)
 				{
 					Print("{1}{2}: {0}",
 					      (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
@@ -475,7 +473,6 @@ namespace Gorgon.Diagnostics
 		public int ThreadID
 		{
 			get;
-			private set;
 		}
 		#endregion
 	}

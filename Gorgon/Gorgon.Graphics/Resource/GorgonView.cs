@@ -27,7 +27,6 @@
 		public BufferFormat Format
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>

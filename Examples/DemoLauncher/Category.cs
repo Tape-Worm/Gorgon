@@ -62,8 +62,7 @@ namespace Gorgon.Examples
 		{
 			XAttribute nameAttr = categoryNode.Attribute("name");
 
-			if ((nameAttr == null)
-			    || (string.IsNullOrWhiteSpace(nameAttr.Value)))
+			if (string.IsNullOrWhiteSpace(nameAttr?.Value))
 			{
 				return null;
 			}

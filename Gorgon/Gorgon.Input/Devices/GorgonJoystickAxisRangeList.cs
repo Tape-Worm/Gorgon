@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Input.Properties;
@@ -93,7 +94,7 @@ namespace Gorgon.Input
 #if DEBUG
 				if ((index < 0) || (index >= _ranges.Count))
 				{
-					throw new ArgumentOutOfRangeException("index", Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
+					throw new ArgumentOutOfRangeException(nameof(index), Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
 				}
 #endif
 
@@ -104,13 +105,8 @@ namespace Gorgon.Input
 
 		#region IReadOnlyCollection<GorgonRange> Members
 		/// <inheritdoc/>
-		public int Count
-		{
-			get
-			{
-				return _ranges.Count;
-			}
-		}
+		public int Count => _ranges.Count;
+
 		#endregion
 
 		#region IEnumerable<GorgonRange> Members
@@ -124,7 +120,7 @@ namespace Gorgon.Input
 
 		#region IEnumerable Members
 		/// <inheritdoc/>
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _ranges.GetEnumerator();
 		}

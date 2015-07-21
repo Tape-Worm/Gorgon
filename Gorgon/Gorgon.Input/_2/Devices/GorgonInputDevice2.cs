@@ -29,15 +29,16 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Input.Properties;
 
 namespace Gorgon.Input
 {
 	/// <summary>
 	/// Base class containing common functionality for all input devices.
 	/// </summary>
-	public abstract class GorgonInputDevice2
+	/// <typeparam name="T">The type of device data to expect.</typeparam>
+	public abstract class GorgonInputDevice2<T>
 		: IGorgonInputDevice
+		where T : struct
 	{
 		#region Variables.
 		// The service that owns this device object.
@@ -68,7 +69,6 @@ namespace Gorgon.Input
 		protected IGorgonLog Log
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -146,22 +146,6 @@ namespace Gorgon.Input
 		protected abstract void OnAcquireStateChanged();
 
 		/// <summary>
-		/// Function called to register a forwarder method for a specific device type with an input service.
-		/// </summary>
-		/// <param name="service">Service to register with.</param>
-		/// <remarks>
-		/// <para>
-		/// If a device does not use polling exclusively to gather input data (i.e. <see cref="IsPolled"/> is <b>false</b>), then 
-		/// </para>
-		/// If the <see cref="IsPolled"/> method is <b>false</b> and this is not overridden, an exception will occur. 
-		/// </remarks>
-		/// <exception cref="NotSupportedException">Thrown if this method is not overridden and the <see cref="IsPolled"/> property returns <b>false</b>.</exception>
-		protected virtual void RegisterForwarder(GorgonInputService2 service)
-		{
-			throw new NotSupportedException(Resources.GORINP_ERR_DEVICE_NEEDS_FORWARDER);
-		}
-
-		/// <summary>
 		/// Function called when the device is bound to the window.
 		/// </summary>
 		/// <remarks>
@@ -196,7 +180,7 @@ namespace Gorgon.Input
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDevice2"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDevice2{T}"/> class.
 		/// </summary>
 		/// <param name="service">The service.</param>
 		/// <param name="deviceInfo">The device information.</param>
@@ -208,12 +192,12 @@ namespace Gorgon.Input
 
 			if (_service == null)
 			{
-				throw new ArgumentNullException("service");
+				throw new ArgumentNullException(nameof(service));
 			}
 
 			if (deviceInfo == null)
 			{
-				throw new ArgumentNullException("deviceInfo");
+				throw new ArgumentNullException(nameof(deviceInfo));
 			}
 
 			UUID = Guid.NewGuid();
@@ -227,7 +211,6 @@ namespace Gorgon.Input
 		public Guid UUID
 		{
 			get;
-			private set;
 		}
 
 		#region Properties.
@@ -275,10 +258,7 @@ namespace Gorgon.Input
 		}
 
 		/// <inheritdoc/>
-		public abstract bool IsPolled
-		{
-			get;
-		}
+		public bool IsPolled => this is IGorgonDeviceRouting<T>;
 		#endregion
 
 		#region Methods.
@@ -287,7 +267,7 @@ namespace Gorgon.Input
 		{
 			if (window == null)
 			{
-				throw new ArgumentNullException("window");
+				throw new ArgumentNullException(nameof(window));
 			}
 
 			// Just in case we get weird with binding.
@@ -310,10 +290,11 @@ namespace Gorgon.Input
 			_service.RegisterDevice(this, _info, parentForm, window, exclusive);
 
 			// Assign a forwarder method to the service so it can send us data.
-			// Polled devices will not need this and can just implement an empty method for this.
-			if (!IsPolled)
+			var routedDevice = this as IGorgonDeviceRouting<T>;
+
+			if (routedDevice != null)
 			{
-				RegisterForwarder(_service);
+				_service.RegisterKeyboardForwarder(UUID, routedDevice);
 			}
 
 			// Get this before we register. That way, our plug ins will be able to use this value 
@@ -382,7 +363,7 @@ namespace Gorgon.Input
 				}
 
 				// Let the service know that we're done.
-				_service.UnregisterDeviceForwarder(this);
+				_service.UnregisterDeviceForwarder(UUID);
 				_service.UnregisterDevice(this, _info);
 
 				if ((!ParentForm.IsDisposed) && (!ParentForm.Disposing) && (!Window.IsDisposed) && (!Window.Disposing))

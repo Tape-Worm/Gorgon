@@ -83,38 +83,21 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return whether the viewport is empty or not.
         /// </summary>
-	    public bool IsEmpty
-	    {
-	        get
-	        {
-	            return _isEmpty;
-	        }
-	    }
+	    public bool IsEmpty => _isEmpty;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the right coordinate of the viewport.
         /// </summary>
         /// <remarks>This is the sum of the left coordinate and the width.</remarks>
-        public float Right
-        {
-            get
-            {
-                return Width + Left;
-            }
-        }
+        public float Right => Width + Left;
 
-        /// <summary>
+		/// <summary>
         /// Property to return the bottom coordinate of the viewport.
         /// </summary>
         /// <remarks>This is the sum of the top coordinate and the height.</remarks>
-	    public float Bottom
-	    {
-	        get
-	        {
-	            return Height + Top;
-	        }
-	    }
-        #endregion
+	    public float Bottom => Height + Top;
+
+		#endregion
 
         #region Methods.
         /// <summary>

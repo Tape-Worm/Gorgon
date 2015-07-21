@@ -30,7 +30,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.Plugins;
@@ -75,13 +74,11 @@ namespace Gorgon.Editor.Controls
 					itemDisablePlugIn.Visible = true;
 					if (listContentPlugIns.SelectedItems.Count == 1)
 					{
-						itemDisablePlugIn.Text = string.Format("{0} '{1}'...",
-															   Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN,
-															   listContentPlugIns.SelectedItems[0].Text);
+						itemDisablePlugIn.Text = $"{Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN} '{listContentPlugIns.SelectedItems[0].Text}'...";
 					}
 					else
 					{
-						itemDisablePlugIn.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN);
+						itemDisablePlugIn.Text = $"{Resources.GOREDIT_ACC_TEXT_DISABLE_PLUGIN}...";
 					}
 
 					return;
@@ -91,13 +88,11 @@ namespace Gorgon.Editor.Controls
 				itemEnablePlugIn.Visible = true;
 				if (listContentPlugIns.SelectedItems.Count == 1)
 				{
-					itemEnablePlugIn.Text = string.Format("{0} '{1}'...",
-														   Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN,
-														   listContentPlugIns.SelectedItems[0].Text);
+					itemEnablePlugIn.Text = $"{Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN} '{listContentPlugIns.SelectedItems[0].Text}'...";
 				}
 				else
 				{
-					itemEnablePlugIn.Text = string.Format("{0}...", Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN);
+					itemEnablePlugIn.Text = $"{Resources.GOREDIT_ACC_TEXT_ENABLE_PLUGIN}...";
 				}
 			}
 			catch (Exception ex)
@@ -118,7 +113,8 @@ namespace Gorgon.Editor.Controls
 
             if (hitTest.Item != null)
             {
-                GorgonDialogs.InfoBox(ParentForm, string.Format("{0}:\n{1}", string.Format(Resources.GOREDIT_DLG_PLUG_IN_FAIL_REASON, hitTest.Item.Text), hitTest.Item.SubItems[1].Text));
+                GorgonDialogs.InfoBox(ParentForm,
+                                      $"{string.Format(Resources.GOREDIT_DLG_PLUG_IN_FAIL_REASON, hitTest.Item.Text)}:\n{hitTest.Item.SubItems[1].Text}");
             }
         }
 

@@ -58,46 +58,22 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the font name.
 		/// </summary>
-		public string FontName
-		{
-			get
-			{
-				return textName.Text;
-			}
-		}
+		public string FontName => textName.Text;
 
 		/// <summary>
 		/// Property to return the font family name.
 		/// </summary>
-		public string FontFamilyName
-		{
-			get
-			{
-				return comboFonts.Text;
-			}
-		}
+		public string FontFamilyName => comboFonts.Text;
 
 		/// <summary>
 		/// Property to return whether to use points or pixels for the font size.
 		/// </summary>
-		public FontHeightMode FontHeightMode
-		{
-			get
-			{
-				return (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)) ? FontHeightMode.Points : FontHeightMode.Pixels;
-			}
-		}
+		public FontHeightMode FontHeightMode => (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)) ? FontHeightMode.Points : FontHeightMode.Pixels;
 
 		/// <summary>
 		/// Property to return the font size.
 		/// </summary>
-		public float FontSize
-		{
-			get
-			{
-				return (float)numericSize.Value;
-			}
-		}
+		public float FontSize => (float)numericSize.Value;
 
 		/// <summary>
 		/// Property to return the anti-aliasing mode.
@@ -121,15 +97,9 @@ namespace Gorgon.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the font texture size.
 		/// </summary>
-		public Size FontTextureSize
-		{
-			get
-			{
-				return new Size((int)numericTextureWidth.Value, (int)numericTextureHeight.Value);
-			}			
-		}
+		public Size FontTextureSize => new Size((int)numericTextureWidth.Value, (int)numericTextureHeight.Value);
 
-        /// <summary>
+		/// <summary>
         /// Property to set or return the maximum texture size.
         /// </summary>
 	    public Size MaxTextureSize

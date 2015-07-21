@@ -213,10 +213,7 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
-				if (Graphics != null)
-				{
-					Graphics.Dispose();
-				}
+				Graphics?.Dispose();
 			}
 		}
 	}

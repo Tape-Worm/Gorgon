@@ -45,24 +45,13 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the type of buffer.
 		/// </summary>
-		public override BufferType BufferType
-		{
-			get
-			{
-				return BufferType.Vertex;
-			}
-		}
+		public override BufferType BufferType => BufferType.Vertex;
 
 		/// <summary>
 		/// Property to return the settings for the vertex buffer.
 		/// </summary>
-		public new GorgonBufferSettings Settings
-		{
-			get
-			{
-				return (GorgonBufferSettings)base.Settings;
-			}
-		}
+		public new GorgonBufferSettings Settings => (GorgonBufferSettings)base.Settings;
+
 		#endregion
 
 		#region Methods.

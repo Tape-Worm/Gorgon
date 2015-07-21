@@ -50,52 +50,28 @@ namespace Gorgon.IO.GorPack
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports writing; otherwise, false.</returns>
-		public override bool CanWrite
-		{
-			get
-			{
-				return false;
-			}
-		}
+		public override bool CanWrite => false;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports reading.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports reading; otherwise, false.</returns>
-		public override bool CanRead
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public override bool CanRead => true;
 
 		/// <summary>
 		/// When overridden in a derived class, gets a value indicating whether the current stream supports seeking.
 		/// </summary>
 		/// <value></value>
 		/// <returns>true if the stream supports seeking; otherwise, false.</returns>
-		public override bool CanSeek
-		{
-			get
-			{
-				return _bzipStream.CanSeek;
-			}
-		}
+		public override bool CanSeek => _bzipStream.CanSeek;
 
 		/// <summary>
 		/// Gets a value that determines whether the current stream can time out.
 		/// </summary>
 		/// <value></value>
 		/// <returns>A value that determines whether the current stream can time out.</returns>
-		public override bool CanTimeout
-		{
-			get
-			{
-				return _bzipStream.CanTimeout;
-			}
-		}
+		public override bool CanTimeout => _bzipStream.CanTimeout;
 
 		/// <summary>
 		/// When overridden in a derived class, gets the length in bytes of the stream.
@@ -104,13 +80,7 @@ namespace Gorgon.IO.GorPack
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
 		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length
-		{
-			get
-			{
-				return _length;
-			}
-		}
+		public override long Length => _length;
 
 		/// <summary>
 		/// When overridden in a derived class, gets or sets the position within the current stream.
@@ -193,8 +163,7 @@ namespace Gorgon.IO.GorPack
 		{
 			if (disposing)
 			{
-				if (_bzipStream != null)
-					_bzipStream.Dispose();
+				_bzipStream?.Dispose();
 				_bzipStream = null;
 			}
 
