@@ -49,9 +49,8 @@ namespace Gorgon.Configuration
 		// Default value;
 		private object _default;
 		// Flag to indicate that a default value is present.
-		private bool _hasDefault;
 		// The name of the section that the property value will be placed in.
-		private readonly string _section;
+
 		#endregion
 
 		#region Properties.
@@ -61,7 +60,11 @@ namespace Gorgon.Configuration
 		/// <remarks>
 		/// This will be set to <c>true</c> when the <see cref="DefaultValue"/> is assigned. Otherwise, it will return <c>false</c>.
 		/// </remarks>
-		public bool HasDefault => _hasDefault;
+		public bool HasDefault
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return the section for the setting.
@@ -70,7 +73,10 @@ namespace Gorgon.Configuration
 		/// Sections are for formatting/namespace purposes in the XML file. For example, if the section name was called "Display", then any properties with the section name would appear under the "Display" section 
 		/// element in the XML file.
 		/// </remarks>
-		public string Section => _section;
+		public string Section
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to set or return a new name for the setting.
@@ -104,7 +110,7 @@ namespace Gorgon.Configuration
 			set
 			{
 				_default = value;
-				_hasDefault = true;
+				HasDefault = true;
 			}
 		}
 		#endregion
@@ -128,8 +134,8 @@ namespace Gorgon.Configuration
 				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(section));
 			}
 
-			_section = section;
-			_hasDefault = false;
+			Section = section;
+			HasDefault = false;
 		}
 		#endregion
 	}

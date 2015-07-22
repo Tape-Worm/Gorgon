@@ -77,7 +77,7 @@ namespace Gorgon.Graphics
 	public class GorgonSwapChainSettings
 	{
 		#region Variables.
-		private GorgonVideoMode _mode = default(GorgonVideoMode);			// Gorgon video mode.
+
 		private int _backBufferCount = 2;									// Number of back buffers.		
 		#endregion
 
@@ -89,11 +89,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return _mode.Size;
+				return VideoMode.Size;
 			}
 			set
 			{
-                _mode = new GorgonVideoMode(value.Width, value.Height, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(value.Width, value.Height, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
 			}
 		}
 
@@ -104,11 +104,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return _mode.Format;
+				return VideoMode.Format;
 			}
 			set
 			{
-                _mode = new GorgonVideoMode(_mode.Width, _mode.Height, value, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(VideoMode.Width, VideoMode.Height, value, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
 			}
 		}
 	
@@ -119,11 +119,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return _mode.Width;
+				return VideoMode.Width;
 			}
 			set
 			{
-                _mode = new GorgonVideoMode(value, _mode.Height, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(value, VideoMode.Height, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
 			}
 		}
 
@@ -134,11 +134,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return _mode.Height;
+				return VideoMode.Height;
 			}
 			set
 			{
-                _mode = new GorgonVideoMode(_mode.Width, value, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(VideoMode.Width, value, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
 			}
 		}
 
@@ -148,15 +148,9 @@ namespace Gorgon.Graphics
 		/// <remarks>Leaving the width, height or format undefined (i.e. 0, 0, or Unknown) will tell Gorgon to find the best video mode based on the window dimensions and desktop format.</remarks>
 		public GorgonVideoMode VideoMode
 		{
-			get
-			{
-				return _mode;
-			}
-			set
-			{
-				_mode = value;
-			}
-		}
+			get;
+			set;
+		} = default(GorgonVideoMode);
 
 		/// <summary>
 		/// Property to set or return whether the client area of the window should stay in sync with the swap chain back buffer size.

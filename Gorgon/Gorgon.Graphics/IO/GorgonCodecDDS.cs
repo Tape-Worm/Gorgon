@@ -700,8 +700,7 @@ namespace Gorgon.IO
 		};
 
         private readonly BufferFormat[] _formats;                       // Buffer formats.
-        private readonly IEnumerable<BufferFormat> _supportedFormats;   // List of formats supported by the DDS codec.
-		private int _actualDepth;						                // Actual depth value.
+	    private int _actualDepth;						                // Actual depth value.
 		private int _actualArrayCount;					                // Actual array count.
 		#endregion
 
@@ -766,7 +765,10 @@ namespace Gorgon.IO
         /// <summary>
         /// Property to return the data formats for the image.
         /// </summary>
-        public override IEnumerable<BufferFormat> SupportedFormats => _supportedFormats;
+        public override IEnumerable<BufferFormat> SupportedFormats
+        {
+	        get;
+        }
 
 	    /// <summary>
         /// Property to return whether the image codec supports image arrays.
@@ -1938,7 +1940,7 @@ namespace Gorgon.IO
 			CodecCommonExtensions = new[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
-		    _supportedFormats = from format in _formats
+		    SupportedFormats = from format in _formats
 		                        let info = GorgonBufferFormatInfo.GetInfo(format)
 		                        where format != BufferFormat.Unknown && !info.IsTypeless
 		                        select format;

@@ -75,7 +75,7 @@ namespace Gorgon.IO.GorPack
 		#endregion
 
 		#region Variables.
-        private readonly string _description;										// Description of the provider.
+
 		private IDictionary<string, CompressedFileEntry> _compressedFiles;			// List of compressed files.
 		#endregion
 
@@ -83,7 +83,10 @@ namespace Gorgon.IO.GorPack
         /// <summary>
         /// Property to return a description of the file system provider.
         /// </summary>        
-        public override string Description => _description;
+        public override string Description
+        {
+	        get;
+        }
 
 		#endregion
 
@@ -299,7 +302,7 @@ namespace Gorgon.IO.GorPack
         /// <param name="description">The description of the provider.</param>
 		internal GorgonGorPackProvider(string description)
 		{
-            _description = description;
+            Description = description;
 		    PreferredExtensions.Add(new GorgonFileExtension("gorPack", Resources.GORFS_FILE_DESC));
 		}
 		#endregion

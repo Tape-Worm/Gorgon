@@ -35,15 +35,26 @@ namespace Gorgon.Input.WinForms
 	/// </summary>
 	class WinFormsKeyboardHook
 	{
+		#region Properties.
 		/// <summary>
 		/// Property to set or return the method to call when a keyboard event is triggered.
 		/// </summary>
-		public Action<GorgonKeyboardData> KeyboardEvent
+		public Action<Control, GorgonKeyboardData> KeyboardEvent
 		{
 			get;
 			set;
 		}
 
+		/// <summary>
+		/// Property to return the window that the hook is registered with.
+		/// </summary>
+		public Control Window
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
 		/// <summary>
 		/// Handles the KeyUp event of the Window control.
 		/// </summary>
@@ -51,7 +62,7 @@ namespace Gorgon.Input.WinForms
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyUp(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent?.Invoke(ProcessEvent(e, KeyState.Up));
+			KeyboardEvent?.Invoke(Window, ProcessEvent(e, KeyState.Up));
 		}
 
 		/// <summary>
@@ -61,7 +72,7 @@ namespace Gorgon.Input.WinForms
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent?.Invoke(ProcessEvent(e, KeyState.Down));
+			KeyboardEvent?.Invoke(Window, ProcessEvent(e, KeyState.Down));
 		}
 
 		/// <summary>
@@ -123,21 +134,31 @@ namespace Gorgon.Input.WinForms
 		/// <summary>
 		/// Function to register windows forms events to the appropriate window.
 		/// </summary>
-		/// <param name="window">The window to bind the events with.</param>
-		public void RegisterEvents(Control window)
+		public void RegisterEvents()
 		{
-			window.KeyDown += Window_KeyDown;
-			window.KeyUp += Window_KeyUp;
+			Window.KeyDown += Window_KeyDown;
+			Window.KeyUp += Window_KeyUp;
 		}
 
 		/// <summary>
 		/// Function to unregister windows forms event from the specified window.
 		/// </summary>
-		/// <param name="window">The window to unbind the events from.</param>
-		public void UnregisterEvents(Control window)
+		public void UnregisterEvents()
 		{
-			window.KeyDown -= Window_KeyDown;
-			window.KeyUp -= Window_KeyUp;
+			Window.KeyDown -= Window_KeyDown;
+			Window.KeyUp -= Window_KeyUp;
 		}
+		#endregion
+
+		#region Constructor/Finalizer
+		/// <summary>
+		/// Initializes a new instance of the <see cref="WinFormsKeyboardHook" /> class.
+		/// </summary>
+		/// <param name="window">The window.</param>
+		public WinFormsKeyboardHook(Control window)
+		{
+			Window = window;
+		}
+		#endregion
 	}
 }

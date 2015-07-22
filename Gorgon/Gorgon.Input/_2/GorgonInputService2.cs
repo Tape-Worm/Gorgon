@@ -86,12 +86,11 @@ namespace Gorgon.Input
 		/// Function to unregister a device when it unbinds from a window.
 		/// </summary>
 		/// <param name="device">The device that is being unbound from the window.</param>
-		/// <param name="deviceInfo">Information about the device being unbound from the window.</param>
 		/// <remarks>
 		/// Plug in implementors will use this method to ensure that any clean up required for functionality is present when a device is unbound from a window. This method will be called when the 
 		/// <see cref="IGorgonInputDevice.UnbindWindow"/>  method is called.
 		/// </remarks>
-		protected internal abstract void UnregisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo);
+		protected internal abstract void UnregisterDevice(IGorgonInputDevice device);
 
 		/// <summary>
 		/// Function to perform enumeration of keyboard devices.

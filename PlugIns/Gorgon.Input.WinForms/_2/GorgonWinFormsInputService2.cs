@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -38,26 +39,49 @@ namespace Gorgon.Input.WinForms
 	{
 		#region Variables.
 		// The hook used to translate windows forms keyboard messages.
-		// TODO: If we create multiple keyboard objects and bind them to different windows, this will probably fail.
-		// TODO: Make a dictionary, keyed by the window we're hooking, and use that to determine where we're coming from.
-		private readonly WinFormsKeyboardHook _keyboardHook = new WinFormsKeyboardHook();
+		private readonly Dictionary<Control, WinFormsKeyboardHook> _keyboardHooks = new Dictionary<Control, WinFormsKeyboardHook>();
 
-		// TODO: Because the hook above needs to be segregated to handle multiple instances of keyboard objects, we'll need
-		// TODO: keep track of devices here somehow. Even though Instance 1 and Instance 2 use the same device, they're still 
-		// TODO: different objects and must be routed properly.
+		// A list of devices registered with the service.
+		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to route keyboard event messages to the proper object.
+		/// </summary>
+		/// <param name="hookWindow">The window broadcasting the event.</param>
+		/// <param name="data">The keyboard data to send.</param>
+		private void RouteKeyboardEvent(Control hookWindow, GorgonKeyboardData data)
+		{
+			IGorgonInputDevice device =
+				_registeredDevices.First(item => item.Value.IsAcquired && item.Value.Window == hookWindow && item.Value is IGorgonKeyboard).Value;
+
+			if (device == null)
+			{
+				return;
+			}
+
+			// Broadcast the message to all keyboard device objects hooked into the window being notified.
+			RouteKeyboardData(device.UUID, ref data);
+		}
+
 		/// <inheritdoc/>
 		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
 		{
+			WinFormsKeyboardHook hook;
+
+			if (!_keyboardHooks.TryGetValue(device.Window, out hook))
+			{
+				return;
+			}
+
 			if (acquisitionState)
 			{
-				_keyboardHook.RegisterEvents(device.Window);
+				hook.RegisterEvents();
 			}
 			else
 			{
-				_keyboardHook.UnregisterEvents(device.Window);
+				hook.UnregisterEvents();
 			}
 		}
 
@@ -68,10 +92,19 @@ namespace Gorgon.Input.WinForms
 			switch (deviceInfo.InputDeviceType)
 			{
 				case InputDeviceType.Keyboard:
-					_keyboardHook.KeyboardEvent = e =>
-					                              {
-						                              SendKeyboardData(null, ref e);
-					                              };
+
+					if (!_keyboardHooks.ContainsKey(window))
+					{
+						var keyboardHook = _keyboardHooks[window] = new WinFormsKeyboardHook(window);
+
+						keyboardHook.KeyboardEvent = RouteKeyboardEvent;
+					}
+
+
+					if (!_registeredDevices.ContainsKey(device.UUID))
+					{
+						_registeredDevices[device.UUID] = device;
+					}
 					break;
 				case InputDeviceType.Mouse:
 					break;
@@ -79,16 +112,27 @@ namespace Gorgon.Input.WinForms
 		}
 
 		/// <inheritdoc/>
-		protected override void UnregisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo)
+		protected override void UnregisterDevice(IGorgonInputDevice device)
 		{
-			switch (deviceInfo.InputDeviceType)
-			{
-				case InputDeviceType.Keyboard:
-					_keyboardHook.KeyboardEvent = null;
-					break;
-				case InputDeviceType.Mouse:
-					break;
-			}
+			// TODO: Change to using message processors like in RawInput.
+			//switch (deviceInfo.InputDeviceType)
+			//{
+//				case InputDeviceType.Keyboard:
+					if (_keyboardHooks.Count(item => item.Key == device.Window) == 1)
+					{
+						_keyboardHooks[device.Window].KeyboardEvent = null;
+					}
+
+					_keyboardHooks.Remove(device.Window);
+
+					if (_registeredDevices.ContainsKey(device.UUID))
+					{
+						_registeredDevices.Remove(device.UUID);
+					}
+//					break;
+//				case InputDeviceType.Mouse:
+//					break;
+			//}
 		}
 
 		/// <inheritdoc/>

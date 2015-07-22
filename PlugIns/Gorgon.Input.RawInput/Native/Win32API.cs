@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using Gorgon.Input;
@@ -157,6 +158,16 @@ namespace Gorgon.Native
 		/// <returns>0 if successful, otherwise an error code.</returns>
 		[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 		public static extern int GetRawInputDeviceInfo(IntPtr hDevice, RawInputCommand uiCommand, IntPtr pData, ref int pcbSize);
+
+		/// <summary>
+		/// Function to retrieve the raw input devices registered to this application.
+		/// </summary>
+		/// <param name="pRawInputDevices">The buffer to hold the list of raw input devices.</param>
+		/// <param name="puiNumDevices">The number of devices.</param>
+		/// <param name="cbSize">The size of the raw input device struct, in bytes.</param>
+		/// <returns>0 if successful, -1 if not.</returns>
+		[DllImport("user32.dll")]
+		private static extern int GetRegisteredRawInputDevices(IntPtr pRawInputDevices, ref uint puiNumDevices, uint cbSize);
 
 		/// <summary>
 		/// Function to register a raw input device.
@@ -325,6 +336,41 @@ namespace Gorgon.Native
 		/// <returns>The requested information.</returns>
 		[DllImport("User32.dll", CharSet = CharSet.Ansi)]
 		private static extern int GetKeyboardType(int nTypeFlag);
+
+		/// <summary>
+		/// Function to retrieve a list of registered raw input devices.
+		/// </summary>
+		/// <returns>An array of raw input device data.</returns>
+		public static RAWINPUTDEVICE[] GetRegisteredDevices()
+		{
+			uint deviceCount = 0;
+			uint structSize = (uint)DirectAccess.SizeOf<RAWINPUTDEVICE>();
+			RAWINPUTDEVICE[] result;
+
+			unsafe
+			{
+				if (GetRegisteredRawInputDevices(IntPtr.Zero, ref deviceCount, structSize) == -1)
+				{
+					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+				}
+
+				RAWINPUTDEVICE* buffer = stackalloc RAWINPUTDEVICE[(int)deviceCount];
+
+				if (GetRegisteredRawInputDevices(new IntPtr(buffer), ref deviceCount, structSize) == -1)
+				{
+					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+				}
+
+				result = new RAWINPUTDEVICE[(int)deviceCount];
+
+				for (int i = 0; i < result.Length; ++i)
+				{
+					result[i] = buffer[i];
+				}
+			}
+
+			return result;
+		}
 		#endregion
 
 		#region Constructor.

@@ -38,10 +38,12 @@ namespace Gorgon.IO.GorPack
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;						
 		private Stream _bzipStream;				    // Input stream for the bzip file.
 		private long _position;						// Position in the stream.
 		private readonly long _basePosition;		// Base position in the stream.
-		private readonly long _length;				// Length of the stream in bytes.
+
 		#endregion
 
 		#region Properties.
@@ -80,7 +82,10 @@ namespace Gorgon.IO.GorPack
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
 		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public override long Length => _length;
+		public override long Length
+		{
+			get;
+		}
 
 		/// <summary>
 		/// When overridden in a derived class, gets or sets the position within the current stream.
@@ -161,11 +166,17 @@ namespace Gorgon.IO.GorPack
 		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
 			if (disposing)
 			{
-				_bzipStream?.Dispose();
-				_bzipStream = null;
+				_bzipStream.Dispose();
 			}
+
+			_disposed = true;
 
 			base.Dispose(disposing);
 		}
@@ -369,12 +380,12 @@ namespace Gorgon.IO.GorPack
 			if (compressionInfo.HasValue)
 			{
 				_bzipStream = new BZip2InputStream(stream);
-				_length = compressionInfo.Value.Size;
+				Length = compressionInfo.Value.Size;
 			}
 			else
 			{
 				_bzipStream = stream;
-				_length = file.Size;
+				Length = file.Size;
 			}
 			_basePosition = stream.Position;
 		}

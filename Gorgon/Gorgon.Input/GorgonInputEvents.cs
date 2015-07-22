@@ -36,55 +36,70 @@ namespace Gorgon.Input
 		: EventArgs
 	{
 		#region Variables.
-		private readonly PointingDeviceButtons _button;			// Buttons that are pressed while the mouse is being moved.
-		private readonly PointingDeviceButtons _shiftButtons;	// Other buttons being held down.
-		private readonly PointF _position;				        // Mouse position.
-		private readonly int _wheelPosition;				    // Wheel position.
-		private readonly PointF _relative;				        // Relative mouse position.
-		private readonly int _wheelDelta;				        // Wheel delta.
-		private readonly int _clickCount;				        // Number of clicks in a timed period.
+
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return buttons that were pressed during mouse movement.
 		/// </summary>
-		public PointingDeviceButtons Buttons => _button;
+		public PointingDeviceButtons Buttons
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the buttons that are being held down during the event.
 		/// </summary>
-		public PointingDeviceButtons ShiftButtons => _shiftButtons;
+		public PointingDeviceButtons ShiftButtons
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the position of the mouse.
 		/// </summary>
-		public PointF Position => _position;
+		public PointF Position
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the wheel position.
 		/// </summary>
-		public int WheelPosition => _wheelPosition;
+		public int WheelPosition
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the amount that the mouse has moved since it last moved.
 		/// </summary>
-		public PointF RelativePosition => _relative;
+		public PointF RelativePosition
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the amount that the wheel has moved since the last update.
 		/// </summary>
-		public int WheelDelta => _wheelDelta;
+		public int WheelDelta
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return if we've double clicked.
 		/// </summary>
-		public bool DoubleClick => (_clickCount > 1);
+		public bool DoubleClick => (ClickCount > 1);
 
 		/// <summary>
 		/// Property to return the number of full clicks.
 		/// </summary>
-		public int ClickCount => _clickCount;
+		public int ClickCount
+		{
+			get;
+		}
 
 		#endregion
 
@@ -101,13 +116,13 @@ namespace Gorgon.Input
 		/// <param name="clickCount">Number of clicks in a timed period.</param>
 		public PointingDeviceEventArgs(PointingDeviceButtons buttons, PointingDeviceButtons shiftButtons, PointF position, int wheelPosition, PointF relativePosition, int wheelDelta, int clickCount)
 		{
-			_button = buttons;
-			_shiftButtons = shiftButtons;
-			_position = position;
-			_wheelPosition = wheelPosition;
-			_relative = relativePosition;
-			_wheelDelta = wheelDelta;
-			_clickCount = clickCount;
+			Buttons = buttons;
+			ShiftButtons = shiftButtons;
+			Position = position;
+			WheelPosition = wheelPosition;
+			RelativePosition = relativePosition;
+			WheelDelta = wheelDelta;
+			ClickCount = clickCount;
 		}
 		#endregion
 	}
@@ -119,47 +134,56 @@ namespace Gorgon.Input
 		: EventArgs
 	{
 		#region Variables.
-		private readonly KeyboardKey _key;						// Key that is pressed.
-		private readonly KeyboardKey _modifierKey;				// Other keys being held down.
-		private readonly int _scan;							    // Scan code information.
-		private readonly GorgonKeyCharMap _character;	// Character that the key represents.
+
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the character that the key represents.
 		/// </summary>
-		public GorgonKeyCharMap CharacterMapping => _character;
+		public GorgonKeyCharMap CharacterMapping
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return key that is pressed.
 		/// </summary>
-		public KeyboardKey Key => _key;
+		public KeyboardKey Key
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the keys that are being held down during the event.
 		/// </summary>
-		public KeyboardKey ModifierKeys => _modifierKey;
+		public KeyboardKey ModifierKeys
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return if ALT is pressed or not.
 		/// </summary>
-		public bool Alt => (_modifierKey & KeyboardKey.Alt) == KeyboardKey.Alt;
+		public bool Alt => (ModifierKeys & KeyboardKey.Alt) == KeyboardKey.Alt;
 
 		/// <summary>
 		/// Property to return if Ctrl is pressed or not.
 		/// </summary>
-		public bool Ctrl => (_modifierKey & KeyboardKey.Control) == KeyboardKey.Control;
+		public bool Ctrl => (ModifierKeys & KeyboardKey.Control) == KeyboardKey.Control;
 
 		/// <summary>
 		/// Property to return if Shift is pressed or not.
 		/// </summary>
-		public bool Shift => (_modifierKey & KeyboardKey.Shift) == KeyboardKey.Shift;
+		public bool Shift => (ModifierKeys & KeyboardKey.Shift) == KeyboardKey.Shift;
 
 		/// <summary>
 		/// Property to return the scan code data.
 		/// </summary>
-		public int ScanCodeData => _scan;
+		public int ScanCodeData
+		{
+			get;
+		}
 
 		#endregion
 
@@ -173,10 +197,10 @@ namespace Gorgon.Input
 		/// <param name="scanData">Scan code data.</param>
 		public KeyboardEventArgs(KeyboardKey key, KeyboardKey modifierKey, GorgonKeyCharMap character, int scanData)
 		{
-			_key = key;
-			_modifierKey = modifierKey;
-			_character = character;
-			_scan = scanData;
+			Key = key;
+			ModifierKeys = modifierKey;
+			CharacterMapping = character;
+			ScanCodeData = scanData;
 		}
 		#endregion
 	}

@@ -30,8 +30,6 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Core.Native;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
@@ -98,9 +96,6 @@ namespace Gorgon.Input.Raw
 		}
 */
 		#region Variables.
-		// The size, in bytes, of the raw input data header.
-		private readonly int _headerSize = DirectAccess.SizeOf<RAWINPUTHEADER>();
-
 		// The logging interface.
 		private readonly IGorgonLog _log;
 
@@ -108,16 +103,16 @@ namespace Gorgon.Input.Raw
 		private RawInputMessageHooker _messageHook;
 
 		// The raw input hook into keyboard data.
-		private readonly Dictionary<IntPtr, RawInputKeyboardHook> _keyboardHooks = new Dictionary<IntPtr, RawInputKeyboardHook>(new GorgonIntPtrEqualityComparer());
+		private readonly Dictionary<Control, RawInputProcessor> _rawInputProcessors = new Dictionary<Control, RawInputProcessor>();
 
 		// A list of registered devices.
-		private readonly Dictionary<IntPtr, IGorgonInputDevice> _registeredDevices = new Dictionary<IntPtr, IGorgonInputDevice>(new GorgonIntPtrEqualityComparer());
+		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
+
+		// Handles for registered devices.
+		private readonly List<Tuple<Guid, IntPtr>> _deviceHandles = new List<Tuple<Guid, IntPtr>>();
 
 		// List of enumerated devices.
 		private readonly Lazy<IEnumerable<RAWINPUTDEVICELIST>> _enumeratedDevices;
-
-		// A list of exclusive devices by handle.
-		private InputDeviceExclusivity _exclusiveDevices;
 		#endregion
 
 		#region Methods.
@@ -276,83 +271,6 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <summary>
-		/// Function to retrieve data for the raw input device message.
-		/// </summary>
-		/// <param name="hwnd">Window handle for the data.</param>
-		/// <param name="deviceHandle">Raw input device handle.</param>
-		/// <returns><b>true</b> if the message processed successfully, <b>false</b> if not.</returns>
-		private unsafe bool GetRawInputData(IntPtr hwnd, IntPtr deviceHandle)
-		{
-			int dataSize = 0;
-
-			// Get data size.			
-			int retVal = Win32API.GetRawInputData(deviceHandle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
-
-			if (retVal == -1)
-			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
-			}
-
-			// Get actual data.
-			var rawInputPtr = stackalloc byte[dataSize];
-			retVal = Win32API.GetRawInputData(deviceHandle,
-											  RawInputCommand.Input,
-											  (IntPtr)rawInputPtr,
-											  ref dataSize,
-											  _headerSize);
-
-			if ((retVal == -1)
-				|| (retVal != dataSize))
-			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
-			}
-
-			var inputData = *((RAWINPUT*)rawInputPtr);
-
-			// Attempt to get the system device, if that fails, then try for a specific one.
-			// Failing that, we can't process this message, so leave.
-			IGorgonInputDevice device;
-
-			if (!_registeredDevices.TryGetValue(IntPtr.Zero, out device))
-			{
-				if (!_registeredDevices.TryGetValue(inputData.Header.Device, out device))
-				{
-					return false;
-				}
-			}
-
-			// The device is not acquired, do nothing.
-			if (!device.IsAcquired)
-			{
-				return false;
-			}
-
-			switch (inputData.Header.Type)
-			{
-				case RawInputType.Keyboard:
-					RawInputKeyboardHook keyboardHook;
-
-					// This message is not meant for this window, leave.
-					if (!_keyboardHooks.TryGetValue(hwnd, out keyboardHook))
-					{
-						return false;
-					}
-
-					GorgonKeyboardData data;
-
-					if (!keyboardHook.ProcessRawInputMessage(ref inputData.Union.Keyboard, out data))
-					{
-						return false;
-					}
-
-					RouteKeyboardData(device.UUID, ref data);
-					return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>
 		/// Function to handle raw input messages on the window.
 		/// </summary>
 		/// <param name="hwnd">The window handle.</param>
@@ -368,10 +286,59 @@ namespace Gorgon.Input.Raw
 				throw new ObjectDisposedException(Resources.GORINP_RAW_HOOK_STILL_ACTIVE);
 			}
 
-			if (msg == WindowMessages.RawInput)
+			if (msg != WindowMessages.RawInput)
 			{
-				return !GetRawInputData(hwnd, lParam) ? _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam) : IntPtr.Zero;
+				return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
 			}
+			
+			bool callDefault = true;
+
+			// Find our device GUID and route appropriately.
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _deviceHandles.Count; ++i)
+			{
+				if ((_deviceHandles[i].Item2 != lParam) && (_deviceHandles[i].Item2 != IntPtr.Zero))
+				{
+					continue;
+				}
+
+				IGorgonInputDevice device;
+
+				// The device requested is not registered, so we can skip it.
+				if ((!_registeredDevices.TryGetValue(_deviceHandles[i].Item1, out device))
+					|| (!device.IsAcquired))
+				{
+					continue;
+				}
+
+				RAWINPUT data = _messageHook.GetRawInputData(lParam);
+
+				switch (data.Header.Type)
+				{
+					case RawInputType.Keyboard:
+						RawInputProcessor processor;
+
+						// There's no hook on this window, so we can't send anything.
+						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
+						{
+							continue;
+						}
+
+						GorgonKeyboardData keyboardData;
+
+						if (!processor.ProcessRawInputMessage(ref data.Union.Keyboard, out keyboardData))
+						{
+							continue;
+						}
+						
+						RouteKeyboardData(device.UUID, ref keyboardData);
+
+						callDefault = false;
+						break;
+				}
+			}
+
+			return callDefault ? _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam) : IntPtr.Zero;
 			/*
 			// If we have a pointing device set as exclusive, then block all WM_MOUSE messages.
 			if ((_exclusiveDevices & InputDeviceExclusivity.Mouse) == InputDeviceExclusivity.Mouse)
@@ -395,38 +362,7 @@ namespace Gorgon.Input.Raw
 						return IntPtr.Zero;
 				}
 			}
-				
-			// If we have a keyboard set as exclusive, then block all WM_KEY messages.
-			if (((_exclusiveDevices & InputDeviceExclusivity.Keyboard) != InputDeviceExclusivity.Keyboard) || (!_keyboardHooks.ContainsKey(hwnd)))
-			{
-				return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
-			}
-
-			switch (msg)
-			{
-				case WindowMessages.KeyDown:
-				case WindowMessages.KeyUp:
-				case WindowMessages.Char:
-				case WindowMessages.UniChar:
-				case WindowMessages.AppCommand:
-				case WindowMessages.DeadChar:
-				case WindowMessages.HotKey:
-				case WindowMessages.SysDeadChar:
-				case WindowMessages.SysKeyUp:
-				case WindowMessages.SysChar:
-					return IntPtr.Zero;
-				case WindowMessages.SysKeyDown:
-					switch ((VirtualKeys)wParam)
-					{
-						case VirtualKeys.F4:
-							break;
-						default:
-							return IntPtr.Zero;
-					}
-					break;
-			}*/
-
-			return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
+			*/
 		}
 
 		/// <inheritdoc/>
@@ -501,128 +437,77 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, bool exclusive)
 		{
+			IntPtr deviceHandle;
+		
 			// Register the exclusive devices with the service so it knows how to handle messages.
 			switch (deviceInfo.InputDeviceType)
 			{
 				case InputDeviceType.Keyboard:
-					if ((_exclusiveDevices & InputDeviceExclusivity.Keyboard) == InputDeviceExclusivity.Keyboard)
-					{
-						throw new GorgonException(GorgonResult.CannotBind, Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD);
-					}
-
-					if (exclusive)
-					{
-						_exclusiveDevices |= InputDeviceExclusivity.Keyboard;
-					}
-
-					// Set up the raw input keyboard hook.
-					// If the window has not been hooked yet for raw input, then we make a new hook for that window.
-					RawInputKeyboardHook keyboardHook;
-
-					if (!_keyboardHooks.TryGetValue(window.Handle, out keyboardHook))
-					{
-						keyboardHook = _keyboardHooks[window.Handle] = new RawInputKeyboardHook(window.Handle);
-					}
-
-					// This will let the keyboard hook know that we've got a device using the hook.
-					// This is like the COM AddRef method in that it increments a count.  The first keyboard registered 
-					// will register the window with Raw Input, but subsequent calls will not because it's unnecessary. 
-					// In typical usage, most people will only use the one device so this will only be called once.
-					keyboardHook.Register(exclusive);
-
 					// Keep track of the keyboard we're registering so we can forward data to it.
-					IRawInputKeyboardInfo2 keyboardInfo = (IRawInputKeyboardInfo2)deviceInfo;
+					deviceHandle = ((IRawInputKeyboardInfo2)deviceInfo).Handle;
 
-					if (!_registeredDevices.ContainsKey(keyboardInfo.Handle))
+					// Find any other registered keyboards.
+					var keyboards = from keyboardDevice in _registeredDevices
+					                let keyboard = keyboardDevice.Value as IGorgonKeyboard
+					                where keyboard != null
+					                select keyboard;
+
+					// ReSharper disable PossibleMultipleEnumeration
+					if (((exclusive) && (keyboards.Any())) || (keyboards.Any(item => item.IsExclusive)))
 					{
-						_registeredDevices.Add(keyboardInfo.Handle, device);
+						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD, nameof(exclusive));
 					}
+					// ReSharper enable PossibleMultipleEnumeration
+
 					break;
 				case InputDeviceType.Mouse:
-					if ((_exclusiveDevices & InputDeviceExclusivity.Mouse) == InputDeviceExclusivity.Mouse)
-					{
-						throw new GorgonException(GorgonResult.CannotBind, Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD);
-					}
-
-					if (exclusive)
-					{
-						_exclusiveDevices |= InputDeviceExclusivity.Mouse;
-					}
-
 					//RegisterRawInputMouse(window.Handle);
 
 					// Keep track of the mice we're registering.
-					IRawInputMouseInfo2 mouseInfo = (IRawInputMouseInfo2)deviceInfo;
-
-					if (!_registeredDevices.ContainsKey(mouseInfo.Handle))
-					{
-						_registeredDevices.Add(mouseInfo.Handle, device);
-					}
+					deviceHandle = ((IRawInputMouseInfo2)deviceInfo).Handle;
 					break;
 				default:
 					return;
+			}
+
+			if (!_rawInputProcessors.ContainsKey(window))
+			{
+				_rawInputProcessors[window] = new RawInputProcessor();
+			}
+
+			if (!_registeredDevices.ContainsKey(device.UUID))
+			{
+				_registeredDevices.Add(device.UUID, device);
+				_deviceHandles.Add(new Tuple<Guid, IntPtr>(device.UUID, deviceHandle));
 			}
 
 			// We should only need to do this once for the window.
-			if (_messageHook != null)
+			if (_messageHook == null)
 			{
-				return;
+				// Initialize our message hook if we haven't done so by now.
+				_messageHook = new RawInputMessageHooker(parentForm.Handle, RawWndProc);
+				_messageHook.HookWindow();
+				_messageHook.RegisterRawInputDevices();
 			}
 
-			_messageHook = new RawInputMessageHooker(window.Handle, RawWndProc);
+			_messageHook.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
 		}
 
 		/// <inheritdoc/>
-		protected override void UnregisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo)
+		protected override void UnregisterDevice(IGorgonInputDevice device)
 		{
-			switch (deviceInfo.InputDeviceType)
+			if (_rawInputProcessors.Count(item => item.Key == device.Window) == 1)
 			{
-				case InputDeviceType.Keyboard:
-					_exclusiveDevices &= ~InputDeviceExclusivity.Keyboard;
+				_rawInputProcessors.Remove(device.Window);
+			}
 
-					IRawInputKeyboardInfo2 keyboardInfo = (IRawInputKeyboardInfo2)deviceInfo;
+			// Unregister the device.
+			if (_registeredDevices.ContainsKey(device.UUID))
+			{
+				_registeredDevices.Remove(device.UUID);
 
-					// Remove this from the registered devices list and unregister from raw input if we don't have any more keyboard devices registered
-					if (_registeredDevices.ContainsKey(keyboardInfo.Handle))
-					{
-						_registeredDevices.Remove(keyboardInfo.Handle);
-					}
-					
-					// Unregister any hooks for the bound window. There is only ever 1 hook per window bound.
-					RawInputKeyboardHook keyboardHook;
-					if (!_keyboardHooks.TryGetValue(device.Window.Handle, out keyboardHook))
-					{
-						break;
-					}
-
-					// If this is the last device to unregister from the keyboard hook, then remove it from the list of hooks.
-					if (keyboardHook.Keyboards == 1)
-					{
-						_keyboardHooks.Remove(device.Window.Handle);
-					}
-
-					// This is more akin to the COM Release method than an actual dispose pattern.
-					// This is by design, we don't want to unregister raw keyboard messages from the window until 
-					// all keyboards are unbound from the window.  In typical usage, this will always dispose 
-					// the object properly because most people will only use the one device.
-					keyboardHook.Dispose();
-					
-					break;
-				case InputDeviceType.Mouse:
-					_exclusiveDevices &= ~InputDeviceExclusivity.Mouse;
-
-					IRawInputMouseInfo2 mouseInfo = (IRawInputMouseInfo2)deviceInfo;
-
-					// Remove this from the registered devices list and unregister from raw input if we don't have any more mouse devices registered
-					if (_registeredDevices.ContainsKey(mouseInfo.Handle))
-					{
-						_registeredDevices.Remove(mouseInfo.Handle);
-					}
-
-					//UnregisterRawInputMouse();	
-					break;
-				default:
-					return;
+				var deviceHandle = _deviceHandles.Find(item => item.Item1 == device.UUID);
+				_deviceHandles.Remove(deviceHandle);
 			}
 
 			if ((_registeredDevices.Count > 0) || (_messageHook == null))

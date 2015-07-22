@@ -51,7 +51,6 @@ namespace Gorgon.Input
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
 		public override bool SupportsKeyboardDevices => true;
-
 		#endregion
 
 		#region Methods.

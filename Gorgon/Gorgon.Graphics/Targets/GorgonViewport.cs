@@ -46,10 +46,8 @@ namespace Gorgon.Graphics
         /// An empty viewport.
         /// </summary>
 	    public static readonly GorgonViewport Empty = new GorgonViewport(true);
-        
-	    private readonly bool _isEmpty;      // Flag to indicate that the viewport is empty.
 
-        /// <summary>
+		/// <summary>
         /// The horizontal position of the viewport.
         /// </summary>
 	    public readonly float Left;
@@ -83,7 +81,10 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return whether the viewport is empty or not.
         /// </summary>
-	    public bool IsEmpty => _isEmpty;
+	    public bool IsEmpty
+        {
+	        get;
+        }
 
 		/// <summary>
         /// Property to return the right coordinate of the viewport.
@@ -120,7 +121,7 @@ namespace Gorgon.Graphics
 		    return ((left.Left.EqualsEpsilon(right.Left)) && (left.Top.EqualsEpsilon(right.Top))
 		            && (left.Width.EqualsEpsilon(right.Width)) && (left.Height.EqualsEpsilon(right.Height))
 		            && (left.MinimumZ.EqualsEpsilon(right.MinimumZ)) && (left.MaximumZ.EqualsEpsilon(right.MaximumZ))
-                    && (left._isEmpty == right._isEmpty));
+                    && (left.IsEmpty == right.IsEmpty));
 		}
 
 		/// <summary>
@@ -177,7 +178,7 @@ namespace Gorgon.Graphics
 			unchecked
 			{
 				return 281.GenerateHash(Left).GenerateHash(Left).GenerateHash(Width).GenerateHash(Height).
-						GenerateHash(MinimumZ).GenerateHash(MaximumZ).GenerateHash(_isEmpty);
+						GenerateHash(MinimumZ).GenerateHash(MaximumZ).GenerateHash(IsEmpty);
 			}
 		}
 
@@ -221,7 +222,7 @@ namespace Gorgon.Graphics
         /// <param name="isEmpty">Flag to indicate that the viewport is empty.</param>
         internal GorgonViewport(bool isEmpty)
         {
-            _isEmpty = isEmpty;
+            IsEmpty = isEmpty;
             Top = 0;
             Left = 0;
             Width = 0;
@@ -270,7 +271,7 @@ namespace Gorgon.Graphics
 		    Height = height;
 		    MinimumZ = minZ;
 		    MaximumZ = maxZ;
-		    _isEmpty = false;
+		    IsEmpty = false;
 		}
 
 		/// <summary>

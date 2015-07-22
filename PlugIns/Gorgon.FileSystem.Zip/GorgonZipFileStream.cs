@@ -38,6 +38,8 @@ namespace Gorgon.IO.Zip
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
+		// Flag to inidcate that the object was disposed.
+		private bool _disposed;
 		private ZipInputStream _zipStream;		// Input stream for the zip file.
 		private long _position;					// Position in the stream.
 		private long _basePosition;				// Base position in the stream.
@@ -206,12 +208,17 @@ namespace Gorgon.IO.Zip
 		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
 			if (disposing)
 			{
-				_zipStream?.Dispose();
-
-				_zipStream = null;
+				_zipStream.Dispose();
 			}
+
+			_disposed = true;
 
 			base.Dispose(disposing);
 		}

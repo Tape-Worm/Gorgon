@@ -239,13 +239,11 @@ namespace Gorgon.Input
 				// If we're not bound yet, then do nothing.
 				if ((Window == null) || (Form.ActiveForm != ParentForm) || ((ParentForm != Window) && (ParentForm.ActiveControl != Window)))
 				{
-					_isAcquired = false;
-					return;
+					value = false;
 				}
 
 				_service.AcquireDevice(this, value);
 				_isAcquired = value;
-
 				OnAcquireStateChanged();
 			}
 		}
@@ -258,7 +256,7 @@ namespace Gorgon.Input
 		}
 
 		/// <inheritdoc/>
-		public bool IsPolled => this is IGorgonDeviceRouting<T>;
+		public bool IsPolled => !(this is IGorgonDeviceRouting<T>);
 		#endregion
 
 		#region Methods.
@@ -364,7 +362,7 @@ namespace Gorgon.Input
 
 				// Let the service know that we're done.
 				_service.UnregisterDeviceForwarder(UUID);
-				_service.UnregisterDevice(this, _info);
+				_service.UnregisterDevice(this);
 
 				if ((!ParentForm.IsDisposed) && (!ParentForm.Disposing) && (!Window.IsDisposed) && (!Window.Disposing))
 				{

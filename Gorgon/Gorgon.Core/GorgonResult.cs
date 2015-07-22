@@ -93,28 +93,35 @@ namespace Gorgon.Core
 
 		#region Variables.
 		// Description of th error.
-		private readonly string _description;
 		// Error code.
-		private readonly int _code;
 		// Name of the error.
-		private readonly string _name;						
+
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the error message to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
-		public string Description => _description;
+		public string Description
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to set or return the error code to be sent along with the <see cref="GorgonException"/>.
 		/// </summary>
-		public int Code => _code;
+		public int Code
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Property to return the name of the error.
 		/// </summary>
-		public string Name => _name;
+		public string Name
+		{
+			get;
+		}
 
 		#endregion
 
@@ -225,9 +232,9 @@ namespace Gorgon.Core
 				throw new ArgumentException(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(description));
 			}
 
-			_name = name;
-			_description = description;
-			_code = code;
+			Name = name;
+			Description = description;
+			Code = code;
 		}
 		#endregion
 

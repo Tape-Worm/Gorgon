@@ -127,13 +127,20 @@
     <value>The buffer for raw input device information is too small: {0} bytes.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD" xml:space="preserve">
-    <value>Cannot bind the keyboard to the window. There is already a keyboard exclusively attached to the window.</value>
+    <value>Cannot bind the keyboard to the window. There is already a keyboard exclusively attached to the window or another keyboard device is active. 
+
+Exclusive mode cannot be used with more than one keyboard.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_MOUSE" xml:space="preserve">
-    <value>Cannot bind the mouse to the window. There is already a mouse exclusively attached to the window.</value>
+    <value>Cannot bind the mouse to the window. There is already a mouse exclusively attached to the window or another mouse device is active. 
+
+Exclusive mode cannot be used with more than one mouse.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_BIND_HID" xml:space="preserve">
     <value>Failed to bind the HID.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_BIND_INPUT_DEVICES" xml:space="preserve">
+    <value>Cannot bind raw input devices.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD" xml:space="preserve">
     <value>Failed to bind the keyboard device.</value>
@@ -157,6 +164,9 @@ Error code: 0x{1}</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_UNBIND_HID" xml:space="preserve">
     <value>Failed to unbind the HID.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_INPUT_DEVICES" xml:space="preserve">
+    <value>Cannot unbind raw input devices.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD" xml:space="preserve">
     <value>Failed to unbind the keyboard device.</value>

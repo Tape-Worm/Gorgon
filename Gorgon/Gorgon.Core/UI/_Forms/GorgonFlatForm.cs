@@ -121,7 +121,6 @@ namespace Gorgon.UI
 		private bool _border;
 		private FormWindowState _windowState = FormWindowState.Normal;
 		private FormWindowState _prevMinState = FormWindowState.Normal;
-		private Rectangle _restoreRect;
 		private GorgonFlatFormTheme _theme = new GorgonFlatFormTheme();
 		private int _captionHeight;
 		[AccessedThroughProperty("ContentArea")]
@@ -478,7 +477,11 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <returns>A <see cref="T:System.Drawing.Rectangle" /> that contains the location and size of the form in the normal window state.</returns>
 		[Browsable(false)]
-		public new Rectangle RestoreBounds => _restoreRect;
+		public new Rectangle RestoreBounds
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Gets or sets a value that indicates whether form is minimized, maximized, or normal.
@@ -502,7 +505,7 @@ namespace Gorgon.UI
 
 				if ((IsHandleCreated) && (value == FormWindowState.Maximized))
 				{
-					_restoreRect = Bounds;
+					RestoreBounds = Bounds;
 				}
 
 				if ((!IsHandleCreated) || (DesignMode))
@@ -512,7 +515,7 @@ namespace Gorgon.UI
 
 				if ((value == FormWindowState.Normal) && (_prevMinState == FormWindowState.Maximized))
 				{
-					SetBounds(_restoreRect.Left, _restoreRect.Top, _restoreRect.Width, _restoreRect.Height, BoundsSpecified.All);
+					SetBounds(RestoreBounds.Left, RestoreBounds.Top, RestoreBounds.Width, RestoreBounds.Height, BoundsSpecified.All);
 				}
 
 				if (value != FormWindowState.Maximized)
@@ -1341,7 +1344,7 @@ namespace Gorgon.UI
 							_windowState = FormWindowState.Normal;
 						}
 
-						_restoreRect = DesktopBounds;
+						RestoreBounds = DesktopBounds;
 						Padding = _currentPadding.Value;
 						break;
 					default:
@@ -1539,7 +1542,7 @@ namespace Gorgon.UI
 
 			InitializeComponent();
 
-			_restoreRect = Bounds;
+			RestoreBounds = Bounds;
 
 			ValidateWindowControls();
 		}
