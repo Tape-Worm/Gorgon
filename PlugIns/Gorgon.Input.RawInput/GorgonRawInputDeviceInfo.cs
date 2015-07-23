@@ -87,9 +87,9 @@ namespace Gorgon.Input.Raw
 			Handle = handle;
 
 			// Get the usage information for the device.			
-			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
+			/*RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
 			Usage = (HIDUsage)deviceInfo.hid.usUsage;
-			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
+			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;*/
 		}
 		#endregion
 	}

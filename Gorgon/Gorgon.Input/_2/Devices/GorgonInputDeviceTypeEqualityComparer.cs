@@ -20,43 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 3, 2015 3:42:52 PM
+// Created: Wednesday, July 15, 2015 12:05:59 AM
 // 
 #endregion
 
-using System;
-using Gorgon.Native;
+using System.Collections.Generic;
 
-namespace Gorgon.Input.Raw
+namespace Gorgon.Input
 {
 	/// <summary>
-	/// Extra information for the raw input data info structures.
+	/// Equality comparer for the <see cref="InputDeviceType"/> enumeration.
 	/// </summary>
-	interface IRawInputKeyboardInfo2
-		: IGorgonKeyboardInfo2
+	public class GorgonInputDeviceTypeEqualityComparer
+		: IEqualityComparer<InputDeviceType>
 	{
+		#region IEqualityComparer<DeviceTypeHandle> Members
 		/// <summary>
-		/// Property to return the handle to the device.
+		/// Determines whether the specified objects are equal.
 		/// </summary>
-		IntPtr Handle
+		/// <param name="x">The first object of type <see cref="InputDeviceType"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="InputDeviceType"/> to compare.</param>
+		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+		public bool Equals(InputDeviceType x, InputDeviceType y)
 		{
-			get;
+			return x.Equals(y);
 		}
 
 		/// <summary>
-		/// Property to return the HID usage.
+		/// Returns a hash code for this instance.
 		/// </summary>
-		HIDUsage Usage
+		/// <param name="obj">The <see cref="T:System.Object" /> for which a hash code is to be returned.</param>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+		public int GetHashCode(InputDeviceType obj)
 		{
-			get;
+			return obj.GetHashCode();
 		}
-
-		/// <summary>
-		/// Property to return the HID usage page.
-		/// </summary>
-		HIDUsagePage UsagePage
-		{
-			get;
-		}
+		#endregion
 	}
 }

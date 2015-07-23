@@ -26,14 +26,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
-using Microsoft.Win32;
 
 namespace Gorgon.Input.Raw
 {
@@ -98,173 +96,57 @@ namespace Gorgon.Input.Raw
 		#region Variables.
 		// The logging interface.
 		private readonly IGorgonLog _log;
-
 		// Hook into the window message procedure.
-		private RawInputMessageHooker _messageHook;
-
-		// The raw input hook into keyboard data.
+		private RawInputNative _messageHook;
+		// The raw input processor for device data.
 		private readonly Dictionary<Control, RawInputProcessor> _rawInputProcessors = new Dictionary<Control, RawInputProcessor>();
-
 		// A list of registered devices.
 		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
-
 		// Handles for registered devices.
 		private readonly List<Tuple<Guid, IntPtr>> _deviceHandles = new List<Tuple<Guid, IntPtr>>();
-
-		// List of enumerated devices.
-		private readonly Lazy<IEnumerable<RAWINPUTDEVICELIST>> _enumeratedDevices;
+		// The interface used to enumerate raw input devices.
+		private readonly RawInputEnumerator _deviceEnumerator = new RawInputEnumerator();
+		// The device information interface.
+		private readonly RawInputDeviceInfo _deviceInfo;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve the class name for the device.
-		/// </summary>
-		/// <param name="registryPath">Path to the class information in the registry.</param>
-		/// <returns>The class name for the device.</returns>
-		private string GetClassName(string registryPath)
-		{
-			if (string.IsNullOrWhiteSpace(registryPath))
-			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
-			}
-
-			string[] regValue = registryPath.Split('#');
-
-			regValue[0] = regValue[0].Substring(4);
-
-			// Don't add RDP devices.
-			if ((regValue.Length > 0) &&
-				(regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
-			{
-				_log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
-				return null;
-			}
-
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-																			false))
-			{
-				if (deviceKey?.GetValue("DeviceDesc") == null)
-				{
-					return null;
-				}
-
-				if (deviceKey.GetValue("Class") != null)
-				{
-					return deviceKey.GetValue("Class").ToString();
-				}
-
-				// Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
-				if (deviceKey.GetValue("ClassGUID") == null)
-				{
-					return null;
-				}
-
-				string classGUID = deviceKey.GetValue("ClassGUID").ToString();
-
-				if (string.IsNullOrWhiteSpace(classGUID))
-				{
-					return null;
-				}
-
-				using (RegistryKey classKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Control\Class\{classGUID}"))
-				{
-					return classKey?.GetValue("Class") == null ? null : classKey.GetValue("Class").ToString();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Function to retrieve the description of the raw input device from the registry.
-		/// </summary>
-		/// <param name="registryPath">Path to the registry key that holds the device description.</param>
-		/// <returns>The device description.</returns>
-		private string GetDeviceDescription(string registryPath)
-		{
-			if (string.IsNullOrWhiteSpace(registryPath))
-			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
-			}
-
-			string[] regValue = registryPath.Split('#');
-
-			regValue[0] = regValue[0].Substring(4);
-
-			// Don't add RDP devices.
-			if ((regValue.Length > 0) &&
-				(regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
-			{
-				_log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
-				return null;
-			}
-
-			using (RegistryKey deviceKey = Registry.LocalMachine.OpenSubKey($@"System\CurrentControlSet\Enum\{regValue[0]}\{regValue[1]}\{regValue[2]}",
-																			false))
-			{
-				if (deviceKey?.GetValue("DeviceDesc") == null)
-				{
-					return null;
-				}
-
-				regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-
-				return regValue[regValue.Length - 1];
-			}
-
-		}
-
-		/// <summary>
 		/// Function to retrieve the device name.
 		/// </summary>
-		/// <param name="deviceHandle">Handle to the device.</param>
-		/// <param name="deviceType">Type of device.</param>
+		/// <param name="device">Raw input device to gather information from.</param>
 		/// <returns>A device name structure.</returns>
-		private T GetRawInputDeviceInfo<T>(IntPtr deviceHandle, InputDeviceType deviceType)
+		private T GetDeviceInfo<T>(ref RAWINPUTDEVICELIST device)
 			where T : class, IGorgonInputDeviceInfo2
 		{
-			int dataSize = 0;
-
 			// If we're running under a terminal server session, then throw an exception.
-			// At this point, Gorgon's raw input does not run very well under RDP (especially the mouse), so we'll disable it.
+			// Raw input does not run very well under RDP (especially the mouse), so we'll disable it.
 			if (SystemInformation.TerminalServerSession)
 			{
 				return null;
 			}
 
-			if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
-			{
-				throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
-			}
+			string deviceName = _deviceInfo.GetDeviceName(ref device);
 
-			// Do nothing if we have no data.
-			if (dataSize == 0)
+			if (string.IsNullOrWhiteSpace(deviceName))
 			{
 				return null;
 			}
 
-			string regPath;
-
-			unsafe
+			RID_DEVICE_INFO deviceInfo = _deviceInfo.GetDeviceInfo(ref device);
+			string className = _deviceInfo.GetDeviceClass(deviceName);
+			string deviceDescription = _deviceInfo.GetDeviceDescription(deviceName);
+			
+			switch (deviceInfo.dwType)
 			{
-				char* data = stackalloc char[dataSize];
+				case RawInputType.Keyboard:
+					var keyboardInfo = new RawInputKeyboardInfo2(deviceDescription, className, deviceName, device.Device);
 
-				if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
-				{
-					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
-				}
+					keyboardInfo.AssignRawInputDeviceInfo(ref deviceInfo.keyboard);
 
-				// The strings that come back from native land will end with a NULL terminator, so crop that off.
-				regPath = new string(data, 0, dataSize - 1);
-			}
-
-			string className = GetClassName(regPath);
-			string deviceDescription = GetDeviceDescription(regPath);
-
-			switch (deviceType)
-			{
-				case InputDeviceType.Keyboard:
-					return (new RawInputKeyboardInfo2(deviceDescription, className, regPath, deviceHandle)) as T;
-				case InputDeviceType.Mouse:
-					return (new RawInputMouseInfo2(deviceDescription, className, regPath, deviceHandle)) as T;
+                    return keyboardInfo as T;
+				case RawInputType.Mouse:
+					return (new RawInputMouseInfo2(deviceDescription, className, deviceName, device.Device)) as T;
 				default:
 					return null;
 			}
@@ -291,13 +173,14 @@ namespace Gorgon.Input.Raw
 				return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
 			}
 			
-			bool callDefault = true;
+			// Get the device data from the raw input system.
+			RAWINPUT data = _messageHook.GetRawInputData(lParam);
 
 			// Find our device GUID and route appropriately.
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _deviceHandles.Count; ++i)
 			{
-				if ((_deviceHandles[i].Item2 != lParam) && (_deviceHandles[i].Item2 != IntPtr.Zero))
+				if ((_deviceHandles[i].Item2 != data.Header.Device) && (_deviceHandles[i].Item2 != IntPtr.Zero))
 				{
 					continue;
 				}
@@ -311,14 +194,12 @@ namespace Gorgon.Input.Raw
 					continue;
 				}
 
-				RAWINPUT data = _messageHook.GetRawInputData(lParam);
-
 				switch (data.Header.Type)
 				{
 					case RawInputType.Keyboard:
 						RawInputProcessor processor;
 
-						// There's no hook on this window, so we can't send anything.
+						// There's no processor on this window, so we can't send anything.
 						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
 						{
 							continue;
@@ -331,14 +212,12 @@ namespace Gorgon.Input.Raw
 							continue;
 						}
 						
-						RouteKeyboardData(device.UUID, ref keyboardData);
-
-						callDefault = false;
+						EventRouter.RouteToKeyboard(device, ref keyboardData);
 						break;
 				}
 			}
 
-			return callDefault ? _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam) : IntPtr.Zero;
+			return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
 			/*
 			// If we have a pointing device set as exclusive, then block all WM_MOUSE messages.
 			if ((_exclusiveDevices & InputDeviceExclusivity.Mouse) == InputDeviceExclusivity.Mouse)
@@ -368,7 +247,7 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonKeyboardInfo2> OnEnumerateKeyboards()
 		{
-			IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Value.Where(item => item.DeviceType == RawInputType.Keyboard);
+			RAWINPUTDEVICELIST[] devices = _deviceEnumerator.Enumerate(InputDeviceType.Keyboard);
 
 			// Put the system keyboard first.
 			var result = new List<IGorgonKeyboardInfo2>
@@ -376,9 +255,10 @@ namespace Gorgon.Input.Raw
 				             new RawInputKeyboardInfo2(Resources.GORINP_RAW_SYSTEM_KEYBOARD, "Keyboard", "SystemKeyboard", IntPtr.Zero)
 			             };
 
-			foreach (var keyboardDevice in devices)
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < devices.Length; ++i)
 			{
-				IRawInputKeyboardInfo2 info = GetRawInputDeviceInfo<IRawInputKeyboardInfo2>(keyboardDevice.Device, InputDeviceType.Keyboard);
+				RawInputKeyboardInfo2 info = GetDeviceInfo<RawInputKeyboardInfo2>(ref devices[i]);
 
 				if (info == null)
 				{
@@ -397,16 +277,16 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
 		{
-			IEnumerable<RAWINPUTDEVICELIST> devices = _enumeratedDevices.Value.Where(item => item.DeviceType == RawInputType.Mouse);
+			RAWINPUTDEVICELIST[] devices = _deviceEnumerator.Enumerate(InputDeviceType.Mouse);
 			// Put the system mouse first.
 			var result = new List<IGorgonMouseInfo2>
 			             {
 				             new RawInputMouseInfo2(Resources.GORINP_RAW_SYSTEM_MOUSE, "Mouse", "SystemMouse", IntPtr.Zero)
 			             };
 
-			foreach (RAWINPUTDEVICELIST mouse in devices)
+			for (int i = 0; i < devices.Length; ++i)
 			{
-				IRawInputMouseInfo2 info = GetRawInputDeviceInfo<IRawInputMouseInfo2>(mouse.Device, InputDeviceType.Mouse);
+				RawInputMouseInfo2 info = GetDeviceInfo<RawInputMouseInfo2>(ref devices[i]);
 
 				if (info == null)
 				{
@@ -435,7 +315,7 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <inheritdoc/>
-		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, bool exclusive)
+		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive)
 		{
 			IntPtr deviceHandle;
 		
@@ -444,7 +324,7 @@ namespace Gorgon.Input.Raw
 			{
 				case InputDeviceType.Keyboard:
 					// Keep track of the keyboard we're registering so we can forward data to it.
-					deviceHandle = ((IRawInputKeyboardInfo2)deviceInfo).Handle;
+					deviceHandle = ((RawInputKeyboardInfo2)deviceInfo).Handle;
 
 					// Find any other registered keyboards.
 					var keyboards = from keyboardDevice in _registeredDevices
@@ -458,13 +338,11 @@ namespace Gorgon.Input.Raw
 						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD, nameof(exclusive));
 					}
 					// ReSharper enable PossibleMultipleEnumeration
-
 					break;
 				case InputDeviceType.Mouse:
-					//RegisterRawInputMouse(window.Handle);
 
 					// Keep track of the mice we're registering.
-					deviceHandle = ((IRawInputMouseInfo2)deviceInfo).Handle;
+					deviceHandle = ((RawInputMouseInfo2)deviceInfo).Handle;
 					break;
 				default:
 					return;
@@ -485,12 +363,12 @@ namespace Gorgon.Input.Raw
 			if (_messageHook == null)
 			{
 				// Initialize our message hook if we haven't done so by now.
-				_messageHook = new RawInputMessageHooker(parentForm.Handle, RawWndProc);
+				_messageHook = new RawInputNative(parentForm.Handle, RawWndProc);
 				_messageHook.HookWindow();
 				_messageHook.RegisterRawInputDevices();
 			}
 
-			_messageHook.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
+			exclusive = _messageHook.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
 		}
 
 		/// <inheritdoc/>
@@ -528,7 +406,7 @@ namespace Gorgon.Input.Raw
 		public GorgonRawInputService2(IGorgonLog log)
 		{
 			_log = log;
-			_enumeratedDevices = new Lazy<IEnumerable<RAWINPUTDEVICELIST>>(Win32API.EnumerateInputDevices);
+			_deviceInfo = new RawInputDeviceInfo(_log);
 		}
 		#endregion
 	}

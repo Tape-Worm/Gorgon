@@ -44,6 +44,7 @@ namespace Gorgon.Input
 		/// Function to route input device data into events for the device.
 		/// </summary>
 		/// <param name="data">The data to route.</param>
-		void ParseData(ref T data);
+		/// <returns><b>true</b> if the data was parsed successfully, <b>false</b> if not.</returns>
+		bool ParseData(ref T data);
 	}
 }

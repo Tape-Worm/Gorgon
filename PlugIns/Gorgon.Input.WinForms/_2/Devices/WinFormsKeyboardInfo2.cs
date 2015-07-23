@@ -137,7 +137,6 @@ namespace Gorgon.Input.WinForms
 
 		/// <inheritdoc/>
 		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
-
 		#endregion
 	}
 }

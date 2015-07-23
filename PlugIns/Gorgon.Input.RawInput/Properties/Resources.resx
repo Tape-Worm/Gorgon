@@ -117,6 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR" xml:space="preserve">
+    <value>Could not enumerate the raw input devices.
+
+Win32 Error: {0}</value>
+  </data>
   <data name="GORINP_RAW_DESC_KEYBOARD" xml:space="preserve">
     <value>{0} ({1} key {2} keyboard)</value>
   </data>
@@ -155,8 +160,10 @@ Exclusive mode cannot be used with more than one mouse.</value>
     <value>Cannot read capabilities from joystick ID [{0}].
 Error code: 0x{1}</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_READ_DATA" xml:space="preserve">
-    <value>Error reading raw input data.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA" xml:space="preserve">
+    <value>Error reading raw input data.
+
+Win32 Error: {0}</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_READ_JOYSTICK_DATA" xml:space="preserve">
     <value>Cannot read data from joystick ID [{0}].

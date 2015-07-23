@@ -45,7 +45,7 @@ namespace Gorgon.Input.Raw
 	/// <summary>
 	/// Hooks a window procedure with a custom message filter.
 	/// </summary>
-	class RawInputMessageHooker
+	class RawInputNative
 		: IDisposable
 	{
 		#region Variables.
@@ -121,7 +121,7 @@ namespace Gorgon.Input.Raw
 
 			if (retVal == -1)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 			}
 
 			// Get actual data.
@@ -137,7 +137,7 @@ namespace Gorgon.Input.Raw
 				if ((retVal == -1)
 				    || (retVal != dataSize))
 				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
 
 				RAWINPUT result = *((RAWINPUT*)rawInputPtr);
@@ -225,25 +225,22 @@ namespace Gorgon.Input.Raw
 			}
 
 			ushort usageFlag = 0;
+			RawInputDeviceFlags flags = RawInputDeviceFlags.None;
 
 			// Find the appropriate HID usage flag.
 			switch (deviceType)
 			{
 				case InputDeviceType.Keyboard:
 					usageFlag = (ushort)HIDUsage.Keyboard;
+					flags = exclusive ? RawInputDeviceFlags.NoLegacy : RawInputDeviceFlags.None;
 					break;
 				case InputDeviceType.Mouse:
 					usageFlag = (ushort)HIDUsage.Mouse;
+					flags = exclusive ? RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.CaptureMouse : RawInputDeviceFlags.None;
 					break;
 			}
 
 			bool result = false;
-			RawInputDeviceFlags flags = exclusive ? RawInputDeviceFlags.InputSink | RawInputDeviceFlags.NoLegacy : RawInputDeviceFlags.InputSink;
-
-			if (deviceType == InputDeviceType.Mouse)
-			{
-				flags |= RawInputDeviceFlags.CaptureMouse;
-			}
 
 			// Find the device we're looking for, and alter its settings.
 			for (int i = 0; i < devices.Length; ++i)
@@ -258,7 +255,7 @@ namespace Gorgon.Input.Raw
 				device.Flags = flags;
 
 				devices[i] = device;
-				result = true;
+				result = exclusive;
 				break;
 			}
 
@@ -291,20 +288,20 @@ namespace Gorgon.Input.Raw
 
 		#region Constructors/Finalizers
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RawInputMessageHooker"/> class.
+		/// Initializes a new instance of the <see cref="RawInputNative"/> class.
 		/// </summary>
 		/// <param name="windowHandle">The window handle to hook.</param>
 		/// <param name="newProc">The new window procedure to install.</param>
-		public RawInputMessageHooker(IntPtr windowHandle, WndProc newProc)
+		public RawInputNative(IntPtr windowHandle, WndProc newProc)
 		{
 			_windowHandle = windowHandle;
 			_wndProc = newProc;
 		}
 
 		/// <summary>
-		/// Finalizes an instance of the <see cref="RawInputMessageHooker"/> class.
+		/// Finalizes an instance of the <see cref="RawInputNative"/> class.
 		/// </summary>
-		~RawInputMessageHooker()
+		~RawInputNative()
 		{
 			UnhookWindowProc();
 		}

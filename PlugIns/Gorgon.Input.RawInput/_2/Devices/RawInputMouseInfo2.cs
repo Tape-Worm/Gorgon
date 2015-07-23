@@ -35,14 +35,37 @@ namespace Gorgon.Input.Raw
 	/// The Raw Input implementation of mouse information.
 	/// </summary>
 	class RawInputMouseInfo2
-		: IRawInputMouseInfo2
+		: IGorgonMouseInfo2
 	{
 		#region Variables.
 		// Device description.
 		private readonly string _deviceDescription;
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Properties.
+		/// <summary>
+		/// Property to return the handle to the device.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve and parse out the device information settings for a raw input mouse.
+		/// </summary>
+		/// <param name="deviceInfo">Raw input device information.</param>
+		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_MOUSE deviceInfo)
+		{
+			ButtonCount = deviceInfo.dwNumberOfButtons;
+			SamplingRate = deviceInfo.dwSampleRate;
+			HasHorizontalWheel = deviceInfo.fHasHorizontalWheel;
+		}
+		#endregion
+
+		#region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RawInputMouseInfo"/> class.
 		/// </summary>
@@ -58,23 +81,9 @@ namespace Gorgon.Input.Raw
 
 			Handle = handle;
 
-			// Get the usage information for the device.			
-			if (handle != IntPtr.Zero)
-			{
-				RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
-				Usage = (HIDUsage)deviceInfo.hid.usUsage;
-				UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-
-				ButtonCount = deviceInfo.mouse.dwNumberOfButtons;
-				SamplingRate = deviceInfo.mouse.dwSampleRate;
-				HasHorizontalWheel = deviceInfo.mouse.fHasHorizontalWheel;
-			}
-			else
-			{
-				ButtonCount = SystemInformation.MouseButtons;
-				SamplingRate = 0;
-				HasHorizontalWheel = false;
-			}
+			ButtonCount = SystemInformation.MouseButtons;
+			SamplingRate = 0;
+			HasHorizontalWheel = false;
 		}
 		#endregion
 
@@ -96,52 +105,28 @@ namespace Gorgon.Input.Raw
 
 		/// <inheritdoc/>
 		public InputDeviceType InputDeviceType => InputDeviceType.Mouse;
-
 		#endregion
 
-		#region IRawInputMouseInfo Members
-		/// <summary>
-		/// Property to return the handle to the device.
-		/// </summary>
-		public IntPtr Handle
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the HID usage.
-		/// </summary>
-		public HIDUsage Usage
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the HID usage page.
-		/// </summary>
-		public HIDUsagePage UsagePage
-		{
-			get;
-		}
-		#endregion
-
-		#region IGorgonMouseInfo Members
+		#region IGorgonMouseInfo2 Members
 		/// <inheritdoc/>
 		public int ButtonCount
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public int SamplingRate
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public bool HasHorizontalWheel
 		{
 			get;
+			private set;
 		}
 		#endregion
 	}

@@ -61,6 +61,17 @@ namespace Gorgon.Input.Raw.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not enumerate the raw input devices.
+        ///
+        ///Win32 Error: {0}.
+        /// </summary>
+        internal static string GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR {
+            get {
+                return ResourceManager.GetString("GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} ({1} key {2} keyboard).
         /// </summary>
         internal static string GORINP_RAW_DESC_KEYBOARD {
@@ -165,11 +176,13 @@ namespace Gorgon.Input.Raw.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error reading raw input data..
+        ///   Looks up a localized string similar to Error reading raw input data.
+        ///
+        ///Win32 Error: {0}.
         /// </summary>
-        internal static string GORINP_RAW_ERR_CANNOT_READ_DATA {
+        internal static string GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA {
             get {
-                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_READ_DATA", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA", resourceCulture);
             }
         }
         

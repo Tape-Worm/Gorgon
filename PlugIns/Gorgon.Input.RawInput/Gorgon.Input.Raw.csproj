@@ -93,14 +93,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_2\Devices\InputDeviceTypeEqualityComparer.cs" />
     <Compile Include="_2\Devices\RawInputProcessor.cs" />
     <Compile Include="_2\Devices\RawInputKeyboardInfo2.cs" />
     <Compile Include="_2\Devices\RawInputMouseInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IRawInputKeyboardInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IRawInputMouseInfo2.cs" />
     <Compile Include="_2\GorgonRawInputService2.cs" />
-    <Compile Include="_2\RawInputMessageHooker.cs" />
+    <Compile Include="_2\Native\RawInputDeviceInfo.cs" />
+    <Compile Include="_2\Native\RawInputEnumerator.cs" />
+    <Compile Include="_2\Native\RawInputNative.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

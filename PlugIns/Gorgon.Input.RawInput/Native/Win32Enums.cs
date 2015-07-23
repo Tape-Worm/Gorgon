@@ -619,7 +619,9 @@ namespace Gorgon.Native
 		/// <summary>If set, the application-defined keyboard device hotkeys are not handled. However, the system hotkeys; for example, ALT+TAB and CTRL+ALT+DEL, are still handled. By default, all keyboard hotkeys are handled. NoHotKeys can be specified even if NoLegacy is not specified and WindowHandle is NULL.</summary>
 		NoHotKeys = 0x00000200,
 		/// <summary>If set, application keys are handled.  NoLegacy must be specified.  Keyboard only.</summary>
-		AppKeys = 0x00000400
+		AppKeys = 0x00000400,
+		/// <summary>If set, this enables the caller to receive input in the background only if the foreground application does not process it. In other words, if the foreground application is not registered for raw input, then the background application that is registered will receive the input.</summary>
+		InputSinkEx = 0x00001000
 	}
 
 	/// <summary>

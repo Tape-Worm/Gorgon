@@ -93,7 +93,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -150,7 +150,7 @@ namespace Gorgon.Input.Raw
 		{
 			if (string.IsNullOrWhiteSpace(registryPath))
 			{
-				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA, nameof(registryPath));
+				throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, nameof(registryPath));
 			}
 
 			string[] regValue = registryPath.Split('#');
@@ -201,7 +201,7 @@ namespace Gorgon.Input.Raw
 
 			if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
 			{
-				throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+				throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 			}
 
 			// Do nothing if we have no data.
@@ -218,7 +218,7 @@ namespace Gorgon.Input.Raw
 
 				if (Win32API.GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
 				{
-					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
 
 				// The strings that come back from native land will end with a NULL terminator, so crop that off.
@@ -728,7 +728,7 @@ namespace Gorgon.Input.Raw
 		public GorgonRawInputService()
 			: base(Resources.GORINP_RAW_SERVICEDESC)
 		{
-			_enumeratedDevices = new Lazy<IEnumerable<RAWINPUTDEVICELIST>>(Win32API.EnumerateInputDevices);
+			_enumeratedDevices = null;//new Lazy<IEnumerable<RAWINPUTDEVICELIST>>(Win32API.EnumerateInputDevices);
 		}
 		#endregion
 	}

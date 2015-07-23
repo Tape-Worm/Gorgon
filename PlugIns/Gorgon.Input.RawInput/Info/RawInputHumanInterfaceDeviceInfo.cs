@@ -32,6 +32,7 @@ namespace Gorgon.Input.Raw
 	/// <summary>
 	/// The Raw Input implementation of human interface device information.
 	/// </summary>
+	[Obsolete("HID devices are no longer supported.")]
 	class RawInputHumanInterfaceDeviceInfo
 		: IRawInputHumanInterfaceDeviceInfo
 	{
@@ -52,14 +53,6 @@ namespace Gorgon.Input.Raw
 			UUID = uuid;
 
 			Handle = handle;
-
-			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
-			Usage = (HIDUsage)deviceInfo.hid.usUsage;
-			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-
-			ProductID = deviceInfo.hid.dwProductId;
-			VendorID = deviceInfo.hid.dwVendorId;
-			Version = deviceInfo.hid.dwVersionNumber;
 		}
 		#endregion
 

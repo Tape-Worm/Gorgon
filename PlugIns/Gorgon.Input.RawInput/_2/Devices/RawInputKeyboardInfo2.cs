@@ -34,11 +34,39 @@ namespace Gorgon.Input.Raw
 	/// The Raw Input implementation of keyboard information.
 	/// </summary>
 	class RawInputKeyboardInfo2
-		: IRawInputKeyboardInfo2
+		: IGorgonKeyboardInfo2
 	{
 		#region Variables.
 		// Device description.
 		private readonly string _deviceDescription;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the handle for the device.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve and parse out the device information settings for a raw input keyboard.
+		/// </summary>
+		/// <param name="deviceInfo">Raw input device information.</param>
+		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_KEYBOARD deviceInfo)
+		{
+			KeyCount = deviceInfo.dwNumberOfKeysTotal;
+			IndicatorCount = deviceInfo.dwNumberOfIndicators;
+			FunctionKeyCount = deviceInfo.dwNumberOfFunctionKeys;
+
+			if (Enum.IsDefined(typeof(KeyboardType), deviceInfo.dwType))
+			{
+				KeyboardType = (KeyboardType)deviceInfo.dwType;
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -54,7 +82,6 @@ namespace Gorgon.Input.Raw
 			_deviceDescription = deviceDescription;
 			ClassName = className;
 			HumanInterfaceDevicePath = hidPath;
-
 			Handle = handle;
 
 			KeyboardType = Win32API.KeyboardType;
@@ -99,25 +126,6 @@ namespace Gorgon.Input.Raw
 					IndicatorCount = -1;
 					break;
 			}
-
-			// Get the usage information for the device.			
-			if (handle == IntPtr.Zero)
-			{
-				return;
-			}
-
-			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
-			Usage = (HIDUsage)deviceInfo.hid.usUsage;
-			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-
-			KeyCount = deviceInfo.keyboard.dwNumberOfKeysTotal;
-			IndicatorCount = deviceInfo.keyboard.dwNumberOfIndicators;
-			FunctionKeyCount = deviceInfo.keyboard.dwNumberOfFunctionKeys;
-
-			if (Enum.IsDefined(typeof(KeyboardType), deviceInfo.keyboard.dwType))
-			{
-				KeyboardType = (KeyboardType)deviceInfo.keyboard.dwType;
-			}
 		}
 		#endregion
 
@@ -126,24 +134,28 @@ namespace Gorgon.Input.Raw
 		public int KeyCount
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public int IndicatorCount
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public int FunctionKeyCount
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public KeyboardType KeyboardType
 		{
 			get;
+			private set;
 		}
 		#endregion
 
@@ -165,27 +177,6 @@ namespace Gorgon.Input.Raw
 
 		/// <inheritdoc/>
 		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
-
-		#endregion
-
-		#region IRawInputKeyboardInfo Members
-		/// <inheritdoc/>
-		public IntPtr Handle
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public HIDUsage Usage
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public HIDUsagePage UsagePage
-		{
-			get;
-		}
 		#endregion
 	}
 }

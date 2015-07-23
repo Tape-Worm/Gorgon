@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -34,29 +33,21 @@ namespace Gorgon.Input
 	public abstract class GorgonInputService2
 		: IGorgonInputService
 	{
-		#region Variables.
-		// A list of routers used to send data to a registered keyboard device.
-		private readonly Dictionary<Guid, IGorgonDeviceRouting<GorgonKeyboardData>> _keyboardRouters = new Dictionary<Guid, IGorgonDeviceRouting<GorgonKeyboardData>>();
+		#region Properties.
+		/// <summary>
+		/// Property to return the router used to pass event data to the appropriate devices.
+		/// </summary>
+		/// <remarks>
+		/// Implementors of an input service must use the method provided by the <see cref="GorgonInputDeviceEventRouting"/> type to ensure that events received for the device are forwarded to the correct 
+		/// <see cref="IGorgonInputDevice"/>. Failure to do so will keep the device from updating its state and from triggering any of its own events.
+		/// </remarks>
+		protected GorgonInputDeviceEventRouting EventRouter
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to route keyboard data on to the appropriate device.
-		/// </summary>
-		/// <param name="uuid">The unique ID for the device.</param>
-		/// <param name="data">Data to send to the device.</param>
-		protected void RouteKeyboardData(Guid uuid, ref GorgonKeyboardData data)
-		{
-			IGorgonDeviceRouting<GorgonKeyboardData> router;
-
-			if (!_keyboardRouters.TryGetValue(uuid, out router))
-			{
-				return;
-			}
-
-			router.ParseData(ref data);
-		}
-
 		/// <summary>
 		/// Function to acquire or unacquire a device.
 		/// </summary>
@@ -80,7 +71,7 @@ namespace Gorgon.Input
 		/// Plug in implementors will use this method to ensure that required functionality is present when a device is bound to a window. This method will be called when the <see cref="IGorgonInputDevice.BindWindow"/> 
 		/// method is called.
 		/// </remarks>
-		protected internal abstract void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, bool exclusive);
+		protected internal abstract void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive);
 
 		/// <summary>
 		/// Function to unregister a device when it unbinds from a window.
@@ -127,50 +118,15 @@ namespace Gorgon.Input
 		/// </para>
 		/// </remarks>
 		protected abstract IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks();
+		#endregion
 
+		#region Constructor
 		/// <summary>
-		/// Function to register a keyboard forwarder method with the input service.
+		/// Initializes a new instance of the <see cref="GorgonInputService2"/> class.
 		/// </summary>
-		/// <param name="uuid">The unique ID for the device object.</param>
-		/// <param name="device">The keyboard device to communicate with.</param>
-		/// <remarks>
-		/// This method will register the forwarder method on the <see cref="GorgonKeyboard2"/> device so that the service can pass messages to it when they come in.
-		/// </remarks>
-		internal void RegisterKeyboardForwarder<T>(Guid uuid, IGorgonDeviceRouting<T> device)
-			where T : struct
+		protected GorgonInputService2()
 		{
-			switch (device.DeviceType)
-			{
-				case InputDeviceType.Keyboard:
-					if (_keyboardRouters.ContainsKey(uuid))
-					{
-						return;
-					}
-
-					_keyboardRouters.Add(uuid, (IGorgonDeviceRouting<GorgonKeyboardData>)device);
-					break;
-				case InputDeviceType.Mouse:
-					break;
-				case InputDeviceType.Joystick:
-					break;
-			}
-		}
-
-		/// <summary>
-		/// Function to unregister a device forwarder method from the input service.
-		/// </summary>
-		/// <param name="uuid">The unique ID for the device object.</param>
-		/// <remarks>
-		/// This method will remove the forwarder method on the <see cref="IGorgonInputDevice"/> device so that the service can stop passing messages to it when they come in.
-		/// </remarks>
-		internal void UnregisterDeviceForwarder(Guid uuid)
-		{
-			if (!_keyboardRouters.ContainsKey(uuid))
-			{
-				return;
-			}
-
-			_keyboardRouters.Remove(uuid);
+			EventRouter = new GorgonInputDeviceEventRouting();
 		}
 		#endregion
 

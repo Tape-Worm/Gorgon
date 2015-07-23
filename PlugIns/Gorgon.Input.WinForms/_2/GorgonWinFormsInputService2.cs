@@ -38,101 +38,64 @@ namespace Gorgon.Input.WinForms
 		: GorgonInputService2
 	{
 		#region Variables.
-		// The hook used to translate windows forms keyboard messages.
-		private readonly Dictionary<Control, WinFormsKeyboardHook> _keyboardHooks = new Dictionary<Control, WinFormsKeyboardHook>();
-
 		// A list of devices registered with the service.
-		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
+		private readonly List<IGorgonInputDevice> _registeredDevices = new List<IGorgonInputDevice>();
+		// The raw input processor for device data.
+		private readonly Dictionary<Control, WinFormsKeyboardHook> _winFormsProcessors = new Dictionary<Control, WinFormsKeyboardHook>();
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to route keyboard event messages to the proper object.
-		/// </summary>
-		/// <param name="hookWindow">The window broadcasting the event.</param>
-		/// <param name="data">The keyboard data to send.</param>
-		private void RouteKeyboardEvent(Control hookWindow, GorgonKeyboardData data)
-		{
-			IGorgonInputDevice device =
-				_registeredDevices.First(item => item.Value.IsAcquired && item.Value.Window == hookWindow && item.Value is IGorgonKeyboard).Value;
-
-			if (device == null)
-			{
-				return;
-			}
-
-			// Broadcast the message to all keyboard device objects hooked into the window being notified.
-			RouteKeyboardData(device.UUID, ref data);
-		}
-
 		/// <inheritdoc/>
 		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
 		{
-			WinFormsKeyboardHook hook;
+			WinFormsKeyboardHook processor;
 
-			if (!_keyboardHooks.TryGetValue(device.Window, out hook))
+			if (!_winFormsProcessors.TryGetValue(device.Window, out processor))
 			{
 				return;
 			}
 
 			if (acquisitionState)
 			{
-				hook.RegisterEvents();
+				processor.RegisterEvents();
 			}
 			else
 			{
-				hook.UnregisterEvents();
+				processor.UnregisterEvents();
 			}
 		}
 
 		/// <inheritdoc/>
-		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, bool exclusive)
+		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive)
 		{
-			// Register the exclusive devices with the service so it knows how to handle messages.
-			switch (deviceInfo.InputDeviceType)
+			if (exclusive)
 			{
-				case InputDeviceType.Keyboard:
+				exclusive = false;
+			}
 
-					if (!_keyboardHooks.ContainsKey(window))
-					{
-						var keyboardHook = _keyboardHooks[window] = new WinFormsKeyboardHook(window);
+			if (!_winFormsProcessors.ContainsKey(window))
+			{
+				_winFormsProcessors.Add(window, new WinFormsKeyboardHook(window, EventRouter, _registeredDevices));
+			}
 
-						keyboardHook.KeyboardEvent = RouteKeyboardEvent;
-					}
-
-
-					if (!_registeredDevices.ContainsKey(device.UUID))
-					{
-						_registeredDevices[device.UUID] = device;
-					}
-					break;
-				case InputDeviceType.Mouse:
-					break;
+			if (!_registeredDevices.Contains(device))
+			{
+				_registeredDevices.Add(device);
 			}
 		}
 
 		/// <inheritdoc/>
 		protected override void UnregisterDevice(IGorgonInputDevice device)
 		{
-			// TODO: Change to using message processors like in RawInput.
-			//switch (deviceInfo.InputDeviceType)
-			//{
-//				case InputDeviceType.Keyboard:
-					if (_keyboardHooks.Count(item => item.Key == device.Window) == 1)
-					{
-						_keyboardHooks[device.Window].KeyboardEvent = null;
-					}
+			if (_winFormsProcessors.Count(item => item.Value.Window == device.Window) == 1)
+			{
+				_winFormsProcessors.Remove(device.Window);
+			}
 
-					_keyboardHooks.Remove(device.Window);
-
-					if (_registeredDevices.ContainsKey(device.UUID))
-					{
-						_registeredDevices.Remove(device.UUID);
-					}
-//					break;
-//				case InputDeviceType.Mouse:
-//					break;
-			//}
+			if (_registeredDevices.Contains(device))
+			{
+				_registeredDevices.Remove(device);
+			}
 		}
 
 		/// <inheritdoc/>
@@ -154,6 +117,15 @@ namespace Gorgon.Input.WinForms
 		protected override IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks()
 		{
 			return new IGorgonJoystickInfo2[0];
+		}
+		
+		/// <summary>
+		/// Function to retrieve a read only list of the registered devices.
+		/// </summary>
+		/// <returns>A read only list of the registered devices.</returns>
+		public IReadOnlyList<IGorgonInputDevice> GetInputDevice()
+		{
+			return _registeredDevices;
 		}
 		#endregion
 	}

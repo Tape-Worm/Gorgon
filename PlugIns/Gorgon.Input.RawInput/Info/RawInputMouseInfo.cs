@@ -57,13 +57,13 @@ namespace Gorgon.Input.Raw
 			// Get the usage information for the device.			
 			if (handle != IntPtr.Zero)
 			{
-				RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
+				/*RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
 				Usage = (HIDUsage)deviceInfo.hid.usUsage;
 				UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
 
 				ButtonCount = deviceInfo.mouse.dwNumberOfButtons;
 				SamplingRate = deviceInfo.mouse.dwSampleRate;
-				HasHorizontalWheel = deviceInfo.mouse.fHasHorizontalWheel;
+				HasHorizontalWheel = deviceInfo.mouse.fHasHorizontalWheel;*/
 			}
 			else
 			{

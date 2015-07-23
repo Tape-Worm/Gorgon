@@ -37,7 +37,7 @@ namespace Gorgon.Input
 	/// The base class used to create keyboard interfaces.
 	/// </summary>
 	public sealed class GorgonKeyboard2
-		: GorgonInputDevice2<GorgonKeyboardData>, IGorgonKeyboard, IGorgonDeviceRouting<GorgonKeyboardData>
+		: GorgonInputDevice2, IGorgonKeyboard, IGorgonDeviceRouting<GorgonKeyboardData>
 	{
 		#region Classes.
 		/// <summary>
@@ -317,7 +317,7 @@ namespace Gorgon.Input
 		}
 
 		/// <inheritdoc/>
-		protected override void OnAcquireStateChanged()
+		protected override void OnAcquiredStateChanged()
 		{
 			KeyStates.Reset();
 		}
@@ -349,6 +349,9 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Properties.
+		/// <inheritdoc/>
+		public override bool IsPolled => false;
+
 		/// <inheritdoc/>
 		public IGorgonKeyboardInfo2 Info
 		{
@@ -413,11 +416,11 @@ namespace Gorgon.Input
 		InputDeviceType IGorgonDeviceRouting<GorgonKeyboardData>.DeviceType => InputDeviceType.Keyboard;
 
 		/// <inheritdoc/>
-		void IGorgonDeviceRouting<GorgonKeyboardData>.ParseData(ref GorgonKeyboardData data)
+		bool IGorgonDeviceRouting<GorgonKeyboardData>.ParseData(ref GorgonKeyboardData data)
 		{
 			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
 			{
-				return;
+				return false;
 			}
 
 			// Get the key code.
@@ -453,6 +456,8 @@ namespace Gorgon.Input
 			{
 				OnKeyUp(keyCode, data.ScanCode);
 			}
+
+			return true;
 		}
 		#endregion
 	}

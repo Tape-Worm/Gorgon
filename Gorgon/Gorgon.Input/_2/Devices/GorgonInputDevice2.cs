@@ -35,10 +35,8 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Base class containing common functionality for all input devices.
 	/// </summary>
-	/// <typeparam name="T">The type of device data to expect.</typeparam>
-	public abstract class GorgonInputDevice2<T>
+	public abstract class GorgonInputDevice2
 		: IGorgonInputDevice
-		where T : struct
 	{
 		#region Variables.
 		// The service that owns this device object.
@@ -141,46 +139,19 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// Function called when the device acquisition is lost or gained.
-		/// </summary>
-		protected abstract void OnAcquireStateChanged();
-
-		/// <summary>
-		/// Function called when the device is bound to the window.
+		/// Function called when the device acquisition has been changed.
 		/// </summary>
 		/// <remarks>
-		/// <para>
-		/// Plug in implementors may wish to override device specific events on the <see cref="Window"/> or <see cref="ParentForm"/> when the device is bound. This method allows a custom device type 
-		/// to do just that.
-		/// </para>
-		/// <para>
-		/// Events assigned in this method should be unassigned in the <see cref="OnUnbindWindow"/> method.
-		/// </para>
+		/// Devices will overload this method to update the state of the device after its <see cref="IsAcquired"/> property has been changed.
 		/// </remarks>
-		protected virtual void OnBindWindow()
-		{
-		}
-
-		/// <summary>
-		/// Function called when the device is unbound from the window.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Plug in implementors that have overridden events on the <see cref="Window"/> or the <see cref="ParentForm"/> should remove those event assignments when the device is unbound from its <see cref="Window"/>. 
-		/// This method will give an opportunity to do just that.
-		/// </para>
-		/// <para>
-		/// Events assigned in <see cref="OnBindWindow"/> should be unassigned in the this method.
-		/// </para>
-		/// </remarks>
-		protected virtual void OnUnbindWindow()
+		protected virtual void OnAcquiredStateChanged()
 		{
 		}
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDevice2{T}"/> class.
+		/// Initializes a new instance of the <see cref="GorgonInputDevice2"/> class.
 		/// </summary>
 		/// <param name="service">The service.</param>
 		/// <param name="deviceInfo">The device information.</param>
@@ -244,7 +215,8 @@ namespace Gorgon.Input
 
 				_service.AcquireDevice(this, value);
 				_isAcquired = value;
-				OnAcquireStateChanged();
+
+				OnAcquiredStateChanged();
 			}
 		}
 
@@ -256,7 +228,10 @@ namespace Gorgon.Input
 		}
 
 		/// <inheritdoc/>
-		public bool IsPolled => !(this is IGorgonDeviceRouting<T>);
+		public abstract bool IsPolled
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.
@@ -285,15 +260,7 @@ namespace Gorgon.Input
 			Debug.Assert(parentForm != null, "No parent form for the window!");
 
 			// Register the device with the service.
-			_service.RegisterDevice(this, _info, parentForm, window, exclusive);
-
-			// Assign a forwarder method to the service so it can send us data.
-			var routedDevice = this as IGorgonDeviceRouting<T>;
-
-			if (routedDevice != null)
-			{
-				_service.RegisterKeyboardForwarder(UUID, routedDevice);
-			}
+			_service.RegisterDevice(this, _info, parentForm, window, ref exclusive);
 
 			// Get this before we register. That way, our plug ins will be able to use this value 
 			// if it's required.
@@ -309,20 +276,6 @@ namespace Gorgon.Input
 			Window.LostFocus += ParentForm_Deactivate;
 			Window.VisibleChanged += Window_VisibleChanged;
 			Window.EnabledChanged += Window_EnabledChanged;
-
-			try
-			{
-				OnBindWindow();
-			}
-			catch(Exception ex)
-			{
-				Log.LogException(ex);
-
-				// If we get an error in the user code and it isn't handled correctly, then unregister this device.
-				UnbindWindow();
-
-				throw;
-			}
 		}
 
 		/// <inheritdoc/>
@@ -361,13 +314,7 @@ namespace Gorgon.Input
 				}
 
 				// Let the service know that we're done.
-				_service.UnregisterDeviceForwarder(UUID);
 				_service.UnregisterDevice(this);
-
-				if ((!ParentForm.IsDisposed) && (!ParentForm.Disposing) && (!Window.IsDisposed) && (!Window.Disposing))
-				{
-					OnUnbindWindow();
-				}
 			}
 			finally
 			{

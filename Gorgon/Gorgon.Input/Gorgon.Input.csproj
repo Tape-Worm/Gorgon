@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -63,7 +63,11 @@
     <Compile Include="Events\GorgonInputKeyboardEventArgs.cs" />
     <Compile Include="GorgonInputServiceFactory2.cs" />
     <Compile Include="_2\Devices\GorgonInputDevice2.cs" />
+    <Compile Include="_2\Devices\GorgonInputDeviceEventRouting.cs" />
+    <Compile Include="_2\Devices\GorgonInputDeviceTypeEqualityComparer.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonDeviceRouting.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDevice.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboard.cs" />
     <Compile Include="_2\GorgonKeyboardData.cs" />
     <Compile Include="_2\Devices\GorgonKeysEqualityComparer.cs" />
     <Compile Include="_2\GorgonInputService2.cs" />
@@ -74,13 +78,11 @@
     <Compile Include="Devices\_Interfaces\IGorgonJoystickDeadZoneList.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonJoystickAxisValueList.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonHumanInterfaceDeviceInfo.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDevice.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceInfo2.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxis.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxisInfoList.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxisList.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboard.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboardInfo2.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonMouseInfo2.cs" />
     <Compile Include="Events\GorgonBeforeInputUnbindEventArgs.cs" />

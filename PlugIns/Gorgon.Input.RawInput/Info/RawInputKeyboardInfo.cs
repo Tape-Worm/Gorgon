@@ -113,13 +113,13 @@ namespace Gorgon.Input.Raw
 			{
 				return;
 			}
-			RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
+			/*RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
 			Usage = (HIDUsage)deviceInfo.hid.usUsage;
 			UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
 
 			KeyCount = deviceInfo.keyboard.dwNumberOfKeysTotal;
 			IndicatorCount = deviceInfo.keyboard.dwNumberOfIndicators;
-			FunctionKeyCount = deviceInfo.keyboard.dwNumberOfFunctionKeys;
+			FunctionKeyCount = deviceInfo.keyboard.dwNumberOfFunctionKeys;*/
 		}
 		#endregion
 

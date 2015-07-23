@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Gorgon.Native;
 
@@ -35,18 +35,16 @@ namespace Gorgon.Input.WinForms
 	/// </summary>
 	class WinFormsKeyboardHook
 	{
+		#region Variables.
+		// The input service that owns this processor.
+		private readonly GorgonInputDeviceEventRouting _router;
+		// A list of registered devices from the service.
+		private readonly IReadOnlyList<IGorgonInputDevice> _devices;
+		#endregion
+
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the method to call when a keyboard event is triggered.
-		/// </summary>
-		public Action<Control, GorgonKeyboardData> KeyboardEvent
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the window that the hook is registered with.
+		/// Property to return the window that this processor is bound with.
 		/// </summary>
 		public Control Window
 		{
@@ -56,13 +54,34 @@ namespace Gorgon.Input.WinForms
 
 		#region Methods.
 		/// <summary>
+		/// Function to route event data to the appropriate keyboard device object.
+		/// </summary>
+		/// <param name="data">The data to pass to the device.</param>
+		private void RouteKeyboardEvent(ref GorgonKeyboardData data)
+		{
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _devices.Count; ++i)
+			{
+				IGorgonInputDevice device = _devices[i];
+
+				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonKeyboard))) 
+				{
+					continue;
+				}
+
+				_router.RouteToKeyboard(_devices[i], ref data);
+			}
+		}
+
+		/// <summary>
 		/// Handles the KeyUp event of the Window control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyUp(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent?.Invoke(Window, ProcessEvent(e, KeyState.Up));
+			GorgonKeyboardData data = ProcessEvent(e, KeyState.Up);
+			RouteKeyboardEvent(ref data);
 		}
 
 		/// <summary>
@@ -72,7 +91,8 @@ namespace Gorgon.Input.WinForms
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
-			KeyboardEvent?.Invoke(Window, ProcessEvent(e, KeyState.Down));
+			GorgonKeyboardData data = ProcessEvent(e, KeyState.Down);
+			RouteKeyboardEvent(ref data);
 		}
 
 		/// <summary>
@@ -154,10 +174,14 @@ namespace Gorgon.Input.WinForms
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WinFormsKeyboardHook" /> class.
 		/// </summary>
-		/// <param name="window">The window.</param>
-		public WinFormsKeyboardHook(Control window)
+		/// <param name="window">The window that the processor is bound with.</param>
+		/// <param name="router">The router used to send the data to the device.</param>
+		/// <param name="devices">The list of registered devices in the service.</param>
+		public WinFormsKeyboardHook(Control window, GorgonInputDeviceEventRouting router, IReadOnlyList<IGorgonInputDevice> devices)
 		{
 			Window = window;
+			_router = router;
+			_devices = devices;
 		}
 		#endregion
 	}

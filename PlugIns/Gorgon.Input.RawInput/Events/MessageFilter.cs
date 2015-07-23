@@ -80,7 +80,7 @@ namespace Gorgon.Input.Raw
 
 	        if (result == -1)
 	        {
-	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 	        }
 
 	        // Get actual data.
@@ -94,7 +94,7 @@ namespace Gorgon.Input.Raw
 	        if ((result == -1)
 	            || (result != dataSize))
 	        {
-	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+	            throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 	        }
 
 	        var rawInput = *((RAWINPUT*)rawInputPtr);

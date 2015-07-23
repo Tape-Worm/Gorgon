@@ -146,7 +146,7 @@ namespace Gorgon.Native
 		/// <param name="cbSize">Size of the raw input device struct.</param>
 		/// <returns>0 if successful, otherwise an error code.</returns>
 		[DllImport("user32.dll")]
-		private static extern int GetRawInputDeviceList(IntPtr pRawInputDeviceList, ref int puiNumDevices, int cbSize);
+		public static extern int GetRawInputDeviceList(IntPtr pRawInputDeviceList, ref int puiNumDevices, int cbSize);
 
 		/// <summary>
 		/// Function to retrieve information about a raw input device.
@@ -254,82 +254,6 @@ namespace Gorgon.Native
         }
 
 		/// <summary>
-		/// Function to retrieve device information.
-		/// </summary>
-		/// <param name="deviceHandle">Device handle.</param>
-		/// <returns>The device information structure.</returns>
-		public static unsafe RID_DEVICE_INFO GetDeviceInfo(IntPtr deviceHandle)
-		{
-			int dataSize = 0;
-			int errCode = GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, IntPtr.Zero, ref dataSize);
-
-			if ((errCode != -1) && (errCode != 0))
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
-
-			if (errCode == -1)
-			{
-				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-			}
-
-			byte* data = stackalloc byte[dataSize];
-			errCode = GetRawInputDeviceInfo(deviceHandle, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize);
-
-			if (errCode < -1)
-			{
-				throw new Win32Exception(Marshal.GetLastWin32Error());
-			}
-			
-			if (errCode == -1)
-			{
-				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-			}
-
-			RID_DEVICE_INFO result;
-
-			DirectAccess.MemoryCopy(&result, data, dataSize);
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to enumerate raw input devices.
-		/// </summary>
-		/// <returns>An array of raw input device structures.</returns>
-		public unsafe static RAWINPUTDEVICELIST[] EnumerateInputDevices()
-		{
-		    int deviceCount = 0;
-			int structSize = DirectAccess.SizeOf<RAWINPUTDEVICELIST>();
-
-			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
-			{
-				throw new Win32Exception();
-			}
-
-			if (deviceCount == 0)
-			{
-				return new RAWINPUTDEVICELIST[0];
-			}
-
-			RAWINPUTDEVICELIST* deviceListPtr = stackalloc RAWINPUTDEVICELIST[deviceCount];
-			
-			if (GetRawInputDeviceList((IntPtr)deviceListPtr, ref deviceCount, structSize) < 0)
-			{
-				throw new Win32Exception();
-			}
-
-			var result = new RAWINPUTDEVICELIST[deviceCount];
-
-			fixed (RAWINPUTDEVICELIST* resultPtr = &result[0])
-			{
-				DirectAccess.MemoryCopy(resultPtr, deviceListPtr, structSize * deviceCount);
-			}
-
-			return result;
-		}
-
-		/// <summary>
 		/// Function to retrieve keyboard type information.
 		/// </summary>
 		/// <param name="nTypeFlag">The type of info.</param>
@@ -351,14 +275,14 @@ namespace Gorgon.Native
 			{
 				if (GetRegisteredRawInputDevices(IntPtr.Zero, ref deviceCount, structSize) == -1)
 				{
-					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
 
 				RAWINPUTDEVICE* buffer = stackalloc RAWINPUTDEVICE[(int)deviceCount];
 
 				if (GetRegisteredRawInputDevices(new IntPtr(buffer), ref deviceCount, structSize) == -1)
 				{
-					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DATA);
+					throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
 
 				result = new RAWINPUTDEVICE[(int)deviceCount];
