@@ -1431,6 +1431,10 @@ namespace Gorgon.Native
 		/// 
 		/// </summary>
 		XButtonDoubleClick = 0x20D,
+		/// <summary>
+		/// 
+		/// </summary>
+		MouseHWheel = 0x20E,
 		/// <summary></summary>
 		ParentNotify = 0x0210,
 		/// <summary></summary>

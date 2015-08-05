@@ -327,12 +327,12 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonKeyboard"/> class.
 		/// </summary>
-		/// <param name="owner">The control that owns this device.</param>
+		/// <param name="service">The input service that this device is registered with.</param>
 		/// <param name="keyboardInfo">Information about which keyboard to use.</param>
 		/// <param name="log">[Optional] The logging interface used for debug logging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-		public GorgonKeyboard2(IGorgonInputService owner, IGorgonKeyboardInfo2 keyboardInfo, IGorgonLog log = null)
-			: base(owner, keyboardInfo, log)
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
+		public GorgonKeyboard2(IGorgonInputService service, IGorgonKeyboardInfo2 keyboardInfo, IGorgonLog log = null)
+			: base(service, keyboardInfo, log)
 		{
 			Info = keyboardInfo;
             KeyStates = new KeyStateCollection();

@@ -289,8 +289,8 @@ namespace Gorgon.Input
 
 			try
 			{
-				IsExclusive = false;
 				IsAcquired = false;
+				IsExclusive = false;
 
 				// Parent form must be assigned by this point, if it wasn't something is really wrong.
 				if ((!ParentForm.IsDisposed) && (!ParentForm.Disposing))

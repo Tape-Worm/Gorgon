@@ -29,6 +29,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,6 +41,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -52,6 +54,10 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gorgon.Native, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -65,9 +71,11 @@
     <Compile Include="_2\Devices\GorgonInputDevice2.cs" />
     <Compile Include="_2\Devices\GorgonInputDeviceEventRouting.cs" />
     <Compile Include="_2\Devices\GorgonInputDeviceTypeEqualityComparer.cs" />
+    <Compile Include="_2\Devices\GorgonMouse.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonDeviceRouting.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonInputDevice.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboard.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonMouse.cs" />
     <Compile Include="_2\GorgonKeyboardData.cs" />
     <Compile Include="_2\Devices\GorgonKeysEqualityComparer.cs" />
     <Compile Include="_2\GorgonInputService2.cs" />
@@ -112,8 +120,12 @@
     <Compile Include="Devices\_Interfaces\IGorgonJoystickInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonMouseInfo.cs" />
     <Compile Include="_2\Devices\GorgonKeyboard2.cs" />
+    <Compile Include="_2\GorgonMouseData.cs" />
+    <Compile Include="_2\Native\Win32Enums.cs" />
+    <Compile Include="_2\Native\Win32Types.cs" />
     <Compile Include="_2\Native\Win32Api.cs" />
     <Compile Include="_2\_Events\GorgonKeyboardEventArgs.cs" />
+    <Compile Include="_2\_Events\GorgonMouseEventArgs.cs" />
     <Compile Include="_2\_Interfaces\IGorgonInputService.cs" />
     <Compile Include="_2\_Interfaces\IGorgonInputServiceFactory.cs" />
   </ItemGroup>

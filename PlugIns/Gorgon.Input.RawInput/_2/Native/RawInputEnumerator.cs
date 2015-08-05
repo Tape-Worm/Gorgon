@@ -54,7 +54,7 @@ namespace Gorgon.Input.Raw
 			// Define how large the buffer needs to be.
 			if (Win32API.GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
 			{
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR, Marshal.GetLastWin32Error()));
+				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, Marshal.GetLastWin32Error()));
 			}
 
 			if (deviceCount == 0)

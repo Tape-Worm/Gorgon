@@ -83,7 +83,7 @@ namespace Gorgon.Input
 
 		#region Properties.
 		/// <summary>
-		/// Property to return information about this keyboard device.
+		/// Property to return information about this keyboard.
 		/// </summary>
 		IGorgonKeyboardInfo2 Info
 		{

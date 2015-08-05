@@ -24,8 +24,11 @@
 // 
 #endregion
 
+using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Security;
+using Gorgon.Input.Properties;
 
 namespace Gorgon.Native
 {
@@ -55,5 +58,42 @@ namespace Gorgon.Native
 		                                    [Out] [MarshalAs(UnmanagedType.LPArray)] char[] buffer,
 		                                    int bufferSize,
 		                                    uint flags);
+
+		/// <summary>
+		/// Function to set the visibility of the pointing device cursor.
+		/// </summary>
+		/// <param name="bShow"><b>true</b> to show, <b>false</b> to hide.</param>
+		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with <b>true</b>.</returns>
+		[DllImport("User32.dll")]
+		public static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
+
+		[DllImport("User32.dll")]
+		private static extern bool GetCursorInfo(IntPtr pci);
+
+
+		public static CursorInfoFlags IsCursorVisible()
+		{
+			unsafe
+			{
+				CursorInfo cursorInfo = new CursorInfo
+				                        {
+					                        cbSize = DirectAccess.SizeOf<CursorInfo>(),
+					                        flags = CursorInfoFlags.CursorHidden,
+					                        hCursor = IntPtr.Zero,
+					                        ptScreenPos = new Win32Point
+					                                      {
+						                                      Y = 0,
+						                                      X = 0
+					                                      }
+				                        };
+
+				if (!GetCursorInfo(new IntPtr(&cursorInfo)))
+				{
+					throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, Marshal.GetLastWin32Error()));
+				}
+
+				return cursorInfo.flags;
+			}	
+		}
 	}
 }

@@ -146,102 +146,14 @@ namespace Gorgon.Input.Raw
 
                     return keyboardInfo as T;
 				case RawInputType.Mouse:
-					return (new RawInputMouseInfo2(deviceDescription, className, deviceName, device.Device)) as T;
+					var mouseInfo = new RawInputMouseInfo2(deviceDescription, className, deviceName, device.Device);
+
+					mouseInfo.AssignRawInputDeviceInfo(ref deviceInfo.mouse);
+
+					return mouseInfo as T;
 				default:
 					return null;
 			}
-		}
-
-		/// <summary>
-		/// Function to handle raw input messages on the window.
-		/// </summary>
-		/// <param name="hwnd">The window handle.</param>
-		/// <param name="msg">The message.</param>
-		/// <param name="wParam">The parameter.</param>
-		/// <param name="lParam">The parameter.</param>
-		/// <returns>The result of the procedure.</returns>
-		private IntPtr RawWndProc(IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam)
-		{
-			if (_messageHook == null)
-			{
-				// If this happens, something got messed up (maybe devices weren't unbound?).
-				throw new ObjectDisposedException(Resources.GORINP_RAW_HOOK_STILL_ACTIVE);
-			}
-
-			if (msg != WindowMessages.RawInput)
-			{
-				return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
-			}
-			
-			// Get the device data from the raw input system.
-			RAWINPUT data = _messageHook.GetRawInputData(lParam);
-
-			// Find our device GUID and route appropriately.
-			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _deviceHandles.Count; ++i)
-			{
-				if ((_deviceHandles[i].Item2 != data.Header.Device) && (_deviceHandles[i].Item2 != IntPtr.Zero))
-				{
-					continue;
-				}
-
-				IGorgonInputDevice device;
-
-				// The device requested is not registered, so we can skip it.
-				if ((!_registeredDevices.TryGetValue(_deviceHandles[i].Item1, out device))
-					|| (!device.IsAcquired))
-				{
-					continue;
-				}
-
-				switch (data.Header.Type)
-				{
-					case RawInputType.Keyboard:
-						RawInputProcessor processor;
-
-						// There's no processor on this window, so we can't send anything.
-						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
-						{
-							continue;
-						}
-
-						GorgonKeyboardData keyboardData;
-
-						if (!processor.ProcessRawInputMessage(ref data.Union.Keyboard, out keyboardData))
-						{
-							continue;
-						}
-						
-						EventRouter.RouteToKeyboard(device, ref keyboardData);
-						break;
-				}
-			}
-
-			return _messageHook.CallPreviousWndProc(hwnd, msg, wParam, lParam);
-			/*
-			// If we have a pointing device set as exclusive, then block all WM_MOUSE messages.
-			if ((_exclusiveDevices & InputDeviceExclusivity.Mouse) == InputDeviceExclusivity.Mouse)
-			{
-				switch (msg)
-				{
-					case WindowMessages.XButtonDoubleClick:
-					case WindowMessages.LeftButtonDoubleClick:
-					case WindowMessages.RightButtonDoubleClick:
-					case WindowMessages.MiddleButtonDoubleClick:
-					case WindowMessages.LeftButtonDown:
-					case WindowMessages.LeftButtonUp:
-					case WindowMessages.RightButtonDown:
-					case WindowMessages.RightButtonUp:
-					case WindowMessages.MiddleButtonDown:
-					case WindowMessages.MiddleButtonUp:
-					case WindowMessages.XButtonDown:
-					case WindowMessages.XButtonUp:
-					case WindowMessages.MouseMove:
-					case WindowMessages.MouseWheel:
-						return IntPtr.Zero;
-				}
-			}
-			*/
 		}
 
 		/// <inheritdoc/>
@@ -340,9 +252,21 @@ namespace Gorgon.Input.Raw
 					// ReSharper enable PossibleMultipleEnumeration
 					break;
 				case InputDeviceType.Mouse:
-
-					// Keep track of the mice we're registering.
+					// Keep track of the keyboard we're registering so we can forward data to it.
 					deviceHandle = ((RawInputMouseInfo2)deviceInfo).Handle;
+
+					// Find any other registered keyboards.
+					var mice = from mouseDevice in _registeredDevices
+					           let mouse = mouseDevice.Value as IGorgonMouse
+					           where mouse != null
+					           select mouse;
+
+					// ReSharper disable PossibleMultipleEnumeration
+					if (((exclusive) && (mice.Any())) || (mice.Any(item => item.IsExclusive)))
+					{
+						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD, nameof(exclusive));
+					}
+					// ReSharper enable PossibleMultipleEnumeration
 					break;
 				default:
 					return;
@@ -350,7 +274,7 @@ namespace Gorgon.Input.Raw
 
 			if (!_rawInputProcessors.ContainsKey(window))
 			{
-				_rawInputProcessors[window] = new RawInputProcessor();
+				_rawInputProcessors[window] = new RawInputProcessor(EventRouter);
 			}
 
 			if (!_registeredDevices.ContainsKey(device.UUID))
@@ -363,9 +287,8 @@ namespace Gorgon.Input.Raw
 			if (_messageHook == null)
 			{
 				// Initialize our message hook if we haven't done so by now.
-				_messageHook = new RawInputNative(parentForm.Handle, RawWndProc);
+				_messageHook = new RawInputNative(parentForm.Handle, _deviceHandles, _rawInputProcessors, _registeredDevices);
 				_messageHook.HookWindow();
-				_messageHook.RegisterRawInputDevices();
 			}
 
 			exclusive = _messageHook.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);

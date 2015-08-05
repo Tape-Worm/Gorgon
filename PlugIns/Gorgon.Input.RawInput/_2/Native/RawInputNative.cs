@@ -25,7 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
@@ -55,13 +58,129 @@ namespace Gorgon.Input.Raw
 		private IntPtr _oldWndProc;
 		// New window procedure.
 		private IntPtr _newWndProc;
-		// New window procedure.
-		private WndProc _wndProc;
 		// The window handle to hook.
 		private IntPtr _windowHandle;
+		// Reference to the new window procedure delegate. This will keep the proc from being GC'd.
+		private WndProc _wndProcRef;
+		// A list of devices registered with the service.
+		private readonly IReadOnlyList<Tuple<Guid, IntPtr>> _deviceHandles;
+		// The raw input processor for device data.
+		private readonly IReadOnlyDictionary<Control, RawInputProcessor> _rawInputProcessors;
+		// A list of registered devices.
+		private readonly IReadOnlyDictionary<Guid, IGorgonInputDevice> _registeredDevices;
+		// Flag to indicate that the mouse is exclusive (used to correct an issue with raw input mice).
+		private bool _isMouseExclusive;
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to handle raw input messages from the window.
+		/// </summary>
+		/// <param name="hwnd">Window handle that received the message.</param>
+		/// <param name="msg">The message to process.</param>
+		/// <param name="lParam">Parameter 1</param>
+		/// <param name="wParam">Parameter 2</param>
+		/// <returns>The result of the message processing.</returns>
+		private IntPtr WndProc(IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam)
+		{
+			if (_oldWndProc == IntPtr.Zero)
+			{
+				// This shouldn't happen, but just in case we forgot to clean up or something, or the 
+				// finalizer didn't run, then ensure that this method is dead for sure.
+				throw new ObjectDisposedException(Resources.GORINP_RAW_HOOK_STILL_ACTIVE);
+			}
+
+			if ((msg != WindowMessages.RawInput) || (hwnd != _windowHandle))
+			{
+				if (!_isMouseExclusive)
+				{
+					return CallPreviousWndProc(hwnd, msg, wParam, lParam);
+				}
+
+				switch (msg)
+				{
+					case WindowMessages.XButtonDoubleClick:
+					case WindowMessages.LeftButtonDoubleClick:
+					case WindowMessages.RightButtonDoubleClick:
+					case WindowMessages.MiddleButtonDoubleClick:
+					case WindowMessages.LeftButtonDown:
+					case WindowMessages.LeftButtonUp:
+					case WindowMessages.RightButtonDown:
+					case WindowMessages.RightButtonUp:
+					case WindowMessages.MiddleButtonDown:
+					case WindowMessages.MiddleButtonUp:
+					case WindowMessages.XButtonDown:
+					case WindowMessages.XButtonUp:
+					case WindowMessages.MouseMove:
+					case WindowMessages.MouseWheel:
+					case WindowMessages.MouseHWheel:
+					case WindowMessages.MouseHover:
+					case WindowMessages.MouseLeave:
+						return IntPtr.Zero;
+				}
+
+				return CallPreviousWndProc(hwnd, msg, wParam, lParam);
+			}
+
+			// Get the device data from the raw input system.
+			RAWINPUT data = GetRawInputData(lParam);
+
+			// Find our device GUID and route appropriately.
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _deviceHandles.Count; ++i)
+			{
+				if ((_deviceHandles[i].Item2 != data.Header.Device) && (_deviceHandles[i].Item2 != IntPtr.Zero))
+				{
+					continue;
+				}
+
+				IGorgonInputDevice device;
+
+				// The device requested is not registered, so we can skip it.
+				if ((!_registeredDevices.TryGetValue(_deviceHandles[i].Item1, out device))
+					|| (!device.IsAcquired))
+				{
+					continue;
+				}
+
+				RawInputProcessor processor;
+
+				switch (data.Header.Type)
+				{
+					case RawInputType.Keyboard:
+						if (!(device is IGorgonKeyboard))
+						{
+							continue;
+						}
+
+						// There's no processor on this window, so we can't send anything.
+						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
+						{
+							continue;
+						}
+
+						processor.ProcessRawInputMessage(device, ref data.Union.Keyboard);
+						break;
+					case RawInputType.Mouse:
+						if (!(device is IGorgonMouse))
+						{
+							continue;
+						}
+
+						// There's no processor on this window, so we can't send anything.
+						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
+						{
+							continue;
+						}
+
+						processor.ProcessRawInputMessage(device, ref data.Union.Mouse);
+						break;
+				}
+			}
+
+			return CallPreviousWndProc(hwnd, msg, wParam, lParam);
+		}
+
 		/// <summary>
 		/// Function to unhook the window procedure.
 		/// </summary>
@@ -86,33 +205,17 @@ namespace Gorgon.Input.Raw
 			{
 				Win32API.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc, _oldWndProc);
 			}
-
-			_wndProc = null;
+			
 			_windowHandle = IntPtr.Zero;
 			_newWndProc = IntPtr.Zero;
 			_oldWndProc = IntPtr.Zero;
 		}
 
 		/// <summary>
-		/// Function to call the previous window procedure.
-		/// </summary>
-		/// <param name="handle">The handle.</param>
-		/// <param name="message">The message.</param>
-		/// <param name="wParam">The w parameter.</param>
-		/// <param name="lParam">The l parameter.</param>
-		/// <returns>
-		/// The return value from the previous window handler.
-		/// </returns>
-		public IntPtr CallPreviousWndProc(IntPtr handle, WindowMessages message, IntPtr wParam, IntPtr lParam)
-		{
-			return _oldWndProc == IntPtr.Zero ? IntPtr.Zero : Win32API.CallWindowProc(_oldWndProc, handle, message, wParam, lParam);
-		}
-
-		/// <summary>
 		/// Function to retrieve data for the raw input device message.
 		/// </summary>
 		/// <param name="deviceHandle">Raw input device handle.</param>
-		public RAWINPUT GetRawInputData(IntPtr deviceHandle)
+		private RAWINPUT GetRawInputData(IntPtr deviceHandle)
 		{
 			int dataSize = 0;
 
@@ -129,13 +232,13 @@ namespace Gorgon.Input.Raw
 			{
 				var rawInputPtr = stackalloc byte[dataSize];
 				retVal = Win32API.GetRawInputData(deviceHandle,
-				                                  RawInputCommand.Input,
-				                                  (IntPtr)rawInputPtr,
-				                                  ref dataSize,
-				                                  _headerSize);
+												  RawInputCommand.Input,
+												  (IntPtr)rawInputPtr,
+												  ref dataSize,
+												  _headerSize);
 
 				if ((retVal == -1)
-				    || (retVal != dataSize))
+					|| (retVal != dataSize))
 				{
 					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
@@ -146,9 +249,24 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <summary>
+		/// Function to call the previous window procedure.
+		/// </summary>
+		/// <param name="handle">The handle.</param>
+		/// <param name="message">The message.</param>
+		/// <param name="wParam">The w parameter.</param>
+		/// <param name="lParam">The l parameter.</param>
+		/// <returns>
+		/// The return value from the previous window handler.
+		/// </returns>
+		private IntPtr CallPreviousWndProc(IntPtr handle, WindowMessages message, IntPtr wParam, IntPtr lParam)
+		{
+			return _oldWndProc == IntPtr.Zero ? IntPtr.Zero : Win32API.CallWindowProc(_oldWndProc, handle, message, wParam, lParam);
+		}
+
+		/// <summary>
 		/// Function to unregister all raw input devices.
 		/// </summary>
-		public void UnregisterRawInputDevices()
+		private static void UnregisterRawInputDevices()
 		{
 			RAWINPUTDEVICE[] devices = Win32API.GetRegisteredDevices();
 
@@ -176,7 +294,7 @@ namespace Gorgon.Input.Raw
 		/// <summary>
 		/// Function to register a raw input de
 		/// </summary>
-		public void RegisterRawInputDevices()
+		private void RegisterRawInputDevices()
 		{
 			RAWINPUTDEVICE[] devices = Win32API.GetRegisteredDevices();
 
@@ -235,9 +353,13 @@ namespace Gorgon.Input.Raw
 					flags = exclusive ? RawInputDeviceFlags.NoLegacy : RawInputDeviceFlags.None;
 					break;
 				case InputDeviceType.Mouse:
-					usageFlag = (ushort)HIDUsage.Mouse;
-					flags = exclusive ? RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.CaptureMouse : RawInputDeviceFlags.None;
-					break;
+					// Unlike the keyboard, we only set a flag here.
+					// This is because changing exclusivity on the mouse during a mouse down, followed by a mouse up event 
+					// causes raw input to behave erratically (for me, this includes not being able to click on my window 
+					// caption bar and drag the window until I click multiple times).  With this flag set, we will manually 
+					// kill any legacy mouse messages and that will "fake" an exclusive mode.
+					_isMouseExclusive = exclusive;
+					return exclusive;
 			}
 
 			bool result = false;
@@ -280,9 +402,15 @@ namespace Gorgon.Input.Raw
 
 			// Hook the window procedure.
 			_oldWndProc = Win32API.GetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc);
-			_newWndProc = Marshal.GetFunctionPointerForDelegate(_wndProc);
+			_wndProcRef = WndProc;
+			_newWndProc = Marshal.GetFunctionPointerForDelegate(_wndProcRef);
 
-			Win32API.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc, _newWndProc);
+			if (Win32API.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc, _newWndProc) == IntPtr.Zero)
+			{
+				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG, Marshal.GetLastWin32Error()));
+			}
+
+			RegisterRawInputDevices();
 		}
 		#endregion
 
@@ -291,11 +419,18 @@ namespace Gorgon.Input.Raw
 		/// Initializes a new instance of the <see cref="RawInputNative"/> class.
 		/// </summary>
 		/// <param name="windowHandle">The window handle to hook.</param>
-		/// <param name="newProc">The new window procedure to install.</param>
-		public RawInputNative(IntPtr windowHandle, WndProc newProc)
+		/// <param name="deviceHandles">A list of device handles and device object GUIDs.</param>
+		/// <param name="rawInputProcessors">The list of input processors.</param>
+		/// <param name="registeredDevices">The list of registered devices.</param>
+		public RawInputNative(IntPtr windowHandle,
+		                      IReadOnlyList<Tuple<Guid, IntPtr>> deviceHandles,
+		                      IReadOnlyDictionary<Control, RawInputProcessor> rawInputProcessors,
+		                      IReadOnlyDictionary<Guid, IGorgonInputDevice> registeredDevices)
 		{
 			_windowHandle = windowHandle;
-			_wndProc = newProc;
+			_deviceHandles = deviceHandles;
+			_rawInputProcessors = rawInputProcessors;
+			_registeredDevices = registeredDevices;
 		}
 
 		/// <summary>

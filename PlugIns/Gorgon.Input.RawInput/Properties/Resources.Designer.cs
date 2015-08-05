@@ -61,17 +61,6 @@ namespace Gorgon.Input.Raw.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not enumerate the raw input devices.
-        ///
-        ///Win32 Error: {0}.
-        /// </summary>
-        internal static string GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR {
-            get {
-                return ResourceManager.GetString("GORINP_RAW_CANNOT_ENUMERATE_WIN32_ERR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0} ({1} key {2} keyboard).
         /// </summary>
         internal static string GORINP_RAW_DESC_KEYBOARD {
@@ -157,6 +146,17 @@ namespace Gorgon.Input.Raw.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not enumerate the raw input devices.
+        ///
+        ///Win32 Error: {0}.
+        /// </summary>
+        internal static string GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR {
+            get {
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not retrieve the device handle. Unknown device information type..
         /// </summary>
         internal static string GORINP_RAW_ERR_CANNOT_GET_DEVICE_HANDLE {
@@ -172,6 +172,17 @@ namespace Gorgon.Input.Raw.Properties {
         internal static string GORINP_RAW_ERR_CANNOT_GET_JOYSTICK_CAPS {
             get {
                 return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_GET_JOYSTICK_CAPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to hook the window for raw input messages:
+        ///
+        ///Win32 Error: {0}.
+        /// </summary>
+        internal static string GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG {
+            get {
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG", resourceCulture);
             }
         }
         

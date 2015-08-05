@@ -69,7 +69,7 @@ namespace Gorgon.Input.WinForms
 					continue;
 				}
 
-				_router.RouteToKeyboard(_devices[i], ref data);
+				_router.RouteToDevice(_devices[i], ref data);
 			}
 		}
 

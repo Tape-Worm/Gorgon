@@ -35,6 +35,39 @@ namespace Gorgon.Input
 	public class GorgonInputDeviceEventRouting
 	{
 		/// <summary>
+		/// Function to route unprocessed mouse event data to a mouse device.
+		/// </summary>
+		/// <param name="device">The device that will receive the mouse event data.</param>
+		/// <param name="data">The unprocessed mouse data to route to the device.</param>
+		/// <returns><b>true</b> if the call was successfully routed, <b>false</b> if not.</returns>
+		/// <remarks>
+		/// <para>
+		/// This method will send a packet of <see cref="GorgonMouseData"/> on to the <paramref name="device"/> specified. 
+		/// </para>
+		/// <para>
+		/// Input service implementors will take the native device event data and convert it into the <see cref="GorgonMouseData"/> so that the input devices will know how to parse the data and provide 
+		/// events to end user objects.
+		/// </para>
+		/// </remarks>
+		public bool RouteToDevice(IGorgonInputDevice device, ref GorgonMouseData data)
+		{
+			if (device == null)
+			{
+				return false;
+			}
+
+			IGorgonDeviceRouting<GorgonMouseData> router = device as IGorgonDeviceRouting<GorgonMouseData>;
+
+			// If the device has become unacquired by this point, then do not forward the data.
+			if (!device.IsAcquired)
+			{
+				return false;
+			}
+
+			return router?.ParseData(ref data) ?? false;
+		}
+
+		/// <summary>
 		/// Function to route unprocessed keyboard event data to a keyboard device.
 		/// </summary>
 		/// <param name="device">The device that will receive the keyboard event data.</param>
@@ -49,7 +82,7 @@ namespace Gorgon.Input
 		/// events to end user objects.
 		/// </para>
 		/// </remarks>
-		public bool RouteToKeyboard(IGorgonInputDevice device, ref GorgonKeyboardData data)
+		public bool RouteToDevice(IGorgonInputDevice device, ref GorgonKeyboardData data)
 		{
 			if (device == null)
 			{

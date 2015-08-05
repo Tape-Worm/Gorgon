@@ -197,7 +197,7 @@ namespace Gorgon.Input.Raw
 			}
 
 			// Do nothing if we have no data.
-			if (dataSize == 0)
+			if (dataSize < 4)
 			{
 				return string.Empty;
 			}

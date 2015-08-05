@@ -43,7 +43,9 @@ namespace Gorgon.UI
 	{
 		#region Variables.
 		// Show focus flag.
-		private bool _showFocus = true;			
+		private bool _showFocus = true;
+		// Flag to indicate that the panel is resizing.
+		private bool _resizing;	
 		#endregion
 
 		#region Properties.
@@ -100,10 +102,7 @@ namespace Gorgon.UI
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnEnter(EventArgs e)
 		{
-			if (ShowFocus)
-			{
-				Invalidate();
-			}
+			Invalidate();
 			base.OnEnter(e);
 		}
 
@@ -113,11 +112,26 @@ namespace Gorgon.UI
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLeave(EventArgs e)
 		{
-			if (ShowFocus)
-			{
-				Invalidate();
-			}
+			Invalidate();
 			base.OnLeave(e);
+		}
+
+		/// <summary>
+		/// Handles the <see cref="E:Resize" /> event.
+		/// </summary>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		protected override void OnResize(EventArgs e)
+		{
+			try
+			{
+				_resizing = true;
+				Invalidate();
+				base.OnResize(e);
+			}
+			finally
+			{
+				_resizing = false;
+			}
 		}
 
 		/// <summary>
@@ -128,7 +142,7 @@ namespace Gorgon.UI
 		{
 			base.OnPaint(e);
 
-			if ((!Focused) || (!ShowFocus))
+			if (((!Focused) && (!_resizing)) || (!ShowFocus))
 			{
 				return;
 			}

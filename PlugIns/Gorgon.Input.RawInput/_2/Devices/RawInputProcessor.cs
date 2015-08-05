@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Windows.Forms;
-using Gorgon.Core;
-using Gorgon.Input.Raw.Properties;
-using Gorgon.Math;
+using System.Drawing;
+using Forms = System.Windows.Forms;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
@@ -38,14 +35,106 @@ namespace Gorgon.Input.Raw
 	/// </summary>
 	class RawInputProcessor
 	{
+		#region Variables.
+		// Router used to send the event data to the appropriate devices.
+		private readonly GorgonInputDeviceEventRouting _router;
+		#endregion
+
 		#region Methods.
+		/// <summary>
+		/// Function to process a raw input message and forward it to the correct device.
+		/// </summary>
+		/// <param name="device">Device to the forward the event data on to.</param>
+		/// <param name="mouseData">The raw input mouse data.</param>
+		public void ProcessRawInputMessage(IGorgonInputDevice device, ref RAWINPUTMOUSE mouseData)
+		{
+			short wheelDelta = 0;
+			MouseButtonState state = MouseButtonState.None;
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.MouseWheel) == RawMouseButtons.MouseWheel)
+			{
+				wheelDelta = (short)mouseData.ButtonData;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.LeftDown) == RawMouseButtons.LeftDown)
+			{
+				state = MouseButtonState.ButtonLeftDown;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.RightDown) == RawMouseButtons.RightDown)
+			{
+				state = MouseButtonState.ButtonRightDown;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.MiddleDown) == RawMouseButtons.MiddleDown)
+			{
+				state = MouseButtonState.ButtonMiddleDown;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.Button4Down) == RawMouseButtons.Button4Down)
+			{
+				state = MouseButtonState.Button4Down;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.Button5Down) == RawMouseButtons.Button5Down)
+			{
+				state = MouseButtonState.Button5Down;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.LeftUp) == RawMouseButtons.LeftUp)
+			{
+				state = MouseButtonState.ButtonLeftUp;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.RightUp) == RawMouseButtons.RightUp)
+			{
+				state = MouseButtonState.ButtonRightUp;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.MiddleUp) == RawMouseButtons.MiddleUp)
+			{
+				state = MouseButtonState.ButtonMiddleUp;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.Button4Up) == RawMouseButtons.Button4Up)
+			{
+				state = MouseButtonState.Button4Up;
+			}
+
+			if ((mouseData.ButtonFlags & RawMouseButtons.Button5Up) == RawMouseButtons.Button5Up)
+			{
+				state = MouseButtonState.Button5Up;
+			}
+
+			Point lastRelativeMovement = new Point(mouseData.LastX, mouseData.LastY);
+
+			// This device uses absolute coordinates (e.g. touch), so we need to convert appropriately.
+			if ((mouseData.Flags & RawMouseFlags.MoveAbsolute) == RawMouseFlags.MoveAbsolute)
+			{
+				var mouse = device as IGorgonMouse;
+
+				if (mouse != null)
+				{
+					lastRelativeMovement = new Point(mouseData.LastX - mouse.Position.X, mouseData.LastY - mouse.Position.Y);
+				}
+			}
+
+			var processedData = new GorgonMouseData
+			                    {
+				                    ButtonState = state,
+				                    MouseWheelDelta = wheelDelta,
+				                    RelativeDirection = lastRelativeMovement
+			                    };
+
+			_router.RouteToDevice(device, ref processedData);
+		}
+
 		/// <summary>
 		/// Function to process a raw input input message and forward it to the correct device.
 		/// </summary>
+		/// <param name="device">Device to forward the event data on to.</param>
 		/// <param name="keyboardData">The raw input keyboard data.</param>
-		/// <param name="processedData">The gorgon keyboard data processed from the raw input data.</param>
-		/// <returns><b>true</b> if the message was processed, <b>false</b> if not.</returns>
-		public bool ProcessRawInputMessage(ref RAWINPUTKEYBOARD keyboardData, out GorgonKeyboardData processedData)
+		public void ProcessRawInputMessage(IGorgonInputDevice device, ref RAWINPUTKEYBOARD keyboardData)
 		{
 			KeyboardDataFlags flags = KeyboardDataFlags.KeyDown;
 
@@ -70,14 +159,25 @@ namespace Gorgon.Input.Raw
 				flags |= keyboardData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
 			}
 
-			processedData = new GorgonKeyboardData
-			{
-				ScanCode = keyboardData.MakeCode,
-				Key = (Keys)keyboardData.VirtualKey,
-				Flags = flags
-			};
+			var processedData = new GorgonKeyboardData
+			                    {
+				                    ScanCode = keyboardData.MakeCode,
+				                    Key = (Forms.Keys)keyboardData.VirtualKey,
+				                    Flags = flags
+			                    };
 
-			return true;
+			_router.RouteToDevice(device, ref processedData);
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RawInputProcessor"/> class.
+		/// </summary>
+		/// <param name="router">The router for the event data.</param>
+		public RawInputProcessor(GorgonInputDeviceEventRouting router)
+		{
+			_router = router;
 		}
 		#endregion
 	}
