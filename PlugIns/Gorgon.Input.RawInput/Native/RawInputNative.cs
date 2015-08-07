@@ -407,7 +407,7 @@ namespace Gorgon.Input.Raw
 
 			if (Win32API.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongType.WndProc, _newWndProc) == IntPtr.Zero)
 			{
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG, Marshal.GetLastWin32Error()));
+				throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG);
 			}
 
 			RegisterRawInputDevices();

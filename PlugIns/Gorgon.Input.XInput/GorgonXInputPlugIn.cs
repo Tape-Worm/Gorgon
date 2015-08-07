@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Diagnostics;
 using Gorgon.Input.XInput;
 
@@ -39,17 +40,17 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices => true;
+		public override bool SupportsJoysticks => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices => false;
+		public override bool SupportsMice => false;
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices => false;
+		public override bool SupportsKeyboards => false;
 
 		#endregion
 
@@ -64,6 +65,7 @@ namespace Gorgon.Input
 		/// Function to create and return a <see cref="GorgonInputService" />.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
+		[Obsolete("This is going away after the refactor and replaced with the method above this one.")]
 		protected override GorgonInputService OnCreateInputService()
 		{
 			return new GorgonXInputService();

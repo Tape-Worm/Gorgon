@@ -30,7 +30,7 @@ using Gorgon.Input.WinForms.Properties;
 namespace Gorgon.Input.WinForms
 {
 	/// <inheritdoc/>
-	sealed class WinFormsMouseInfo2
+	sealed class WinFormsMouseInfo
 		: IGorgonMouseInfo2
 	{
 		#region Properties.
@@ -64,9 +64,9 @@ namespace Gorgon.Input.WinForms
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WinFormsMouseInfo2" /> class.
+		/// Initializes a new instance of the <see cref="WinFormsMouseInfo" /> class.
 		/// </summary>
-		public WinFormsMouseInfo2()
+		public WinFormsMouseInfo()
 		{
 			HasMouseWheel = SystemInformation.MouseWheelPresent;
 		}

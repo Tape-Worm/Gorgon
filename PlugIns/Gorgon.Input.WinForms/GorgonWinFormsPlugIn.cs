@@ -26,6 +26,7 @@
 
 using Gorgon.Diagnostics;
 using Gorgon.Input.WinForms;
+using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input
 {
@@ -39,32 +40,23 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices => false;
+		public override bool SupportsJoysticks => false;
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices => true;
+		public override bool SupportsMice => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices => true;
+		public override bool SupportsKeyboards => true;
 
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
 		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
-		{
-			return new GorgonWinFormsInputService2();
-		}
-
-		/// <summary>
-		/// Function to create and return a <see cref="GorgonInputService" />.
-		/// </summary>
-		/// <returns>The interface for the input factory.</returns>
-		protected override GorgonInputService OnCreateInputService()
 		{
 			return new GorgonWinFormsInputService();
 		}
@@ -75,7 +67,7 @@ namespace Gorgon.Input
 		/// Initializes a new instance of the <see cref="GorgonWinFormsPlugIn"/> class.
 		/// </summary>
 		public GorgonWinFormsPlugIn()
-			: base("Gorgon windows forms input plug-in.")
+			: base(Resources.GORINP_WINFORMS_PLUGIN_DESC)
 		{
 		}
 		#endregion

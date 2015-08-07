@@ -303,7 +303,7 @@ namespace Gorgon.Input
 		/// <param name="scan">Scan code data.</param>
 		private void OnKeyDown(Keys key, int scan)
 		{
-			KeyDown?.Invoke(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
+			KeyDown?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
 		}
 
 		/// <summary>
@@ -313,7 +313,7 @@ namespace Gorgon.Input
 		/// <param name="scan">Scan code data.</param>
 		private void OnKeyUp(Keys key, int scan)
 		{
-			KeyUp?.Invoke(this, new GorgonKeyboardEventArgs2(key, GetModifiers(), scan));
+			KeyUp?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
 		}
 
 		/// <inheritdoc/>
@@ -342,10 +342,10 @@ namespace Gorgon.Input
 		#region IGorgonKeyboard Members.
 		#region Events.
 		/// <inheritdoc/>
-		public event EventHandler<GorgonKeyboardEventArgs2> KeyDown;
+		public event EventHandler<GorgonKeyboardEventArgs> KeyDown;
 
 		/// <inheritdoc/>
-		public event EventHandler<GorgonKeyboardEventArgs2> KeyUp;
+		public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
 		#endregion
 
 		#region Properties.

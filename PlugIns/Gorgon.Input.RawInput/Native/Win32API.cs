@@ -178,42 +178,52 @@ namespace Gorgon.Native
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool RegisterRawInputDevices([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices, int uiNumDevices, int cbSize);
 
-        /// <summary>
-        /// Function to retrieve information about the specified window.
-        /// </summary>
-        /// <param name="hwnd">Window handle to retrieve information from.</param>
-        /// <param name="index">Type of information.</param>
-        /// <returns>A pointer to the information.</returns>
-        [DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
+		/// <summary>
+		/// Function to retrieve information about the specified window.
+		/// </summary>
+		/// <param name="hwnd">Window handle to retrieve information from.</param>
+		/// <param name="index">Type of information.</param>
+		/// <returns>A pointer to the information.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
 	    private static extern IntPtr GetWindowLongx86(HandleRef hwnd, WindowLongType index);
 
-        /// <summary>
-        /// Function to retrieve information about the specified window.
-        /// </summary>
-        /// <param name="hwnd">Window handle to retrieve information from.</param>
-        /// <param name="index">Type of information.</param>
-        /// <returns>A pointer to the information.</returns>
-        [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
+		/// <summary>
+		/// Function to retrieve information about the specified window.
+		/// </summary>
+		/// <param name="hwnd">Window handle to retrieve information from.</param>
+		/// <param name="index">Type of information.</param>
+		/// <returns>A pointer to the information.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr GetWindowLongx64(HandleRef hwnd, WindowLongType index);
 
-        /// <summary>
-        /// Function to set information for the specified window.
-        /// </summary>
-        /// <param name="hwnd">Window handle to set information on.</param>
-        /// <param name="index">Type of information.</param>
-        /// <param name="info">Information to set.</param>
-        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
+		/// <summary>
+		/// Function to set information for the specified window.
+		/// </summary>
+		/// <param name="hwnd">Window handle to set information on.</param>
+		/// <param name="index">Type of information.</param>
+		/// <param name="info">Information to set.</param>
+		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongx86(HandleRef hwnd, WindowLongType index, IntPtr info);
 
-        /// <summary>
-        /// Function to set information for the specified window.
-        /// </summary>
-        /// <param name="hwnd">Window handle to set information on.</param>
-        /// <param name="index">Type of information.</param>
-        /// <param name="info">Information to set.</param>
-        /// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-        [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
+		/// <summary>
+		/// Function to set information for the specified window.
+		/// </summary>
+		/// <param name="hwnd">Window handle to set information on.</param>
+		/// <param name="index">Type of information.</param>
+		/// <param name="info">Information to set.</param>
+		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
+		[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
         private static extern IntPtr SetWindowLongx64(HandleRef hwnd, WindowLongType index, IntPtr info);
 
         /// <summary>

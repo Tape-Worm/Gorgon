@@ -26,6 +26,7 @@
 
 using System;
 using System.Windows.Forms;
+using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
@@ -34,52 +35,62 @@ namespace Gorgon.Input.Raw
 	/// The Raw Input implementation of mouse information.
 	/// </summary>
 	class RawInputMouseInfo
-		: IRawInputMouseInfo
+		: IGorgonMouseInfo2
 	{
-		#region Constructor/Destructor.
+		#region Variables.
+		// Device description.
+		private readonly string _deviceDescription;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the handle to the device.
+		/// </summary>
+		public IntPtr Handle
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve and parse out the device information settings for a raw input mouse.
+		/// </summary>
+		/// <param name="deviceInfo">Raw input device information.</param>
+		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_MOUSE deviceInfo)
+		{
+			ButtonCount = deviceInfo.dwNumberOfButtons;
+			SamplingRate = deviceInfo.dwSampleRate;
+			HasHorizontalWheel = deviceInfo.fHasHorizontalWheel;
+		}
+		#endregion
+
+		#region Constructor/Finalizer.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RawInputMouseInfo"/> class.
 		/// </summary>
-		/// <param name="uuid">Unique identifier for the pointing device.</param>
-		/// <param name="name">The device name.</param>
+		/// <param name="deviceDescription">The device description.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="handle">Handle to the device.</param>
-		public RawInputMouseInfo(Guid uuid, string name, string className, string hidPath, IntPtr handle)
+		public RawInputMouseInfo(string deviceDescription, string className, string hidPath, IntPtr handle)
 		{
-			Name = name;
+			HasMouseWheel = SystemInformation.MouseWheelPresent;
+			_deviceDescription = deviceDescription;
 			ClassName = className;
 			HumanInterfaceDevicePath = hidPath;
-			UUID = uuid;
 
 			Handle = handle;
 
-			// Get the usage information for the device.			
-			if (handle != IntPtr.Zero)
-			{
-				/*RID_DEVICE_INFO deviceInfo = Win32API.GetDeviceInfo(handle);
-				Usage = (HIDUsage)deviceInfo.hid.usUsage;
-				UsagePage = (HIDUsagePage)deviceInfo.hid.usUsagePage;
-
-				ButtonCount = deviceInfo.mouse.dwNumberOfButtons;
-				SamplingRate = deviceInfo.mouse.dwSampleRate;
-				HasHorizontalWheel = deviceInfo.mouse.fHasHorizontalWheel;*/
-			}
-			else
-			{
-				ButtonCount = SystemInformation.MouseButtons;
-				SamplingRate = 0;
-				HasHorizontalWheel = false;
-			}
+			ButtonCount = SystemInformation.MouseButtons;
+			SamplingRate = 0;
+			HasHorizontalWheel = false;
 		}
 		#endregion
 
 		#region IGorgonInputDeviceInfo Members
 		/// <inheritdoc/>
-		public Guid UUID
-		{
-			get;
-		}
+		public string Description => string.Format(Resources.GORINP_RAW_DESC_MOUSE, _deviceDescription);
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
@@ -94,61 +105,33 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
-
+		public InputDeviceType InputDeviceType => InputDeviceType.Mouse;
 		#endregion
 
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		public string Name
-		{
-			get;
-		}
-		#endregion
-
-		#region IGorgonRawInputKeyboardInfo Members
-		/// <summary>
-		/// Property to return the handle to the device.
-		/// </summary>
-		public IntPtr Handle
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the HID usage.
-		/// </summary>
-		public HIDUsage Usage
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the HID usage page.
-		/// </summary>
-		public HIDUsagePage UsagePage
-		{
-			get;
-		}
-		#endregion
-
-		#region IGorgonMouseInfo Members
+		#region IGorgonMouseInfo2 Members
 		/// <inheritdoc/>
 		public int ButtonCount
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public int SamplingRate
 		{
 			get;
+			private set;
 		}
 
 		/// <inheritdoc/>
 		public bool HasHorizontalWheel
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public bool HasMouseWheel
 		{
 			get;
 		}

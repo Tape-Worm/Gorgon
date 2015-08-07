@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw;
 using Gorgon.Input.Raw.Properties;
@@ -40,33 +41,34 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public override bool SupportsGameDevices => true;
+		public override bool SupportsJoysticks => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public override bool SupportsPointingDevices => true;
+		public override bool SupportsMice => true;
 
 		/// <summary>
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
-		public override bool SupportsKeyboardDevices => true;
+		public override bool SupportsKeyboards => true;
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
 		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
 		{
-			return new GorgonRawInputService2(log);
+			return new GorgonRawInputService(log);
 		}
 
 		/// <summary>
 		/// Function to create and return a <see cref="GorgonInputService" />.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
+		[Obsolete("This is no longer used.  Please remove it when refactor is complete.")]
 		protected override GorgonInputService OnCreateInputService()
 		{
-			return new GorgonRawInputService();
+			return null;
 		}
 		#endregion
 

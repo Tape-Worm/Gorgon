@@ -25,17 +25,16 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
 {
 	/// <summary>
-	/// The Raw Input implementation of mouse information.
+	/// The Raw Input implementation of keyboard information.
 	/// </summary>
-	class RawInputMouseInfo2
-		: IGorgonMouseInfo2
+	class RawInputKeyboardInfo
+		: IGorgonKeyboardInfo2
 	{
 		#region Variables.
 		// Device description.
@@ -44,7 +43,7 @@ namespace Gorgon.Input.Raw
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the handle to the device.
+		/// Property to return the handle for the device.
 		/// </summary>
 		public IntPtr Handle
 		{
@@ -54,44 +53,113 @@ namespace Gorgon.Input.Raw
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve and parse out the device information settings for a raw input mouse.
+		/// Function to retrieve and parse out the device information settings for a raw input keyboard.
 		/// </summary>
 		/// <param name="deviceInfo">Raw input device information.</param>
-		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_MOUSE deviceInfo)
+		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_KEYBOARD deviceInfo)
 		{
-			ButtonCount = deviceInfo.dwNumberOfButtons;
-			SamplingRate = deviceInfo.dwSampleRate;
-			HasHorizontalWheel = deviceInfo.fHasHorizontalWheel;
+			KeyCount = deviceInfo.dwNumberOfKeysTotal;
+			IndicatorCount = deviceInfo.dwNumberOfIndicators;
+			FunctionKeyCount = deviceInfo.dwNumberOfFunctionKeys;
+
+			if (Enum.IsDefined(typeof(KeyboardType), deviceInfo.dwType))
+			{
+				KeyboardType = (KeyboardType)deviceInfo.dwType;
+			}
 		}
 		#endregion
 
-		#region Constructor/Finalizer.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RawInputMouseInfo"/> class.
+		/// Initializes a new instance of the <see cref="RawInputKeyboardInfo"/> class.
 		/// </summary>
 		/// <param name="deviceDescription">The device description.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
 		/// <param name="handle">Handle to the device.</param>
-		public RawInputMouseInfo2(string deviceDescription, string className, string hidPath, IntPtr handle)
+		public RawInputKeyboardInfo(string deviceDescription, string className, string hidPath, IntPtr handle)
 		{
-			HasMouseWheel = SystemInformation.MouseWheelPresent;
 			_deviceDescription = deviceDescription;
 			ClassName = className;
 			HumanInterfaceDevicePath = hidPath;
-
 			Handle = handle;
 
-			ButtonCount = SystemInformation.MouseButtons;
-			SamplingRate = 0;
-			HasHorizontalWheel = false;
+			KeyboardType = Win32API.KeyboardType;
+			FunctionKeyCount = Win32API.FunctionKeyCount;
+
+			switch (KeyboardType)
+			{
+				case KeyboardType.XT:
+					KeyCount = 83;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.OlivettiICO:
+					KeyCount = 102;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.AT:
+					KeyCount = 84;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.Enhanced:
+					KeyCount = 102;
+					IndicatorCount = 3;
+					break;
+				case KeyboardType.Nokia1050:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.Nokia9140:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.Japanese:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				case KeyboardType.USB:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+				default:
+					KeyCount = -1;
+					IndicatorCount = -1;
+					break;
+			}
+		}
+		#endregion
+
+		#region IGorgonKeyboardInfo Members
+		/// <inheritdoc/>
+		public int KeyCount
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public int IndicatorCount
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public int FunctionKeyCount
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public KeyboardType KeyboardType
+		{
+			get;
+			private set;
 		}
 		#endregion
 
 		#region IGorgonInputDeviceInfo Members
-		/// <inheritdoc/>
-		public string Description => string.Format(Resources.GORINP_RAW_DESC_MOUSE, _deviceDescription);
-
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath
 		{
@@ -105,36 +173,10 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType => InputDeviceType.Mouse;
-		#endregion
-
-		#region IGorgonMouseInfo2 Members
-		/// <inheritdoc/>
-		public int ButtonCount
-		{
-			get;
-			private set;
-		}
+		public string Description => string.Format(Resources.GORINP_RAW_DESC_KEYBOARD, _deviceDescription, KeyCount, KeyboardType);
 
 		/// <inheritdoc/>
-		public int SamplingRate
-		{
-			get;
-			private set;
-		}
-
-		/// <inheritdoc/>
-		public bool HasHorizontalWheel
-		{
-			get;
-			private set;
-		}
-
-		/// <inheritdoc/>
-		public bool HasMouseWheel
-		{
-			get;
-		}
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
 		#endregion
 	}
 }

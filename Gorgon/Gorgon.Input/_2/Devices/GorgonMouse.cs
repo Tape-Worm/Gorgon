@@ -401,7 +401,6 @@ namespace Gorgon.Input
 			}
 
 			// Set the position to empty when switching into exclusive mode.
-			Position = Point.Empty;
 			_lastCursorPosition = Cursor.Position;
 
 			// Force the cursor to the upper left hand corner if we're hiding the cursor in exclusive mode.

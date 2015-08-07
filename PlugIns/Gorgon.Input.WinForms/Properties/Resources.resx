@@ -126,4 +126,7 @@
   <data name="GORINP_WINFORMS_MOUSE_DESC" xml:space="preserve">
     <value>{0} button mouse</value>
   </data>
+  <data name="GORINP_WINFORMS_PLUGIN_DESC" xml:space="preserve">
+    <value>Gorgon windows forms input plug-in.</value>
+  </data>
 </root>

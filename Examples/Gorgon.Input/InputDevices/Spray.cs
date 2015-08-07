@@ -39,10 +39,10 @@ namespace Gorgon.Examples
         : IDisposable
     {
         #region Variables.
-		// Flag to indicate that the object was disposed.
-        private bool _disposed;                 
 		// Graphics interface.
-        private DrawingGraphics _graphics;             
+        private DrawingGraphics _graphics;
+		// List if brushes to use.
+	    private SolidBrush[] _brushes;
         #endregion
 
         #region Properties.
@@ -90,15 +90,7 @@ namespace Gorgon.Examples
         public void SprayPoint(Point point)
         {
             var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
-            Color randomColor = Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
-
-            using (var brush = new SolidBrush(randomColor))
-            {                
-                _graphics.FillEllipse(brush, new Rectangle(point.X + randomArea.X
-                                                            , point.Y + randomArea.Y
-                                                            , 10
-                                                            , 10));
-            }
+	        _graphics.FillEllipse(_brushes[GorgonRandom.RandomInt32(0, _brushes.Length)], new Rectangle(point.X + randomArea.X, point.Y + randomArea.Y, 10, 10));
         }
         #endregion
 
@@ -111,45 +103,29 @@ namespace Gorgon.Examples
         {
             Surface = new Bitmap(size.Width, size.Height, PixelFormat.Format32bppArgb);
             _graphics = DrawingGraphics.FromImage(Surface);
+
+			_brushes = new SolidBrush[64];
+
+	        for (int i = 0; i < _brushes.Length; ++i)
+	        {
+				_brushes[i] = new SolidBrush(Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255)));
+	        }
         }
         #endregion
 
         #region IDisposable Implementation.
         /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-        private void Dispose(bool disposing)
-        {
-	        if (_disposed)
-	        {
-		        return;
-	        }
-
-	        if (disposing)
-	        {
-		        if (Surface != null)
-		        {
-			        Surface.Dispose();
-			        Surface = null;
-		        }
-
-		        if (_graphics != null)
-		        {
-			        _graphics.Dispose();
-			        _graphics = null;
-		        }
-	        }
-
-	        _disposed = true;
-        }
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
+	        foreach (SolidBrush brush in _brushes)
+	        {
+		        brush.Dispose();
+	        }
+
+            Surface?.Dispose();
+			_graphics?.Dispose();
             GC.SuppressFinalize(this);
         }
         #endregion

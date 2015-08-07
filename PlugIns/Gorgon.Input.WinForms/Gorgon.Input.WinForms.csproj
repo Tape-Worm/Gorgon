@@ -62,25 +62,18 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\KeyMapper.cs" />
-    <Compile Include="Devices\WinFormsKeyboard.cs" />
-    <Compile Include="Devices\WinFormsPointingDevice.cs" />
     <Compile Include="GorgonWinFormsPlugIn.cs" />
-    <Compile Include="GorgonWinFormsInputDeviceInfo.cs" />
-    <Compile Include="Info\WinFormsKeyboardInfo.cs" />
-    <Compile Include="Info\WinFormsMouseInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GorgonWinFormsInputService.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="_2\Devices\WinFormsMouseInfo2.cs" />
-    <Compile Include="_2\Devices\WinFormsProcessor.cs" />
-    <Compile Include="_2\Devices\WinFormsKeyboardInfo2.cs" />
-    <Compile Include="_2\GorgonWinFormsInputService2.cs" />
-    <Compile Include="_2\Native\Win32API.cs" />
+    <Compile Include="Devices\WinFormsMouseInfo.cs" />
+    <Compile Include="Devices\WinFormsProcessor.cs" />
+    <Compile Include="Devices\WinFormsKeyboardInfo.cs" />
+    <Compile Include="GorgonWinFormsInputService.cs" />
+    <Compile Include="Native\Win32API.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

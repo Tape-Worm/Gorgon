@@ -1,7 +1,7 @@
-#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,87 +20,114 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 15, 2011 6:24:19 AM
+// Created: Monday, July 20, 2015 10:22:43 PM
 // 
 #endregion
 
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
-using Gorgon.Collections;
-using Gorgon.Collections.Specialized;
-using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
 {
 	/// <summary>
-	/// Object representing the main interface to the input library.
+	/// Windows forms input service for keyboard and mouse.
 	/// </summary>
-	internal class GorgonWinFormsInputService
-		: GorgonInputService
+	class GorgonWinFormsInputService
+		: GorgonInputService2
 	{
+		#region Variables.
+		// A list of devices registered with the service.
+		private readonly List<IGorgonInputDevice> _registeredDevices = new List<IGorgonInputDevice>();
+		// The raw input processor for device data.
+		private readonly Dictionary<Control, WinformsInputProcessor> _winFormsProcessors = new Dictionary<Control, WinformsInputProcessor>();
+		#endregion
+
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> OnEnumerateMice()
+		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
 		{
-			return new GorgonNamedObjectDictionary<IGorgonMouseInfo>(false)
+			WinformsInputProcessor processor;
+
+			if (!_winFormsProcessors.TryGetValue(device.Window, out processor))
+			{
+				return;
+			}
+
+			if (acquisitionState)
+			{
+				processor.RegisterEvents();
+			}
+			else
+			{
+				processor.UnregisterEvents();
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive)
+		{
+			if (exclusive)
+			{
+				exclusive = false;
+			}
+
+			if (!_winFormsProcessors.ContainsKey(window))
+			{
+				_winFormsProcessors[window] = new WinformsInputProcessor(window, EventRouter, _registeredDevices);
+			}
+
+			if (!_registeredDevices.Contains(device))
+			{
+				_registeredDevices.Add(device);
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override void UnregisterDevice(IGorgonInputDevice device)
+		{
+			if (_winFormsProcessors.Count(item => item.Value.Window == device.Window) == 1)
+			{
+				_winFormsProcessors.Remove(device.Window);
+			}
+
+			if (_registeredDevices.Contains(device))
+			{
+				_registeredDevices.Remove(device);
+			}
+		}
+
+		/// <inheritdoc/>
+		protected override IReadOnlyList<IGorgonKeyboardInfo2> OnEnumerateKeyboards()
+		{
+			return new IGorgonKeyboardInfo2[]
+			       {
+				       new WinFormsKeyboardInfo()
+			       };
+		}
+
+		/// <inheritdoc/>
+		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
+		{
+			return new IGorgonMouseInfo2[]
 			       {
 					   new WinFormsMouseInfo()
 			       };
 		}
 
 		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> OnEnumerateKeyboards()
+		protected override IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks()
 		{
-			return new GorgonNamedObjectDictionary<IGorgonKeyboardInfo>(false)
-			       {
-					   new WinFormsKeyboardInfo()
-			       };
+			return new IGorgonJoystickInfo2[0];
 		}
-
-		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> OnEnumerateJoysticks()
-		{
-			return new GorgonNamedObjectDictionary<IGorgonJoystickInfo>();
-		}
-
-		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices()
-		{
-			return new GorgonNamedObjectDictionary<IGorgonHumanInterfaceDeviceInfo>();
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonCustomHID OnCreateHumanInterfaceDevice(Control window, IGorgonHumanInterfaceDeviceInfo hidInfo)
-		{
-			throw new NotSupportedException(Resources.GORINP_ERR_KEYBOARD_MOUSE_ONLY);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonKeyboard OnCreateKeyboard(Control window, IGorgonKeyboardInfo keyboardInfo)
-		{
-			return new WinFormsKeyboard(this, keyboardInfo);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonPointingDevice OnCreateMouse(Control window, IGorgonMouseInfo pointingDeviceInfo)
-		{
-			return new WinFormsPointingDevice(this, pointingDeviceInfo);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo joystickInfo)
-		{
-            throw new NotSupportedException(Resources.GORINP_ERR_KEYBOARD_MOUSE_ONLY);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
+		
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonWinFormsInputService"/> class.
+		/// Function to retrieve a read only list of the registered devices.
 		/// </summary>
-		public GorgonWinFormsInputService()
-			: base("Gorgon Windows Forms Input")
+		/// <returns>A read only list of the registered devices.</returns>
+		public IReadOnlyList<IGorgonInputDevice> GetInputDevice()
 		{
+			return _registeredDevices;
 		}
 		#endregion
 	}

@@ -28,12 +28,15 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.Plugins;
+using Gorgon.Timing;
 using Gorgon.UI;
+using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
 namespace Gorgon.Examples
 {
@@ -87,15 +90,28 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-        private Spray _spray;                                   // The spray effect.
-        private MouseCursor _cursor;                            // Our mouse cursor.
-		private IGorgonInputService _service;					// Our input service.
-		private GorgonPointingDevice _mouse;					// Our mouse interface.
-		private GorgonJoystick _joystick;						// A joystick interface.
-		private GorgonKeyboard _keyboard;						// Our keyboard interface.
-		private Point _mousePosition = Point.Empty;				// Mouse position.
-		private Image _currentCursor;							// Current image for the cursor.
-		private bool _usePolling;								// Flag to indicate whether to use polling or events.
+		// The spray effect.
+		private Spray _spray;                                   
+		// Our mouse cursor.
+        private MouseCursor _cursor;                            
+		// Our input service.
+		private IGorgonInputService _service;
+		// Our mouse interface.
+		private IGorgonMouse _mouse;
+		// A joystick interface.
+		private GorgonJoystick _joystick;
+		// Our keyboard interface.
+		private IGorgonKeyboard _keyboard;
+		// Mouse position.
+		private Point _mousePosition = Point.Empty;
+		// Current image for the cursor.
+		private Image _currentCursor;
+		// Flag to indicate whether to use polling or events.
+		private bool _usePolling;
+		// A spin wait used to give up CPU while we're keeping our app under control in the idle event.
+		private SpinWait _spinner;
+		// The timer used to determine how long to wait until the next idle loop iteration.
+		private IGorgonTimer _updateTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
 		#endregion
 
 		#region Properties.
@@ -149,7 +165,7 @@ namespace Gorgon.Examples
 	            else
 	            {
 		            // Turn off the cursor if the mouse button isn't held down.
-		            if ((_mouse.Button & PointingDeviceButtons.Button1) != PointingDeviceButtons.Button1)
+		            if ((_mouse.Buttons & GorgonMouseButtons.Button1) == GorgonMouseButtons.Button1)
 		            {
 			            _currentCursor = Resources.hand_icon;
 		            }
@@ -191,7 +207,7 @@ namespace Gorgon.Examples
 			// info in real time during our idle time.
 			if (_usePolling)
 			{
-                UpdateMouseLabel(_mouse.Position, _mouse.Button);
+                UpdateMouseLabel(_mouse.Position, _mouse.Buttons);
 			}
 
             // Update the joystick information.
@@ -199,6 +215,14 @@ namespace Gorgon.Examples
 
 			// Display the mouse cursor.			
             _cursor.DrawMouseCursor(_mousePosition, _currentCursor, _spray.Surface);
+
+			// Free up CPU time if we're not using it.
+	        while (_updateTimer.Milliseconds <= GorgonTiming.FpsToMilliseconds(60))
+	        {
+		        _spinner.SpinOnce();
+	        }
+
+			_updateTimer.Reset();
 
 			return true;
 		}
@@ -236,9 +260,9 @@ namespace Gorgon.Examples
         /// </summary>
         /// <param name="position">The position of the mouse cursor.</param>
         /// <param name="button">The current button being held down.</param>
-        private void UpdateMouseLabel(PointF position, PointingDeviceButtons button)
+        private void UpdateMouseLabel(Point position, GorgonMouseButtons button)
         {
-            if ((button & PointingDeviceButtons.Button1) == PointingDeviceButtons.Button1)
+            if (button == GorgonMouseButtons.Button1)
             {
                 _spray.SprayPoint(Point.Round(position));
                 _currentCursor = Resources.hand_pointer_icon;
@@ -248,10 +272,10 @@ namespace Gorgon.Examples
                 _currentCursor = Resources.hand_icon;
             }
 
-            _mousePosition = new Point((int)position.X, (int)_mouse.Position.Y);
+            _mousePosition = new Point(position.X, position.Y);
 
-            labelMouse.Text =
-	            $"{_mouse.Name}: {position.X.ToString("0.#")}x{position.Y.ToString("0.#")}.  Button: {button}.  Using {(_usePolling ? "Polling" : "Events")} for data retrieval.";
+	        labelMouse.Text = $"{_mouse.Info.Description}: {position.X.ToString("0.#")}x{position.Y.ToString("0.#")}.  " +
+	                          $"Button: {button}.  Using {(_usePolling ? "Polling" : "Events")} for data retrieval.";
         }
 
 	    /// <summary>
@@ -259,30 +283,30 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    /// <param name="key">Key that's currently pressed.</param>
 	    /// <param name="shift">Shifted keys.</param>
-	    private void UpdateKeyboardLabel(KeyboardKey key, KeyboardKey shift)
+	    private void UpdateKeyboardLabel(Keys key, Keys shift)
 		{
-			var shiftKey = KeyboardKey.None;
+			var shiftKey = Keys.None;
 
-			if ((KeyboardKey.Alt & shift) == KeyboardKey.Alt)
+			if ((Keys.Alt & shift) == Keys.Alt)
 			{
-				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LMenu : KeyboardKey.RMenu;
+				shiftKey = (shift & Keys.LMenu) == Keys.LMenu ? Keys.LMenu : Keys.RMenu;
 			}
 
-			if ((shift & KeyboardKey.Control) == KeyboardKey.Control)
+			if ((shift & Keys.Control) == Keys.Control)
 			{
-				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LControlKey : KeyboardKey.RControlKey;
+				shiftKey = (shift & Keys.LControlKey) == Keys.LControlKey ? Keys.LControlKey : Keys.RControlKey;
 			}
 
-			if ((shift & KeyboardKey.Shift) == KeyboardKey.Shift)
+			if ((shift & Keys.Shift) == Keys.Shift)
 			{
-				shiftKey = (shift & KeyboardKey.LeftVersion) == KeyboardKey.LeftVersion ? KeyboardKey.LShiftKey : KeyboardKey.RShiftKey;
+				shiftKey = (shift & Keys.LShiftKey) == Keys.LShiftKey ? Keys.LShiftKey : Keys.RShiftKey;
 			}
 
 
 			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)"
 												, key
-												, ((shiftKey != KeyboardKey.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
-                                                , _keyboard.Name);				
+												, ((shiftKey != Keys.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
+                                                , _keyboard.Info.Description);				
 		}
 
 		/// <summary>
@@ -291,7 +315,7 @@ namespace Gorgon.Examples
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-		private void _mouse_PointingDeviceUp(object sender, PointingDeviceEventArgs e)
+		private void _mouse_ButtonUp(object sender, GorgonMouseEventArgs e)
 		{
 			// Update the buttons so that only the buttons we have held down are showing.
             UpdateMouseLabel(e.Position, e.ShiftButtons & ~e.Buttons);
@@ -303,7 +327,7 @@ namespace Gorgon.Examples
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-        private void _mouse_PointingDeviceDown(object sender, PointingDeviceEventArgs e)
+        private void _mouse_ButtonDown(object sender, GorgonMouseEventArgs e)
 		{
             UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
         }
@@ -314,7 +338,7 @@ namespace Gorgon.Examples
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
 		/// <exception cref="System.NotSupportedException"></exception>
-		private void _mouse_PointingDeviceMove(object sender, PointingDeviceEventArgs e)
+		private void _mouse_Move(object sender, GorgonMouseEventArgs e)
 		{
             UpdateMouseLabel(e.Position, e.Buttons | e.ShiftButtons);
 		}
@@ -323,41 +347,41 @@ namespace Gorgon.Examples
 		/// Handles the KeyUp event of the _keyboard control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="KeyboardEventArgs" /> instance containing the event data.</param>
-		private void _keyboard_KeyUp(object sender, KeyboardEventArgs e)
+		/// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>
+		private void _keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
 		{
-			UpdateKeyboardLabel(KeyboardKey.None, e.ModifierKeys);
+			UpdateKeyboardLabel(Keys.None, e.ModifierKeys);
 		}
 
 		/// <summary>
 		/// Handles the KeyDown event of the _keyboard control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="KeyboardEventArgs" /> instance containing the event data.</param>		
-		private void _keyboard_KeyDown(object sender, KeyboardEventArgs e)
+		/// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>		
+		private void _keyboard_KeyDown(object sender, GorgonKeyboardEventArgs e)
 		{
 			// If we press "P", then switch between polling and events.
-			if (e.Key == KeyboardKey.P)
+			if (e.Key == Keys.P)
 			{
 				_usePolling = !_usePolling;
 				if (_usePolling)
 				{
 					// Turn off mouse events when polling.
-					_mouse.PointingDeviceMove -= _mouse_PointingDeviceMove;
-					_mouse.PointingDeviceDown -= _mouse_PointingDeviceDown;
-					_mouse.PointingDeviceUp -= _mouse_PointingDeviceUp;
+					_mouse.MouseMove -= _mouse_Move;
+					_mouse.MouseButtonDown -= _mouse_ButtonDown;
+					_mouse.MouseButtonUp -= _mouse_ButtonUp;
 				}
 				else
 				{
 					// Turn on mouse events when not polling.
-					_mouse.PointingDeviceMove += _mouse_PointingDeviceMove;
-					_mouse.PointingDeviceDown += _mouse_PointingDeviceDown;
-					_mouse.PointingDeviceUp += _mouse_PointingDeviceUp;
+					_mouse.MouseMove += _mouse_Move;
+					_mouse.MouseButtonDown += _mouse_ButtonDown;
+					_mouse.MouseButtonUp += _mouse_ButtonUp;
 				}
 			}
 
 			// Exit the application.
-			if (e.Key == KeyboardKey.Escape)
+			if (e.Key == Keys.Escape)
 			{
 				Close();
 				return;
@@ -382,7 +406,7 @@ namespace Gorgon.Examples
 			// If we resize our window, update our position range.
 			if (_mouse != null)
 			{
-				_mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
+				_mouse.PositionConstraint = panelDisplay.ClientRectangle;
 			}
 
 			_spray?.Resize(panelDisplay.ClientSize);
@@ -391,48 +415,57 @@ namespace Gorgon.Examples
         /// <summary>
         /// Function to create the mouse device.
         /// </summary>
-        private void CreateMouse()
+        /// <param name="mouseInfo">The information about the current mouse to use.</param>
+        private void CreateMouse(IGorgonMouseInfo2 mouseInfo)
         {
-	        return;
             // Create the device from the factory.
-            //_mouse = _service.CreateMouse(panelDisplay);
+            _mouse = new GorgonMouse(_service, mouseInfo);
 
-            // Set up the mouse for use.
-            _mouse.Enabled = true;
-
-            // Set the mouse as exclusively owned by this window.
-            // This way all the mouse input will go to this window when it's got focus.
-            _mouse.Exclusive = true;
 
             // Assign an event to notify us when the mouse is moving.
-            _mouse.PointingDeviceMove += _mouse_PointingDeviceMove;
+            _mouse.MouseMove += _mouse_Move;
 
             // Assign another event to notify us when a mouse button was clicked.
-            _mouse.PointingDeviceDown += _mouse_PointingDeviceDown;
-            _mouse.PointingDeviceUp += _mouse_PointingDeviceUp;
+            _mouse.MouseButtonDown += _mouse_ButtonDown;
+            _mouse.MouseButtonUp += _mouse_ButtonUp;
 
             // Limit the mouse position to the client area of the window.				
-            _mouse.PositionRange = new RectangleF(0, 0, panelDisplay.ClientSize.Width, panelDisplay.ClientSize.Height);
+            _mouse.PositionConstraint = panelDisplay.ClientRectangle;
 
-			UpdateMouseLabel(_mouse.Position, PointingDeviceButtons.None);			
+			// This will bind the device to this window, allowing us to intercept its data.
+			// We will set the mouse as exclusively owned by this window. This keeps the windows messages (WM_MOUSEMOVE, etc...) and 
+			// the corresponding WinForms events from being processed.
+			_mouse.BindWindow(this, true);
+
+			// This must be set to true, or the device will not send any data.
+			_mouse.IsAcquired = true;
+
+			// Center the mouse on the window.
+			_mouse.Position = new Point(panelDisplay.ClientSize.Width / 2, panelDisplay.ClientSize.Height / 2);
+
+			UpdateMouseLabel(_mouse.Position, GorgonMouseButtons.None);			
         }
 
         /// <summary>
         /// Function to create the keyboard device.
         /// </summary>
-        private void CreateKeyboard()
+        /// <param name="keyboardInfo">The information about the current keyboard to use.</param>
+        private void CreateKeyboard(IGorgonKeyboardInfo2 keyboardInfo)
         {
-	        return;
             // Create our device.
-            //_keyboard = _service.CreateKeyboard(panelDisplay);
-
-            // Enable the devices.
-            _keyboard.Enabled = true;
+            _keyboard = new GorgonKeyboard2(_service, keyboardInfo);
+            
             // Set up an event handler for our keyboard.
             _keyboard.KeyDown += _keyboard_KeyDown;
             _keyboard.KeyUp += _keyboard_KeyUp;
 
-			UpdateKeyboardLabel(KeyboardKey.None, KeyboardKey.None);
+			// This will bind the device to this window, allowing us to intercept its data.
+			_keyboard.BindWindow(this);
+
+			// This must be set to true, or the device will not send any data.
+	        _keyboard.IsAcquired = true;
+
+			UpdateKeyboardLabel(Keys.None, Keys.None);
         }
 
         /// <summary>
@@ -468,6 +501,28 @@ namespace Gorgon.Examples
 
 	        UpdateJoystickLabel(JoystickTransformed);
         }
+
+
+		/// <summary>
+		/// Handles the <see cref="E:Activated" /> event.
+		/// </summary>
+		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+		protected override void OnActivated(EventArgs e)
+		{
+			base.OnActivated(e);
+
+			// If we've lost focus, our devices will become unacquired and will stop registering input.
+			// This tell the devices that it is now OK to regain acquisition.
+			if (_mouse != null)
+			{
+				_mouse.IsAcquired = true;
+			}
+
+			if (_keyboard != null)
+			{
+				_keyboard.IsAcquired = true;
+			}
+		}
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -531,8 +586,8 @@ namespace Gorgon.Examples
 				}
 
 				// Get our input devices.				
-				CreateMouse();
-				CreateKeyboard();
+				CreateMouse(mice[0]);
+				CreateKeyboard(keyboards[0]);
 				CreateJoystick(new IGorgonJoystickInfo2[0]);
 
 				// When the display area changes size, update the spray effect
@@ -540,7 +595,7 @@ namespace Gorgon.Examples
 				panelDisplay.Resize += panelDisplay_Resize;
 
 				// Set the initial range of the mouse cursor.
-				_mouse.PositionRange = Rectangle.Round(panelDisplay.ClientRectangle);
+				_mouse.PositionConstraint = panelDisplay.ClientRectangle;
 
 				// Set up our spray object.
 				_spray = new Spray(panelDisplay.ClientSize);
@@ -550,6 +605,7 @@ namespace Gorgon.Examples
 				          };
 
 				// Set up our idle method.
+				_updateTimer.Reset();
 				GorgonApplication.IdleMethod = Idle;
 			}
 			catch (Exception ex)
@@ -573,19 +629,12 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
-            if (_cursor != null)
-            {
-                _cursor.Dispose();
-                _cursor = null;
-            }
+			_mouse?.UnbindWindow();
+			_keyboard?.UnbindWindow();
 
-			if (_spray == null)
-			{
-				return;
-			}
+			_cursor?.Dispose();
 
-			_spray.Dispose();
-			_spray = null;
+			_spray?.Dispose();
 		}
 		#endregion
 

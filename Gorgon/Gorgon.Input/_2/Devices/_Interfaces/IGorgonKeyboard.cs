@@ -73,12 +73,12 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Event fired when a key is pressed on the keyboard.
 		/// </summary>
-		event EventHandler<GorgonKeyboardEventArgs2> KeyDown;
+		event EventHandler<GorgonKeyboardEventArgs> KeyDown;
 
 		/// <summary>
 		/// Event fired when a key is released on the keyboard.
 		/// </summary>
-		event EventHandler<GorgonKeyboardEventArgs2> KeyUp;
+		event EventHandler<GorgonKeyboardEventArgs> KeyUp;
 		#endregion
 
 		#region Properties.

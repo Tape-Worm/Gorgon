@@ -32,7 +32,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Event arguments for the various events triggered on the <see cref="IGorgonKeyboard"/> interface.
 	/// </summary>
-	public class GorgonKeyboardEventArgs2
+	public class GorgonKeyboardEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -80,12 +80,12 @@ namespace Gorgon.Input
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs2"/> class.
+		/// Initializes a new instance of the <see cref="GorgonKeyboardEventArgs"/> class.
 		/// </summary>
 		/// <param name="key">Key that is pressed.</param>
 		/// <param name="modifierKey">Keys that are held down during the event.</param>
 		/// <param name="scanData">Scan code data.</param>
-		public GorgonKeyboardEventArgs2(Keys key, Keys modifierKey, int scanData)
+		public GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
 		{
 			Key = key;
 			ModifierKeys = modifierKey;

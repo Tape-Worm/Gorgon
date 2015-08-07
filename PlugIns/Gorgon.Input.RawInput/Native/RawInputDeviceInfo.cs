@@ -58,7 +58,8 @@ namespace Gorgon.Input.Raw
 
 			if ((errCode != -1) && (errCode != 0))
 			{
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, Marshal.GetLastWin32Error()));
+				int win32Error = Marshal.GetLastWin32Error();
+				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 			}
 
 			if (errCode == -1)
@@ -73,7 +74,8 @@ namespace Gorgon.Input.Raw
 
 				if (errCode < -1)
 				{
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, Marshal.GetLastWin32Error()));
+					int win32Error = Marshal.GetLastWin32Error();
+					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 				}
 
 				if (errCode == -1)
@@ -193,7 +195,8 @@ namespace Gorgon.Input.Raw
 
 			if (Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
 			{
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, Marshal.GetLastWin32Error()));
+				int win32Error = Marshal.GetLastWin32Error();
+				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 			}
 
 			// Do nothing if we have no data.
@@ -208,7 +211,8 @@ namespace Gorgon.Input.Raw
 
 				if (Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
 				{
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, Marshal.GetLastWin32Error()));
+					int win32Error = Marshal.GetLastWin32Error();
+					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
 				}
 
 				// The strings that come back from native land will end with a NULL terminator, so crop that off.

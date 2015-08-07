@@ -25,13 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
@@ -54,7 +50,8 @@ namespace Gorgon.Input.Raw
 			// Define how large the buffer needs to be.
 			if (Win32API.GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
 			{
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, Marshal.GetLastWin32Error()));
+				int win32Error = Marshal.GetLastWin32Error();
+				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR, win32Error));
 			}
 
 			if (deviceCount == 0)

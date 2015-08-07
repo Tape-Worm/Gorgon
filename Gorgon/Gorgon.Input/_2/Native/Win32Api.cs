@@ -87,12 +87,13 @@ namespace Gorgon.Native
 					                                      }
 				                        };
 
-				if (!GetCursorInfo((IntPtr)(&cursorInfo)))
+				if (GetCursorInfo((IntPtr)(&cursorInfo)))
 				{
-					throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, Marshal.GetLastWin32Error()));
+					return cursorInfo.flags;
 				}
 
-				return cursorInfo.flags;
+				int win32Error = Marshal.GetLastWin32Error();
+				throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, win32Error));
 			}	
 		}
 	}

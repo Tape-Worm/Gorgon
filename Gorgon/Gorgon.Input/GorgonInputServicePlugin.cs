@@ -34,15 +34,12 @@ namespace Gorgon.Input
 	/// Plugin interface for an input device factory plugin.
 	/// </summary>
 	/// <remarks>
-	/// This plugin will create a single instance of a concrete <see cref="GorgonInputService"/>. If the <see cref="CreateInputService"/> is called multiple times then this single instance will be sent back 
-	/// instead of a new instance.
+	/// This plugin will create a single instance of a <see cref="IGorgonInputService"/>.
 	/// </remarks>
 	public abstract class GorgonInputServicePlugin
 		: GorgonPlugin
 	{
 		#region Variables.
-		// The lazily created input service.
-		private readonly Lazy<GorgonInputService> _inputService;
 		// The lazily created input service.
 		private readonly Lazy<IGorgonInputService> _inputService2;
 		#endregion
@@ -51,7 +48,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports game devices like game pads, or joysticks.
 		/// </summary>
-		public abstract bool SupportsGameDevices
+		public abstract bool SupportsJoysticks
 		{
 			get;
 		}
@@ -59,15 +56,15 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return whether the plugin supports pointing devices like mice, trackballs, etc...
 		/// </summary>
-		public abstract bool SupportsPointingDevices
+		public abstract bool SupportsMice
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return whether the plugin supports keyboard devices.
+		/// Property to return whether the plugin supports keyboards.
 		/// </summary>
-		public abstract bool SupportsKeyboardDevices
+		public abstract bool SupportsKeyboards
 		{
 			get;
 		}
@@ -83,19 +80,25 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Methods.
+
 		/// <summary>
 		/// Function to create and return a <see cref="GorgonInputService"/>.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		protected abstract GorgonInputService OnCreateInputService();
+		[Obsolete("This is not used anymore.  Get rid of it when refactor is complete.")]
+		protected virtual GorgonInputService OnCreateInputService()
+		{
+			throw new Exception("This is deprecated.  Please remove it.");
+		}
 
 		/// <summary>
 		/// Function to create and return an input service.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
+		[Obsolete("This is not used anymore.  Get rid of it when refactor is complete.")]
 		internal GorgonInputService CreateInputService()
 		{
-			return _inputService.Value;
+			return null;
 		}
 
 		/// <summary>
@@ -122,10 +125,9 @@ namespace Gorgon.Input
 		/// <param name="description">Optional description of the plugin.</param>
 		protected GorgonInputServicePlugin(string description)
 			: base(description)
-		{			
-			_inputService = new Lazy<GorgonInputService>(OnCreateInputService);
-			_inputService2 = new Lazy<IGorgonInputService>(() => OnCreateInputService2(Log));
+		{
 			Log = new GorgonLogDummy();
+			_inputService2 = new Lazy<IGorgonInputService>(() => OnCreateInputService2(Log));
 		}
 		#endregion		
 	}
