@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Input
 {
@@ -92,9 +88,13 @@ namespace Gorgon.Input
 	public struct GorgonMouseData
 	{
 		/// <summary>
-		/// The direction and distance that the mouse has moved since the last event.
+		/// The current position of the mouse.
 		/// </summary>
-		public Point RelativeDirection;
+		/// <remarks>
+		/// If the <see cref="IsRelative"/> value is set to <b>true</b>, then this value will be a relative value based on the last known position of the mouse. Otherwise, this will return the absolute 
+		/// position of the mouse.
+		/// </remarks>
+		public Point Position;
 
 		/// <summary>
 		/// The change in the mouse wheel since the last event.
@@ -105,5 +105,10 @@ namespace Gorgon.Input
 		/// The state of the mouse button
 		/// </summary>
 		public MouseButtonState ButtonState;
+
+		/// <summary>
+		/// Flag to indicate whether the <see cref="Position"/> value is relative or not.
+		/// </summary>
+		public bool IsRelative;
 	}
 }

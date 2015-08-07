@@ -32,7 +32,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// Mouse event arguments.
 	/// </summary>
-	public class MouseEventArgs
+	public class GorgonMouseEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -106,7 +106,7 @@ namespace Gorgon.Input
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MouseEventArgs" /> class.
+		/// Initializes a new instance of the <see cref="GorgonMouseEventArgs" /> class.
 		/// </summary>
 		/// <param name="buttons">Buttons that are pressed during mouse event.</param>
 		/// <param name="shiftButtons">Buttons that are held down during the mouse event.</param>
@@ -115,7 +115,7 @@ namespace Gorgon.Input
 		/// <param name="relativePosition">Relative position of the mouse.</param>
 		/// <param name="wheelDelta">Relative position of the wheel.</param>
 		/// <param name="clickCount">Number of clicks in a timed period.</param>
-		public MouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, Point position, int wheelPosition, Point relativePosition, int wheelDelta, int clickCount)
+		public GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, Point position, int wheelPosition, Point relativePosition, int wheelDelta, int clickCount)
 		{
 			Buttons = buttons;
 			ShiftButtons = shiftButtons;

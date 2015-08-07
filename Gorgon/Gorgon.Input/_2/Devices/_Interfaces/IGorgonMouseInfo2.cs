@@ -41,6 +41,14 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
+		/// Property to return whether the mouse has a vertical scroll wheel or not.
+		/// </summary>
+		bool HasMouseWheel
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the number of data points per second.
 		/// </summary>
 		/// <remarks>

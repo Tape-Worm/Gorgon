@@ -108,22 +108,12 @@ namespace Gorgon.Input.Raw
 
 			Point lastRelativeMovement = new Point(mouseData.LastX, mouseData.LastY);
 
-			// This device uses absolute coordinates (e.g. touch), so we need to convert appropriately.
-			if ((mouseData.Flags & RawMouseFlags.MoveAbsolute) == RawMouseFlags.MoveAbsolute)
-			{
-				var mouse = device as IGorgonMouse;
-
-				if (mouse != null)
-				{
-					lastRelativeMovement = new Point(mouseData.LastX - mouse.Position.X, mouseData.LastY - mouse.Position.Y);
-				}
-			}
-
 			var processedData = new GorgonMouseData
 			                    {
 				                    ButtonState = state,
 				                    MouseWheelDelta = wheelDelta,
-				                    RelativeDirection = lastRelativeMovement
+				                    Position = lastRelativeMovement,
+									IsRelative = ((mouseData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute)
 			                    };
 
 			_router.RouteToDevice(device, ref processedData);

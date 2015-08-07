@@ -31,15 +31,17 @@ using Gorgon.Native;
 namespace Gorgon.Input.WinForms
 {
 	/// <summary>
-	/// The windows forms keyboard hook used to capture and translate standard windows keyboard messages.
+	/// The windows forms keyboard processor used to capture and translate standard win forms events.
 	/// </summary>
-	class WinFormsKeyboardHook
+	class WinformsInputProcessor
 	{
 		#region Variables.
 		// The input service that owns this processor.
 		private readonly GorgonInputDeviceEventRouting _router;
 		// A list of registered devices from the service.
 		private readonly IReadOnlyList<IGorgonInputDevice> _devices;
+		// Flag to indicate that the events are already registered.
+		private bool _isRegistered;
 		#endregion
 
 		#region Properties.
@@ -54,34 +56,13 @@ namespace Gorgon.Input.WinForms
 
 		#region Methods.
 		/// <summary>
-		/// Function to route event data to the appropriate keyboard device object.
-		/// </summary>
-		/// <param name="data">The data to pass to the device.</param>
-		private void RouteKeyboardEvent(ref GorgonKeyboardData data)
-		{
-			// ReSharper disable once ForCanBeConvertedToForeach
-			for (int i = 0; i < _devices.Count; ++i)
-			{
-				IGorgonInputDevice device = _devices[i];
-
-				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonKeyboard))) 
-				{
-					continue;
-				}
-
-				_router.RouteToDevice(_devices[i], ref data);
-			}
-		}
-
-		/// <summary>
 		/// Handles the KeyUp event of the Window control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyUp(object sender, KeyEventArgs e)
 		{
-			GorgonKeyboardData data = ProcessEvent(e, KeyState.Up);
-			RouteKeyboardEvent(ref data);
+			ProcessEvent(e, KeyState.Up);
 		}
 
 		/// <summary>
@@ -91,8 +72,131 @@ namespace Gorgon.Input.WinForms
 		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
 		private void Window_KeyDown(object sender, KeyEventArgs e)
 		{
-			GorgonKeyboardData data = ProcessEvent(e, KeyState.Down);
-			RouteKeyboardEvent(ref data);
+			ProcessEvent(e, KeyState.Down);
+		}
+
+		/// <summary>
+		/// Handles the MouseWheel event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void Window_MouseWheel(object sender, MouseEventArgs e)
+		{
+			ProcessEvent(e, false);
+		}
+
+		/// <summary>
+		/// Handles the MouseUp event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void Window_MouseUp(object sender, MouseEventArgs e)
+		{
+			ProcessEvent(e, true);
+		}
+
+		/// <summary>
+		/// Handles the MouseDown event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void Window_MouseDown(object sender, MouseEventArgs e)
+		{
+			ProcessEvent(e, false);
+		}
+
+		/// <summary>
+		/// Handles the MouseMove event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void Window_MouseMove(object sender, MouseEventArgs e)
+		{
+			ProcessEvent(e, false);
+		}
+
+		/// <summary>
+		/// Function to retrieve the mouse button states from an event.
+		/// </summary>
+		/// <param name="button">The current button to evaluate.</param>
+		/// <param name="isUp"><b>true</b> if the button was released, <b>false</b> if not.</param>
+		/// <returns>The current button state for the mouse.</returns>
+		private static MouseButtonState GetMouseButtonState(System.Windows.Forms.MouseButtons button, bool isUp)
+		{
+			MouseButtonState state = MouseButtonState.None;
+
+			if (isUp)
+			{
+				switch (button)
+				{
+					case System.Windows.Forms.MouseButtons.Left:
+						state |= MouseButtonState.ButtonLeftUp;
+						break;
+					case System.Windows.Forms.MouseButtons.Middle:
+						state |= MouseButtonState.ButtonMiddleUp;
+						break;
+					case System.Windows.Forms.MouseButtons.Right:
+						state |= MouseButtonState.ButtonRightUp;
+						break;
+					case System.Windows.Forms.MouseButtons.XButton1:
+						state |= MouseButtonState.Button4Up;
+						break;
+					case System.Windows.Forms.MouseButtons.XButton2:
+						state |= MouseButtonState.Button5Up;
+						break;
+				}
+
+				return state;
+			}
+
+			switch (button)
+			{
+				case System.Windows.Forms.MouseButtons.Left:
+					state |= MouseButtonState.ButtonLeftDown;
+					break;
+				case System.Windows.Forms.MouseButtons.Middle:
+					state |= MouseButtonState.ButtonMiddleDown;
+					break;
+				case System.Windows.Forms.MouseButtons.Right:
+					state |= MouseButtonState.ButtonRightDown;
+					break;
+				case System.Windows.Forms.MouseButtons.XButton1:
+					state |= MouseButtonState.Button4Down;
+					break;
+				case System.Windows.Forms.MouseButtons.XButton2:
+					state |= MouseButtonState.Button5Down;
+					break;
+			}
+
+			return state;
+		}
+
+		/// <summary>
+		/// Function to process windows forms mouse events, and return data Gorgon can parse.
+		/// </summary>
+		/// <param name="e">Event parameters.</param>
+		/// <param name="buttonUp"><b>true</b> if a button was released, <b>false</b> if not.</param>
+		private void ProcessEvent(MouseEventArgs e, bool buttonUp)
+		{
+			var data = new GorgonMouseData
+			           {
+				           MouseWheelDelta = (short)e.Delta,
+				           ButtonState = GetMouseButtonState(e.Button, buttonUp),
+						   Position = e.Location
+			           };
+
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _devices.Count; ++i)
+			{
+				IGorgonInputDevice device = _devices[i];
+
+				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonMouse)))
+				{
+					continue;
+				}
+
+				_router.RouteToDevice(_devices[i], ref data);
+			}
 		}
 
 		/// <summary>
@@ -101,7 +205,7 @@ namespace Gorgon.Input.WinForms
 		/// <param name="e">Event parameters.</param>
 		/// <param name="state">The state of the key, up or down.</param>
 		/// <returns>The parsed data for the keyboard event.</returns>
-		private static GorgonKeyboardData ProcessEvent(KeyEventArgs e, KeyState state)
+		private void ProcessEvent(KeyEventArgs e, KeyState state)
 		{
 			KeyboardDataFlags flags = state == KeyState.Down ? KeyboardDataFlags.KeyDown : KeyboardDataFlags.KeyUp;
 			
@@ -143,12 +247,25 @@ namespace Gorgon.Input.WinForms
 					break;
 			}
 
-			return new GorgonKeyboardData
-			       {
-				       ScanCode = Win32API.MapVirtualKey(e.KeyCode, 0),
-				       Key = e.KeyCode,
-				       Flags = flags
-			       };
+			var data = new GorgonKeyboardData
+			           {
+				           ScanCode = Win32API.MapVirtualKey(e.KeyCode, 0),
+				           Key = e.KeyCode,
+				           Flags = flags
+			           };
+
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _devices.Count; ++i)
+			{
+				IGorgonInputDevice device = _devices[i];
+
+				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonKeyboard)))
+				{
+					continue;
+				}
+
+				_router.RouteToDevice(_devices[i], ref data);
+			}
 		}
 
 		/// <summary>
@@ -156,28 +273,51 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		public void RegisterEvents()
 		{
+			if (_isRegistered)
+			{
+				return;
+			}
+
 			Window.KeyDown += Window_KeyDown;
 			Window.KeyUp += Window_KeyUp;
+			Window.MouseMove += Window_MouseMove;
+			Window.MouseDown += Window_MouseDown;
+			Window.MouseUp += Window_MouseUp;
+			Window.MouseWheel += Window_MouseWheel;
+
+			_isRegistered = true;
 		}
+
 
 		/// <summary>
 		/// Function to unregister windows forms event from the specified window.
 		/// </summary>
 		public void UnregisterEvents()
 		{
+			if (!_isRegistered)
+			{
+				return;
+			}
+
 			Window.KeyDown -= Window_KeyDown;
 			Window.KeyUp -= Window_KeyUp;
+			Window.MouseMove -= Window_MouseMove;
+			Window.MouseDown -= Window_MouseDown;
+			Window.MouseUp -= Window_MouseUp;
+			Window.MouseWheel -= Window_MouseWheel;
+
+			_isRegistered = false;
 		}
 		#endregion
 
 		#region Constructor/Finalizer
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WinFormsKeyboardHook" /> class.
+		/// Initializes a new instance of the <see cref="WinformsInputProcessor" /> class.
 		/// </summary>
 		/// <param name="window">The window that the processor is bound with.</param>
 		/// <param name="router">The router used to send the data to the device.</param>
 		/// <param name="devices">The list of registered devices in the service.</param>
-		public WinFormsKeyboardHook(Control window, GorgonInputDeviceEventRouting router, IReadOnlyList<IGorgonInputDevice> devices)
+		public WinformsInputProcessor(Control window, GorgonInputDeviceEventRouting router, IReadOnlyList<IGorgonInputDevice> devices)
 		{
 			Window = window;
 			_router = router;

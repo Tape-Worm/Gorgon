@@ -124,12 +124,6 @@
     <value>{0} keyboard</value>
   </data>
   <data name="GORINP_WINFORMS_MOUSE_DESC" xml:space="preserve">
-    <value>System mouse</value>
-  </data>
-  <data name="GORINP_WIN_KEYBOARD_DESC" xml:space="preserve">
-    <value>Win Forms Input Keyboard</value>
-  </data>
-  <data name="GORINP_WIN_MOUSE_DESC" xml:space="preserve">
-    <value>Win Forms Mouse</value>
+    <value>{0} button mouse</value>
   </data>
 </root>

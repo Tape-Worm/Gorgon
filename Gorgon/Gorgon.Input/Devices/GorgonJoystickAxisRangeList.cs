@@ -74,12 +74,11 @@ namespace Gorgon.Input
 			{
 				int index;
 
-#if DEBUG
 				if (!_axes.TryGetValue(axis, out index))
 				{
 					throw new KeyNotFoundException(Resources.GORINP_ERR_JOYSTICK_AXES_INVALID);
 				}
-#endif
+
 				return _ranges[index];
 			}
 		}

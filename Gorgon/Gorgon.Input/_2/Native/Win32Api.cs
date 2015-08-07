@@ -68,9 +68,9 @@ namespace Gorgon.Native
 		public static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
 
 		[DllImport("User32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool GetCursorInfo(IntPtr pci);
-
-
+		
 		public static CursorInfoFlags IsCursorVisible()
 		{
 			unsafe
@@ -87,7 +87,7 @@ namespace Gorgon.Native
 					                                      }
 				                        };
 
-				if (!GetCursorInfo(new IntPtr(&cursorInfo)))
+				if (!GetCursorInfo((IntPtr)(&cursorInfo)))
 				{
 					throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, Marshal.GetLastWin32Error()));
 				}

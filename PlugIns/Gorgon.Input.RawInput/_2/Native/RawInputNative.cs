@@ -227,24 +227,24 @@ namespace Gorgon.Input.Raw
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 			}
 
-			// Get actual data.
 			unsafe
 			{
-				var rawInputPtr = stackalloc byte[dataSize];
+				RAWINPUT rawInput;
+
+				// Get actual data.
 				retVal = Win32API.GetRawInputData(deviceHandle,
-												  RawInputCommand.Input,
-												  (IntPtr)rawInputPtr,
-												  ref dataSize,
-												  _headerSize);
+				                                  RawInputCommand.Input,
+				                                  (IntPtr)(&rawInput),
+				                                  ref dataSize,
+				                                  _headerSize);
 
 				if ((retVal == -1)
-					|| (retVal != dataSize))
+				    || (retVal != dataSize))
 				{
 					throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
 				}
 
-				RAWINPUT result = *((RAWINPUT*)rawInputPtr);
-				return result;
+				return rawInput;
 			}
 		}
 

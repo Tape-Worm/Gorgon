@@ -75,6 +75,7 @@ namespace Gorgon.Input.Raw
 		/// <param name="handle">Handle to the device.</param>
 		public RawInputMouseInfo2(string deviceDescription, string className, string hidPath, IntPtr handle)
 		{
+			HasMouseWheel = SystemInformation.MouseWheelPresent;
 			_deviceDescription = deviceDescription;
 			ClassName = className;
 			HumanInterfaceDevicePath = hidPath;
@@ -127,6 +128,12 @@ namespace Gorgon.Input.Raw
 		{
 			get;
 			private set;
+		}
+
+		/// <inheritdoc/>
+		public bool HasMouseWheel
+		{
+			get;
 		}
 		#endregion
 	}

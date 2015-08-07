@@ -43,6 +43,7 @@
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -75,6 +76,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="_2\Devices\WinFormsMouseInfo2.cs" />
     <Compile Include="_2\Devices\WinFormsProcessor.cs" />
     <Compile Include="_2\Devices\WinFormsKeyboardInfo2.cs" />
     <Compile Include="_2\GorgonWinFormsInputService2.cs" />

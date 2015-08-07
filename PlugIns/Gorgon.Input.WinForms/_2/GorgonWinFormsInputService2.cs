@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Gorgon.Input.WinForms.Properties;
 
 namespace Gorgon.Input.WinForms
 {
@@ -41,14 +42,14 @@ namespace Gorgon.Input.WinForms
 		// A list of devices registered with the service.
 		private readonly List<IGorgonInputDevice> _registeredDevices = new List<IGorgonInputDevice>();
 		// The raw input processor for device data.
-		private readonly Dictionary<Control, WinFormsKeyboardHook> _winFormsProcessors = new Dictionary<Control, WinFormsKeyboardHook>();
+		private readonly Dictionary<Control, WinformsInputProcessor> _winFormsProcessors = new Dictionary<Control, WinformsInputProcessor>();
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
 		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
 		{
-			WinFormsKeyboardHook processor;
+			WinformsInputProcessor processor;
 
 			if (!_winFormsProcessors.TryGetValue(device.Window, out processor))
 			{
@@ -75,7 +76,7 @@ namespace Gorgon.Input.WinForms
 
 			if (!_winFormsProcessors.ContainsKey(window))
 			{
-				_winFormsProcessors.Add(window, new WinFormsKeyboardHook(window, EventRouter, _registeredDevices));
+				_winFormsProcessors[window] = new WinformsInputProcessor(window, EventRouter, _registeredDevices);
 			}
 
 			if (!_registeredDevices.Contains(device))
@@ -110,7 +111,10 @@ namespace Gorgon.Input.WinForms
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
 		{
-			throw new NotImplementedException();
+			return new IGorgonMouseInfo2[]
+			       {
+					   new WinFormsMouseInfo2()
+			       };
 		}
 
 		/// <inheritdoc/>

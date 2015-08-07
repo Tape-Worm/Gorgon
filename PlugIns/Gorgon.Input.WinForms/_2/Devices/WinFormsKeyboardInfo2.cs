@@ -33,15 +33,50 @@ namespace Gorgon.Input.WinForms
 	sealed class WinFormsKeyboardInfo2
 		: IGorgonKeyboardInfo2
 	{
+		#region Properties.
+		/// <inheritdoc/>
+		public int KeyCount
+		{
+			get;
+		}
+
+		/// <inheritdoc/>
+		public int IndicatorCount
+		{
+			get;
+		}
+
+		/// <inheritdoc/>
+		public int FunctionKeyCount
+		{
+			get;
+		}
+
+		/// <inheritdoc/>
+		public KeyboardType KeyboardType
+		{
+			get;
+		}
+
+		/// <inheritdoc/>
+		public string Description => string.Format(Resources.GORINP_WINFORMS_KEYBOARD_DESC, KeyboardType);
+
+		/// <inheritdoc/>
+		public string HumanInterfaceDevicePath => "SystemKeyboard";
+
+		/// <inheritdoc/>
+		public string ClassName => "Keyboard";
+
+		/// <inheritdoc/>
+		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WinFormsKeyboardInfo2"/> class.
 		/// </summary>
 		public WinFormsKeyboardInfo2()
 		{
-			ClassName = "Keyboard";
-			HumanInterfaceDevicePath = "SystemKeyboard";
-
 			KeyboardType = Win32API.KeyboardType;
 
 			switch (Win32API.KeyboardType)
@@ -85,58 +120,7 @@ namespace Gorgon.Input.WinForms
 			}
 
 			FunctionKeyCount = Win32API.FunctionKeyCount;
-
-			Description = string.Format(Resources.GORINP_WINFORMS_KEYBOARD_DESC, KeyboardType);
 		}
-		#endregion
-
-		#region IGorgonKeyboardInfo2 Members
-		/// <inheritdoc/>
-		public int KeyCount
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public int IndicatorCount
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public int FunctionKeyCount
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public KeyboardType KeyboardType
-		{
-			get;
-		}
-		#endregion
-
-		#region IGorgonInputDeviceInfo2 Members
-		/// <inheritdoc/>
-		public string Description
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public string HumanInterfaceDevicePath
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public string ClassName
-		{
-			get;
-		}
-
-		/// <inheritdoc/>
-		public InputDeviceType InputDeviceType => InputDeviceType.Keyboard;
 		#endregion
 	}
 }

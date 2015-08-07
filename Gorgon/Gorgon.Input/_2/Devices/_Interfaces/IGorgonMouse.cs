@@ -89,27 +89,27 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Event triggered when the mouse is moved over the client area of the <see cref="IGorgonInputDevice.Window"/>.
 		/// </summary>
-		event EventHandler<MouseEventArgs> MouseMove;
+		event EventHandler<GorgonMouseEventArgs> MouseMove;
 
 		/// <summary>
 		/// Event triggered when a mouse button is held down on the client area of the <see cref="IGorgonInputDevice.Window"/>.
 		/// </summary>
-		event EventHandler<MouseEventArgs> MouseButtonDown;
+		event EventHandler<GorgonMouseEventArgs> MouseButtonDown;
 
 		/// <summary>
 		/// Event triggered when a mouse button is release from the client area of the <see cref="IGorgonInputDevice.Window"/>.
 		/// </summary>
-		event EventHandler<MouseEventArgs> MouseButtonUp;
+		event EventHandler<GorgonMouseEventArgs> MouseButtonUp;
 
 		/// <summary>
 		/// Event triggered when a mouse wheel (if present) is moved while the mouse is within the client area of the <see cref="IGorgonInputDevice.Window"/>.
 		/// </summary>
-		event EventHandler<MouseEventArgs> MouseWheelMove;
+		event EventHandler<GorgonMouseEventArgs> MouseWheelMove;
 
 		/// <summary>
 		/// Event triggered when a double click is performed on a mouse button.
 		/// </summary>
-		event EventHandler<MouseEventArgs> MouseDoubleClicked;
+		event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
 		#endregion
 
 		#region Properties.

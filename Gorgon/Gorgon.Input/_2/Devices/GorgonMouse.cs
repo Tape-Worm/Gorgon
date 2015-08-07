@@ -82,19 +82,19 @@ namespace Gorgon.Input
 
 		#region Events.
 		/// <inheritdoc/>
-		public event EventHandler<MouseEventArgs> MouseMove;
+		public event EventHandler<GorgonMouseEventArgs> MouseMove;
 
 		/// <inheritdoc/>
-		public event EventHandler<MouseEventArgs> MouseButtonDown;
+		public event EventHandler<GorgonMouseEventArgs> MouseButtonDown;
 
 		/// <inheritdoc/>
-		public event EventHandler<MouseEventArgs> MouseButtonUp;
+		public event EventHandler<GorgonMouseEventArgs> MouseButtonUp;
 
 		/// <inheritdoc/>
-		public event EventHandler<MouseEventArgs> MouseWheelMove;
+		public event EventHandler<GorgonMouseEventArgs> MouseWheelMove;
 
 		/// <inheritdoc/>
-		public event EventHandler<MouseEventArgs> MouseDoubleClicked;
+		public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
 		#endregion
 
 		#region Properties.
@@ -151,7 +151,7 @@ namespace Gorgon.Input
 			set
 			{
 				_positionConstraint = value;
-				ConstrainPositionData();
+				ConstrainPositionData(ref _position);
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace Gorgon.Input
 			set
 			{
 				_wheelConstraint = value;
-				ConstrainPositionData();
+				ConstrainWheelData();
 			}
 		}
 
@@ -193,16 +193,15 @@ namespace Gorgon.Input
 			{
 				_position = value;
 
-				ConstrainPositionData();
+				ConstrainPositionData(ref _position);
 
 				if (Window == null)
 				{
 					return;
 				}
 
-				Cursor.Position = !IsExclusive
-					                  ? Window.PointToScreen(value)
-					                  : Window.PointToScreen(new Point(Window.ClientSize.Width / 2, Window.ClientSize.Height / 2));
+				Cursor.Position = IsExclusive ? Window.PointToScreen(new Point(Window.ClientSize.Width / 2, Window.ClientSize.Height / 2))
+					: Cursor.Position = Window.PointToScreen(_position);
 			}
 		}
 
@@ -271,32 +270,58 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to constrain the mouse position data to the supplied ranges.
 		/// </summary>
-		private void ConstrainPositionData()
+		private void ConstrainPositionData(ref Point position)
 		{
-			if (_positionConstraint == Rectangle.Empty)
+			if (_positionConstraint.IsEmpty)
 			{
+				if (!Cursor.Clip.IsEmpty)
+				{
+					Cursor.Clip = Rectangle.Empty;
+				}
 				return;
 			}
 
 			// Limit positioning.
-			if (_position.X < _positionConstraint.X)
+			if (position.X < _positionConstraint.X)
 			{
-				_position.X = _positionConstraint.X;
+				position.X = _positionConstraint.X;
 			}
 
-			if (_position.Y < _positionConstraint.Y)
+			if (position.Y < _positionConstraint.Y)
 			{
-				_position.Y = _positionConstraint.Y;
+				position.Y = _positionConstraint.Y;
 			}
 
-			if (_position.X > _positionConstraint.Right)
+			if (position.X > _positionConstraint.Right)
 			{
-				_position.X = _positionConstraint.Right;
+				position.X = _positionConstraint.Right;
 			}
 
-			if (_position.Y > _positionConstraint.Bottom)
+			if (position.Y > _positionConstraint.Bottom)
 			{
-				_position.Y = _positionConstraint.Bottom;
+				position.Y = _positionConstraint.Bottom;
+			}
+
+			if (Window == null)
+			{
+				Cursor.Clip = Rectangle.Empty;
+				return;
+			}
+
+			if (IsExclusive)
+			{
+				if (Cursor.Clip.IsEmpty)
+				{
+					Cursor.Clip = Rectangle.Empty;
+				}
+				return;
+			}
+
+			Rectangle screenRect = Window.RectangleToScreen(_positionConstraint);
+
+			if (Cursor.Clip != screenRect)
+			{
+				Cursor.Clip = screenRect;
 			}
 		}
 
@@ -326,11 +351,16 @@ namespace Gorgon.Input
 		protected override void OnAcquiredStateChanged()
 		{
 			_relativePosition = Point.Empty;
+			_wheelDelta = 0;
+			_clickCount = 0;
+			_doubleClickPosition = Point.Empty;
+			_doubleClickTimer.Reset();
 			Buttons = MouseButtons.None;
 
 			if (!IsAcquired)
 			{
 				ShowMouseCursor(true);
+				Cursor.Clip = Rectangle.Empty;
 
 				if ((IsExclusive) && (_cursorHidden == 0))
 				{
@@ -349,19 +379,29 @@ namespace Gorgon.Input
 					ShowMouseCursor(true);
 				}
 
+				Point clientPos = Window.PointToClient(Cursor.Position);
+
 				if (!_firstAcquisition)
 				{
-					Cursor.Position = Window.PointToScreen(Position);
+					if (!Window.ClientRectangle.Contains(clientPos))
+					{
+						return;
+					}
+
+					ConstrainPositionData(ref _position);
+					Cursor.Position = Window.PointToScreen(_position);
 				}
 				else
 				{
 					_firstAcquisition = false;
-					Position = Window.PointToClient(Cursor.Position);
+					Position = clientPos;
 				}
 
 				return;
 			}
 
+			// Set the position to empty when switching into exclusive mode.
+			Position = Point.Empty;
 			_lastCursorPosition = Cursor.Position;
 
 			// Force the cursor to the upper left hand corner if we're hiding the cursor in exclusive mode.
@@ -434,7 +474,7 @@ namespace Gorgon.Input
 				return;
 			}
 
-			if (_clickCount >= 1)
+			if (_clickCount > 0)
 			{
 				return;
 			}
@@ -449,7 +489,8 @@ namespace Gorgon.Input
 		/// Function to handle mouse down button events.
 		/// </summary>
 		/// <param name="buttonState">Button state to evaluate.</param>
-		private void HandleButtonDownEvents(MouseButtonState buttonState)
+		/// <returns>The current button that was held down.</returns>
+		private MouseButtons HandleButtonDownEvents(MouseButtonState buttonState)
 		{
 			MouseButtons button = MouseButtons.None;
 
@@ -491,14 +532,15 @@ namespace Gorgon.Input
 
 			Buttons |= button;
 
-			MouseButtonDown?.Invoke(this, new MouseEventArgs(button, Buttons, Position, WheelPosition, _relativePosition, _wheelDelta, _clickCount));
+			return button;
 		}
 
 		/// <summary>
 		/// Function to handle mouse up button events.
 		/// </summary>
 		/// <param name="buttonState">Button state to evaluate.</param>
-		private void HandleButtonUpEvents(MouseButtonState buttonState)
+		/// <returns>The current button that was released.</returns>
+		private MouseButtons HandleButtonUpEvents(MouseButtonState buttonState)
 		{
 			MouseButtons button = MouseButtons.None;
 
@@ -530,7 +572,7 @@ namespace Gorgon.Input
 			// If no button was released, then exit.
 			if (button == MouseButtons.None)
 			{
-				return;
+				return button;
 			}
 
 			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - DoubleClickSize.Width / 2,
@@ -550,16 +592,7 @@ namespace Gorgon.Input
 
 			Buttons &= ~button;
 
-			var e = new MouseEventArgs(button, Buttons, Position, WheelPosition, _relativePosition, _wheelDelta, _clickCount);
-
-			MouseButtonUp?.Invoke(this, e);
-
-			if (_clickCount != 2)
-			{
-				return;
-			}
-
-			MouseDoubleClicked?.Invoke(this, e);
+			return button;
 		}
 
 		/// <summary>
@@ -575,21 +608,40 @@ namespace Gorgon.Input
 
 			_wheelDelta += mouseWheelDelta;
 			WheelPosition += mouseWheelDelta;
-			ConstrainWheelData();
-			MouseWheelMove?.Invoke(this, new MouseEventArgs(Buttons, MouseButtons.None, Position, WheelPosition, _relativePosition, _wheelDelta, 0));
 		}
 
 		/// <summary>
 		/// Function to handle the mouse movement event.
 		/// </summary>
-		/// <param name="lastX">The last relative horizontal position for the mouse.</param>
-		/// <param name="lastY">The last relative vertical position for the mouse.</param>
-		private void HandleMouseMove(int lastX, int lastY)
+		/// <param name="x">The last relative horizontal position for the mouse.</param>
+		/// <param name="y">The last relative vertical position for the mouse.</param>
+		/// <param name="relative"><b>true</b> if the mouse movement is relative, <b>false</b> if absolute.</param>
+		/// <returns><b>true</b> if the mouse moved, <b>false</b> if not.</returns>
+		private bool HandleMouseMove(int x, int y, bool relative)
 		{
-			_relativePosition = new Point(_relativePosition.X + lastX, _relativePosition.Y + lastY);
-			Position = new Point(Position.X + lastX, Position.Y + lastY);
-			ConstrainPositionData();
-			MouseMove?.Invoke(this, new MouseEventArgs(Buttons, MouseButtons.None, Position, WheelPosition, _relativePosition, _wheelDelta, 0));
+			Point newPosition;
+
+			if (relative)
+			{
+				_relativePosition = new Point(_relativePosition.X + x, _relativePosition.Y + y);
+				newPosition = new Point(_position.X + x, _position.Y + y);
+			}
+			else
+			{
+				_relativePosition = new Point(_relativePosition.X + (x - _position.X), _relativePosition.Y + (y - _position.Y));
+				newPosition = new Point(x, y);
+			}
+
+			ConstrainPositionData(ref newPosition);
+
+			if ((newPosition.X == _position.X) && (newPosition.Y == _position.Y))
+			{
+				return false;
+			}
+
+			Position = newPosition;
+
+			return true;
 		}
 
 		/// <inheritdoc/>
@@ -600,6 +652,10 @@ namespace Gorgon.Input
 				return false;
 			}
 
+			// If the mouse cursor was outside of the window, and the mouse is not exclusive, then 
+			// flag it as outside. Once it returns to the window, reset the position to match the
+			// current cursor position so we don't get weirdness. This only applies to plug ins that 
+			// can monitor the mouse position outside of the client area of the window (e.g. raw input).
 			if (!IsExclusive)
 			{
 				Point clientPosition = Window.PointToClient(Cursor.Position);
@@ -618,7 +674,13 @@ namespace Gorgon.Input
 				}
 			}
 
-			if (SystemInformation.MouseWheelPresent)
+			// Gather the event information.
+			MouseButtons downButtons = MouseButtons.None;
+			MouseButtons upButtons = MouseButtons.None;
+			
+			bool wasMoved = HandleMouseMove(data.Position.X, data.Position.Y, data.IsRelative);
+			
+			if ((Info.HasMouseWheel) && (data.MouseWheelDelta != 0))
 			{
 				HandleMouseWheelMove(data.MouseWheelDelta);
 			}
@@ -626,11 +688,38 @@ namespace Gorgon.Input
 			// If there's a button event, then process it.
 			if (data.ButtonState != MouseButtonState.None)
 			{
-				HandleButtonDownEvents(data.ButtonState);
-				HandleButtonUpEvents(data.ButtonState);
+				downButtons = HandleButtonDownEvents(data.ButtonState);
+				upButtons = HandleButtonUpEvents(data.ButtonState);
 			}
 
-			HandleMouseMove(data.RelativeDirection.X, data.RelativeDirection.Y);
+			// Trigger button events.
+			if (downButtons != MouseButtons.None)
+			{
+				MouseButtonDown?.Invoke(this, new GorgonMouseEventArgs(downButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount));
+			}
+
+			if (upButtons != MouseButtons.None)
+			{
+				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount);
+
+				MouseButtonUp?.Invoke(this, e);
+
+				if ((_clickCount > 0) && ((_clickCount % 2) == 0))
+				{
+					MouseDoubleClicked?.Invoke(this, e);
+				}
+			}
+
+			// Trigger move events.
+			if (data.MouseWheelDelta != 0)
+			{
+				MouseWheelMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
+			}
+
+			if (wasMoved)
+			{
+				MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
+			}
 
 			return true;
 		}
