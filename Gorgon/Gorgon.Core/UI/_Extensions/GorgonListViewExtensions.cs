@@ -38,6 +38,21 @@ namespace Gorgon.UI
 	/// </summary>
 	public static class GorgonListViewExtensions
 	{
+		#region Constants.
+		// List view message to return the header.
+		private const uint LvmGetHeader = 0x101F;
+		// Header message used to retrieve an item.
+		private const uint HdmGetItem = 0x120B;
+		// Header message used to set an item.
+		private const uint HdmSetItem = 0x120C;
+		// Mask for header format format
+		private const int HeaderFormatMask = 0x4;
+		// Flag to make the column sort ascending.
+		private const int HeaderSortDown = 0x200;
+		// Flag to make the column sort descending.
+		private const int HeaderSortUp = 0x400;
+		#endregion
+
 		/// <summary>
 		/// Function to set the sorting icon on the list view control.
 		/// </summary>
@@ -49,17 +64,17 @@ namespace Gorgon.UI
 		/// list view is sorted.</remarks>
 		public static void SetSortIcon(this ListView listViewControl, int headerIndex, SortOrder order)
 		{
-			IntPtr columnHeader = Win32API.SendMessage(listViewControl.Handle, (uint)ListViewMessages.LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+			IntPtr columnHeader = UserApi.SendMessage(listViewControl.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
 
 			for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
 			{
 				var columnPtr = new IntPtr(columnNumber);
 				var item = new HDITEM
 				{
-					mask = HeaderMask.Format
+					mask = HeaderFormatMask
 				};
 
-				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_GETITEM, columnPtr, ref item) == IntPtr.Zero)
+				if (UserApi.SendMessage(columnHeader, HdmGetItem, columnPtr, ref item) == IntPtr.Zero)
 				{
 					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_ERR_LISTVIEW_CANNOT_FIND_HEADER);
 				}
@@ -69,21 +84,21 @@ namespace Gorgon.UI
 					switch (order)
 					{
 						case SortOrder.Ascending:
-							item.fmt &= ~HeaderFormat.SortDown;
-							item.fmt |= HeaderFormat.SortUp;
+							item.fmt &= ~HeaderSortDown;
+							item.fmt |= HeaderSortUp;
 							break;
 						case SortOrder.Descending:
-							item.fmt &= ~HeaderFormat.SortUp;
-							item.fmt |= HeaderFormat.SortDown;
+							item.fmt &= ~HeaderSortUp;
+							item.fmt |= HeaderSortDown;
 							break;
 					}
 				}
 				else
 				{
-					item.fmt &= ~HeaderFormat.SortDown & ~HeaderFormat.SortUp;
+					item.fmt &= ~HeaderSortDown & ~HeaderSortUp;
 				}
 
-				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_SETITEM, columnPtr, ref item) == IntPtr.Zero)
+				if (UserApi.SendMessage(columnHeader, HdmSetItem, columnPtr, ref item) == IntPtr.Zero)
 				{
 					throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR_ERR_LISTVIEW_CANNOT_UPDATE_COLUMN);
 				}

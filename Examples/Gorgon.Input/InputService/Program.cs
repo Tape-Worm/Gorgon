@@ -147,8 +147,6 @@ namespace Gorgon.Examples
 				// Retrieve the list of plugins from the input service factory.
 				IEnumerable<GorgonInputServicePlugin> inputPlugIns = pluginService.GetPlugins<GorgonInputServicePlugin>();
 
-				// TODO: This is temporary while developing refactored input service.
-#warning Fix this when the input service is refactored.		
 				return (from plugin in inputPlugIns
 				        let service = serviceFactory.CreateService(plugin.Name)
 				        where service != null
@@ -203,7 +201,7 @@ namespace Gorgon.Examples
 				    {
 					    IReadOnlyList<IGorgonKeyboardInfo2> keyboards = plugIn.Item2.EnumerateKeyboards();
 					    IReadOnlyList<IGorgonMouseInfo2> mice = plugIn.Item2.EnumerateMice();
-						IReadOnlyList<IGorgonJoystickInfo2> joysticks = new IGorgonJoystickInfo2[0];//plugIn.Item2.EnumerateJoysticks();
+						IReadOnlyList<IGorgonJoystickInfo2> joysticks = plugIn.Item2.EnumerateJoysticks();
 
 						// The XBox Controller plugin always registers multiple devices, even when none
 						// are physically attached to the system.  So in this case, we'll disregard those.
@@ -212,7 +210,7 @@ namespace Gorgon.Examples
 						Console.WriteLine("\t{0} keyboards, {1} mice, {2} joysticks found.",
 										  keyboards.Count,
 										  mice.Count,
-										  joysticks.Count(item => item.IsConnected));
+										  joysticks.Count);
 				    }
 				    catch (Exception ex)
 				    {

@@ -30,6 +30,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
+using Gorgon.Input.Raw.Devices;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
@@ -97,17 +98,15 @@ namespace Gorgon.Input.Raw
 		// The logging interface.
 		private readonly IGorgonLog _log;
 		// Hook into the window message procedure.
-		private RawInputNative _messageHook;
+		private RawInputMessageHandler _messageHook;
 		// The raw input processor for device data.
 		private readonly Dictionary<Control, RawInputProcessor> _rawInputProcessors = new Dictionary<Control, RawInputProcessor>();
 		// A list of registered devices.
 		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
 		// Handles for registered devices.
 		private readonly List<Tuple<Guid, IntPtr>> _deviceHandles = new List<Tuple<Guid, IntPtr>>();
-		// The interface used to enumerate raw input devices.
-		private readonly RawInputEnumerator _deviceEnumerator = new RawInputEnumerator();
 		// The device information interface.
-		private readonly RawInputDeviceInfo _deviceInfo;
+		private readonly RawInputDeviceRegistryInfo _deviceInfo;
 		#endregion
 
 		#region Methods.
@@ -115,25 +114,38 @@ namespace Gorgon.Input.Raw
 		/// Function to retrieve the device name.
 		/// </summary>
 		/// <param name="device">Raw input device to gather information from.</param>
+		/// <param name="pageFilter">HID usage page filter.</param>
+		/// <param name="usageFilter">HID usage filter.</param>
 		/// <returns>A device name structure.</returns>
-		private T GetDeviceInfo<T>(ref RAWINPUTDEVICELIST device)
+		private T GetDeviceInfo<T>(ref RAWINPUTDEVICELIST device, HIDUsagePage pageFilter = HIDUsagePage.Generic, HIDUsage[] usageFilter = null)
 			where T : class, IGorgonInputDeviceInfo2
 		{
-			// If we're running under a terminal server session, then throw an exception.
-			// Raw input does not run very well under RDP (especially the mouse), so we'll disable it.
-			if (SystemInformation.TerminalServerSession)
+			RID_DEVICE_INFO deviceInfo = RawInputApi.GetDeviceInfo(ref device);
+
+			// Filter out HID devices that do not have the specified usage and page.
+			if ((deviceInfo.dwType == RawInputType.HID) 
+				&& (usageFilter != null) 
+				&& (usageFilter.Length != 0)
+			    && ((pageFilter != (HIDUsagePage)deviceInfo.hid.usUsagePage)
+			         || (!usageFilter.Contains((HIDUsage)deviceInfo.hid.usUsage))))
 			{
 				return null;
 			}
 
-			string deviceName = _deviceInfo.GetDeviceName(ref device);
+			// If we're running under a terminal server session, then throw an exception.
+			// Raw input does not run very well under RDP (especially the mouse), so we'll disable it.
+			if ((SystemInformation.TerminalServerSession) && (device.DeviceType == RawInputType.Mouse))
+			{
+				_log.Print("RDP session detected.  The mouse interface may not work correctly.", LoggingLevel.Simple);
+			}
+
+			string deviceName = RawInputApi.GetDeviceName(ref device);
 
 			if (string.IsNullOrWhiteSpace(deviceName))
 			{
 				return null;
 			}
 
-			RID_DEVICE_INFO deviceInfo = _deviceInfo.GetDeviceInfo(ref device);
 			string className = _deviceInfo.GetDeviceClass(deviceName);
 			string deviceDescription = _deviceInfo.GetDeviceDescription(deviceName);
 			
@@ -151,6 +163,12 @@ namespace Gorgon.Input.Raw
 					mouseInfo.AssignRawInputDeviceInfo(ref deviceInfo.mouse);
 
 					return mouseInfo as T;
+				case RawInputType.HID:
+					var joystickInfo = new RawInputJoystickInfo(deviceDescription, className, deviceName, device.Device);
+
+					joystickInfo.AssignRawInputDeviceInfo(_deviceInfo, ref deviceInfo.hid);
+
+					return joystickInfo as T;
 				default:
 					return null;
 			}
@@ -159,7 +177,7 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonKeyboardInfo2> OnEnumerateKeyboards()
 		{
-			RAWINPUTDEVICELIST[] devices = _deviceEnumerator.Enumerate(InputDeviceType.Keyboard);
+			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Keyboard);
 
 			// Put the system keyboard first.
 			var result = new List<IGorgonKeyboardInfo2>
@@ -189,7 +207,7 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
 		{
-			RAWINPUTDEVICELIST[] devices = _deviceEnumerator.Enumerate(InputDeviceType.Mouse);
+			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.Mouse);
 			// Put the system mouse first.
 			var result = new List<IGorgonMouseInfo2>
 			             {
@@ -217,7 +235,34 @@ namespace Gorgon.Input.Raw
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks()
 		{
-			return new IGorgonJoystickInfo2[0];
+			RAWINPUTDEVICELIST[] devices = RawInputApi.EnumerateRawInputDevices(RawInputType.HID);
+
+			List<IGorgonJoystickInfo2> result = new List<IGorgonJoystickInfo2>();
+
+			// Look up joysticks and gamepads.
+			HIDUsage[] usageFlags = {
+				                        HIDUsage.Joystick,
+				                        HIDUsage.Gamepad
+			                        };
+
+			for (int i = 0; i < devices.Length; ++i)
+			{
+				RawInputJoystickInfo info = GetDeviceInfo<RawInputJoystickInfo>(ref devices[i],
+				                                                                HIDUsagePage.Generic,
+																				usageFlags);
+
+				if (info == null)
+				{
+					_log.Print("WARNING: Could not retrieve the device info, class, or device name.  Skipping this device.", LoggingLevel.Verbose);
+					continue;
+				}
+
+				_log.Print("Found joystick: '{0}' on HID path {1}, class {2}.", LoggingLevel.Verbose, info.Description, info.HumanInterfaceDevicePath, info.ClassName);
+
+				result.Add(info);
+			}
+
+			return result;
 		}
 
 		/// <inheritdoc/>
@@ -255,7 +300,7 @@ namespace Gorgon.Input.Raw
 					// Keep track of the keyboard we're registering so we can forward data to it.
 					deviceHandle = ((RawInputMouseInfo)deviceInfo).Handle;
 
-					// Find any other registered keyboards.
+					// Find any other registered mice.
 					var mice = from mouseDevice in _registeredDevices
 					           let mouse = mouseDevice.Value as IGorgonMouse
 					           where mouse != null
@@ -264,9 +309,16 @@ namespace Gorgon.Input.Raw
 					
 					if (((exclusive) && (mice.Any())) || (mice.Any(item => item.IsExclusive)))
 					{
-						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD, nameof(exclusive));
+						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_MOUSE, nameof(exclusive));
 					}
 					// ReSharper enable PossibleMultipleEnumeration
+					break;
+				case InputDeviceType.Joystick:
+					// Keep track of the keyboard we're registering so we can forward data to it.
+					deviceHandle = ((RawInputMouseInfo)deviceInfo).Handle;
+
+					// We don't do exclusive on joysticks.  No need for it.
+					exclusive = false;
 					break;
 				default:
 					return;
@@ -287,11 +339,11 @@ namespace Gorgon.Input.Raw
 			if (_messageHook == null)
 			{
 				// Initialize our message hook if we haven't done so by now.
-				_messageHook = new RawInputNative(parentForm.Handle, _deviceHandles, _rawInputProcessors, _registeredDevices);
+				_messageHook = new RawInputMessageHandler(parentForm.Handle, _deviceHandles, _rawInputProcessors, _registeredDevices);
 				_messageHook.HookWindow();
 			}
 
-			exclusive = _messageHook.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
+			exclusive = RawInputApi.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
 		}
 
 		/// <inheritdoc/>
@@ -329,7 +381,7 @@ namespace Gorgon.Input.Raw
 		public GorgonRawInputService(IGorgonLog log)
 		{
 			_log = log;
-			_deviceInfo = new RawInputDeviceInfo(_log);
+			_deviceInfo = new RawInputDeviceRegistryInfo(_log);
 		}
 		#endregion
 	}

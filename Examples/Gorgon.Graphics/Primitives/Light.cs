@@ -116,7 +116,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="color">Color to use.</param>
 	    public void UpdateColor(ref GorgonColor color, int index)
         {
-            _lightData[index].LightColor = color;
+            _lightData[index].LightColor = new Vector4(color.Red, color.Green, color.Blue, color.Alpha);
             UpdateIndex(index);
         }
 
@@ -127,7 +127,7 @@ namespace Gorgon.Graphics.Example
         /// <param name="power">Specular power.</param>
 	    public void UpdateSpecular(ref GorgonColor specColor, float power, int index)
         {
-            _lightData[index].SpecularColor = specColor;
+            _lightData[index].SpecularColor = new Vector4(specColor.Red, specColor.Green, specColor.Blue, specColor.Alpha);
             _lightData[index].SpecularPower = power;
 	        UpdateIndex(index);
         }
@@ -151,9 +151,9 @@ namespace Gorgon.Graphics.Example
 		public Light(GorgonGraphics graphics)
 		{
 			_lightData[0].Attenuation = 6.0f;
-			_lightData[0].LightColor = GorgonColor.White;
+			_lightData[0].LightColor = new Vector4(GorgonColor.White.Red, GorgonColor.White.Green, GorgonColor.White.Blue, GorgonColor.White.Alpha);
 			_lightData[0].LightPosition = Vector3.Zero;
-			_lightData[0].SpecularColor = GorgonColor.White;
+			_lightData[0].SpecularColor = new Vector4(GorgonColor.White.Red, GorgonColor.White.Green, GorgonColor.White.Blue, GorgonColor.White.Alpha);
 			_lightData[0].SpecularPower = 512.0f;
 
 			_buffer = graphics.Buffers.CreateConstantBuffer("LightBuffer",

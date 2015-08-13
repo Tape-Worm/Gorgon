@@ -67,6 +67,7 @@
     <Compile Include="Devices\GorgonJoystickAxisInfo.cs" />
     <Compile Include="Devices\GorgonKeyCharMap.cs" />
     <Compile Include="Events\GorgonInputKeyboardEventArgs.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystick.cs" />
     <Compile Include="_2\GorgonInputServiceFactory2.cs" />
     <Compile Include="_2\Devices\GorgonInputDevice2.cs" />
     <Compile Include="_2\Devices\GorgonInputDeviceEventRouting.cs" />

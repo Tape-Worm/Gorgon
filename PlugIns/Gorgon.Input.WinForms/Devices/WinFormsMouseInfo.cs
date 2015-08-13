@@ -68,7 +68,12 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		public WinFormsMouseInfo()
 		{
-			HasMouseWheel = SystemInformation.MouseWheelPresent;
+			// This is not working properly under RDP (for 8.1/Server 2012/Win 10). So, assume we 
+			// have a wheel when using RDP.
+			// RDP assumes that we have a generic 2 button mouse (without a wheel), and thus the 
+			// underlying call to GetSystemMetrics returns 0 when checking SM_MOUSEWHEELPRESENT.
+			// See: KB3015033 (https://support.microsoft.com/en-us/kb/3015033)
+			HasMouseWheel = SystemInformation.MouseWheelPresent || SystemInformation.TerminalServerSession;
 		}
 		#endregion
 	}

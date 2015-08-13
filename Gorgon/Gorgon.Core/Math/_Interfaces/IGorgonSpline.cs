@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SlimMath;
+using System.Numerics;
 
 namespace Gorgon.Math
 {

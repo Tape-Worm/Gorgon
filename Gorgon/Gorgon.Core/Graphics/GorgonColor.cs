@@ -26,11 +26,11 @@
 
 using System;
 using System.Drawing;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using Gorgon.Core;
 using Gorgon.Core.Properties;
-using SlimMath;
 
 namespace Gorgon.Graphics
 {
@@ -604,7 +604,7 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="SlimMath.Vector4"/>.
+		/// Performs an implicit conversion from <see cref="Gorgon.Graphics.GorgonColor"/> to <see cref="Vector4"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>
@@ -617,7 +617,7 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Performs an implicit conversion from <see cref="SlimMath.Vector4"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
+		/// Performs an implicit conversion from <see cref="Vector4"/> to <see cref="Gorgon.Graphics.GorgonColor"/>.
 		/// </summary>
 		/// <param name="color">The color.</param>
 		/// <returns>The result of the conversion.</returns>

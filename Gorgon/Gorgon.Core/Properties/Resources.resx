@@ -660,9 +660,6 @@ Code: 0x{2}</value>
   <data name="GOR_EXCEPT_TARGET_SITE" xml:space="preserve">
     <value>Target Site</value>
   </data>
-  <data name="GOR_TEXT_TO_ALL" xml:space="preserve">
-    <value>&amp;Apply selection to all items?</value>
-  </data>
   <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
     <value>Exception</value>
   </data>
@@ -672,17 +669,11 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_TIME_CANNOT_END" xml:space="preserve">
     <value>Cannot end the timer period.</value>
   </data>
-  <data name="GOR_TEXT_FLATFORM_MAXIMIZE" xml:space="preserve">
-    <value>Ma&amp;ximize</value>
-  </data>
   <data name="GOR_TEXT_FLATFORM_MAXIMIZE_TIP" xml:space="preserve">
     <value>Maximize the window</value>
   </data>
   <data name="GOR_TEXT_FLATFORM_MAX_ICON" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="GOR_TEXT_FLATFORM_RESTORE" xml:space="preserve">
-    <value>&amp;Restore</value>
   </data>
   <data name="GOR_TEXT_FLATFORM_RESTORE_ICON" xml:space="preserve">
     <value>1</value>
@@ -909,20 +900,11 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CHUNK_RESERVED" xml:space="preserve">
     <value>The chunk ID 0x{0} is already the ID of a reserved value.</value>
   </data>
-  <data name="GOR_ERR_DATASTREAM_PINNED_NOT_RESIZABLE" xml:space="preserve">
-    <value>The data stream cannot resize memory that was pinned.</value>
-  </data>
   <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
     <value>The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}.</value>
   </data>
   <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
     <value>The file extension '{0}' was not found in this collection.</value>
-  </data>
-  <data name="GOR_ERR_DATASTREAM_ARRAY_ELEMENT_NOT_VALUETYPE" xml:space="preserve">
-    <value>The array element type is not a value type.</value>
-  </data>
-  <data name="GOR_ERR_DATASTREAM_ARRAY_ELEMENT_TYPE_INVALID" xml:space="preserve">
-    <value>The array element type does not have a structure layout, or the structure layout is not valid.</value>
   </data>
   <data name="GOR_ERR_DATASTREAM_POINTER_IS_NULL" xml:space="preserve">
     <value>The pointer passed to the stream is NULL.</value>
@@ -951,20 +933,11 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_DATABUFF_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The size must be greater than 0.</value>
   </data>
-  <data name="GOR_ERR_DATABUFF_TYPE_INVALID" xml:space="preserve">
-    <value>The type '{0}' does not have a structure layout, or the structure layout is not valid.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_TYPE_NOT_VALUETYPE" xml:space="preserve">
-    <value>The type '{0}' is not a value type.</value>
-  </data>
   <data name="GOR_ERR_DATABUFF_BUFFER_OVERRUN" xml:space="preserve">
     <value>The size of the data, plus the offset would result in a buffer overrun.</value>
   </data>
   <data name="GOR_ERR_DATABUFF_OFFSET_TOO_SMALL" xml:space="preserve">
     <value>The offset must be 0 or greater.</value>
-  </data>
-  <data name="GOR_ERR_DATABUFF_SIZE_TOO_LARGE_FOR_CONVERT" xml:space="preserve">
-    <value>The stream type only supports 2GB of memory, the memory held by this object is too large.</value>
   </data>
   <data name="GOR_ERR_DATABUFF_PTR_DISPOSED" xml:space="preserve">
     <value>Pointer has been disposed.</value>
@@ -1008,13 +981,7 @@ Code: 0x{2}</value>
   <data name="GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The requested format is not supported.</value>
   </data>
-  <data name="GOR_RESULT_DESC_INVALID_FILE_FORMAT" xml:space="preserve">
-    <value>The file format is not supported.</value>
-  </data>
   <data name="GOR_RESULT_DESC_NOT_INITIALIZED" xml:space="preserve">
     <value>Initialization is required before continuing this operation.</value>
-  </data>
-  <data name="GOR_TOSTR_RANGE" xml:space="preserve">
-    <value>Min: {0}  Max: {1}  Range: {2}</value>
   </data>
 </root>

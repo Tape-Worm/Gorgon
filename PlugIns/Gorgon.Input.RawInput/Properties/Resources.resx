@@ -120,9 +120,6 @@
   <data name="GORINP_RAW_DESC_KEYBOARD" xml:space="preserve">
     <value>{0} ({1} key {2} keyboard)</value>
   </data>
-  <data name="GORINP_RAW_DESC_MOUSE" xml:space="preserve">
-    <value>{0}</value>
-  </data>
   <data name="GORINP_RAW_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
     <value>The buffer for raw input device information is too small: {0} bytes.</value>
   </data>
@@ -136,25 +133,13 @@ Exclusive mode cannot be used with more than one keyboard.</value>
 
 Exclusive mode cannot be used with more than one mouse.</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_BIND_HID" xml:space="preserve">
-    <value>Failed to bind the HID.</value>
-  </data>
   <data name="GORINP_RAW_ERR_CANNOT_BIND_INPUT_DEVICES" xml:space="preserve">
     <value>Cannot bind raw input devices.</value>
-  </data>
-  <data name="GORINP_RAW_ERR_CANNOT_BIND_KEYBOARD" xml:space="preserve">
-    <value>Failed to bind the keyboard device.</value>
-  </data>
-  <data name="GORINP_RAW_ERR_CANNOT_BIND_POINTING_DEVICE" xml:space="preserve">
-    <value>Failed to bind the pointing device.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR" xml:space="preserve">
     <value>Could not enumerate the raw input devices.
 
 Win32 Error: {0}</value>
-  </data>
-  <data name="GORINP_RAW_ERR_CANNOT_GET_DEVICE_HANDLE" xml:space="preserve">
-    <value>Could not retrieve the device handle. Unknown device information type.</value>
   </data>
   <data name="GORINP_RAW_ERR_CANNOT_GET_JOYSTICK_CAPS" xml:space="preserve">
     <value>Cannot read capabilities from joystick ID [{0}].
@@ -174,32 +159,11 @@ Win32 Error: {0}</value>
     <value>Cannot read data from joystick ID [{0}].
 Error code: 0x{1}</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_HID" xml:space="preserve">
-    <value>Failed to unbind the HID.</value>
-  </data>
   <data name="GORINP_RAW_ERR_CANNOT_UNBIND_INPUT_DEVICES" xml:space="preserve">
     <value>Cannot unbind raw input devices.</value>
   </data>
-  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_KEYBOARD" xml:space="preserve">
-    <value>Failed to unbind the keyboard device.</value>
-  </data>
-  <data name="GORINP_RAW_ERR_CANNOT_UNBIND_POINTING_DEVICE" xml:space="preserve">
-    <value>Failed to unbind the pointing device.</value>
-  </data>
-  <data name="GORINP_RAW_HIDINFO_NOT_RAW" xml:space="preserve">
-    <value>The HID information object is not a raw HID object.</value>
-  </data>
   <data name="GORINP_RAW_HOOK_STILL_ACTIVE" xml:space="preserve">
     <value>The window hook for raw input is still active after the object was disposed.</value>
-  </data>
-  <data name="GORINP_RAW_NOT_MM_JOYSTICK" xml:space="preserve">
-    <value>The joystick information object is not Windows Multimedia specific.</value>
-  </data>
-  <data name="GORINP_RAW_NOT_UNDER_RDP" xml:space="preserve">
-    <value>Raw input will not work properly under an RDP/Terminal services session.</value>
-  </data>
-  <data name="GORINP_RAW_NO_WINDOW_TO_BIND" xml:space="preserve">
-    <value>Raw input requires a window to bind with in order to received event data.</value>
   </data>
   <data name="GORINP_RAW_SERVICEDESC" xml:space="preserve">
     <value>Gorgon raw input service</value>

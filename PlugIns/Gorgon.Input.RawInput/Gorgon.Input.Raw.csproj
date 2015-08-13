@@ -66,14 +66,34 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\RawInputJoystickInfo.cs" />
     <Compile Include="GorgonRawPlugIn.cs" />
     <Compile Include="Info\MultimediaJoystickInfo.cs" />
     <Compile Include="Info\_Interfaces\IMultimediaJoystickInfo.cs" />
+    <Compile Include="Native\HIDApi.cs" />
+    <Compile Include="Native\RawInputApi.cs" />
+    <Compile Include="Native\Win32 Structs\HIDP_BUTTON_CAPS.cs" />
+    <Compile Include="Native\Win32 Structs\HIDP_CAPS.cs" />
+    <Compile Include="Native\Win32 Structs\HIDP_NOTRANGE.cs" />
+    <Compile Include="Native\Win32 Structs\HIDP_RANGE.cs" />
+    <Compile Include="Native\Win32 Structs\HIDP_VALUE_CAPS.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUT.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICE.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICELIST.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTHEADER.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTHID.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTKEYBOARD.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTMOUSE.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_HID.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_KEYBOARD.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_MOUSE.cs" />
+    <Compile Include="Native\Win32KeyboardApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\WMMJoystick.cs" />
-    <Compile Include="Native\Win32API.cs" />
-    <Compile Include="Native\Win32Enums.cs" />
-    <Compile Include="Native\Win32Types.cs" />
+    <Compile Include="Native\Olde\Win32API.cs" />
+    <Compile Include="Native\Olde\Win32Enums.cs" />
+    <Compile Include="Native\Olde\Win32Types.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -83,9 +103,8 @@
     <Compile Include="Devices\RawInputKeyboardInfo.cs" />
     <Compile Include="Devices\RawInputMouseInfo.cs" />
     <Compile Include="GorgonRawInputService.cs" />
-    <Compile Include="Native\RawInputDeviceInfo.cs" />
-    <Compile Include="Native\RawInputEnumerator.cs" />
-    <Compile Include="Native\RawInputNative.cs" />
+    <Compile Include="Devices\RawInputDeviceRegistryInfo.cs" />
+    <Compile Include="Native\RawInputMessageHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

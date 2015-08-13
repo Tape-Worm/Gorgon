@@ -110,6 +110,62 @@ namespace Gorgon.UI
 			/// </summary>
 			BottomLeft = 128
 		}
+
+		/// <summary>
+		/// Types of messages that passed to a window.
+		/// </summary>
+		/// <remarks>See the MSDN documentation for more detail.</remarks>
+		private enum WindowMessages
+		{
+			SysCommand = 0x0112,
+			// ReSharper disable once InconsistentNaming
+			NCLeftButtonDown = 0x00A1,
+			EnterSizeMove = 0x0231,
+			ExitSizeMove = 0x0232,
+		}
+
+		/// <summary>
+		/// Hit tests for non-client areas.
+		/// </summary>
+		private enum HitTests
+		{
+			/// <summary>
+			/// Bottom border
+			/// </summary>
+			Bottom = 15,
+			/// <summary>
+			/// Bottom left corner.
+			/// </summary>
+			BottomLeft = 16,
+			/// <summary>
+			/// Bottom right corner.
+			/// </summary>
+			BottomRight = 17,
+			/// <summary>
+			/// Caption area.
+			/// </summary>
+			Caption = 2,
+			/// <summary>
+			/// Left border.
+			/// </summary>
+			Left = 10,
+			/// <summary>
+			/// Right border.
+			/// </summary>
+			Right = 11,
+			/// <summary>
+			/// Top border.
+			/// </summary>
+			Top = 12,
+			/// <summary>
+			/// Top left corner.
+			/// </summary>
+			TopLeft = 13,
+			/// <summary>
+			/// Top right corner.
+			/// </summary>
+			TopRight = 14
+		}
 		#endregion
 
 		#region Variables.
@@ -756,8 +812,8 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemMove_Click(object sender, EventArgs e)
 		{
-			Win32API.ReleaseCapture();										// SC_MOVE
-			Win32API.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF010), IntPtr.Zero);
+			UserApi.ReleaseCapture();										// SC_MOVE
+			UserApi.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF010), IntPtr.Zero);
 		}
 
 		/// <summary>
@@ -767,8 +823,8 @@ namespace Gorgon.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemSize_Click(object sender, EventArgs e)
 		{
-			Win32API.ReleaseCapture();										// SC_SIZE
-			Win32API.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF000), IntPtr.Zero);
+			UserApi.ReleaseCapture();										// SC_SIZE
+			UserApi.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF000), IntPtr.Zero);
 		}
 
 		/// <summary>
@@ -1187,8 +1243,8 @@ namespace Gorgon.UI
 
 				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize) && (WindowState == FormWindowState.Normal))
 				{
-					Win32API.ReleaseCapture();
-					Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
+					UserApi.ReleaseCapture();
+					UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
 				}
 				else
 				{
@@ -1200,44 +1256,44 @@ namespace Gorgon.UI
 					switch (ResizeDir)
 					{
 						case ResizeDirection.Left:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeWE;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
 							break;
 						case ResizeDirection.TopLeft:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNWSE;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
 							break;
 						case ResizeDirection.Top:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNS;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
 							break;
 						case ResizeDirection.TopRight:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNESW;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
 							break;
 						case ResizeDirection.Right:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeWE;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
 							break;
 						case ResizeDirection.BottomRight:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNWSE;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
 							break;
 						case ResizeDirection.Bottom:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNS;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
 							break;
 						case ResizeDirection.BottomLeft:
-							Win32API.ReleaseCapture();
+							UserApi.ReleaseCapture();
 							Cursor.Current = Cursors.SizeNESW;
-							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
+							UserApi.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
 							break;
 					}
 				}

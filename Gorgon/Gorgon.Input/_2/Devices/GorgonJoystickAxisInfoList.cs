@@ -48,7 +48,7 @@ namespace Gorgon.Input
 		/// Function to add an axis to the list.
 		/// </summary>
 		/// <param name="axis">Axis to add to the list.</param>
-		internal void Add(GorgonJoystickAxisInfo axis)
+		private void Add(GorgonJoystickAxisInfo axis)
 		{
 			if (_infoList.ContainsKey(axis.Axis))
 			{
@@ -57,6 +57,20 @@ namespace Gorgon.Input
 
 			_axisList.Add(axis.Axis);
 			_infoList[axis.Axis] = axis;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonJoystickAxisInfoList"/> class.
+		/// </summary>
+		/// <param name="infoList">The axis information list used to populate this collection.</param>
+		public GorgonJoystickAxisInfoList(IEnumerable<GorgonJoystickAxisInfo> infoList)
+		{
+			foreach (GorgonJoystickAxisInfo info in infoList)
+			{
+				Add(info);
+			}
 		}
 		#endregion
 

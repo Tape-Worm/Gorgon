@@ -10,9 +10,10 @@
     </IgnoreExtensions>
     <IgnoreFiles>
       <IgnoreFile>.\Gorgon.Core\GlobalSuppressions.cs</IgnoreFile>
+      <IgnoreFile>.\Gorgon.Core\Native\_Internal\KernelApi.cs</IgnoreFile>
+      <IgnoreFile>.\Gorgon.Core\Native\_Internal\WinMultimediaApi.cs</IgnoreFile>
       <IgnoreFile>.\Gorgon.Input\_2\Native\Win32Api.cs</IgnoreFile>
-      <IgnoreFile>..\PlugIns\Gorgon.Input.RawInput\Native\Win32Enums.cs</IgnoreFile>
-      <IgnoreFile>..\Test\Gorgon.Core.Test\NativeTests.cs</IgnoreFile>
+      <IgnoreFile>..\PlugIns\Gorgon.Input.RawInput\Native\Win32 Structs\RAWINPUTKEYBOARD.cs</IgnoreFile>
     </IgnoreFiles>
   </SpellChecker>
 <HelpConfigurations selected="HelpFile">

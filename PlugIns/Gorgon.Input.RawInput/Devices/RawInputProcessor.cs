@@ -25,7 +25,7 @@
 #endregion
 
 using System.Drawing;
-using Forms = System.Windows.Forms;
+using System.Windows.Forms;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
@@ -106,13 +106,11 @@ namespace Gorgon.Input.Raw
 				state = MouseButtonState.Button5Up;
 			}
 
-			Point lastRelativeMovement = new Point(mouseData.LastX, mouseData.LastY);
-
 			var processedData = new GorgonMouseData
 			                    {
 				                    ButtonState = state,
 				                    MouseWheelDelta = wheelDelta,
-				                    Position = lastRelativeMovement,
+				                    Position = new Point(mouseData.LastX, mouseData.LastY),
 									IsRelative = ((mouseData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute)
 			                    };
 
@@ -152,7 +150,7 @@ namespace Gorgon.Input.Raw
 			var processedData = new GorgonKeyboardData
 			                    {
 				                    ScanCode = keyboardData.MakeCode,
-				                    Key = (Forms.Keys)keyboardData.VirtualKey,
+				                    Key = (Keys)keyboardData.VirtualKey,
 				                    Flags = flags
 			                    };
 

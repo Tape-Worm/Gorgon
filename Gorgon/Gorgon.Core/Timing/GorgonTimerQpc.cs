@@ -145,7 +145,7 @@ namespace Gorgon.Timing
 			{
 			    long currentTime;
 
-			    Win32API.QueryPerformanceCounter(out currentTime);
+			    KernelApi.QueryPerformanceCounter(out currentTime);
 				_currentTicks =  currentTime - _startTime;
 				_microSeconds = (_currentTicks * 1000000.0) / _frequency;
 			}
@@ -159,7 +159,7 @@ namespace Gorgon.Timing
 		{
 			long throwAway;
 
-			return Win32API.QueryPerformanceFrequency(out throwAway);
+			return KernelApi.QueryPerformanceFrequency(out throwAway);
 		}
 
 		/// <summary>
@@ -167,12 +167,12 @@ namespace Gorgon.Timing
 		/// </summary>
 		public void Reset()
 		{
-			if (!Win32API.QueryPerformanceFrequency(out _frequency))
+			if (!KernelApi.QueryPerformanceFrequency(out _frequency))
 			{
 				throw new Win32Exception(Resources.GOR_ERR_TIME_QPC_NOT_AVAILABLE);
 			}
 
-			Win32API.QueryPerformanceCounter(out _startTime);
+			KernelApi.QueryPerformanceCounter(out _startTime);
 			_queried = true;
 		}
 		#endregion

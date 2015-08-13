@@ -627,8 +627,8 @@ namespace Gorgon.Input
 			}
 			else
 			{
-				_relativePosition = new Point(_relativePosition.X + (x - _position.X), _relativePosition.Y + (y - _position.Y));
 				newPosition = new Point(x, y);
+				_relativePosition = new Point(_relativePosition.X + (newPosition.X - _position.X), _relativePosition.Y + (newPosition.Y - _position.Y));
 			}
 
 			ConstrainPositionData(ref newPosition);
@@ -674,7 +674,7 @@ namespace Gorgon.Input
 			}
 
 			// Gather the event information.
-			MouseButtons downButtons = MouseButtons.None;
+			MouseButtons downButtons = Buttons;
 			MouseButtons upButtons = MouseButtons.None;
 			
 			bool wasMoved = HandleMouseMove(data.Position.X, data.Position.Y, data.IsRelative);

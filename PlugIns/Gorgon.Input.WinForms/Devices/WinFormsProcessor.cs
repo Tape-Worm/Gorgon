@@ -213,34 +213,34 @@ namespace Gorgon.Input.WinForms
 			switch (e.KeyCode)
 			{
 				case Keys.ControlKey:
-					if ((Win32API.GetKeyState(Keys.LControlKey) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.LControlKey))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if ((Win32API.GetKeyState(Keys.RControlKey) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.RControlKey))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
 					break;
 				case Keys.Menu:
-					if ((Win32API.GetKeyState(Keys.LMenu) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.LMenu))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if ((Win32API.GetKeyState(Keys.RMenu) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.RMenu))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
 					break;
 				case Keys.ShiftKey:
-					if ((Win32API.GetKeyState(Keys.LShiftKey) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.LShiftKey))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if ((Win32API.GetKeyState(Keys.RShiftKey) & 0x80) == 0x80)
+					if (Win32KeyboardApi.CheckKeyDown(Keys.RShiftKey))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
@@ -249,7 +249,7 @@ namespace Gorgon.Input.WinForms
 
 			var data = new GorgonKeyboardData
 			           {
-				           ScanCode = Win32API.MapVirtualKey(e.KeyCode, 0),
+				           ScanCode = Win32KeyboardApi.GetScancode(e.KeyCode),
 				           Key = e.KeyCode,
 				           Flags = flags
 			           };

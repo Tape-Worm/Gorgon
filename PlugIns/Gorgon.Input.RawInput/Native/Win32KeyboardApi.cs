@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, July 20, 2015 11:01:04 PM
+// Created: Wednesday, August 12, 2015 11:29:45 PM
 // 
 #endregion
 
@@ -32,28 +32,48 @@ using Gorgon.Input;
 namespace Gorgon.Native
 {
 	/// <summary>
-	/// Native Win32 API calls.
+	/// Win32 native keyboard input functionality.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	class Win32API
+	static class Win32KeyboardApi
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return the number of function keys on the keyboard.
 		/// </summary>
-		public static int FunctionKeyCount
-		{
-			get;
-			private set;
-		}
+		public static int FunctionKeyCount => GetKeyboardType(2);
 
 		/// <summary>
 		/// Property to return the keyboard type.
 		/// </summary>
 		public static KeyboardType KeyboardType
 		{
-			get;
-			private set;
+			get
+			{
+				int keyboardType = GetKeyboardType(0);
+
+				switch (keyboardType)
+				{
+					case 1:
+						return KeyboardType.XT;
+					case 2:
+						return KeyboardType.OlivettiICO;
+					case 3:
+						return KeyboardType.AT;
+					case 4:
+						return KeyboardType.Enhanced;
+					case 5:
+						return KeyboardType.Nokia1050;
+					case 6:
+						return KeyboardType.Nokia9140;
+					case 7:
+						return KeyboardType.Japanese;
+					case 81:
+						return KeyboardType.USB;
+					default:
+						return KeyboardType.Unknown;
+				}
+			}
 		}
 		#endregion
 
@@ -63,7 +83,7 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="nTypeFlag">The type of info.</param>
 		/// <returns>The requested information.</returns>
-		[DllImport("User32.dll", CharSet = CharSet.Ansi), SuppressUnmanagedCodeSecurity]
+		[DllImport("User32.dll", CharSet = CharSet.Ansi)]
 		private static extern int GetKeyboardType(int nTypeFlag);
 
 		/// <summary>
@@ -72,7 +92,7 @@ namespace Gorgon.Native
 		/// <param name="nVirtKey">Virtual key code to retrieve.</param>
 		/// <returns>A bit mask containing the state of the virtual key.</returns>
 		[DllImport("User32.dll"), SuppressUnmanagedCodeSecurity]
-		public static extern short GetKeyState(Keys nVirtKey);
+		private static extern short GetKeyState(Keys nVirtKey);
 
 		/// <summary>
 		/// Function to retrieve the scan code for a virtual key.
@@ -81,51 +101,36 @@ namespace Gorgon.Native
 		/// <param name="uMapType">Mapping type.</param>
 		/// <returns>The scan code.</returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto), SuppressUnmanagedCodeSecurity]
-		public static extern int MapVirtualKey(Keys uCode, int uMapType);
+		private static extern int MapVirtualKey(Keys uCode, int uMapType);
+
+		/// <summary>
+		/// Function to return the scan code for a virtual key.
+		/// </summary>
+		/// <param name="virtualKey">The virtual key to evaluate.</param>
+		/// <returns>The scan code for the virtual key.</returns>
+		public static int GetScancode(Keys virtualKey)
+		{
+			return MapVirtualKey(virtualKey, 0);
+		}
+
+		/// <summary>
+		/// Function to determine if the specified virtual key is pressed or not.
+		/// </summary>
+		/// <param name="virtualKey">The virtual key to evaluate.</param>
+		/// <returns><b>true</b> if down, <b>false</b> if not.</returns>
+		public static bool CheckKeyDown(Keys virtualKey)
+		{
+			return (GetKeyState(virtualKey) & 0x80) == 0x80;
+		}
 		#endregion
 
-		#region Constructor.
+		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes static members of the <see cref="Win32API"/> class.
+		/// Initializes static members of the <see cref="Win32KeyboardApi"/> class.
 		/// </summary>
-		static Win32API()
+		static Win32KeyboardApi()
 		{
-			Marshal.PrelinkAll(typeof(Win32API));
-
-			int keyboardType = GetKeyboardType(0);
-
-			switch (keyboardType)
-			{
-				case 1:
-					KeyboardType = KeyboardType.XT;
-					break;
-				case 2:
-					KeyboardType = KeyboardType.OlivettiICO;
-					break;
-				case 3:
-					KeyboardType = KeyboardType.AT;
-					break;
-				case 4:
-					KeyboardType = KeyboardType.Enhanced;
-					break;
-				case 5:
-					KeyboardType = KeyboardType.Nokia1050;
-					break;
-				case 6:
-					KeyboardType = KeyboardType.Nokia9140;
-					break;
-				case 7:
-					KeyboardType = KeyboardType.Japanese;
-					break;
-				case 81:
-					KeyboardType = KeyboardType.USB;
-					break;
-				default:
-					KeyboardType = KeyboardType.Unknown;
-					break;
-			}
-
-			FunctionKeyCount = GetKeyboardType(2);
+			Marshal.PrelinkAll(typeof(Win32KeyboardApi));
 		}
 		#endregion
 	}

@@ -30,7 +30,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core.Properties;
 using Gorgon.Design;
-using Gorgon.Native;
 
 namespace Gorgon.UI
 {
@@ -41,6 +40,19 @@ namespace Gorgon.UI
 	public class GorgonSelectablePanel
 		: Panel
 	{
+		#region Enums.
+		/// <summary>
+		/// Types of messages that passed to a window.
+		/// </summary>
+		/// <remarks>See the MSDN documentation for more detail.</remarks>
+		private enum WindowMessages
+		{
+			LeftButtonDown = 0x0201,
+			RightButtonDown = 0x0204,
+			MiddleButtonDown = 0x0207,
+			MouseWheel = 0x020A,
+		}
+		#endregion
 		#region Variables.
 		// Show focus flag.
 		private bool _showFocus = true;

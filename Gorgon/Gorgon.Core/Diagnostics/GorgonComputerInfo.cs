@@ -71,12 +71,12 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Property to return the total physical RAM available in bytes.
 		/// </summary>
-		public static long TotalPhysicalRAM => Win32API.TotalPhysicalRAM;
+		public static long TotalPhysicalRAM => KernelApi.TotalPhysicalRAM;
 
 		/// <summary>
 		/// Property to return the available physical RAM in bytes.
 		/// </summary>
-		public static long AvailablePhysicalRAM => Win32API.AvailablePhysicalRAM;
+		public static long AvailablePhysicalRAM => KernelApi.AvailablePhysicalRAM;
 
 		/// <summary>
 		/// Property to return the platform that this instance of Gorgon was compiled for.

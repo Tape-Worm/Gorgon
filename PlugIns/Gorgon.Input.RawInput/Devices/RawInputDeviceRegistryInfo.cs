@@ -25,9 +25,7 @@
 #endregion
 
 using System;
-using System.ComponentModel;
-using System.IO;
-using System.Runtime.InteropServices;
+using System.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
@@ -36,9 +34,9 @@ using Microsoft.Win32;
 namespace Gorgon.Input.Raw
 {
 	/// <summary>
-	/// Retrieves information about a raw input device.
+	/// Retrieves information from the registry about a raw input devices.
 	/// </summary>
-	class RawInputDeviceInfo
+	class RawInputDeviceRegistryInfo
 	{
 		#region Variables.
 		// The logging interface to use for debugging.
@@ -46,49 +44,6 @@ namespace Gorgon.Input.Raw
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve information about a specific device.
-		/// </summary>
-		/// <param name="device">The device to retrieve information about.</param>
-		/// <returns>The device information for the device.</returns>
-		public RID_DEVICE_INFO GetDeviceInfo(ref RAWINPUTDEVICELIST device)
-		{
-			int dataSize = 0;
-			int errCode = Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, IntPtr.Zero, ref dataSize);
-
-			if ((errCode != -1) && (errCode != 0))
-			{
-				int win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-			}
-
-			if (errCode == -1)
-			{
-				throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-			}
-
-			unsafe
-			{
-				byte* data = stackalloc byte[dataSize];
-				errCode = Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceInfo, (IntPtr)data, ref dataSize);
-
-				if (errCode < -1)
-				{
-					int win32Error = Marshal.GetLastWin32Error();
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-				}
-
-				if (errCode == -1)
-				{
-					throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, dataSize));
-				}
-
-				RID_DEVICE_INFO result = *((RID_DEVICE_INFO*)data);
-
-				return result;
-			}
-		}
-
 		/// <summary>
 		/// Function to retrieve the description of the raw input device from the registry.
 		/// </summary>
@@ -130,7 +85,7 @@ namespace Gorgon.Input.Raw
 		/// <summary>
 		/// Function to return the class name for the device.
 		/// </summary>
-		/// <param name="deviceName">The name of the device from <see cref="GetDeviceName"/>.</param>
+		/// <param name="deviceName">The name of the device from <see cref="RawInputApi.GetDeviceName"/>.</param>
 		/// <returns>The device class name.</returns>
 		public string GetDeviceClass(string deviceName)
 		{
@@ -185,48 +140,79 @@ namespace Gorgon.Input.Raw
 		}
 
 		/// <summary>
-		/// Function to retrieve the name for the specified device.
+		/// Function to get the real name for a joystick.
 		/// </summary>
-		/// <param name="device">Device to retrieve the name for.</param>
-		/// <returns>A string containing the device name.</returns>
-		public string GetDeviceName(ref RAWINPUTDEVICELIST device)
+		/// <param name="rawInputDeviceName">The raw input device name for the joystick.</param>
+		/// <returns>The real name for the joystick.</returns>
+		public string GetJoystickName(string rawInputDeviceName)
 		{
-			int dataSize = 0;
-
-			if (Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, IntPtr.Zero, ref dataSize) < 0)
-			{
-				int win32Error = Marshal.GetLastWin32Error();
-				throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-			}
-
-			// Do nothing if we have no data.
-			if (dataSize < 4)
+			if (string.IsNullOrWhiteSpace(rawInputDeviceName))
 			{
 				return string.Empty;
 			}
 
-			unsafe
-			{
-				char* data = stackalloc char[dataSize];
+			// Take the HID path, and split it out until we get the appropriate sub key name.
+			string[] parts = rawInputDeviceName.Split(new[]
+			                                          {
+				                                          '#'
+			                                          },
+			                                          StringSplitOptions.RemoveEmptyEntries);
 
-				if (Win32API.GetRawInputDeviceInfo(device.Device, RawInputCommand.DeviceName, (IntPtr)data, ref dataSize) < 0)
+			if ((parts.Length < 2) || (string.IsNullOrWhiteSpace(parts[1])))
+			{
+				return null;
+			}
+
+			string subKeyName = parts[1];
+
+			// The XBOX 360 controller has an &IG_ at the end of its PID, strip it off.
+			while (subKeyName.Count(item => item == '&') > 1)
+			{
+				int lastAmp = subKeyName.LastIndexOf("&", StringComparison.OrdinalIgnoreCase);
+
+				if (lastAmp == -1)
 				{
-					int win32Error = Marshal.GetLastWin32Error();
-					throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
+					return null;
 				}
 
-				// The strings that come back from native land will end with a NULL terminator, so crop that off.
-				return new string(data, 0, dataSize - 1);
+				subKeyName = subKeyName.Substring(0, lastAmp);
+			}
+
+			if (string.IsNullOrWhiteSpace(subKeyName))
+			{
+				return string.Empty;
+			}
+
+			// Find the key and open it.
+			// The original example code this is based on uses HKEY_LOCAL_MACHINE instead of CURRENT_USER.  This may be a difference 
+			// between operating systems.
+			const string regKeyPath = @"System\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\";
+
+            using (RegistryKey joystickOemKey = Registry.CurrentUser.OpenSubKey(regKeyPath, false))
+			{
+				string joystickDeviceKeyName = joystickOemKey?.GetSubKeyNames().First(item => parts[1].StartsWith(item, StringComparison.OrdinalIgnoreCase));
+
+				if (string.IsNullOrWhiteSpace(joystickDeviceKeyName))
+				{
+					return string.Empty;
+				}
+
+				using (RegistryKey joystickVidKey = joystickOemKey.OpenSubKey(subKeyName, false))
+				{
+					object value = joystickVidKey?.GetValue("OEMName");
+
+					return value?.ToString() ?? string.Empty;
+				}
 			}
 		}
 		#endregion
 
 		#region Constructor/Finalizer
 		/// <summary>
-		/// Initializes a new instance of the <see cref="RawInputDeviceInfo" /> class.
+		/// Initializes a new instance of the <see cref="RawInputDeviceRegistryInfo" /> class.
 		/// </summary>
 		/// <param name="log">The log to use for debug logging.</param>
-		public RawInputDeviceInfo(IGorgonLog log)
+		public RawInputDeviceRegistryInfo(IGorgonLog log)
 		{
 			_log = log;
 		}

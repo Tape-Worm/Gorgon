@@ -26,7 +26,6 @@
 
 using System;
 using System.Windows.Forms;
-using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
 namespace Gorgon.Input.Raw
@@ -37,11 +36,6 @@ namespace Gorgon.Input.Raw
 	class RawInputMouseInfo
 		: IGorgonMouseInfo2
 	{
-		#region Variables.
-		// Device description.
-		private readonly string _deviceDescription;
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the handle to the device.
@@ -75,8 +69,14 @@ namespace Gorgon.Input.Raw
 		/// <param name="handle">Handle to the device.</param>
 		public RawInputMouseInfo(string deviceDescription, string className, string hidPath, IntPtr handle)
 		{
-			HasMouseWheel = SystemInformation.MouseWheelPresent;
-			_deviceDescription = deviceDescription;
+			// This is not working properly under RDP (for 8.1/Server 2012/Win 10). So, assume we 
+			// have a wheel when using RDP.
+			// RDP assumes that we have a generic 2 button mouse (without a wheel), and thus the 
+			// underlying call to GetSystemMetrics returns 0 when checking SM_MOUSEWHEELPRESENT.
+			// See: KB3015033 (https://support.microsoft.com/en-us/kb/3015033)
+			HasMouseWheel = SystemInformation.MouseWheelPresent || SystemInformation.TerminalServerSession;
+
+			Description = deviceDescription;
 			ClassName = className;
 			HumanInterfaceDevicePath = hidPath;
 
@@ -90,7 +90,10 @@ namespace Gorgon.Input.Raw
 
 		#region IGorgonInputDeviceInfo Members
 		/// <inheritdoc/>
-		public string Description => string.Format(Resources.GORINP_RAW_DESC_MOUSE, _deviceDescription);
+		public string Description
+		{
+			get;
+		}
 
 		/// <inheritdoc/>
 		public string HumanInterfaceDevicePath

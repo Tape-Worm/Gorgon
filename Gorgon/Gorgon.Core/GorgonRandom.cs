@@ -29,8 +29,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Gorgon.Math;
-using SlimMath;
 
 namespace Gorgon.Core
 {
@@ -262,8 +262,7 @@ namespace Gorgon.Core
 
 			var unskew = new Vector2(i - t, j - t);				
 
-			Vector2 distance;
-			Vector2.Subtract(ref value, ref unskew, out distance);
+			Vector2 distance = value - unskew;
 
 			int offset1 = 0;  // upper triangle, YX order: (0,0)->(0,1)->(1,1)
 			int offset2 = 1;
@@ -291,17 +290,20 @@ namespace Gorgon.Core
 			float t2 = (0.5f - corner2.X * corner2.X - corner2.Y * corner2.Y);
 			float dot;
 
-			if (t0 > 0.0f)
-			{
-				var gradIndex0 = (Vector2)_grad3[_permMod12[index0 + _permutations[index1]]];
-				Vector2.Dot(ref gradIndex0, ref distance, out dot);
+			Vector3 vec3Value;
+            if (t0 > 0.0f)
+            {
+	            vec3Value = _grad3[_permMod12[index0 + _permutations[index1]]];
+                var gradIndex0 = new Vector2(vec3Value.X, vec3Value.Y);
+				dot = Vector2.Dot(gradIndex0, distance);
 				noiseContrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
-				var gradIndex1 = (Vector2)_grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2]]];
-				Vector2.Dot(ref gradIndex1, ref corner1, out dot);
+				vec3Value = _grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2]]];
+                var gradIndex1 = new Vector2(vec3Value.X, vec3Value.Y);
+				dot = Vector2.Dot(gradIndex1, corner1);
 				noiseContrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
@@ -311,8 +313,9 @@ namespace Gorgon.Core
 				return 70.0f * (noiseContrib.X + noiseContrib.Y);
 			}
 
-			var gradIndex2 = (Vector2)_grad3[_permMod12[index0 + 1 + _permutations[index1 + 1]]];
-			Vector2.Dot(ref gradIndex2, ref corner2, out dot);
+			vec3Value = _grad3[_permMod12[index0 + 1 + _permutations[index1 + 1]]];
+            var gradIndex2 = new Vector2(vec3Value.X, vec3Value.Y);
+			dot = Vector2.Dot(gradIndex2, corner2);
 			noiseContrib.Z = t2 * t2 * t2 * t2 * dot;
 
 			// Add contributions from each corner to get the final noise value.
@@ -343,8 +346,7 @@ namespace Gorgon.Core
 			var unskew = new Vector3(i - t, j - t, k - t);
 
 			// The x,y,z distances from the cell origin
-			Vector3 distance;
-			Vector3.Subtract(ref value, ref unskew, out distance);
+			Vector3 distance = value - unskew;
 
 			// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 			// Determine which simplex we are in.
@@ -445,21 +447,21 @@ namespace Gorgon.Core
 			if (t0 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + _permutations[index1 + _permutations[index2]]]];
-				Vector3.Dot(ref grad, ref distance, out dot);
+				dot = Vector3.Dot(grad, distance);
 				contrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2 + _permutations[index2 + offset3]]]];
-				Vector3.Dot(ref grad, ref corner1, out dot);
+				dot = Vector3.Dot(grad, corner1);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset4 + _permutations[index1 + offset5 + _permutations[index2 + offset6]]]];
-				Vector3.Dot(ref grad, ref corner2, out dot);
+				dot = Vector3.Dot(grad, corner2);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
@@ -469,7 +471,7 @@ namespace Gorgon.Core
 			}
 
 			grad = _grad3[_permMod12[index0 + 1 + _permutations[index1 + 1 + _permutations[index2 + 1]]]];
-			Vector3.Dot(ref grad, ref corner3, out dot);
+			dot = Vector3.Dot(grad, corner3);
 			contrib.W = t3 * t3 * t3 * t3 * dot;
 
 			// Add contributions from each corner to get the final noise value.
@@ -502,8 +504,7 @@ namespace Gorgon.Core
 			var unskew = new Vector4(i - t, j - t, k - t, l - t);
 
 			// The x,y,z,w distances from the cell origin
-			Vector4 distance;
-			Vector4.Subtract(ref value, ref unskew, out distance);
+			Vector4 distance = value - unskew;
 
 			// For the 4D case, the simplex is a 4D shape I won't even try to describe.
 			// To find out which of the 24 possible simplices we're in, we need to
@@ -615,28 +616,28 @@ namespace Gorgon.Core
 			if (t0 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + _permutations[index2 + _permutations[index3 + _permutations[index4]]]]];
-				Vector4.Dot(ref grad, ref distance, out dot);
+				dot = Vector4.Dot(grad, distance);
 				contrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset1 + _permutations[index2 + offset2 + _permutations[index3 + offset3 + _permutations[index4 + offset4]]]]];
-				Vector4.Dot(ref grad, ref corner1, out dot);
+				dot = Vector4.Dot(grad, corner1);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset5 + _permutations[index2 + offset6 + _permutations[index3 + offset7 + _permutations[index4 + offset8]]]]];
-				Vector4.Dot(ref grad, ref corner2, out dot);
+				dot = Vector4.Dot(grad, corner2);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
 			if (t3 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset9 + _permutations[index2 + offset10 + _permutations[index3 + offset11 + _permutations[index4 + offset12]]]]];
-				Vector4.Dot(ref grad, ref corner3, out dot);
+				dot = Vector4.Dot(grad, corner3);
 				contrib.W = t3 * t3 * t3 * t3 * dot;
 			}
 
@@ -646,7 +647,7 @@ namespace Gorgon.Core
 			}
 
 			grad = _grad4[_permutations[index1 + 1 + _permutations[index2 + 1 + _permutations[index3 + 1 + _permutations[index4 + 1]]]] % 32];
-			Vector4.Dot(ref grad, ref corner4, out dot);
+			dot = Vector4.Dot(grad, corner4);
 			float contrib5 = t4 * t4 * t4 * t4 * dot;
 
 			// Sum up and scale the result to cover the range [-1,1]

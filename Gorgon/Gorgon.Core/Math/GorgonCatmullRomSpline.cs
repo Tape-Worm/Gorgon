@@ -25,8 +25,8 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Numerics;
 using Gorgon.Diagnostics;
-using SlimMath;
 
 namespace Gorgon.Math
 {
@@ -42,7 +42,7 @@ namespace Gorgon.Math
     {
         #region Variables.
 		// Spline coefficients.
-        private Matrix _coefficients = Matrix.Identity;
+        private Matrix4x4 _coefficients = Matrix4x4.Identity;
 		// Tangents.
         private Vector4[] _tangents;
         #endregion
@@ -59,7 +59,7 @@ namespace Gorgon.Math
 		/// <inheritdoc/>
 		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
-            Matrix calculations = Matrix.Identity;
+            Matrix4x4 calculations = Matrix4x4.Identity;
 
 			startPointIndex.ValidateRange("startPointIndex", 0, Points.Count - 1);
 
@@ -75,15 +75,19 @@ namespace Gorgon.Math
 
             var result = new Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
 
-            calculations.Row1 = Points[startPointIndex];
-            calculations.Row2 = Points[startPointIndex + 1];
-            calculations.Row3 = _tangents[startPointIndex];
-            calculations.Row4 = _tangents[startPointIndex + 1];
+			Vector4 startPoint = Points[startPointIndex];
+			Vector4 startPointNext = Points[startPointIndex + 1];
+			Vector4 tangent = _tangents[startPointIndex];
+			Vector4 tangentNext = _tangents[startPointIndex + 1];
 
-            Matrix.Multiply(ref _coefficients, ref calculations, out calculations);
-            Vector4.Transform(ref result, ref calculations, out result);
+			calculations.M11 = startPoint.X; calculations.M12 = startPoint.Y; calculations.M13 = startPoint.Z;
+			calculations.M21 = startPointNext.X; calculations.M22 = startPointNext.Y; calculations.M23 = startPointNext.Z;
+			calculations.M31 = tangent.X; calculations.M32 = tangent.Y; calculations.M33 = tangent.Z;
+			calculations.M41 = tangentNext.X; calculations.M42 = tangentNext.Y; calculations.M43 = tangentNext.Z;
 
-            return result;
+			calculations = Matrix4x4.Multiply(_coefficients, calculations);
+
+            return Vector4.Transform(result, calculations);
         }
 
 		/// <inheritdoc/>
@@ -155,9 +159,8 @@ namespace Gorgon.Math
                     }
                 }
                                 
-                Vector4 diff;
-                Vector4.Subtract(ref prev, ref next, out diff);
-                Vector4.Multiply(ref diff, 0.5f, out diff);
+                Vector4 diff = Vector4.Subtract(prev, next);
+                diff = Vector4.Multiply(diff, 0.5f);
                 _tangents[i] = diff;
             }
         }
@@ -169,10 +172,10 @@ namespace Gorgon.Math
         /// </summary>
         public GorgonCatmullRomSpline()
         {
-            _coefficients.Row1 = new Vector4(2, -2, 1, 1);
-            _coefficients.Row2 = new Vector4(-3, 3, -2, -1);
-            _coefficients.Row3 = new Vector4(0, 0, 1, 0);
-            _coefficients.Row4 = new Vector4(1, 0, 0, 0);
+	        _coefficients.M11 = 2; _coefficients.M12 = -2; _coefficients.M13 = 1; _coefficients.M14 = 1;
+			_coefficients.M21 = -3; _coefficients.M22 = 3; _coefficients.M23 = -2; _coefficients.M24 = -1;
+			_coefficients.M31 = 0; _coefficients.M32 = 9; _coefficients.M33 = 1; _coefficients.M34 = 0;
+			_coefficients.M41 = 1; _coefficients.M42 = 0; _coefficients.M43 = 0; _coefficients.M44 = 0;
 
             Points = new List<Vector4>(256);
             _tangents = new Vector4[256];

@@ -420,7 +420,6 @@ namespace Gorgon.Graphics
 		static GorgonVideoDeviceEnumerator()
 		{
 			VideoDevices = new GorgonNamedObjectList<GorgonVideoDevice>();
-			Enumerate(false, false);
 		}
 		#endregion
 	}

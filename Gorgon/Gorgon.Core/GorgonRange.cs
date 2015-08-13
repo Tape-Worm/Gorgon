@@ -331,7 +331,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_TOSTR_RANGE, Minimum, Maximum, Range);
+			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
 		#endregion
 
@@ -871,7 +871,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_TOSTR_RANGE, Minimum, Maximum, Range);
+			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
 		#endregion
 
@@ -1411,7 +1411,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_TOSTR_RANGE, Minimum, Maximum, Range);
+			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
 		#endregion
 
@@ -1951,7 +1951,7 @@ namespace Gorgon.Core
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOR_TOSTR_RANGE, Minimum, Maximum, Range);
+			return string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 		}
 		#endregion
 

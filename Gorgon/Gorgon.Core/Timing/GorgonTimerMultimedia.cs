@@ -59,6 +59,11 @@ namespace Gorgon.Timing
 	public sealed class GorgonTimerMultimedia 
 		: IGorgonTimer
 	{
+		#region Constants.
+		// Error code returned when setting timer period.
+		private const uint ErrorNoCanDo = 97;
+		#endregion
+
 		#region Variables.
 		// Flag to indicate that the timer was initialized.
 		private bool _initialized;
@@ -147,7 +152,7 @@ namespace Gorgon.Timing
 				Reset();	
 			}
 
-			long currentTime = Win32API.timeGetTime();
+			long currentTime = WinMultimediaApi.timeGetTime();
 			long ticks = Environment.TickCount;
 
 			// Handle wrap around every ~50 days.
@@ -199,7 +204,7 @@ namespace Gorgon.Timing
 				period = (int)_timeCaps.MinPeriod;
 			}
 
-			if (Win32API.timeBeginPeriod((uint)period) == TimePeriodReturn.NoCanDo)
+			if (WinMultimediaApi.timeBeginPeriod((uint)period) == ErrorNoCanDo)
 			{
 				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
 			}
@@ -227,7 +232,7 @@ namespace Gorgon.Timing
 				return;
 			}
 
-			if (Win32API.timeEndPeriod((uint)_lastPeriod.Value) == TimePeriodReturn.NoCanDo)
+			if (WinMultimediaApi.timeEndPeriod((uint)_lastPeriod.Value) == ErrorNoCanDo)
 			{
 				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_END);
 			}
@@ -241,7 +246,7 @@ namespace Gorgon.Timing
 		/// <exception cref="Win32Exception">Thrown when timer information cannot be retrieved from the operating system.</exception>
 		public void Reset()
 		{
-			if (Win32API.timeGetDevCaps(ref _timeCaps, DirectAccess.SizeOf<TIMECAPS>()) != 0)
+			if (WinMultimediaApi.timeGetDevCaps(ref _timeCaps, DirectAccess.SizeOf<TIMECAPS>()) != 0)
 			{
 				throw new Win32Exception(Resources.GOR_ERR_TIME_CANNOT_BEGIN);
 			}
@@ -254,7 +259,7 @@ namespace Gorgon.Timing
 			}
 
 			_startTick = Environment.TickCount;
-			_startTime = Win32API.timeGetTime();
+			_startTime = WinMultimediaApi.timeGetTime();
 			_initialized = true;
 		}
 		#endregion

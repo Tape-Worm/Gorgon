@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -106,9 +106,6 @@
       <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="SlimMath">
-      <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -118,6 +115,8 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
@@ -163,9 +162,16 @@
     <Compile Include="Native\GorgonPointerAlias.cs" />
     <Compile Include="Native\GorgonPointerAliasTyped.cs" />
     <Compile Include="Native\GorgonPointerBase.cs" />
+    <Compile Include="Native\_Internal\KernelApi.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\HDITEM.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\MEMORYSTATUSEX.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\MSG.cs" />
+    <Compile Include="Native\_Internal\Win32 Structs\TIMECAPS.cs" />
     <Compile Include="Native\_Interfaces\IGorgonPointer.cs" />
     <Compile Include="Native\GorgonPointer.cs" />
     <Compile Include="Native\GorgonPointerPinned.cs" />
+    <Compile Include="Native\_Internal\UserApi.cs" />
+    <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginAssemblyCache.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
@@ -203,12 +209,6 @@
     <Compile Include="IO\GorgonFileExtensionComparer.cs" />
     <Compile Include="GorgonRandom.cs" />
     <Compile Include="Math\GorgonCatmullRomSpline.cs" />
-    <Compile Include="Native\_Internal\Win32API.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Native\_Internal\Win32Enums.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Plugins\GorgonPluginAssemblyCache.cs" />
     <Compile Include="Plugins\GorgonPlugin.cs" />
     <Compile Include="Plugins\GorgonPluginPathCollection.cs" />

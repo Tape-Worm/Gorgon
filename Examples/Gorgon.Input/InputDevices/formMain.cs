@@ -28,13 +28,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
 using Gorgon.Plugins;
-using Gorgon.Timing;
 using Gorgon.UI;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
@@ -108,10 +106,6 @@ namespace Gorgon.Examples
 		private Image _currentCursor;
 		// Flag to indicate whether to use polling or events.
 		private bool _usePolling;
-		// A spin wait used to give up CPU while we're keeping our app under control in the idle event.
-		private SpinWait _spinner;
-		// The timer used to determine how long to wait until the next idle loop iteration.
-		private IGorgonTimer _updateTimer = GorgonTimerQpc.SupportsQpc() ? (IGorgonTimer)new GorgonTimerQpc() : new GorgonTimerMultimedia();
 		#endregion
 
 		#region Properties.
@@ -215,14 +209,6 @@ namespace Gorgon.Examples
 
 			// Display the mouse cursor.			
             _cursor.DrawMouseCursor(_mousePosition, _currentCursor, _spray.Surface);
-
-			// Free up CPU time if we're not using it.
-	        while (_updateTimer.Milliseconds <= GorgonTiming.FpsToMilliseconds(60))
-	        {
-		        _spinner.SpinOnce();
-	        }
-
-			_updateTimer.Reset();
 
 			return true;
 		}
@@ -479,15 +465,16 @@ namespace Gorgon.Examples
 		        return;
 	        }
 
-	        // Find the first one that's active.
-			var activeDevice = (from joystick in joystickDevices
+#warning Fix this later.
+			// Find the first one that's active.
+/*			var activeDevice = (from joystick in joystickDevices
 		        where joystick.IsConnected
 		        select joystick).FirstOrDefault();
 
 	        if (activeDevice == null)
 	        {
 		        return;
-	        }
+	        }*/
 
 	        // Note that joysticks from Raw Input are always exclusive access,
 	        // so setting _joystick.Exclusive = true; does nothing.
@@ -605,7 +592,6 @@ namespace Gorgon.Examples
 				          };
 
 				// Set up our idle method.
-				_updateTimer.Reset();
 				GorgonApplication.IdleMethod = Idle;
 			}
 			catch (Exception ex)
@@ -629,8 +615,11 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
+			// Always unbind your devices when the window is shutting down.
+			// Failure to do so can lead to unpredictable results.
 			_mouse?.UnbindWindow();
 			_keyboard?.UnbindWindow();
+			_joystick?.Unbind();
 
 			_cursor?.Dispose();
 

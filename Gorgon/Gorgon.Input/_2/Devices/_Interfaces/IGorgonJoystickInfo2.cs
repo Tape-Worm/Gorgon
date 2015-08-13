@@ -91,21 +91,29 @@ namespace Gorgon.Input
 		/// </summary>
 		YAxis = 1,
 		/// <summary>
-		/// The throttle.
+		/// The primary z axis.
 		/// </summary>
-		Throttle = 2,
-		/// <summary>
-		/// The rudder.
-		/// </summary>
-		Rudder = 3,
+		ZAxis = 2,
 		/// <summary>
 		/// The secondary horizontal axis.
 		/// </summary>
-		XAxis2 = 4,
+		XAxis2 = 3,
 		/// <summary>
 		/// The secondary vertical axis.
 		/// </summary>
-		YAxis2 = 5
+		YAxis2 = 4,
+		/// <summary>
+		/// The secondary z axis.
+		/// </summary>
+		ZAxis2 = 5,
+		/// <summary>
+		/// The throttle axis. This maps to the <see cref="ZAxis"/> value.
+		/// </summary>
+		Throttle = 2,
+		/// <summary>
+		/// The rudder axis. This maps to the <see cref="ZAxis2"/> value.
+		/// </summary>
+		Rudder = 5
 	}
 
 	/// <summary>
@@ -114,23 +122,6 @@ namespace Gorgon.Input
 	public interface IGorgonJoystickInfo2
 		: IGorgonInputDeviceInfo2
 	{
-		/// <summary>
-		/// Property to return whether the joystick is connected or not.
-		/// </summary> 
-		/// <remarks>
-		/// <para>
-		/// Joysticks may be registered with the system, and appear in the enumeration list provided by <see cref="IGorgonInputService.EnumerateJoysticks"/>, but they may not be connected to the system 
-		/// at the time of enumeration. Thus, we have this property to ensure that we know when a joystick is connected to the system or not. 
-		/// </para>
-		/// <para>
-		/// This property will update itself when a joystick is connected or disconnected.
-		/// </para>
-		/// </remarks>
-		bool IsConnected
-		{
-			get;
-		}
-
 		/// <summary>
 		/// Property to return the number of buttons available on the joystick.
 		/// </summary>

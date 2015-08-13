@@ -134,7 +134,7 @@ namespace Gorgon.Native
 			long alignedSize = size + mask + ptrSize;
 
 			// On x86, we cannot allocate more than 2GB in one shot, so disallow it.
-			if ((GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x86) && (alignedSize > Int32.MaxValue))
+			if ((GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x86) && (alignedSize > int.MaxValue))
 			{
 				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_CANNOT_ALLOC_x86, nameof(size));
 			}

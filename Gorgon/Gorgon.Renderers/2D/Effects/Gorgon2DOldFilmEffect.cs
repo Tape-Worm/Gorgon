@@ -400,7 +400,7 @@ namespace Gorgon.Renderers
 					{
 						for (int x = 0; x < textureSize; ++x)
 						{
-							float simplexNoise = GorgonRandom.SimplexNoise(new Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
+							float simplexNoise = GorgonRandom.SimplexNoise(new System.Numerics.Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
 
 							if (simplexNoise < -0.75f)
 							{

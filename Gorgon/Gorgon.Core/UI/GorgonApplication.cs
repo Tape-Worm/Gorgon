@@ -108,6 +108,8 @@ namespace Gorgon.UI
 		#region Constants.
 		// Log file application name.
 		private const string LogFile = "GorgonLibrary";
+		// Peek message NoRemove flag.
+		private const uint PeekMessageNoRemove = 0;
 		#endregion
 
 		#region Events.
@@ -465,7 +467,7 @@ namespace Gorgon.UI
 			// run regardless since we have an idle method to execute.
 			bool appShouldProcess = MainForm == null || AllowBackground || IsForeground;
 
-			while ((appShouldProcess) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
+			while ((appShouldProcess) && (!UserApi.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageNoRemove)))
 			{
                 // Reset the timer so that frame rate timing can start with the first iteration of the loop.
 			    if (!_applicationTimer.IsValueCreated)
