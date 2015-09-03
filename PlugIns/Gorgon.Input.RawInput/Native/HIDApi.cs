@@ -258,8 +258,7 @@ namespace Gorgon.Native
 		/// <returns>The success/fail return code.</returns>
 		[DllImport("Hid.dll", CharSet = CharSet.Unicode)]
 		private static extern unsafe int HidP_GetValueCaps(HIDReportType reportType, HIDP_VALUE_CAPS* caps, ref ushort capsLength, byte* preparsedData);
-
-
+		
 		/// <summary>
 		/// Function to retrieve the capabilities for a HID.
 		/// </summary>

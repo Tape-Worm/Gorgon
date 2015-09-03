@@ -53,10 +53,11 @@ namespace Gorgon.Math
         {
             get;
         }
-        #endregion
+		#endregion
 
-        #region Methods.
+		#region Methods.
 		/// <inheritdoc/>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
 		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
             Matrix4x4 calculations = Matrix4x4.Identity;

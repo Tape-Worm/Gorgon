@@ -73,7 +73,7 @@ namespace Gorgon.Configuration
 	/// <item><description>A primitive type.</description></item>
 	/// <item><description>An enum type.</description></item>
 	/// <item><description>A value type that has a <see cref="TypeConverterAttribute"/>.</description></item>
-	/// <item><description>A <see cref="String"/> type.</description></item>
+	/// <item><description>A <see cref="string"/> type.</description></item>
 	/// <item><description>A <see cref="DateTime"/> type.</description></item>
 	/// </list>
 	/// Furthermore, array types on properties are restricted to a single rank.
@@ -116,6 +116,7 @@ namespace Gorgon.Configuration
 	/// </note>
 	/// </para>
 	/// </remarks>
+	
 	public abstract class GorgonApplicationSettings
 	{
 		#region Classes.
@@ -264,8 +265,6 @@ namespace Gorgon.Configuration
 		private XElement _rootNode;
 		// The version attribute for the XML document.
 		private XAttribute _versionAttr;
-		// The application log.
-
 		#endregion
 
 		#region Properties.

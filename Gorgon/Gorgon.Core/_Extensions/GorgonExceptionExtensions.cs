@@ -55,10 +55,7 @@ namespace Gorgon.Core
 				return;
 			}
 
-			if ((log != null) && (!log.IsClosed))
-			{
-				log.LogException(ex);
-			}
+			log?.LogException(ex);
 
 			handler(ex);
 		}

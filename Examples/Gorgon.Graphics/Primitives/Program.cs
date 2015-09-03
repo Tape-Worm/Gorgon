@@ -643,11 +643,11 @@ namespace Gorgon.Graphics.Example
 			_cameraRotation = Vector2.Zero;
 
 			
-			using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
 				pluginAssemblies.Load(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
 
-				IGorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+				GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
 				GorgonInputServiceFactory inputFactory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
 
 				_input = inputFactory.CreateService("Gorgon.Input.GorgonRawPlugIn");

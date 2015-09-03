@@ -1,30 +1,4 @@
-﻿#region MIT
-// 
-// Gorgon.
-// Copyright (C) 2015 Michael Winsor
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-// 
-// Created: Saturday, July 11, 2015 9:32:45 AM
-// 
-#endregion
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Gorgon.Collections;
 
 namespace Gorgon.Input
@@ -34,28 +8,24 @@ namespace Gorgon.Input
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// An input service provides access to the various input devices (such as a keyboard, mouse, or gaming device) attached to the system. It provides data from the native input device data sources (e.g. 
-	/// Raw input) and converts it into a form that Gorgon can interpret and use.
-	/// </para>
-	/// <para>
-	/// Because this service does transformation of the input data, it will provide a consistent interface to accessing that data whether the input devices be accessed through regular windows events (WinForms), 
-	/// Raw Input, XInput or another input wrapper. The interface to these devices will be seamless and as such, it won't be known, or even matter which input capture method is being used.
+	/// An input service provides access to the various input devices (such as a keyboard, mouse, ,joystick, game pad, etc...) attached to the system. It coordinates data from the native input device data 
+	/// sources (e.g. Raw input) and forwards the data to the appropriate devices after it's been converted to a form that Gorgon can interpret.
 	/// </para>
 	/// <para>
 	/// Input services can pick and choose which device types they support. This means that one input service may support XBox controllers through XInput, and another will use the Windows Multimedia interface 
 	/// to use other joystick types. And yet another may provide mouse/keyboard support only. 
 	/// </para>
 	/// <para>
-	/// Users may enumerate the input devices present on the system via provided enumeration methods. These methods will return <see cref="IGorgonNamedObjectReadOnlyDictionary{T}"/> types that will contain 
-	/// <see cref="IGorgonKeyboardInfo"/>, <see cref="IGorgonMouseInfo"/> or <see cref="IGorgonJoystickInfo"/> types giving information about each device. These values may be passed to the constructors of the  
+	/// Users may enumerate the input devices present on the system via provided enumeration methods. These methods will return <see cref="Collections.IReadOnlyList{T}"/> types that will contain 
+	/// <see cref="IGorgonKeyboardInfo2"/>, <see cref="IGorgonMouseInfo2"/> or <see cref="IGorgonJoystickInfo2"/> types giving information about each device. These values may be passed to the constructors of the  
 	/// various input object types to allow selection of a specific device. This includes mice and keyboards. However, not all input services will allow the use of individual mice and keyboards and may only 
 	/// allow use of the system devices (i.e. all input is directed from multiple devices into a single interface). If this is the case, the enumeration method will return only one item in its list.
 	/// </para>
 	/// <para>
-	/// <note type="warning">
+	/// <note type="important">
 	/// <para>
-	/// No input service is guaranteed to be thread safe, and none of the services provided by Gorgon are thread safe. Accessing a single <see cref="IGorgonInputService"/> instance via multiple threads is 
-	/// highly discouraged and not supported.
+	/// The input service, and any plug ins deriving from it, are not guaranteed to be thread safe by design. Accessing a single <see cref="GorgonInputService2"/> instance via multiple threads is discouraged 
+	/// and not supported.
 	/// </para>
 	/// </note>
 	/// </para>
@@ -63,8 +33,7 @@ namespace Gorgon.Input
 	/// <note type="caution">
 	/// <para>
 	/// While multiple input services can co-exist, care should be taken not to instantiate the same type of input service more than once. Doing so may end up in undefined behaviour due to internal implementation 
-	/// details that may conflict. For example, creating a <c>GorgonRawInputService</c> and a <c>GorgonXInputService</c> would be fine, but a <c>GorgonInputService</c> and a <c>GorgonInputService</c> would 
-	/// cause problems due to how RAW Input works.
+	/// details that may conflict. For example, creating a Raw Input service and an XInput service would be fine, but two instances of the Raw Input service would cause problems due to how Raw Input works.
 	/// </para> 
 	/// </note>
 	/// </para>
@@ -72,13 +41,37 @@ namespace Gorgon.Input
 	public interface IGorgonInputService
 	{
 		/// <summary>
-		/// Function to enumerate the keyboards attached to the computer.
+		/// Property to return the <see cref="IGorgonInputDeviceRegistrar"/> used to register or unregister any input devices.
 		/// </summary>
-		/// <returns>A <see cref="IGorgonNamedObjectReadOnlyDictionary{T}"/> type containing <see cref="IGorgonKeyboardInfo"/> values with information about each keyboard.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return information about each keyboard attached to the system. The <see cref="IGorgonKeyboardInfo"/> values contained within the returned list are used to create 
-		/// <see cref="IGorgonKeyboard"/> devices.
+		/// A registrar is used to keep track of which devices are currently bound to a window handle. This allows for routing of device data to the appropriate instance of the input device. 
+		/// </para>
+		/// <para>
+		/// Plug in implementors are required to provide their own device registration tracking.
+		/// </para>
+		/// </remarks>
+		IGorgonInputDeviceRegistrar Registrar
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the coordinator used to send/receive data to the appropriate <see cref="IGorgonInputDevice"/>.
+		/// </summary>
+		IGorgonInputDeviceCoordinator Coordinator
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Function to enumerate the keyboards attached to the computer.
+		/// </summary>
+		/// <returns>A <see cref="IReadOnlyList{T}"/> type containing <see cref="IGorgonKeyboardInfo2"/> values with information about each keyboard.</returns>
+		/// <remarks>
+		/// <para>
+		/// This will return information about each keyboard attached to the system. The <see cref="IGorgonKeyboardInfo2"/> values contained within the returned list are used to create 
+		/// <see cref="GorgonKeyboard2"/> devices.
 		/// </para>
 		/// <para>
 		/// Not all input services will allow the use of the individual keyboard devices attached to the computer. Some will only allow the use of the system keyboard (i.e. all input from all keyboards 
@@ -90,10 +83,10 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to enumerate the mice (or other pointing devices) attached to the computer.
 		/// </summary>
-		/// <returns>A <see cref="IGorgonNamedObjectReadOnlyDictionary{T}"/> type containing <see cref="IGorgonMouseInfo"/> values with information about each mouse.</returns>
+		/// <returns>A <see cref="IReadOnlyList{T}"/> type containing <see cref="IGorgonMouseInfo2"/> values with information about each mouse.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return information about each mouse attached to the system. The <see cref="IGorgonMouseInfo"/> values contained within the returned list are used to create <see cref="IGorgonMouse"/> 
+		/// This will return information about each mouse attached to the system. The <see cref="IGorgonMouseInfo2"/> values contained within the returned list are used to create <see cref="GorgonMouse"/> 
 		/// devices.
 		/// </para>
 		/// <para>
@@ -106,10 +99,10 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to enumerate the joysticks (or other gaming devices such as game pads) attached to the computer.
 		/// </summary>
-		/// <returns>A <see cref="IGorgonNamedObjectReadOnlyDictionary{T}"/> type containing <see cref="IGorgonJoystickInfo"/> values with information about each joystick.</returns>
+		/// <returns>A <see cref="IReadOnlyList{T}"/> type containing <see cref="IGorgonJoystickInfo2"/> values with information about each joystick.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return information about each joystick attached to the system. The <see cref="IGorgonJoystickInfo"/> values contained within the returned list are used to create <see cref="IGorgonJoystick"/> 
+		/// This will return information about each joystick attached to the system. The <see cref="IGorgonJoystickInfo2"/> values contained within the returned list are used to create <see cref="GorgonJoystick2"/> 
 		/// devices.
 		/// </para>
 		/// </remarks>

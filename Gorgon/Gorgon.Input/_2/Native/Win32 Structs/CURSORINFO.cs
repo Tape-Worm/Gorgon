@@ -1,4 +1,4 @@
-﻿#region MIT
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -27,21 +27,15 @@
 using System;
 using System.Runtime.InteropServices;
 
+// ReSharper disable InconsistentNaming
 namespace Gorgon.Native
 {
 	[StructLayout(LayoutKind.Sequential)]
-	struct Win32Point
-	{
-		public int X;
-		public int Y;
-	}
-
-	[StructLayout(LayoutKind.Sequential)]
-	struct CursorInfo
+	struct CURSORINFO
 	{
 		public int cbSize;
 		public CursorInfoFlags flags;
 		public IntPtr hCursor;
-		public Win32Point ptScreenPos;
+		public POINT ptScreenPos;
 	}
 }

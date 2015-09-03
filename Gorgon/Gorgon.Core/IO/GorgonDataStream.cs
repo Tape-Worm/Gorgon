@@ -164,7 +164,7 @@ namespace Gorgon.IO
 		/// To improve performance, exceptions will only be thrown for this property if the library is compiled for <b>DEBUG</b> mode.
 		/// </note>
 		/// </remarks>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="Int32.MaxValue"/>.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="int.MaxValue"/>.</exception>
 		public override long Position
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -190,7 +190,7 @@ namespace Gorgon.IO
 				// Limit to the bounds of an integer.
 				if (value < 0)
 				{
-					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, value, Int64.MaxValue));
+					throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, value, long.MaxValue));
 				}
 #endif
 
@@ -701,7 +701,7 @@ namespace Gorgon.IO
 		/// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
 		/// </summary>
 		/// <returns>
-		/// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
+		/// The unsigned byte cast to an int, or -1 if at the end of the stream.
 		/// </returns>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>

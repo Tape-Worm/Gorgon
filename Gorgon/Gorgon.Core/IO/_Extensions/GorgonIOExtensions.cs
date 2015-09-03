@@ -594,14 +594,14 @@ namespace Gorgon.IO
 		/// Function to return the chunk ID based on the name of the chunk passed to this method.
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
-		/// <returns>A <see cref="UInt64"/> value representing the chunk ID of the name.</returns>
+		/// <returns>A <see cref="ulong"/> value representing the chunk ID of the name.</returns>
 		/// <remarks>
 		/// <para>
 		/// This method is used to generate a new chunk ID for the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon chunked file format</conceptualLink>. It converts the characters in the string to their ASCII byte 
-		/// equivalents, and then builds a <see cref="UInt64"/> value from those bytes.
+		/// equivalents, and then builds a <see cref="ulong"/> value from those bytes.
 		/// </para>
 		/// <para>
-		/// Since the size of an <see cref="UInt64"/> is 8 bytes, then the string should contain 8 characters. If it does not, then the ID will be padded with 0's on the right to take up the remaining 
+		/// Since the size of an <see cref="ulong"/> is 8 bytes, then the string should contain 8 characters. If it does not, then the ID will be padded with 0's on the right to take up the remaining 
 		/// bytes. If the string is larger than 8 characters, then it will be truncated to the 8 character limit.
 		/// </para>
 		/// <para>

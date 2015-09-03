@@ -24,9 +24,9 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Diagnostics;
 using Gorgon.Input.XInput;
+using Gorgon.Input.XInput.Properties;
 
 namespace Gorgon.Input
 {
@@ -51,24 +51,20 @@ namespace Gorgon.Input
 		/// Property to return whether the plugin supports keyboard devices.
 		/// </summary>
 		public override bool SupportsKeyboards => false;
-
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
+		protected override GorgonInputService2 OnCreateInputService2(IGorgonLog log)
 		{
-			return null;
-		}
+			var coordinator = new XInputDeviceCoordinator();
+			var registrar = new XInputDeviceRegistrar(log);
 
-		/// <summary>
-		/// Function to create and return a <see cref="GorgonInputService" />.
-		/// </summary>
-		/// <returns>The interface for the input factory.</returns>
-		[Obsolete("This is going away after the refactor and replaced with the method above this one.")]
-		protected override GorgonInputService OnCreateInputService()
-		{
-			return new GorgonXInputService();
+			// Unlike the other plugins, we don't need a processor because this thing only captures 
+			// state via polling. We can just use our coordinator to determine if the window currently 
+			// in focus is allowed to update state or not.
+
+			return new GorgonXInputService(log, registrar, coordinator);
 		}
 		#endregion
 
@@ -77,7 +73,7 @@ namespace Gorgon.Input
 		/// Initializes a new instance of the <see cref="GorgonXInputPlugIn"/> class.
 		/// </summary>
 		public GorgonXInputPlugIn()
-			: base("Gorgon XBOX 360 controller input plug-in.")
+			: base(Resources.GORINP_XINP_SERVICEDESC)
 		{
 		}
 		#endregion

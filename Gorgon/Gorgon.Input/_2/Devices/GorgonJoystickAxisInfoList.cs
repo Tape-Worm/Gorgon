@@ -34,7 +34,7 @@ namespace Gorgon.Input
 {
 	/// <inheritdoc/>
 	public sealed class GorgonJoystickAxisInfoList
-		: IGorgonJoystickAxisInfoList
+		: IEnumerable<GorgonJoystickAxisInfo>
 	{
 		#region Variables.
 		// The list of available axes.
@@ -43,44 +43,17 @@ namespace Gorgon.Input
 		private readonly Dictionary<JoystickAxis, GorgonJoystickAxisInfo> _infoList = new Dictionary<JoystickAxis, GorgonJoystickAxisInfo>(new GorgonJoystickAxisEqualityComparer());
 		#endregion
 
-		#region Methods.
+		#region Properties.
 		/// <summary>
-		/// Function to add an axis to the list.
+		/// Property to return the number of axes on the joystick.
 		/// </summary>
-		/// <param name="axis">Axis to add to the list.</param>
-		private void Add(GorgonJoystickAxisInfo axis)
-		{
-			if (_infoList.ContainsKey(axis.Axis))
-			{
-				return;
-			}
+		public int Count => _axisList.Count;
 
-			_axisList.Add(axis.Axis);
-			_infoList[axis.Axis] = axis;
-		}
-		#endregion
-
-		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonJoystickAxisInfoList"/> class.
+		/// Property to return the range for the specified <see cref="JoystickAxis"/>.
 		/// </summary>
-		/// <param name="infoList">The axis information list used to populate this collection.</param>
-		public GorgonJoystickAxisInfoList(IEnumerable<GorgonJoystickAxisInfo> infoList)
-		{
-			foreach (GorgonJoystickAxisInfo info in infoList)
-			{
-				Add(info);
-			}
-		}
-		#endregion
-
-		#region IGorgonJoystickAxisInfoList Members
-		/// <inheritdoc/>
 		public GorgonJoystickAxisInfo this[JoystickAxis axis] => _infoList[axis];
 
-		#endregion
-
-		#region IReadOnlyList<GorgonJoystickAxisInfo> Members
 		/// <summary>
 		/// Gets the <see cref="GorgonJoystickAxisInfo"/> at the specified index in the axis list.
 		/// </summary>
@@ -99,25 +72,45 @@ namespace Gorgon.Input
 		}
 		#endregion
 
-		#region IReadOnlyCollection<GorgonJoystickAxisInfo> Members
-		/// <inheritdoc/>
-		public int Count => _axisList.Count;
+		#region Methods.
+		/// <summary>
+		/// Function to add an axis to the list.
+		/// </summary>
+		/// <param name="axis">Axis to add to the list.</param>
+		private void Add(GorgonJoystickAxisInfo axis)
+		{
+			if (_infoList.ContainsKey(axis.Axis))
+			{
+				return;
+			}
 
-		#endregion
+			_axisList.Add(axis.Axis);
+			_infoList[axis.Axis] = axis;
+		}
 
-		#region IEnumerable<GorgonJoystickAxisInfo> Members
 		/// <inheritdoc/>
 		public IEnumerator<GorgonJoystickAxisInfo> GetEnumerator()
 		{
 			return _infoList.Select(item => item.Value).GetEnumerator();
 		}
-		#endregion
 
-		#region IEnumerable Members
-		/// <inheritdoc/>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return ((IEnumerable)_infoList.Values).GetEnumerator();
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonJoystickAxisInfoList"/> class.
+		/// </summary>
+		/// <param name="infoList">The axis information list used to populate this collection.</param>
+		public GorgonJoystickAxisInfoList(IEnumerable<GorgonJoystickAxisInfo> infoList)
+		{
+			foreach (GorgonJoystickAxisInfo info in infoList)
+			{
+				Add(info);
+			}
 		}
 		#endregion
 	}

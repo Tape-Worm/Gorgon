@@ -64,19 +64,21 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\GorgonJoystickAxisInfo.cs" />
+    <Compile Include="_2\Devices\GorgonInputDeviceDefaultCoordinator.cs" />
+    <Compile Include="_2\Devices\GorgonJoystickAxis.cs" />
+    <Compile Include="_2\Devices\GorgonJoystickAxisInfo.cs" />
     <Compile Include="Devices\GorgonKeyCharMap.cs" />
     <Compile Include="Events\GorgonInputKeyboardEventArgs.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystick.cs" />
+    <Compile Include="_2\Devices\GorgonJoystick2.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceCoordinator.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceRegistrar.cs" />
     <Compile Include="_2\GorgonInputServiceFactory2.cs" />
     <Compile Include="_2\Devices\GorgonInputDevice2.cs" />
-    <Compile Include="_2\Devices\GorgonInputDeviceEventRouting.cs" />
     <Compile Include="_2\Devices\GorgonInputDeviceTypeEqualityComparer.cs" />
     <Compile Include="_2\Devices\GorgonMouse.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonDeviceRouting.cs" />
+    <Compile Include="_2\Devices\_Interfaces\IGorgonInputEventDrivenDevice.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonInputDevice.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboard.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonMouse.cs" />
+    <Compile Include="_2\GorgonJoystickData.cs" />
     <Compile Include="_2\GorgonKeyboardData.cs" />
     <Compile Include="_2\Devices\GorgonKeysEqualityComparer.cs" />
     <Compile Include="_2\GorgonInputService2.cs" />
@@ -88,9 +90,6 @@
     <Compile Include="Devices\_Interfaces\IGorgonJoystickAxisValueList.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonHumanInterfaceDeviceInfo.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxis.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxisInfoList.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickAxisList.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickInfo2.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboardInfo2.cs" />
     <Compile Include="_2\Devices\_Interfaces\IGorgonMouseInfo2.cs" />
@@ -122,13 +121,12 @@
     <Compile Include="Devices\_Interfaces\IGorgonMouseInfo.cs" />
     <Compile Include="_2\Devices\GorgonKeyboard2.cs" />
     <Compile Include="_2\GorgonMouseData.cs" />
-    <Compile Include="_2\Native\Win32Enums.cs" />
-    <Compile Include="_2\Native\Win32Types.cs" />
-    <Compile Include="_2\Native\Win32Api.cs" />
+    <Compile Include="_2\_Interfaces\IGorgonInputService.cs" />
+    <Compile Include="_2\Native\Win32 Structs\CURSORINFO.cs" />
+    <Compile Include="_2\Native\Win32 Structs\POINT.cs" />
+    <Compile Include="_2\Native\UserApi.cs" />
     <Compile Include="_2\_Events\GorgonKeyboardEventArgs.cs" />
     <Compile Include="_2\_Events\GorgonMouseEventArgs.cs" />
-    <Compile Include="_2\_Interfaces\IGorgonInputService.cs" />
-    <Compile Include="_2\_Interfaces\IGorgonInputServiceFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -145,6 +143,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

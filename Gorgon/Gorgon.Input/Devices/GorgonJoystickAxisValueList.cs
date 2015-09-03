@@ -67,7 +67,7 @@ namespace Gorgon.Input
 		}
 		#endregion
 
-		#region IGorgonJoystickAxisValueList Members
+		#region GorgonJoystick2AxisValueList Members
 		/// <inheritdoc/>
 		public int this[JoystickAxis axis]
 		{

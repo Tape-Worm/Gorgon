@@ -555,7 +555,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="fontFile">Font file reader.</param>
 		/// <param name="textureCount">The expected number of textures to load.</param>
-		private void ReadExternalTexture(IGorgonChunkFileReader fontFile, int textureCount)
+		private void ReadExternalTexture(GorgonChunkFileReader fontFile, int textureCount)
 		{
 			FileStream fileStream = GetFileStream(fontFile.Stream);
 
@@ -596,7 +596,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <param name="fontFile">Font file reader.</param>
 		/// <param name="textureCount">The expected number of textures to load.</param>
-		private void ReadInternalTexture(IGorgonChunkFileReader fontFile, int textureCount)
+		private void ReadInternalTexture(GorgonChunkFileReader fontFile, int textureCount)
 		{
 			GorgonBinaryReader reader = fontFile.OpenChunk(TextureChunk);
 
@@ -648,7 +648,7 @@ namespace Gorgon.Graphics
 		/// Function to read the kerning pairs for the font, if they exist.
 		/// </summary>
 		/// <param name="fontFile">Font file to read.</param>
-		private void ReadKernPairs(IGorgonChunkFileReader fontFile)
+		private void ReadKernPairs(GorgonChunkFileReader fontFile)
 		{
 			GorgonBinaryReader reader = fontFile.OpenChunk(KernDataChunk);
 			
@@ -668,7 +668,7 @@ namespace Gorgon.Graphics
 		/// Function to read the glyphs from the texture.
 		/// </summary>
 		/// <param name="fontFile">Font file to read.</param>
-		private void ReadGlyphs(IGorgonChunkFileReader fontFile)
+		private void ReadGlyphs(GorgonChunkFileReader fontFile)
 		{
 			// Get glyph information.
 			GorgonBinaryReader reader = fontFile.OpenChunk(GlyphDataChunk);
@@ -730,7 +730,7 @@ namespace Gorgon.Graphics
 		/// Function to read the font data in from the chunked file.
 		/// </summary>
 		/// <param name="fontFile">Reader for the chunked file.</param>
-		internal void ReadFont(IGorgonChunkFileReader fontFile)
+		internal void ReadFont(GorgonChunkFileReader fontFile)
 		{
 			// Clear out old textures.
 			ClearFont();
@@ -785,7 +785,7 @@ namespace Gorgon.Graphics
 		/// Function to write out textures to external files local to the font file.
 		/// </summary>
 		/// <param name="fontFile">The font file that is being persisted.</param>
-		private void WriteExternalTextures(IGorgonChunkFileWriter fontFile)
+		private void WriteExternalTextures(GorgonChunkFileWriter fontFile)
 		{
 			FileStream fileStream = GetFileStream(fontFile.Stream);
 
@@ -817,7 +817,7 @@ namespace Gorgon.Graphics
 		/// Function to read the glyphs from the texture.
 		/// </summary>
 		/// <param name="fontFile">Font file to read.</param>
-		private void WriteGlyphs(IGorgonChunkFileWriter fontFile)
+		private void WriteGlyphs(GorgonChunkFileWriter fontFile)
 		{
 			// Write glyph data.
 			GorgonBinaryWriter writer = fontFile.OpenChunk(GlyphDataChunk);
@@ -855,7 +855,7 @@ namespace Gorgon.Graphics
 		/// Function to write out textures as internal data in the font file.
 		/// </summary>
 		/// <param name="fontFile">The font file that is being persisted.</param>
-		private void WriteInternalTextures(IGorgonChunkFileWriter fontFile)
+		private void WriteInternalTextures(GorgonChunkFileWriter fontFile)
 		{
 			GorgonBinaryWriter writer = fontFile.OpenChunk(TextureChunk);
 
@@ -887,7 +887,7 @@ namespace Gorgon.Graphics
 		/// Function to write out the kerning pair information for the font.
 		/// </summary>
 		/// <param name="fontFile">The font file that is being persisted.</param>
-		private void WriteKerningValues(IGorgonChunkFileWriter fontFile)
+		private void WriteKerningValues(GorgonChunkFileWriter fontFile)
 		{
 			GorgonBinaryWriter writer = fontFile.OpenChunk(KernDataChunk);	
 
@@ -924,7 +924,7 @@ namespace Gorgon.Graphics
 				throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
 			}
 
-			IGorgonChunkFileWriter fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
+			GorgonChunkFileWriter fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
 
 			try
 			{

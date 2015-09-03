@@ -39,12 +39,20 @@ namespace Gorgon.Input
 		: IGorgonInputDevice
 	{
 		#region Variables.
-		// The service that owns this device object.
-		private readonly GorgonInputService2 _service;
 		// Information about the device.
 		private readonly IGorgonInputDeviceInfo2 _info;
 		// Flag to indicate that the device has been acquired.
 		private bool _isAcquired;
+		// The input device registrar.
+		private IGorgonInputDeviceRegistrar _registrar;
+		#endregion
+
+		#region Events.
+		/// <inheritdoc/>
+		public event EventHandler InputDeviceAcquired;
+
+		/// <inheritdoc/>
+		public event EventHandler InputDeviceUnacquired;
 		#endregion
 
 		#region Properties.
@@ -65,6 +73,76 @@ namespace Gorgon.Input
 		/// Property to return the debug log file used with the device object.
 		/// </summary>
 		protected IGorgonLog Log
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the service that owns this device.
+		/// </summary>
+		public GorgonInputService2 Service
+		{
+			get;
+		}
+
+		/// <inheritdoc/>
+		public Guid UUID
+		{
+			get;
+		}
+		
+		/// <inheritdoc/>
+		public Control Window
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public bool IsAcquired
+		{
+			get
+			{
+				return _isAcquired;
+			}
+			set
+			{
+				// If the state has not changed, then do nothing.
+				if (value == _isAcquired)
+				{
+					return;
+				}
+
+				// If we're not bound yet, then do nothing.
+				if ((Window == null) || (Form.ActiveForm != ParentForm) || ((ParentForm != Window) && (ParentForm.ActiveControl != Window)))
+				{
+					value = false;
+				}
+
+				_isAcquired = value;
+
+				if (value)
+				{
+					InputDeviceAcquired?.Invoke(this, EventArgs.Empty);
+				}
+				else
+				{
+					InputDeviceUnacquired?.Invoke(this, EventArgs.Empty);
+				}
+
+				OnAcquiredStateChanged();
+			}
+		}
+
+		/// <inheritdoc/>
+		public bool IsExclusive
+		{
+			get;
+			private set;
+		}
+
+		/// <inheritdoc/>
+		public abstract bool IsPolled
 		{
 			get;
 		}
@@ -147,94 +225,7 @@ namespace Gorgon.Input
 		protected virtual void OnAcquiredStateChanged()
 		{
 		}
-		#endregion
 
-		#region Constructor/Finalizer.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonInputDevice2"/> class.
-		/// </summary>
-		/// <param name="service">The service.</param>
-		/// <param name="deviceInfo">The device information.</param>
-		/// <param name="log">The debug log file to use with this device.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/>, or the <paramref name="deviceInfo"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		protected GorgonInputDevice2(IGorgonInputService service, IGorgonInputDeviceInfo2 deviceInfo, IGorgonLog log)
-		{
-			_service = service as GorgonInputService2;
-
-			if (_service == null)
-			{
-				throw new ArgumentNullException(nameof(service));
-			}
-
-			if (deviceInfo == null)
-			{
-				throw new ArgumentNullException(nameof(deviceInfo));
-			}
-
-			UUID = Guid.NewGuid();
-			_info = deviceInfo;
-			Log = log ?? new GorgonLogDummy();
-		}
-		#endregion
-
-		#region IGorgonInputDevice Members
-		/// <inheritdoc/>
-		public Guid UUID
-		{
-			get;
-		}
-
-		#region Properties.
-		/// <inheritdoc/>
-		public Control Window
-		{
-			get;
-			private set;
-		}
-
-		/// <inheritdoc/>
-		public bool IsAcquired
-		{
-			get
-			{
-				return _isAcquired;
-			}
-			set
-			{
-				// If the state has not changed, then do nothing.
-				if (value == _isAcquired)
-				{
-					return;
-				}
-
-				// If we're not bound yet, then do nothing.
-				if ((Window == null) || (Form.ActiveForm != ParentForm) || ((ParentForm != Window) && (ParentForm.ActiveControl != Window)))
-				{
-					value = false;
-				}
-
-				_service.AcquireDevice(this, value);
-				_isAcquired = value;
-
-				OnAcquiredStateChanged();
-			}
-		}
-
-		/// <inheritdoc/>
-		public bool IsExclusive
-		{
-			get;
-			private set;
-		}
-
-		/// <inheritdoc/>
-		public abstract bool IsPolled
-		{
-			get;
-		}
-		#endregion
-
-		#region Methods.
 		/// <inheritdoc/>
 		public void BindWindow(Control window, bool exclusive = false)
 		{
@@ -260,13 +251,12 @@ namespace Gorgon.Input
 			Debug.Assert(parentForm != null, "No parent form for the window!");
 
 			// Register the device with the service.
-			_service.RegisterDevice(this, _info, parentForm, window, ref exclusive);
+			IsExclusive = _registrar.RegisterDevice(this, _info, window, exclusive);
 
 			// Get this before we register. That way, our plug ins will be able to use this value 
 			// if it's required.
 			ParentForm = parentForm;
 			Window = window;
-			IsExclusive = exclusive;
 
 			// These events are used to mark the window as unacquired when the app loses focus.
 			ParentForm.Deactivate += ParentForm_Deactivate;
@@ -308,13 +298,13 @@ namespace Gorgon.Input
 					Window.EnabledChanged -= Window_EnabledChanged;
 
 					Log.Print("Unbinding input device object {1} from window 0x{0}.",
-					          LoggingLevel.Intermediate,
-					          Window.Handle.FormatHex(),
-					          GetType().Name);
+							  LoggingLevel.Intermediate,
+							  Window.Handle.FormatHex(),
+							  GetType().Name);
 				}
 
 				// Let the service know that we're done.
-				_service.UnregisterDevice(this);
+				_registrar.UnregisterDevice(this);
 			}
 			finally
 			{
@@ -323,6 +313,33 @@ namespace Gorgon.Input
 			}
 		}
 		#endregion
+
+		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonInputDevice2"/> class.
+		/// </summary>
+		/// <param name="service">The service.</param>
+		/// <param name="deviceInfo">The device information.</param>
+		/// <param name="log">The debug log file to use with this device.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/>, or the <paramref name="deviceInfo"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		protected GorgonInputDevice2(GorgonInputService2 service, IGorgonInputDeviceInfo2 deviceInfo, IGorgonLog log)
+		{
+			if (service == null)
+			{
+				throw new ArgumentNullException(nameof(service));
+			}
+
+			if (deviceInfo == null)
+			{
+				throw new ArgumentNullException(nameof(deviceInfo));
+			}
+
+			_registrar = service.Registrar;
+			Service = service;
+			UUID = Guid.NewGuid();
+			_info = deviceInfo;
+			Log = log ?? new GorgonLogDummy();
+		}
 		#endregion
 	}
 }

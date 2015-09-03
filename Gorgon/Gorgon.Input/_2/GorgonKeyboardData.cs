@@ -54,7 +54,7 @@ namespace Gorgon.Input
 	}
 
 	/// <summary>
-	/// Data received from the device layer and transformed into a common data set so that the <see cref="IGorgonInputService"/> can decipher it.
+	/// Data received from the device layer and transformed into a common data set so that the <see cref="GorgonInputService2"/> can decipher it.
 	/// </summary>
 	public struct GorgonKeyboardData
 	{

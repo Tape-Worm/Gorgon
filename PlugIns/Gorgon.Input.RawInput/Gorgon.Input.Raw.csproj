@@ -66,6 +66,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Devices\RawInputDeviceCoordinator.cs" />
+    <Compile Include="Devices\RawInputDeviceRegistrar.cs" />
     <Compile Include="Devices\RawInputJoystickInfo.cs" />
     <Compile Include="GorgonRawPlugIn.cs" />
     <Compile Include="Info\MultimediaJoystickInfo.cs" />
@@ -88,7 +90,7 @@
     <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_HID.cs" />
     <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_KEYBOARD.cs" />
     <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_MOUSE.cs" />
-    <Compile Include="Native\Win32KeyboardApi.cs" />
+    <Compile Include="Native\UserApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\WMMJoystick.cs" />
     <Compile Include="Native\Olde\Win32API.cs" />

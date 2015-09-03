@@ -83,11 +83,11 @@ namespace Gorgon.Examples
 		{
 			// Set up the assembly cache.
 			// We'll need the assemblies loaded into this object in order to load our plugin types.
-			IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
+			GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log);
 
 			// Create our plugin service.
 			// This takes the cache of assemblies that we just loaded.
-			IGorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
+			GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
 
 			try
 			{
@@ -192,7 +192,6 @@ namespace Gorgon.Examples
 			{
 				// Always call dispose so we can unload our temporary application domain.
 				pluginAssemblies.Dispose();
-				GorgonApplication.Log.Close();
 			}
 		}
 		#endregion

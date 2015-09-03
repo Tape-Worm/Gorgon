@@ -480,7 +480,7 @@ namespace Gorgon.Renderers
 				}
 			}
 
-			IGorgonChunkFileReader spriteFile = new GorgonChunkFileReader(stream,
+			GorgonChunkFileReader spriteFile = new GorgonChunkFileReader(stream,
 			                                                              new[]
 			                                                              {
 				                                                              FileHeader.ChunkID()
@@ -576,7 +576,7 @@ namespace Gorgon.Renderers
 				throw new IOException(Resources.GOR2D_STREAM_READ_ONLY);
 			}
 
-			IGorgonChunkFileWriter spriteFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
+			GorgonChunkFileWriter spriteFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
 
 			try
 			{

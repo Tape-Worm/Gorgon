@@ -34,14 +34,14 @@ namespace Gorgon.Input
 	/// Plugin interface for an input device factory plugin.
 	/// </summary>
 	/// <remarks>
-	/// This plugin will create a single instance of a <see cref="IGorgonInputService"/>.
+	/// This plugin will create a single instance of a <see cref="GorgonInputService2"/>.
 	/// </remarks>
 	public abstract class GorgonInputServicePlugin
 		: GorgonPlugin
 	{
 		#region Variables.
 		// The lazily created input service.
-		private readonly Lazy<IGorgonInputService> _inputService2;
+		private readonly Lazy<GorgonInputService2> _inputService2;
 		#endregion
 
 		#region Properties.
@@ -80,13 +80,12 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Methods.
-
 		/// <summary>
 		/// Function to create and return a <see cref="GorgonInputService"/>.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
 		[Obsolete("This is not used anymore.  Get rid of it when refactor is complete.")]
-		protected virtual GorgonInputService OnCreateInputService()
+		protected GorgonInputService OnCreateInputService()
 		{
 			throw new Exception("This is deprecated.  Please remove it.");
 		}
@@ -106,13 +105,13 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="log">The logging interface to use for debug logging.</param>
 		/// <returns>The interface for the input factory.</returns>
-		protected abstract IGorgonInputService OnCreateInputService2(IGorgonLog log);
+		protected abstract GorgonInputService2 OnCreateInputService2(IGorgonLog log);
 
 		/// <summary>
 		/// Function to create and return an input service.
 		/// </summary>
 		/// <returns>The interface for the input factory.</returns>
-		internal IGorgonInputService CreateInputService2()
+		internal GorgonInputService2 CreateInputService2()
 		{
 			return _inputService2.Value;
 		}
@@ -127,7 +126,7 @@ namespace Gorgon.Input
 			: base(description)
 		{
 			Log = new GorgonLogDummy();
-			_inputService2 = new Lazy<IGorgonInputService>(() => OnCreateInputService2(Log));
+			_inputService2 = new Lazy<GorgonInputService2>(() => OnCreateInputService2(Log));
 		}
 		#endregion		
 	}

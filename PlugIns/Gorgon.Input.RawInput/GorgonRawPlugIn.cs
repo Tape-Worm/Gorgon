@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Raw;
 using Gorgon.Input.Raw.Properties;
@@ -56,19 +58,15 @@ namespace Gorgon.Input
 
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
+		protected override GorgonInputService2 OnCreateInputService2(IGorgonLog log)
 		{
-			return new GorgonRawInputService(log);
-		}
+			// The raw input processor for device data.
+			var rawInputProcessors = new Dictionary<Control, RawInputProcessor>();
 
-		/// <summary>
-		/// Function to create and return a <see cref="GorgonInputService" />.
-		/// </summary>
-		/// <returns>The interface for the input factory.</returns>
-		[Obsolete("This is no longer used.  Please remove it when refactor is complete.")]
-		protected override GorgonInputService OnCreateInputService()
-		{
-			return null;
+			var coordinator = new RawInputDeviceCoordinator();
+			var registrar = new RawInputDeviceRegistrar(log, coordinator, rawInputProcessors);
+
+			return new GorgonRawInputService(log, registrar, coordinator);
 		}
 		#endregion
 

@@ -1624,7 +1624,7 @@ namespace Gorgon.Renderers
                 throw new IOException(Resources.GOR2D_STREAM_READ_ONLY);
 			}
 
-			IGorgonChunkFileWriter polyFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
+			GorgonChunkFileWriter polyFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
 
 			try
 			{
@@ -1711,7 +1711,7 @@ namespace Gorgon.Renderers
 				throw new IOException(Resources.GOR2D_STREAM_WRITE_ONLY);
 			}
 
-			IGorgonChunkFileReader polyFile = new GorgonChunkFileReader(stream,
+			GorgonChunkFileReader polyFile = new GorgonChunkFileReader(stream,
 			                                                            new[]
 			                                                            {
 				                                                            FileHeader.ChunkID()

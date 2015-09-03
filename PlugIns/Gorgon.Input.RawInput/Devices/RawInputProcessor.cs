@@ -36,8 +36,8 @@ namespace Gorgon.Input.Raw
 	class RawInputProcessor
 	{
 		#region Variables.
-		// Router used to send the event data to the appropriate devices.
-		private readonly GorgonInputDeviceEventRouting _router;
+		// The device data coordinator.
+		private readonly RawInputDeviceCoordinator _coordinator;
 		#endregion
 
 		#region Methods.
@@ -45,8 +45,24 @@ namespace Gorgon.Input.Raw
 		/// Function to process a raw input message and forward it to the correct device.
 		/// </summary>
 		/// <param name="device">Device to the forward the event data on to.</param>
+		/// <param name="hidData">HID data.</param>
+		public void ProcessRawInputMessage(GorgonJoystick2 device, ref RAWINPUTHID hidData)
+		{
+			// Unlike the other device types, this one is polled.  So we capture any data from the 
+			// device and store it a look up for retrieval when the user is ready instead of forwarding it 
+			// on to the device.
+
+			var data = new GorgonJoystickData();
+
+			_coordinator.SetJoystickState(device, ref data);
+		}
+
+		/// <summary>
+		/// Function to process a raw input message and forward it to the correct device.
+		/// </summary>
+		/// <param name="device">Device to the forward the event data on to.</param>
 		/// <param name="mouseData">The raw input mouse data.</param>
-		public void ProcessRawInputMessage(IGorgonInputDevice device, ref RAWINPUTMOUSE mouseData)
+		public void ProcessRawInputMessage(IGorgonInputEventDrivenDevice<GorgonMouseData> device, ref RAWINPUTMOUSE mouseData)
 		{
 			short wheelDelta = 0;
 			MouseButtonState state = MouseButtonState.None;
@@ -114,7 +130,7 @@ namespace Gorgon.Input.Raw
 									IsRelative = ((mouseData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute)
 			                    };
 
-			_router.RouteToDevice(device, ref processedData);
+			_coordinator.DispatchEvent(device, ref processedData);
 		}
 
 		/// <summary>
@@ -122,7 +138,7 @@ namespace Gorgon.Input.Raw
 		/// </summary>
 		/// <param name="device">Device to forward the event data on to.</param>
 		/// <param name="keyboardData">The raw input keyboard data.</param>
-		public void ProcessRawInputMessage(IGorgonInputDevice device, ref RAWINPUTKEYBOARD keyboardData)
+		public void ProcessRawInputMessage(IGorgonInputEventDrivenDevice<GorgonKeyboardData> device, ref RAWINPUTKEYBOARD keyboardData)
 		{
 			KeyboardDataFlags flags = KeyboardDataFlags.KeyDown;
 
@@ -154,7 +170,7 @@ namespace Gorgon.Input.Raw
 				                    Flags = flags
 			                    };
 
-			_router.RouteToDevice(device, ref processedData);
+			_coordinator.DispatchEvent(device, ref processedData);
 		}
 		#endregion
 
@@ -162,10 +178,10 @@ namespace Gorgon.Input.Raw
 		/// <summary>
 		/// Initializes a new instance of the <see cref="RawInputProcessor"/> class.
 		/// </summary>
-		/// <param name="router">The router for the event data.</param>
-		public RawInputProcessor(GorgonInputDeviceEventRouting router)
+		/// <param name="coordinator">The coordinator used to route data to the appropriate device objects.</param>
+		public RawInputProcessor(RawInputDeviceCoordinator coordinator)
 		{
-			_router = router;
+			_coordinator = coordinator;
 		}
 		#endregion
 	}

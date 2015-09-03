@@ -1017,11 +1017,11 @@ namespace Gorgon.Native
 #endif
 
 				// If the buffer is larger than what we can accommodate, then we'll fill it in chunks.
-				if (Size > Int32.MaxValue)
+				if (Size > int.MaxValue)
 				{
 					byte* ptr = _pointer;
 					long size = Size;
-					int fillAmount = Int32.MaxValue;
+					int fillAmount = int.MaxValue;
 
 					while (size > 0)
 					{
@@ -1030,9 +1030,9 @@ namespace Gorgon.Native
 						size -= fillAmount;
 						ptr += fillAmount;
 
-						if (size < Int32.MaxValue)
+						if (size < int.MaxValue)
 						{
-							fillAmount = (int)(Int32.MaxValue - size);
+							fillAmount = (int)(int.MaxValue - size);
 						}
 					}
 
@@ -1088,11 +1088,11 @@ namespace Gorgon.Native
 #endif
 
 				// If the buffer is larger than what we can accommodate, then we'll fill it in chunks.
-				if (Size > Int32.MaxValue)
+				if (Size > int.MaxValue)
 				{
 					byte* ptr = _pointer;
 					long size = Size;
-					int fillAmount = Int32.MaxValue;
+					int fillAmount = int.MaxValue;
 
 					while (size > 0)
 					{
@@ -1101,9 +1101,9 @@ namespace Gorgon.Native
 						size -= fillAmount;
 						ptr += fillAmount;
 
-						if (size < Int32.MaxValue)
+						if (size < int.MaxValue)
 						{
-							fillAmount = (int)(Int32.MaxValue - size);
+							fillAmount = (int)(int.MaxValue - size);
 						}
 					}
 

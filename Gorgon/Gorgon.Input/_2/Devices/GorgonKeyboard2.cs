@@ -34,10 +34,25 @@ using Gorgon.Native;
 namespace Gorgon.Input
 {
 	/// <summary>
+	/// Key states.
+	/// </summary>
+	public enum KeyState
+	{
+		/// <summary>
+		/// Key is not pressed.
+		/// </summary>
+		Up = 0,
+		/// <summary>
+		/// Key is pressed.
+		/// </summary>
+		Down = 1
+	}
+
+	/// <summary>
 	/// The base class used to create keyboard interfaces.
 	/// </summary>
 	public sealed class GorgonKeyboard2
-		: GorgonInputDevice2, IGorgonKeyboard, IGorgonDeviceRouting<GorgonKeyboardData>
+		: GorgonInputDevice2, IGorgonInputEventDrivenDevice<GorgonKeyboardData>
 	{
 		#region Classes.
 		/// <summary>
@@ -225,6 +240,18 @@ namespace Gorgon.Input
         }
 		#endregion
 
+		#region Events.
+		/// <summary>
+		/// Event fired when a key is pressed on the keyboard.
+		/// </summary>
+		public event EventHandler<GorgonKeyboardEventArgs> KeyDown;
+
+		/// <summary>
+		/// Event fired when a key is released on the keyboard.
+		/// </summary>
+		public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
+		#endregion
+
 		#region Variables.
 		// The character buffer to hold the characters represented by a key press.
 		private static readonly char[] _characterBuffer = new char[1];
@@ -233,6 +260,18 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Properties.
+		/// <inheritdoc/>
+		public override bool IsPolled => false;
+
+		/// <summary>
+		/// Property to return information about this keyboard.
+		/// </summary>
+
+		public IGorgonKeyboardInfo2 Info
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the key states.
 		/// </summary>
@@ -321,48 +360,28 @@ namespace Gorgon.Input
 		{
 			KeyStates.Reset();
 		}
-		#endregion
 
-		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonKeyboard"/> class.
+		/// Function to convert a keyboard key into a character (if applicable).
 		/// </summary>
-		/// <param name="service">The input service that this device is registered with.</param>
-		/// <param name="keyboardInfo">Information about which keyboard to use.</param>
-		/// <param name="log">[Optional] The logging interface used for debug logging.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-		public GorgonKeyboard2(IGorgonInputService service, IGorgonKeyboardInfo2 keyboardInfo, IGorgonLog log = null)
-			: base(service, keyboardInfo, log)
-		{
-			Info = keyboardInfo;
-            KeyStates = new KeyStateCollection();
-		}
-		#endregion
-
-		#region IGorgonKeyboard Members.
-		#region Events.
-		/// <inheritdoc/>
-		public event EventHandler<GorgonKeyboardEventArgs> KeyDown;
-
-		/// <inheritdoc/>
-		public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
-		#endregion
-
-		#region Properties.
-		/// <inheritdoc/>
-		public override bool IsPolled => false;
-
-		/// <inheritdoc/>
-		public IGorgonKeyboardInfo2 Info
-		{
-			get;
-		}
-		#endregion
-
-		#region Methods.
-		/// <inheritdoc/>
+		/// <param name="key">The key to convert into a character.</param>
+		/// <param name="modifier">The modifier for that key.</param>
+		/// <returns>The character representation for the key. If no representation is available, an empty string is returned.</returns>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// Use this to retrieve the character associated with a keyboard key. For example, if <see cref="Keys.A"/> is pressed, then 'a' will be returned. A <paramref name="modifier"/> can be 
+		/// passed with the <see cref="Keys.ShiftKey"/> to return 'A'. 
+		/// </para>
+		/// <para>
+		/// This method also supports the AltGr key which is represented by a combination of the <see cref="Keys.ControlKey"/> | <see cref="Keys.Menu"/> keys.
+		/// </para>
+		/// <para>
+		/// This method only returns characters for the currently active keyboard layout (i.e. the system keyboard layout). If this keyboard interface represents another keyboard attached to the computer 
+		/// then it will default to using the system keyboard to retrieve the character.
+		/// </para>
+		/// <para>
+		/// This method is not thread safe. Invalid data will be returned if multiple thread access this method.
+		/// </para>
 		/// <para>
 		/// This method was derived from the answer at <a href="http://stackoverflow.com/questions/6929275/how-to-convert-a-virtual-key-code-to-a-character-according-to-the-current-keyboa"/>.
 		/// </para>
@@ -395,7 +414,7 @@ namespace Gorgon.Input
 				_charStates[menuKey] = 0;
 			}
 
-			int result = Win32Api.ToUnicode((uint)key, 0, _charStates, _characterBuffer, _characterBuffer.Length, 0);
+			int result = UserApi.ToUnicode((uint)key, 0, _charStates, _characterBuffer, _characterBuffer.Length, 0);
 
 			switch (result)
 			{
@@ -403,20 +422,40 @@ namespace Gorgon.Input
 				case 0:
 					return string.Empty;
 				case 1:
-					return new string(_characterBuffer, 0,1);
+					return new string(_characterBuffer, 0, 1);
 				default:
 					return string.Empty;
 			}
 		}
 		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonKeyboard"/> class.
+		/// </summary>
+		/// <param name="service">The input service that this device is registered with.</param>
+		/// <param name="keyboardInfo">Information about which keyboard to use.</param>
+		/// <param name="log">[Optional] The logging interface used for debug logging.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
+		public GorgonKeyboard2(GorgonInputService2 service, IGorgonKeyboardInfo2 keyboardInfo, IGorgonLog log = null)
+			: base(service, keyboardInfo, log)
+		{
+			Info = keyboardInfo;
+            KeyStates = new KeyStateCollection();
+		}
+		#endregion
+
+		#region GorgonKeyboard2 Members.
+		#region Methods.
+		#endregion
 		#endregion
 
 		#region IGorgonDeviceRouting<GorgonKeyboardData> Members
 		/// <inheritdoc/>
-		InputDeviceType IGorgonDeviceRouting<GorgonKeyboardData>.DeviceType => InputDeviceType.Keyboard;
+		InputDeviceType IGorgonInputEventDrivenDevice<GorgonKeyboardData>.DeviceType => InputDeviceType.Keyboard;
 
 		/// <inheritdoc/>
-		bool IGorgonDeviceRouting<GorgonKeyboardData>.ParseData(ref GorgonKeyboardData data)
+		bool IGorgonInputEventDrivenDevice<GorgonKeyboardData>.ParseData(ref GorgonKeyboardData data)
 		{
 			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
 			{

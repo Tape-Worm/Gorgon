@@ -438,6 +438,25 @@ namespace Gorgon.Input
 	#endregion
 
 	/// <summary>
+	/// Actions to take when resetting the key state reset modes for the keyboard device after its bound control loses focus.
+	/// </summary>
+	public enum KeyStateResetMode
+	{
+		/// <summary>
+		/// Don't reset after losing focus.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Reset only the modifier (Ctrl, Alt and Shift) keys after losing focus.
+		/// </summary>
+		ResetModifiers = 1,
+		/// <summary>
+		/// Reset all keys after losing focus.
+		/// </summary>
+		ResetAll = 2
+	}
+
+	/// <summary>
 	/// The base class used to create keyboard interfaces.
 	/// </summary>
 	public abstract class GorgonKeyboard

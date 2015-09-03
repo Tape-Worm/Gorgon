@@ -37,11 +37,55 @@ using Gorgon.Timing;
 namespace Gorgon.Input
 {
 	/// <summary>
+	/// Enumeration for mouse buttons.
+	/// </summary>
+	[Flags]
+	public enum MouseButtons
+	{
+		/// <summary>
+		/// No pointing device button pressed.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Left pointing device button pressed.
+		/// </summary>
+		Left = 1,
+		/// <summary>
+		/// Right pointing device button pressed.
+		/// </summary>
+		Right = 2,
+		/// <summary>
+		/// Middle pointing device button pressed.
+		/// </summary>
+		Middle = 4,
+		/// <summary>
+		/// Left pointing device button pressed (same as <see cref="Left"/>).
+		/// </summary>
+		Button1 = 1,
+		/// <summary>
+		/// Right pointing device button pressed (same as <see cref="Right"/>).
+		/// </summary>
+		Button2 = 2,
+		/// <summary>
+		/// Middle pointing device button pressed (same as <see cref="Middle"/>).
+		/// </summary>
+		Button3 = 4,
+		/// <summary>
+		/// Fourth pointing device button pressed.
+		/// </summary>
+		Button4 = 8,
+		/// <summary>
+		/// Fifth pointing device button pressed.
+		/// </summary>
+		Button5 = 16
+	}
+
+	/// <summary>
 	/// A mouse interface.
 	/// </summary>
 	/// <remarks>A mouse can be any type of pointing device.  For instance a trackball will be considered a mouse by Gorgon.</remarks>
 	public sealed class GorgonMouse
-		: GorgonInputDevice2, IGorgonMouse, IGorgonDeviceRouting<GorgonMouseData>
+		: GorgonInputDevice2, IGorgonInputEventDrivenDevice<GorgonMouseData>
 	{
 		#region Variables.
 		// Is the pointing device cursor visible?
@@ -81,27 +125,39 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Events.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when the mouse is moved over the client area of the <see cref="IGorgonInputDevice.Window"/>.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseMove;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse button is held down on the client area of the <see cref="IGorgonInputDevice.Window"/>.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseButtonDown;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse button is released from the client area of the <see cref="IGorgonInputDevice.Window"/>.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseButtonUp;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse wheel (if present) is moved while the mouse is within the client area of the <see cref="IGorgonInputDevice.Window"/>.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseWheelMove;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a double click is performed on a mouse button.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
 		#endregion
 
 		#region Properties.
 		/// <inheritdoc/>
 		public override bool IsPolled => false;
-		
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Property to set or return the delay between button clicks, in milliseconds, for a double click event.
+		/// </summary>
 		public int DoubleClickDelay
 		{
 			get
@@ -119,7 +175,12 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return whether the windows cursor is visible or not.
+		/// </summary>
+		/// <remarks>
+		/// This will change the visibility for the windows cursor for all mouse device objects.
+		/// </remarks>
 		public bool CursorVisible
 		{
 			get
@@ -141,7 +202,18 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the <see cref="Rectangle"/> used to constrain the mouse <see cref="Position"/>.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will constrain the value of the <see cref="Position"/> within the specified <see cref="Rectangle"/>. This means that a cursor positioned at 320x200 with a region located at 330x210 with a width 
+		/// and height of 160x160 will make the <see cref="Position"/> property return 330x210. If the cursor was positioned at 500x400, the <see cref="Position"/> property would return 480x360.
+		/// </para>
+		/// <para>
+		/// Passing <see cref="Rectangle.Empty"/> to this property will remove the constraint on the position.
+		/// </para>
+		/// </remarks>
 		public Rectangle PositionConstraint
 		{
 			get
@@ -155,7 +227,18 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="WheelPosition"/>.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If a mouse wheel exists on the device, this will constrain the value of the <see cref="WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+		/// 160, with a constraint of 180-190 will make the <see cref="WheelPosition"/> property return 180.
+		/// </para>
+		/// <para>
+		/// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+		/// </para>
+		/// </remarks>
 		public GorgonRange WheelConstraint
 		{
 			get
@@ -169,7 +252,19 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the <see cref="Size"/> of the area, in pixels, surrounding the cursor that represents a valid double click area.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this value is set, and a mouse button is double clicked, this value is checked to see if the mouse <see cref="Position"/> falls within -<c>value.</c><see cref="Size.Width"/> to <c>value.</c><see cref="Size.Width"/>, 
+		/// and -<c>value.</c><see cref="Size.Height"/> to <c>value.</c><see cref="Size.Height"/> on the second click. If the <see cref="Position"/> is within this area, then the double click event will be triggered. Otherwise, it will 
+		/// not.
+		/// </para>
+		/// <para>
+		/// Passing <see cref="Size.Empty"/> to this property will disable double clicking.
+		/// </para>
+		/// </remarks>
 		public Size DoubleClickSize
 		{
 			get
@@ -182,7 +277,18 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the position of the mouse.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If the device has its <see cref="IGorgonInputDevice.IsExclusive"/> property set to <b>false</b>, then this method will move the mouse cursor to the specified position (relative to the client 
+		/// area of the <see cref="IGorgonInputDevice.Window"/>). 
+		/// </para>
+		/// <para>
+		/// The value returned by this property is affected by the <see cref="PositionConstraint"/> value.
+		/// </para>
+		/// </remarks>
 		public Point Position
 		{
 			get
@@ -205,7 +311,12 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the pointing device wheel position.
+		/// </summary>
+		/// <remarks>
+		/// The value returned by this property is affected by the <see cref="WheelConstraint"/> value.
+		/// </remarks>
 		public int WheelPosition
 		{
 			get
@@ -219,31 +330,298 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the pointing device button(s) that are currently down.
+		/// </summary>
 		public MouseButtons Buttons
 		{
 			get;
 			set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return information about this mouse.
+		/// </summary>
 		public IGorgonMouseInfo2 Info
 		{
 			get;
 		}
 
 		/// <inheritdoc/>
-		InputDeviceType IGorgonDeviceRouting<GorgonMouseData>.DeviceType => InputDeviceType.Mouse;
+		InputDeviceType IGorgonInputEventDrivenDevice<GorgonMouseData>.DeviceType => InputDeviceType.Mouse;
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to initiate a double click.
+		/// </summary>
+		/// <param name="button">The button that was clicked.</param>
+		private void BeginDoubleClick(MouseButtons button)
+		{
+			if ((_doubleClickButton != MouseButtons.None) && (button != _doubleClickButton))
+			{
+				_doubleClickTimer.Reset();
+				_clickCount = 0;
+				return;
+			}
+
+			if (_clickCount > 0)
+			{
+				return;
+			}
+
+			_doubleClickTimer.Reset();
+			_doubleClickPosition = Position;
+			_doubleClickButton = button;
+		}
+
+
+		/// <summary>
+		/// Function to handle mouse down button events.
+		/// </summary>
+		/// <param name="buttonState">Button state to evaluate.</param>
+		/// <returns>The current button that was held down.</returns>
+		private MouseButtons HandleButtonDownEvents(MouseButtonState buttonState)
+		{
+			MouseButtons button = MouseButtons.None;
+
+			if (_doubleClickTimer.Milliseconds > DoubleClickDelay)
+			{
+				_doubleClickTimer.Reset();
+				_clickCount = 0;
+			}
+
+			if ((buttonState & MouseButtonState.ButtonLeftDown) == MouseButtonState.ButtonLeftDown)
+			{
+				button = MouseButtons.Left;
+				BeginDoubleClick(button);
+			}
+
+			if ((buttonState & MouseButtonState.ButtonRightDown) == MouseButtonState.ButtonRightDown)
+			{
+				button = MouseButtons.Right;
+				BeginDoubleClick(button);
+			}
+
+			if ((buttonState & MouseButtonState.ButtonMiddleDown) == MouseButtonState.ButtonMiddleDown)
+			{
+				button = MouseButtons.Middle;
+				BeginDoubleClick(button);
+			}
+
+			if ((buttonState & MouseButtonState.Button4Down) == MouseButtonState.Button4Down)
+			{
+				button = MouseButtons.Button4;
+				BeginDoubleClick(button);
+			}
+
+			if ((buttonState & MouseButtonState.Button5Down) == MouseButtonState.Button5Down)
+			{
+				button = MouseButtons.Button5;
+				BeginDoubleClick(button);
+			}
+
+			Buttons |= button;
+
+			return button;
+		}
+
+		/// <summary>
+		/// Function to handle mouse up button events.
+		/// </summary>
+		/// <param name="buttonState">Button state to evaluate.</param>
+		/// <returns>The current button that was released.</returns>
+		private MouseButtons HandleButtonUpEvents(MouseButtonState buttonState)
+		{
+			MouseButtons button = MouseButtons.None;
+
+			if ((buttonState & MouseButtonState.ButtonLeftUp) == MouseButtonState.ButtonLeftUp)
+			{
+				button = MouseButtons.Left;
+			}
+
+			if ((buttonState & MouseButtonState.ButtonRightUp) == MouseButtonState.ButtonRightUp)
+			{
+				button = MouseButtons.Right;
+			}
+
+			if ((buttonState & MouseButtonState.ButtonMiddleUp) == MouseButtonState.ButtonMiddleUp)
+			{
+				button = MouseButtons.Middle;
+			}
+
+			if ((buttonState & MouseButtonState.Button4Up) == MouseButtonState.Button4Up)
+			{
+				button = MouseButtons.Button4;
+			}
+
+			if ((buttonState & MouseButtonState.Button5Up) == MouseButtonState.Button5Up)
+			{
+				button = MouseButtons.Button5;
+			}
+
+			// If no button was released, then exit.
+			if (button == MouseButtons.None)
+			{
+				return button;
+			}
+
+			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - DoubleClickSize.Width / 2,
+													  _doubleClickPosition.Y - DoubleClickSize.Height / 2,
+													  DoubleClickSize.Width,
+													  DoubleClickSize.Height);
+
+			if ((!doubleClickArea.Contains(Position)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
+			{
+				_doubleClickTimer.Reset();
+				_clickCount = 0;
+			}
+			else
+			{
+				++_clickCount;
+			}
+
+			Buttons &= ~button;
+
+			return button;
+		}
+
+		/// <summary>
+		/// Function to handle a mouse movement event.
+		/// </summary>
+		/// <param name="mouseWheelDelta">The delta indicating the direction and amount that the mouse wheel moved by.</param>
+		private void HandleMouseWheelMove(short mouseWheelDelta)
+		{
+			if (mouseWheelDelta == 0)
+			{
+				return;
+			}
+
+			_wheelDelta += mouseWheelDelta;
+			WheelPosition += mouseWheelDelta;
+		}
+
+		/// <summary>
+		/// Function to handle the mouse movement event.
+		/// </summary>
+		/// <param name="x">The last relative horizontal position for the mouse.</param>
+		/// <param name="y">The last relative vertical position for the mouse.</param>
+		/// <param name="relative"><b>true</b> if the mouse movement is relative, <b>false</b> if absolute.</param>
+		/// <returns><b>true</b> if the mouse moved, <b>false</b> if not.</returns>
+		private bool HandleMouseMove(int x, int y, bool relative)
+		{
+			Point newPosition;
+
+			if (relative)
+			{
+				_relativePosition = new Point(_relativePosition.X + x, _relativePosition.Y + y);
+				newPosition = new Point(_position.X + x, _position.Y + y);
+			}
+			else
+			{
+				newPosition = new Point(x, y);
+				_relativePosition = new Point(_relativePosition.X + (newPosition.X - _position.X), _relativePosition.Y + (newPosition.Y - _position.Y));
+			}
+
+			ConstrainPositionData(ref newPosition);
+
+			if ((newPosition.X == _position.X) && (newPosition.Y == _position.Y))
+			{
+				return false;
+			}
+
+			Position = newPosition;
+
+			return true;
+		}
+
+		/// <inheritdoc/>
+		bool IGorgonInputEventDrivenDevice<GorgonMouseData>.ParseData(ref GorgonMouseData data)
+		{
+			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
+			{
+				return false;
+			}
+
+			// If the mouse cursor was outside of the window, and the mouse is not exclusive, then 
+			// flag it as outside. Once it returns to the window, reset the position to match the
+			// current cursor position so we don't get weirdness. This only applies to plug ins that 
+			// can monitor the mouse position outside of the client area of the window (e.g. raw input).
+			if (!IsExclusive)
+			{
+				Point clientPosition = Window.PointToClient(Cursor.Position);
+
+				if (!Window.ClientRectangle.Contains(clientPosition))
+				{
+					_wasOutside = true;
+					return true;
+				}
+
+				// If we were previously outside of the window, reposition at the point of entry.
+				if (_wasOutside)
+				{
+					Position = clientPosition;
+					_wasOutside = false;
+				}
+			}
+
+			// Gather the event information.
+			MouseButtons downButtons = Buttons;
+			MouseButtons upButtons = MouseButtons.None;
+
+			bool wasMoved = HandleMouseMove(data.Position.X, data.Position.Y, data.IsRelative);
+
+			if ((Info.HasMouseWheel) && (data.MouseWheelDelta != 0))
+			{
+				HandleMouseWheelMove(data.MouseWheelDelta);
+			}
+
+			// If there's a button event, then process it.
+			if (data.ButtonState != MouseButtonState.None)
+			{
+				downButtons = HandleButtonDownEvents(data.ButtonState);
+				upButtons = HandleButtonUpEvents(data.ButtonState);
+			}
+
+			// Trigger button events.
+			if (downButtons != MouseButtons.None)
+			{
+				MouseButtonDown?.Invoke(this, new GorgonMouseEventArgs(downButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount));
+			}
+
+			if (upButtons != MouseButtons.None)
+			{
+				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount);
+
+				MouseButtonUp?.Invoke(this, e);
+
+				if ((_clickCount > 0) && ((_clickCount % 2) == 0))
+				{
+					MouseDoubleClicked?.Invoke(this, e);
+				}
+			}
+
+			// Trigger move events.
+			if (data.MouseWheelDelta != 0)
+			{
+				MouseWheelMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
+			}
+
+			if (wasMoved)
+			{
+				MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
+			}
+
+			return true;
+		}
+
 		/// <summary>
 		/// Function to show the mouse cursor or hide it.
 		/// </summary>
 		/// <param name="show"><b>true</b> to show the mouse cursor, <b>false</b> to hide it.</param>
 		private static void ShowMouseCursor(bool show)
 		{
-			CursorInfoFlags isVisible = Win32Api.IsCursorVisible();
+			CursorInfoFlags isVisible = UserApi.IsCursorVisible();
 
 			// If the cursor is suppressed, then we're using a touch interface.
 			// So we'll not acknowledge requests to show the cursor in that case.
@@ -256,13 +634,13 @@ namespace Gorgon.Input
 
 			if (show)
 			{
-				while (Win32Api.ShowCursor(true) < 0)
+				while (UserApi.ShowCursor(true) < 0)
 				{
 				}
 				return;
 			}
 
-			while (Win32Api.ShowCursor(false) > -1)
+			while (UserApi.ShowCursor(false) > -1)
 			{
 			}
 		}
@@ -416,7 +794,19 @@ namespace Gorgon.Input
 			ShowMouseCursor(false);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function that will hide the cursor and rewind the cursor visibility stack.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will reset the cursor visibility to an initial state. This initial state is visible when the <see cref="IGorgonInputDevice.IsExclusive"/> property is <b>false</b>, or invisible when the 
+		/// property is returns <b>true</b>.
+		/// </para>
+		/// <para>
+		/// Because the <see cref="Cursor.Show"/> method does not return any value to indicate how deep the cursor stack might be, this can lead to problems when hiding the cursor (i.e. it won't be hidden). 
+		/// This method will ensure that the cursor stack is reset to the proper stack level and will show/hide properly.
+		/// </para>
+		/// </remarks>
 		public void ResetCursor()
 		{
 			// Turn off the cursor.
@@ -434,7 +824,15 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to retrieve the relative position of the mouse.
+		/// </summary>
+		/// <param name="peek">[Optional] <b>true</b> to read the value without resetting it, <b>false</b> to reset the value after reading.</param>
+		/// <returns>A <see cref="Point"/> containing the relative movement of the mouse since the last call of this method.</returns>
+		/// <remarks>
+		/// This will return the relative position of the mouse since the last time this method was called. When this method is called, and the <paramref name="peek"/> parameter is <b>false</b>, then it will 
+		/// reset the relative position to 0, 0 and accumulate until this method is called again.
+		/// </remarks>
 		public Point GetRelativePosition(bool peek = false)
 		{
 			Point result = _relativePosition;
@@ -447,7 +845,15 @@ namespace Gorgon.Input
 			return result;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to retrieve the relative position of the mouse wheel.
+		/// </summary>
+		/// <param name="peek">[Optional] <b>true</b> to read the value without resetting it, <b>false</b> to reset the value after reading.</param>
+		/// <returns>An <see cref="int"/> containing the relative movement of the mouse wheel since the last call of this method.</returns>
+		/// <remarks>
+		/// This will return the relative position of the mouse wheel, if one is present, since the last time this method was called. When this method is called, and the <paramref name="peek"/> parameter is 
+		/// <b>false</b>, then it will reset the relative position to 0 and accumulate until this method is called again.
+		/// </remarks>
 		public int GetRelativeWheelPosition(bool peek = false)
 		{
 			int result = _wheelDelta;
@@ -459,269 +865,6 @@ namespace Gorgon.Input
 
 			return result;
 		}
-
-		/// <summary>
-		/// Function to initiate a double click.
-		/// </summary>
-		/// <param name="button">The button that was clicked.</param>
-		private void BeginDoubleClick(MouseButtons button)
-		{
-			if ((_doubleClickButton != MouseButtons.None) && (button != _doubleClickButton))
-			{
-				_doubleClickTimer.Reset();
-				_clickCount = 0;
-				return;
-			}
-
-			if (_clickCount > 0)
-			{
-				return;
-			}
-			
-			_doubleClickTimer.Reset();
-			_doubleClickPosition = Position;
-			_doubleClickButton = button;
-		}
-
-
-		/// <summary>
-		/// Function to handle mouse down button events.
-		/// </summary>
-		/// <param name="buttonState">Button state to evaluate.</param>
-		/// <returns>The current button that was held down.</returns>
-		private MouseButtons HandleButtonDownEvents(MouseButtonState buttonState)
-		{
-			MouseButtons button = MouseButtons.None;
-
-			if (_doubleClickTimer.Milliseconds > DoubleClickDelay)
-			{
-				_doubleClickTimer.Reset();
-				_clickCount = 0;
-			}
-
-			if ((buttonState & MouseButtonState.ButtonLeftDown) == MouseButtonState.ButtonLeftDown)
-			{
-				button = MouseButtons.Left;
-				BeginDoubleClick(button);
-			}
-
-			if ((buttonState & MouseButtonState.ButtonRightDown) == MouseButtonState.ButtonRightDown)
-			{
-				button = MouseButtons.Right;
-				BeginDoubleClick(button);
-			}
-
-			if ((buttonState & MouseButtonState.ButtonMiddleDown) == MouseButtonState.ButtonMiddleDown)
-			{
-				button = MouseButtons.Middle;
-				BeginDoubleClick(button);
-			}
-
-			if ((buttonState & MouseButtonState.Button4Down) == MouseButtonState.Button4Down)
-			{
-				button = MouseButtons.Button4;
-				BeginDoubleClick(button);
-			}
-
-			if ((buttonState & MouseButtonState.Button5Down) == MouseButtonState.Button5Down)
-			{
-				button = MouseButtons.Button5;
-				BeginDoubleClick(button);
-			}
-
-			Buttons |= button;
-
-			return button;
-		}
-
-		/// <summary>
-		/// Function to handle mouse up button events.
-		/// </summary>
-		/// <param name="buttonState">Button state to evaluate.</param>
-		/// <returns>The current button that was released.</returns>
-		private MouseButtons HandleButtonUpEvents(MouseButtonState buttonState)
-		{
-			MouseButtons button = MouseButtons.None;
-
-			if ((buttonState & MouseButtonState.ButtonLeftUp) == MouseButtonState.ButtonLeftUp)
-			{
-				button = MouseButtons.Left;
-			}
-
-			if ((buttonState & MouseButtonState.ButtonRightUp) == MouseButtonState.ButtonRightUp)
-			{
-				button = MouseButtons.Right;
-			}
-
-			if ((buttonState & MouseButtonState.ButtonMiddleUp) == MouseButtonState.ButtonMiddleUp)
-			{
-				button = MouseButtons.Middle;
-			}
-
-			if ((buttonState & MouseButtonState.Button4Up) == MouseButtonState.Button4Up)
-			{
-				button = MouseButtons.Button4;
-			}
-
-			if ((buttonState & MouseButtonState.Button5Up) == MouseButtonState.Button5Up)
-			{
-				button = MouseButtons.Button5;
-			}
-
-			// If no button was released, then exit.
-			if (button == MouseButtons.None)
-			{
-				return button;
-			}
-
-			Rectangle doubleClickArea = new Rectangle(_doubleClickPosition.X - DoubleClickSize.Width / 2,
-			                                          _doubleClickPosition.Y - DoubleClickSize.Height / 2,
-			                                          DoubleClickSize.Width,
-			                                          DoubleClickSize.Height);
-
-			if ((!doubleClickArea.Contains(Position)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
-			{
-				_doubleClickTimer.Reset();
-				_clickCount = 0;
-			}
-			else
-			{
-				++_clickCount;
-			}
-
-			Buttons &= ~button;
-
-			return button;
-		}
-
-		/// <summary>
-		/// Function to handle a mouse movement event.
-		/// </summary>
-		/// <param name="mouseWheelDelta">The delta indicating the direction and amount that the mouse wheel moved by.</param>
-		private void HandleMouseWheelMove(short mouseWheelDelta)
-		{
-			if (mouseWheelDelta == 0)
-			{
-				return;
-			}
-
-			_wheelDelta += mouseWheelDelta;
-			WheelPosition += mouseWheelDelta;
-		}
-
-		/// <summary>
-		/// Function to handle the mouse movement event.
-		/// </summary>
-		/// <param name="x">The last relative horizontal position for the mouse.</param>
-		/// <param name="y">The last relative vertical position for the mouse.</param>
-		/// <param name="relative"><b>true</b> if the mouse movement is relative, <b>false</b> if absolute.</param>
-		/// <returns><b>true</b> if the mouse moved, <b>false</b> if not.</returns>
-		private bool HandleMouseMove(int x, int y, bool relative)
-		{
-			Point newPosition;
-
-			if (relative)
-			{
-				_relativePosition = new Point(_relativePosition.X + x, _relativePosition.Y + y);
-				newPosition = new Point(_position.X + x, _position.Y + y);
-			}
-			else
-			{
-				newPosition = new Point(x, y);
-				_relativePosition = new Point(_relativePosition.X + (newPosition.X - _position.X), _relativePosition.Y + (newPosition.Y - _position.Y));
-			}
-
-			ConstrainPositionData(ref newPosition);
-
-			if ((newPosition.X == _position.X) && (newPosition.Y == _position.Y))
-			{
-				return false;
-			}
-
-			Position = newPosition;
-
-			return true;
-		}
-
-		/// <inheritdoc/>
-		bool IGorgonDeviceRouting<GorgonMouseData>.ParseData(ref GorgonMouseData data)
-		{
-			if ((!IsAcquired) || (Window == null) || (Window.Disposing) || (Window.IsDisposed))
-			{
-				return false;
-			}
-
-			// If the mouse cursor was outside of the window, and the mouse is not exclusive, then 
-			// flag it as outside. Once it returns to the window, reset the position to match the
-			// current cursor position so we don't get weirdness. This only applies to plug ins that 
-			// can monitor the mouse position outside of the client area of the window (e.g. raw input).
-			if (!IsExclusive)
-			{
-				Point clientPosition = Window.PointToClient(Cursor.Position);
-
-				if (!Window.ClientRectangle.Contains(clientPosition))
-				{
-					_wasOutside = true;
-					return true;
-				}
-
-				// If we were previously outside of the window, reposition at the point of entry.
-				if (_wasOutside)
-				{
-					Position = clientPosition;
-					_wasOutside = false;
-				}
-			}
-
-			// Gather the event information.
-			MouseButtons downButtons = Buttons;
-			MouseButtons upButtons = MouseButtons.None;
-			
-			bool wasMoved = HandleMouseMove(data.Position.X, data.Position.Y, data.IsRelative);
-			
-			if ((Info.HasMouseWheel) && (data.MouseWheelDelta != 0))
-			{
-				HandleMouseWheelMove(data.MouseWheelDelta);
-			}
-
-			// If there's a button event, then process it.
-			if (data.ButtonState != MouseButtonState.None)
-			{
-				downButtons = HandleButtonDownEvents(data.ButtonState);
-				upButtons = HandleButtonUpEvents(data.ButtonState);
-			}
-
-			// Trigger button events.
-			if (downButtons != MouseButtons.None)
-			{
-				MouseButtonDown?.Invoke(this, new GorgonMouseEventArgs(downButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount));
-			}
-
-			if (upButtons != MouseButtons.None)
-			{
-				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, _relativePosition, _wheelDelta, _clickCount);
-
-				MouseButtonUp?.Invoke(this, e);
-
-				if ((_clickCount > 0) && ((_clickCount % 2) == 0))
-				{
-					MouseDoubleClicked?.Invoke(this, e);
-				}
-			}
-
-			// Trigger move events.
-			if (data.MouseWheelDelta != 0)
-			{
-				MouseWheelMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
-			}
-
-			if (wasMoved)
-			{
-				MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, _relativePosition, _wheelDelta, 0));
-			}
-
-			return true;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -732,7 +875,7 @@ namespace Gorgon.Input
 		/// <param name="mouseInfo">Information about which mouse to use.</param>
 		/// <param name="log">[Optional] The logging interface used for debug logging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="service"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-		public GorgonMouse(IGorgonInputService service, IGorgonMouseInfo2 mouseInfo, IGorgonLog log = null)
+		public GorgonMouse(GorgonInputService2 service, IGorgonMouseInfo2 mouseInfo, IGorgonLog log = null)
 			: base(service, mouseInfo, log)
 		{
 			Info = mouseInfo;

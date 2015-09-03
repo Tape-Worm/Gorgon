@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Input.Raw.Properties;
@@ -50,68 +49,48 @@ namespace Gorgon.Input.Raw
 		/// <param name="wParam">Parameter</param>
 		/// <param name="lParam">Parameter.</param>
 		/// <returns>Result.</returns>
-		private delegate IntPtr WndProcHandler(IntPtr hWnd, WindowMessages msg, IntPtr wParam, IntPtr lParam);
-		#endregion
-
-		#region Enums.
-		/// <summary>
-		/// Types of messages that passed to a window.
-		/// </summary>
-		/// <remarks>See the MSDN documentation for more detail.</remarks>
-		private enum WindowMessages
-		{
-			/// <summary></summary>
-			MouseMove = 0x0200,
-			/// <summary></summary>
-			LeftButtonDown = 0x0201,
-			/// <summary></summary>
-			LeftButtonUp = 0x0202,
-			/// <summary></summary>
-			LeftButtonDoubleClick = 0x0203,
-			/// <summary></summary>
-			RightButtonDown = 0x0204,
-			/// <summary></summary>
-			RightButtonUp = 0x0205,
-			/// <summary></summary>
-			RightButtonDoubleClick = 0x0206,
-			/// <summary></summary>
-			MiddleButtonDown = 0x0207,
-			/// <summary></summary>
-			MiddleButtonUp = 0x0208,
-			/// <summary></summary>
-			MiddleButtonDoubleClick = 0x0209,
-			/// <summary></summary>
-			MouseWheel = 0x020A,
-			/// <summary>
-			/// 
-			/// </summary>
-			XButtonDown = 0x20B,
-			/// <summary>
-			/// 
-			/// </summary>
-			XButtonUp = 0x20C,
-			/// <summary>
-			/// 
-			/// </summary>
-			XButtonDoubleClick = 0x20D,
-			/// <summary>
-			/// 
-			/// </summary>
-			MouseHWheel = 0x20E,
-			/// <summary></summary>
-			MouseHover = 0x02A1,
-			/// <summary></summary>
-			MouseLeave = 0x02A3,
-			/// <summary></summary>
-			RawInput = 0x00FF
-		}
+		private delegate IntPtr WndProcHandler(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 		#endregion
 
 		#region Constants.
-		/// <summary>
-		/// Retrieves a window procedure.
-		/// </summary>
-		private int WindowLongWndProc = -4;
+		// Retrieves a window procedure.
+		private const int WindowLongWndProc = -4;
+		// Mouse move message.
+		private const int WmMouseMove = 0x0200;
+		// Left mouse button down message.
+		private const int WmLeftButtonDown = 0x0201;
+		// Left mouse button up message.
+		private const int WmLeftButtonUp = 0x0202;
+		// Left mouse button double click message.
+        private const int WmLeftButtonDoubleClick = 0x0203;
+		// Right mouse button down message.
+		private const int WmRightButtonDown = 0x0204;
+		// Right mouse button up message.
+		private const int WmRightButtonUp = 0x0205;
+		// Right mouse button double click message.
+		private const int WmRightButtonDoubleClick = 0x0206;
+		// Middle mouse button down message.
+		private const int WmMiddleButtonDown = 0x0207;
+		// Middle mouse button up message.
+		private const int WmMiddleButtonUp = 0x0208;
+		// Middle mouse button double click message.
+		private const int WmMiddleButtonDoubleClick = 0x0209;
+		// Mouse wheel move message.
+		private const int WmMouseWheel = 0x020A;
+		// X button down message.
+		private const int WmXButtonDown = 0x20B;
+		// X button up message.
+		private const int WmXButtonUp = 0x20C;
+		// X button double click message.
+		private const int WmXButtonDoubleClick = 0x20D;
+		// Horizontal mouse wheel move message.
+		private const int WmMouseHWheel = 0x20E;
+		// Mouse hover message.
+		private const int WmMouseHover = 0x02A1;
+		// Mouse leave message.
+		private const int WmMouseLeave = 0x02A3;
+		// Raw input message.
+		private const int WmRawInput = 0x00FF;
 		#endregion
 
 		#region Variables.
@@ -133,89 +112,6 @@ namespace Gorgon.Input.Raw
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve information about the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to retrieve information from.</param>
-		/// <param name="index">Type of information.</param>
-		/// <returns>A pointer to the information.</returns>
-		[SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[DllImport("user32.dll", EntryPoint = "GetWindowLong", CharSet = CharSet.Unicode)]
-		private static extern IntPtr GetWindowLongx86(HandleRef hwnd, int index);
-
-		/// <summary>
-		/// Function to retrieve information about the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to retrieve information from.</param>
-		/// <param name="index">Type of information.</param>
-		/// <returns>A pointer to the information.</returns>
-		[SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[DllImport("user32.dll", EntryPoint = "GetWindowLongPtr", CharSet = CharSet.Unicode)]
-		private static extern IntPtr GetWindowLongx64(HandleRef hwnd, int index);
-
-		/// <summary>
-		/// Function to set information for the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to set information on.</param>
-		/// <param name="index">Type of information.</param>
-		/// <param name="info">Information to set.</param>
-		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[DllImport("user32.dll", EntryPoint = "SetWindowLong", CharSet = CharSet.Unicode)]
-		private static extern IntPtr SetWindowLongx86(HandleRef hwnd, int index, IntPtr info);
-
-		/// <summary>
-		/// Function to set information for the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to set information on.</param>
-		/// <param name="index">Type of information.</param>
-		/// <param name="info">Information to set.</param>
-		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[SuppressMessage("Microsoft.Interoperability", "CA1400:PInvokeEntryPointsShouldExist", Justification = "Really now?  You couldn't check the ENTRYPOINT ATTRIBUTE!?!")]
-		[SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "return", Justification = "Not visible outside of assembly. Call platform is determined at runtime.")]
-		[DllImport("user32.dll", EntryPoint = "SetWindowLongPtr", CharSet = CharSet.Unicode)]
-		private static extern IntPtr SetWindowLongx64(HandleRef hwnd, int index, IntPtr info);
-
-		/// <summary>
-		/// Function to call a window procedure.
-		/// </summary>
-		/// <param name="wndProc">Pointer to the window procedure function to call.</param>
-		/// <param name="hwnd">Window handle to use.</param>
-		/// <param name="msg">Message to send.</param>
-		/// <param name="wParam">Parameter for the message.</param>
-		/// <param name="lParam">Parameter for the message.</param>
-		/// <returns>The return value specifies the result of the message processing and depends on the message sent.</returns>
-		[DllImport("user32.dll", EntryPoint = "CallWindowProc", CharSet = CharSet.Unicode)]
-		private static extern IntPtr CallWindowProc(IntPtr wndProc, IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam);
-
-		/// <summary>
-		/// Function to retrieve information about the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to retrieve information from.</param>
-		/// <param name="index">Type of information.</param>
-		/// <returns>A pointer to the information.</returns>
-		private static IntPtr GetWindowLong(HandleRef hwnd, int index)
-		{
-			return IntPtr.Size == 4 ? GetWindowLongx86(hwnd, index) : GetWindowLongx64(hwnd, index);
-		}
-
-		/// <summary>
-		/// Function to set information for the specified window.
-		/// </summary>
-		/// <param name="hwnd">Window handle to set information on.</param>
-		/// <param name="index">Type of information.</param>
-		/// <param name="info">Information to set.</param>
-		/// <returns>A pointer to the previous information, or 0 if not successful.</returns>
-		private static IntPtr SetWindowLong(HandleRef hwnd, int index, IntPtr info)
-		{
-			return IntPtr.Size == 4 ? SetWindowLongx86(hwnd, index, info) : SetWindowLongx64(hwnd, index, info);
-		}
-
-		/// <summary>
 		/// Function to handle raw input messages from the window.
 		/// </summary>
 		/// <param name="hwnd">Window handle that received the message.</param>
@@ -223,7 +119,7 @@ namespace Gorgon.Input.Raw
 		/// <param name="lParam">Parameter 1</param>
 		/// <param name="wParam">Parameter 2</param>
 		/// <returns>The result of the message processing.</returns>
-		private IntPtr WndProc(IntPtr hwnd, WindowMessages msg, IntPtr wParam, IntPtr lParam)
+		private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
 		{
 			if (_oldWndProc == IntPtr.Zero)
 			{
@@ -231,8 +127,8 @@ namespace Gorgon.Input.Raw
 				// finalizer didn't run, then ensure that this method is dead for sure.
 				throw new ObjectDisposedException(Resources.GORINP_RAW_HOOK_STILL_ACTIVE);
 			}
-
-			if ((msg != WindowMessages.RawInput) || (hwnd != _windowHandle))
+			
+			if ((msg != WmRawInput) || (hwnd != _windowHandle))
 			{
 				if (!RawInputApi.IsMouseExclusive)
 				{
@@ -241,23 +137,23 @@ namespace Gorgon.Input.Raw
 
 				switch (msg)
 				{
-					case WindowMessages.XButtonDoubleClick:
-					case WindowMessages.LeftButtonDoubleClick:
-					case WindowMessages.RightButtonDoubleClick:
-					case WindowMessages.MiddleButtonDoubleClick:
-					case WindowMessages.LeftButtonDown:
-					case WindowMessages.LeftButtonUp:
-					case WindowMessages.RightButtonDown:
-					case WindowMessages.RightButtonUp:
-					case WindowMessages.MiddleButtonDown:
-					case WindowMessages.MiddleButtonUp:
-					case WindowMessages.XButtonDown:
-					case WindowMessages.XButtonUp:
-					case WindowMessages.MouseMove:
-					case WindowMessages.MouseWheel:
-					case WindowMessages.MouseHWheel:
-					case WindowMessages.MouseHover:
-					case WindowMessages.MouseLeave:
+					case WmXButtonDoubleClick:
+					case WmLeftButtonDoubleClick:
+					case WmRightButtonDoubleClick:
+					case WmMiddleButtonDoubleClick:
+					case WmLeftButtonDown:
+					case WmLeftButtonUp:
+					case WmRightButtonDown:
+					case WmRightButtonUp:
+					case WmMiddleButtonDown:
+					case WmMiddleButtonUp:
+					case WmXButtonDown:
+					case WmXButtonUp:
+					case WmMouseMove:
+					case WmMouseWheel:
+					case WmMouseHWheel:
+					case WmMouseHover:
+					case WmMouseLeave:
 						return IntPtr.Zero;
 				}
 
@@ -290,32 +186,36 @@ namespace Gorgon.Input.Raw
 				switch (data.Header.Type)
 				{
 					case RawInputType.Keyboard:
-						if (!(device is IGorgonKeyboard))
-						{
-							continue;
-						}
+						var keyboardDevice = device as IGorgonInputEventDrivenDevice<GorgonKeyboardData>;
 
 						// There's no processor on this window, so we can't send anything.
-						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
+						if ((keyboardDevice == null) || (!_rawInputProcessors.TryGetValue(device.Window, out processor)))
 						{
 							continue;
 						}
 
-						processor.ProcessRawInputMessage(device, ref data.Union.Keyboard);
+						processor.ProcessRawInputMessage(keyboardDevice, ref data.Union.Keyboard);
 						break;
 					case RawInputType.Mouse:
-						if (!(device is IGorgonMouse))
-						{
-							continue;
-						}
+						var mouseDevice = device as IGorgonInputEventDrivenDevice<GorgonMouseData>;
 
 						// There's no processor on this window, so we can't send anything.
-						if (!_rawInputProcessors.TryGetValue(device.Window, out processor))
+						if ((mouseDevice == null) || (!_rawInputProcessors.TryGetValue(device.Window, out processor)))
 						{
 							continue;
 						}
 
-						processor.ProcessRawInputMessage(device, ref data.Union.Mouse);
+						processor.ProcessRawInputMessage(mouseDevice, ref data.Union.Mouse);
+						break;
+					case RawInputType.HID:
+						GorgonJoystick2 joystick = device as GorgonJoystick2;
+						
+						if ((joystick == null) || (!_rawInputProcessors.TryGetValue(device.Window, out processor)))
+						{
+							continue;
+						}
+
+						processor.ProcessRawInputMessage(joystick, ref data.Union.HID);
 						break;
 				}
 			}
@@ -337,7 +237,7 @@ namespace Gorgon.Input.Raw
 				return;
 			}
 
-			IntPtr currentWndProc = GetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc);
+			IntPtr currentWndProc = UserApi.GetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc);
 
 			// We only unhook our own procedure, if someone else hooks after us, and does not clean up, then there's nothing 
 			// we can do, and rather than bring down a mess of procedures inappropriately, it's best if we just leave it be.
@@ -345,14 +245,13 @@ namespace Gorgon.Input.Raw
 			// bit of unnecessary overhead in the worst case.
 			if (currentWndProc == _newWndProc)
 			{
-				SetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc, _oldWndProc);
+				UserApi.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc, _oldWndProc);
 			}
 			
 			_windowHandle = IntPtr.Zero;
 			_newWndProc = IntPtr.Zero;
 			_oldWndProc = IntPtr.Zero;
 		}
-
 
 		/// <summary>
 		/// Function to call the previous window procedure.
@@ -364,9 +263,9 @@ namespace Gorgon.Input.Raw
 		/// <returns>
 		/// The return value from the previous window handler.
 		/// </returns>
-		private IntPtr CallPreviousWndProc(IntPtr handle, WindowMessages message, IntPtr wParam, IntPtr lParam)
+		private IntPtr CallPreviousWndProc(IntPtr handle, int message, IntPtr wParam, IntPtr lParam)
 		{
-			return _oldWndProc == IntPtr.Zero ? IntPtr.Zero : CallWindowProc(_oldWndProc, handle, message, wParam, lParam);
+			return _oldWndProc == IntPtr.Zero ? IntPtr.Zero : UserApi.CallWindowProc(_oldWndProc, handle, message, wParam, lParam);
 		}
 
 		/// <summary>
@@ -381,11 +280,11 @@ namespace Gorgon.Input.Raw
 			}
 
 			// Hook the window procedure.
-			_oldWndProc = GetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc);
+			_oldWndProc = UserApi.GetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc);
 			_wndProcRef = WndProc;
 			_newWndProc = Marshal.GetFunctionPointerForDelegate(_wndProcRef);
 
-			if (SetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc, _newWndProc) == IntPtr.Zero)
+			if (UserApi.SetWindowLong(new HandleRef(this, _windowHandle), WindowLongWndProc, _newWndProc) == IntPtr.Zero)
 			{
 				throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG);
 			}

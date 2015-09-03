@@ -20,26 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, July 5, 2015 3:10:01 PM
+// Created: Wednesday, August 12, 2015 10:11:24 PM
 // 
 #endregion
-
-using System.Collections.Generic;
 
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// A list of <see cref="GorgonJoystickAxisInfo"/> values for the available joystick axes.
+	/// Data received from the device layer and transformed into a common data set so that the <see cref="GorgonInputService2"/> can decipher it.
 	/// </summary>
-	public interface IGorgonJoystickAxisInfoList
-		: IReadOnlyList<GorgonJoystickAxisInfo>
+	public struct GorgonJoystickData
 	{
 		/// <summary>
-		/// Property to return the range for the specified <see cref="JoystickAxis"/>.
+		/// Indicates whether the joystick is connected or not.
 		/// </summary>
-		GorgonJoystickAxisInfo this[JoystickAxis axis]
-		{
-			get;
-		}
+		public bool IsConnected;
 	}
 }

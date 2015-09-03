@@ -142,6 +142,7 @@
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
     <Compile Include="Diagnostics\GorgonLogDummy.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
+    <Compile Include="Diagnostics\_Interfaces\IGorgonLogFile.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
     <Compile Include="GorgonCancelEventArgs.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
@@ -152,9 +153,6 @@
     <Compile Include="IO\GorgonChunkFileReader.cs" />
     <Compile Include="IO\GorgonChunkFileWriter.cs" />
     <Compile Include="IO\GorgonStreamWrapper.cs" />
-    <Compile Include="IO\_Interfaces\IGorgonChunkFileWriter.cs" />
-    <Compile Include="IO\_Interfaces\IGorgonChunkFileReader.cs" />
-    <Compile Include="IO\_Interfaces\IGorgonChunk.cs" />
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
     <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
     <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
@@ -173,8 +171,6 @@
     <Compile Include="Native\_Internal\UserApi.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
-    <Compile Include="Plugins\_Interfaces\IGorgonPluginAssemblyCache.cs" />
-    <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />
     <Compile Include="Timing\_Interfaces\IGorgonTimer.cs" />
@@ -188,7 +184,6 @@
     <Compile Include="_Extensions\GorgonNumericFormattingExtensions.cs" />
     <Compile Include="Reflection\_Extensions\GorgonReflectionExtensions.cs" />
     <Compile Include="_Extensions\GorgonStringFormattingExtensions.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="UI\GorgonApplication.cs" />
     <Compile Include="_Interfaces\IGorgonCloneable.cs" />
     <Compile Include="_Interfaces\IGorgonEquatableByRef.cs" />
@@ -278,12 +273,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialog.resx">
       <DependentUpon>ConfirmationDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\_Internal\ConfirmationDialogEx.resx">
       <DependentUpon>ConfirmationDialogEx.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\GorgonFlatForm.resx">
       <DependentUpon>GorgonFlatForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\_Forms\_Internal\WarningDialog.resx">
       <DependentUpon>WarningDialog.cs</DependentUpon>

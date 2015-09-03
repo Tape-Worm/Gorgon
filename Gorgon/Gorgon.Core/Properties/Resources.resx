@@ -984,4 +984,7 @@ Code: 0x{2}</value>
   <data name="GOR_RESULT_DESC_NOT_INITIALIZED" xml:space="preserve">
     <value>Initialization is required before continuing this operation.</value>
   </data>
+  <data name="GOR_TOSTR_GORGONCHUNK" xml:space="preserve">
+    <value>Chunk: 0x{0}. Offset: 0x{1}. Size: 0x{2}</value>
+  </data>
 </root>

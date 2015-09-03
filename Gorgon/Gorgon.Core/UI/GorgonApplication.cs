@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -431,7 +430,8 @@ namespace Gorgon.UI
 			{
 				lock (_syncLock)
 				{
-					_log?.Close();
+					IGorgonLogFile logFile = _log as IGorgonLogFile;
+					logFile?.End();
 
 					if (value == null)
 					{
@@ -505,19 +505,8 @@ namespace Gorgon.UI
 		/// </summary>
 		private static void InitializeLogger()
 		{
-			if (Log.IsClosed)
-			{
-				// Open the log if it's closed so we can begin logging.
-				try
-				{
-					_log.Open();
-				}
-				catch (Exception ex)
-				{
-					// Only note this in DEBUG mode.
-					Debug.Print("Error opening the log file: {0}", ex.Message);
-				}
-			}
+			IGorgonLogFile logFile = _log as IGorgonLogFile;
+			logFile?.Begin();
 
 			// Display information
 			Log.Print("Logging interface assigned. Initializing...", LoggingLevel.All);
@@ -636,10 +625,8 @@ namespace Gorgon.UI
 			Log.Print("Shutting down.", LoggingLevel.All);
 
 			// Destroy log.
-			if (!Log.IsClosed)
-			{
-				Log.Close();
-			}
+			IGorgonLogFile logFile = _log as IGorgonLogFile;
+			logFile?.End();
 		}
 
 		/// <summary>

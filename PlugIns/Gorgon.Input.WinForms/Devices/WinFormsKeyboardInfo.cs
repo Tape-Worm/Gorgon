@@ -77,9 +77,9 @@ namespace Gorgon.Input.WinForms
 		/// </summary>
 		public WinFormsKeyboardInfo()
 		{
-			KeyboardType = Win32KeyboardApi.KeyboardType;
+			KeyboardType = UserApi.KeyboardType;
 
-			switch (Win32KeyboardApi.KeyboardType)
+			switch (UserApi.KeyboardType)
 			{
 				case KeyboardType.XT:
 					KeyCount = 83;
@@ -119,7 +119,7 @@ namespace Gorgon.Input.WinForms
 					break;
 			}
 
-			FunctionKeyCount = Win32KeyboardApi.FunctionKeyCount;
+			FunctionKeyCount = UserApi.FunctionKeyCount;
 		}
 		#endregion
 	}

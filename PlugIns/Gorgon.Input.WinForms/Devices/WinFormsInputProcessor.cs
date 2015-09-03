@@ -36,12 +36,12 @@ namespace Gorgon.Input.WinForms
 	class WinformsInputProcessor
 	{
 		#region Variables.
-		// The input service that owns this processor.
-		private readonly GorgonInputDeviceEventRouting _router;
 		// A list of registered devices from the service.
 		private readonly IReadOnlyList<IGorgonInputDevice> _devices;
 		// Flag to indicate that the events are already registered.
 		private bool _isRegistered;
+		// The input device coordinator from the input service.
+		private readonly GorgonInputDeviceDefaultCoordinator _coordinator;
 		#endregion
 
 		#region Properties.
@@ -188,14 +188,14 @@ namespace Gorgon.Input.WinForms
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _devices.Count; ++i)
 			{
-				IGorgonInputDevice device = _devices[i];
+				var device = _devices[i] as IGorgonInputEventDrivenDevice<GorgonMouseData>;
 
-				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonMouse)))
+				if ((device == null) || (!device.IsAcquired) || (device.Window != Window))
 				{
 					continue;
 				}
 
-				_router.RouteToDevice(_devices[i], ref data);
+				_coordinator.DispatchEvent(device, ref data);
 			}
 		}
 
@@ -213,34 +213,34 @@ namespace Gorgon.Input.WinForms
 			switch (e.KeyCode)
 			{
 				case Keys.ControlKey:
-					if (Win32KeyboardApi.CheckKeyDown(Keys.LControlKey))
+					if (UserApi.CheckKeyDown(Keys.LControlKey))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if (Win32KeyboardApi.CheckKeyDown(Keys.RControlKey))
+					if (UserApi.CheckKeyDown(Keys.RControlKey))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
 					break;
 				case Keys.Menu:
-					if (Win32KeyboardApi.CheckKeyDown(Keys.LMenu))
+					if (UserApi.CheckKeyDown(Keys.LMenu))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if (Win32KeyboardApi.CheckKeyDown(Keys.RMenu))
+					if (UserApi.CheckKeyDown(Keys.RMenu))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
 					break;
 				case Keys.ShiftKey:
-					if (Win32KeyboardApi.CheckKeyDown(Keys.LShiftKey))
+					if (UserApi.CheckKeyDown(Keys.LShiftKey))
 					{
 						flags |= KeyboardDataFlags.LeftKey;
 					}
 
-					if (Win32KeyboardApi.CheckKeyDown(Keys.RShiftKey))
+					if (UserApi.CheckKeyDown(Keys.RShiftKey))
 					{
 						flags |= KeyboardDataFlags.RightKey;
 					}
@@ -249,7 +249,7 @@ namespace Gorgon.Input.WinForms
 
 			var data = new GorgonKeyboardData
 			           {
-				           ScanCode = Win32KeyboardApi.GetScancode(e.KeyCode),
+				           ScanCode = UserApi.GetScancode(e.KeyCode),
 				           Key = e.KeyCode,
 				           Flags = flags
 			           };
@@ -257,14 +257,14 @@ namespace Gorgon.Input.WinForms
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _devices.Count; ++i)
 			{
-				IGorgonInputDevice device = _devices[i];
+				var device = _devices[i] as IGorgonInputEventDrivenDevice<GorgonKeyboardData>;
 
-				if ((!device.IsAcquired) || (device.Window != Window) || (!(device is IGorgonKeyboard)))
+				if ((device == null) || (!device.IsAcquired) || (device.Window != Window))
 				{
 					continue;
 				}
 
-				_router.RouteToDevice(_devices[i], ref data);
+				_coordinator.DispatchEvent(device, ref data);
 			}
 		}
 
@@ -315,12 +315,12 @@ namespace Gorgon.Input.WinForms
 		/// Initializes a new instance of the <see cref="WinformsInputProcessor" /> class.
 		/// </summary>
 		/// <param name="window">The window that the processor is bound with.</param>
-		/// <param name="router">The router used to send the data to the device.</param>
+		/// <param name="coordinator">The input device event coordinator.</param>
 		/// <param name="devices">The list of registered devices in the service.</param>
-		public WinformsInputProcessor(Control window, GorgonInputDeviceEventRouting router, IReadOnlyList<IGorgonInputDevice> devices)
+		public WinformsInputProcessor(Control window, GorgonInputDeviceDefaultCoordinator coordinator, IReadOnlyList<IGorgonInputDevice> devices)
 		{
 			Window = window;
-			_router = router;
+			_coordinator = coordinator;
 			_devices = devices;
 		}
 		#endregion

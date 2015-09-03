@@ -84,8 +84,8 @@ namespace Gorgon.Input.Raw
 			HumanInterfaceDevicePath = hidPath;
 			Handle = handle;
 
-			KeyboardType = Win32KeyboardApi.KeyboardType;
-			FunctionKeyCount = Win32KeyboardApi.FunctionKeyCount;
+			KeyboardType = UserApi.KeyboardType;
+			FunctionKeyCount = UserApi.FunctionKeyCount;
 
 			switch (KeyboardType)
 			{

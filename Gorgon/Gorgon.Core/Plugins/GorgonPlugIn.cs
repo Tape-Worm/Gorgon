@@ -30,12 +30,12 @@ using Gorgon.Core;
 namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// The base for all plug ins used by the <see cref="IGorgonPluginService"/>.
+	/// The base for all plug ins used by the <see cref="GorgonPluginService"/>.
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// Any plug ins used by the <see cref="IGorgonPluginService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded into the 
-	/// <see cref="IGorgonPluginAssemblyCache"/> and will enumerate only types that inherit this type.
+	/// Any plug ins used by the <see cref="GorgonPluginService"/> must be derived from this type. The plug in service will scan any plug in assemblies loaded into the 
+	/// <see cref="GorgonPluginAssemblyCache"/> and will enumerate only types that inherit this type.
 	/// </para>
 	/// </remarks>
 	public abstract class GorgonPlugin

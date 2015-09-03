@@ -66,9 +66,9 @@ namespace Gorgon.Examples
 		// The providers that were loaded.
 		private static GorgonFileSystemProvider[] _providers;
 		// The cache that will hold the assemblies where our plugins will live.
-		private static IGorgonPluginAssemblyCache _pluginAssemblies;
+		private static GorgonPluginAssemblyCache _pluginAssemblies;
 		// The plugin service.
-		private static IGorgonPluginService _pluginService;
+		private static GorgonPluginService _pluginService;
         #endregion
 
         #region Properties.
@@ -213,7 +213,6 @@ namespace Gorgon.Examples
 		    {
 				// Always call dispose so we can unload our temporary application domain.
 			    _pluginAssemblies.Dispose();
-				GorgonApplication.Log.Close();
 		    }
         }
         #endregion

@@ -20,43 +20,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, July 5, 2015 3:36:14 PM
+// Created: Thursday, September 3, 2015 9:58:54 PM
 // 
 #endregion
 
-using XI = SharpDX.XInput;
+using System.Collections.Generic;
 
-namespace Gorgon.Input.XInput
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
-	/// Extended information for the XInput controllers.
+	/// A raw input specific concrete implementation of the <see cref="IGorgonInputDeviceCoordinator"/> interface.
 	/// </summary>
-	interface IXInputJoystickInfo
-		: IGorgonJoystickInfo
+	class RawInputDeviceCoordinator
+		: GorgonInputDeviceDefaultCoordinator
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to return ID of the controller.
-		/// </summary>
-		int ID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the controller that holds the information.
-		/// </summary>
-		XI.Controller Controller
-		{
-			get;
-		}
+		#region Variables.
+		// Queued joystick events.
+		private readonly Dictionary<GorgonJoystick2, GorgonJoystickData> _joystickData = new Dictionary<GorgonJoystick2, GorgonJoystickData>();
 		#endregion
 
 		#region Methods.
+		/// <inheritdoc/>
+		/// <remarks>
+		/// <inheritdoc cref="IGorgonInputDeviceCoordinator.GetJoystickStateData"/>
+		/// </remarks>
+		public override bool GetJoystickStateData(GorgonJoystick2 device, out GorgonJoystickData deviceData)
+		{
+			if (_joystickData.TryGetValue(device, out deviceData))
+			{
+				return true;
+			}
+
+			deviceData = default(GorgonJoystickData);
+			return false;
+		}
+
 		/// <summary>
-		/// Function to retrieve the capabilities of the controller.
+		/// Function to set the current state for the joystick.
 		/// </summary>
-		void GetCaps();
+		/// <param name="device">The joystick device.</param>
+		/// <param name="data">The data to store.</param>
+		public void SetJoystickState(GorgonJoystick2 device, ref GorgonJoystickData data)
+		{
+			_joystickData[device] = data;
+		}
 		#endregion
 	}
 }

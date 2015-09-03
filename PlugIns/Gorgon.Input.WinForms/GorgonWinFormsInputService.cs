@@ -24,9 +24,8 @@
 // 
 #endregion
 
+using Gorgon.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace Gorgon.Input.WinForms
 {
@@ -37,69 +36,16 @@ namespace Gorgon.Input.WinForms
 		: GorgonInputService2
 	{
 		#region Variables.
-		// A list of devices registered with the service.
-		private readonly List<IGorgonInputDevice> _registeredDevices = new List<IGorgonInputDevice>();
-		// The raw input processor for device data.
-		private readonly Dictionary<Control, WinformsInputProcessor> _winFormsProcessors = new Dictionary<Control, WinformsInputProcessor>();
+		// Logger used for debugging.
+		private readonly IGorgonLog _log;
 		#endregion
 
 		#region Methods.
 		/// <inheritdoc/>
-		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
-		{
-			WinformsInputProcessor processor;
-
-			if (!_winFormsProcessors.TryGetValue(device.Window, out processor))
-			{
-				return;
-			}
-
-			if (acquisitionState)
-			{
-				processor.RegisterEvents();
-			}
-			else
-			{
-				processor.UnregisterEvents();
-			}
-		}
-
-		/// <inheritdoc/>
-		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive)
-		{
-			if (exclusive)
-			{
-				exclusive = false;
-			}
-
-			if (!_winFormsProcessors.ContainsKey(window))
-			{
-				_winFormsProcessors[window] = new WinformsInputProcessor(window, EventRouter, _registeredDevices);
-			}
-
-			if (!_registeredDevices.Contains(device))
-			{
-				_registeredDevices.Add(device);
-			}
-		}
-
-		/// <inheritdoc/>
-		protected override void UnregisterDevice(IGorgonInputDevice device)
-		{
-			if (_winFormsProcessors.Count(item => item.Value.Window == device.Window) == 1)
-			{
-				_winFormsProcessors.Remove(device.Window);
-			}
-
-			if (_registeredDevices.Contains(device))
-			{
-				_registeredDevices.Remove(device);
-			}
-		}
-
-		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonKeyboardInfo2> OnEnumerateKeyboards()
 		{
+			_log.Print("Win forms input plug in is using the system keyboard.", LoggingLevel.Verbose);
+
 			return new IGorgonKeyboardInfo2[]
 			       {
 				       new WinFormsKeyboardInfo()
@@ -109,6 +55,8 @@ namespace Gorgon.Input.WinForms
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
 		{
+			_log.Print("Win forms input plug in is using the system mouse.", LoggingLevel.Verbose);
+
 			return new IGorgonMouseInfo2[]
 			       {
 					   new WinFormsMouseInfo()
@@ -118,16 +66,22 @@ namespace Gorgon.Input.WinForms
 		/// <inheritdoc/>
 		protected override IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks()
 		{
+			_log.Print("Win forms input plug in does not support joystick devices.", LoggingLevel.Verbose);
 			return new IGorgonJoystickInfo2[0];
 		}
-		
+		#endregion
+
+		#region Constructor.
 		/// <summary>
-		/// Function to retrieve a read only list of the registered devices.
+		/// Initializes a new instance of the <see cref="GorgonWinFormsInputService"/> class.
 		/// </summary>
-		/// <returns>A read only list of the registered devices.</returns>
-		public IReadOnlyList<IGorgonInputDevice> GetInputDevice()
+		/// <param name="log">The log used for debugging.</param>
+		/// <param name="registrar">The device registrar.</param>
+		/// <param name="coordinator">The device event coordinator.</param>
+		public GorgonWinFormsInputService(IGorgonLog log, IGorgonInputDeviceRegistrar registrar, GorgonInputDeviceDefaultCoordinator coordinator)
+			: base(registrar, coordinator)
 		{
-			return _registeredDevices;
+			_log = log;
 		}
 		#endregion
 	}

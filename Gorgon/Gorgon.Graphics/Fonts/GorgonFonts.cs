@@ -143,7 +143,7 @@ namespace Gorgon.Graphics
 
 			var font = new GorgonFont(_graphics, name, new GorgonFontSettings());
 
-			IGorgonChunkFileReader fontFile = new GorgonChunkFileReader(stream,
+			GorgonChunkFileReader fontFile = new GorgonChunkFileReader(stream,
 			                                                            new[]
 			                                                            {
 				                                                            GorgonFont.FileHeader.ChunkID()

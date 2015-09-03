@@ -40,7 +40,7 @@ namespace Gorgon.Input
 		/// </summary> 
 		/// <remarks>
 		/// <para>
-		/// Joysticks may be registered with the system, and appear in the enumeration list provided by <see cref="IGorgonInputService.EnumerateJoysticks"/>, but they may not be connected to the 
+		/// Joysticks may be registered with the system, and appear in the enumeration list provided by <see cref="GorgonInputService2.EnumerateJoysticks"/>, but they may not be connected to the 
 		/// system at the time of enumeration. Thus, we have this property to ensure that we know when a joystick is connected to the system or not. 
 		/// </para>
 		/// <para>

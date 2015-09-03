@@ -30,7 +30,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
-using Gorgon.Input.Raw.Devices;
 using Gorgon.Input.Raw.Properties;
 using Gorgon.Native;
 
@@ -97,16 +96,6 @@ namespace Gorgon.Input.Raw
 		#region Variables.
 		// The logging interface.
 		private readonly IGorgonLog _log;
-		// Hook into the window message procedure.
-		private RawInputMessageHandler _messageHook;
-		// The raw input processor for device data.
-		private readonly Dictionary<Control, RawInputProcessor> _rawInputProcessors = new Dictionary<Control, RawInputProcessor>();
-		// A list of registered devices.
-		private readonly Dictionary<Guid, IGorgonInputDevice> _registeredDevices = new Dictionary<Guid, IGorgonInputDevice>();
-		// Handles for registered devices.
-		private readonly List<Tuple<Guid, IntPtr>> _deviceHandles = new List<Tuple<Guid, IntPtr>>();
-		// The device information interface.
-		private readonly RawInputDeviceRegistryInfo _deviceInfo;
 		#endregion
 
 		#region Methods.
@@ -146,8 +135,8 @@ namespace Gorgon.Input.Raw
 				return null;
 			}
 
-			string className = _deviceInfo.GetDeviceClass(deviceName);
-			string deviceDescription = _deviceInfo.GetDeviceDescription(deviceName);
+			string className = RawInputDeviceRegistryInfo.GetDeviceClass(deviceName, _log);
+			string deviceDescription = RawInputDeviceRegistryInfo.GetDeviceDescription(deviceName, _log);
 			
 			switch (deviceInfo.dwType)
 			{
@@ -166,7 +155,7 @@ namespace Gorgon.Input.Raw
 				case RawInputType.HID:
 					var joystickInfo = new RawInputJoystickInfo(deviceDescription, className, deviceName, device.Device);
 
-					joystickInfo.AssignRawInputDeviceInfo(_deviceInfo, ref deviceInfo.hid);
+					joystickInfo.AssignRawInputDeviceInfo(ref deviceInfo.hid);
 
 					return joystickInfo as T;
 				default:
@@ -264,113 +253,6 @@ namespace Gorgon.Input.Raw
 
 			return result;
 		}
-
-		/// <inheritdoc/>
-		protected override void AcquireDevice(IGorgonInputDevice device, bool acquisitionState)
-		{
-			
-		}
-
-		/// <inheritdoc/>
-		protected override void RegisterDevice(IGorgonInputDevice device, IGorgonInputDeviceInfo2 deviceInfo, Form parentForm, Control window, ref bool exclusive)
-		{
-			IntPtr deviceHandle;
-		
-			// Register the exclusive devices with the service so it knows how to handle messages.
-			switch (deviceInfo.InputDeviceType)
-			{
-				case InputDeviceType.Keyboard:
-					// Keep track of the keyboard we're registering so we can forward data to it.
-					deviceHandle = ((RawInputKeyboardInfo)deviceInfo).Handle;
-
-					// Find any other registered keyboards.
-					var keyboards = from keyboardDevice in _registeredDevices
-					                let keyboard = keyboardDevice.Value as IGorgonKeyboard
-					                where keyboard != null
-					                select keyboard;
-
-					// ReSharper disable PossibleMultipleEnumeration
-					if (((exclusive) && (keyboards.Any())) || (keyboards.Any(item => item.IsExclusive)))
-					{
-						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_KEYBOARD, nameof(exclusive));
-					}
-					
-					break;
-				case InputDeviceType.Mouse:
-					// Keep track of the keyboard we're registering so we can forward data to it.
-					deviceHandle = ((RawInputMouseInfo)deviceInfo).Handle;
-
-					// Find any other registered mice.
-					var mice = from mouseDevice in _registeredDevices
-					           let mouse = mouseDevice.Value as IGorgonMouse
-					           where mouse != null
-					           select mouse;
-
-					
-					if (((exclusive) && (mice.Any())) || (mice.Any(item => item.IsExclusive)))
-					{
-						throw new ArgumentException(Resources.GORINP_RAW_ERR_CANNOT_BIND_EXCLUSIVE_MOUSE, nameof(exclusive));
-					}
-					// ReSharper enable PossibleMultipleEnumeration
-					break;
-				case InputDeviceType.Joystick:
-					// Keep track of the keyboard we're registering so we can forward data to it.
-					deviceHandle = ((RawInputMouseInfo)deviceInfo).Handle;
-
-					// We don't do exclusive on joysticks.  No need for it.
-					exclusive = false;
-					break;
-				default:
-					return;
-			}
-
-			if (!_rawInputProcessors.ContainsKey(window))
-			{
-				_rawInputProcessors[window] = new RawInputProcessor(EventRouter);
-			}
-
-			if (!_registeredDevices.ContainsKey(device.UUID))
-			{
-				_registeredDevices.Add(device.UUID, device);
-				_deviceHandles.Add(new Tuple<Guid, IntPtr>(device.UUID, deviceHandle));
-			}
-
-			// We should only need to do this once for the window.
-			if (_messageHook == null)
-			{
-				// Initialize our message hook if we haven't done so by now.
-				_messageHook = new RawInputMessageHandler(parentForm.Handle, _deviceHandles, _rawInputProcessors, _registeredDevices);
-				_messageHook.HookWindow();
-			}
-
-			exclusive = RawInputApi.SetExclusiveState(deviceInfo.InputDeviceType, exclusive);
-		}
-
-		/// <inheritdoc/>
-		protected override void UnregisterDevice(IGorgonInputDevice device)
-		{
-			if (_rawInputProcessors.Count(item => item.Key == device.Window) == 1)
-			{
-				_rawInputProcessors.Remove(device.Window);
-			}
-
-			// Unregister the device.
-			if (_registeredDevices.ContainsKey(device.UUID))
-			{
-				_registeredDevices.Remove(device.UUID);
-
-				var deviceHandle = _deviceHandles.Find(item => item.Item1 == device.UUID);
-				_deviceHandles.Remove(deviceHandle);
-			}
-
-			if ((_registeredDevices.Count > 0) || (_messageHook == null))
-			{
-				return;
-			}
-
-			_messageHook.Dispose();
-			_messageHook = null;
-		}
 		#endregion
 
 		#region Constructor/Finalizer.
@@ -378,10 +260,12 @@ namespace Gorgon.Input.Raw
 		/// Initializes a new instance of the <see cref="GorgonRawInputService"/> class.
 		/// </summary>
 		/// <param name="log">The log interface used for debug logging.</param>
-		public GorgonRawInputService(IGorgonLog log)
+		/// <param name="registrar"><inheritdoc/></param>
+		/// <param name="coordinator"><inheritdoc/></param>
+		public GorgonRawInputService(IGorgonLog log, RawInputDeviceRegistrar registrar, RawInputDeviceCoordinator coordinator)
+			: base(registrar, coordinator)
 		{
 			_log = log;
-			_deviceInfo = new RawInputDeviceRegistryInfo(_log);
 		}
 		#endregion
 	}

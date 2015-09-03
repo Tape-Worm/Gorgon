@@ -30,7 +30,7 @@ using System.Linq;
 using Gorgon.Core;
 using Gorgon.Native;
 
-namespace Gorgon.Input.Raw.Devices
+namespace Gorgon.Input.Raw
 {
 	/// <summary>
 	/// The raw input implementation of joystick information.
@@ -38,10 +38,6 @@ namespace Gorgon.Input.Raw.Devices
 	class RawInputJoystickInfo
 		: IGorgonJoystickInfo2
 	{
-		#region Variables.
-		
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the handle for the device.
@@ -52,7 +48,7 @@ namespace Gorgon.Input.Raw.Devices
 		}
 
 		/// <inheritdoc/>
-		public IGorgonJoystickAxisInfoList AxisInfo
+		public GorgonJoystickAxisInfoList AxisInfo
 		{
 			get;
 			private set;
@@ -93,14 +89,6 @@ namespace Gorgon.Input.Raw.Devices
 
 		/// <inheritdoc/>
 		public InputDeviceType InputDeviceType => InputDeviceType.Joystick;
-
-		public bool IsConnected
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
 
 		/// <inheritdoc/>
 		public int ManufacturerID
@@ -218,11 +206,10 @@ namespace Gorgon.Input.Raw.Devices
 		/// <summary>
 		/// Function to retrieve and parse out the device information settings for a raw input joystick.
 		/// </summary>
-		/// <param name="deviceInfo">Device information functionality.</param>
 		/// <param name="hidInfo">Raw input device information.</param>
-		public void AssignRawInputDeviceInfo(RawInputDeviceRegistryInfo deviceInfo, ref RID_DEVICE_INFO_HID hidInfo)
+		public void AssignRawInputDeviceInfo(ref RID_DEVICE_INFO_HID hidInfo)
 		{
-			string newDescription = deviceInfo.GetJoystickName(HumanInterfaceDevicePath);
+			string newDescription = RawInputDeviceRegistryInfo.GetJoystickName(HumanInterfaceDevicePath);
 
 			if (!string.IsNullOrWhiteSpace(newDescription))
 			{

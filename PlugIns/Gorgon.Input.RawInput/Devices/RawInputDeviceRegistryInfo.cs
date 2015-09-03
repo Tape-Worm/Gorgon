@@ -36,20 +36,15 @@ namespace Gorgon.Input.Raw
 	/// <summary>
 	/// Retrieves information from the registry about a raw input devices.
 	/// </summary>
-	class RawInputDeviceRegistryInfo
+	static class RawInputDeviceRegistryInfo
 	{
-		#region Variables.
-		// The logging interface to use for debugging.
-		private readonly IGorgonLog _log;
-		#endregion
-
-		#region Methods.
 		/// <summary>
 		/// Function to retrieve the description of the raw input device from the registry.
 		/// </summary>
 		/// <param name="deviceName">Path to the registry key that holds the device description.</param>
+		/// <param name="log">The debug log file to use when logging issues.</param>
 		/// <returns>The device description.</returns>
-		public string GetDeviceDescription(string deviceName)
+		public static string GetDeviceDescription(string deviceName, IGorgonLog log)
 		{
 			if (string.IsNullOrWhiteSpace(deviceName))
 			{
@@ -61,10 +56,11 @@ namespace Gorgon.Input.Raw
 			regValue[0] = regValue[0].Substring(4);
 
 			// Don't add RDP devices.
-			if ((regValue.Length > 0) &&
+			if ((log != null) &&
+				(regValue.Length > 0) &&
 				(regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
 			{
-				_log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+				log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
 				return string.Empty;
 			}
 
@@ -86,8 +82,9 @@ namespace Gorgon.Input.Raw
 		/// Function to return the class name for the device.
 		/// </summary>
 		/// <param name="deviceName">The name of the device from <see cref="RawInputApi.GetDeviceName"/>.</param>
+		/// <param name="log">The debug log file to use when logging issues.</param>
 		/// <returns>The device class name.</returns>
-		public string GetDeviceClass(string deviceName)
+		public static string GetDeviceClass(string deviceName, IGorgonLog log)
 		{
 			if (string.IsNullOrWhiteSpace(deviceName))
 			{
@@ -99,10 +96,11 @@ namespace Gorgon.Input.Raw
 			regValue[0] = regValue[0].Substring(4);
 
 			// Don't add RDP devices.
-			if ((regValue.Length > 0) &&
+			if ((log != null) &&
+				(regValue.Length > 0) &&
 				(regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
 			{
-				_log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+				log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
 				return string.Empty;
 			}
 
@@ -144,7 +142,7 @@ namespace Gorgon.Input.Raw
 		/// </summary>
 		/// <param name="rawInputDeviceName">The raw input device name for the joystick.</param>
 		/// <returns>The real name for the joystick.</returns>
-		public string GetJoystickName(string rawInputDeviceName)
+		public static string GetJoystickName(string rawInputDeviceName)
 		{
 			if (string.IsNullOrWhiteSpace(rawInputDeviceName))
 			{
@@ -205,17 +203,5 @@ namespace Gorgon.Input.Raw
 				}
 			}
 		}
-		#endregion
-
-		#region Constructor/Finalizer
-		/// <summary>
-		/// Initializes a new instance of the <see cref="RawInputDeviceRegistryInfo" /> class.
-		/// </summary>
-		/// <param name="log">The log to use for debug logging.</param>
-		public RawInputDeviceRegistryInfo(IGorgonLog log)
-		{
-			_log = log;
-		}
-		#endregion
 	}
 }

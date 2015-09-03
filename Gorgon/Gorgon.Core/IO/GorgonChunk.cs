@@ -25,42 +25,126 @@
 #endregion
 
 using System;
+using Gorgon.Core;
+using Gorgon.Core.Properties;
 
 namespace Gorgon.IO
 {
 	/// <summary>
 	/// A chunk for the chunked file format.
 	/// </summary>
-	class GorgonChunk
-		: IGorgonChunk
+	public struct GorgonChunk
+		: IEquatable<GorgonChunk>
 	{
-		#region IGorgonChunk Members
+		#region Variables.
 		/// <summary>
-		/// Property to return the ID for this chunk.
+		/// The ID for the chunk.
 		/// </summary>
-		public ulong ID
-		{
-			get;
-			set;
-		}
+		public readonly ulong ID;
 
 		/// <summary>
-		/// Property to return the size of the chunk, in bytes.
+		/// The size of the chunk, in bytes.
 		/// </summary>
-		public int Size
-		{
-			get;
-			set;
-		}
+		public readonly int Size;
 
 		/// <summary>
-		/// Property to return the offset, in bytes, of the chunk within the chunked file.
+		/// The offset, in bytes, of the chunk within the chunked file.
 		/// </summary>
 		/// <remarks>This is relative to the header of the file.</remarks>
-		public Int64 FileOffset
+		public readonly ulong FileOffset;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Returns a <see cref="string" /> that represents this instance.
+		/// </summary>
+		/// <returns>A <see cref="string" /> that represents this instance.</returns>
+		public override string ToString()
 		{
-			get;
-			set;
+			return string.Format(Resources.GOR_TOSTR_GORGONCHUNK, ID.FormatHex(), FileOffset.FormatHex(), Size.FormatHex());
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+		public override int GetHashCode()
+		{
+			return 281.GenerateHash(ID);
+		}
+
+		/// <summary>
+		/// Function to compare two instances for equality.
+		/// </summary>
+		/// <param name="left">The first object of type <see cref="GorgonChunk"/> to compare.</param>
+		/// <param name="right">The second object of type <see cref="GorgonChunk"/> to compare.</param>
+		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+		public static bool Equals(ref GorgonChunk left, ref GorgonChunk right)
+		{
+			return left.ID == right.ID;
+		}
+
+		/// <summary>
+		/// Function to compare two instances for equality.
+		/// </summary>
+		/// <param name="other">The object of type <see cref="GorgonChunk"/> to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
+		public bool Equals(GorgonChunk other)
+		{
+			return Equals(ref this, ref other);
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The object to compare with the current instance.</param>
+		/// <returns><b>true</b> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <b>false</b>.</returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonChunk)
+			{
+				return ((GorgonChunk)obj).Equals(this);
+			}
+			return base.Equals(obj);
+		}
+		#endregion
+
+		#region Operators.
+		/// <summary>
+		/// Operator used to compare two instances for equality.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> otherwise.</returns>
+		public static bool operator ==(GorgonChunk left, GorgonChunk right)
+		{
+			return Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Operator used to compare two instances for inequality.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
+		public static bool operator !=(GorgonChunk left, GorgonChunk right)
+		{
+			return !Equals(ref left, ref right);
+		}
+		#endregion
+
+		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonChunk"/> struct.
+		/// </summary>
+		/// <param name="id">The identifier for the chunk.</param>
+		/// <param name="size">The size of the chunk, in bytes.</param>
+		/// <param name="offset">The offset within the file, in bytes.</param>
+		public GorgonChunk(ulong id, int size, ulong offset)
+		{
+			ID = id;
+			Size = size;
+			FileOffset = offset;
 		}
 		#endregion
 	}

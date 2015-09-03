@@ -26,9 +26,8 @@
 
 using System;
 using System.Linq;
-using System.Windows.Forms;
-using Gorgon.Collections;
-using Gorgon.Collections.Specialized;
+using System.Collections.Generic;
+using Gorgon.Diagnostics;
 using Gorgon.Input.XInput.Properties;
 using XI = SharpDX.XInput;
 
@@ -38,74 +37,47 @@ namespace Gorgon.Input.XInput
 	/// The service for XInput controllers.
 	/// </summary>
 	class GorgonXInputService
-		: GorgonInputService
+		: GorgonInputService2
 	{
+		#region Variables.
+		// The logger used for debugging.
+		private readonly IGorgonLog _log;
+		#endregion
+
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> OnEnumerateMice()
+		protected override IReadOnlyList<IGorgonMouseInfo2> OnEnumerateMice()
 		{
-			return new GorgonNamedObjectDictionary<IGorgonMouseInfo>();
+			return new IGorgonMouseInfo2[0];
 		}
 
 		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> OnEnumerateKeyboards()
+		protected override IReadOnlyList<IGorgonKeyboardInfo2> OnEnumerateKeyboards()
 		{
-			return new GorgonNamedObjectDictionary<IGorgonKeyboardInfo>();
+			return new IGorgonKeyboardInfo2[0];
 		}
 
 		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> OnEnumerateJoysticks()
+		protected override IReadOnlyList<IGorgonJoystickInfo2> OnEnumerateJoysticks()
 		{
+			_log.Print("Enumerating XInput controllers...", LoggingLevel.Verbose);
+
 			// Enumerate all controllers.
-			var result = new GorgonNamedObjectDictionary<IGorgonJoystickInfo>(false);
-			result.AddRange((from xiDeviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
-			                 where xiDeviceIndex != XI.UserIndex.Any
-			                 orderby xiDeviceIndex
-			                 select
-				                 new XInputJoystickInfo(Guid.NewGuid(),
-				                                        string.Format(Resources.GORINP_XINP_DEVICE_NAME, (int)xiDeviceIndex + 1),
-				                                        new XI.Controller(xiDeviceIndex),
-				                                        (int)xiDeviceIndex))
-				                .OrderBy(item => item.Name));
+			IReadOnlyList<XInputJoystickInfo> result =
+				(from deviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
+				 where deviceIndex != XI.UserIndex.Any
+				 orderby deviceIndex
+				 select
+					 new XInputJoystickInfo(string.Format(Resources.GORINP_XINP_DEVICE_NAME, (int)deviceIndex + 1), deviceIndex))
+					.ToArray();
+
+			foreach (XInputJoystickInfo info in result)
+			{
+				_log.Print("Found XInput controller {0}", LoggingLevel.Verbose, info.Description);
+				info.GetCaps(new XI.Controller(info.ID));
+			}
 
 			return result;
-		}
-
-		/// <inheritdoc/>
-		protected override IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices()
-		{
-			return new GorgonNamedObjectDictionary<IGorgonHumanInterfaceDeviceInfo>();
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonCustomHID OnCreateHumanInterfaceDevice(Control window, IGorgonHumanInterfaceDeviceInfo deviceInfo)
-		{
-			throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonKeyboard OnCreateKeyboard(Control window, IGorgonKeyboardInfo keyboardInfo)
-		{
-            throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonPointingDevice OnCreateMouse(Control window, IGorgonMouseInfo pointingDeviceInfo)
-		{
-            throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
-		}
-
-		/// <inheritdoc/>
-		protected override GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo deviceInfo)
-		{
-		    var xinputDeviceInfo = deviceInfo as IXInputJoystickInfo;
-
-		    if (xinputDeviceInfo == null)
-		    {
-                throw new InvalidCastException(Resources.GORINP_XINP_NOT_XINPUT_JOYSTICK);
-		    }
-
-			return new XInputController(this, xinputDeviceInfo);
 		}
 		#endregion
 
@@ -113,9 +85,13 @@ namespace Gorgon.Input.XInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonXInputService"/> class.
 		/// </summary>
-		public GorgonXInputService()
-			: base(Resources.GORINP_XINP_SERVICEDESC)
+		/// <param name="log">The logger used for debugging.</param>
+		/// <param name="registrar">The registrar used to register the devices.</param>
+		/// <param name="coordinator">The coordinator used to manage state.</param>
+		public GorgonXInputService(IGorgonLog log, XInputDeviceRegistrar registrar, XInputDeviceCoordinator coordinator)
+			: base(registrar, coordinator)
 		{
+			_log = log;
 		}
 		#endregion
 	}

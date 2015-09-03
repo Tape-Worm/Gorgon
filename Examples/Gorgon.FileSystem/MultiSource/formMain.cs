@@ -214,7 +214,7 @@ namespace Gorgon.Examples
 			// We can load the objects we need and discard the plugin system after.
 			// This works because we keep the references to the objects that our 
 			// plugin creates, even after the plugin is gone.
-			using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
 				pluginAssemblies.Load(zipProviderDLL);
 

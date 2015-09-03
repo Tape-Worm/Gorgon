@@ -70,7 +70,7 @@ namespace Gorgon.Native
 	/// Raw input native functionality.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	class RawInputApi
+	static class RawInputApi
 	{
 		#region Variables.
 		// The size of the raw input data header.

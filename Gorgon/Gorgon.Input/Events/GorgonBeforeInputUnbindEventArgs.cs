@@ -31,7 +31,7 @@ using System.Windows.Forms;
 namespace Gorgon.Input.Events
 {
 	/// <summary>
-	/// Event arguments for the <see cref="IGorgonInputService.BeforeUnbind"/> event.
+	/// Event arguments for the <see cref="GorgonInputService2.BeforeUnbind"/> event.
 	/// </summary>
 	public class GorgonBeforeInputUnbindEventArgs
 		: EventArgs

@@ -54,21 +54,10 @@ namespace Gorgon.Diagnostics
 		}
 
 		/// <summary>
-		/// Property to return whether or not the log is in a closed state.
-		/// </summary>
-		bool IsClosed
-		{
-			get;
-		}
-
-		/// <summary>
 		/// Function to send an exception to the log.
 		/// </summary>
 		/// <param name="ex">The exception to log.</param>
 		/// <remarks>
-		/// <para>
-		/// This method will send a line of formatted text to the log. If the <see cref="Open"/> method has not been called, then this method will do nothing.
-		/// </para>
 		/// <para>
 		/// If the <see cref="GorgonLogFile.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
 		/// regardless of filter level.
@@ -77,33 +66,11 @@ namespace Gorgon.Diagnostics
 		void LogException(Exception ex);
 
 		/// <summary>
-		/// Function to print a line to the log.
+		/// Function to print a formatted line of text to the log.
 		/// </summary>
 		/// <param name="formatSpecifier">Format specifier for the line.</param>
 		/// <param name="level">Level that this message falls under.</param>
 		/// <param name="arguments">List of optional arguments.</param>
-		/// <remarks>
-		/// <para>
-		/// This method will send a line of formatted text to the log. If the <see cref="Open"/> method has not been called, then this method will do nothing.
-		/// </para>
-		/// </remarks>
 		void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
-
-		/// <summary>
-		/// Function to close the log.
-		/// </summary>
-		/// <remarks>
-		/// Applications must call this method, otherwise a resource leak may occur.
-		/// </remarks>
-		void Close();
-
-		/// <summary>
-		/// Function to open the log.
-		/// </summary>
-		/// <remarks>
-		/// This method should be called before calling the <see cref="Print"/> or <see cref="LogException"/> methods. Otherwise, no data 
-		/// will be sent to the log.
-		/// </remarks>
-		void Open();
 	}
 }

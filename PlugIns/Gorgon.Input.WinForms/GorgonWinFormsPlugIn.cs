@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Input.WinForms;
 using Gorgon.Input.WinForms.Properties;
@@ -56,9 +58,15 @@ namespace Gorgon.Input
 
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonInputService OnCreateInputService2(IGorgonLog log)
+		protected override GorgonInputService2 OnCreateInputService2(IGorgonLog log)
 		{
-			return new GorgonWinFormsInputService();
+			// The windows forms input processor for device data.
+			var inputProcessors = new Dictionary<Control, WinformsInputProcessor>();
+			var coordinator = new GorgonInputDeviceDefaultCoordinator();
+
+			WinFormsInputDeviceRegistrar registrar = new WinFormsInputDeviceRegistrar(log, coordinator, inputProcessors);
+
+			return new GorgonWinFormsInputService(log, registrar, coordinator);
 		}
 		#endregion
 

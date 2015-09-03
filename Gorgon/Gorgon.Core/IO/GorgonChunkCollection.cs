@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -34,19 +33,19 @@ namespace Gorgon.IO
 	/// A collection of chunks within a chunked file.
 	/// </summary>
 	class GorgonChunkCollection
-		: IList<IGorgonChunk>, IGorgonReadOnlyChunkCollection
+		: IList<GorgonChunk>, IGorgonReadOnlyChunkCollection
 	{
 		#region Variables.
 		// The backing store for the chunks.
-		private readonly List<IGorgonChunk> _list = new List<IGorgonChunk>();
+		private readonly List<GorgonChunk> _list = new List<GorgonChunk>();
 		#endregion
 
-		#region IList<IGorgonChunk> Members
+		#region IList<GorgonChunk> Members
 		#region Properties.
 		/// <summary>
 		/// Property to set or return a chunk at the specified index.
 		/// </summary>
-		public IGorgonChunk this[int index]
+		public GorgonChunk this[int index]
 		{
 			get
 			{
@@ -65,7 +64,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
 		/// <returns>The index of <paramref name="item" /> if found in the list; otherwise, -1.</returns>
-		public int IndexOf(IGorgonChunk item)
+		public int IndexOf(GorgonChunk item)
 		{
 			return _list.IndexOf(item);
 		}
@@ -75,7 +74,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
 		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		public void Insert(int index, IGorgonChunk item)
+		public void Insert(int index, GorgonChunk item)
 		{
 			_list.Insert(index, item);
 		}
@@ -91,7 +90,7 @@ namespace Gorgon.IO
 		#endregion
 		#endregion
 
-		#region ICollection<IGorgonChunk> Members
+		#region ICollection<GorgonChunk> Members
 		#region Properties.
 		/// <summary>
 		/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
@@ -103,7 +102,7 @@ namespace Gorgon.IO
 		/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 		/// </summary>
 		/// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
-		bool ICollection<IGorgonChunk>.IsReadOnly => false;
+		bool ICollection<GorgonChunk>.IsReadOnly => false;
 
 		#endregion
 
@@ -112,7 +111,7 @@ namespace Gorgon.IO
 		/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 		/// </summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-		public void Add(IGorgonChunk item)
+		public void Add(GorgonChunk item)
 		{
 			_list.Add(item);
 		}
@@ -130,7 +129,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
-		public bool Contains(IGorgonChunk item)
+		public bool Contains(GorgonChunk item)
 		{
 			return IndexOf(item) != -1;
 		}
@@ -140,7 +139,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
-		public void CopyTo(IGorgonChunk[] array, int arrayIndex)
+		public void CopyTo(GorgonChunk[] array, int arrayIndex)
 		{
 			_list.CopyTo(array, arrayIndex);
 		}
@@ -150,19 +149,19 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-		public bool Remove(IGorgonChunk item)
+		public bool Remove(GorgonChunk item)
 		{
 			return _list.Remove(item);
 		}
 		#endregion
 		#endregion
 
-		#region IEnumerable<IGorgonChunk> Members
+		#region IEnumerable<GorgonChunk> Members
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
-		public IEnumerator<IGorgonChunk> GetEnumerator()
+		public IEnumerator<GorgonChunk> GetEnumerator()
 		{
 			return _list.GetEnumerator();
 		}
@@ -187,13 +186,13 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).
 		/// </remarks>
-		public IGorgonChunk this[string chunkName]
+		public GorgonChunk this[string chunkName]
 		{
 			get
 			{
 				int index = IndexOf(chunkName);
 
-				return index == -1 ? null : _list[index];
+				return index == -1 ? default(GorgonChunk) : _list[index];
 			}
 		}
 
@@ -203,13 +202,13 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// If the chunk is not found, then this property will return <b>null</b> (<i>Nothing</i> in VB.Net).
 		/// </remarks>
-		public IGorgonChunk this[ulong ID]
+		public GorgonChunk this[ulong ID]
 		{
 			get
 			{
 				int index = IndexOf(ID);
 
-				return index == -1 ? null : _list[index];
+				return index == -1 ? default(GorgonChunk) : _list[index];
 			}
 		}
 		#endregion
@@ -223,7 +222,7 @@ namespace Gorgon.IO
 				return -1;
 			}
 
-			UInt64 id = chunkName.ChunkID();
+			ulong id = chunkName.ChunkID();
 
 			return IndexOf(id);
 		}

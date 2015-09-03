@@ -32,12 +32,20 @@ using Gorgon.Input.Properties;
 
 namespace Gorgon.Native
 {
+	enum CursorInfoFlags
+	{
+		CursorHidden = 0,
+		CursorShowing = 1,
+		Suppressed = 2
+	}
+
 	/// <summary>
-	/// Win32 API function calls.
+	/// User32 native functionality.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	static class Win32Api
+	static class UserApi
 	{
+		#region Methods.
 		/// <summary>
 		/// Converts a virtual key code into a unicode character representation.
 		/// </summary>
@@ -75,12 +83,12 @@ namespace Gorgon.Native
 		{
 			unsafe
 			{
-				CursorInfo cursorInfo = new CursorInfo
+				CURSORINFO cursorInfo = new CURSORINFO
 				                        {
-					                        cbSize = DirectAccess.SizeOf<CursorInfo>(),
+					                        cbSize = DirectAccess.SizeOf<CURSORINFO>(),
 					                        flags = CursorInfoFlags.CursorHidden,
 					                        hCursor = IntPtr.Zero,
-					                        ptScreenPos = new Win32Point
+					                        ptScreenPos = new POINT
 					                                      {
 						                                      Y = 0,
 						                                      X = 0
@@ -96,5 +104,16 @@ namespace Gorgon.Native
 				throw new Win32Exception(string.Format(Resources.GORINP_ERR_WIN32_CURSOR_INFO, win32Error));
 			}	
 		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes static members of the <see cref="UserApi"/> class.
+		/// </summary>
+		static UserApi()
+		{
+			Marshal.PrelinkAll(typeof(UserApi));
+		}
+		#endregion
 	}
 }

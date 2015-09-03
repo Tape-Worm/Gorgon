@@ -20,10 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, July 11, 2015 2:40:01 PM
+// Created: Wednesday, August 12, 2015 9:29:01 PM
 // 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Gorgon.Core;
 
 namespace Gorgon.Input
@@ -31,12 +36,13 @@ namespace Gorgon.Input
 	/// <summary>
 	/// A representation of a joystick axis.
 	/// </summary>
-	public interface IGorgonJoystickAxis
+	public class GorgonJoystickAxis
 	{
+		#region Properties.
 		/// <summary>
 		/// Property to return the identifier for the joystick axis.
 		/// </summary>
-		JoystickAxis Axis
+		public JoystickAxis Axis
 		{
 			get;
 		}
@@ -52,9 +58,10 @@ namespace Gorgon.Input
 		/// When a <see cref="DeadZone"/> is applied to the axis, the value will remain at 0 (i.e. centered) until it exits the dead zone range.
 		/// </para>
 		/// </remarks>
-		int Value
+		public int Value
 		{
 			get;
+			internal set;
 		}
 
 		/// <summary>
@@ -69,10 +76,22 @@ namespace Gorgon.Input
 		/// Specify <see cref="GorgonRange.Empty"/> to disable the dead zone on the axis.
 		/// </para>
 		/// </remarks>
-		GorgonRange DeadZone
+		public GorgonRange DeadZone
 		{
 			get;
 			set;
 		}
+		#endregion
+
+		#region Constructor/Finalizer.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonJoystickAxis"/> class.
+		/// </summary>
+		/// <param name="axis">The name of the axis on the joystick.</param>
+		internal GorgonJoystickAxis(JoystickAxis axis)
+		{
+			Axis = axis;
+		}
+		#endregion
 	}
 }

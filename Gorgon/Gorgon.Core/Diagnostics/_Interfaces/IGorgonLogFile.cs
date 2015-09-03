@@ -20,31 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, July 20, 2015 11:55:23 PM
+// Created: Monday, August 17, 2015 9:41:38 PM
 // 
 #endregion
 
-namespace Gorgon.Input
+namespace Gorgon.Diagnostics
 {
 	/// <summary>
-	/// Provides routing for device interface data and the input service.
+	/// Provides functionality to log to a file on the file system.
 	/// </summary>
-	interface IGorgonDeviceRouting<T>
-		where T : struct
+	public interface IGorgonLogFile
 	{
 		/// <summary>
-		/// Property to return the type of device we're routing.
+		/// Function to start logging to a new file.
 		/// </summary>
-		InputDeviceType DeviceType
-		{
-			get;
-		}
+		void Begin();
 
 		/// <summary>
-		/// Function to route input device data into events for the device.
+		/// Function to end logging to the file.
 		/// </summary>
-		/// <param name="data">The data to route.</param>
-		/// <returns><b>true</b> if the data was parsed successfully, <b>false</b> if not.</returns>
-		bool ParseData(ref T data);
+		void End();
 	}
 }

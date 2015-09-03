@@ -1,4 +1,4 @@
-﻿#region MIT
+#region MIT
 // 
 // Gorgon.
 // Copyright (C) 2015 Michael Winsor
@@ -20,38 +20,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, August 12, 2015 7:36:36 PM
+// Created: Wednesday, August 12, 2015 9:42:40 PM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
-namespace Gorgon.Input
+// ReSharper disable InconsistentNaming
+namespace Gorgon.Native
 {
-	/// <summary>
-	/// A joystick interface.
-	/// </summary>
-	public interface IGorgonJoystick
+	[StructLayout(LayoutKind.Sequential)]
+	struct POINT
 	{
-		/// <summary>
-		/// Property to return whether the joystick is connected or not.
-		/// </summary> 
-		/// <remarks>
-		/// <para>
-		/// Joysticks may be registered with the system, and appear in the enumeration list provided by <see cref="IGorgonInputService.EnumerateJoysticks"/>, but they may not be connected to the system 
-		/// at the time of enumeration. Thus, we have this property to ensure that we know when a joystick is connected to the system or not. 
-		/// </para>
-		/// <para>
-		/// This property will update itself when a joystick is connected or disconnected.
-		/// </para>
-		/// </remarks>
-		bool IsConnected
-		{
-			get;
-		}
+		public int X;
+		public int Y;
 	}
 }

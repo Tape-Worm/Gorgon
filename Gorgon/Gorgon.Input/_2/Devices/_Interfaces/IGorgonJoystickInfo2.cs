@@ -152,7 +152,7 @@ namespace Gorgon.Input
 		/// <remarks>
 		/// Use this value to retrieve the number of axes the joystick supports by checking its <see cref="GorgonJoystickAxisRangeList.Count"/> property.
 		/// </remarks>
-		IGorgonJoystickAxisInfoList AxisInfo
+		GorgonJoystickAxisInfoList AxisInfo
 		{
 			get;
 		}

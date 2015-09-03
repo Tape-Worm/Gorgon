@@ -32,49 +32,6 @@ using Gorgon.Input.Properties;
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// Enumeration for point-of-view hat directions.
-	/// </summary>
-	[Flags]
-	public enum POVDirection
-	{
-		/// <summary>
-		/// Axis is centered.
-		/// </summary>
-		Center = 1,
-		/// <summary>
-		/// Axis is up.
-		/// </summary>
-		Up = 2,
-		/// <summary>
-		/// Axis is down.
-		/// </summary>
-		Down = 4,
-		/// <summary>
-		/// Axis is left.
-		/// </summary>
-		Left = 8,
-		/// <summary>
-		/// Axis is right.
-		/// </summary>
-		Right = 16
-	}
-
-	/// <summary>
-	/// The state of a joystick button.
-	/// </summary>
-	public enum JoystickButtonState
-	{
-		/// <summary>
-		/// The joystick button is not pressed.
-		/// </summary>
-		Up = 0,
-		/// <summary>
-		/// The joystick button is pressed.
-		/// </summary>
-		Down = 1
-	}
-
-	/// <summary>
 	/// A joystick/game pad interface.
 	/// </summary>
 	/// <remarks>This is not like the other input interfaces in that the data in this object is a snapshot of its state and not polled automatically.  

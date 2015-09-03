@@ -1,4 +1,4 @@
-#region MIT.
+/*#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2011 Michael Winsor
@@ -258,3 +258,4 @@ namespace Gorgon.Input.XInput
 		#endregion
 	}
 }
+*/

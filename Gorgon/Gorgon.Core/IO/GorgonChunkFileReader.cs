@@ -33,21 +33,113 @@ using Gorgon.Core.Properties;
 
 namespace Gorgon.IO
 {
-	/// <inheritdoc cref="IGorgonChunkFileReader"/>
+	/// <summary>
+	/// A reader that will read in and parse the contents of a <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> file.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This allows access to a file format that uses the concept of grouping sections of an object together into a grouping called a chunk. This chunk will hold binary data associated with an object allows 
+	/// the developer to read/write only the pieces of the object that are absolutely necessary while skipping optional chunks.
+	/// </para>
+	/// <para>
+	/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic.
+	/// </para>
+	/// <para>
+	/// A chunk file object will expose a collection of <see cref="GorgonChunk"/> values, and these give the available chunks in the file and can be looked up either by the <see cref="ulong"/> value for 
+	/// the chunk ID, or an 8 character <see cref="string"/> that represents the chunk (this is recommended for readability). This allows an application to do validation on the chunk file to ensure that 
+	/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats.
+	/// </para>
+	/// <para>
+	/// Chunks can be accessed in any order, not just the order in which they were written. This allows an application to only take the pieces they require from the file, and leave the rest. It also allows 
+	/// for optional chunks that can be skipped if not present, and read/written when they are.
+	/// </para>
+	/// <note type="tip">
+	/// <para>
+	/// Gorgon uses the chunked file format for its own file serializing/deserializing of its objects that support persistence. 
+	/// </para>
+	/// </note>
+	/// </remarks>
+	/// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
+	/// <example>
+	/// This example builds on the example provided in the <see cref="GorgonChunkFileWriter"/> example and shows how to read in the file created by that example:
+	/// <code language="csharp">
+	/// <![CDATA[
+	///		// An application defined file header ID. Useful for identifying the contents of the file.
+	///		const ulong FileHeader = 0xBAADBEEFBAADF00D;	
+	/// 
+	///		const string StringsChunk = "STRNGLST";
+	///		const string IntChunk = "INTGRLST"; 
+	/// 
+	///		string[] strings;
+	///		int[] ints;
+	/// 
+	///		Stream myStream = File.Open("<<Path to your file>>", FileMode.Open, FileAccess.Read, FileShare.Read);
+	/// 
+	///		// Notice that we're passing in an array of file header ID values. This allows us to allow the formatter to 
+	///		// read the file with multiple versions of the header ID. This gives us an ability to provide backwards 
+	///		// compatibility with file types.
+	///		GorgonChunkFileReader file = new GorgonChunkFileReader(myStream, new [] { FileHeader });
+	/// 
+	///		try
+	///		{
+	///			// Open the file for writing within the stream.
+	///			file.Open();
+	/// 
+	///			// Read the chunk that contains the integers. Note that this is different than the writer example,
+	///			// we're wrote these items last, and in a sequential file read, we'd have to read the values last when 
+	///			// reading the file. But with this format, we can find the chunk and read it from anywhere in the file.
+	///			// Alternatively, we could pass in an ulong value for the chunk ID instead of a string.
+	///			using (GorgonBinaryReader reader = file.OpenChunk(IntChunk))
+	///			{
+	///				ints = new int[reader.ReadInt32()];
+	///	
+	///				for (int = 0; i < ints.Length; ++i)
+	///				{
+	///					ints[i] = reader.ReadInt32();
+	///				}
+	///			}			
+	/// 
+	///			// Read the chunk that contains strings.
+	///			using (GorgonBinaryReader reader = file.OpenChunk(StringsChunk))
+	///			{
+	///				strings = new string[reader.ReadInt32()];
+	/// 
+	///				for (int i = 0; i < strings.Length; ++i)
+	///				{
+	///					strings[i] = reader.ReadString();
+	///				}
+	///			}
+	///		}
+	///		finally
+	///		{
+	///			// Ensure that we close the file, otherwise it'll be corrupt because the 
+	///			// chunk table will not be persisted.
+	///			file.Close();
+	/// 
+	///			if (myStream != null)
+	///			{
+	///				myStream.Dispose();
+	///			}
+	///		}
+	/// ]]>
+	/// </code>
+	/// </example>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable"
+		, Justification = "This is not correct. GorgonBinaryReader does not close its underlying stream, thus Dispose does not need to be called.")]
 	public sealed class GorgonChunkFileReader
-		: GorgonChunkFile<GorgonBinaryReader>, IGorgonChunkFileReader
+		: GorgonChunkFile<GorgonBinaryReader>
 	{
 		#region Variables.
 		// The list of allowable application specific Id values.
-		private readonly HashSet<UInt64> _appSpecificIds;
+		private readonly HashSet<ulong> _appSpecificIds;
 		// The currently active chunk.
-		private IGorgonChunk _activeChunk;
+		private GorgonChunk _activeChunk;
 		// The reader for the active chunk.
 		private GorgonBinaryReader _activeReader;
 		// The byte marker for the end of the file header.
-		private Int64 _headerEnd;
+		private long _headerEnd;
 		// The size of the file, in bytes.
-		private Int64 _fileSize;
+		private long _fileSize;
 		#endregion
 
 		#region Methods.
@@ -56,15 +148,15 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="reader">The reader for the stream.</param>
 		/// <param name="offset">Offset of the chunk table from the file start.</param>
-		private void ReadChunkTable(GorgonBinaryReader reader, Int64 offset)
+		private void ReadChunkTable(GorgonBinaryReader reader, long offset)
 		{
-			Int64 prevPosition = Stream.Position;
+			long prevPosition = Stream.Position;
 
 			try
 			{
 				Stream.Position = offset;
 
-				UInt64 chunkID = reader.ReadUInt64();
+				ulong chunkID = reader.ReadUInt64();
 
 				if (chunkID != ChunkTableID)
 				{
@@ -81,12 +173,7 @@ namespace Gorgon.IO
 				// Retrieve the chunk table.
 				for (int i = 0; i < count; ++i)
 				{
-					ChunkList.Add(new GorgonChunk
-					{
-						ID = reader.ReadUInt64(),
-						Size = reader.ReadInt32(),
-						FileOffset = reader.ReadInt64()
-					});
+					ChunkList.Add(new GorgonChunk(reader.ReadUInt64(),reader.ReadInt32(), reader.ReadUInt64()));
 				}
 			}
 			finally
@@ -117,14 +204,14 @@ namespace Gorgon.IO
 		{
 			using (GorgonBinaryReader reader = new GorgonBinaryReader(Stream, true))
 			{
-				UInt64 headerID = reader.ReadUInt64();
+				ulong headerID = reader.ReadUInt64();
 
 				if (headerID != FileFormatHeaderIDv0100)
 				{
 					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_FILE_HEADER_MISMATCH, headerID));
 				}
 
-				UInt64 appHeaderID = reader.ReadUInt64();
+				ulong appHeaderID = reader.ReadUInt64();
 
 				if (!_appSpecificIds.Contains(appHeaderID))
 				{
@@ -135,7 +222,7 @@ namespace Gorgon.IO
 				_fileSize = reader.ReadInt64();
 
 				// The offset of the chunk table in the file.
-				Int64 tablePosition = reader.ReadInt64();
+				long tablePosition = reader.ReadInt64();
 
 				// Record the end of the header.
 				_headerEnd = Stream.Position;
@@ -158,39 +245,58 @@ namespace Gorgon.IO
 
 		/// <inheritdoc/>
 		/// <returns>The total number of bytes read from the stream.</returns>
-		protected override Int64 OnClose()
+		protected override long OnClose()
 		{
 			CloseChunk();
 			return _fileSize;
 		}
 
-		/// <inheritdoc cref="IGorgonChunkFileReader.CloseChunk"/>
+		/// <summary>
+		/// Function to close an open chunk.
+		/// </summary>
+		/// <remarks>This will close the active chunk, and reposition the stream to the end of the file header.</remarks>
 		public override void CloseChunk()
 		{
-			if (_activeChunk == null)
+			if (_activeChunk.ID == 0)
 			{
 				return;
 			}
 
+			_activeChunk = default(GorgonChunk);
 			Stream.Position = _headerEnd;
-			_activeChunk = null;
 			_activeReader.Dispose();
 			_activeReader = null;
 		}
 
-		/// <inheritdoc cref="IGorgonChunkFileReader.OpenChunk(ulong)"/>
+		/// <summary>
+		/// Function to open a chunk for reading.
+		/// </summary>
+		/// <param name="chunkId">The ID of the chunk to open.</param>
+		/// <returns>A <see cref="GorgonBinaryReader" /> that will allow reading within the chunk.</returns>
+		/// <remarks>
+		/// <para>
+		/// Use this to read data from a chunk within the file. If the <paramref name="chunkId"/> is not found, then this method will throw an exception. To mitigate this, check for the existence of a chunk in 
+		/// the <see cref="GorgonChunkFile{T}.Chunks"/> collection.
+		/// </para>
+		/// <para>
+		/// This method will provide minimal validation for the chunk in that it will only check the <paramref name="chunkId"/> to see if it matches what's in the file, beyond that, the user is responsible for 
+		/// validating the data that lives within the chunk.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
+		/// <exception cref="KeyNotFoundException">Thrown when the <paramref name="chunkId" /> was not found in the chunk table.</exception>
 		public override GorgonBinaryReader OpenChunk(ulong chunkId)
 		{
 			ValidateChunkID(chunkId);
 
-			IGorgonChunk chunk = Chunks[chunkId];
+			GorgonChunk chunk = Chunks[chunkId];
 
 			if (chunk == null)
 			{
 				throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_CHUNK_NOT_FOUND, chunkId.FormatHex()));	
 			}
 
-			if (_activeChunk != null)
+			if (_activeChunk.ID != 0)
 			{
 				if (_activeChunk.ID == chunkId)
 				{
@@ -207,9 +313,9 @@ namespace Gorgon.IO
 			try
 			{
 				reader = new GorgonBinaryReader(Stream, true);
-				Stream.Position = (_activeChunk.FileOffset + _headerEnd) - sizeof(Int64);
+				Stream.Position = ((long)_activeChunk.FileOffset + _headerEnd) - sizeof(long);
 
-				UInt64 fileChunkId = reader.ReadUInt64();
+				ulong fileChunkId = reader.ReadUInt64();
 
 				if (fileChunkId != _activeChunk.ID)
 				{
@@ -253,7 +359,7 @@ namespace Gorgon.IO
 		/// of which versions are supported through the application specific IDs, the reader can determine if the file type is readable or not.
 		/// </para>
 		/// </remarks>
-		public GorgonChunkFileReader(Stream stream, IEnumerable<UInt64> appSpecificIds)
+		public GorgonChunkFileReader(Stream stream, IEnumerable<ulong> appSpecificIds)
 			: base(stream)
 		{
 			if (Stream.Length == Stream.Position)

@@ -60,21 +60,19 @@ namespace Gorgon.Diagnostics
 	/// This is a concrete implementation of the <see cref="IGorgonLog"/> interface.
 	/// </remarks>
 	sealed public class GorgonLogFile : 
-		IGorgonThreadedLog
+		IGorgonThreadedLog, IGorgonLogFile
 	{
 		#region Variables.
-		// File stream object.
-		private StreamWriter _stream;
 		// Logging filter.
 		private LoggingLevel _filterLevel = LoggingLevel.All;
 		// Buffer used to send data to the log file.
 		private readonly StringBuilder _outputBuffer = new StringBuilder(1024);
+		// Synchronization lock for multiple threads.
+		private readonly object _syncLock = new object();
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the filtering level of this log.
-		/// </summary>
+		/// <inheritdoc/>
 		public LoggingLevel LogFilterLevel
 		{
 			get
@@ -85,18 +83,14 @@ namespace Gorgon.Diagnostics
 			{
 				if ((_filterLevel != value) && (value != LoggingLevel.NoLogging))
 				{
-					Print(string.Empty, LoggingLevel.All);
-					Print("**** Filter level: {0}", LoggingLevel.All, value);
-					Print(string.Empty, LoggingLevel.All);
+					Print("\n**** Filter level: {0}\n", LoggingLevel.All, value);
 				}
 
 				_filterLevel = value;
 			}
 		}
 
-		/// <summary>
-		/// Property to return the name of the application that is being logged.
-		/// </summary>
+		/// <inheritdoc/>
 		public string LogApplication
 		{
 			get;
@@ -109,25 +103,16 @@ namespace Gorgon.Diagnostics
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Property to return whether or not the log object is in a closed state.
-		/// </summary>
-		public bool IsClosed
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to format a stack trace to be more presentable.
 		/// </summary>
+		/// <param name="writer">The stream to the log file.</param>
 		/// <param name="stack">Stack trace to format.</param>
 		/// <param name="indicator">Inner exception indicator.</param>
-		/// <param name="logLevel">Logging level to use.</param>
-		private void FormatStackTrace(string stack, string indicator, LoggingLevel logLevel)
+		private void FormatStackTrace(StreamWriter writer, string stack, string indicator)
 		{
 			if (string.IsNullOrEmpty(stack))
 			{
@@ -138,7 +123,7 @@ namespace Gorgon.Diagnostics
 			string[] lines = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
 			// Output to each log file.
-			Print("{0}Stack trace:", logLevel, indicator);
+			SendToLog(writer, "{0}Stack trace:", indicator);
 			for (int i = lines.Length - 1; i >= 0; i--)
 			{
 				int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
@@ -149,19 +134,19 @@ namespace Gorgon.Diagnostics
 					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
 				}
 
-				Print("{1}{0}", logLevel, lines[i], indicator);
+				SendToLog(writer, "{1}{0}", lines[i], indicator);
 			}
 
-			Print("{0}<<<{1}>>>", logLevel, indicator, Resources.GOR_EXCEPT_STACK_END);
+			SendToLog(writer, "{0}<<<{1}>>>", indicator, Resources.GOR_EXCEPT_STACK_END);
 		}
 
 		/// <summary>
 		/// Function to format the exception message for the log output.
 		/// </summary>
+		/// <param name="stream">File stream to write into.</param>
 		/// <param name="message">Message to format.</param>
 		/// <param name="indicator">Inner exception indicator.</param>
-		/// <param name="logLevel">Logging level to use.</param>
-		private void FormatMessage(string message, string indicator, LoggingLevel logLevel)
+		private void FormatMessage(StreamWriter stream, string message, string indicator)
 		{
 			if (string.IsNullOrEmpty(message))
 			{
@@ -173,241 +158,234 @@ namespace Gorgon.Diagnostics
 
 			for (int i = 0; i < lines.Length; i++)
 			{
-				Print(i == 0 ? "{1}{2}: {0}" : "{1}           {0}", logLevel, lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
+				SendToLog(stream, i == 0 ? "{1}{2}: {0}" : "{1}           {0}", lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
 			}
 		}
 
-		/// <summary>
-		/// Function to send an exception to the log file.
-		/// </summary>
-		/// <param name="ex">The exception to log.</param>
-		/// <remarks>
-		/// If the <see cref="LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-		/// regardless of filter level.
-		/// </remarks>
+		/// <inheritdoc/>
 		public void LogException(Exception ex)
 		{
 			string indicator = string.Empty; // Inner exception indicator.
 			string branch = string.Empty; // Branching character.
 
 			if ((ex == null)
-			    || (IsClosed)
 				|| (LogFilterLevel == LoggingLevel.NoLogging))
 			{
 				return;
 			}
 
-			Print("", LoggingLevel.All);
-			Print("================================================", LoggingLevel.All);
-			Print("\t{0}!!", LoggingLevel.All, Resources.GOR_LOG_EXCEPTION.ToUpper());
-			Print("================================================", LoggingLevel.All);
-
-			Exception inner = ex;
-
-			while (inner != null)
+			lock (_syncLock)
 			{
-				var gorgonException = inner as GorgonException;
-
-				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-				Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator, Resources.GOR_EXCEPT_EXCEPT_TYPE);
-				if (inner.Source != null)
+				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite)))
 				{
-					Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
-				}
+					SendToLog(stream, string.Empty);
+					SendToLog(stream, "================================================");
+					SendToLog(stream, "\t{0}!!", Resources.GOR_LOG_EXCEPTION.ToUpper());
+					SendToLog(stream, "================================================");
 
-				if (inner.TargetSite?.DeclaringType != null)
-				{
-					Print("{1}{2}: {0}",
-					      (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-					      inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name,
-					      indicator,
-					      Resources.GOR_EXCEPT_TARGET_SITE);
-				}
+					Exception inner = ex;
 
-				if (gorgonException != null)
-				{
-					Print("{3}{4}: [{0}] {1} (0x{2:X})",
-					      (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-					      gorgonException.ResultCode.Name,
-					      gorgonException.ResultCode.Description,
-					      gorgonException.ResultCode.Code,
-					      indicator,
-					      Resources.GOR_EXCEPT_GOREXCEPT_RESULT);
-				}
-
-				IDictionary extraInfo = inner.Data;
-
-				// Print custom information.
-				if (extraInfo.Count > 0)
-				{
-					Print("{0}", LoggingLevel.Verbose, indicator);
-					Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_EXCEPT_CUSTOM_INFO);
-					Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
-					foreach (DictionaryEntry item in extraInfo)
+					while (inner != null)
 					{
-						if (item.Value != null)
+						var gorgonException = inner as GorgonException;
+
+						if ((inner == ex) || (LogFilterLevel == LoggingLevel.Verbose))
 						{
-							Print("{0}{1}:  {2}", LoggingLevel.Verbose, indicator, item.Key, item.Value);
+							FormatMessage(stream, inner.Message, indicator);
+
+							SendToLog(stream,
+							          "{1}{2}: {0}",
+							          inner.GetType().FullName,
+							          indicator,
+							          Resources.GOR_EXCEPT_EXCEPT_TYPE);
+
+							if (inner.Source != null)
+							{
+								SendToLog(stream, "{1}{2}: {0}", inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
+							}
+
+							if (inner.TargetSite?.DeclaringType != null)
+							{
+								SendToLog(stream,
+								          "{1}{2}: {0}",
+								          inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name,
+								          indicator,
+								          Resources.GOR_EXCEPT_TARGET_SITE);
+							}
+
+							if (gorgonException != null)
+							{
+								SendToLog(stream,
+								          "{3}{4}: [{0}] {1} (0x{2:X})",
+								          gorgonException.ResultCode.Name,
+								          gorgonException.ResultCode.Description,
+								          gorgonException.ResultCode.Code,
+								          indicator,
+								          Resources.GOR_EXCEPT_GOREXCEPT_RESULT);
+							}
 						}
+
+						IDictionary extraInfo = inner.Data;
+
+						// Print custom information.
+						if ((LogFilterLevel == LoggingLevel.Verbose) && (extraInfo.Count > 0))
+						{
+							SendToLog(stream, "{0}", indicator);
+							SendToLog(stream, "{0}{1}:", indicator, Resources.GOR_EXCEPT_CUSTOM_INFO);
+							SendToLog(stream, "{0}------------------------------------------------------------", indicator);
+
+							foreach (DictionaryEntry item in extraInfo)
+							{
+								if (item.Value != null)
+								{
+									SendToLog(stream, "{0}{1}:  {2}", indicator, item.Key, item.Value);
+								}
+							}
+							SendToLog(stream, "{0}------------------------------------------------------------", indicator);
+							SendToLog(stream, "{0}", indicator);
+						}
+
+						if ((ex == inner) || (LogFilterLevel == LoggingLevel.Verbose))
+						{
+							FormatStackTrace(stream, inner.StackTrace, indicator);
+						}
+
+						if ((inner.InnerException != null) && (LogFilterLevel == LoggingLevel.Verbose))
+						{
+							if (!string.IsNullOrWhiteSpace(indicator))
+							{
+								SendToLog(stream, "{0}================================================================================================", branch + "|->   ");
+								branch += "  ";
+								indicator = branch + "|   ";
+							}
+							else
+							{
+								SendToLog(stream, "{0}================================================================================================", branch + "|-> ");
+								indicator = "|   ";
+							}
+
+							SendToLog(stream, "{0}  {2} \"{1}\"", indicator, inner.Message, Resources.GOR_EXCEPT_NEXT_EXCEPTION);
+							SendToLog(stream, "{0}================================================================================================", indicator);
+						}
+
+						inner = inner.InnerException;
 					}
-					Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
-					Print("{0}", LoggingLevel.Verbose, indicator);
+					SendToLog(stream, string.Empty);
 				}
-
-				FormatStackTrace(inner.StackTrace, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-
-				if (inner.InnerException != null)
-				{
-					if (!string.IsNullOrWhiteSpace(indicator))
-					{
-						Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|->   ");
-						branch += "  ";
-						indicator = branch + "|   ";
-					}
-					else
-					{
-						Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|-> ");
-						indicator = "|   ";
-					}
-
-					Print("{0}  {2} \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message, Resources.GOR_EXCEPT_NEXT_EXCEPTION);
-					Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
-				}
-
-				inner = inner.InnerException;
 			}
-			Print("", LoggingLevel.All);
 		}
 
 		/// <summary>
-		/// Function to print a line to the log file.
+		/// Function to append a line of logging text to the log file.
 		/// </summary>
-		/// <param name="formatSpecifier">Format specifier for the line.</param>
-		/// <param name="level">Level that this message falls under.</param>
-		/// <param name="arguments">List of optional arguments.</param>
-		/// <remarks>
-		/// This method is thread safe and can be called from threads that did not create the this object. Writing will be synchronized to ensure that multiple threads do not 
-		/// attempt to write to the file at the same time.
-		/// </remarks>
+		/// <param name="writer">Stream writer used to write to the log file.</param>
+		/// <param name="formatSpecifier">The pre-formatted text message.</param>
+		/// <param name="arguments">The arguments to pass to the pre-formatted text.</param>
+		private void SendToLog(StreamWriter writer, string formatSpecifier, params object[] arguments)
+		{
+			_outputBuffer.Length = 0;
+
+			if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
+			{
+				_outputBuffer.AppendFormat("[{0} {1}]\r\n", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+			}
+			else
+			{
+				// Get a list of lines.
+				string[] lines = formatSpecifier.Split(new[]
+													   {
+																   '\r',
+																   '\n'
+															   },
+													   StringSplitOptions.RemoveEmptyEntries);
+
+				foreach (string line in lines)
+				{
+					_outputBuffer.AppendFormat("[{0} {1}] ", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+					_outputBuffer.Append(string.Format(line + "\r\n", arguments));
+				}
+
+				writer.Write(_outputBuffer.ToString());
+				writer.Flush();
+			}
+		}
+
+		/// <inheritdoc/>
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
-			if ((LogFilterLevel == LoggingLevel.NoLogging) || (IsClosed) || ((level > LogFilterLevel) && (level != LoggingLevel.All)))
+			if ((LogFilterLevel == LoggingLevel.NoLogging) || 
+				((level > LogFilterLevel) && (level != LoggingLevel.All)))
 			{
 				return;
 			}
 
-			bool locked = false;
-			var spinLock = new SpinLock();
-
-			try
+			lock (_syncLock)
 			{
-				spinLock.Enter(ref locked);
-
-				_outputBuffer.Length = 0;
-
-				if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
-				{
-					_outputBuffer.AppendFormat("[{0} {1}]\r\n", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
-				}
-				else
-				{
-					// Get a list of lines.
-					string[] lines = formatSpecifier.Split(new[]
-					                                       {
-						                                       '\r',
-						                                       '\n'
-					                                       },
-					                                       StringSplitOptions.RemoveEmptyEntries);
-
-					foreach (string line in lines)
-					{
-						_outputBuffer.AppendFormat("[{0} {1}] ", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
-						_outputBuffer.Append(string.Format(line + "\r\n", arguments));
-					}
-				}
-
-				_stream.Write(_outputBuffer.ToString());
-				_stream.Flush();
-			}
-			finally
-			{
-				if (locked)
-				{
-					spinLock.Exit();
+				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8))
+				{ 
+					SendToLog(stream, formatSpecifier, arguments);
 				}
 			}
 		}
 
-		/// <summary>
-		/// Function to close the log file.
-		/// </summary>
-		/// <remarks>
-		/// If this method is not called from the thread that the object was created on, then that call will do nothing.
-		/// </remarks>
-		public void Close()
+		/// <inheritdoc/>
+		public void End()
 		{
-			if ((IsClosed)
-				|| (ThreadID != Thread.CurrentThread.ManagedThreadId))
-			{
-				return;
-			}
-
 			// Clean up.
-			Print(string.Empty, LoggingLevel.All);
-			Print("**** {0} (Version {1}) logging ends. ****", LoggingLevel.All, LogApplication,
-			      GetType().Assembly.GetName().Version.ToString());
-
-			if (_stream != null)
+			lock (_syncLock)
 			{
-				_stream.Close();
-				_stream = null;
+				using (var writer = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8))
+				{
+					SendToLog(writer,
+					              "**** {0} (Version {1}) logging ends on thread ID: 0x{2}. ****",
+					              LogApplication,
+					              GetType().Assembly.GetName().Version.ToString(),
+					              ThreadID.FormatHex());
+				}
 			}
-
-			IsClosed = true;
 		}
 
-		/// <summary>
-		/// Function to open the log file.
-		/// </summary>
+		/// <inheritdoc/>
 		/// <remarks>
-		/// If this method is not called from the thread that the object was created on, then that call will do nothing.
+		/// If calling this method from a thread that is <b>not</b> the thread that created the object, then no new file will be created.
 		/// </remarks>
-		public void Open()
+		public void Begin()
 		{
-			if ((!IsClosed)
-				|| (ThreadID != Thread.CurrentThread.ManagedThreadId))
-			{
-				return;
-			}
-
+			StreamWriter stream = null;
 			string directory = Path.GetDirectoryName(LogPath);
 
 			// If we can't get a directory, then leave.
-			if (string.IsNullOrWhiteSpace(directory))
+			if ((string.IsNullOrWhiteSpace(directory))
+				|| (ThreadID != Thread.CurrentThread.ManagedThreadId))
 			{
 				return;
 			}
 
-			// Create the directory if it doesn't exist.
-			if (!Directory.Exists(directory))
+			try
 			{
-				Directory.CreateDirectory(directory);
+				// Create the directory if it doesn't exist.
+				if (!Directory.Exists(directory))
+				{
+					Directory.CreateDirectory(directory);
+				}
+
+				// Open the stream.
+				stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
+				stream.WriteLine("**** {0} (Version {1}) logging begins on thread ID 0x{2} ****",
+					                LogApplication,
+					                GetType().Assembly.GetName().Version,
+					                ThreadID.FormatHex());
+				if (LogFilterLevel != LoggingLevel.NoLogging)
+				{
+					stream.WriteLine("**** Filter level: {0}", LogFilterLevel);
+				}
+				stream.WriteLine();
+				stream.Flush();
 			}
-
-			// Open the stream.
-			_stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
-			_stream.Flush();
-
-			IsClosed = false;
-			Print("**** {0} (Version {1}) logging begins ****", LoggingLevel.All, LogApplication,
-			      GetType().Assembly.GetName().Version.ToString());
-
-			if (LogFilterLevel != LoggingLevel.NoLogging)
+			finally
 			{
-				Print("**** Filter level: {0}", LoggingLevel.All, LogFilterLevel);
+				stream?.Close();
 			}
-
-			Print(string.Empty, LoggingLevel.All);
 		}
 		#endregion
 
@@ -424,8 +402,6 @@ namespace Gorgon.Diagnostics
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 
 			appname.ValidateString("appname");
-
-			IsClosed = true;
 
 			LogApplication = appname;
 

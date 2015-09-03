@@ -30,7 +30,7 @@ using System.Windows.Forms;
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// Event arguments for the various events triggered on the <see cref="IGorgonKeyboard"/> interface.
+	/// Event arguments for the various events triggered on the <see cref="GorgonKeyboard2"/> interface.
 	/// </summary>
 	public class GorgonKeyboardEventArgs
 		: EventArgs

@@ -1651,7 +1651,7 @@ namespace Gorgon.Core
 	}
 	#endregion
 
-	#region Int32
+	#region int
 	/// <summary>
 	/// A type that represents a range between two <see cref="int"/> values.
 	/// </summary>

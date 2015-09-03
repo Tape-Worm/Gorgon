@@ -93,13 +93,13 @@ namespace Gorgon.Examples
 		// Our mouse cursor.
         private MouseCursor _cursor;                            
 		// Our input service.
-		private IGorgonInputService _service;
+		private GorgonInputService2 _service;
 		// Our mouse interface.
-		private IGorgonMouse _mouse;
+		private GorgonMouse _mouse;
 		// A joystick interface.
 		private GorgonJoystick _joystick;
 		// Our keyboard interface.
-		private IGorgonKeyboard _keyboard;
+		private GorgonKeyboard2 _keyboard;
 		// Mouse position.
 		private Point _mousePosition = Point.Empty;
 		// Current image for the cursor.
@@ -479,7 +479,7 @@ namespace Gorgon.Examples
 	        // Note that joysticks from Raw Input are always exclusive access,
 	        // so setting _joystick.Exclusive = true; does nothing.
 			// TODO: Needs to be refactored.
-#warning Fix this later.
+
 //	        _joystick = _service.CreateJoystick(panelDisplay, null);
 
 	        // Show our joystick information.
@@ -517,7 +517,7 @@ namespace Gorgon.Examples
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			IGorgonPluginAssemblyCache assemblies = null;
+			GorgonPluginAssemblyCache assemblies = null;
 			string pluginPath = Program.PlugInPath;
 
 			base.OnLoad(e);
@@ -551,8 +551,8 @@ namespace Gorgon.Examples
 				assemblies.Load(pluginPath);
 
 				// Create our input factory.
-				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
-				IGorgonInputServiceFactory factory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
+				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				GorgonInputServiceFactory2 factory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
 				_service = factory.CreateService(pluginName);
 
 				// Ensure that we have the necessary input devices.

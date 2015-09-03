@@ -37,7 +37,7 @@ namespace Gorgon.Input
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the buttons that were held down during a <see cref="IGorgonMouse"/> event.
+		/// Property to return the buttons that were held down during a <see cref="GorgonMouse"/> event.
 		/// </summary>
 		public MouseButtons Buttons
 		{
@@ -45,7 +45,7 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// Property to return the buttons that were being held down in conjunction with the <see cref="Buttons"/> during a <see cref="IGorgonMouse"/> event.
+		/// Property to return the buttons that were being held down in conjunction with the <see cref="Buttons"/> during a <see cref="GorgonMouse"/> event.
 		/// </summary>
 		public MouseButtons ShiftButtons
 		{
@@ -72,7 +72,7 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// Property to return the amount that the mouse has moved since the last <see cref="IGorgonMouse"/> event.
+		/// Property to return the amount that the mouse has moved since the last <see cref="GorgonMouse"/> event.
 		/// </summary>
 		public Point RelativePosition
 		{
@@ -80,7 +80,7 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// Property to return the amount that the wheel has moved since the last <see cref="IGorgonMouse"/> event.
+		/// Property to return the amount that the wheel has moved since the last <see cref="GorgonMouse"/> event.
 		/// </summary>
 		/// <remarks>
 		/// If this is no mouse wheel present, this value will return 0.

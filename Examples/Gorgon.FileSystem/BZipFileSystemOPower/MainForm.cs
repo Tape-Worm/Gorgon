@@ -165,7 +165,7 @@ namespace Gorgon.Examples
 
 			// Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
 			// and get rid of the plugin stuff since we won't need it again.
-		    using (IGorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+		    using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 		    {
 			    pluginAssemblies.Load(gorPackPath);
 

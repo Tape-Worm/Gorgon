@@ -78,15 +78,15 @@ namespace Gorgon.Examples
 		// Text font. 
 		private GorgonFont _font;
 		// Input factory.
-		private IGorgonInputService _input;                         
+		private GorgonInputService2 _input;                         
 		// Mouse object.
-		private IGorgonMouse _mouse;
+		private GorgonMouse _mouse;
 		// Joystick list.
 		private GorgonJoystick[] _joystickList;
 		// Joystick.
 		private GorgonJoystick _joystick;
 		// Keyboard object.
-		private IGorgonKeyboard _keyboard;
+		private GorgonKeyboard2 _keyboard;
 		// Text sprite object.
 		private GorgonText _messageSprite;
 		// Back buffer.
@@ -403,7 +403,7 @@ namespace Gorgon.Examples
 		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			IGorgonPluginAssemblyCache assemblyCache = null;
+			GorgonPluginAssemblyCache assemblyCache = null;
 			base.OnLoad(e);
 
 			try
@@ -429,10 +429,10 @@ namespace Gorgon.Examples
 				assemblyCache.Load(pluginPath);
 
 				// Create the plugin service.
-				IGorgonPluginService plugInService = new GorgonPluginService(assemblyCache, GorgonApplication.Log);
+				GorgonPluginService plugInService = new GorgonPluginService(assemblyCache, GorgonApplication.Log);
 				
 				// Create the service.
-				IGorgonInputServiceFactory inputServiceFactory = new GorgonInputServiceFactory2(plugInService, GorgonApplication.Log);
+				GorgonInputServiceFactory2 inputServiceFactory = new GorgonInputServiceFactory2(plugInService, GorgonApplication.Log);
 				_input = inputServiceFactory.CreateService(pluginName);
 
 				// Get the available devices on our system.

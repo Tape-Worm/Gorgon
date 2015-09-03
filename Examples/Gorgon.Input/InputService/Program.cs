@@ -107,10 +107,10 @@ namespace Gorgon.Examples
 		/// Function to load in the input plugins.
 		/// </summary>
 		/// <returns>A list of input plugins.</returns>
-		static IList<Tuple<GorgonInputServicePlugin, IGorgonInputService>> GetInputPlugIns()
+		static IList<Tuple<GorgonInputServicePlugin, GorgonInputService2>> GetInputPlugIns()
 		{
 			// Access our plugin cache.
-			using (IGorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
+			using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
 			{
 				// Get the files from the plugin directory.
 				// The plugin directory can be changed in the configuration file
@@ -121,7 +121,7 @@ namespace Gorgon.Examples
 
 				if (files.Length == 0)
 				{
-					return new Tuple<GorgonInputServicePlugin, IGorgonInputService>[0];
+					return new Tuple<GorgonInputServicePlugin, GorgonInputService2>[0];
 				}
 
 				// Find our plugins in the DLLs.
@@ -139,10 +139,10 @@ namespace Gorgon.Examples
 				}
 				
 				// Create our plugin service.
-				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
 
 				// Create our input service factory.
-				IGorgonInputServiceFactory serviceFactory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
+				GorgonInputServiceFactory2 serviceFactory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
 
 				// Retrieve the list of plugins from the input service factory.
 				IEnumerable<GorgonInputServicePlugin> inputPlugIns = pluginService.GetPlugins<GorgonInputServicePlugin>();
@@ -150,7 +150,7 @@ namespace Gorgon.Examples
 				return (from plugin in inputPlugIns
 				        let service = serviceFactory.CreateService(plugin.Name)
 				        where service != null
-				        select new Tuple<GorgonInputServicePlugin, IGorgonInputService>(plugin, service)).ToArray();
+				        select new Tuple<GorgonInputServicePlugin, GorgonInputService2>(plugin, service)).ToArray();
 			}
 		}
 

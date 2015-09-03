@@ -120,13 +120,7 @@
   <data name="GORINP_XINP_DEVICE_NAME" xml:space="preserve">
     <value>XInput controller #{0}</value>
   </data>
-  <data name="GORINP_XINP_NOT_XINPUT_JOYSTICK" xml:space="preserve">
-    <value>The joystick information object is not XInput specific.</value>
-  </data>
-  <data name="GORINP_XINP_ONLY_360_CONTROLLERS" xml:space="preserve">
-    <value>This plug-in only contains XBOX 360 controller devices.</value>
-  </data>
   <data name="GORINP_XINP_SERVICEDESC" xml:space="preserve">
-    <value>Gorgon XInput controller input</value>
+    <value>Gorgon XBOX 360 controller input plug-in.</value>
   </data>
 </root>

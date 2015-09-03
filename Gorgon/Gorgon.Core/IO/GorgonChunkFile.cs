@@ -60,7 +60,7 @@ namespace Gorgon.IO
 	/// A more detailed explanation of the chunk file format can be found in the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF)</conceptualLink> topic.
 	/// </para>
 	/// <para>
-	/// A chunk file object will expose a collection of <see cref="IGorgonChunk"/> values, and these give the available chunks in the file and can be looked up either by the <see cref="ulong"/> value for 
+	/// A chunk file object will expose a collection of <see cref="GorgonChunk"/> values, and these give the available chunks in the file and can be looked up either by the <see cref="ulong"/> value for 
 	/// the chunk ID, or an 8 character <see cref="string"/> that represents the chunk (this is recommended for readability). This allows an application to do validation on the chunk file to ensure that 
 	/// its format is correct. It also allows an application to discard chunks it doesn't care about or are optional. This allows for some level of versioning between chunk file formats.
 	/// </para>
@@ -82,11 +82,11 @@ namespace Gorgon.IO
 		/// <summary>
 		/// The header ID for the 1.0 version of the chunk file format. (GCFF0100)
 		/// </summary>
-		public const UInt64 FileFormatHeaderIDv0100 = 0x3030313046464347;
+		public const ulong FileFormatHeaderIDv0100 = 0x3030313046464347;
 		/// <summary>
 		/// The chunk table chunk ID (CHUNKTBL)
 		/// </summary>
-		public const UInt64 ChunkTableID = 0x4C42544B4E554843;
+		public const ulong ChunkTableID = 0x4C42544B4E554843;
 		#endregion
 
 		#region Variables.
@@ -141,7 +141,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="chunkId">Chunk ID to evaluate.</param>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="chunkId"/> is the same as one of the reserved chunk IDs.</exception>
-		protected void ValidateChunkID(UInt64 chunkId)
+		protected void ValidateChunkID(ulong chunkId)
 		{
 			switch (chunkId)
 			{
@@ -160,7 +160,7 @@ namespace Gorgon.IO
 		/// Function called when a chunk file is closing.
 		/// </summary>
 		/// <returns>The total number of bytes read or written.</returns>
-		protected abstract Int64 OnClose();
+		protected abstract long OnClose();
 
 		/// <summary>
 		/// Function to open a chunked file within the stream.
@@ -231,12 +231,12 @@ namespace Gorgon.IO
 		/// <param name="chunkId">The ID of the chunk to open.</param>
 		/// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
 		/// <remarks>
-		/// See the <see cref="IGorgonChunkFileReader.OpenChunk(UInt64)"/>, or the <see cref="IGorgonChunkFileWriter.OpenChunk(UInt64)"/> methods for detailed information on what this method does during reading/writing 
+		/// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> methods for detailed information on what this method does during reading/writing 
 		/// contexts.
 		/// </remarks>
-		/// <seealso cref="IGorgonChunkFileReader.OpenChunk(UInt64)"/>
-		/// <seealso cref="IGorgonChunkFileWriter.OpenChunk(UInt64)"/>
-		public abstract T OpenChunk(UInt64 chunkId);
+		/// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
+		/// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
+		public abstract T OpenChunk(ulong chunkId);
 
 		/// <summary>
 		/// Function to close an open chunk file in the stream.
@@ -268,10 +268,10 @@ namespace Gorgon.IO
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
 		/// <remarks>
-		/// See the <see cref="IGorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="IGorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
+		/// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
 		/// </remarks>
-		/// <seealso cref="IGorgonChunkFileReader.OpenChunk(ulong)"/>
-		/// <seealso cref="IGorgonChunkFileWriter.OpenChunk(ulong)"/>
+		/// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
+		/// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
 		public T OpenChunk(string chunkName)
 		{
 			if (chunkName == null)

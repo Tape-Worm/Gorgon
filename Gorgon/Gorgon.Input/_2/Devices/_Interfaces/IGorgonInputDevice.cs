@@ -34,6 +34,18 @@ namespace Gorgon.Input
 	/// </summary>
 	public interface IGorgonInputDevice
 	{
+		#region Events.
+		/// <summary>
+		/// Event triggered when an input device has been acquired.
+		/// </summary>
+		event EventHandler InputDeviceAcquired;
+
+		/// <summary>
+		/// Event triggered when an input device has been unacquired.
+		/// </summary>
+		event EventHandler InputDeviceUnacquired;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the unique identifier for this device.
@@ -103,7 +115,7 @@ namespace Gorgon.Input
 		/// <para>
 		/// <note type="tip">
 		/// <para>
-		/// When a <see cref="IGorgonMouse"/> is exclusive, it will turn off the system mouse cursor.
+		/// When a <see cref="GorgonMouse"/> is exclusive, it will turn off the system mouse cursor.
 		/// </para>
 		/// </note>
 		/// </para>

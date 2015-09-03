@@ -42,11 +42,10 @@ namespace Gorgon.Input
 	/// The input service factory is used to create input services from the plugins available in a <see cref="GorgonPluginService"/> object.
 	/// </remarks>
 	public class GorgonInputServiceFactory2
-		: IGorgonInputServiceFactory
 	{
 		#region Variables.
 		// A plugin service where instances of the provider plugins can be found.
-		private readonly IGorgonPluginService _pluginService;
+		private readonly GorgonPluginService _pluginService;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
 		#endregion
@@ -56,9 +55,9 @@ namespace Gorgon.Input
 		/// Function to retrieve all the input services from the plugin service.
 		/// </summary>
 		/// <returns>A list of input services created by this method.</returns>
-		private IEnumerable<IGorgonInputService> GetAllServices()
+		private IEnumerable<GorgonInputService2> GetAllServices()
 		{
-			var result = new List<IGorgonInputService>();
+			var result = new List<GorgonInputService2>();
 
 			foreach (KeyValuePair<string, Assembly> assemblyItem in _pluginService.PluginAssemblyCache.PluginAssemblies)
 			{
@@ -89,7 +88,7 @@ namespace Gorgon.Input
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="servicePluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="servicePluginName"/> is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="servicePluginName"/> parameter was not found.</exception>
-		public IGorgonInputService CreateService(string servicePluginName)
+		public GorgonInputService2 CreateService(string servicePluginName)
 		{
 			if (servicePluginName == null)
 			{
@@ -124,7 +123,7 @@ namespace Gorgon.Input
 		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b> (<i>Nothing</i> in VB.Net), then only the <see cref="GorgonInputService"/> objects within that assembly will 
 		/// be loaded. Otherwise, all services available in the <see cref="GorgonPluginService"/> that was passed to the object constructor will be created (or have a previously created instance returned).
 		/// </remarks>
-		public IEnumerable<IGorgonInputService> CreateServices(AssemblyName pluginAssembly = null)
+		public IEnumerable<GorgonInputService2> CreateServices(AssemblyName pluginAssembly = null)
 		{
 			return pluginAssembly == null
 				       ? GetAllServices()
@@ -143,7 +142,7 @@ namespace Gorgon.Input
 		/// <param name="pluginService">The plugin service used to retrieve file system provider plugins.</param>
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonInputServiceFactory2(IGorgonPluginService pluginService, IGorgonLog log = null)
+		public GorgonInputServiceFactory2(GorgonPluginService pluginService, IGorgonLog log = null)
 		{
 			if (pluginService == null)
 			{

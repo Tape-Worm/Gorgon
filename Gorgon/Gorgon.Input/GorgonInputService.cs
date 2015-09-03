@@ -284,20 +284,20 @@ namespace Gorgon.Input
 		/// Function to enumerate the pointing devices such as mice, trackballs, etc... attached to the system.
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonMouseInfo"/> items.</returns>
-		protected abstract IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> OnEnumerateMice();
+		protected abstract IReadOnlyList<IGorgonMouseInfo> OnEnumerateMice();
 
 		/// <summary>
 		/// Function to perform the enumeration of keyboard devices attached to the system.
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonKeyboardInfo"/> items.</returns>
-		protected abstract IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> OnEnumerateKeyboards();
+		protected abstract IReadOnlyList<IGorgonKeyboardInfo> OnEnumerateKeyboards();
 
 		/// <summary>
 		/// Function to enumerate the available keyboards attached to the system.
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonKeyboardInfo"/> items.</returns>
 		/// <exception cref="GorgonException">Thrown when an attempt to enumerate keyboard devices is made, but there are already keyboard devices active.</exception>
-		public IGorgonNamedObjectReadOnlyDictionary<IGorgonKeyboardInfo> EnumerateKeyboards()
+		public IReadOnlyList<IGorgonKeyboardInfo> EnumerateKeyboards()
 		{
 			Log.Print("Enumerating keyboard devices.", LoggingLevel.Simple);
 
@@ -314,7 +314,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonMouseInfo"/> items.</returns>
 		/// <exception cref="GorgonException">Thrown when an attempt to enumerate pointing devices is made, but there are already pointing devices active.</exception>
-		public IGorgonNamedObjectReadOnlyDictionary<IGorgonMouseInfo> EnumerateMice()
+		public IReadOnlyList<IGorgonMouseInfo> EnumerateMice()
 		{
 			Log.Print("Enumerating pointing devices.", LoggingLevel.Simple);
 
@@ -331,7 +331,7 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonJoystickInfo"/> items.</returns>
 		/// <exception cref="GorgonException">Thrown when an attempt to enumerate gaming devices is made, but there are already gaming devices active.</exception>
-		public IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> EnumerateJoysticks()
+		public IReadOnlyList<IGorgonJoystickInfo> EnumerateJoysticks()
 		{
 			Log.Print("Enumerating pointing devices.", LoggingLevel.Simple);
 
@@ -354,7 +354,7 @@ namespace Gorgon.Input
 		/// make use of the data provided by the <see cref="IGorgonHumanInterfaceDevice"/> objects created by the input service.
 		/// </para>
 		/// </remarks>
-		public IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> EnumerateHumanInterfaceDevices()
+		public IReadOnlyList<IGorgonHumanInterfaceDeviceInfo> EnumerateHumanInterfaceDevices()
 		{
 			Log.Print("Enumerating human interface devices.", LoggingLevel.Simple);
 
@@ -370,7 +370,7 @@ namespace Gorgon.Input
 		/// Function to enumerate the gaming devices such as joysticks, game pads, etc... registered with the system.
 		/// </summary>
 		/// <returns>A list of <see cref="IGorgonJoystickInfo"/> items.</returns>
-		protected abstract IGorgonNamedObjectReadOnlyDictionary<IGorgonJoystickInfo> OnEnumerateJoysticks();
+		protected abstract IReadOnlyList<IGorgonJoystickInfo> OnEnumerateJoysticks();
 
         /// <summary>
 		/// Function to enumerate Human Interface Devices. 
@@ -382,17 +382,17 @@ namespace Gorgon.Input
 		/// make use of the data provided by the <see cref="IGorgonHumanInterfaceDevice"/> objects created by the input service.
 		/// </para>
 		/// </remarks>
-		protected abstract IGorgonNamedObjectReadOnlyDictionary<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices();
+		protected abstract IReadOnlyList<IGorgonHumanInterfaceDeviceInfo> OnEnumerateHumanInterfaceDevices();
 
 		/// <summary>
 		/// Function to create a keyboard interface.
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="keyboardInfo">Information about the keyboard to bind.</param>
-		/// <returns>A new <see cref="IGorgonKeyboard"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonKeyboard2"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method is for implementing functionality that will return a new <see cref="IGorgonKeyboard"/> interface. 
+		/// This method is for implementing functionality that will return a new <see cref="GorgonKeyboard2"/> interface. 
 		/// </para>
 		/// <para>
 		/// When implementing this method, developers must handle the case where the <paramref name="keyboardInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net). This usually means that a system 
@@ -414,10 +414,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="mouseInfo">Information about the pointing device to bind.</param>
-		/// <returns>A new <see cref="IGorgonMouse"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonMouse"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method is for implementing functionality that will return a new <see cref="IGorgonMouse"/> interface. 
+		/// This method is for implementing functionality that will return a new <see cref="GorgonMouse"/> interface. 
 		/// </para>
 		/// <para>
 		/// When implementing this method, developers must handle the case where the <paramref name="mouseInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net). This usually means that a system 
@@ -439,10 +439,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="joystickInfo">Information about the gaming device to bind.</param>
-		/// <returns>A new <see cref="IGorgonJoystick"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonJoystick2"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This method is for implementing functionality that will return a new <see cref="IGorgonJoystick"/> interface. 
+		/// This method is for implementing functionality that will return a new <see cref="GorgonJoystick2"/> interface. 
 		/// </para>
 		/// </remarks>
 		protected abstract GorgonJoystick OnCreateJoystick(Control window, IGorgonJoystickInfo joystickInfo);
@@ -507,10 +507,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="keyboardInfo">[Optional] Information about a specific keyboard to bind.</param>
-		/// <returns>A new <see cref="IGorgonKeyboard"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonKeyboard2"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return a new <see cref="IGorgonKeyboard"/> interface to allow processing of key presses either through polling or events. 
+		/// This will return a new <see cref="GorgonKeyboard2"/> interface to allow processing of key presses either through polling or events. 
 		/// </para>
 		/// <para>
 		/// When passing the <paramref name="keyboardInfo"/> for a keyboard interface that was already created, that existing keyboard interface will be returned instead of a new one.
@@ -552,10 +552,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="pointingDeviceInfo">[Optional] Information about a specific pointing device to bind.</param>
-		/// <returns>A new <see cref="IGorgonMouse"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonMouse"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return a new <see cref="IGorgonMouse"/> interface to allow processing of pointing device actions either through polling or events. A pointing device can be a mouse, track pad, etc... But 
+		/// This will return a new <see cref="GorgonMouse"/> interface to allow processing of pointing device actions either through polling or events. A pointing device can be a mouse, track pad, etc... But 
 		/// for simplicity and easy of typing, the Gorgon Input API refers to these devices as mice.
 		/// </para>
 		/// <para>
@@ -612,10 +612,10 @@ namespace Gorgon.Input
 		/// </summary>
 		/// <param name="window">The application window to bind with.</param>
 		/// <param name="joystickDeviceInfo">Information about a specific gaming device to bind.</param>
-		/// <returns>A new <see cref="IGorgonJoystick"/> interface.</returns>
+		/// <returns>A new <see cref="GorgonJoystick2"/> interface.</returns>
 		/// <remarks>
 		/// <para>
-		/// This will return a new <see cref="IGorgonJoystick"/> interface to allow processing of gaming device actions through polling. A gaming device can be a joystick, game pad, etc... But 
+		/// This will return a new <see cref="GorgonJoystick2"/> interface to allow processing of gaming device actions through polling. A gaming device can be a joystick, game pad, etc... But 
 		/// for simplicity and easy of typing, the Gorgon Input API refers to these devices as joysticks.
 		/// </para>
 		/// <para>
