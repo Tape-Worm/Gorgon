@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Gorgon.Input
 {
 	/// <summary>
@@ -64,12 +57,19 @@ namespace Gorgon.Input
 		/// Function to retrieve state for a joystick device.
 		/// </summary>
 		/// <param name="device">The joystick to retrieve the state from.</param>
-		/// <param name="deviceData">The data for the device.</param>
-		/// <returns><b>true</b> if the data was retrieved successfully, <b>false</b> if not.</returns>
+		/// <returns>The joystick data for the joystick..</returns>
 		/// <remarks>
 		/// This will retrieve the current state for a joystick device. The <see cref="GorgonJoystick2"/> device is polled instead of event driven, and this will allow the joystick to retrieve its daat from 
 		/// the native device data.
 		/// </remarks>
-		bool GetJoystickStateData(GorgonJoystick2 device, out GorgonJoystickData deviceData);
+		GorgonJoystickData GetJoystickStateData(GorgonJoystick2 device);
+
+		/// <summary>
+		/// Function to send vibration data to the joystick (if supported).
+		/// </summary>
+		/// <param name="device">The device to virbate.</param>
+		/// <param name="vibrationMotor">The index of the motor to turn on/off.</param>
+		/// <param name="speed">The speed of the motor, 0 will turn off the motor.</param>
+		void SendVibrationData(GorgonJoystick2 device, int vibrationMotor, int speed);
 	}
 }

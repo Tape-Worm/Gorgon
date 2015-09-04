@@ -82,9 +82,9 @@ namespace Gorgon.Examples
 		// Mouse object.
 		private GorgonMouse _mouse;
 		// Joystick list.
-		private GorgonJoystick[] _joystickList;
+		private GorgonJoystick2[] _joystickList;
 		// Joystick.
-		private GorgonJoystick _joystick;
+		private GorgonJoystick2 _joystick;
 		// Keyboard object.
 		private GorgonKeyboard2 _keyboard;
 		// Text sprite object.
@@ -170,7 +170,7 @@ namespace Gorgon.Examples
 
 						// Move to the next joystick.
 						_joystick = _joystickList[_counter];
-						_messageSprite.Text = "Using joystick " + _joystick.Name;
+						_messageSprite.Text = "Using joystick " + _joystick.Info.Description;
 					}
 					break;
 			}			
@@ -263,12 +263,12 @@ namespace Gorgon.Examples
 				// Poll the joystick.
 				_joystick.Poll();
 
-				GorgonRange xAxisRange = _joystick.Info.AxisRanges[JoystickAxis.XAxis];
-				GorgonRange yAxisRange = _joystick.Info.AxisRanges[JoystickAxis.YAxis];
+				GorgonRange xAxisRange = _joystick.Info.AxisInfo[JoystickAxis.XAxis].Range;
+				GorgonRange yAxisRange = _joystick.Info.AxisInfo[JoystickAxis.YAxis].Range;
 
 				// Adjust position to match screen coordinates.
-				cursorPosition = new Vector2(_joystick.Axis[JoystickAxis.XAxis] - xAxisRange.Minimum, 
-											 _joystick.Axis[JoystickAxis.YAxis] - yAxisRange.Minimum);
+				cursorPosition = new Vector2(_joystick.Axis[JoystickAxis.XAxis].Value - xAxisRange.Minimum, 
+											 _joystick.Axis[JoystickAxis.YAxis].Value - yAxisRange.Minimum);
 				cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Settings.Width;
 				cursorPosition.Y = _screen.Settings.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Settings.Height);
 			}
@@ -374,7 +374,7 @@ namespace Gorgon.Examples
 			
 			foreach (var joystick in _joystickList)
 			{
-				joystick.Acquired = true;
+				joystick.IsAcquired = true;
 			}
 		}
 
@@ -393,7 +393,7 @@ namespace Gorgon.Examples
 
 			foreach (var joystick in _joystickList)
 			{
-				joystick.Unbind();
+				joystick.UnbindWindow();
 			}
 		}
 
@@ -444,9 +444,7 @@ namespace Gorgon.Examples
 				// The first mouse and keyboard in the lists are always the system devices.
 				_keyboard = new GorgonKeyboard2(_input, keyboards[0]);
 				_mouse = new GorgonMouse(_input, mice[0]);
-#warning Fix this once we get the joystick interface refactored.
-				//_joystickList = joysticks.Select(item => new GorgonJoystick(_input, item)).ToArray();
-				_joystickList = new GorgonJoystick[0];
+				_joystickList = joysticks.Select(item => new GorgonJoystick2(_input, item)).ToArray();
 
 				// Create the graphics interface.
 				_graphics = new GorgonGraphics();

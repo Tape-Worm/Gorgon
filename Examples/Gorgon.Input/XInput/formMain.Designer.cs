@@ -62,7 +62,7 @@ namespace Gorgon.Examples
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(778, 462);
+			this.panelDisplay.Size = new System.Drawing.Size(1262, 661);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panelControllers
@@ -74,9 +74,9 @@ namespace Gorgon.Examples
 			this.panelControllers.Controls.Add(this.panelController2);
 			this.panelControllers.Controls.Add(this.panelController3);
 			this.panelControllers.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControllers.Location = new System.Drawing.Point(0, 462);
+			this.panelControllers.Location = new System.Drawing.Point(0, 661);
 			this.panelControllers.Name = "panelControllers";
-			this.panelControllers.Size = new System.Drawing.Size(778, 92);
+			this.panelControllers.Size = new System.Drawing.Size(1262, 92);
 			this.panelControllers.TabIndex = 1;
 			// 
 			// panelController0
@@ -87,7 +87,7 @@ namespace Gorgon.Examples
 			this.panelController0.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelController0.Location = new System.Drawing.Point(0, 0);
 			this.panelController0.Name = "panelController0";
-			this.panelController0.Size = new System.Drawing.Size(778, 23);
+			this.panelController0.Size = new System.Drawing.Size(1262, 23);
 			this.panelController0.TabIndex = 2;
 			this.panelController0.Visible = false;
 			// 
@@ -96,7 +96,7 @@ namespace Gorgon.Examples
 			this.labelController0.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelController0.Location = new System.Drawing.Point(23, 0);
 			this.labelController0.Name = "labelController0";
-			this.labelController0.Size = new System.Drawing.Size(755, 23);
+			this.labelController0.Size = new System.Drawing.Size(1239, 23);
 			this.labelController0.TabIndex = 0;
 			this.labelController0.Text = "XBox Controller";
 			this.labelController0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -122,7 +122,7 @@ namespace Gorgon.Examples
 			this.panelController1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelController1.Location = new System.Drawing.Point(0, 23);
 			this.panelController1.Name = "panelController1";
-			this.panelController1.Size = new System.Drawing.Size(778, 23);
+			this.panelController1.Size = new System.Drawing.Size(1262, 23);
 			this.panelController1.TabIndex = 3;
 			this.panelController1.Visible = false;
 			// 
@@ -131,7 +131,7 @@ namespace Gorgon.Examples
 			this.labelController1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelController1.Location = new System.Drawing.Point(23, 0);
 			this.labelController1.Name = "labelController1";
-			this.labelController1.Size = new System.Drawing.Size(755, 23);
+			this.labelController1.Size = new System.Drawing.Size(1239, 23);
 			this.labelController1.TabIndex = 0;
 			this.labelController1.Text = "XBox Controller";
 			this.labelController1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -157,7 +157,7 @@ namespace Gorgon.Examples
 			this.panelController2.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelController2.Location = new System.Drawing.Point(0, 46);
 			this.panelController2.Name = "panelController2";
-			this.panelController2.Size = new System.Drawing.Size(778, 23);
+			this.panelController2.Size = new System.Drawing.Size(1262, 23);
 			this.panelController2.TabIndex = 4;
 			this.panelController2.Visible = false;
 			// 
@@ -166,7 +166,7 @@ namespace Gorgon.Examples
 			this.labelController2.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelController2.Location = new System.Drawing.Point(23, 0);
 			this.labelController2.Name = "labelController2";
-			this.labelController2.Size = new System.Drawing.Size(755, 23);
+			this.labelController2.Size = new System.Drawing.Size(1239, 23);
 			this.labelController2.TabIndex = 0;
 			this.labelController2.Text = "XBox Controller";
 			this.labelController2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -192,7 +192,7 @@ namespace Gorgon.Examples
 			this.panelController3.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelController3.Location = new System.Drawing.Point(0, 69);
 			this.panelController3.Name = "panelController3";
-			this.panelController3.Size = new System.Drawing.Size(778, 23);
+			this.panelController3.Size = new System.Drawing.Size(1262, 23);
 			this.panelController3.TabIndex = 5;
 			this.panelController3.Visible = false;
 			// 
@@ -201,7 +201,7 @@ namespace Gorgon.Examples
 			this.labelController3.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelController3.Location = new System.Drawing.Point(23, 0);
 			this.labelController3.Name = "labelController3";
-			this.labelController3.Size = new System.Drawing.Size(755, 23);
+			this.labelController3.Size = new System.Drawing.Size(1239, 23);
 			this.labelController3.TabIndex = 0;
 			this.labelController3.Text = "XBox Controller";
 			this.labelController3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -223,7 +223,7 @@ namespace Gorgon.Examples
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(778, 554);
+			this.ClientSize = new System.Drawing.Size(1262, 753);
 			this.Controls.Add(this.panelDisplay);
 			this.Controls.Add(this.panelControllers);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -231,6 +231,8 @@ namespace Gorgon.Examples
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Gorgon Example - XInput";
+			this.Activated += new System.EventHandler(this.formMain_Activated);
+			this.Deactivate += new System.EventHandler(this.formMain_Deactivate);
 			this.panelControllers.ResumeLayout(false);
 			this.panelController0.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

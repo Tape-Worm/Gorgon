@@ -48,13 +48,19 @@ namespace Gorgon.Input.Raw
 		/// <param name="hidData">HID data.</param>
 		public void ProcessRawInputMessage(GorgonJoystick2 device, ref RAWINPUTHID hidData)
 		{
-			// Unlike the other device types, this one is polled.  So we capture any data from the 
-			// device and store it a look up for retrieval when the user is ready instead of forwarding it 
-			// on to the device.
+			GorgonJoystickData data = _coordinator.GetJoystickStateData(device);
 
-			var data = new GorgonJoystickData();
+			if (data == null)
+			{
+				data = new GorgonJoystickData();
+			}
 
-			_coordinator.SetJoystickState(device, ref data);
+			// TODO: Fix this so that we get our data from the HID.
+			data.IsConnected = true;
+			data.ButtonState = 0;
+			data.POVValue = 0;
+
+			_coordinator.SetJoystickState(device, data);
 		}
 
 		/// <summary>

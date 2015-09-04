@@ -105,7 +105,7 @@ namespace Gorgon.Input.XInput
 		/// <inheritdoc/>
 		public void GetCaps(XI.Controller controller)
 		{
-			Capabilities = JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsDiscreetPOV;
+			Capabilities = JoystickCapabilityFlags.None;
 
 			var buttons = (XI.GamepadButtonFlags[])Enum.GetValues(typeof(XI.GamepadButtonFlags));
 			XI.Capabilities capabilities;
@@ -113,15 +113,43 @@ namespace Gorgon.Input.XInput
 			controller.GetCapabilities(XI.DeviceQueryType.Any, out capabilities);
 
 			// Get vibration caps.
-			VibrationMotorRanges = new[]
-			                       {
-				                       new GorgonRange(0, capabilities.Vibration.LeftMotorSpeed),
-				                       new GorgonRange(0, capabilities.Vibration.RightMotorSpeed),
-			                       };
-			
+			var vibrationRanges = new List<GorgonRange>();
+
+			if (capabilities.Vibration.LeftMotorSpeed != 0)
+			{
+				vibrationRanges.Add(new GorgonRange(0, ushort.MaxValue));
+				Capabilities |= JoystickCapabilityFlags.SupportsVibration;
+			}
+
+			if (capabilities.Vibration.RightMotorSpeed != 0)
+			{
+				vibrationRanges.Add(new GorgonRange(0, ushort.MaxValue));
+				Capabilities |= JoystickCapabilityFlags.SupportsVibration;
+			}
+
+			VibrationMotorRanges = vibrationRanges;
+
+			if (((capabilities.Gamepad.Buttons & XI.GamepadButtonFlags.DPadDown) == XI.GamepadButtonFlags.DPadDown)
+			    || ((capabilities.Gamepad.Buttons & XI.GamepadButtonFlags.DPadUp) == XI.GamepadButtonFlags.DPadUp)
+			    || ((capabilities.Gamepad.Buttons & XI.GamepadButtonFlags.DPadLeft) == XI.GamepadButtonFlags.DPadLeft)
+			    || ((capabilities.Gamepad.Buttons & XI.GamepadButtonFlags.DPadRight) == XI.GamepadButtonFlags.DPadRight))
+			{
+				Capabilities |= JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsDiscreetPOV;
+			}
+
 			// Get the button count.
 			foreach (XI.GamepadButtonFlags button in buttons)
 			{
+				// The D-Pad on the controller is considered a button.
+				if ((button == XI.GamepadButtonFlags.DPadDown)
+				    || (button == XI.GamepadButtonFlags.DPadLeft)
+				    || (button == XI.GamepadButtonFlags.DPadUp)
+				    || (button == XI.GamepadButtonFlags.DPadRight)
+					|| (button == XI.GamepadButtonFlags.None))
+				{
+					continue;
+				}
+
 				if ((capabilities.Gamepad.Buttons & button) == button)
 				{
 					ButtonCount++;
@@ -133,35 +161,35 @@ namespace Gorgon.Input.XInput
 
 			if (capabilities.Gamepad.LeftThumbX != 0)
 			{
-				axes[JoystickAxis.XAxis] = new GorgonRange(0, capabilities.Gamepad.LeftThumbX);
+				axes[JoystickAxis.XAxis] = new GorgonRange(short.MinValue, short.MaxValue);
 			}
 
 			if (capabilities.Gamepad.LeftThumbY != 0)
 			{
-				axes[JoystickAxis.YAxis] = new GorgonRange(0, capabilities.Gamepad.LeftThumbY);
+				axes[JoystickAxis.YAxis] = new GorgonRange(short.MinValue, short.MaxValue);
 			}
 
 			if (capabilities.Gamepad.RightThumbX != 0)
 			{
-				axes[JoystickAxis.XAxis2] = new GorgonRange(0, capabilities.Gamepad.RightThumbX);
+				axes[JoystickAxis.XAxis2] = new GorgonRange(short.MinValue, short.MaxValue);
 				Capabilities |= JoystickCapabilityFlags.SupportsSecondaryXAxis;
 			}
 
 			if (capabilities.Gamepad.RightThumbY != 0)
 			{
-				axes[JoystickAxis.YAxis2] = new GorgonRange(0, capabilities.Gamepad.RightThumbY);
+				axes[JoystickAxis.YAxis2] = new GorgonRange(short.MinValue, short.MaxValue);
 				Capabilities |= JoystickCapabilityFlags.SupportsSecondaryYAxis;
 			}
 
 			if (capabilities.Gamepad.LeftTrigger != 0)
 			{
-				axes[JoystickAxis.Rudder] = new GorgonRange(0, capabilities.Gamepad.LeftTrigger);
+				axes[JoystickAxis.LeftTrigger] = new GorgonRange(0, byte.MaxValue);
 				Capabilities |= JoystickCapabilityFlags.SupportsRudder;
 			}
 
 			if (capabilities.Gamepad.RightTrigger != 0)
 			{
-				axes[JoystickAxis.Throttle] = new GorgonRange(0, capabilities.Gamepad.RightTrigger);
+				axes[JoystickAxis.RightTrigger] = new GorgonRange(0, byte.MaxValue);
 				Capabilities |= JoystickCapabilityFlags.SupportsThrottle;
 			}
 

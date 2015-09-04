@@ -75,16 +75,14 @@ namespace Gorgon.Examples
 		public int Index
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
 		/// Property to return the joystick that owns this spray.
 		/// </summary>
-		public GorgonJoystick Joystick
+		public GorgonJoystick2 Joystick
 		{
 			get;
-			private set;
 		}
 
 		/// <summary>
@@ -253,7 +251,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		public void Update()
 		{
-			float throttleValue = Joystick.Throttle;
+			float throttleValue = Joystick.Axis[JoystickAxis.RightTrigger].Value;
 		    float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
 
 			// Get unit time.
@@ -263,11 +261,11 @@ namespace Gorgon.Examples
 			Joystick.Vibrate(1, (int)_vibAmount);
 
 			// Get the spray vector in a -1 .. 1 range.
-			var sprayVector = new PointF(Joystick.SecondaryX - Joystick.Capabilities.SecondaryXAxisRange.Minimum,
-										Joystick.SecondaryY - Joystick.Capabilities.SecondaryYAxisRange.Minimum);
+			var sprayVector = new PointF(Joystick.Axis[JoystickAxis.XAxis2].Value - Joystick.Info.AxisInfo[JoystickAxis.XAxis2].Range.Minimum,
+										Joystick.Axis[JoystickAxis.YAxis2].Value - Joystick.Info.AxisInfo[JoystickAxis.YAxis2].Range.Minimum);
 
-			sprayVector = new PointF((sprayVector.X / (Joystick.Capabilities.SecondaryXAxisRange.Range + 1)) * 2.0f - 1.0f,
-									 -((sprayVector.Y / (Joystick.Capabilities.SecondaryYAxisRange.Range + 1)) * 2.0f - 1.0f));
+			sprayVector = new PointF((sprayVector.X / (Joystick.Info.AxisInfo[JoystickAxis.XAxis2].Range.Range + 1)) * 2.0f - 1.0f,
+									 -((sprayVector.Y / (Joystick.Info.AxisInfo[JoystickAxis.YAxis2].Range.Range + 1)) * 2.0f - 1.0f));
 
 			// Calculate angle without magnitude.
 			var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
@@ -351,7 +349,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="joystick">The joystick that owns this spray.</param>
 		/// <param name="controllerIndex">Index of the controller.</param>
-		public SprayCan(GorgonJoystick joystick, int controllerIndex)
+		public SprayCan(GorgonJoystick2 joystick, int controllerIndex)
 		{
 			Index = controllerIndex;
 			Joystick = joystick;

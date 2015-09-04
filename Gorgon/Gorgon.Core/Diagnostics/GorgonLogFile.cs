@@ -176,7 +176,7 @@ namespace Gorgon.Diagnostics
 
 			lock (_syncLock)
 			{
-				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite)))
+				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite)))
 				{
 					SendToLog(stream, string.Empty);
 					SendToLog(stream, "================================================");
@@ -293,11 +293,11 @@ namespace Gorgon.Diagnostics
 			{
 				// Get a list of lines.
 				string[] lines = formatSpecifier.Split(new[]
-													   {
-																   '\r',
-																   '\n'
-															   },
-													   StringSplitOptions.RemoveEmptyEntries);
+				                                       {
+					                                       '\r',
+					                                       '\n'
+				                                       },
+				                                       StringSplitOptions.RemoveEmptyEntries);
 
 				foreach (string line in lines)
 				{
@@ -321,7 +321,7 @@ namespace Gorgon.Diagnostics
 
 			lock (_syncLock)
 			{
-				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8))
+				using (var stream = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
 				{ 
 					SendToLog(stream, formatSpecifier, arguments);
 				}
@@ -334,7 +334,7 @@ namespace Gorgon.Diagnostics
 			// Clean up.
 			lock (_syncLock)
 			{
-				using (var writer = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8))
+				using (var writer = new StreamWriter(File.Open(LogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8))
 				{
 					SendToLog(writer,
 					              "**** {0} (Version {1}) logging ends on thread ID: 0x{2}. ****",
@@ -370,7 +370,7 @@ namespace Gorgon.Diagnostics
 				}
 
 				// Open the stream.
-				stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
+				stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
 				stream.WriteLine("**** {0} (Version {1}) logging begins on thread ID 0x{2} ****",
 					                LogApplication,
 					                GetType().Assembly.GetName().Version,

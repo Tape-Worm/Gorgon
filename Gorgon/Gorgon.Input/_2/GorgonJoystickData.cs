@@ -24,16 +24,64 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+
 namespace Gorgon.Input
 {
 	/// <summary>
 	/// Data received from the device layer and transformed into a common data set so that the <see cref="GorgonInputService2"/> can decipher it.
 	/// </summary>
-	public struct GorgonJoystickData
+	public class GorgonJoystickData
 	{
 		/// <summary>
-		/// Indicates whether the joystick is connected or not.
+		/// Property to indicate whether the joystick is connected or not.
 		/// </summary>
-		public bool IsConnected;
+		public bool IsConnected
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the bit mask containing the buttons that are currently pressed.
+		/// </summary>
+		/// <remarks>
+		/// Each button is indicated by a single bit in the mask. For example, if the 3rd button is down, then bit #3 is set.
+		/// </remarks>
+		public int ButtonState
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return the values for the axes on the joystick.
+		/// </summary>
+
+		public Dictionary<JoystickAxis, int> AxisValues
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the point of view hat values.
+		/// </summary>
+		/// <remarks>
+		/// This must be a value from 0 - 359.99999f, to get the bearing in degrees, divide by 100.0f.
+		/// </remarks>
+		public float POVValue
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonJoystickData"/> class.
+		/// </summary>
+		public GorgonJoystickData()
+		{
+			AxisValues = new Dictionary<JoystickAxis, int>(new GorgonJoystickAxisEqualityComparer());
+			POVValue = 1.0f;
+		}
 	}
 }

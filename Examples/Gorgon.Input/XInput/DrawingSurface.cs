@@ -78,7 +78,6 @@ namespace Gorgon.Examples
 		public Size CursorSize
 		{
 			get;
-			private set;
 		}
 		#endregion
 
@@ -90,7 +89,6 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
 		private void surfaceControl_Resize(object sender, EventArgs e)
 		{
-			Image tempImage;
 			Form parentForm = _control.FindForm();
 
 			if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized))
@@ -105,7 +103,7 @@ namespace Gorgon.Examples
 			}
 
 			// Copy the old image into the new buffer.
-			tempImage = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, _drawing.PixelFormat);
+			Image tempImage = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, _drawing.PixelFormat);
 			_imageGraphics = DrawingGraphics.FromImage(tempImage);
 			if (_drawing != null)
 			{								

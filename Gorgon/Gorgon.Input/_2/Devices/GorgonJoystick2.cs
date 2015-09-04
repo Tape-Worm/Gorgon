@@ -26,9 +26,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Input
 {
@@ -85,6 +88,11 @@ namespace Gorgon.Input
 	public sealed class GorgonJoystick2
 		: GorgonInputDevice2
 	{
+		#region Variables.
+		// Flag to indicate that the joystick is connected.
+		private bool _isConnected;
+		#endregion
+
 		#region Properties.
 		/// <inheritdoc/>
 		public override bool IsPolled => true;
@@ -120,8 +128,10 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the point of view value for continuous bearing.
 		/// </summary>
-		/// <remarks>This will return an integer value of -1 for center, or 0 to 35999.  The user must divide by 100 to get the angle in degrees for a continuous bearing POV.</remarks>
-		public int POV
+		/// <remarks>
+		/// This will return a <see cref="float"/> value of -1.0f for center, or 0 to 359.9999f to indicate the direction of the POV hat.
+		/// </remarks>
+		public float POV
 		{
 			get;
 			private set;
@@ -149,9 +159,14 @@ namespace Gorgon.Input
 		/// </remarks>
 		public bool IsConnected
 		{
-			get;
-			private set;
+			get
+			{
+				GorgonJoystickData data = Service.Coordinator.GetJoystickStateData(this);
+
+				return data.IsConnected;
+			}
 		}
+
 		#endregion
 
 		#region Methods.
@@ -184,34 +199,36 @@ namespace Gorgon.Input
 				return;
 			}
 
+			int pov = (int)((POV * 100.0f).Max(-1.0f));
+
 			// Wrap POV if it's higher than 359.99 degrees.
-			if (POV > 35999)
+			if (pov > 35999)
 			{
-				POV = -1;
+				pov = -1;
 			}
 			
 			// Get POV direction.
-			if (POV != -1)
+			if (pov != -1)
 			{
-				if ((POV < 18000) && (POV > 9000))
+				if ((pov < 18000) && (pov > 9000))
 				{
 					POVDirection = POVDirection.Down | POVDirection.Right;
 				}
-				if ((POV > 18000) && (POV < 27000))
+				if ((pov > 18000) && (pov < 27000))
 				{
 					POVDirection = POVDirection.Down | POVDirection.Left;
 				}
-				if ((POV > 27000) && (POV < 36000))
+				if ((pov > 27000) && (pov < 36000))
 				{
 					POVDirection = POVDirection.Up | POVDirection.Left;
 				}
-				if ((POV > 0) && (POV < 9000))
+				if ((pov > 0) && (pov < 9000))
 				{
 					POVDirection = POVDirection.Up | POVDirection.Right;
 				}
 			}
 
-			switch (POV)
+			switch (pov)
 			{
 				case 18000:
 					POVDirection = POVDirection.Down;
@@ -260,16 +277,6 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// Function to perform device vibration.
-		/// </summary>
-		/// <param name="motorIndex">Index of the motor to start.</param>
-		/// <param name="value">Value to set.</param>
-		/// <remarks>Implementors should implement this method if the device supports vibration.</remarks>
-		/*protected virtual void VibrateDevice(int motorIndex, int value)
-		{
-		}*/
-
-		/// <summary>
 		/// Function to set the device to vibrate.
 		/// </summary>
 		/// <param name="motorIndex">Index of the motor to start.</param>
@@ -291,7 +298,7 @@ namespace Gorgon.Input
 
 			if (Info.VibrationMotorRanges[motorIndex].Contains(value))
 		    {
-		        //VibrateDevice(motorIndex, value);
+				Service.Coordinator.SendVibrationData(this, motorIndex, value);
 		    }
 		}
 
@@ -309,20 +316,36 @@ namespace Gorgon.Input
 		    // Set the values back to their defaults.
 			Reset();
 
-			GorgonJoystickData data;
-			if (!Service.Coordinator.GetJoystickStateData(this, out data))
-			{
+			GorgonJoystickData data = Service.Coordinator.GetJoystickStateData(this);
+
+			if (!data.IsConnected)
+			{ 
 				return;
 			}
 
-			// Get the data.
+			// Parse the button states.
+			int buttonIndex = 1;
+			for (int i = 0; i < Button.Count; ++i)
+			{
+				if ((data.ButtonState & buttonIndex) == buttonIndex)
+				{
+					Button[i] = JoystickButtonState.Down;
+				}
+				else
+				{
+					Button[i] = JoystickButtonState.Up;
+				}
 
+				buttonIndex *= 2;
+			}
 
-			// Apply dead zones and get directions.
-			//for (int i = 0; i < Axis.Count; ++i)
-			//{
-				//Axis[i] = DeadZoneValue(Axis[i], DeadZones[i], _midRanges[i]);
-			//}
+			// ReSharper disable PossibleNullReferenceException
+			foreach (KeyValuePair<JoystickAxis, int> axisValue in data.AxisValues)
+			{
+				// Ensure the value does not exceed the ranges.
+				GorgonRange axisRange = Info.AxisInfo[axisValue.Key].Range;
+				Axis[axisValue.Key].Value = axisValue.Value.Max(axisRange.Minimum).Min(axisRange.Maximum);
+			}
 
 			UpdatePOVDirection();
 		}
@@ -339,7 +362,7 @@ namespace Gorgon.Input
 		public GorgonJoystick2(GorgonInputService2 owner, IGorgonJoystickInfo2 deviceInfo, IGorgonLog log = null)
 			: base(owner, deviceInfo, log)
 		{
-			Button = new List<JoystickButtonState>();
+			Button = new JoystickButtonState[deviceInfo.ButtonCount];
 			Info = deviceInfo;
 			Axis = new GorgonJoystickAxisList(deviceInfo);
 		}

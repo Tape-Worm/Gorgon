@@ -24,11 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Core;
 
 namespace Gorgon.Input
@@ -38,6 +33,11 @@ namespace Gorgon.Input
 	/// </summary>
 	public class GorgonJoystickAxis
 	{
+		#region Variables.
+		// The value for the axis.
+		private int _value;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the identifier for the joystick axis.
@@ -60,8 +60,14 @@ namespace Gorgon.Input
 		/// </remarks>
 		public int Value
 		{
-			get;
-			internal set;
+			get
+			{
+				return !DeadZone.Contains(_value) ? _value : 0;
+			}
+			set
+			{
+				_value = value;
+			}
 		}
 
 		/// <summary>

@@ -44,15 +44,11 @@ namespace Gorgon.Input.Raw
 		/// <remarks>
 		/// <inheritdoc cref="IGorgonInputDeviceCoordinator.GetJoystickStateData"/>
 		/// </remarks>
-		public override bool GetJoystickStateData(GorgonJoystick2 device, out GorgonJoystickData deviceData)
+		public override GorgonJoystickData GetJoystickStateData(GorgonJoystick2 device)
 		{
-			if (_joystickData.TryGetValue(device, out deviceData))
-			{
-				return true;
-			}
+			GorgonJoystickData deviceData;
 
-			deviceData = default(GorgonJoystickData);
-			return false;
+			return _joystickData.TryGetValue(device, out deviceData) ? deviceData : null;
 		}
 
 		/// <summary>
@@ -60,7 +56,7 @@ namespace Gorgon.Input.Raw
 		/// </summary>
 		/// <param name="device">The joystick device.</param>
 		/// <param name="data">The data to store.</param>
-		public void SetJoystickState(GorgonJoystick2 device, ref GorgonJoystickData data)
+		public void SetJoystickState(GorgonJoystick2 device, GorgonJoystickData data)
 		{
 			_joystickData[device] = data;
 		}

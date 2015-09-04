@@ -16,7 +16,7 @@ namespace Gorgon.Input
 	/// to use other joystick types. And yet another may provide mouse/keyboard support only. 
 	/// </para>
 	/// <para>
-	/// Users may enumerate the input devices present on the system via provided enumeration methods. These methods will return <see cref="Collections.IReadOnlyList{T}"/> types that will contain 
+	/// Users may enumerate the input devices present on the system via provided enumeration methods. These methods will return <see cref="IGorgonNamedObjectReadOnlyList{T}"/> types that will contain 
 	/// <see cref="IGorgonKeyboardInfo2"/>, <see cref="IGorgonMouseInfo2"/> or <see cref="IGorgonJoystickInfo2"/> types giving information about each device. These values may be passed to the constructors of the  
 	/// various input object types to allow selection of a specific device. This includes mice and keyboards. However, not all input services will allow the use of individual mice and keyboards and may only 
 	/// allow use of the system devices (i.e. all input is directed from multiple devices into a single interface). If this is the case, the enumeration method will return only one item in its list.

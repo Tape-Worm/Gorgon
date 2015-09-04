@@ -113,7 +113,15 @@ namespace Gorgon.Input
 		/// <summary>
 		/// The rudder axis. This maps to the <see cref="ZAxis2"/> value.
 		/// </summary>
-		Rudder = 5
+		Rudder = 5,
+		/// <summary>
+		/// The right trigger axis for xbox controllers. This maps to the <see cref="ZAxis"/>.
+		/// </summary>
+		RightTrigger = 2,
+		/// <summary>
+		/// The left trigger axis for xbox controllers. This maps to the <see cref="ZAxis2"/>.
+		/// </summary>
+		LeftTrigger = 5
 	}
 
 	/// <summary>

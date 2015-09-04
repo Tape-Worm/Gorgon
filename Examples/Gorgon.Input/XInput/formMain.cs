@@ -61,17 +61,40 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonInputService _service;					// Our service factory.
-		private IList<GorgonJoystick> _joystick;				// Our XBox controllers.
+		private GorgonInputService2 _service;					// Our service factory.
+		private IList<GorgonJoystick2> _joystick;				// Our XBox controllers.
 		private PointF[] _stickPosition;						// Current stick position point for the spray.
 		private SprayCan[] _sprayStates;					    // Spray states.
-		private DrawingSurface _surface;						// Surface to draw on.
-		#endregion
-
-		#region Properties.
+		private DrawingSurface _surface;                        // Surface to draw on.
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Forms the main_ activated. Seriously GhostDoc??? What the fuck is this?
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+		private void formMain_Activated(object sender, EventArgs e)
+		{
+			foreach (GorgonJoystick2 joystick in _joystick.Where(item => item.IsConnected))
+			{
+				joystick.IsAcquired = true;
+			}
+		}
+
+		/// <summary>
+		/// Forms the main_ deactivate.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="System.EventArgs" /> instance containing the event data.</param>
+		private void formMain_Deactivate(object sender, EventArgs e)
+		{
+			foreach (GorgonJoystick2 joystick in _joystick.Where(item => item.IsConnected))
+			{
+				joystick.IsAcquired = false;
+			}
+		}
+
 		/// <summary>
 		/// Function called during the paint event of the controls that display controller information.
 		/// </summary>
@@ -92,13 +115,13 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="joystick">Joystick to update.</param>
 		/// <param name="index">Index of the joystick.</param>
-		private void UpdateControllerLabels(GorgonJoystick joystick, int index)
+		private void UpdateControllerLabels(GorgonJoystick2 joystick, int index)
 		{			
 			var panel = (Panel)panelControllers.Controls["panelController" + index];
 			var label = (Label)panel.Controls["labelController" + index];			
 
 			// Update the label visibility for the controller.
-			if (joystick.Info.IsConnected)
+			if (joystick.IsConnected)
 			{
 				if (!panel.Visible)
 				{
@@ -107,7 +130,7 @@ namespace Gorgon.Examples
 			}
 			else
 			{
-				label.Text = string.Format("{0} ({1})", joystick.Name, joystick.Info.ClassName);
+				label.Text = $"{joystick.Info.Description} ({joystick.Info.ClassName})";
 
 				// Turn off the other ones since we don't want to clutter 
 				// up the screen.
@@ -119,15 +142,11 @@ namespace Gorgon.Examples
 			}			
 
 			// Set the label information.
-			label.Text = string.Format("{0} ({7}): Stick 1 Position {1}x{2}. Stick 2 Position {3}x{4}. Right Trigger Position {5}. Left Trigger Position {6}.",
-									joystick.Name,
-									joystick.X,
-									joystick.Y,
-									joystick.SecondaryX,
-									joystick.SecondaryY,
-									joystick.Throttle,
-									joystick.Rudder,
-									_service.JoystickDevices[joystick.Name].ClassName);
+			label.Text = $"{joystick.Info.Description} ({joystick.Info.ClassName}): " +
+			             $"Stick 1 Position {joystick.Axis[JoystickAxis.XAxis].Value}x{joystick.Axis[JoystickAxis.YAxis].Value}. " +
+			             $"Stick 2 Position {joystick.Axis[JoystickAxis.XAxis2].Value}x{joystick.Axis[JoystickAxis.YAxis2].Value}. " +
+			             $"Right Trigger Position {joystick.Axis[JoystickAxis.RightTrigger].Value}. " +
+			             $"Left Trigger Position {joystick.Axis[JoystickAxis.LeftTrigger].Value}.";
 		}
 
 	    /// <summary>
@@ -135,26 +154,28 @@ namespace Gorgon.Examples
 	    /// </summary>
 	    /// <param name="joystick">Joystick to use for the spray.</param>
 	    /// <param name="index">Index of the joystick.</param>
-	    private void DrawSpray(GorgonJoystick joystick, int index)
+	    private void DrawSpray(GorgonJoystick2 joystick, int index)
 		{
 			SprayCan state = _sprayStates[index];
 
 	        // Update the origin of the spray.
 			state.Origin = _stickPosition[index];
 
+			GorgonRange throttleRange = joystick.Info.AxisInfo[JoystickAxis.Throttle].Range;
+
 			// Find out if we're spraying.
-			if (joystick.Throttle > joystick.Capabilities.ThrottleAxisRange.Minimum) 
+			if (joystick.Axis[JoystickAxis.Throttle].Value > throttleRange.Minimum)
 			{
 				if ((!state.IsActive) && (!state.NeedReset))
 				{
 					// Convert the throttle value to a unit value.
-					float throttleUnit = ((float)(joystick.Throttle - joystick.Capabilities.ThrottleAxisRange.Minimum) / joystick.Capabilities.ThrottleAxisRange.Range);
+					float throttleUnit = ((float)(joystick.Axis[JoystickAxis.Throttle].Value - throttleRange.Minimum) / throttleRange.Range);
 
 					// Set up the spray state.
 					state.Position = state.Origin;
-					state.Amount = joystick.Capabilities.ThrottleAxisRange.Range / 2.0f;
+					state.Amount = throttleRange.Range / 2.0f;
 					state.Time = throttleUnit * 10.0f;
-					state.VibrationAmount = joystick.Capabilities.VibrationMotorRanges[1].Maximum;
+					state.VibrationAmount = joystick.Info.VibrationMotorRanges[1].Maximum;
 					state.SprayAlpha = (throttleUnit * 239.0f) + 16;
 					state.IsActive = true;
 				}
@@ -179,17 +200,19 @@ namespace Gorgon.Examples
 		/// </summary>
 		/// <param name="joystick">Joystick for the cursor.</param>
 		/// <param name="index">Index of the joystick.</param>
-		private void DrawJoystickCursor(GorgonJoystick joystick, int index)
+		private void DrawJoystickCursor(GorgonJoystick2 joystick, int index)
 		{
+			GorgonRange xRange = joystick.Info.AxisInfo[JoystickAxis.XAxis].Range;
+			GorgonRange yRange = joystick.Info.AxisInfo[JoystickAxis.YAxis].Range;
 			var playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the joystick index.			
 			var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
-			var moveVector = new PointF(joystick.X - (float)joystick.Capabilities.XAxisRange.Minimum,
-											joystick.Y - (float)joystick.Capabilities.YAxisRange.Minimum);
+			var moveVector = new PointF(joystick.Axis[JoystickAxis.XAxis].Value - (float)xRange.Minimum,
+											joystick.Axis[JoystickAxis.YAxis].Value - (float)yRange.Minimum);
 
-			moveVector = new PointF((moveVector.X / (joystick.Capabilities.XAxisRange.Range + 1) * 2.0f) - 1.0f,
-									(moveVector.Y / (joystick.Capabilities.YAxisRange.Range + 1) * 2.0f) - 1.0f);
+			moveVector = new PointF((moveVector.X / (xRange.Range + 1) * 2.0f) - 1.0f,
+									(moveVector.Y / (yRange.Range + 1) * 2.0f) - 1.0f);
 
 			// Move at 100 units per second 
 			float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
@@ -246,7 +269,7 @@ namespace Gorgon.Examples
 				}
 
 				// Clear the drawing if the primary button is clicked.
-				if (joystick.Button[0].IsPressed)
+				if (joystick.Button[0] == JoystickButtonState.Down)
 				{
 					_surface.ClearDrawing();
 				}
@@ -266,12 +289,42 @@ namespace Gorgon.Examples
 		}
 
 		/// <summary>
+		/// Function to initialize the game pad and its dead zones.
+		/// </summary>
+		/// <param name="gamePad">The game pad to initialize.</param>
+		/// <returns><b>true</b> if the game pad is connected and set up, <b>false</b> if not.</returns>
+		private bool SetupGamePad(GorgonJoystick2 gamePad)
+		{
+			if (!gamePad.IsConnected)
+			{
+				return false;
+			}
+			
+			GorgonRange xRange = gamePad.Info.AxisInfo[JoystickAxis.XAxis].Range;
+			GorgonRange yRange = gamePad.Info.AxisInfo[JoystickAxis.YAxis].Range;
+			GorgonRange x2Range = gamePad.Info.AxisInfo[JoystickAxis.XAxis2].Range;
+			GorgonRange y2Range = gamePad.Info.AxisInfo[JoystickAxis.YAxis2].Range;
+
+			// Set a dead zone on the game pad.
+			// A dead zone will stop input from the game pad until it reaches the outside
+			// of the specified coordinates.
+			gamePad.Axis[JoystickAxis.XAxis].DeadZone = new GorgonRange(xRange.Minimum / 4, xRange.Maximum / 4);
+			gamePad.Axis[JoystickAxis.YAxis].DeadZone = new GorgonRange(yRange.Minimum / 4, yRange.Maximum / 4);
+			gamePad.Axis[JoystickAxis.XAxis2].DeadZone = new GorgonRange(x2Range.Minimum / 128, x2Range.Maximum / 128);
+			gamePad.Axis[JoystickAxis.YAxis2].DeadZone = new GorgonRange(y2Range.Minimum / 128, y2Range.Maximum / 128);
+
+			gamePad.BindWindow(this);
+
+			return true;
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			IGorgonPluginAssemblyCache assemblies = null;
+			GorgonPluginAssemblyCache assemblies = null;
 
 			base.OnLoad(e);
 
@@ -282,16 +335,18 @@ namespace Gorgon.Examples
 				assemblies.Load(Program.PlugInPath + "Gorgon.Input.XInput.dll");
 
 				// Create the plug services.
-				IGorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
 
 				// Create the input service factory.
-				GorgonInputServiceFactory factory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+				GorgonInputServiceFactory2 factory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
 
 				// Create our factory.
 				_service = factory.CreateService("Gorgon.Input.GorgonXInputPlugIn");
 
-				// Ensure that we have and XBox controller to work with.
-				if (_service.JoystickDevices.Count == 0)
+				IReadOnlyList<IGorgonJoystickInfo2> joysticks = _service.EnumerateJoysticks();
+
+				// Ensure that we have an XBox controller to work with.
+				if (joysticks.Count == 0)
 				{
 					GorgonDialogs.ErrorBox(this, "No XBox controllers were found on this system.\nThis example requires an XBox controller.");
 					GorgonApplication.Quit();
@@ -299,44 +354,39 @@ namespace Gorgon.Examples
 				}
 
 				// Enumerate the active joysticks.  We'll only take 3 of the 4 available xbox controllers.
-				_joystick = _service.JoystickDevices.Take(3).Select(item => _service.CreateJoystick(this, item.Name)).ToArray();
+				_joystick = joysticks.Take(3).Select(item => new GorgonJoystick2(_service, item, GorgonApplication.Log)).ToArray();
 				_stickPosition = new PointF[_joystick.Count];
 				_sprayStates = new SprayCan[_joystick.Count];
-
-				for (int i = 0; i < _joystick.Count; i++)
-				{
-					var joystick = _joystick[i];
-
-					// Set a dead zone on the joystick.
-					// A dead zone will stop input from the joystick until it reaches the outside
-					// of the specified coordinates.
-					_joystick[i].DeadZone.X = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 4, joystick.Capabilities.XAxisRange.Maximum / 4);
-					_joystick[i].DeadZone.Y = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 4, joystick.Capabilities.YAxisRange.Maximum / 4);
-					_joystick[i].DeadZone.SecondaryX = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 128, joystick.Capabilities.XAxisRange.Maximum / 128);
-					_joystick[i].DeadZone.SecondaryY = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
-
-					// Start at a random spot.					
-					_stickPosition[i] = new Point(GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Width - 64),
-					                              GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Height - 64));
-
-					// Turn off spray for all controllers.
-					_sprayStates[i] = new SprayCan(joystick, i);
-				}
 
 				// Check for connected controllers.
 				while (!_joystick.Any(item => item.IsConnected))
 				{
 					if (MessageBox.Show(this,
-					                    "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.",
-					                    "No Controllers",
-					                    MessageBoxButtons.OKCancel,
-					                    MessageBoxIcon.Warning) != DialogResult.Cancel)
+										"There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.",
+										"No Controllers",
+										MessageBoxButtons.OKCancel,
+										MessageBoxIcon.Warning) != DialogResult.Cancel)
 					{
 						continue;
 					}
 
 					GorgonApplication.Quit();
 					return;
+				}
+
+				for (int i = 0; i < _joystick.Count; i++)
+				{
+					if (!SetupGamePad(_joystick[i]))
+					{
+						continue;
+					}
+
+					// Start at a random spot.					
+					_stickPosition[i] = new Point(GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Width - 64),
+					                              GorgonRandom.RandomInt32(64, panelDisplay.ClientSize.Height - 64));
+
+					// Turn off spray for all controllers.
+					_sprayStates[i] = new SprayCan(_joystick[i], i);
 				}
 
 				// Get the graphics interface for our panel.
@@ -354,10 +404,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				if (assemblies != null)
-				{
-					assemblies.Dispose();
-				}
+				assemblies?.Dispose();
 			}
 		}
 
@@ -368,6 +415,14 @@ namespace Gorgon.Examples
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
+
+			if (_joystick != null)
+			{
+				foreach (GorgonJoystick2 joystick in _joystick)
+				{
+					joystick.UnbindWindow();
+				}
+			}
 
 			if (_surface == null)
 			{

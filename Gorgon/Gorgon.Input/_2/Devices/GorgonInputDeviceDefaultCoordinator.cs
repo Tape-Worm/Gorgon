@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+
 namespace Gorgon.Input
 {
 	/// <summary>
@@ -55,10 +57,17 @@ namespace Gorgon.Input
 		/// <remarks>
 		/// In this implementation, this method will return <b>false</b>, and will send back default data for the <see cref="GorgonJoystickData"/> type.
 		/// </remarks>
-		public virtual bool GetJoystickStateData(GorgonJoystick2 device, out GorgonJoystickData deviceData)
+		public virtual GorgonJoystickData GetJoystickStateData(GorgonJoystick2 device)
 		{
-			deviceData = default(GorgonJoystickData);
-			return false;
+			return null;
+		}
+
+		/// <inheritdoc/>
+		/// <remarks>
+		/// In this implementation, this method will do nothing.
+		/// </remarks>
+		public virtual void SendVibrationData(GorgonJoystick2 device, int vibrationMotor, int speed)
+		{
 		}
 	}
 }
