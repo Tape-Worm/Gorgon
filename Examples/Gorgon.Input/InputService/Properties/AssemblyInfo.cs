@@ -33,18 +33,18 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 //
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Input Factory Example [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example showing how to use the Input Factory to gain access to various types of input mechanisms. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Gaming Device Driver Example [DEBUG VERSION]")]
+[assembly: AssemblyDescription("An example showing how to load gaming device drivers to gain access to various types of gaming devices like joysticks, game pads, etc... [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Gorgon Input Factory Example")]
-[assembly: AssemblyDescription("An example showing how to use the Input Factory to gain access to various types of input mechanisms.")]
+[assembly: AssemblyTitle("Gorgon Gaming Device Driver Example")]
+[assembly: AssemblyDescription("An example showing how to load gaming device drivers to gain access to various types of gaming devices like joysticks, game pads, etc...")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2012")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2015")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -61,6 +61,15 @@ namespace Gorgon.Input.XInput.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The device information is not valid for an XInput driver..
+        /// </summary>
+        internal static string GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO {
+            get {
+                return ResourceManager.GetString("GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XInput controller #{0}.
         /// </summary>
         internal static string GORINP_XINP_DEVICE_NAME {

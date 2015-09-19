@@ -61,47 +61,11 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not create the input factory for &apos;{0}&apos;..
+        ///   Looks up a localized string similar to The gaming device driver &apos;{0}&apos; was not found..
         /// </summary>
-        internal static string GORINP_CANNOT_CREATE {
+        internal static string GORINP_ERR_DRIVER_NOT_FOUND {
             get {
-                return ResourceManager.GetString("GORINP_CANNOT_CREATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The device requested already exists, but is not of the type &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot enumerate the devices when input device objects are active..
-        /// </summary>
-        internal static string GORINP_ERR_CANNOT_ENUM_DEVICES_PRESENT {
-            get {
-                return ResourceManager.GetString("GORINP_ERR_CANNOT_ENUM_DEVICES_PRESENT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The device is not polled and requires a forwarder method. Did you forget to override RegisterForwarder?.
-        /// </summary>
-        internal static string GORINP_ERR_DEVICE_NEEDS_FORWARDER {
-            get {
-                return ResourceManager.GetString("GORINP_ERR_DEVICE_NEEDS_FORWARDER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The HID property &apos;{0}&apos; is NULL..
-        /// </summary>
-        internal static string GORINP_ERR_HID_PROPERTY_NULL {
-            get {
-                return ResourceManager.GetString("GORINP_ERR_HID_PROPERTY_NULL", resourceCulture);
+                return ResourceManager.GetString("GORINP_ERR_DRIVER_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -115,11 +79,11 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A window is required to bind with the {0} device..
+        ///   Looks up a localized string similar to There is no motor at index [{0}]..
         /// </summary>
-        internal static string GORINP_ERR_NO_WINDOW_TO_BIND {
+        internal static string GORINP_ERR_JOYSTICK_MOTOR_NOT_FOUND {
             get {
-                return ResourceManager.GetString("GORINP_ERR_NO_WINDOW_TO_BIND", resourceCulture);
+                return ResourceManager.GetString("GORINP_ERR_JOYSTICK_MOTOR_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -144,92 +108,103 @@ namespace Gorgon.Input.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find the HID &apos;{0}&apos;..
+        ///   Looks up a localized string similar to System keyboard.
         /// </summary>
-        internal static string GORINP_HID_NOT_FOUND {
+        internal static string GORINP_RAW_DESC_SYS_KEYBOARD {
             get {
-                return ResourceManager.GetString("GORINP_HID_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_DESC_SYS_KEYBOARD", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no motor at index [{0}]..
+        ///   Looks up a localized string similar to System mouse.
         /// </summary>
-        internal static string GORINP_JOYSTICK_MOTOR_NOT_FOUND {
+        internal static string GORINP_RAW_DESC_SYS_MOUSE {
             get {
-                return ResourceManager.GetString("GORINP_JOYSTICK_MOTOR_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_DESC_SYS_MOUSE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find the joystick &apos;{0}&apos;..
+        ///   Looks up a localized string similar to The buffer returned was too small..
         /// </summary>
-        internal static string GORINP_JOYSTICK_NOT_FOUND {
+        internal static string GORINP_RAW_ERR_BUFFER_TOO_SMALL {
             get {
-                return ResourceManager.GetString("GORINP_JOYSTICK_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_BUFFER_TOO_SMALL", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The joystick was not initialized..
+        ///   Looks up a localized string similar to Unable to enumerate the raw input devices..
         /// </summary>
-        internal static string GORINP_JOYSTICK_NOT_INITIALIZED {
+        internal static string GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR {
             get {
-                return ResourceManager.GetString("GORINP_JOYSTICK_NOT_INITIALIZED", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keyboard key &apos;{0}&apos; has not been assigned to a mapping..
+        ///   Looks up a localized string similar to Failed to hook the application window message procedure..
         /// </summary>
-        internal static string GORINP_KEY_NOT_FOUND {
+        internal static string GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG {
             get {
-                return ResourceManager.GetString("GORINP_KEY_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Keyboard key &apos;{0}&apos; has not been assigned to a mapping..
+        ///   Looks up a localized string similar to Could not read the raw input device data..
         /// </summary>
-        internal static string GORINP_KEYBOARD_KEY_NO_MAPPING {
+        internal static string GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA {
             get {
-                return ResourceManager.GetString("GORINP_KEYBOARD_KEY_NO_MAPPING", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find the keyboard &apos;{0}&apos;..
+        ///   Looks up a localized string similar to Could not register the raw input device..
         /// </summary>
-        internal static string GORINP_KEYBOARD_NOT_FOUND {
+        internal static string GORINP_RAW_ERR_CANNOT_REGISTER {
             get {
-                return ResourceManager.GetString("GORINP_KEYBOARD_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_REGISTER", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be NULL or empty..
+        ///   Looks up a localized string similar to Could not unregister the raw input device..
         /// </summary>
-        internal static string GORINP_PARAMETER_NULL_EMPTY {
+        internal static string GORINP_RAW_ERR_CANNOT_UNREGISTER {
             get {
-                return ResourceManager.GetString("GORINP_PARAMETER_NULL_EMPTY", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_CANNOT_UNREGISTER", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The plug-in &apos;{0}&apos; was not found in any of the loaded plug-in assemblies or was not the correct type..
+        ///   Looks up a localized string similar to The window hook for raw input is still active, but the message filter has no record of it.
+        ///
+        ///This may happen if the object is disposed, but not cleaned up correctly..
         /// </summary>
-        internal static string GORINP_PLUGIN_NOT_FOUND {
+        internal static string GORINP_RAW_ERR_HOOK_STILL_ACTIVE {
             get {
-                return ResourceManager.GetString("GORINP_PLUGIN_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_HOOK_STILL_ACTIVE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find the pointing device &apos;{0}&apos;..
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not valid for use with this type &apos;{1}&apos;..
         /// </summary>
-        internal static string GORINP_POINTINGDEVICE_NOT_FOUND {
+        internal static string GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE {
             get {
-                return ResourceManager.GetString("GORINP_POINTINGDEVICE_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only one instance of the raw input system may be active at any given time..
+        /// </summary>
+        internal static string GORINP_RAW_ERR_ONLY_ONE_INSTANCE {
+            get {
+                return ResourceManager.GetString("GORINP_RAW_ERR_ONLY_ONE_INSTANCE", resourceCulture);
             }
         }
         
@@ -239,15 +214,6 @@ namespace Gorgon.Input.Properties {
         internal static string GORINP_TOSTR_JOYSTICKAXIS {
             get {
                 return ResourceManager.GetString("GORINP_TOSTR_JOYSTICKAXIS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Virtual Key: {0}, Character: {1}, Shift+Character: {2}.
-        /// </summary>
-        internal static string GORINP_TOSTR_KEYCHARMAP {
-            get {
-                return ResourceManager.GetString("GORINP_TOSTR_KEYCHARMAP", resourceCulture);
             }
         }
     }

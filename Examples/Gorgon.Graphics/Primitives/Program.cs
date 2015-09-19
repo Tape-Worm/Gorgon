@@ -25,12 +25,13 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Example.Properties;
-using Gorgon.Input;
+using GI = Gorgon.Input;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Plugins;
@@ -101,11 +102,11 @@ namespace Gorgon.Graphics.Example
 		// Rotation value.
 		private static float _cloudRotation;
 		// Input factory.
-		private static GorgonInputService _input;
+		private static GI.GorgonRawInput _input;
 		// Keyboard interface.
-		private static GorgonKeyboard _keyboard;
+		private static GI.GorgonRawKeyboard _keyboard;
 		// Mouse interface.
-		private static GorgonPointingDevice _mouse;
+		private static GI.GorgonRawMouse _mouse;
 		// Camera rotation amount.
 		private static Vector3 _cameraRotation;
 		// Camera position (eye).
@@ -117,7 +118,7 @@ namespace Gorgon.Graphics.Example
 		// Lock to sphere.
 		private static bool _lock;
 		// Mouse sensitivity.
-		private static float _sensitivity = 0.5f;
+		private static float _sensitivity = 1.5f;
 		// Normal map.
 		private static GorgonTexture2D _normalMap;
 		// Normal map.
@@ -294,8 +295,8 @@ namespace Gorgon.Graphics.Example
 			                                             GorgonTiming.Delta * 1000,
 			                                             _cameraRotation,
 			                                             (_triangle.TriangleCount) + (_plane.TriangleCount) + (_cube.TriangleCount) + (_sphere.TriangleCount) + (_icoSphere.TriangleCount) + (_clouds.TriangleCount),
-			                                             _mouse.Position.X,
-			                                             _mouse.Position.Y,
+			                                             _mouse?.Position.X ?? 0,
+			                                             _mouse?.Position.Y ?? 0,
 														 _sensitivity),
 			                               Vector2.Zero,
 			                               Color.White);
@@ -319,50 +320,50 @@ namespace Gorgon.Graphics.Example
 			Matrix rotMatrix;
 			Vector3 cameraDir = Vector3.Zero;
 
-			if (_keyboard.KeyStates[KeyboardKey.Left] == KeyState.Down)
+			if (_keyboard.KeyStates[Keys.Left] == GI.KeyState.Down)
 			{
 				_cameraRotation.X -= 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKey.Right] == KeyState.Down)
+			if (_keyboard.KeyStates[Keys.Right] == GI.KeyState.Down)
 			{
 				_cameraRotation.X += 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKey.Up] == KeyState.Down)
+			if (_keyboard.KeyStates[Keys.Up] == GI.KeyState.Down)
 			{
 				_cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
 			} else
-			if (_keyboard.KeyStates[KeyboardKey.Down] == KeyState.Down)
+			if (_keyboard.KeyStates[Keys.Down] == GI.KeyState.Down)
 			{
 				_cameraRotation.Y += 40.0f * GorgonTiming.Delta;
-			} else if (_keyboard.KeyStates[KeyboardKey.PageUp] == KeyState.Down)
+			} else if (_keyboard.KeyStates[Keys.PageUp] == GI.KeyState.Down)
 			{
 				_cameraRotation.Z -= 40.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.PageDown] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.PageDown] == GI.KeyState.Down)
 			{
 				_cameraRotation.Z += 40.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.D] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.D] == GI.KeyState.Down)
 			{
 				cameraDir.X = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.A] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.A] == GI.KeyState.Down)
 			{
 				cameraDir.X = -2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.W] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.W] == GI.KeyState.Down)
 			{
 				cameraDir.Z = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.S] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.S] == GI.KeyState.Down)
 			{
 				cameraDir.Z = -2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.Q] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.Q] == GI.KeyState.Down)
 			{
 				cameraDir.Y = 2.0f * GorgonTiming.Delta;
 			}
-			else if (_keyboard.KeyStates[KeyboardKey.E] == KeyState.Down)
+			else if (_keyboard.KeyStates[Keys.E] == GI.KeyState.Down)
 			{
 				cameraDir.Y = -2.0f * GorgonTiming.Delta;
 			}
@@ -404,17 +405,35 @@ namespace Gorgon.Graphics.Example
 		/// Handles the Down event of the Mouse control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
-		private static void Mouse_Down(object sender, PointingDeviceEventArgs args)
+		/// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private static void Mouse_Down(object sender, MouseEventArgs args)
 		{
-			if (((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
-				&& (!_mouse.Exclusive))
+			if ((args.Button != MouseButtons.Right)
+				|| (_mouse != null))
 			{
 				return;
 			}
+			
+			_mouseStart = args.Location;
 
-			_mouseStart = args.Position;
-			_mouse.Exclusive = true;
+			GI.GorgonRawMouse.CursorVisible = false;
+
+			// Capture the cursor so that we can't move it outside the client area.
+			Cursor.Clip = _form.RectangleToScreen(new Rectangle(_form.ClientSize.Width / 2, _form.ClientSize.Height / 2, 1, 1));
+
+			_mouse = new GI.GorgonRawMouse();
+			_input.RegisterDevice(_mouse);
+			
+			_mouse.MouseButtonUp += Mouse_Up;
+			_mouse.MouseMove += RawMouse_MouseMove;
+		}
+
+		private static void RawMouse_MouseMove(object esender, GI.GorgonMouseEventArgs e)
+		{
+			var delta = e.RelativePosition;
+			_cameraRotation.Y += delta.Y.Sign() * (_sensitivity); //((360.0f * 0.002f) * delta.Y.Sign());
+			_cameraRotation.X += delta.X.Sign() * (_sensitivity); //((360.0f * 0.002f) * delta.X.Sign());
+			_mouseStart = _mouse.Position;
 		}
 
 		/// <summary>
@@ -422,16 +441,29 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="args">The <see cref="PointingDeviceEventArgs"/> instance containing the event data.</param>
-		private static void Mouse_Up(object sender, PointingDeviceEventArgs args)
+		private static void Mouse_Up(object sender, GI.GorgonMouseEventArgs args)
 		{
-			if (((args.Buttons & PointingDeviceButtons.Right) != PointingDeviceButtons.Right)
-				&& (_mouse.Exclusive))
+			if (((args.Buttons & GI.MouseButtons.Right) != GI.MouseButtons.Right)
+				|| (_mouse == null))
 			{
 				return;
 			}
 
-			_mouse.Exclusive = false;
-			_mouse.ShowCursor();
+			try
+			{
+				_mouse.MouseButtonUp -= Mouse_Up;
+				_mouse.MouseMove -= RawMouse_MouseMove;
+
+				_input.UnregisterDevice(_mouse);
+				_mouse = null;
+
+				Cursor.Clip = Rectangle.Empty;
+				GI.GorgonRawMouse.CursorVisible = true;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(_form, ex);
+			}
 		}
 
 		/// <summary>
@@ -642,63 +674,42 @@ namespace Gorgon.Graphics.Example
 
 			_cameraRotation = Vector2.Zero;
 
-			
-			using (GorgonPluginAssemblyCache pluginAssemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
-			{
-				pluginAssemblies.Load(Application.StartupPath + @"\Gorgon.Input.Raw.dll");
 
-				GorgonPluginService pluginService = new GorgonPluginService(pluginAssemblies, GorgonApplication.Log);
-				GorgonInputServiceFactory inputFactory = new GorgonInputServiceFactory(pluginService, GorgonApplication.Log);
+			_input = new GI.GorgonRawInput(_form);
+			_keyboard = new GI.GorgonRawKeyboard();
 
-				_input = inputFactory.CreateService("Gorgon.Input.GorgonRawPlugIn");
-				_keyboard = _input.CreateKeyboard(_form);
-				_mouse = _input.CreateMouse(_form);
-			}
+			_input.RegisterDevice(_keyboard);
 
 			_keyboard.KeyDown += (sender, args) =>
 			                     {
-				                     if (args.Key == KeyboardKey.L)
+				                     if (args.Key == Keys.L)
 				                     {
 					                     _lock = !_lock;
 				                     }
 			                     };
 
-			_mouse.PointingDeviceDown += Mouse_Down;
-			_mouse.PointingDeviceUp += Mouse_Up;
-			_mouse.PointingDeviceWheelMove += (sender, args) =>
-			                                  {
-				                                  if (args.WheelDelta < 0)
-				                                  {
-					                                  _sensitivity -= 0.05f;
+			_form.MouseDown += Mouse_Down;
+			_form.MouseWheel += (sender, args) =>
+			                    {
+				                    if (args.Delta < 0)
+				                    {
+					                    _sensitivity -= 0.05f;
 
-					                                  if (_sensitivity < 0.05f)
-					                                  {
-						                                  _sensitivity = 0.05f;
-					                                  }
-				                                  } else if (args.WheelDelta > 0)
-				                                  {
-					                                  _sensitivity += 0.05f;
+					                    if (_sensitivity < 0.05f)
+					                    {
+						                    _sensitivity = 0.05f;
+					                    }
+				                    }
+				                    else if (args.Delta > 0)
+				                    {
+					                    _sensitivity += 0.05f;
 
-					                                  if (_sensitivity > 2.0f)
-					                                  {
-						                                  _sensitivity = 2.0f;
-					                                  }
-				                                  }
-
-			                                  };
-			_mouse.PointingDeviceMove += (sender, args) =>
-			                             {
-				                             if (!_mouse.Exclusive)
-				                             {
-					                             return;
-				                             }
-
-				                             var delta = args.RelativePosition;
-				                             _cameraRotation.Y += delta.Y * _sensitivity;//((360.0f * 0.002f) * delta.Y.Sign());
-				                             _cameraRotation.X += delta.X * _sensitivity;//((360.0f * 0.002f) * delta.X.Sign());
-				                             _mouseStart = _mouse.Position;
-				                             _mouse.RelativePosition = PointF.Empty;
-			                             };
+					                    if (_sensitivity > 3.0f)
+					                    {
+						                    _sensitivity = 3.0f;
+					                    }
+				                    }
+			                    };
 
 		}
 
@@ -723,6 +734,8 @@ namespace Gorgon.Graphics.Example
 			}
 			finally
 			{
+				_input?.Dispose();
+
 				_materialBuffer?.Dispose();
 
 				_normalEarfMap?.Dispose();

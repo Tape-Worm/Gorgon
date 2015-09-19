@@ -32,11 +32,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Gorgon X Input")]
-[assembly: AssemblyDescription("A XBOX 360 controller plug-in for Gorgon.")]
+[assembly: AssemblyDescription("A XBOX 360 controller driver plug in for Gorgon.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
 [assembly: AssemblyProduct("Gorgon.Input.XInput")]
-[assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
+[assembly: AssemblyCopyright("Copyright © Michael Winsor 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

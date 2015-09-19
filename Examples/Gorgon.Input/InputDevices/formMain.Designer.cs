@@ -58,7 +58,7 @@ namespace Gorgon.Examples
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(778, 485);
+			this.panelDisplay.Size = new System.Drawing.Size(1262, 604);
 			this.panelDisplay.TabIndex = 1;
 			// 
 			// panel1
@@ -69,9 +69,9 @@ namespace Gorgon.Examples
 			this.panel1.Controls.Add(this.panelKeyboard);
 			this.panel1.Controls.Add(this.panelJoystick);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 485);
+			this.panel1.Location = new System.Drawing.Point(0, 604);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(778, 69);
+			this.panel1.Size = new System.Drawing.Size(1262, 69);
 			this.panel1.TabIndex = 0;
 			// 
 			// panelMouse
@@ -81,7 +81,7 @@ namespace Gorgon.Examples
 			this.panelMouse.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelMouse.Location = new System.Drawing.Point(0, 0);
 			this.panelMouse.Name = "panelMouse";
-			this.panelMouse.Size = new System.Drawing.Size(778, 23);
+			this.panelMouse.Size = new System.Drawing.Size(1262, 23);
 			this.panelMouse.TabIndex = 6;
 			// 
 			// labelMouse
@@ -90,7 +90,7 @@ namespace Gorgon.Examples
 			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelMouse.Location = new System.Drawing.Point(26, 0);
 			this.labelMouse.Name = "labelMouse";
-			this.labelMouse.Size = new System.Drawing.Size(752, 23);
+			this.labelMouse.Size = new System.Drawing.Size(1236, 23);
 			this.labelMouse.TabIndex = 0;
 			this.labelMouse.Text = "Mouse";
 			this.labelMouse.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -116,7 +116,7 @@ namespace Gorgon.Examples
 			this.panelKeyboard.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelKeyboard.Location = new System.Drawing.Point(0, 23);
 			this.panelKeyboard.Name = "panelKeyboard";
-			this.panelKeyboard.Size = new System.Drawing.Size(778, 23);
+			this.panelKeyboard.Size = new System.Drawing.Size(1262, 23);
 			this.panelKeyboard.TabIndex = 5;
 			// 
 			// labelKeyboard
@@ -125,7 +125,7 @@ namespace Gorgon.Examples
 			this.labelKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelKeyboard.Location = new System.Drawing.Point(26, 0);
 			this.labelKeyboard.Name = "labelKeyboard";
-			this.labelKeyboard.Size = new System.Drawing.Size(752, 23);
+			this.labelKeyboard.Size = new System.Drawing.Size(1236, 23);
 			this.labelKeyboard.TabIndex = 0;
 			this.labelKeyboard.Text = "Keyboard";
 			this.labelKeyboard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -149,7 +149,7 @@ namespace Gorgon.Examples
 			this.panelJoystick.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelJoystick.Location = new System.Drawing.Point(0, 46);
 			this.panelJoystick.Name = "panelJoystick";
-			this.panelJoystick.Size = new System.Drawing.Size(778, 23);
+			this.panelJoystick.Size = new System.Drawing.Size(1262, 23);
 			this.panelJoystick.TabIndex = 4;
 			this.panelJoystick.Visible = false;
 			// 
@@ -159,7 +159,7 @@ namespace Gorgon.Examples
 			this.labelJoystick.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelJoystick.Location = new System.Drawing.Point(26, 0);
 			this.labelJoystick.Name = "labelJoystick";
-			this.labelJoystick.Size = new System.Drawing.Size(752, 23);
+			this.labelJoystick.Size = new System.Drawing.Size(1236, 23);
 			this.labelJoystick.TabIndex = 2;
 			this.labelJoystick.Text = "Joystick";
 			this.labelJoystick.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -178,9 +178,9 @@ namespace Gorgon.Examples
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(778, 554);
+			this.ClientSize = new System.Drawing.Size(1262, 673);
 			this.Controls.Add(this.panelDisplay);
 			this.Controls.Add(this.panel1);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

@@ -31,13 +31,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Input Example [DEBUG VERSION]")]
-[assembly: AssemblyDescription("An example showing how to use the Input devices. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Gorgon Raw Input Example [DEBUG VERSION]")]
+[assembly: AssemblyDescription("An example showing how to use the Raw Input devices. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Gorgon Input Example")]
-[assembly: AssemblyDescription("An example showing how to use the Input devices.")]
+[assembly: AssemblyTitle("Gorgon Raw Input Example")]
+[assembly: AssemblyDescription("An example showing how to use the Raw Input devices.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif

@@ -543,6 +543,13 @@ namespace Gorgon.Examples
 				_keyboard.KeyDown += _keyboard_KeyDown;
 				_keyboard.IsAcquired = true;
 
+				// Enable joysticks.
+				foreach (GorgonJoystick2 joystick in _joystickList)
+				{
+					joystick.BindWindow(this);
+					joystick.IsAcquired = true;
+				}
+
 				GorgonApplication.IdleMethod = Gorgon_Idle;
 			}
 			catch (Exception ex)

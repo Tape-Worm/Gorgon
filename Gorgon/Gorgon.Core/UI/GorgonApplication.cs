@@ -521,8 +521,7 @@ namespace Gorgon.UI
 		/// <summary>
 		/// Function to initialize the main form and idle loop..
 		/// </summary>
-		/// <returns><b>true</b> if the application has signalled to quit before it starts running, <b>false</b> to continue.</returns>
-		private static bool Initialize()
+		private static void Initialize()
 		{
 			// Initialize the timing data.
 			// This will start the application uptime counter.  But since there's no actual timer set on this yet,
@@ -530,15 +529,15 @@ namespace Gorgon.UI
 			GorgonTiming.Reset();
 
 			// Initialize the timer. By creating them as lazy instantiated objects, we can ensure that they won't start 
-			// until the application completes processing message its queue on first run.
+			// until the application completes processing its queue on first run.
 			if (GorgonTimerQpc.SupportsQpc())
 			{
 				_applicationTimer = new Lazy<IGorgonTimer>(() => new GorgonTimerQpc());
 			}
 			else
 			{
-				// Set the period to 1 millisecond before using the multimedia timing, otherwise things may not be 
-				// accurate. 
+				// Set the period to 1 millisecond (the default for the BeginTiming method) before using the multimedia timing, 
+				// otherwise things may not be  accurate. 
 				_applicationTimer = new Lazy<IGorgonTimer>(() =>
 				                                           {
 					                                           GorgonTimerMultimedia.BeginTiming();
@@ -546,7 +545,10 @@ namespace Gorgon.UI
 				                                           });
 			}
 
-		    // Display the form.
+			// Notify that we're in a running state.
+			IsRunning = true;
+
+			// Display the form.
 			if ((MainForm != null) && (!MainForm.IsDisposed))
 			{
 				MainForm.Show();
@@ -562,7 +564,8 @@ namespace Gorgon.UI
 			Application.ApplicationExit += Application_ApplicationExit;
 			Application.ThreadExit += Application_ThreadExit;
 
-			return _quitSignalled;
+			// If anything kills the application early, then capture the quit state.
+			IsRunning = !_quitSignalled;
 		}
 
 		/// <summary>
@@ -741,13 +744,14 @@ namespace Gorgon.UI
 
 			try
 			{
-			    if (Initialize())
-			    {
-			        return;
-			    }
+				Initialize();
 
-			    IsRunning = true;
-                Application.Run(context);
+				if (!IsRunning)
+				{
+					return;
+				}
+
+				Application.Run(context);
 			}
 			catch (Exception ex)
 			{
@@ -826,12 +830,13 @@ namespace Gorgon.UI
 
 			try
 			{
-				if (Initialize())
+				Initialize();
+
+				if (!IsRunning)
 				{
 					return;
 				}
-
-				IsRunning = true;
+				
 				Application.Run(MainForm);
 			}
 			catch (Exception ex)
@@ -899,12 +904,13 @@ namespace Gorgon.UI
 
 			try
 			{
-				if (Initialize())
+				Initialize();
+
+				if (!IsRunning)
 				{
 					return;
 				}
 
-				IsRunning = true;
                 Application.Run();
 			}
 			catch (Exception ex)

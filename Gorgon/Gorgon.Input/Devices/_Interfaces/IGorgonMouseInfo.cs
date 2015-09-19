@@ -1,6 +1,6 @@
-﻿#region MIT
+#region MIT
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,49 +20,53 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, July 4, 2015 2:20:46 PM
+// Created: Thursday, September 10, 2015 10:00:57 PM
 // 
 #endregion
 
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// Contains information for a pointing input (e.g. a mouse, track pad, etc...) device.
+	/// Provides capability information about a mouse device.
 	/// </summary>
-	public interface IGorgonMouseInfo
-		: IGorgonInputDeviceInfo
+	public interface IGorgonMouseInfo 
 	{
 		/// <summary>
-		/// Property to return the number of buttons on the pointing device.
-		/// </summary> 
+		/// Property to return a human friendly description of the device.
+		/// </summary>
+		string Description
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the sampling rate for the mouse.
+		/// </summary>
+		int SampleRate
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the number of buttons on the mouse.
+		/// </summary>
 		int ButtonCount
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return the number of data points per second.
+		/// Property to return whether the mouse supports a horizontal wheel or not.
 		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Some input plug-ins may not be able to query this information. When this is the case, this value should return 0.
-		/// </para>
-		/// <para>
-		/// This information may not be applicable for every pointing device.
-		/// </para>
-		/// </remarks>
-		int SamplingRate
+		bool HasHorizontalWheel
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return whether the pointing device has a horizontal scrolling wheel.
+		/// Property to return the mouse ID.
 		/// </summary>
-		/// <remarks>
-		/// Some input plug-ins may not be able to query this information. When this is the case, this value should return <b>false</b>.
-		/// </remarks>
-		bool HasHorizontalWheel
+		int MouseID
 		{
 			get;
 		}

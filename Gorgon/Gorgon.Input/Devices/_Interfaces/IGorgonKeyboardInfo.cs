@@ -1,6 +1,6 @@
-﻿#region MIT
+#region MIT
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,18 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, July 3, 2015 11:27:17 AM
+// Created: Thursday, September 10, 2015 10:04:24 PM
 // 
 #endregion
 
 namespace Gorgon.Input
 {
 	/// <summary>
-	/// Contains information for a keyboard input device.
+	/// Provides capability information about a keyboard device.
 	/// </summary>
 	public interface IGorgonKeyboardInfo
-		: IGorgonInputDeviceInfo
 	{
+		/// <summary>
+		/// Property to return a human friendly description of the device.
+		/// </summary>
+		string Description
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the total number of keys present on the keyboard.
 		/// </summary>
@@ -39,9 +46,6 @@ namespace Gorgon.Input
 		/// <para>
 		/// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
 		/// </para> 
-		/// <para>
-		/// If this value is -1, then the <see cref="GorgonInputServicePlugin"/> was not able to determine the total number of keys when enumerating this device.
-		/// </para>
 		/// </remarks>
 		int KeyCount
 		{
@@ -51,9 +55,6 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the number of LED indicators on the keyboard.
 		/// </summary>
-		/// <remarks>
-		/// If this value is -1, then the <see cref="GorgonInputServicePlugin"/> was not able to determine the number of indicators when enumerating this device.
-		/// </remarks>
 		int IndicatorCount
 		{
 			get;
@@ -62,9 +63,6 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Property to return the number of function keys on the keyboard.
 		/// </summary>
-		/// <remarks>
-		/// If this value is -1, then the <see cref="GorgonInputServicePlugin"/> was not able to determine the number of indicators when enumerating this device.
-		/// </remarks>
 		int FunctionKeyCount
 		{
 			get;

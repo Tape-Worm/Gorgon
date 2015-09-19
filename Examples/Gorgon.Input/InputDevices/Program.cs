@@ -40,33 +40,6 @@ namespace Gorgon.Examples
 	static class Program
 	{
 		/// <summary>
-		/// Property to return the path to the plug-ins.
-		/// </summary>
-		public static string PlugInPath
-		{
-			get
-			{
-				string path = Settings.Default.PlugInLocation;
-
-				if (path.Contains("{0}"))
-				{
-#if DEBUG
-					path = string.Format(path, "Debug");
-#else
-					path = string.Format(path, "Release");					
-#endif
-				}
-
-				if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				{
-					path += Path.DirectorySeparatorChar.ToString();
-				}
-
-				return Path.GetFullPath(path);
-			}
-		}
-
-		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]

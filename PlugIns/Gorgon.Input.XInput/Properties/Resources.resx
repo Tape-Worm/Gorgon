@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORINP_ERR_XINP_NOT_AN_XINPUT_DEVICE_INFO" xml:space="preserve">
+    <value>The device information is not valid for an XInput driver.</value>
+  </data>
   <data name="GORINP_XINP_DEVICE_NAME" xml:space="preserve">
     <value>XInput controller #{0}</value>
   </data>

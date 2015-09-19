@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Input;
@@ -40,35 +39,32 @@ namespace Gorgon.Examples
 	/// Entry point class.
 	/// </summary>
 	/// <remarks>
-    /// The Input system in this version of Gorgon is very different from the previous version.  Input plugins now create factories which
-    /// will create input device objects (e.g. a mouse device, keyboard device, etc...).  This allows mixing and matching of various input
-    /// types.  For example, you can load a winforms plugin to handle keyboard input, a raw input plugin to handle mouse input and a
-    /// plugin to handle XBox controller support.  In fact, the XBox controller plugin only has support for the controller and has no
-    /// mouse or keyboard device support.
+	/// The first step in loading a gaming device driver is to create a plug in assembly cache and plug in service to load the driver. 
+	/// After that, use the GorgonGamingDeviceDriverFactory object to load the driver plug in from the loaded assemblies. In this example 
+	/// we will load the both the XInput and Direct Input drivers and display the supported gaming devices for these drivers in the 
+	/// console window. The example will load the DLLs for these drivers from the plug ins directory (which is configured in the app.config 
+	/// file). It is important to note that this is done for the example only, in most cases the developer will know the DLL and plugin 
+	/// type and create it directly.  For example:
     /// 
-    /// The first step in setting up the input interface is to create an input service.  In this example we'll load the plugins and create 
-    /// their respective input services.  This example will go to the plugins directory (which can be configured in the config file) and
-    /// load all of the input plugins by enumerating the DLLs and checking for input plugin.  It is important to note that this is done 
-    /// for the example only, in most cases the developer will know the DLL and plugin type and create it directly.  For example:
-    /// 
-    /// // Load the raw input plugin DLL.
-    /// GorgonInputService inputService;
+    /// // Load the Xinput plugin DLL.
+    /// GorgonGamingDeviceDriver xInputDriver;
     /// 
     /// using (var assemblyCache = new GorgonPluginAssemblyCache())
     /// {
-    ///		assemblyCache.Load("[directory for plugins]\Gorgon.Input.Raw.DLL"); 
+    ///		assemblyCache.Load("[directory for plugins]\Gorgon.Input.XInput.DLL"); 
     /// 
     ///		// Create the plugin service.
     ///		var pluginService = new GorgonPluginService(assemblyCache);
     ///
-    ///		// Create the factory for input services.  Notice that we're using the full type name of the plugin.
-    ///		var inputServiceFactory = new GorgonInputServiceFactory(pluginService);
+    ///		// Create the factory for loading the drivers and load the driver.
+    ///		var driverFactory = new GorgonGamingDeviceDriverFactory(inputServiceFactory);
     /// 
     ///		// Finally, create the input service. Note the use of the fully qualified type name for the plugin name.
-	///		inputService = inputServiceFactory.CreateInputService("Gorgon.Input.GorgonRawPlugIn");
+	///		xInputDriver = driverFactory.LoadDriver("Gorgon.Input.GorgonXInputDriver");
     /// }
     /// 
-    /// While this is more complex than the previous version of Gorgon, it's also far more flexible.
+    /// While this is more complex than the previous version of Gorgon, it's also far more flexible when dealing with object composition 
+    /// techniques like dependency injection.
 	/// </remarks>
 	static class Program
 	{
@@ -104,10 +100,10 @@ namespace Gorgon.Examples
 
 		#region Methods.
 		/// <summary>
-		/// Function to load in the input plugins.
+		/// Function to load in the gaming device driver plug ins.
 		/// </summary>
-		/// <returns>A list of input plugins.</returns>
-		static IList<Tuple<GorgonInputServicePlugin, GorgonInputService2>> GetInputPlugIns()
+		/// <returns>A list of gaming device driver plug ins.</returns>
+		static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
 		{
 			// Access our plugin cache.
 			using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache(GorgonApplication.Log))
@@ -121,7 +117,7 @@ namespace Gorgon.Examples
 
 				if (files.Length == 0)
 				{
-					return new Tuple<GorgonInputServicePlugin, GorgonInputService2>[0];
+					return new IGorgonGamingDeviceDriver[0];
 				}
 
 				// Find our plugins in the DLLs.
@@ -139,18 +135,13 @@ namespace Gorgon.Examples
 				}
 				
 				// Create our plugin service.
-				GorgonPluginService pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
+				var pluginService = new GorgonPluginService(assemblies, GorgonApplication.Log);
 
 				// Create our input service factory.
-				GorgonInputServiceFactory2 serviceFactory = new GorgonInputServiceFactory2(pluginService, GorgonApplication.Log);
+				var factory = new GorgonGamingDeviceDriverFactory(pluginService, GorgonApplication.Log);
 
-				// Retrieve the list of plugins from the input service factory.
-				IEnumerable<GorgonInputServicePlugin> inputPlugIns = pluginService.GetPlugins<GorgonInputServicePlugin>();
-
-				return (from plugin in inputPlugIns
-				        let service = serviceFactory.CreateService(plugin.Name)
-				        where service != null
-				        select new Tuple<GorgonInputServicePlugin, GorgonInputService2>(plugin, service)).ToArray();
+				// Retrieve the list of driver plug ins from the input service factory.
+				return factory.LoadAllDrivers();
 			}
 		}
 
@@ -166,32 +157,34 @@ namespace Gorgon.Examples
 				Console.ForegroundColor = ConsoleColor.White;
                 Console.Title = "Gorgon Example - Input Services.";
 
-                Console.WriteLine("In this example we will perform the first step in accessing Gorgon's input");
-                Console.WriteLine("device API. Unlike the previous version of Gorgon, this is done by means of");
-                Console.WriteLine("an object called an input service.  The input service is responsible for");
-                Console.WriteLine("creating input device objects like a mouse, keyboard or joystick which can");
-                Console.WriteLine("then be used to monitor input from one of these devices.");
-                Console.WriteLine();
-                Console.WriteLine("It is important to note that this example does not create any of these devices");
-                Console.WriteLine("since they require a Windows Form to operate.");
+                Console.WriteLine("In this example we will perform the first step in accessing Gorgon's gaming");
+				Console.WriteLine("device driver API. These drivers will allow access to any gaming device (e.g. a ");
+				Console.WriteLine("joystick, game pad, etc...) that is supported by its underlying native provider.");
+				Console.WriteLine("These drivers are loaded as plug ins and can be used to mix and match various");
+				Console.WriteLine("types of gaming devices.");
+				Console.WriteLine();
+				Console.WriteLine("Only connected gaming device drivers will be reported by this example.");
+				Console.WriteLine();
+				Console.WriteLine("It is important to note that this example does not create any of these devices ");
+                Console.WriteLine("since some providers (e.g. Direct Input) require a window handle to operate.");
 
                 Console.WriteLine();
-				Console.WriteLine("Loading input plugins...");
+				Console.WriteLine("Loading gaming device drivers...");
 
 				// Load our input factory plugins.
-				var inputPlugIns = GetInputPlugIns();
+				IReadOnlyList<IGorgonGamingDeviceDriver> inputPlugIns = GetGamingDeviceDrivers();
 
                 // No plugins?  No luck.
 				if (inputPlugIns.Count == 0)
 				{
 					Console.ResetColor();
-					Console.WriteLine("Could not find any input factory plugins.");
+					Console.WriteLine("Could not find any gaming device driver plug ins.");
 					return;
 				}
 
 			    // Display the plugin information.
 			    Console.WriteLine();
-			    Console.WriteLine("{0} input factory plugins found:", inputPlugIns.Count);					
+			    Console.WriteLine("{0} gaming device driver plug ins found:", inputPlugIns.Count);					
 			    foreach (var plugIn in inputPlugIns)
 			    {
 			        Console.ForegroundColor = ConsoleColor.Cyan;
@@ -199,23 +192,19 @@ namespace Gorgon.Examples
 			        // Enumerate the devices available on the system.
 				    try
 				    {
-					    IReadOnlyList<IGorgonKeyboardInfo2> keyboards = plugIn.Item2.EnumerateKeyboards();
-					    IReadOnlyList<IGorgonMouseInfo2> mice = plugIn.Item2.EnumerateMice();
-						IReadOnlyList<IGorgonJoystickInfo2> joysticks = plugIn.Item2.EnumerateJoysticks();
+					    IReadOnlyList<IGorgonGamingDeviceInfo> devices = plugIn.EnumerateGamingDevices(true);
 
-						// The XBox Controller plugin always registers multiple devices, even when none
-						// are physically attached to the system.  So in this case, we'll disregard those.
-						Console.WriteLine("{0}", plugIn.Item1.Description);
+						Console.WriteLine($"{plugIn.Description} ({devices.Count} device(s))");
 						Console.ForegroundColor = ConsoleColor.Gray;
-						Console.WriteLine("\t{0} keyboards, {1} mice, {2} joysticks found.",
-										  keyboards.Count,
-										  mice.Count,
-										  joysticks.Count);
+					    for (int i = 0; i < devices.Count; ++i)
+					    {
+							Console.WriteLine($"\t{i + 1}. {devices[i].Description}");						    
+					    }
 				    }
 				    catch (Exception ex)
 				    {
 					    Console.ForegroundColor = ConsoleColor.Red;
-					    Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Item2.GetType().FullName, ex.Message.Ellipses(Console.WindowWidth - 4));
+					    Console.WriteLine("Cannot enumerate devices from {0}. Error:\n{1}", plugIn.Description, ex.Message.Ellipses(Console.WindowWidth - 4));
 				    }
 			    }
 			    Console.ResetColor();

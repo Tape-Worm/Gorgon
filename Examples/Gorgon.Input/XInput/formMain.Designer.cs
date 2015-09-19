@@ -33,6 +33,7 @@ namespace Gorgon.Examples
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
 			this.panelDisplay = new System.Windows.Forms.Panel();
+			this.labelMessage = new System.Windows.Forms.Label();
 			this.panelControllers = new System.Windows.Forms.Panel();
 			this.panelController0 = new System.Windows.Forms.Panel();
 			this.labelController0 = new System.Windows.Forms.Label();
@@ -46,6 +47,7 @@ namespace Gorgon.Examples
 			this.panelController3 = new System.Windows.Forms.Panel();
 			this.labelController3 = new System.Windows.Forms.Label();
 			this.pictureBox4 = new System.Windows.Forms.PictureBox();
+			this.panelDisplay.SuspendLayout();
 			this.panelControllers.SuspendLayout();
 			this.panelController0.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -59,11 +61,26 @@ namespace Gorgon.Examples
 			// 
 			// panelDisplay
 			// 
+			this.panelDisplay.Controls.Add(this.labelMessage);
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(1262, 661);
+			this.panelDisplay.Size = new System.Drawing.Size(1262, 581);
 			this.panelDisplay.TabIndex = 0;
+			// 
+			// labelMessage
+			// 
+			this.labelMessage.BackColor = System.Drawing.Color.White;
+			this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.labelMessage.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelMessage.Location = new System.Drawing.Point(0, 0);
+			this.labelMessage.Name = "labelMessage";
+			this.labelMessage.Size = new System.Drawing.Size(1262, 581);
+			this.labelMessage.TabIndex = 0;
+			this.labelMessage.Text = "No XInput controllers are connected.\r\n\r\nPlease connect an XInput controller to us" +
+    "e this application.";
+			this.labelMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.labelMessage.Visible = false;
 			// 
 			// panelControllers
 			// 
@@ -74,7 +91,7 @@ namespace Gorgon.Examples
 			this.panelControllers.Controls.Add(this.panelController2);
 			this.panelControllers.Controls.Add(this.panelController3);
 			this.panelControllers.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControllers.Location = new System.Drawing.Point(0, 661);
+			this.panelControllers.Location = new System.Drawing.Point(0, 581);
 			this.panelControllers.Name = "panelControllers";
 			this.panelControllers.Size = new System.Drawing.Size(1262, 92);
 			this.panelControllers.TabIndex = 1;
@@ -223,7 +240,7 @@ namespace Gorgon.Examples
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1262, 753);
+			this.ClientSize = new System.Drawing.Size(1262, 673);
 			this.Controls.Add(this.panelDisplay);
 			this.Controls.Add(this.panelControllers);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -231,8 +248,7 @@ namespace Gorgon.Examples
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Gorgon Example - XInput";
-			this.Activated += new System.EventHandler(this.formMain_Activated);
-			this.Deactivate += new System.EventHandler(this.formMain_Deactivate);
+			this.panelDisplay.ResumeLayout(false);
 			this.panelControllers.ResumeLayout(false);
 			this.panelController0.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -263,7 +279,7 @@ namespace Gorgon.Examples
 		private Panel panelController3;
 		private Label labelController3;
 		private PictureBox pictureBox4;
-
-    }
+		private Label labelMessage;
+	}
 }
 

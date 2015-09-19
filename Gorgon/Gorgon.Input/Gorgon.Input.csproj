@@ -44,7 +44,8 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -64,72 +65,72 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_2\Devices\GorgonInputDeviceDefaultCoordinator.cs" />
-    <Compile Include="_2\Devices\GorgonJoystickAxis.cs" />
-    <Compile Include="_2\Devices\GorgonJoystickAxisInfo.cs" />
-    <Compile Include="Devices\GorgonKeyCharMap.cs" />
-    <Compile Include="Events\GorgonInputKeyboardEventArgs.cs" />
-    <Compile Include="_2\Devices\GorgonJoystick2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceCoordinator.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceRegistrar.cs" />
-    <Compile Include="_2\GorgonInputServiceFactory2.cs" />
-    <Compile Include="_2\Devices\GorgonInputDevice2.cs" />
-    <Compile Include="_2\Devices\GorgonInputDeviceTypeEqualityComparer.cs" />
-    <Compile Include="_2\Devices\GorgonMouse.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputEventDrivenDevice.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDevice.cs" />
-    <Compile Include="_2\GorgonJoystickData.cs" />
-    <Compile Include="_2\GorgonKeyboardData.cs" />
-    <Compile Include="_2\Devices\GorgonKeysEqualityComparer.cs" />
-    <Compile Include="_2\GorgonInputService2.cs" />
-    <Compile Include="_2\Devices\GorgonJoystickAxisList.cs" />
-    <Compile Include="_2\Devices\GorgonJoystickAxisInfoList.cs" />
-    <Compile Include="Devices\GorgonJoystickDeadZoneList.cs" />
-    <Compile Include="Devices\GorgonJoystickAxisValueList.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonJoystickDeadZoneList.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonJoystickAxisValueList.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonHumanInterfaceDeviceInfo.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonInputDeviceInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonJoystickInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonKeyboardInfo2.cs" />
-    <Compile Include="_2\Devices\_Interfaces\IGorgonMouseInfo2.cs" />
-    <Compile Include="Events\GorgonBeforeInputUnbindEventArgs.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Devices\GorgonCustomHIDProperty.cs" />
-    <Compile Include="Devices\GorgonInputDevice.cs" />
-    <Compile Include="GorgonInputDeviceInfo.cs" />
-    <Compile Include="GorgonInputEvents.cs" />
-    <Compile Include="GorgonInputServiceFactory.cs" />
-    <Compile Include="GorgonInputService.cs" />
-    <Compile Include="GorgonInputServicePlugin.cs" />
-    <Compile Include="Devices\GorgonJoystick.cs" />
-    <Compile Include="Devices\GorgonJoystickAxisEqualityComparer.cs" />
-    <Compile Include="Devices\GorgonJoystickAxisRangeList.cs" />
-    <Compile Include="Devices\GorgonKeyboard.cs" />
-    <Compile Include="Devices\GorgonPointingDevice.cs" />
-    <Compile Include="Devices\GorgonCustomHID.cs" />
+    <Compile Include="Devices\GorgonGamingDevice.cs" />
+    <Compile Include="Devices\GorgonGamingDeviceAxis.cs" />
+    <Compile Include="Devices\GorgonGamingDeviceAxisEqualityComparer.cs" />
+    <Compile Include="Devices\GorgonGamingDeviceAxisInfo.cs" />
+    <Compile Include="Devices\GorgonGamingDeviceAxisList.cs" />
+    <Compile Include="Devices\GorgonGamingDeviceRegistryInfo.cs" />
+    <Compile Include="Devices\GorgonKeyStateCollection.cs" />
+    <Compile Include="Devices\GorgonRawHID.cs" />
+    <Compile Include="Devices\GorgonRawHIDData.cs" />
+    <Compile Include="Devices\GorgonRawHIDInfo.cs" />
+    <Compile Include="Devices\GorgonRawKeyboard.cs" />
+    <Compile Include="Devices\GorgonRawKeyboardData.cs" />
+    <Compile Include="Devices\GorgonRawMouse.cs" />
+    <Compile Include="Devices\GorgonRawMouseData.cs" />
+    <Compile Include="Devices\_Events\GorgonHIDEventArgs.cs" />
+    <Compile Include="Devices\_Events\GorgonKeyboardEventArgs.cs" />
+    <Compile Include="Devices\_Events\GorgonMouseEventArgs.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonGamingDevice.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonGamingDeviceAxis.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonGamingDeviceInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonKeyboard.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonKeyboardInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonMouse.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonMouseInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonRawHID.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonRawHIDInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonRawInputDevice.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceData.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceInfo.cs" />
+    <Compile Include="Devices\_Internal\RawKeyboardInfo.cs" />
+    <Compile Include="Devices\_Internal\RawMouseInfo.cs" />
+    <Compile Include="GorgonGamingDeviceDriver.cs" />
+    <Compile Include="GorgonGamingDeviceFactory.cs" />
+    <Compile Include="GorgonKeysEqualityComparer.cs" />
+    <Compile Include="GorgonRawInput.cs" />
+    <Compile Include="GorgonRawInputSettings.cs" />
+    <Compile Include="Native\RawInputApi.cs" />
+    <Compile Include="Native\UserApi.cs" />
+    <Compile Include="Native\Win32 Structs\CURSORINFO.cs" />
+    <Compile Include="Native\Win32 Structs\POINT.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUT.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICE.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTDEVICELIST.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTHEADER.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTHID.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTKEYBOARD.cs" />
+    <Compile Include="Native\Win32 Structs\RAWINPUTMOUSE.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_HID.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_KEYBOARD.cs" />
+    <Compile Include="Native\Win32 Structs\RID_DEVICE_INFO_MOUSE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Devices\_Interfaces\IGorgonInputDeviceInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonJoystickAxisRangeList.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonKeyboardInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonJoystickInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonMouseInfo.cs" />
-    <Compile Include="_2\Devices\GorgonKeyboard2.cs" />
-    <Compile Include="_2\GorgonMouseData.cs" />
-    <Compile Include="_2\_Interfaces\IGorgonInputService.cs" />
-    <Compile Include="_2\Native\Win32 Structs\CURSORINFO.cs" />
-    <Compile Include="_2\Native\Win32 Structs\POINT.cs" />
-    <Compile Include="_2\Native\UserApi.cs" />
-    <Compile Include="_2\_Events\GorgonKeyboardEventArgs.cs" />
-    <Compile Include="_2\_Events\GorgonMouseEventArgs.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Gorgon2.ico" />
+    <Compile Include="_Interfaces\IGorgonGamingDeviceDriver.cs" />
+    <Compile Include="_Interfaces\IGorgonGamingDeviceDriverFactory.cs" />
+    <Compile Include="_Interfaces\IGorgonInput.cs" />
+    <Compile Include="_Interfaces\IGorgonRawInput.cs" />
+    <Compile Include="_Internal\DeviceKey.cs" />
+    <Compile Include="_Internal\MessageFilterHook.cs" />
+    <Compile Include="_Internal\RawInputDeviceRegistryInfo.cs" />
+    <Compile Include="_Internal\RawInputDispatcher.cs" />
+    <Compile Include="_Internal\RawInputMessageFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
@@ -143,7 +144,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Gorgon2.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

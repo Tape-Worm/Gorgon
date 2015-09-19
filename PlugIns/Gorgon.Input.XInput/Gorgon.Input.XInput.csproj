@@ -66,13 +66,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\XInputDeviceCoordinator.cs" />
-    <Compile Include="Devices\XInputDeviceRegistrar.cs" />
-    <Compile Include="GorgonXInputPlugIn.cs" />
-    <Compile Include="GorgonXInputService.cs" />
-    <Compile Include="Devices\XInputJoystickInfo.cs" />
+    <Compile Include="Devices\XInputDevice.cs" />
+    <Compile Include="Devices\XInputDeviceInfo.cs" />
+    <Compile Include="Devices\_Internal\ButtonFlagsEqualityComparer.cs" />
+    <Compile Include="GorgonXInputDriver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Devices\XInput.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -98,9 +96,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Info\_Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"

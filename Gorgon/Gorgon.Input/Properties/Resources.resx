@@ -117,26 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORINP_CANNOT_CREATE" xml:space="preserve">
-    <value>Could not create the input factory for '{0}'.</value>
-  </data>
-  <data name="GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH" xml:space="preserve">
-    <value>The device requested already exists, but is not of the type '{0}'.</value>
-  </data>
-  <data name="GORINP_ERR_CANNOT_ENUM_DEVICES_PRESENT" xml:space="preserve">
-    <value>Cannot enumerate the devices when input device objects are active.</value>
-  </data>
-  <data name="GORINP_ERR_DEVICE_NEEDS_FORWARDER" xml:space="preserve">
-    <value>The device is not polled and requires a forwarder method. Did you forget to override RegisterForwarder?</value>
-  </data>
-  <data name="GORINP_ERR_HID_PROPERTY_NULL" xml:space="preserve">
-    <value>The HID property '{0}' is NULL.</value>
+  <data name="GORINP_ERR_DRIVER_NOT_FOUND" xml:space="preserve">
+    <value>The gaming device driver '{0}' was not found.</value>
   </data>
   <data name="GORINP_ERR_JOYSTICK_AXES_INVALID" xml:space="preserve">
     <value>There is no gaming device axis at the specified index.</value>
   </data>
-  <data name="GORINP_ERR_NO_WINDOW_TO_BIND" xml:space="preserve">
-    <value>A window is required to bind with the {0} device.</value>
+  <data name="GORINP_ERR_JOYSTICK_MOTOR_NOT_FOUND" xml:space="preserve">
+    <value>There is no motor at index [{0}].</value>
   </data>
   <data name="GORINP_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
@@ -146,40 +134,42 @@
 
 Win32 Error Code: {0}</value>
   </data>
-  <data name="GORINP_HID_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the HID '{0}'.</value>
+  <data name="GORINP_RAW_DESC_SYS_KEYBOARD" xml:space="preserve">
+    <value>System keyboard</value>
   </data>
-  <data name="GORINP_JOYSTICK_MOTOR_NOT_FOUND" xml:space="preserve">
-    <value>There is no motor at index [{0}].</value>
+  <data name="GORINP_RAW_DESC_SYS_MOUSE" xml:space="preserve">
+    <value>System mouse</value>
   </data>
-  <data name="GORINP_JOYSTICK_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the joystick '{0}'.</value>
+  <data name="GORINP_RAW_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
+    <value>The buffer returned was too small.</value>
   </data>
-  <data name="GORINP_JOYSTICK_NOT_INITIALIZED" xml:space="preserve">
-    <value>The joystick was not initialized.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR" xml:space="preserve">
+    <value>Unable to enumerate the raw input devices.</value>
   </data>
-  <data name="GORINP_KEYBOARD_KEY_NO_MAPPING" xml:space="preserve">
-    <value>Keyboard key '{0}' has not been assigned to a mapping.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_HOOK_RAWINPUT_MSG" xml:space="preserve">
+    <value>Failed to hook the application window message procedure.</value>
   </data>
-  <data name="GORINP_KEYBOARD_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the keyboard '{0}'.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA" xml:space="preserve">
+    <value>Could not read the raw input device data.</value>
   </data>
-  <data name="GORINP_KEY_NOT_FOUND" xml:space="preserve">
-    <value>Keyboard key '{0}' has not been assigned to a mapping.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_REGISTER" xml:space="preserve">
+    <value>Could not register the raw input device.</value>
   </data>
-  <data name="GORINP_PARAMETER_NULL_EMPTY" xml:space="preserve">
-    <value>The parameter must not be NULL or empty.</value>
+  <data name="GORINP_RAW_ERR_CANNOT_UNREGISTER" xml:space="preserve">
+    <value>Could not unregister the raw input device.</value>
   </data>
-  <data name="GORINP_PLUGIN_NOT_FOUND" xml:space="preserve">
-    <value>The plug-in '{0}' was not found in any of the loaded plug-in assemblies or was not the correct type.</value>
+  <data name="GORINP_RAW_ERR_HOOK_STILL_ACTIVE" xml:space="preserve">
+    <value>The window hook for raw input is still active, but the message filter has no record of it.
+
+This may happen if the object is disposed, but not cleaned up correctly.</value>
   </data>
-  <data name="GORINP_POINTINGDEVICE_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the pointing device '{0}'.</value>
+  <data name="GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE" xml:space="preserve">
+    <value>The type '{0}' is not valid for use with this type '{1}'.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_ONLY_ONE_INSTANCE" xml:space="preserve">
+    <value>Only one instance of the raw input system may be active at any given time.</value>
   </data>
   <data name="GORINP_TOSTR_JOYSTICKAXIS" xml:space="preserve">
     <value>Joystick axis: {0}, Range: {1} - {2}.</value>
-  </data>
-  <data name="GORINP_TOSTR_KEYCHARMAP" xml:space="preserve">
-    <value>Virtual Key: {0}, Character: {1}, Shift+Character: {2}</value>
   </data>
 </root>

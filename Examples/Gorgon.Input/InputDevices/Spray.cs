@@ -42,7 +42,7 @@ namespace Gorgon.Examples
 		// Graphics interface.
         private DrawingGraphics _graphics;
 		// List if brushes to use.
-	    private SolidBrush[] _brushes;
+	    private readonly SolidBrush[] _brushes;
         #endregion
 
         #region Properties.

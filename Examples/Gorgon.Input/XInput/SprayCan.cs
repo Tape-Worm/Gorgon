@@ -80,7 +80,7 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Property to return the joystick that owns this spray.
 		/// </summary>
-		public GorgonJoystick2 Joystick
+		public IGorgonGamingDevice Controller
 		{
 			get;
 		}
@@ -251,21 +251,21 @@ namespace Gorgon.Examples
 		/// </summary>
 		public void Update()
 		{
-			float throttleValue = Joystick.Axis[JoystickAxis.RightTrigger].Value;
+			float throttleValue = Controller.Axis[GamingDeviceAxis.RightTrigger].Value;
 		    float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
 
 			// Get unit time.
 			float unitTime = appTime / _maxTime;
 
 			// Vibrate our controller.
-			Joystick.Vibrate(1, (int)_vibAmount);
+			Controller.Vibrate(1, (int)_vibAmount);
 
 			// Get the spray vector in a -1 .. 1 range.
-			var sprayVector = new PointF(Joystick.Axis[JoystickAxis.XAxis2].Value - Joystick.Info.AxisInfo[JoystickAxis.XAxis2].Range.Minimum,
-										Joystick.Axis[JoystickAxis.YAxis2].Value - Joystick.Info.AxisInfo[JoystickAxis.YAxis2].Range.Minimum);
+			var sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
+										Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
-			sprayVector = new PointF((sprayVector.X / (Joystick.Info.AxisInfo[JoystickAxis.XAxis2].Range.Range + 1)) * 2.0f - 1.0f,
-									 -((sprayVector.Y / (Joystick.Info.AxisInfo[JoystickAxis.YAxis2].Range.Range + 1)) * 2.0f - 1.0f));
+			sprayVector = new PointF((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f - 1.0f,
+									 -((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f - 1.0f));
 
 			// Calculate angle without magnitude.
 			var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
@@ -336,9 +336,9 @@ namespace Gorgon.Examples
 		/// </summary>
 		public void StopVibration()
 		{
-			if (Joystick.IsConnected)
+			if (Controller.IsConnected)
 			{
-				Joystick.Vibrate(1, 0);
+				Controller.Vibrate(1, 0);
 			}
 		}
 		#endregion
@@ -347,12 +347,12 @@ namespace Gorgon.Examples
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SprayCan" /> struct.
 		/// </summary>
-		/// <param name="joystick">The joystick that owns this spray.</param>
+		/// <param name="controller">The joystick that owns this spray.</param>
 		/// <param name="controllerIndex">Index of the controller.</param>
-		public SprayCan(GorgonJoystick2 joystick, int controllerIndex)
+		public SprayCan(IGorgonGamingDevice controller, int controllerIndex)
 		{
 			Index = controllerIndex;
-			Joystick = joystick;
+			Controller = controller;
 			Position = PointF.Empty;
 			Amount = 0.0f;
 			Time = 0.0f;
