@@ -35,6 +35,7 @@ namespace Gorgon.Input
 	/// <summary>
 	/// A list of axis data values for a gaming device.
 	/// </summary>
+	/// <typeparam name="T">The type of axis data to store in this collection. This type must implement <see cref="IGorgonGamingDeviceAxis"/>.</typeparam>
 	public sealed class GorgonGamingDeviceAxisList<T>
 		: IEnumerable<T>
 		where T : IGorgonGamingDeviceAxis

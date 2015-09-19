@@ -31,7 +31,7 @@ using Gorgon.Plugins;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonGamingDeviceDriver"/>
 	public abstract class GorgonGamingDeviceDriver
 		: GorgonPlugin, IGorgonGamingDeviceDriver
 	{

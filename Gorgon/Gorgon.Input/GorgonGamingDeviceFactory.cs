@@ -32,7 +32,7 @@ using Gorgon.Plugins;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonGamingDeviceDriverFactory"/>
 	public sealed class GorgonGamingDeviceDriverFactory 
 		: IGorgonGamingDeviceDriverFactory
 	{
@@ -40,7 +40,7 @@ namespace Gorgon.Input
 		// The logger used for debugging.
 		private readonly IGorgonLog _log;
 		// The plug in service to use when loading drivers.
-		private readonly GorgonPluginService _plugInService;
+		private readonly IGorgonPluginService _plugInService;
 		#endregion
 
 		#region Methods.
@@ -86,7 +86,7 @@ namespace Gorgon.Input
 		/// <param name="plugInService">The plug in service to use when loading drivers.</param>
 		/// <param name="log">[Optional] The logger used for debugging.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInService"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonGamingDeviceDriverFactory(GorgonPluginService plugInService, IGorgonLog log = null)
+		public GorgonGamingDeviceDriverFactory(IGorgonPluginService plugInService, IGorgonLog log = null)
 		{
 			_log = log ?? new GorgonLogDummy();
 			_plugInService = plugInService;

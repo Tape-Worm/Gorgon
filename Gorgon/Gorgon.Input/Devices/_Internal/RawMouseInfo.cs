@@ -29,7 +29,7 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonRawInputDeviceInfo"/>
 	class RawMouseInfo
 		: IGorgonMouseInfo, IGorgonRawInputDeviceInfo
 	{

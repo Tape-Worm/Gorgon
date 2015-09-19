@@ -35,17 +35,13 @@ using Gorgon.Plugins;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A factory used to create file system providers.
-	/// </summary>
-	/// <remarks>
-	/// The file system provider factory is used to create file system provider plugins available in a <see cref="GorgonPluginService"/> object.
-	/// </remarks>
-	public sealed class GorgonFileSystemProviderFactory
+	/// <inheritdoc/>
+	public sealed class GorgonFileSystemProviderFactory 
+		: IGorgonFileSystemProviderFactory
 	{
 		#region Variables.
 		// A plugin service where instances of the provider plugins can be found.
-		private readonly GorgonPluginService _pluginService;
+		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
 		#endregion
@@ -55,35 +51,13 @@ namespace Gorgon.IO
 		/// Function to retrieve all the file system providers from the plugin service.
 		/// </summary>
 		/// <returns>A list of file system providers.</returns>
-		private IEnumerable<GorgonFileSystemProvider> GetAllProviders()
+		private IReadOnlyList<GorgonFileSystemProvider> GetAllProviders()
 		{
-			var result = new List<GorgonFileSystemProvider>();
-
-			foreach (KeyValuePair<string, Assembly> assemblyItem in _pluginService.PluginAssemblyCache.PluginAssemblies)
-			{
-				AssemblyName name = assemblyItem.Value.GetName();
-
-				IReadOnlyList<GorgonFileSystemProviderPlugIn> plugins = _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>(name);
-
-				if (plugins.Count == 0)
-				{
-					continue;
-				}
-
-				result.AddRange(plugins.Select(item => item.CreateProvider()));
-			}
-
-			return result;
+			return _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>()
+			                     .Select(item => item.CreateProvider()).ToArray();
 		}
 
-		/// <summary>
-		/// Function to create a new file system provider.
-		/// </summary>
-		/// <param name="providerPluginName">The fully qualified type name of the plugin that contains the file system provider.</param>
-		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="providerPluginName"/> is empty.</exception>
-		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPluginName"/> parameter was not found.</exception>
+		/// <inheritdoc/>
 		public GorgonFileSystemProvider CreateProvider(string providerPluginName)
 		{
 			if (providerPluginName == null)
@@ -108,21 +82,13 @@ namespace Gorgon.IO
 			return plugin.CreateProvider();
 		}
 
-		/// <summary>
-		/// Function to retrieve all the file system providers from the available plugins in the plugin service.
-		/// </summary>
-		/// <param name="pluginAssembly">[Optional] The name of the assembly to load file system providers from.</param>
-		/// <returns>A list of file system providers</returns>
-		/// <remarks>
-		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b> (<i>Nothing</i> in VB.Net), then only the file system providers within that assembly will 
-		/// be loaded. Otherwise, all file system providers available in the <see cref="GorgonPluginService"/> passed to the object constructor will be created (or have 
-		/// a previously created instance returned).
-		/// </remarks>
-		public IEnumerable<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null)
+		/// <inheritdoc/>
+		public IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null)
 		{
 			return pluginAssembly == null
 				       ? GetAllProviders()
-				       : _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>(pluginAssembly).Select(item => item.CreateProvider());
+				       : _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>(pluginAssembly).Select(item => item.CreateProvider())
+				                       .ToArray();
 		}
 		#endregion
 
@@ -133,7 +99,7 @@ namespace Gorgon.IO
 		/// <param name="pluginService">The plugin service used to retrieve file system provider plugins.</param>
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginService"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonFileSystemProviderFactory(GorgonPluginService pluginService, IGorgonLog log = null)
+		public GorgonFileSystemProviderFactory(IGorgonPluginService pluginService, IGorgonLog log = null)
 		{
 			if (pluginService == null)
 			{

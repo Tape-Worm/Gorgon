@@ -224,8 +224,8 @@ namespace Gorgon.Input
 		/// </para>
 		/// <para>
 		/// A device may lose acquisition when the application goes into the background, and as such, the application will no longer receive information from the device. When this is the case, the 
-		/// application should immediately set this value to <b>false</b> during deactivation (during the WinForms <see cref="Form.Deactivate"/>, or WPF <see cref="T:System.Windows.Window.Deactivated"/> events). 
-		/// When the application is activated (during the WinForms <see cref="Form.Activated"/>, or WPF <see cref="T:System.Windows.Window.Activated"/> events), it should set this value to <b>true</b> in order to 
+		/// application should immediately set this value to <b>false</b> during deactivation (during the WinForms <see cref="Form.Deactivate"/>, or WPF <see cref="E:System.Windows.Window.Deactivated"/> events). 
+		/// When the application is activated (during the WinForms <see cref="Form.Activated"/>, or WPF <see cref="E:System.Windows.Window.Activated"/> events), it should set this value to <b>true</b> in order to 
 		/// start capturing data again. 
 		/// </para>
 		/// <para>

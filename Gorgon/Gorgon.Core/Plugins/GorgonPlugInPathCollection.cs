@@ -56,7 +56,7 @@ namespace Gorgon.Plugins
 	/// This collection is -not- thread safe.
 	/// </para>
 	/// </remarks>
-	public class GorgonPluginPathCollection
+	public sealed class GorgonPluginPathCollection
 		: IList<string>, IReadOnlyList<string>
 	{
         #region Variables.

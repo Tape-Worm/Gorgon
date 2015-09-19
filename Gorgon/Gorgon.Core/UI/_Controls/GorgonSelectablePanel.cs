@@ -109,7 +109,7 @@ namespace Gorgon.UI
 
 		#region Methods.
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.Enter" /> event.
+		/// Raises the <see cref="Control.Enter" /> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnEnter(EventArgs e)
@@ -119,7 +119,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.Leave" /> event.
+		/// Raises the <see cref="Control.Leave" /> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
 		protected override void OnLeave(EventArgs e)
@@ -129,7 +129,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Handles the <see cref="E:Resize" /> event.
+		/// Handles the <see cref="Control.Resize" /> event.
 		/// </summary>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		protected override void OnResize(EventArgs e)
@@ -147,7 +147,7 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.Paint" /> event.
+		/// Raises the <see cref="Control.Paint" /> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs" /> that contains the event data.</param>
 		protected override void OnPaint(PaintEventArgs e)

@@ -33,7 +33,7 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonRawInput"/>
 	public class GorgonRawInput
 		: IGorgonRawInput
 	{

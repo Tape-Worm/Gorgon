@@ -152,9 +152,7 @@ namespace Gorgon.Input
 			set;
 		}
 
-		/// <summary>
-		/// Property to return information about this mouse.
-		/// </summary>
+		/// <inheritdoc/>
 		public IGorgonMouseInfo Info
 		{
 			get;
@@ -178,7 +176,13 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return whether the mouse cursor is visible.
+		/// </summary>
+		/// <remarks>
+		/// This is a convenience property that will show or hide the mouse cursor. It has an advantage over <see cref="Cursor.Show"/> in that it will keep the mouse cursor visibility reference count 
+		/// at a constant value. 
+		/// </remarks>
 		public static bool CursorVisible
 		{
 			get
@@ -652,7 +656,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRawMouse" /> class.
 		/// </summary>
-		/// <param name="mouseInfo">[Optional] A <see cref="RawMouseInfo"/> to determine which device to use..</param>
+		/// <param name="mouseInfo">[Optional] A <see cref="IGorgonMouseInfo"/> value to determine which device to use..</param>
 		/// <exception cref="InvalidCastException">Thrown if the <paramref name="mouseInfo"/> is not the expected type.</exception>
 		/// <remarks>
 		/// When the <paramref name="mouseInfo"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net), the system mouse (that is, all mice attached to the computer) will be used. No differentiation between 

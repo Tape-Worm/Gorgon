@@ -16,15 +16,18 @@ namespace Gorgon.Input
 	/// when finished with this object.
 	/// </para>
 	/// </remarks>
-	public interface IGorgonRawHID : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawHIDData>, IDisposable
+	public interface IGorgonRawHID 
+		: IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawHIDData>, IDisposable
 	{
 		/// <summary>
 		/// Event triggered when Raw Input receives data from the device.
 		/// </summary>
 		event EventHandler<GorgonHIDEventArgs> DataReceived;
 
-		/// <inheritdoc/>
-		GorgonRawHIDInfo Info
+		/// <summary>
+		/// Property to return information about the Raw Input Human Interface Device.
+		/// </summary>
+		IGorgonRawHIDInfo Info
 		{
 			get;
 		}

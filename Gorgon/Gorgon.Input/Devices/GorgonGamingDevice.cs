@@ -33,7 +33,7 @@ using Gorgon.Math;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonGamingDevice"/>
 	public abstract class GorgonGamingDevice
 		: IGorgonGamingDevice
 	{

@@ -29,7 +29,7 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonRawHID"/>
 	public class GorgonRawHID
 		: IGorgonRawHID
 	{
@@ -56,7 +56,7 @@ namespace Gorgon.Input
 		HIDUsage IGorgonRawInputDevice.DeviceUsage => Info.Usage;
 
 		/// <inheritdoc/>
-		public GorgonRawHIDInfo Info
+		public IGorgonRawHIDInfo Info
 		{
 			get;
 		}

@@ -31,7 +31,9 @@ using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput
 {
-	/// <inheritdoc/>
+	/// <summary>
+	/// XInput controller information.
+	/// </summary>
 	class XInputDeviceInfo
 		: IGorgonGamingDeviceInfo
 	{
