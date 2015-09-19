@@ -182,7 +182,11 @@ namespace Gorgon.Input.DirectInput
 				throw new ArgumentException(Resources.GORINP_ERR_DI_NOT_A_DI_DEVICE_INFO, nameof(gamingDeviceInfo));
 			}
 
-			return new DirectInputDevice(deviceInfo, _directInput.Value);
+			return new DirectInputDevice(deviceInfo, _directInput.Value)
+			       {
+				       // Attempt to acquire the device immediately.
+				       IsAcquired = true
+			       };
 		}
 
 		/// <summary>

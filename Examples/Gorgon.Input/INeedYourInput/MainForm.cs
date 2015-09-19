@@ -27,18 +27,19 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Input;
+using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 using SlimMath;
+using MouseButtons = System.Windows.Forms.MouseButtons;
 
 namespace Gorgon.Examples
 {
@@ -54,7 +55,7 @@ namespace Gorgon.Examples
 	/// Down arrow - Decrease pen radius.
 	/// F1, F2, F3 - Switch between modulated, additive and no blending respectively.
 	/// C - Clear the buffer.
-	/// J - Switch to joysticks (if available).  Press J to cycle through joysticks and to get back to the keyboard/mouse interface.
+	/// J - Switch to raw input and joysticks (if available).  Press J to cycle through joysticks and to get back to the win forms keyboard/mouse interface.
 	/// ESC - Close the example.
 	/// 
 	/// Mouse controls:
@@ -78,15 +79,15 @@ namespace Gorgon.Examples
 		// Text font. 
 		private GorgonFont _font;
 		// Input factory.
-		private GorgonInputService2 _input;                         
+		private GorgonRawInput _input;                         
 		// Mouse object.
-		private GorgonMouse _mouse;
+		private GorgonRawMouse _mouse;
+		// Gaming device drivers.
+		private IReadOnlyList<IGorgonGamingDeviceDriver> _drivers;
 		// Joystick list.
-		private GorgonJoystick2[] _joystickList;
+		private List<IGorgonGamingDevice> _joystickList;
 		// Joystick.
-		private GorgonJoystick2 _joystick;
-		// Keyboard object.
-		private GorgonKeyboard2 _keyboard;
+		private IGorgonGamingDevice _joystick;
 		// Text sprite object.
 		private GorgonText _messageSprite;
 		// Back buffer.
@@ -98,18 +99,19 @@ namespace Gorgon.Examples
 		// Blend mode.
 		private BlendingMode _blendMode = BlendingMode.Modulate;
 		// Joystick index counter.
-		private int _counter = -1;									
+		private int _counter = -2;
+		// Flag to indicate that we are using windows forms input.
+		private bool _useWinFormsInput = true;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Handles the KeyDown event of the _keyboard control.
+		/// Handles the <see cref="E:KeyDown" /> event.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonKeyboardEventArgs" /> instance containing the event data.</param>
-		private void _keyboard_KeyDown(object sender, GorgonKeyboardEventArgs e)
+		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
+		protected override void OnKeyUp(KeyEventArgs e)
 		{
-			switch (e.Key)
+			switch (e.KeyCode)
 			{
 				case Keys.Escape:
 					Close();			// Close
@@ -156,15 +158,36 @@ namespace Gorgon.Examples
 			            new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height));
 			        break;
 				case Keys.J:
-					if (_joystickList.Length != 0)
+					if (_joystickList.Count != 0)
 					{
 						// Disable if we go beyond the end of the list.
 						_counter++;
-						if ((_counter >= _joystickList.Length) && (_joystick != null))
+
+						if (_counter == -1)
 						{
+							// Clip the mouse cursor to our client area.
+							Cursor.Clip = _mouse.PositionConstraint = RectangleToScreen(ClientRectangle);
+							// Set the position to the current mouse position.
+							_mouse.Position = Cursor.Position;
+
+							_input.RegisterDevice(_mouse);
+							_useWinFormsInput = false;
+							_messageSprite.Text = "Using mouse and keyboard (Raw Input)";
+							break;
+						}
+
+						if ((_counter >= _joystickList.Count) && (_joystick != null))
+						{
+							if (!_useWinFormsInput)
+							{
+								Cursor.Clip = Rectangle.Empty;
+								_input.UnregisterDevice(_mouse);
+							}
+
+							_useWinFormsInput = true;
 							_joystick = null;
-							_counter = -1;
-							_messageSprite.Text = "Using mouse and keyboard.";
+							_counter = -2;
+							_messageSprite.Text = "Using mouse and keyboard (Windows Forms).";
 							break;
 						}						
 
@@ -177,20 +200,19 @@ namespace Gorgon.Examples
 		}
 
 		/// <summary>
-		/// Handles the PointingDeviceWheelMove event of the _mouse control.
+		/// Handles the <see cref="E:MouseWheel" /> event.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
-		private void _mouse_PointingDeviceWheelMove(object sender, GorgonMouseEventArgs e)
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		protected override void OnMouseWheel(MouseEventArgs e)
 		{
-			if (e.WheelDelta > 0)
+			base.OnMouseWheel(e);
+
+			if (!_useWinFormsInput)
 			{
-				_radius += 1.0f;
+				return;
 			}
-			if (e.WheelDelta < 0)
-			{
-				_radius -= 1.0f;
-			}
+
+			_radius += e.Delta.Sign();
 
 			if (_radius < 2.0f)
 			{
@@ -203,13 +225,75 @@ namespace Gorgon.Examples
 		}
 
 		/// <summary>
+		/// Handles the <see cref="E:MouseDown" /> event.
+		/// </summary>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+
+			if (!_useWinFormsInput)
+			{
+				return;
+			}
+
+			GorgonMouseButtons buttons = GorgonMouseButtons.None;
+
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			{
+				buttons |= GorgonMouseButtons.Left;
+			}
+
+			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+			{
+				buttons |= GorgonMouseButtons.Right;
+			}
+
+			MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, e.Location, e.Delta, Point.Empty, e.Delta, 0, false));
+		}
+
+		/// <summary>
+		/// Handles the <see cref="E:MouseMove" /> event.
+		/// </summary>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			if (!_useWinFormsInput)
+			{
+				return;
+			}
+
+			GorgonMouseButtons buttons = GorgonMouseButtons.None;
+
+			if ((e.Button & MouseButtons.Left) == MouseButtons.Left)
+			{
+				buttons |= GorgonMouseButtons.Left;
+			}
+
+			if ((e.Button & MouseButtons.Right) == MouseButtons.Right)
+			{
+				buttons |= GorgonMouseButtons.Right;
+			}
+
+			MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, e.Location, e.Delta, Point.Empty, e.Delta, 0, false));
+		}
+
+		/// <summary>
 		/// Handles the button and movement events of the _mouse control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="PointingDeviceEventArgs" /> instance containing the event data.</param>
+		/// <param name="e">The <see cref="GorgonMouseEventArgs" /> instance containing the event data.</param>
 		private void MouseInput(object sender, GorgonMouseEventArgs e)
 		{
+			if (_joystick != null)
+			{
+				return;
+			}
+
 			Color drawColor = Color.Black;		// Drawing color.
+			Point position = _useWinFormsInput ? e.Position : PointToClient(e.Position);
 
 		    if (e.Buttons == GorgonMouseButtons.None)
 		    {
@@ -232,7 +316,7 @@ namespace Gorgon.Examples
 		    }
 
 		    // Draw the pen.
-		    var penPosition = new RectangleF(e.Position.X - (_radius / 2.0f), e.Position.Y - (_radius / 2.0f), _radius, _radius);
+		    var penPosition = new RectangleF(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
 		    if (_radius > 3.0f)
 		    {
 		        _2D.Drawing.FilledEllipse(penPosition, drawColor);
@@ -252,7 +336,13 @@ namespace Gorgon.Examples
 		/// <returns><b>true</b> to continue processing, <b>false</b> to end processing.</returns>
 		private bool Gorgon_Idle()
 		{
-			Vector2 cursorPosition = _mouse.Position;		// Cursor position.
+			// Cursor position.
+			Vector2 cursorPosition = PointToClient(!_useWinFormsInput ? _mouse.Position : Cursor.Position);
+
+			if (!_useWinFormsInput)
+			{
+				Cursor.Position = PointToScreen((Point)cursorPosition);
+			}
 
 			// Dump to the screen.
 			_2D.Drawing.BlendingMode = BlendingMode.None;
@@ -263,12 +353,12 @@ namespace Gorgon.Examples
 				// Poll the joystick.
 				_joystick.Poll();
 
-				GorgonRange xAxisRange = _joystick.Info.AxisInfo[JoystickAxis.XAxis].Range;
-				GorgonRange yAxisRange = _joystick.Info.AxisInfo[JoystickAxis.YAxis].Range;
+				GorgonRange xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
+				GorgonRange yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
 
 				// Adjust position to match screen coordinates.
-				cursorPosition = new Vector2(_joystick.Axis[JoystickAxis.XAxis].Value - xAxisRange.Minimum, 
-											 _joystick.Axis[JoystickAxis.YAxis].Value - yAxisRange.Minimum);
+				cursorPosition = new Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum, 
+											 _joystick.Axis[GamingDeviceAxis.YAxis].Value - yAxisRange.Minimum);
 				cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Settings.Width;
 				cursorPosition.Y = _screen.Settings.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Settings.Height);
 			}
@@ -285,7 +375,7 @@ namespace Gorgon.Examples
 			}
 						
 			// If we have a joystick button down, then draw a black dot.
-			if ((_joystick != null) && (_joystick.Button[0] == JoystickButtonState.Down))
+			if ((_joystick != null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
 			{
 				var penPosition = new RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
 				_2D.Drawing.BlendingMode = BlendingMode.Modulate;
@@ -296,7 +386,7 @@ namespace Gorgon.Examples
 				}
 				else
 				{
-					_2D.Drawing.FilledRectangle(penPosition, Color.White);
+					_2D.Drawing.FilledRectangle(penPosition, Color.Black);
 				}
 				_2D.Target = null;
 			}			
@@ -359,19 +449,20 @@ namespace Gorgon.Examples
 		{
 			base.OnActivated(e);
 
-			// If the window loses focus, all our devices will become unacquired. 
-			// This means that no data will be received from the devices until they are acquired.
+			// If the window loses focus, some of our gaming devices will become unacquired. 
+			// This means that no data will be received from the gaming devices until they are acquired.
 			// Doing this on window activation is the best way to ensure that happens.
-			if (_mouse != null)
+			foreach (var joystick in _joystickList)
 			{
-				_mouse.IsAcquired = true;
+				joystick.IsAcquired = true;
 			}
+		}
 
-			if (_keyboard != null)
-			{
-				_keyboard.IsAcquired = true;
-			}
-			
+		protected override void OnDeactivate(EventArgs e)
+		{
+			base.OnDeactivate(e);
+
+			// Mark each gaming device as unacquired if we lose focus.
 			foreach (var joystick in _joystickList)
 			{
 				joystick.IsAcquired = true;
@@ -386,15 +477,20 @@ namespace Gorgon.Examples
 		{
 			base.OnFormClosing(e);
 
-			// Always unbind your devices when the window is shutting down.
+			// Always dispose your devices when the window is shutting down.
 			// Failure to do so can lead to unpredictable results.
-			_mouse?.UnbindWindow();
-			_keyboard?.UnbindWindow();
-
-			foreach (var joystick in _joystickList)
+			foreach (IGorgonGamingDevice joystick in _joystickList)
 			{
-				joystick.UnbindWindow();
+				joystick.Dispose();
 			}
+
+			foreach (IGorgonGamingDeviceDriver driver in _drivers)
+			{
+				driver.Dispose();
+			}
+
+			_input.UnregisterDevice(_mouse);
+			_input?.Dispose();
 		}
 
 		/// <summary>
@@ -411,40 +507,44 @@ namespace Gorgon.Examples
 				// Load the assembly.
 				assemblyCache = new GorgonPluginAssemblyCache(GorgonApplication.Log);
 
-				// RDP sessions cause weirdness with raw input, so we'll go with another plug in if we're in through RDP.
-				string pluginPath;
-				string pluginName;
-
-				if (!SystemInformation.TerminalServerSession)
-				{
-					pluginPath = $"{Program.PlugInPath}Gorgon.Input.Raw.DLL";
-					pluginName = "Gorgon.Input.GorgonRawPlugIn";
-				}
-				else
-				{
-					pluginPath = $"{Program.PlugInPath}Gorgon.Input.WinForms.DLL";
-					pluginName = "Gorgon.Input.GorgonWinFormsPlugIn";
-				}
-
-				assemblyCache.Load(pluginPath);
-
 				// Create the plugin service.
 				GorgonPluginService plugInService = new GorgonPluginService(assemblyCache, GorgonApplication.Log);
-				
-				// Create the service.
-				GorgonInputServiceFactory2 inputServiceFactory = new GorgonInputServiceFactory2(plugInService, GorgonApplication.Log);
-				_input = inputServiceFactory.CreateService(pluginName);
 
-				// Get the available devices on our system.
-				IReadOnlyList<IGorgonMouseInfo2> mice = _input.EnumerateMice();
-				IReadOnlyList<IGorgonKeyboardInfo2> keyboards = _input.EnumerateKeyboards();
-				IReadOnlyList<IGorgonJoystickInfo2> joysticks = _input.EnumerateJoysticks();
+				// Create the factory to retrieve gaming device drivers.
+				GorgonGamingDeviceDriverFactory factory = new GorgonGamingDeviceDriverFactory(plugInService);
 
-				// Create mouse, keyboard and joystick interfaces.
-				// The first mouse and keyboard in the lists are always the system devices.
-				_keyboard = new GorgonKeyboard2(_input, keyboards[0]);
-				_mouse = new GorgonMouse(_input, mice[0]);
-				_joystickList = joysticks.Select(item => new GorgonJoystick2(_input, item)).ToArray();
+				// Create the raw input interface.
+				_input = new GorgonRawInput(this, GorgonApplication.Log);
+
+				// Get available gaming device driver plug ins.
+				assemblyCache.Load(Program.PlugInPath + "Gorgon.Input.DirectInput.dll");
+				assemblyCache.Load(Program.PlugInPath + "Gorgon.Input.XInput.dll");
+
+				_drivers = factory.LoadAllDrivers();
+
+				_joystickList = new List<IGorgonGamingDevice>();
+
+				// Get all gaming devices from the drivers.
+				foreach (IGorgonGamingDeviceDriver driver in _drivers)
+				{
+					IReadOnlyList<IGorgonGamingDeviceInfo> infoList = driver.EnumerateGamingDevices(true);
+
+					foreach (IGorgonGamingDeviceInfo info in infoList)
+					{
+						IGorgonGamingDevice device = driver.CreateGamingDevice(info);
+
+						// Turn off dead zones for this example.
+						foreach (GorgonGamingDeviceAxis axis in device.Axis)
+						{
+							axis.DeadZone = GorgonRange.Empty;
+						}
+						
+						_joystickList.Add(device);
+					}
+				}
+
+				// Create mouse.
+				_mouse = new GorgonRawMouse();
 
 				// Create the graphics interface.
 				_graphics = new GorgonGraphics();
@@ -479,7 +579,7 @@ namespace Gorgon.Examples
 				                                   });
 
 				// Create text sprite.
-				_messageSprite = _2D.Renderables.CreateText("Message", _font, "Using mouse and keyboard.");
+				_messageSprite = _2D.Renderables.CreateText("Message", _font, "Using mouse and keyboard (Windows Forms).");
 				_messageSprite.Color = Color.Black;
 
 				// Create a back buffer.
@@ -529,26 +629,24 @@ namespace Gorgon.Examples
 
 				// Enable the mouse.
 				Cursor = Cursors.Cross;
-				_mouse.BindWindow(this);
 				_mouse.MouseButtonDown += MouseInput;
-				_mouse.MouseButtonUp += MouseInput;
-				_mouse.MouseWheelMove += _mouse_PointingDeviceWheelMove;
-				_mouse.IsAcquired = true;
+				_mouse.MouseMove += MouseInput;
+				_mouse.MouseWheelMove += (sender, args) =>
+				                         {
+											 _radius += args.WheelDelta.Sign();
+
+											 if (_radius < 2.0f)
+											 {
+												 _radius = 2.0f;
+											 }
+											 if (_radius > 10.0f)
+											 {
+												 _radius = 10.0f;
+											 }
+										 };
 
 				// Set the mouse position.
 				_mouse.Position = new Point(ClientSize.Width / 2, ClientSize.Height / 2);
-
-				// Enable the keyboard.
-				_keyboard.BindWindow(this);
-				_keyboard.KeyDown += _keyboard_KeyDown;
-				_keyboard.IsAcquired = true;
-
-				// Enable joysticks.
-				foreach (GorgonJoystick2 joystick in _joystickList)
-				{
-					joystick.BindWindow(this);
-					joystick.IsAcquired = true;
-				}
 
 				GorgonApplication.IdleMethod = Gorgon_Idle;
 			}
