@@ -20,58 +20,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, September 19, 2015 8:29:18 PM
+// Created: Sunday, September 20, 2015 12:06:21 AM
 // 
 #endregion
 
-using Gorgon.Native;
+using System.Collections.Generic;
 
-namespace Gorgon.Input
+namespace Gorgon.IO.Providers
 {
-	/// <summary>
-	/// Provides capability information about a Raw Input Human Interface Device.
-	/// </summary>
-	public interface IGorgonRawHIDInfo 
-		: IGorgonRawInputDeviceInfo
+	/// <inheritdoc cref="IGorgonPhysicalFileSystemData"/>
+	public class GorgonPhysicalFileSystemData
+		: IGorgonPhysicalFileSystemData
 	{
-		/// <summary>
-		/// Property to return the product ID for the device.
-		/// </summary>
-		int ProductID
+		#region Properties.
+		/// <inheritdoc/>
+		public IReadOnlyList<string> Directories
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the vendor ID for the device.
-		/// </summary>
-		int VendorID
+		/// <inheritdoc/>
+		public IReadOnlyList<IGorgonPhysicalFileInfo> Files
 		{
 			get;
 		}
+		#endregion
 
+		#region Constructor.
 		/// <summary>
-		/// Property to return the version number for the device.
+		/// Initializes a new instance of the <see cref="GorgonPhysicalFileSystemData"/> class.
 		/// </summary>
-		int Version
+		/// <param name="directories">The directories.</param>
+		/// <param name="files">The files.</param>
+		public GorgonPhysicalFileSystemData(IReadOnlyList<string> directories, IReadOnlyList<IGorgonPhysicalFileInfo> files)
 		{
-			get;
+			Directories = directories;
+			Files = files;
 		}
-
-		/// <summary>
-		/// Property to return the top level collection usage value for this device.
-		/// </summary>
-		HIDUsage Usage
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the top level collection usage page value for this device.
-		/// </summary>
-		HIDUsagePage UsagePage
-		{
-			get;
-		}
+		#endregion
 	}
 }

@@ -34,16 +34,18 @@ namespace Gorgon.IO.GorPack
 	/// <summary>
 	/// A stream used to read Gorgon bzip2 pack files.
 	/// </summary>
-	public class GorgonGorPackFileStream
+	public class GorPackFileStream
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
 		// Flag to indicate that the object was disposed.
-		private bool _disposed;						
-		private Stream _bzipStream;				    // Input stream for the bzip file.
-		private long _position;						// Position in the stream.
-		private readonly long _basePosition;		// Base position in the stream.
-
+		private bool _disposed;
+		// Input stream for the bzip file.
+		private readonly Stream _bzipStream;
+		// Position in the stream.		    
+		private long _position;
+		// Base position in the stream.
+		private readonly long _basePosition;		
 		#endregion
 
 		#region Properties.
@@ -286,12 +288,12 @@ namespace Gorgon.IO.GorPack
 
 		    if (_position > Length)
 		    {
-		        throw new EndOfStreamException(Resources.GORFS_EOS);
+		        throw new EndOfStreamException(Resources.GORFS_GORPACK_ERR_EOS);
 		    }
 
 		    if (_position < 0)
 		    {
-		        throw new EndOfStreamException(Resources.GORFS_BOS);
+		        throw new EndOfStreamException(Resources.GORFS_GORPACK_ERR_BOS);
 		    }
 
 		    _bzipStream.Position = _basePosition + _position;
@@ -367,26 +369,18 @@ namespace Gorgon.IO.GorPack
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGorPackFileStream"/> class.
+		/// Initializes a new instance of the <see cref="GorPackFileStream"/> class.
 		/// </summary>
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
-		/// <param name="compressionInfo">Compression information for the file.</param>
-		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, Stream stream, GorgonGorPackProvider.CompressedFileEntry? compressionInfo)
+		/// <param name="compressedSize">Compression size for the file.</param>
+		internal GorPackFileStream(GorgonFileSystemFileEntry file, Stream stream, long? compressedSize)
 			: base(file, stream)
 		{
-			stream.Position = file.Offset;		// Set the offset here.
+			stream.Position = file.PhysicalFile.Offset;		// Set the offset here.
 
-			if (compressionInfo.HasValue)
-			{
-				_bzipStream = new BZip2InputStream(stream);
-				Length = compressionInfo.Value.Size;
-			}
-			else
-			{
-				_bzipStream = stream;
-				Length = file.Size;
-			}
+			_bzipStream = compressedSize != null ? new BZip2InputStream(stream) : stream;
+			Length = file.Size;
 			_basePosition = stream.Position;
 		}
 		#endregion

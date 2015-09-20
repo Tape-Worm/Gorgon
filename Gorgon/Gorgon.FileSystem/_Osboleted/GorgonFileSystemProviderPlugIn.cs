@@ -29,8 +29,8 @@ using Gorgon.Plugins;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// The base entry point for an Gorgon file system provider plug-in.
+	/*/// <summary>
+	/// The base entry point for an Gorgon file system provider plug in.
 	/// </summary>
 	public abstract class GorgonFileSystemProviderPlugIn
 		: GorgonPlugin
@@ -69,5 +69,5 @@ namespace Gorgon.IO
 			_provider = new Lazy<GorgonFileSystemProvider>(OnCreateProvider);
 		}
 		#endregion
-	}
+	}*/
 }

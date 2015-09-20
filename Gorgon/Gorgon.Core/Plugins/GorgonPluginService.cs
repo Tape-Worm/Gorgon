@@ -83,7 +83,8 @@ namespace Gorgon.Plugins
 			Type typeT = typeof(T);
 
 			// Match the types with our generic type. The type in the plugin must be an exact match with T, or a subclass of T.
-			foreach (KeyValuePair<Type, ObjectActivator<GorgonPlugin>> constructor in pluginConstructors.Where(item => typeT == item.Key || item.Key.IsSubclassOf(typeT)))
+			foreach (KeyValuePair<Type, ObjectActivator<GorgonPlugin>> constructor in
+				pluginConstructors.Where(item => typeT == item.Key || item.Key.IsSubclassOf(typeT)))
 			{
 				GorgonPlugin plugin;
 
@@ -279,12 +280,13 @@ namespace Gorgon.Plugins
 					IEnumerable<Type> types = from type in assemblyItem.Value.GetTypes()
 					                          where type.IsSubclassOf(typeof(GorgonPlugin))
 					                                && !type.IsAbstract && !type.IsPrimitive && !type.IsValueType
+													&& type.GetCustomAttribute<ExcludeAsPluginAttribute>() == null
 					                          select type;
 
 					// Build another view of the constructor list that allows us to segregate by assembly.
 					var assemblyConstructors = _assemblyConstructors.Value.GetOrAdd(assemblyItem.Value.GetName().FullName,
 					                                                                new Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>(
-						                                                                () => new ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>()));
+						                                                                () => new ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>(), true));
 
 					foreach (Type pluginType in types)
 					{

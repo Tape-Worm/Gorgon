@@ -33,6 +33,7 @@ using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.IO;
+using Gorgon.IO.Providers;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
@@ -161,7 +162,7 @@ namespace Gorgon.Examples
 			// The path to the Gorgon packed file provider.
 		    string gorPackPath = Program.PlugInPath + "Gorgon.FileSystem.GorPack.dll";
 			// The name of the Gorgon packed file plugin.
-		    const string gorPackPluginName = "Gorgon.IO.GorgonGorPackPlugIn";
+		    const string gorPackPluginName = "Gorgon.IO.GorPack.GorPackProvider";
 
 			// Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
 			// and get rid of the plugin stuff since we won't need it again.

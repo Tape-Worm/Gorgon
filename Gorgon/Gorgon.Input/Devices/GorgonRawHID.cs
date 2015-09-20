@@ -31,7 +31,7 @@ namespace Gorgon.Input
 {
 	/// <inheritdoc cref="IGorgonRawHID"/>
 	public class GorgonRawHID
-		: IGorgonRawHID
+		: IGorgonRawHID, IGorgonRawInputDeviceData<GorgonRawHIDData>
 	{
 		#region Variables.
 		// Pre parsed data for this device.

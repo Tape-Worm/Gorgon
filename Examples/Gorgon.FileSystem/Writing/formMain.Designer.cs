@@ -76,13 +76,14 @@ namespace Gorgon.Examples
 			// 
 			this.textDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.textDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.textDisplay.Location = new System.Drawing.Point(0, 25);
+			this.textDisplay.Location = new System.Drawing.Point(0, 27);
 			this.textDisplay.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.textDisplay.Multiline = true;
 			this.textDisplay.Name = "textDisplay";
 			this.textDisplay.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-			this.textDisplay.Size = new System.Drawing.Size(784, 470);
+			this.textDisplay.Size = new System.Drawing.Size(1262, 580);
 			this.textDisplay.TabIndex = 1;
+			this.textDisplay.TextChanged += new System.EventHandler(this.textDisplay_TextChanged);
 			// 
 			// panel1
 			// 
@@ -93,12 +94,13 @@ namespace Gorgon.Examples
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(784, 25);
+			this.panel1.Size = new System.Drawing.Size(1262, 27);
 			this.panel1.TabIndex = 0;
 			// 
 			// stripCommands
 			// 
 			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripCommands.ImageScalingSize = new System.Drawing.Size(20, 20);
 			this.stripCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonSave,
             this.buttonReload,
@@ -106,7 +108,7 @@ namespace Gorgon.Examples
             this.toolStripLabel1});
 			this.stripCommands.Location = new System.Drawing.Point(0, 0);
 			this.stripCommands.Name = "stripCommands";
-			this.stripCommands.Size = new System.Drawing.Size(784, 25);
+			this.stripCommands.Size = new System.Drawing.Size(1262, 27);
 			this.stripCommands.Stretch = true;
 			this.stripCommands.TabIndex = 1;
 			this.stripCommands.Text = "toolStrip1";
@@ -116,7 +118,7 @@ namespace Gorgon.Examples
 			this.buttonSave.Image = global::Gorgon.Examples.Properties.Resources.save_as_16x16;
 			this.buttonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonSave.Name = "buttonSave";
-			this.buttonSave.Size = new System.Drawing.Size(51, 22);
+			this.buttonSave.Size = new System.Drawing.Size(64, 24);
 			this.buttonSave.Text = "&Save";
 			this.buttonSave.Click += new System.EventHandler(this.buttonSave_Click);
 			// 
@@ -128,32 +130,32 @@ namespace Gorgon.Examples
 			this.buttonReload.Image = global::Gorgon.Examples.Properties.Resources.reload_filesystem_16x16;
 			this.buttonReload.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonReload.Name = "buttonReload";
-			this.buttonReload.Size = new System.Drawing.Size(72, 22);
+			this.buttonReload.Size = new System.Drawing.Size(90, 24);
 			this.buttonReload.Text = "&Reload";
 			// 
 			// itemLoadChanged
 			// 
 			this.itemLoadChanged.Name = "itemLoadChanged";
-			this.itemLoadChanged.Size = new System.Drawing.Size(190, 22);
+			this.itemLoadChanged.Size = new System.Drawing.Size(229, 26);
 			this.itemLoadChanged.Text = "&Load changed version";
 			this.itemLoadChanged.Click += new System.EventHandler(this.itemLoadChanged_Click);
 			// 
 			// itemLoadOriginal
 			// 
 			this.itemLoadOriginal.Name = "itemLoadOriginal";
-			this.itemLoadOriginal.Size = new System.Drawing.Size(190, 22);
+			this.itemLoadOriginal.Size = new System.Drawing.Size(229, 26);
 			this.itemLoadOriginal.Text = "Load &original version";
 			this.itemLoadOriginal.Click += new System.EventHandler(this.itemLoadOriginal_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
 			// 
 			// toolStripLabel1
 			// 
 			this.toolStripLabel1.Name = "toolStripLabel1";
-			this.toolStripLabel1.Size = new System.Drawing.Size(554, 22);
+			this.toolStripLabel1.Size = new System.Drawing.Size(697, 20);
 			this.toolStripLabel1.Text = "Change the text below and press the Save button.  Press the Reload button to load" +
     " in the saved changes.";
 			// 
@@ -167,7 +169,7 @@ namespace Gorgon.Examples
 			this.panelWriteLocation.Location = new System.Drawing.Point(0, 22);
 			this.panelWriteLocation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.panelWriteLocation.Name = "panelWriteLocation";
-			this.panelWriteLocation.Size = new System.Drawing.Size(784, 22);
+			this.panelWriteLocation.Size = new System.Drawing.Size(1262, 22);
 			this.panelWriteLocation.TabIndex = 2;
 			// 
 			// labelWriteLocation
@@ -175,7 +177,7 @@ namespace Gorgon.Examples
 			this.labelWriteLocation.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelWriteLocation.Location = new System.Drawing.Point(22, 0);
 			this.labelWriteLocation.Name = "labelWriteLocation";
-			this.labelWriteLocation.Size = new System.Drawing.Size(762, 22);
+			this.labelWriteLocation.Size = new System.Drawing.Size(1240, 22);
 			this.labelWriteLocation.TabIndex = 0;
 			this.labelWriteLocation.Text = "File system";
 			this.labelWriteLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -200,10 +202,10 @@ namespace Gorgon.Examples
 			this.panel3.Controls.Add(this.panelWriteLocation);
 			this.panel3.Controls.Add(this.panel4);
 			this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel3.Location = new System.Drawing.Point(0, 495);
+			this.panel3.Location = new System.Drawing.Point(0, 607);
 			this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.panel3.Name = "panel3";
-			this.panel3.Size = new System.Drawing.Size(784, 66);
+			this.panel3.Size = new System.Drawing.Size(1262, 66);
 			this.panel3.TabIndex = 3;
 			// 
 			// panelFileSystem
@@ -216,7 +218,7 @@ namespace Gorgon.Examples
 			this.panelFileSystem.Location = new System.Drawing.Point(0, 0);
 			this.panelFileSystem.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
 			this.panelFileSystem.Name = "panelFileSystem";
-			this.panelFileSystem.Size = new System.Drawing.Size(784, 22);
+			this.panelFileSystem.Size = new System.Drawing.Size(1262, 22);
 			this.panelFileSystem.TabIndex = 5;
 			// 
 			// labelFileSystem
@@ -224,7 +226,7 @@ namespace Gorgon.Examples
 			this.labelFileSystem.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelFileSystem.Location = new System.Drawing.Point(22, 0);
 			this.labelFileSystem.Name = "labelFileSystem";
-			this.labelFileSystem.Size = new System.Drawing.Size(762, 22);
+			this.labelFileSystem.Size = new System.Drawing.Size(1240, 22);
 			this.labelFileSystem.TabIndex = 0;
 			this.labelFileSystem.Text = "File system";
 			this.labelFileSystem.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -250,7 +252,7 @@ namespace Gorgon.Examples
 			this.panel4.ForeColor = System.Drawing.SystemColors.InfoText;
 			this.panel4.Location = new System.Drawing.Point(0, 44);
 			this.panel4.Name = "panel4";
-			this.panel4.Size = new System.Drawing.Size(784, 22);
+			this.panel4.Size = new System.Drawing.Size(1262, 22);
 			this.panel4.TabIndex = 3;
 			// 
 			// labelInfo
@@ -258,7 +260,7 @@ namespace Gorgon.Examples
 			this.labelInfo.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelInfo.Location = new System.Drawing.Point(22, 0);
 			this.labelInfo.Name = "labelInfo";
-			this.labelInfo.Size = new System.Drawing.Size(762, 22);
+			this.labelInfo.Size = new System.Drawing.Size(1240, 22);
 			this.labelInfo.TabIndex = 0;
 			this.labelInfo.Text = "Info";
 			this.labelInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -276,9 +278,9 @@ namespace Gorgon.Examples
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(784, 561);
+			this.ClientSize = new System.Drawing.Size(1262, 673);
 			this.Controls.Add(this.textDisplay);
 			this.Controls.Add(this.panel3);
 			this.Controls.Add(this.panel1);

@@ -167,7 +167,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY);
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY);
 			}
 
 			name = name.FormatFileName();

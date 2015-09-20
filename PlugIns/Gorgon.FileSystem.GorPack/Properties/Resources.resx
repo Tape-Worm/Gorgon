@@ -117,25 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORFS_BOS" xml:space="preserve">
+  <data name="GORFS_GORPACK_DESC" xml:space="preserve">
+    <value>Gorgon BZip compressed file provider.</value>
+  </data>
+  <data name="GORFS_GORPACK_ERR_BOS" xml:space="preserve">
     <value>Cannot read beyond the beginning of the stream.</value>
   </data>
-  <data name="GORFS_DESC" xml:space="preserve">
-    <value>A provider to mount a v1.x Gorgon pack file as a file system.</value>
-  </data>
-  <data name="GORFS_EOS" xml:space="preserve">
+  <data name="GORFS_GORPACK_ERR_EOS" xml:space="preserve">
     <value>Cannot read beyond the end of the stream.</value>
   </data>
-  <data name="GORFS_FILEINDEX_CORRUPT" xml:space="preserve">
+  <data name="GORFS_GORPACK_ERR_FILEINDEX_CORRUPT" xml:space="preserve">
     <value>A file is corrupted or empty in the index table.</value>
   </data>
-  <data name="GORFS_FILE_DESC" xml:space="preserve">
+  <data name="GORFS_GORPACK_FILE_DESC" xml:space="preserve">
     <value>Gorgon packed file</value>
-  </data>
-  <data name="GORFS_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
-  <data name="GORFS_PLUGIN_DESC" xml:space="preserve">
-    <value>Gorgon 1.x BZip2 compressed packed file.</value>
   </data>
 </root>

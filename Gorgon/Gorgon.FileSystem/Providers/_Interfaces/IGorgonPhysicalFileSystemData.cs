@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,42 +20,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, June 27, 2011 9:36:13 AM
+// Created: Sunday, September 20, 2015 12:03:55 AM
 // 
 #endregion
 
 using System.Collections.Generic;
-using Gorgon.IO.Zip;
-using Gorgon.IO.Zip.Properties;
 
-namespace Gorgon.IO
+namespace Gorgon.IO.Providers
 {
-    /// <summary>
-    /// Plug-in entry point for the zip file file system provider plug-in.
-    /// </summary>
-    public class GorgonZipPlugin
-        : GorgonFileSystemProviderPlugIn
-    {
-        /// <summary>
-        /// Header bytes for a zip file.
-        /// </summary>
-        internal static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
-
+	/// <summary>
+	/// Contains data about the physical file system directories and files.
+	/// </summary>
+	public interface IGorgonPhysicalFileSystemData
+	{
 		/// <summary>
-		/// Function to create a new file system provider plug-in instance.
+		/// Property to return the available directories from the physical file system
 		/// </summary>
-		/// <returns>The file system provider plug-in.</returns>
-		protected override GorgonFileSystemProvider OnCreateProvider()
+		IReadOnlyList<string> Directories
 		{
-			return new GorgonZipProvider(Resources.GORFS_DESC);
+			get;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonZipPlugin"/> class.
+		/// Property to return the available files from the physical file system.
 		/// </summary>
-		public GorgonZipPlugin()
-            : base(Resources.GORFS_PLUGIN_DESC)
+		IReadOnlyList<IGorgonPhysicalFileInfo> Files
 		{
+			get;
 		}
 	}
 }

@@ -58,12 +58,28 @@ namespace Gorgon.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonFileSystem _fileSystem;			        // Our file system.
-		private string _writePath = string.Empty;				// Write path.
-		private string _originalText = string.Empty;			// Original text.
+		// Our file system.
+		private GorgonFileSystem _fileSystem;
+		// Write path.
+		private string _writePath = string.Empty;
+		// Original text.
+		private string _originalText = string.Empty;
+		// Changed text.
+		private string _changedText = string.Empty;				
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Handles the TextChanged event of the textDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void textDisplay_TextChanged(object sender, EventArgs e)
+		{
+			buttonSave.Enabled = !string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture);
+			itemLoadOriginal.Enabled = buttonSave.Enabled;
+		}
+
 		/// <summary>
 		/// Handles the Click event of the buttonSave control.
 		/// </summary>
@@ -74,10 +90,18 @@ namespace Gorgon.Examples
 			try
 			{
 				CommandEnable(false);
-				buttonSave.Enabled = false;
 				textDisplay.Enabled = false;
+
+				if (string.IsNullOrEmpty(textDisplay.Text))
+				{
+					_fileSystem.DeleteFile("/SomeText.txt");
+					LoadText();
+					return;
+				}
+
 				byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
 				_fileSystem.WriteFile("/SomeText.txt", data);
+				_changedText = textDisplay.Text;
 			}
 			catch (Exception ex)
 			{
@@ -85,8 +109,8 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				CommandEnable(true);
-				itemLoadChanged.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
+				textDisplay.Enabled = true;
+				CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
 				UpdateInfo();
 			}
 		}
@@ -109,7 +133,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				CommandEnable(true);
+				CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
 				UpdateInfo();
 			}
 		}
@@ -133,7 +157,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				CommandEnable(true);
+				CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
 				UpdateInfo();
 			}
 		}
@@ -146,7 +170,8 @@ namespace Gorgon.Examples
         /// <param name="value"><b>true</b> to enable the command buttons, <b>false</b> to disable.</param>
         private void CommandEnable(bool value)
         {
-            buttonSave.Enabled = buttonReload.Enabled = textDisplay.Enabled = value;
+            itemLoadChanged.Enabled = itemLoadOriginal.Enabled = value;
+	        buttonSave.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
         }
 
         /// <summary>
@@ -154,7 +179,7 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void UpdateInfo()
         {
-	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text)
+	        labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
 		                         ? $"Using original text from {Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true)}"
 		                         : $"Using modified text from {_writePath.Ellipses(100, true)}";
         }
@@ -176,9 +201,9 @@ namespace Gorgon.Examples
 
 			// Load the modified version.			
 			textData = _fileSystem.ReadFile("/SomeText.txt");
-			string modifiedText = Encoding.UTF8.GetString(textData);
+			_changedText = Encoding.UTF8.GetString(textData);
 
-			textDisplay.Text = string.Equals(modifiedText, _originalText) ? _originalText : modifiedText;
+			textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
 		}
 
 		/// <summary>
@@ -210,7 +235,7 @@ namespace Gorgon.Examples
 			}
 			finally
 			{
-				itemLoadChanged.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
+				CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
 				UpdateInfo();
 			}
 		}

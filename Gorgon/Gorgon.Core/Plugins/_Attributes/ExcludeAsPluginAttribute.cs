@@ -20,58 +20,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, September 19, 2015 8:29:18 PM
+// Created: Saturday, September 19, 2015 9:27:59 PM
 // 
 #endregion
 
-using Gorgon.Native;
+using System;
 
-namespace Gorgon.Input
+namespace Gorgon.Plugins
 {
 	/// <summary>
-	/// Provides capability information about a Raw Input Human Interface Device.
+	/// An attribute to disallow a type from being picked up as a plug in.
 	/// </summary>
-	public interface IGorgonRawHIDInfo 
-		: IGorgonRawInputDeviceInfo
+	/// <remarks>
+	/// Use this to exclude a type from the plug in enumeration process. This is handy in situations where a base plug in class is a concrete type (i.e. not abstract), and it is not beneficial to enumerate 
+	/// this type as a plug in. 
+	/// </remarks>
+	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+	public class ExcludeAsPluginAttribute
+		: Attribute
 	{
-		/// <summary>
-		/// Property to return the product ID for the device.
-		/// </summary>
-		int ProductID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the vendor ID for the device.
-		/// </summary>
-		int VendorID
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the version number for the device.
-		/// </summary>
-		int Version
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the top level collection usage value for this device.
-		/// </summary>
-		HIDUsage Usage
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return the top level collection usage page value for this device.
-		/// </summary>
-		HIDUsagePage UsagePage
-		{
-			get;
-		}
 	}
 }

@@ -34,7 +34,7 @@ namespace Gorgon.IO.Zip
 	/// <summary>
 	/// A stream used to read zip files.
 	/// </summary>
-	public class GorgonZipFileStream
+	public class ZipFileStream
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
@@ -161,23 +161,23 @@ namespace Gorgon.IO.Zip
 		private void GetZipEntryStream(GorgonFileSystemFileEntry file, Stream stream)
 		{
 			ZipEntry entry;
-
+			
 			_zipStream = new ZipInputStream(stream);
-
+			
 			while ((entry = _zipStream.GetNextEntry()) != null)
 			{
-			    if (!entry.IsFile)
-			    {
-			        continue;
-			    }
+				if (!entry.IsFile)
+				{
+					continue;
+				}
 
-			    string newPath = entry.Name;
-			    string filePath = file.PhysicalFileSystemPath.Substring(file.PhysicalFileSystemPath.LastIndexOf(':') + 1);
+				string newPath = entry.Name;
+				string filePath = file.PhysicalFile.FullPath.Substring(file.PhysicalFile.FullPath.LastIndexOf(':') + 1);
 
-			    if (!newPath.StartsWith("/"))
-			    {
-			        newPath = "/" + newPath;
-			    }
+				if (!newPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+				{
+					newPath = "/" + newPath;
+				}
 
 				if (!string.Equals(newPath, filePath, StringComparison.OrdinalIgnoreCase))
 				{
@@ -191,7 +191,7 @@ namespace Gorgon.IO.Zip
 
 			_zipStream?.Dispose();
 
-			throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, file.PhysicalFileSystemPath));
+			throw new FileNotFoundException(string.Format(Resources.GORFS_ZIP_ERR_FILE_NOT_FOUND, file.PhysicalFile.FullPath));
 		}
 
 		/// <summary>
@@ -326,12 +326,12 @@ namespace Gorgon.IO.Zip
 
 		    if (_position > Length)
 		    {
-		        throw new EndOfStreamException(Resources.GORFS_EOS);
+		        throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_EOS);
 		    }
 
 		    if (_position < 0)
 		    {
-		        throw new EndOfStreamException(Resources.GORFS_BOS);
+		        throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_BOS);
 		    }
 
 		    _zipStream.Position = _position + _basePosition;
@@ -407,11 +407,11 @@ namespace Gorgon.IO.Zip
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonZipFileStream"/> class.
+		/// Initializes a new instance of the <see cref="ZipFileStream"/> class.
 		/// </summary>
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
-		internal GorgonZipFileStream(GorgonFileSystemFileEntry file, Stream stream)
+		internal ZipFileStream(GorgonFileSystemFileEntry file, Stream stream)
 			: base(file, stream)
 		{
 			GetZipEntryStream(file, stream);

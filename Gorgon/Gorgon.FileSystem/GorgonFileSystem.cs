@@ -36,6 +36,7 @@ using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -78,7 +79,7 @@ namespace Gorgon.IO
 		// Flag to indicate that the mount point list was changed.
 		private bool _mountListChanged;
 		// Synchronization object.
-		private static readonly object _syncLock = new object();
+		private readonly object _syncLock = new object();
 		// The list of mount points to expose to the user.
 		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList;
 		// Mount points.
@@ -92,7 +93,7 @@ namespace Gorgon.IO
 		// The list of providers available to the file system.
 		private readonly Dictionary<string, GorgonFileSystemProvider> _providers;
 		// The log file for the application.
-		private IGorgonLog _log = new GorgonLogDummy();
+		private readonly IGorgonLog _log;
 		#endregion
 
 		#region Properties.
@@ -184,10 +185,7 @@ namespace Gorgon.IO
         /// <param name="mountPath">Mounting point in the virtual file system.</param>
         private void GetFileSystemObjects(GorgonFileSystemProvider provider, string physicalPath, string mountPath)
         {
-            string[] physicalDirectories;
-            GorgonFileSystemProvider.PhysicalFileInfo[] physicalFiles;
-
-            physicalPath = Path.GetFullPath(physicalPath);
+	        physicalPath = Path.GetFullPath(physicalPath);
 
             string fileName = Path.GetFileName(physicalPath);
 
@@ -203,26 +201,24 @@ namespace Gorgon.IO
 
             _log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Simple, physicalPath, mountPath);
 
-            provider.Enumerate(physicalPath, mountDirectory, out physicalDirectories, out physicalFiles);
+	        IGorgonPhysicalFileSystemData data = provider.Enumerate(physicalPath, mountDirectory);
 
             // Process the directories.
-            // ReSharper disable once ForCanBeConvertedToForeach
-            for (int i = 0; i < physicalDirectories.Length; i++)
+            foreach (string directory in data.Directories)
             {
-                string directory = physicalDirectories[i];
-
-                if (GetDirectory(directory) == null)
-                {
-                    AddDirectoryEntry(directory);
-                }
+	            if (GetDirectory(directory) == null)
+	            {
+		            AddDirectoryEntry(directory);
+	            }
             }
 
-            foreach (var file in physicalFiles)
-            {
-                AddFileEntry(provider, file.VirtualPath, physicalPath, file.FullPath, file.Length, file.Offset, file.CreateDate);
-            }
+			// Process the files.
+			foreach (IGorgonPhysicalFileInfo file in data.Files)
+			{
+				AddFileEntry(provider, file, physicalPath);
+			}
 
-            _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, physicalDirectories.Length, physicalFiles.Length);
+            _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, data.Directories.Count, data.Files.Count);
         }
 
         /// <summary>
@@ -392,7 +388,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(path))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
 			}
 
 			path = path.FormatDirectory('/');
@@ -441,51 +437,35 @@ namespace Gorgon.IO
 		/// Function to add a file entry to the list of files.
 		/// </summary>
 		/// <param name="provider">Provider to use.</param>
-		/// <param name="path">Path to the file entry.</param>
+		/// <param name="fileInfo">Information about the physical file.</param>
 		/// <param name="mountPoint">The mount point that holds the file.</param>
-		/// <param name="physicalLocation">The location of the file entry on the physical file system.</param>
-		/// <param name="size">Size of the file in bytes.</param>
-		/// <param name="offset">Offset of the file within a packed file.</param>
-		/// <param name="createDate">Date the file was created.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the path parameter is an empty string.
-		/// <para>-or-</para><para>The file already exists.</para>
-		/// <para>-or-</para><para>The file name is missing from the path.</para>
-		/// <para>-or-</para><para>The path was not found in the file system.</para>
-		/// </exception>
 		/// <returns>A new file system entry.</returns>
-		private GorgonFileSystemFileEntry AddFileEntry(GorgonFileSystemProvider provider, string path, string mountPoint, string physicalLocation, long size, long offset, DateTime createDate)
+		private GorgonFileSystemFileEntry AddFileEntry(GorgonFileSystemProvider provider, IGorgonPhysicalFileInfo fileInfo, string mountPoint)
 		{
-		    string directoryName = Path.GetDirectoryName(path).FormatDirectory('/');
-            string fileName = Path.GetFileName(path).FormatFileName();
-
+		    string directoryName = Path.GetDirectoryName(fileInfo.VirtualPath).FormatDirectory('/');
+            
 		    if (!directoryName.StartsWith("/"))
 		    {
 		        directoryName += "/";
-		    }
-
-		    if (string.IsNullOrWhiteSpace(fileName))
-		    {
-                throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path));
 		    }
 
 		    GorgonFileSystemDirectory directory = GetDirectory(directoryName);
 
 		    if (directory == null)
 		    {
-		        throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName), nameof(path));
+		        throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName), nameof(fileInfo));
 		    }
 
-		    if (directory.Directories.Contains(fileName))
+		    if (directory.Directories.Contains(fileInfo.Name))
             {
-                throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, fileName));
-            }
+                throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, fileInfo.Name));
+			}
 
 			// Create the entry.
-			var result = new GorgonFileSystemFileEntry(provider, directory, fileName, mountPoint, physicalLocation, size, offset, createDate);
+			var result = new GorgonFileSystemFileEntry(provider, directory, fileInfo, mountPoint);
 
             // If the file exists, then override it, otherwise it'll just be added.
-			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files)[fileName] = result;
+			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files)[fileInfo.Name] = result;
 
 			return result;
 		}
@@ -512,7 +492,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemDirectory startDirectory = GetDirectory(path);
@@ -565,7 +545,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemDirectory start = GetDirectory(path);
@@ -616,7 +596,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 		    if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
@@ -661,7 +641,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, path);
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, path);
             }
 
 			path = path.FormatDirectory('/');
@@ -742,7 +722,7 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(file));
 			}
 
-			using (GorgonFileSystemStream stream = OpenStream(file, false))
+			using (Stream stream = OpenStream(file, false))
 			{
 				data = new byte[stream.Length];
 
@@ -782,15 +762,13 @@ namespace Gorgon.IO
 			lock(_syncLock)
 			{
 				// Write the file out to the write location.
-				using(GorgonFileSystemStream stream = OpenStream(file, true))
+				using(Stream stream = OpenStream(file, true))
 				{
 					stream.Write(data, 0, data.Length);
 				}
 
-				var fileInfo = new FileInfo(file.PhysicalFileSystemPath);
-
-				file.Update(fileInfo.Length, null, fileInfo.CreationTime, WriteLocation, file.PhysicalFileSystemPath,
-				            _defaultProvider);
+				var fileInfo = new FileInfo(file.PhysicalFile.FullPath);
+				file.Update(new PhysicalFileInfo(fileInfo, file.FullPath), WriteLocation, _defaultProvider);
 			}
 		}
 
@@ -814,8 +792,7 @@ namespace Gorgon.IO
 			lock(_syncLock)
 			{
 				GorgonFileSystemFileEntry file = GetFile(path) ??
-												 AddFileEntry(_defaultProvider, path, WriteLocation, GetWritePath(path), 0, 0,
-																			   DateTime.Now);
+				                                 AddFileEntry(_defaultProvider, new PhysicalFileInfo(GetWritePath(path), DateTime.Now, 0, path), WriteLocation);
 
 				if ((data != null) && (file != null))
 				{
@@ -836,9 +813,9 @@ namespace Gorgon.IO
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
-		public GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
+		public Stream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
-			GorgonFileSystemStream stream;
+			Stream stream;
 
 			if (file == null)
 			{
@@ -859,12 +836,12 @@ namespace Gorgon.IO
 					
 					var info = new FileInfo(writePath);
 					stream = new GorgonFileSystemStream(file, File.Open(writePath, FileMode.Create, FileAccess.Write, FileShare.None));
-					file.Update(info.Length, 0, DateTime.Now, WriteLocation, writePath, _defaultProvider);
+					file.Update(new PhysicalFileInfo(info, file.FullPath), WriteLocation, _defaultProvider);
 				}
 			}
 			else
 			{
-				stream = file.Provider.OnOpenFileStream(file);
+				stream = file.Provider.OpenFileStream(file);
 			}
 
 			return stream;
@@ -883,7 +860,7 @@ namespace Gorgon.IO
         /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is <b>false</b>.</exception>
 		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
-		public GorgonFileSystemStream OpenStream(string path, bool writeable)
+		public Stream OpenStream(string path, bool writeable)
 		{
 			GorgonFileSystemFileEntry file = GetFile(path);
             
@@ -892,19 +869,7 @@ namespace Gorgon.IO
 		    {
 			    lock(_syncLock)
 			    {
-				    if (file != null)
-				    {
-					    return OpenStream(file, true);
-				    }
-
-				    string writePath = GetWritePath(path);
-
-				    file = AddFileEntry(_defaultProvider, path,
-					    WriteLocation,
-					    writePath, 0,
-					    0, DateTime.Now);
-
-				    return OpenStream(file, true);
+				    return OpenStream(file ?? AddFileEntry(_defaultProvider, new PhysicalFileInfo(GetWritePath(path), DateTime.Now, 0, path), WriteLocation), true);
 			    }
 		    }
 			
@@ -935,7 +900,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 		    lock(_syncLock)
@@ -1015,7 +980,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 			GorgonFileSystemFileEntry file = GetFile(path);
@@ -1124,7 +1089,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(path));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
 	        lock(_syncLock)
@@ -1304,7 +1269,7 @@ namespace Gorgon.IO
 
             if (string.IsNullOrWhiteSpace(physicalPath))
             {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(physicalPath));
+                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
             }
 
 			lock(_syncLock)
@@ -1437,10 +1402,7 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(providers));
 			}
 
-			if (log != null)
-			{
-				_log = log;
-			}
+			_log = log ?? new GorgonLogDummy();
 
 			_mountListChanged = true;
 			_mountPoints = new List<GorgonFileSystemMountPoint>();

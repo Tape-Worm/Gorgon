@@ -17,7 +17,7 @@ namespace Gorgon.Input
 	/// </para>
 	/// </remarks>
 	public interface IGorgonRawHID 
-		: IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawHIDData>, IDisposable
+		: IGorgonRawInputDevice, IDisposable
 	{
 		/// <summary>
 		/// Event triggered when Raw Input receives data from the device.

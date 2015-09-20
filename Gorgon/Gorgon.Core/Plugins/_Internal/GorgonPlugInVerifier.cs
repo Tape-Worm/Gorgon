@@ -160,9 +160,13 @@ namespace Gorgon.Plugins
 	            var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
                 var types = assembly.GetTypes();
 
-                return (from type in types
-                        where type.IsSubclassOf(_plugInType) && !type.IsAbstract
-                        select type.FullName).ToArray();
+	            return (from type in types
+	                    where !type.IsPrimitive && !type.IsValueType && !type.IsAbstract && type.IsSubclassOf(_plugInType)
+	                          && !CustomAttributeData
+		                             .GetCustomAttributes(type)
+		                             .Any(item => item.ToString()
+		                                              .StartsWith("[Gorgon.Plugins.ExcludeAsPluginAttribute", StringComparison.Ordinal))
+	                    select type.FullName).ToArray();
             }
             catch (ReflectionTypeLoadException)
             {

@@ -171,6 +171,7 @@
     <Compile Include="Native\_Internal\UserApi.cs" />
     <Compile Include="Native\_Internal\WinMultimediaApi.cs" />
     <Compile Include="Plugins\GorgonPluginService.cs" />
+    <Compile Include="Plugins\_Attributes\ExcludeAsPluginAttribute.cs" />
     <Compile Include="Plugins\_Interfaces\IGorgonPluginService.cs" />
     <Compile Include="Plugins\_Interfaces\IClrStrongName.cs" />
     <Compile Include="Timing\GorgonTimerMultimedia.cs" />

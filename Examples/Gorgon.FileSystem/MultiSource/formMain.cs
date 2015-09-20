@@ -32,6 +32,7 @@ using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO;
+using Gorgon.IO.Providers;
 using Gorgon.Plugins;
 using Gorgon.UI;
 
@@ -209,7 +210,7 @@ namespace Gorgon.Examples
 			// Location of our zip file provider assembly.
 			string zipProviderDLL = Program.PlugInPath + @"\Gorgon.FileSystem.Zip.DLL";
 			// Name of our zip provider plugin.
-			const string zipProviderPluginName = "Gorgon.IO.GorgonZipPlugin";
+			const string zipProviderPluginName = "Gorgon.IO.Zip.ZipProvider";
 
 			// We can load the objects we need and discard the plugin system after.
 			// This works because we keep the references to the objects that our 

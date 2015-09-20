@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using Gorgon.Core;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -34,13 +35,22 @@ namespace Gorgon.IO
 	/// A file entry corresponding to a file on the physical file system.
 	/// </summary>
 	public sealed class GorgonFileSystemFileEntry
-		: GorgonNamedObject
+		: IGorgonNamedObject
 	{
 		#region Properties.
-        /// <summary>
-        /// Property to return the file system that owns this file.
-        /// </summary>
-        public GorgonFileSystem FileSystem => Directory?.FileSystem;
+		/// <summary>
+		/// Property to return the file system that owns this file.
+		/// </summary>
+		public GorgonFileSystem FileSystem => Directory?.FileSystem;
+
+		/// <summary>
+		/// Property to return the physical file information for this virtual file.
+		/// </summary>
+		public IGorgonPhysicalFileInfo PhysicalFile
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return the file system that can access this file.
@@ -65,15 +75,6 @@ namespace Gorgon.IO
 
 			    return Directory.FullPath + Name;
 			}
-		}
-
-		/// <summary>
-		/// Property to return the path to the file on the physical file system.
-		/// </summary>
-		public string PhysicalFileSystemPath
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -115,61 +116,38 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the uncompressed size of the file in bytes.
 		/// </summary>
-		public long Size
-		{
-			get;
-			private set;
-		}
+		public long Size => PhysicalFile.Length;
 
 		/// <summary>
 		/// Property to return the file creation date.
 		/// </summary>
-		public DateTime CreateDate
-		{
-			get;
-			private set;
-		}
+		public DateTime CreateDate => PhysicalFile.CreateDate;
 
 		/// <summary>
-		/// Property to return the offset of the file within a packed file.
+		/// Property to return the last modified date.
 		/// </summary>
-		/// <remarks>This will always return 0 for a folder file system.</remarks>
-		public long Offset
-		{
-			get;
-			private set;
-		}
+		public DateTime LastModifiedDate => PhysicalFile.LastModifiedDate;
+
+		/// <summary>
+		/// Property to return the filename and extension for this virtual file.
+		/// </summary>
+		public string Name => PhysicalFile.Name;
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to update the information about this file.
-        /// </summary>
-        /// <param name="fileSize">Size of the file.</param>
-        /// <param name="fileOffset">Offset of the file in a packed file file system.</param>
-        /// <param name="createDate">Date of creation for the file.</param>
-        /// <param name="mountPoint">Mount point for the file.</param>
-        /// <param name="physicalPath">Physical path for the file.</param>
-        /// <param name="provider">Provider that can access the file.</param>
-        internal void Update(long? fileSize, int? fileOffset, DateTime? createDate, string mountPoint,
-                             string physicalPath, GorgonFileSystemProvider provider)
-        {
-            if (fileSize.HasValue)
-            {
-                Size = fileSize.Value;
-            }
+		/// <summary>
+		/// Function to update the information about this file.
+		/// </summary>
+		/// <param name="fileInfo">The physical file information.</param>
+		/// <param name="mountPoint">The mount point for the file.</param>
+		/// <param name="provider">Provider that can access the file.</param>
+		internal void Update(IGorgonPhysicalFileInfo fileInfo, string mountPoint, GorgonFileSystemProvider provider)
+		{
+			PhysicalFile = fileInfo;
+			Extension = Path.GetExtension(fileInfo.Name);
+			BaseFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
 
-            if (fileOffset.HasValue)
-            {
-                Offset = fileOffset.Value;
-            }
-
-            if (createDate.HasValue)
-            {
-                CreateDate = createDate.Value;
-            }
-
-            if (!string.IsNullOrWhiteSpace(mountPoint))
+			if (!string.IsNullOrWhiteSpace(mountPoint))
             {
                 MountPoint = mountPoint;
             }
@@ -177,11 +155,6 @@ namespace Gorgon.IO
             if (provider != null)
             {
                 Provider = provider;
-            }
-
-            if (!string.IsNullOrWhiteSpace(physicalPath))
-            {
-                PhysicalFileSystemPath = physicalPath;
             }
         }
 
@@ -216,7 +189,7 @@ namespace Gorgon.IO
         /// </summary>
         /// <param name="writeable"><b>true</b> to write to the file, <b>false</b> to make read-only.</param>
         /// <returns>The open <see cref="GorgonFileSystemStream"/> file stream object.</returns>
-        public GorgonFileSystemStream OpenStream(bool writeable)
+        public Stream OpenStream(bool writeable)
         {
             return FileSystem.OpenStream(this, writeable);
         }
@@ -228,34 +201,16 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="provider">The file system provider that owns this file.</param>
 		/// <param name="directory">The directory that holds this file.</param>
-		/// <param name="fileName">The file name of the file.</param>
+		/// <param name="fileInfo">Information about the physical file.</param>
 		/// <param name="mountPoint">The mount point that holds the file.</param>
-		/// <param name="physicalPath">Path to the file on the physical file system.</param>
-		/// <param name="fileSize">Size of the file in bytes.</param>
-		/// <param name="offset">Offset of the file within a packed file.</param>
-		/// <param name="createDate">Create date for the file.</param>
-		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, string fileName, string mountPoint, string physicalPath, long fileSize, long offset, DateTime createDate)
-			: base(fileName.FormatFileName())
+		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, IGorgonPhysicalFileInfo fileInfo, string mountPoint)
 		{
+			PhysicalFile = fileInfo;
 			Provider = provider;
 			Directory = directory;
-			Extension = Path.GetExtension(Name);
-			BaseFileName = Path.GetFileNameWithoutExtension(fileName);
-			
-			if (string.IsNullOrEmpty(physicalPath))
-			{
-				PhysicalFileSystemPath = Name;
-				MountPoint = mountPoint;
-			}
-			else
-			{
-				MountPoint = mountPoint;
-				PhysicalFileSystemPath = physicalPath;
-			}
-
-			Offset = offset;
-			Size = fileSize;
-			CreateDate = createDate;
+			Extension = Path.GetExtension(fileInfo.Name);
+			BaseFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
+			MountPoint = mountPoint;
 		}
 		#endregion
 	}

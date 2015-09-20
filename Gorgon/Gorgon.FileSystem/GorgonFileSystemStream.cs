@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -36,7 +37,8 @@ namespace Gorgon.IO
 		: Stream
 	{
 		#region Variables.
-		private Stream _baseStream;					// Base stream to use.
+		// Base stream to use.
+		private Stream _baseStream;					
 		#endregion
 
 		#region Properties.
@@ -155,14 +157,11 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to update the file information for a file.
 		/// </summary>
-		/// <param name="fileSize">The file size.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
-		/// <param name="fileOffset">The offset of the file within a packed file.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
-		/// <param name="createDate">The date/time the file was created.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
-		/// <param name="physicalPath">A new file system provider for the file.  Pass NULL (<i>Nothing</i> in VB.Net) or an empty string to leave unchanged.</param>
-		/// <param name="provider">A new file system provider for the file.  Pass NULL (<i>Nothing</i> in VB.Net) to leave unchanged.</param>
-		protected void UpdateFileInfo(long? fileSize, int? fileOffset, DateTime? createDate, string physicalPath, GorgonFileSystemProvider provider)
+		/// <param name="fileInfo">The information about the physical file.</param>
+		/// <param name="provider">A new file system provider for the file.</param>
+		protected void UpdateFileInfo(IGorgonPhysicalFileInfo fileInfo, GorgonFileSystemProvider provider)
 		{
-			FileEntry?.Update(fileSize, fileOffset, createDate, null, physicalPath, provider);
+			FileEntry?.Update(fileInfo, null, provider);
 		}
 
 		/// <summary>
@@ -170,13 +169,13 @@ namespace Gorgon.IO
 		/// </summary>
 		protected virtual void OnUpdateFileEntry()
 		{
-			if ((FileEntry == null) || (!File.Exists(FileEntry.PhysicalFileSystemPath)))
+			if ((FileEntry == null) || (!File.Exists(FileEntry.PhysicalFile.FullPath)))
 			{
 				return;
 			}
 
-			var info = new FileInfo(FileEntry.PhysicalFileSystemPath);
-			UpdateFileInfo(info.Length, 0, info.CreationTime, info.FullName, FileEntry.Provider);
+			var info = new FileInfo(FileEntry.PhysicalFile.FullPath);
+			UpdateFileInfo(new PhysicalFileInfo(info, FileEntry.FullPath), FileEntry.Provider);
 		}
 
 		/// <summary>
@@ -384,12 +383,17 @@ namespace Gorgon.IO
 		/// <param name="file">File being read/written.</param>
 		/// <param name="baseStream">The underlying stream to use for this stream.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonFileSystemStream(GorgonFileSystemFileEntry file, Stream baseStream)
+		protected internal GorgonFileSystemStream(GorgonFileSystemFileEntry file, Stream baseStream)
 		{
 			if (file == null)
+			{
 				throw new ArgumentNullException(nameof(file));
+			}
+
 			if (baseStream == null)
+			{
 				throw new ArgumentNullException(nameof(baseStream));
+			}
 
 			CloseUnderlyingStream = true;
 			_baseStream = baseStream;
@@ -397,7 +401,9 @@ namespace Gorgon.IO
 
 			// Reset the position to the beginning.
 			if (_baseStream.CanSeek)
+			{
 				_baseStream.Position = 0;
+			}
 		}
 		#endregion
 	}

@@ -33,9 +33,9 @@ using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
 using Gorgon.Plugins;
 
-namespace Gorgon.IO
+namespace Gorgon.IO.Providers
 {
-	/// <inheritdoc/>
+	/// <inheritdoc cref="IGorgonFileSystemProviderFactory"/>
 	public sealed class GorgonFileSystemProviderFactory 
 		: IGorgonFileSystemProviderFactory
 	{
@@ -44,6 +44,8 @@ namespace Gorgon.IO
 		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
+		// The type for the default file system provider.
+		private readonly Type _baseType = typeof(GorgonFileSystemProvider);
 		#endregion
 
 		#region Methods.
@@ -53,8 +55,8 @@ namespace Gorgon.IO
 		/// <returns>A list of file system providers.</returns>
 		private IReadOnlyList<GorgonFileSystemProvider> GetAllProviders()
 		{
-			return _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>()
-			                     .Select(item => item.CreateProvider()).ToArray();
+			return _pluginService.GetPlugins<GorgonFileSystemProvider>()
+			                     .ToArray();
 		}
 
 		/// <inheritdoc/>
@@ -67,19 +69,19 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(providerPluginName))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(providerPluginName));
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(providerPluginName));
 			}
 
-			GorgonFileSystemProviderPlugIn plugin = _pluginService.GetPlugin<GorgonFileSystemProviderPlugIn>(providerPluginName);
+			_log.Print("Creating file system provider '{0}'.", LoggingLevel.Simple, providerPluginName);
+
+			GorgonFileSystemProvider plugin =  _pluginService.GetPlugin<GorgonFileSystemProvider>(providerPluginName);
 
 			if (plugin == null)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerPluginName));
 			}
 
-			_log.Print("Creating file system provider '{0}'.", LoggingLevel.Simple, providerPluginName);
-
-			return plugin.CreateProvider();
+			return plugin;
 		}
 
 		/// <inheritdoc/>
@@ -87,8 +89,8 @@ namespace Gorgon.IO
 		{
 			return pluginAssembly == null
 				       ? GetAllProviders()
-				       : _pluginService.GetPlugins<GorgonFileSystemProviderPlugIn>(pluginAssembly).Select(item => item.CreateProvider())
-				                       .ToArray();
+				       : _pluginService.GetPlugins<GorgonFileSystemProvider>(pluginAssembly)
+									   .ToArray();
 		}
 		#endregion
 

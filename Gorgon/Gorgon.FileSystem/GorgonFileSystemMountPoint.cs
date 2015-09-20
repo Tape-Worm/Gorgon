@@ -143,7 +143,7 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(physicalPath))
 			{
-				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, nameof(physicalPath));
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
 			}
 
 			if (string.IsNullOrWhiteSpace(mountLocation))

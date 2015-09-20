@@ -32,6 +32,7 @@ using System.Reflection;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.IO;
+using Gorgon.IO.Providers;
 using Gorgon.Plugins;
 using Gorgon.UI;
 
@@ -61,7 +62,7 @@ namespace Gorgon.Examples
 	static class Program
     {
         #region Constants.
-        private const string PluginName = "Gorgon.IO.GorgonZipPlugin";
+        private const string PluginName = "Gorgon.IO.Zip.ZipProvider";
         #endregion
 
         #region Variables.
