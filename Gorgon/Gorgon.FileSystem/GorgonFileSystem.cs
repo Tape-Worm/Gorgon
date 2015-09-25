@@ -26,49 +26,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// The virtual file System interface.
-	/// </summary>
-	/// <remarks>
-	/// <para>
-	/// This will allow the user to mount folders or packed files (such as Zip files) into a unified file system.  For example, if the user has mount MyData.zip and C:\users\Bob\Data\ into the file system then
-	/// all files and/or directories from both sources would be combined into a single virtual file system.
-	/// </para>
-	/// <para>
-	/// Accessing a file is handled like this:  GorgonFileSystem.ReadFile("/MyFile.txt");  It won't matter where MyFile.txt is stored on the physical file system, the system will know where to find it.
-	/// </para>
-	/// <para>
-	/// Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="WriteLocation">WriteLocaton</see> property.  
-	/// For example, if the user sets the WriteLocation to C:\MyWriteDirectory, and proceeds to create a new file called "SomeText.txt" in the root of the virtual file system, then the file will be sent to 
-	/// "C:\MyWriteDirectory\SomeText.txt".  Likewise, if a file, /SubDir1/SomeText.txt is in a sub directory on the virtual file system, the file will be rerouted to "C:\MyWriteDirectory\SubDir1\SomeText.txt".
-	/// </para>
-	/// <para>
-	/// The order in which file systems are mounted into the virtual file system is important.  If a zip file contains SomeText.txt, and a directory to be mounted as root contains the same file and the
-	/// directory is mounted first, followed by the zip, then the zip file version of the SomeText.txt file will take precedence and will be used.  The only exception to this rule is the WriteLocation directory
-	/// which has the highest precedence over all files.
-	/// </para>
-    /// <para>
-    /// By default, a new file system instance will only have access to the folders and files of the hard drive via a folder file system.  File systems that are in packed files (e.g. WinZip files) can be loaded into the 
-    /// file system by way of a <see cref="GorgonFileSystemProvider"/>.  Providers are plug-in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  Once a provider plug-in 
-    /// is loaded, then the contents of that file system can be mounted like a standard directory.  For example, if the zip file provider plug-in is loaded, then the file system may be mounted into the root by: 
-    /// <c>fileSystem.Mount("d:\zipFiles\myZipFile.zip", "/");</c>.
-    /// </para>
-	/// </remarks>
-	public class GorgonFileSystem
+	/// <inheritdoc cref="IGorgonFileSystem"/>
+	public class GorgonFileSystem 
+		: IGorgonFileSystem
 	{
 		#region Variables.
 		/// <summary>
@@ -76,117 +47,117 @@ namespace Gorgon.IO
 		/// </summary>
 	    internal static readonly string PhysicalDirSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
-		// Flag to indicate that the mount point list was changed.
-		private bool _mountListChanged;
 		// Synchronization object.
 		private readonly object _syncLock = new object();
-		// The list of mount points to expose to the user.
-		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList;
-		// Mount points.
-		private readonly List<GorgonFileSystemMountPoint> _mountPoints;
-		// The area on the physical file system that we can write into.
-		private string _writeLocation = string.Empty;
-		// The default file system provider.
-		private readonly GorgonFileSystemProvider _defaultProvider = new GorgonFileSystemProvider();
-		// Interlock increment variable.
-	    private int _refreshSemaphore;
 		// The list of providers available to the file system.
-		private readonly Dictionary<string, GorgonFileSystemProvider> _providers;
+		private readonly Dictionary<string, IGorgonFileSystemProvider> _providers;
 		// The log file for the application.
 		private readonly IGorgonLog _log;
+		// The root directory for the file system.
+		private readonly VirtualDirectory _rootDirectory;
+		// A list of mount points grouped by provider.
+		private readonly HashSet<GorgonFileSystemMountPoint> _mountProviders;
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return a list of current mount points.
-		/// </summary>
-		public IList<GorgonFileSystemMountPoint> MountPoints
-		{
-			get
-			{
-				if (!_mountListChanged)
-				{
-					return _mountPointList;
-				}
-
-				lock (_syncLock)
-				{
-					_mountListChanged = false;
-					_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
-				}
-
-				return _mountPointList;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the location on the physical file system that can be written to.
-		/// </summary>
-		/// <remarks>Files written to this location will be created using the directories of the virtual file system.  So, if the user sets "C:\MyWriteArea\" as the writeable location and then
-		/// proceeds to create a directory:  "/LetsSayThisIsaZipFileDirectory/ZipDirectory/MyNewDirectory", the directory will be created in "C:\MyWriteArea\LetsSayThisIsaZipFileDirectory\ZipDirectory\".
-		/// This also applies to files being written into a directory.  If the user creates a file: "/MountedFolder/MyFile.txt", then the file will be created as "C:\MyWriteArea\MountedFolder\MyFile.txt".
-		/// <para>The write directory is automatically mounted last and will have precedence over all files in the file system (i.e. files retrieved will come from the write location first if they exist).</para>
-		/// <para>If this value is set to NULL (<i>Nothing</i> in VB.Net) or an empty string, then no writeable area is assigned.  This will make the file system read-only until a valid write location is applied 
-		/// to the property.  This is the default setting.</para>
-		/// <para>The path for the write location must be an area that the user can write into, otherwise any write operations will fail.</para>
+		/// <inheritdoc/>
+		/// <remarks>
+		/// This is the default folder file system provider.
 		/// </remarks>
-		public string WriteLocation
-		{
-			get
-			{
-				return _writeLocation;
-			}
-			set
-			{
-				if (value == null)
-				{
-					value = string.Empty;
-				}
-
-				_writeLocation = value;
-
-				if (!string.IsNullOrWhiteSpace(_writeLocation))
-				{
-					_writeLocation = _writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
-
-					var info = new DirectoryInfo(_writeLocation);
-					if (!info.Exists)
-					{
-						info.Create();
-					}
-				}
-
-				// Query the files/sub directories in the write location.
-				Refresh();
-			}
-		}
-
-		/// <summary>
-		/// Property to return the root directory for the file system.
-		/// </summary>
-		public GorgonFileSystemDirectory RootDirectory
+		public IGorgonFileSystemProvider DefaultProvider
 		{
 			get;
 		}
 
-		/// <summary>
-		/// Property to return the list of providers available to this file system.
-		/// </summary>
-		public IReadOnlyDictionary<string, GorgonFileSystemProvider> Providers => _providers;
+		/// <inheritdoc/>
+		public IEnumerable<GorgonFileSystemMountPoint> MountPoints => _mountProviders;
 
+		/// <inheritdoc cref="IGorgonFileSystem.RootDirectory"/>
+		internal VirtualDirectory InternalRootDirectory => _rootDirectory;
+
+		/// <inheritdoc/>
+		public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to retrieve the file system objects from the physical file system.
-        /// </summary>
-        /// <param name="provider">The provider to the physical file system objects.</param>
-        /// <param name="physicalPath">Physical path that is being mounted.</param>
-        /// <param name="mountPath">Mounting point in the virtual file system.</param>
-        private void GetFileSystemObjects(GorgonFileSystemProvider provider, string physicalPath, string mountPath)
-        {
-	        physicalPath = Path.GetFullPath(physicalPath);
+		/// <summary>
+		/// Function to mount a file as a mount point in the virtual file system.
+		/// </summary>
+		/// <param name="physicalPath">The physical path to the file.</param>
+		/// <param name="mountPath">The path to mount under.</param>
+		/// <returns>A new mount point.</returns>
+		private GorgonFileSystemMountPoint MountFile(string physicalPath, string mountPath)
+		{
+			// Rebuild the file path.
+			if (!File.Exists(physicalPath))
+			{
+				throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, physicalPath));
+			}
 
+			IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFile(physicalPath)).Value;
+
+			if (provider == null)
+			{
+				throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, physicalPath));
+			}
+
+			var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
+
+			GetFileSystemObjects(mountPoint);
+
+			if (_mountProviders.Contains(mountPoint))
+			{
+				_mountProviders.Remove(mountPoint);
+			}
+
+			_mountProviders.Add(mountPoint);
+
+			return mountPoint;
+		}
+
+		/// <summary>
+		/// Function to mount an operating system directory as a mount point in the virtual file system.
+		/// </summary>
+		/// <param name="physicalPath">The physical path to the operating system directory.</param>
+		/// <param name="mountPath">The path to mount under.</param>
+		/// <returns>A new mount point.</returns>
+		private GorgonFileSystemMountPoint MountDirectory(string physicalPath, string mountPath)
+		{
+			physicalPath = physicalPath.FormatDirectory(Path.DirectorySeparatorChar);
+
+			if (string.IsNullOrWhiteSpace(physicalPath))
+			{
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+			}
+			
+			// Use the default folder provider.
+			if (!Directory.Exists(physicalPath))
+			{
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+			}
+
+			var mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
+
+			GetFileSystemObjects(mountPoint);
+
+			if (_mountProviders.Contains(mountPoint))
+			{
+				_mountProviders.Remove(mountPoint);
+			}
+
+			// Assign the default provider to the mount point.
+			_mountProviders.Add(mountPoint);
+
+			return mountPoint;
+		}
+
+		/// <summary>
+		/// Function to retrieve the file system objects from the physical file system.
+		/// </summary>
+		/// <param name="mountPoint">The mount point to link the physical file system with the virtual file system.</param>
+		private void GetFileSystemObjects(GorgonFileSystemMountPoint mountPoint)
+        {
+	        string physicalPath = Path.GetFullPath(mountPoint.PhysicalPath);
             string fileName = Path.GetFileName(physicalPath);
 
             physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory(Path.DirectorySeparatorChar);
@@ -197,99 +168,157 @@ namespace Gorgon.IO
             }
 
             // Find existing mount point.
-            GorgonFileSystemDirectory mountDirectory = GetDirectory(mountPath) ?? AddDirectoryEntry(mountPath);
+			VirtualDirectory mountDirectory = InternalGetDirectory(mountPoint.MountLocation);
 
-            _log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Simple, physicalPath, mountPath);
+			if (mountDirectory == null)
+			{
+				mountDirectory = _rootDirectory.Directories.Add(mountPoint, mountPoint.MountLocation);
+			}
+			else
+			{
+				mountDirectory.MountPoint = mountPoint;
+			}
 
-	        IGorgonPhysicalFileSystemData data = provider.Enumerate(physicalPath, mountDirectory);
+			_log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Simple, physicalPath, mountPoint.MountLocation);
+
+	        GorgonPhysicalFileSystemData data = mountPoint.Provider.Enumerate(physicalPath, mountDirectory);
 
             // Process the directories.
             foreach (string directory in data.Directories)
             {
-	            if (GetDirectory(directory) == null)
+	            VirtualDirectory existingDirectory = InternalGetDirectory(directory);
+
+				// If the directory path already exists for another provider, then override it with the 
+				// provider we're currently loading. All directories and files will be overridden by the last 
+				// provider loaded if they already exist.
+				if (existingDirectory == null)
 	            {
-		            AddDirectoryEntry(directory);
+		            _rootDirectory.Directories.Add(mountPoint, directory);
+	            }
+	            else
+				{
+					_log.Print($"\"{existingDirectory.FullPath}\" already exists in provider: " +
+							   $"\"{existingDirectory.MountPoint.Provider.Description}\". Changing provider to \"{mountPoint.Provider.Description}\"",
+							   LoggingLevel.Verbose);
+
+		            existingDirectory.MountPoint = mountPoint;
 	            }
             }
 
 			// Process the files.
 			foreach (IGorgonPhysicalFileInfo file in data.Files)
 			{
-				AddFileEntry(provider, file, physicalPath);
+				string directoryName = Path.GetDirectoryName(file.VirtualPath).FormatDirectory('/');
+
+				if (!directoryName.StartsWith("/"))
+				{
+					directoryName += "/";
+				}
+
+				VirtualDirectory directory = InternalGetDirectory(directoryName);
+
+				if (directory == null)
+				{
+					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName));
+				}
+
+				VirtualFile virtualFile;
+
+				// Update the file information to the most recent provider.
+				if (!directory.Files.TryGetValue(file.Name, out virtualFile))
+				{
+					directory.Files.Add(mountPoint, file);
+				}
+				else
+				{
+					_log.Print($"\"{file.FullPath}\" already exists in provider: " +
+							   $"\"{virtualFile.MountPoint.Provider.Description}\". Changing provider to \"{mountPoint.Provider.Description}\"",
+							   LoggingLevel.Verbose);
+
+					virtualFile.MountPoint = mountPoint;
+					virtualFile.PhysicalFile = file;
+				}
 			}
 
             _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, data.Directories.Count, data.Files.Count);
         }
 
-        /// <summary>
-		/// Function to query the write location.
-		/// </summary>
-		private void QueryWriteLocation()
-		{
-			// If we've not included a write location, then leave.
-			if (string.IsNullOrWhiteSpace(WriteLocation))
-			{
-				return;
-			}
-
-			// Mount the writable location into the root.			
-			GetFileSystemObjects(_defaultProvider, WriteLocation, "/");
-		}
-		
 		/// <summary>
-		/// Function to recursively search for files.
+		/// Function to determine if the name of an object matches the pattern specified.
 		/// </summary>
-		/// <param name="parent">Parent directory for the files.</param>
-		/// <param name="entries">List of entries to populate.</param>
-		/// <param name="recurse"><b>true</b> to search all children, <b>false</b> to use only the immediate directory.</param>
-		/// <param name="fileName">Filename/mask to search for.</param>
-		private static void SearchDirectories(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemDirectory> entries, bool recurse, string fileName)
+		/// <typeparam name="T">Type of named object to compare.</typeparam>
+		/// <param name="item">Item to compare.</param>
+		/// <param name="searchMask">The mask used to filter.</param>
+		/// <returns><b>true</b> if the name of the item matches the pattern, <b>false</b> if not.</returns>
+		private static bool IsPatternMatch<T>(T item, string searchMask)
+			where T : IGorgonNamedObject
 		{
-			foreach (GorgonFileSystemDirectory entry in parent.Directories)
+			
+			if ((searchMask.EndsWith("*")) || (!searchMask.StartsWith("*")) || (searchMask.Length != 1))
 			{
-				if (Regex.IsMatch(entry.Name, Regex.Escape(fileName).Replace(@"\*", ".*").Replace(@"\?", "."),
-				                  RegexOptions.Singleline | RegexOptions.IgnoreCase))
-				{
-					entries.Add(entry);
-				}
-
-				if ((recurse) && (entry.Directories.Count > 0))
-				{
-					SearchDirectories(entry, entries, true, fileName);
-				}
+				return Regex.IsMatch(item.Name,
+				                     Regex.Escape(searchMask).Replace(@"\*", ".*").Replace(@"\?", "."),
+				                     RegexOptions.Singleline | RegexOptions.IgnoreCase);
 			}
+
+			return item.Name.EndsWith(searchMask.Substring(searchMask.IndexOf('*') + 1), StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
-		/// Function to recursively search for files.
+		/// Function to flatten a directory hierarchy.
 		/// </summary>
-		/// <param name="parent">Parent directory for the files.</param>
-		/// <param name="entries">List of entries to populate.</param>
-		/// <param name="recurse"><b>true</b> to search all children, <b>false</b> to use only the immediate directory.</param>
-		/// <param name="fileName">Filename/mask to search for.</param>
-		private static void SearchFiles(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemFileEntry> entries, bool recurse, string fileName)
+		/// <param name="directory">The directory to start searching in.</param>
+		/// <param name="searchMask">The pattern mask to search on.</param>
+		/// <returns>An enumerable containing the flattened list.</returns>
+		private static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
 		{
-			if (recurse)
+			IEnumerable<VirtualDirectory> directories = directory.Directories.InternalEnumerable();
+
+			if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
 			{
-				foreach (GorgonFileSystemDirectory directory in parent.Directories)
-					SearchFiles(directory, entries, true, fileName);
+				directories = directories.Where(item => IsPatternMatch(item, searchMask));
 			}
 
-			foreach (GorgonFileSystemFileEntry entry in parent.Files)
+			var stack = new Queue<VirtualDirectory>(directories);
+
+			while (stack.Count > 0)
 			{
-				if ((fileName.StartsWith("*")) && (fileName.Length > 1))
+				VirtualDirectory current = stack.Dequeue();
+
+				yield return current;
+
+				directories = current.Directories.InternalEnumerable();
+
+				if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
 				{
-					string endString = fileName.Substring(fileName.IndexOf('*') + 1);
-					if (entry.Name.EndsWith(endString, StringComparison.OrdinalIgnoreCase))
-					{
-						entries.Add(entry);
-					}
+					directories = directories.Where(item => IsPatternMatch(item, searchMask));
 				}
-				else
+
+				foreach (VirtualDirectory subDirectory in directories)
 				{
-					if (Regex.IsMatch(entry.Name, Regex.Escape(fileName).Replace(@"\*", ".*").Replace(@"\?", "."), RegexOptions.Singleline | RegexOptions.IgnoreCase))
-						entries.Add(entry);
+					stack.Enqueue(subDirectory);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Function to flatten a file hierarchy.
+		/// </summary>
+		/// <param name="directory">The directory to start searching in.</param>
+		/// <param name="searchMask">The pattern mask to search on.</param>
+		/// <returns>An enumerable containing the flattened list.</returns>
+		private static IEnumerable<VirtualFile> FlattenFileHierarchy(VirtualDirectory directory, string searchMask)
+		{
+			IEnumerable<VirtualDirectory> directories = FlattenDirectoryHierarchy(directory, "*");
+
+			foreach (VirtualFile file in directory.Files.InternalEnumerable().Where(item => IsPatternMatch(item, searchMask)))
+			{
+				yield return file;
+			}
+
+			foreach (VirtualFile file in directories.SelectMany(subDirectory => subDirectory.Files.InternalEnumerable().Where(item => IsPatternMatch(item, searchMask))))
+			{
+				yield return file;
 			}
 		}
 
@@ -297,89 +326,91 @@ namespace Gorgon.IO
 		/// Function to unmount the mounted virtual file system directories and files pointed at by a mount point.
 		/// </summary>
 		/// <param name="mountPoint">Mount point to unmount.</param>
-		/// <exception cref="System.IO.IOException">The path was not found.</exception>
-		/// <returns><b>true</b> if unmounted, <b>false</b> if not.</returns>
-		private bool UnmountMountPoint(GorgonFileSystemMountPoint mountPoint)
+		/// <exception cref="IOException">The path was not found.</exception>
+		private void UnmountMountPoint(GorgonFileSystemMountPoint mountPoint)
 		{
-			if (string.IsNullOrWhiteSpace(mountPoint.PhysicalPath))
+			lock (_syncLock)
 			{
-				return false;
+				if (!_mountProviders.Contains(mountPoint))
+				{
+					throw new IOException(string.Format(Resources.GORGFS_MOUNTPOINT_NOT_FOUND,
+					                                    mountPoint.MountLocation,
+					                                    mountPoint.PhysicalPath));
+				}
+
+				// Find the directory for the mount point.
+				VirtualDirectory mountPointDirectory = InternalGetDirectory(mountPoint.MountLocation);
+
+				// If we don't have the directory in the file system, then we have nothing to remove.
+				if (mountPointDirectory == null)
+				{
+					return;
+				}
+
+				IEnumerable<VirtualFile> files = InternalFindFiles(mountPoint.MountLocation, "*", true)
+					.Where(item => item.MountPoint.Equals(mountPoint))
+					.ToArray();
+
+				foreach (VirtualFile file in files)
+				{
+					file.Directory.Files.Remove(file);
+				}
+
+				// Find all directories and files that are related to the provider.
+				IEnumerable<VirtualDirectory> directories = InternalFindDirectories(mountPoint.MountLocation, "*", true)
+					.Where(item => item.MountPoint.Equals(mountPoint))
+					.OrderByDescending(item => item.FullPath)
+					.ThenByDescending(item => item.FullPath.Length)
+					.ToArray();
+
+				GorgonFileSystemMountPoint newMountPoint;
+
+				foreach (VirtualDirectory directory in directories)
+				{
+					if ((directory.Files.Count == 0) && (directory.Directories.Count == 0))
+					{
+						directory.Parent?.Directories.Remove(directory);
+					}
+					else
+					{
+						newMountPoint = directory.Directories.Count > 0
+							             ? directory.Directories.First().MountPoint
+							             : (directory.Files.Count > 0
+								                ? directory.Files.First().MountPoint
+								                : new GorgonFileSystemMountPoint(DefaultProvider, directory.MountPoint.PhysicalPath, directory.MountPoint.MountLocation));
+						// If there are still files or sub directories in the directory, then keep it around, and 
+						// set its provider back to the first provider in the list of directories, files or the 
+						// default.
+						directory.MountPoint = newMountPoint;
+					}
+				}
+
+				_mountProviders.Remove(mountPoint);
+
+				// If there's nothing left under this mount point, and it's not the root, then dump the directory.
+				if ((mountPointDirectory.Parent == null) 
+					|| (mountPointDirectory.Directories.Count != 0) 
+					|| (mountPointDirectory.Files.Count != 0))
+				{
+					newMountPoint = mountPointDirectory.Directories.Count > 0
+						                ? mountPointDirectory.Directories.First().MountPoint
+						                : (mountPointDirectory.Files.Count > 0
+							                   ? mountPointDirectory.Files.First().MountPoint
+							                   : new GorgonFileSystemMountPoint(DefaultProvider,
+							                                                    mountPointDirectory.MountPoint.PhysicalPath,
+							                                                    mountPointDirectory.MountPoint.MountLocation));
+
+
+					mountPointDirectory.MountPoint = newMountPoint;
+					return;
+				}
+
+				mountPointDirectory.Parent.Directories.Remove(mountPointDirectory);
 			}
-
-			if (!_mountPoints.Contains(mountPoint))
-			{
-			    throw new IOException(string.Format(Resources.GORGFS_MOUNTPOINT_NOT_FOUND,
-			        mountPoint.MountLocation,
-			        mountPoint.PhysicalPath));
-			}
-
-			_mountPoints.Remove(mountPoint);
-			_mountListChanged = true;
-
-			return true;
 		}
 
-        /// <summary>
-        /// Function to return the writeable path including the virtual path passed in.
-        /// </summary>
-        /// <param name="path">Virtual path.</param>
-        /// <returns>The physical writeable path.</returns>
-        private string GetWritePath(string path)
-        {
-            var writePath = new StringBuilder(1024);
-
-            if (string.IsNullOrWhiteSpace(WriteLocation))
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_NO_WRITE_LOCATION, path));
-            }
-
-            if (path == "/")
-            {
-                return WriteLocation;
-            }
-
-            // The file name just gets tacked on, we don't use it for processing.
-            string fileName = Path.GetFileName(path).FormatFileName();
-
-            writePath.Append(Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar));
-
-            if ((writePath.Length > 0) && (writePath[0] == Path.DirectorySeparatorChar))
-            {
-                writePath.Remove(0, 1);
-            }
-
-            // Prepend the write location.
-            writePath.Insert(0, WriteLocation);
-
-            string result = writePath.ToString();
-
-            // Create the directory if necessary.
-            if (!Directory.Exists(result))
-            {
-                Directory.CreateDirectory(result);
-            }
-
-	        if (string.IsNullOrWhiteSpace(fileName))
-	        {
-		        return result;
-	        }
-
-	        writePath.Append(fileName);
-	        result = writePath.ToString();
-
-	        return result;
-        }
-
-		/// <summary>
-		/// Function to add a directory entry to the list of directories.
-		/// </summary>
-		/// <param name="path">Path to the directory entry.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the path parameter is an empty string.
-		/// <para>-or-</para><para>The directory already exists.</para>
-		/// <para>-or-</para><para>The directory path is not valid.</para></exception>
-		/// <returns>A new virtual directory entry.</returns>
-		private GorgonFileSystemDirectory AddDirectoryEntry(string path)
+		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories"/>
+		internal IEnumerable<VirtualDirectory> InternalFindDirectories(string path, string directoryMask, bool recursive)
 		{
 			if (path == null)
 			{
@@ -391,152 +422,41 @@ namespace Gorgon.IO
 				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
 			}
 
-			path = path.FormatDirectory('/');
-
-			if (!path.StartsWith("/"))
+			VirtualDirectory startDirectory = InternalGetDirectory(path);
+			if (startDirectory == null)
 			{
-				path = "/" + path;
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
 			}
 
-			if (path == "/")
-			{
-				throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, "/"), nameof(path));
-			}
-
-			string[] directories = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-
-			if (directories.Length == 0)
-			{
-				throw new ArgumentException(string.Format(Resources.GORFS_PATH_INVALID, path), nameof(path));
-			}
-
-			GorgonFileSystemDirectory directory = RootDirectory;
-			foreach (string item in directories)
-			{
-                if (directory.Files.Contains(item))
-                {
-					throw new ArgumentException(string.Format(Resources.GORFS_FILE_EXISTS, item), nameof(path));
-                }
-
-				if (directory.Directories.Contains(item))
-				{
-					directory = directory.Directories[item];
-				}
-				else
-				{
-					var newDirectory = new GorgonFileSystemDirectory(this, item, directory);
-					((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Directories).Add(newDirectory);
-					directory = newDirectory;
-				}
-			}
-
-			return directory;
+			return !recursive
+				       ? (string.Equals(directoryMask, "*", StringComparison.OrdinalIgnoreCase)
+					          ? startDirectory.Directories.InternalEnumerable()
+					          : startDirectory.Directories.InternalEnumerable()
+					                          .Where(item => IsPatternMatch(item, directoryMask)))
+				       : FlattenDirectoryHierarchy(startDirectory, directoryMask);
 		}
 
-		/// <summary>
-		/// Function to add a file entry to the list of files.
-		/// </summary>
-		/// <param name="provider">Provider to use.</param>
-		/// <param name="fileInfo">Information about the physical file.</param>
-		/// <param name="mountPoint">The mount point that holds the file.</param>
-		/// <returns>A new file system entry.</returns>
-		private GorgonFileSystemFileEntry AddFileEntry(GorgonFileSystemProvider provider, IGorgonPhysicalFileInfo fileInfo, string mountPoint)
-		{
-		    string directoryName = Path.GetDirectoryName(fileInfo.VirtualPath).FormatDirectory('/');
-            
-		    if (!directoryName.StartsWith("/"))
-		    {
-		        directoryName += "/";
-		    }
-
-		    GorgonFileSystemDirectory directory = GetDirectory(directoryName);
-
-		    if (directory == null)
-		    {
-		        throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName), nameof(fileInfo));
-		    }
-
-		    if (directory.Directories.Contains(fileInfo.Name))
-            {
-                throw new ArgumentException(string.Format(Resources.GORFS_DIRECTORY_EXISTS, fileInfo.Name));
-			}
-
-			// Create the entry.
-			var result = new GorgonFileSystemFileEntry(provider, directory, fileInfo, mountPoint);
-
-            // If the file exists, then override it, otherwise it'll just be added.
-			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files)[fileInfo.Name] = result;
-
-			return result;
-		}
+		/// <inheritdoc/>
+		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string path, string directoryMask, bool recursive = true) => InternalFindDirectories(path, directoryMask, recursive);
 
 		/// <summary>
-		/// Function to find all the directories specified in the directory mask.
+		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
 		/// </summary>
-		/// <param name="path">Path to the directory to start searching in.</param>
-		/// <param name="directoryMask">The directory name or mask to search for.</param>
-		/// <param name="recursive"><b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directoryMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="directoryMask"/> or the path parameter is a zero length string.</exception>
-		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> was not found.</exception>
-		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
-		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
+		/// <param name="directoryMask"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
+		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <remarks>
+		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
 		/// </remarks>
-		public IReadOnlyList<GorgonFileSystemDirectory> FindDirectories(string path, string directoryMask, bool recursive)
-		{
-		    if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string directoryMask, bool recursive = true) => InternalFindDirectories("/", directoryMask, recursive);
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
-            }
+		/// <inheritdoc/>
+		public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
 
-			GorgonFileSystemDirectory startDirectory = GetDirectory(path);
-		    if (startDirectory == null)
-		    {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
-		    }
-
-		    var entries = new List<GorgonFileSystemDirectory>();
-			SearchDirectories(startDirectory, entries, recursive, directoryMask);
-
-			return entries;
-		}
-
-		/// <summary>
-		/// Function to find all the directories specified in the directory mask.
-		/// </summary>
-		/// <param name="directoryMask">The directory name or mask to search for.</param>
-		/// <param name="recursive"><b>true</b> to search all child directories, <b>false</b> to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemDirectory">GorgonFileSystemDirectory</see> objects.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="directoryMask"/> parameter is a zero length string.</exception>
-		/// <remarks>This method will accept file name masks like directory*, directory??1 and directory*a* when searching.
-		/// <para>Please note that the <paramref name="directoryMask"/> is not a path.  It is the name (or mask of the name) of the directory we wish to find.  Specifying something like /MyDir/ThisDir/C*w/ will fail.</para>
-		/// </remarks>
-		public IReadOnlyList<GorgonFileSystemDirectory> FindDirectories(string directoryMask, bool recursive)
-		{
-			return FindDirectories("/", directoryMask, recursive);
-		}
-
-		/// <summary>
-		/// Function to find all the files specified in the file mask.
-		/// </summary>
-		/// <param name="path">Path to start searching in.</param>
-		/// <param name="fileMask">The file name or mask to search for.</param>
-		/// <param name="recursive"><b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="fileMask"/> or the <paramref name="path"/> is a zero length string.</exception>
-		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> parameter was not found.</exception>
-		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
-		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
-		/// </remarks>
-		public IReadOnlyList<GorgonFileSystemFileEntry> FindFiles(string path, string fileMask, bool recursive)
+		/// <inheritdoc cref="IGorgonFileSystem.FindFiles"/>
+		internal IEnumerable<VirtualFile> InternalFindFiles(string path, string fileMask, bool recursive)
 		{
             if (path == null)
             {
@@ -548,74 +468,63 @@ namespace Gorgon.IO
                 throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
             }
 
-			GorgonFileSystemDirectory start = GetDirectory(path);
+			VirtualDirectory start = InternalGetDirectory(path);
 
 		    if (start == null)
 		    {
                 throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
 		    }
 
-		    var entries = new List<GorgonFileSystemFileEntry>();
-			SearchFiles(start, entries, recursive, fileMask);
-
-			return entries;
+			return !recursive
+				       ? (string.Equals(fileMask, "*", StringComparison.OrdinalIgnoreCase)
+					          ? start.Files.InternalEnumerable()
+					          : start.Files.InternalEnumerable().Where(item => IsPatternMatch(item, fileMask)))
+				       : FlattenFileHierarchy(start, fileMask);
 		}
 
 		/// <summary>
-		/// Function to find all the files specified in the file mask.
+		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
 		/// </summary>
-		/// <param name="fileMask">The file name or mask to search for.</param>
-		/// <param name="recursive"><b>true</b> to search all directories, <b>false</b> to search only the immediate directory.</param>
-		/// <returns>An enumerable object containing <see cref="Gorgon.IO.GorgonFileSystemFileEntry">GorgonFileSystemFileEntry</see> objects.</returns>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileMask"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileMask"/> is a zero length string.</exception>
-		/// <remarks>This method will accept file name masks like file*, file??1 and file*a* when searching.
-		/// <para>Please note that the <paramref name="fileMask"/> is not a path.  It is the name (or mask of the name) of the file we wish to find.  Specifying something like /MyDir/ThisDir/C*w.ext will fail.</para>
+		/// <param name="fileMask"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
+		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <remarks>
+		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
 		/// </remarks>
-		public IReadOnlyList<GorgonFileSystemFileEntry> FindFiles(string fileMask, bool recursive)
+		public IEnumerable<IGorgonVirtualFile> FindFiles(string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
+
+		/// <inheritdoc cref="IGorgonFileSystem.GetFile"/>
+		internal VirtualFile InternalGetFile(string path)
 		{
-			return FindFiles("/", fileMask, recursive);
-		}
+			if (path == null)
+			{
+				throw new ArgumentNullException(nameof(path));
+			}
 
-		/// <summary>
-		/// Function to retrieve a file from the file system.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		/// <returns>The file requested or NULL (<i>Nothing</i> in VB.Net) if the file was not found.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when there is no file name in the path.</para>
-		/// </exception>
-		public GorgonFileSystemFileEntry GetFile(string path)
-		{
-		    if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+			if (string.IsNullOrWhiteSpace(path))
+			{
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
+			}
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
-            }
+			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+			{
+				path = "/" + path;
+			}
 
-		    if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-		    {
-		        path = "/" + path;
-		    }
-
-            // Get path parts.
-		    string directory = Path.GetDirectoryName(path).FormatDirectory('/');
+			// Get path parts.
+			string directory = Path.GetDirectoryName(path).FormatDirectory('/');
 			string filename = Path.GetFileName(path).FormatFileName();
 
-            // Check for file name.
-		    if (string.IsNullOrWhiteSpace(filename))
-		    {
-		        throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path), nameof(path));
-		    }
+			// Check for file name.
+			if (string.IsNullOrWhiteSpace(filename))
+			{
+				throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path), nameof(path));
+			}
 
-            // Start search.
-		    GorgonFileSystemDirectory search = GetDirectory(directory);
+			// Start search.
+			VirtualDirectory search = InternalGetDirectory(directory);
 
 			if (search == null)
 			{
@@ -625,636 +534,132 @@ namespace Gorgon.IO
 			return search.Files.Contains(filename) ? search.Files[filename] : null;
 		}
 
-		/// <summary>
-		/// Function to retrieve a directory from the provider.
-		/// </summary>
-		/// <param name="path">Path to the directory to retrieve.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <returns>The file system directory if found, NULL (<i>Nothing</i> in VB.Net) if not.</returns>
-		public GorgonFileSystemDirectory GetDirectory(string path)
-		{
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+		/// <inheritdoc/>
+		public IGorgonVirtualFile GetFile(string path) => InternalGetFile(path);
 
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, path);
-            }
+		/// <inheritdoc cref="IGorgonFileSystem.GetDirectory"/>
+		internal VirtualDirectory InternalGetDirectory(string path)
+		{
+			if (path == null)
+			{
+				throw new ArgumentNullException(nameof(path));
+			}
+
+			if (string.IsNullOrWhiteSpace(path))
+			{
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, path);
+			}
 
 			path = path.FormatDirectory('/');
 
-		    if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-		    {
-		        path = "/" + path;
-		    }
+			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+			{
+				path = "/" + path;
+			}
 
-            // Optimization to deal with the root path.
-		    if (path == "/")
-		    {
-		        return RootDirectory;
-		    }
+			// Optimization to deal with the root path.
+			if (path == "/")
+			{
+				return _rootDirectory;
+			}
 
-		    string[] directories = path.Split(new[]
-		        {
-		            '/'
-		        }, StringSplitOptions.RemoveEmptyEntries);
+			string[] directories = path.Split(new[]
+				{
+					'/'
+				}, StringSplitOptions.RemoveEmptyEntries);
 
-		    if (directories.Length == 0)
-		    {
-		        return null;
-		    }
+			if (directories.Length == 0)
+			{
+				return null;
+			}
 
-		    GorgonFileSystemDirectory directory = RootDirectory;
+			VirtualDirectory directory = _rootDirectory;
 
 			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < directories.Length; i++)
 			{
-                // Search our child directories.
-			    if (directory.Directories.Contains(directories[i]))
-			    {
-			        directory = directory.Directories[directories[i]];
-			    }
-			    else
-			    {
-                    // If we couldn't find this path part, then abort.
-			        return null;
-			    }
+				// Search our child directories.
+				if (directory.Directories.Contains(directories[i]))
+				{
+					directory = directory.Directories[directories[i]];
+				}
+				else
+				{
+					// If we couldn't find this path part, then abort.
+					return null;
+				}
 			}
 
 			return directory;
 		}
 
-		/// <summary>
-		/// Function to read a file from the file system.
-		/// </summary>
-		/// <param name="path">Path to the file to read.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found.</exception>
-		/// <returns>An array of bytes containing the data in the file.</returns>
-		public byte[] ReadFile(string path)
-		{
-			GorgonFileSystemFileEntry file = GetFile(path);
-			
-		    if (file == null)
-		    {
-			    throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, path));
-		    }
+		/// <inheritdoc/>
+		public IGorgonVirtualDirectory GetDirectory(string path) => InternalGetDirectory(path);
 
-			return file.Size == 0 ? new byte[] {} : ReadFile(file);
-		}
-
-		/// <summary>
-		/// Function to read a file from the file system.
-		/// </summary>
-		/// <param name="file">The file to read.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
-		/// <returns>An array of bytes containing the data in the file.</returns>
-		public byte[] ReadFile(GorgonFileSystemFileEntry file)
-		{
-			byte[] data;
-
-			if (file == null)
-			{
-				throw new ArgumentNullException(nameof(file));
-			}
-
-			using (Stream stream = OpenStream(file, false))
-			{
-				data = new byte[stream.Length];
-
-				if (data.Length > 0)
-				{
-					stream.Read(data, 0, data.Length);
-				}
-			}
-
-			return data;
-		}
-
-		/// <summary>
-		/// Function to read a write a file to the file system.
-		/// </summary>
-		/// <param name="file">The file to write.</param>
-		/// <param name="data">Data to write.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-		/// <remarks>To create a 0 byte file, pass an empty array into the data parameter.</remarks>
-		public void WriteFile(GorgonFileSystemFileEntry file, byte[] data)
-		{
-            if (file == null)
-			{
-				throw new ArgumentNullException(nameof(file));
-			}
-
-			if (data == null)
-			{
-				throw new ArgumentNullException(nameof(data));
-			}
-
-			lock(_syncLock)
-			{
-				// Write the file out to the write location.
-				using(Stream stream = OpenStream(file, true))
-				{
-					stream.Write(data, 0, data.Length);
-				}
-
-				var fileInfo = new FileInfo(file.PhysicalFile.FullPath);
-				file.Update(new PhysicalFileInfo(fileInfo, file.FullPath), WriteLocation, _defaultProvider);
-			}
-		}
-
-		/// <summary>
-		/// Function to read a write a file to the file system.
-		/// </summary>
-		/// <param name="path">Path to the file to write.</param>
-		/// <param name="data">Data to write.</param>
-        /// <returns>The file system file entry that was updated or created.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="data"/> parameter is NULL and the file exists.  See remarks.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
-		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para></exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-        /// <remarks>Passing NULL (<i>Nothing</i> in VB.Net) to the <paramref name="data"/> parameter will only add a file entry (if it does not already exist) to the virtual directory, but will not create 
-        /// it on the actual physical file system.  To create a 0 byte file, pass an empty array into the data parameter.</remarks>
-		public GorgonFileSystemFileEntry WriteFile(string path, byte[] data)
-		{
-			lock(_syncLock)
-			{
-				GorgonFileSystemFileEntry file = GetFile(path) ??
-				                                 AddFileEntry(_defaultProvider, new PhysicalFileInfo(GetWritePath(path), DateTime.Now, 0, path), WriteLocation);
-
-				if ((data != null) && (file != null))
-				{
-					WriteFile(file, data);
-				}
-
-				return file;
-			}
-		}
-
-		/// <summary>
-		/// Function to open a file stream for reading/writing.
-		/// </summary>
-		/// <param name="file">The file to read or write.</param>
-		/// <param name="writeable"><b>true</b> to write to this file, <b>false</b> to open read-only.</param>
-		/// <remarks>Some file system providers cannot write, and will throw an exception if this is the case.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
-		public Stream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
-		{
-			Stream stream;
-
-			if (file == null)
-			{
-				throw new ArgumentNullException(nameof(file));
-			}
-
-            if (file.FileSystem != this)
-            {
-                throw new ArgumentException(Resources.GORFS_FILE_FILESYSTEM_MISMATCH);
-            }
-
-			// If the file doesn't exist, then we need to create it if we're writing.
-			if (writeable)
-			{
-				lock(_syncLock)
-				{
-					string writePath = GetWritePath(file.FullPath);
-					
-					var info = new FileInfo(writePath);
-					stream = new GorgonFileSystemStream(file, File.Open(writePath, FileMode.Create, FileAccess.Write, FileShare.None));
-					file.Update(new PhysicalFileInfo(info, file.FullPath), WriteLocation, _defaultProvider);
-				}
-			}
-			else
-			{
-				stream = file.Provider.OpenFileStream(file);
-			}
-
-			return stream;
-		}
-
-		/// <summary>
-		/// Function to open a file stream for reading/writing.
-		/// </summary>
-		/// <param name="path">Path to the file to read or write.</param>
-		/// <param name="writeable"><b>true</b> to write to this file, <b>false</b> to open read-only.</param>
-		/// <remarks>Some file system providers cannot write, and will throw an exception if this is the case.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
-		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para>
-		/// </exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="writeable"/> parameter is <b>true</b> and <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found and <paramref name="writeable"/> is <b>false</b>.</exception>
-		/// <returns>The open <see cref="Gorgon.IO.GorgonFileSystemStream"/> file stream object.</returns>
-		public Stream OpenStream(string path, bool writeable)
-		{
-			GorgonFileSystemFileEntry file = GetFile(path);
-            
-            // If the file doesn't exist, then we need to create it if we're writing.
-            if (writeable)
-		    {
-			    lock(_syncLock)
-			    {
-				    return OpenStream(file ?? AddFileEntry(_defaultProvider, new PhysicalFileInfo(GetWritePath(path), DateTime.Now, 0, path), WriteLocation), true);
-			    }
-		    }
-			
-			if (file == null)
-			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, path));
-			}
-
-			return OpenStream(file, false);
-		}
-
-		/// <summary>
-		/// Function to create a directory.
-		/// </summary>
-		/// <param name="path">Path to the new directory.</param>
-		/// <returns>The new directory.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <remarks>This method will create a directory in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
-		/// </remarks>
-		public GorgonFileSystemDirectory CreateDirectory(string path)
-		{
-		    if (path == null)
-		    {
-		        throw new ArgumentNullException(nameof(path));
-		    }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
-            }
-
-		    lock(_syncLock)
-		    {
-		        GorgonFileSystemDirectory directory = GetDirectory(path) ?? AddDirectoryEntry(path);
-
-			    if (string.IsNullOrWhiteSpace(WriteLocation))
-			    {
-				    return directory;
-			    }
-
-			    string newPath = GetWritePath(directory.FullPath);
-
-			    if (!Directory.Exists(newPath))
-			    {
-				    Directory.CreateDirectory(newPath);
-			    }
-
-			    return directory;
-		    }
-		}
-
-
-		/// <summary>
-		/// Function to delete a file.
-		/// </summary>
-		/// <param name="file">The file to delete.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="file"/> belongs to another file system.</exception>
-		/// <remarks>This method will remove a file in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
-		/// </remarks>
-		public void DeleteFile(GorgonFileSystemFileEntry file)
-		{
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file));
-            }
-
-            if (file.FileSystem != this)
-            {
-                throw new ArgumentException(Resources.GORFS_FILE_FILESYSTEM_MISMATCH);
-            }
-
-            ((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)file.Directory.Files).Remove(file);
-
-            if (string.IsNullOrWhiteSpace(WriteLocation))
-            {
-                return;
-            }
-
-            string newPath = GetWritePath(file.FullPath);
-
-            if (File.Exists(newPath))
-            {
-                File.Delete(newPath);
-            }
-        }
-
-
-		/// <summary>
-		/// Function to delete a file.
-		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in the <paramref name="path"/> parameter was not found.</exception>
-		/// <remarks>This method will remove a file in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
-		/// </remarks>
-		public void DeleteFile(string path)
-		{
-		    if (path == null)
-		    {
-		        throw new ArgumentNullException(nameof(path));
-		    }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
-            }
-
-			GorgonFileSystemFileEntry file = GetFile(path);
-
-            if (file == null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, path));
-            }
-
-            DeleteFile(file);
-		}
-
-	    /// <summary>
-	    /// Function to delete a directory.
-	    /// </summary>
-	    /// <param name="directory">The directory to delete.</param>
-	    /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="directory"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-	    /// <exception cref="System.ArgumentException">Thrown if the <paramref name="directory"/> belongs to another file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the <paramref name="directory"/> was not found.</exception>
-        /// <remarks>This method will remove a directory in the virtual file system and in the writable area of the physical file system.
-	    /// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
-	    /// </remarks>
-	    public void DeleteDirectory(GorgonFileSystemDirectory directory)
-	    {
-	        string newPath = null;
-
-            if (directory == null)
-            {
-                throw new ArgumentNullException(nameof(directory));
-            }
-
-            if (directory.FileSystem != this)
-            {
-                throw new ArgumentException(Resources.GORFS_DIR_FILESYSTEM_MISMATCH);
-            }
-
-	        lock(_syncLock)
-	        {
-	            // If we specify the root, then remove everything.
-	            if (directory.Name == "/")
-	            {
-					((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Directories).Clear();
-	                ((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)directory.Files).Clear();
-
-	                if (!string.IsNullOrWhiteSpace(WriteLocation))
-	                {
-	                    newPath = WriteLocation;
-	                }
-	            }
-	            else
-	            {
-	                if (!string.IsNullOrWhiteSpace(WriteLocation))
-	                {
-	                    newPath = GetWritePath(directory.FullPath);
-	                }
-
-	                ((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)directory.Parent.Directories).Remove(directory);
-	            }
-
-	            if ((string.IsNullOrWhiteSpace(newPath)) || (!Directory.Exists(newPath)))
-	            {
-	                return;
-	            }
-
-	            var dirInfo = new DirectoryInfo(newPath);
-
-	            // Remove from the write area if the directory exists.
-	            if (directory.Name == "/")
-	            {
-	                var directories = dirInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly);
-	                var files = dirInfo.EnumerateFileSystemInfos("*", SearchOption.TopDirectoryOnly);
-
-	                foreach (var directoryPath in directories)
-	                {
-	                    directoryPath.Delete(true);
-	                }
-
-	                foreach (var file in files)
-	                {
-	                    file.Delete();
-	                }
-	            }
-	            else
-	            {
-	                dirInfo.Delete(true);
-	            }
-	        }
-	    }
-
-	    /// <summary>
-		/// Function to delete a directory.
-		/// </summary>
-		/// <param name="path">Path to the directory.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory specified in <paramref name="path"/> was not found.</exception>
-		/// <remarks>This method will remove a directory in the virtual file system and in the writable area of the physical file system.
-		/// <para>The writeable area is specified by the <see cref="P:Gorgon.IO.GorgonFileSystem.WriteLocation">WriteLocation</see> property.</para>
-		/// </remarks>
-		public void DeleteDirectory(string path)
-		{
-	        if (path == null)
-		    {
-                throw new ArgumentNullException(nameof(path));
-		    }
-
-            if (string.IsNullOrWhiteSpace(path))
-            {
-                throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(path));
-            }
-
-	        lock(_syncLock)
-	        {
-	            GorgonFileSystemDirectory directory = GetDirectory(path);
-
-	            if (directory == null)
-	            {
-	                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
-	            }
-
-	            DeleteDirectory(directory);
-	        }
-		}
-
-		/// <summary>
-		/// Function to clear all the mounted directories and files.
-		/// </summary>
-		/// <remarks>
-		/// This will remove all the files and directories from the virtual file system and will clear the write directory.
-		/// <para>Note that this method will not delete any files or directories from the physical file system.</para></remarks>
-		public void Clear()
-		{
-			_mountListChanged = true;
-			_mountPoints.Clear();
-		    _writeLocation = string.Empty;
-			((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)RootDirectory.Directories).Clear();
-			((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)RootDirectory.Files).Clear();
-		}
-
-		/// <summary>
-		/// Function to refresh all the files and directories in the file system.
-		/// </summary>
+		/// <inheritdoc/>
 		public void Refresh()
 		{
-            // Don't allow multiple threads to refresh this file system more than once.
-		    try
-		    {
-		        if (Interlocked.Increment(ref _refreshSemaphore) > 1)
-		        {
-		            return;
-		        }
-
-		        string writeLocation = WriteLocation;
-
-				((IGorgonNamedObjectDictionary<GorgonFileSystemDirectory>)RootDirectory.Directories).Clear();
-				((IGorgonNamedObjectDictionary<GorgonFileSystemFileEntry>)RootDirectory.Files).Clear();
-
-		        _writeLocation = string.Empty;
-
-		        // This isn't the most efficient way, but it works.
-		        // Since the directories don't track which physical location they're in
-		        // and files only track the last mounted physical location, we have no way
-		        // to selectively exclude files.  The best approach at this point is to 
-		        // just clear it all out, and start over.
-		        foreach (GorgonFileSystemMountPoint mountPoint in _mountPoints)
-		        {
-		            Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
-		        }
-
-			    if (string.IsNullOrWhiteSpace(writeLocation))
-			    {
-				    return;
-			    }
-
-			    _writeLocation = writeLocation;
-			    QueryWriteLocation();
-		    }
-		    finally
-		    {
-		        Interlocked.Decrement(ref _refreshSemaphore);
-		    }
-		}
-
-		/// <summary>
-		/// Function to unmount the mounted virtual file system directories and files pointed at by a mount point.
-		/// </summary>
-		/// <param name="mountPoint">The mount point to unmount.</param>
-		/// <exception cref="System.IO.IOException">The path was not found.</exception>
-		public void Unmount(GorgonFileSystemMountPoint mountPoint)
-		{
-			if (UnmountMountPoint(mountPoint))
+			// Don't allow multiple threads to refresh this file system more than once.
+			lock (_syncLock)
 			{
-				Refresh();
+				_rootDirectory.Directories.Clear();
+				_rootDirectory.Files.Clear();
+				_mountProviders.Clear();
+
+				// This isn't the most efficient way, but it works.
+				// Since the directories don't track which physical location they're in
+				// and files only track the last mounted physical location, we have no way
+				// to selectively exclude files.  The best approach at this point is to 
+				// just clear it all out, and start over.
+				foreach (GorgonFileSystemMountPoint mountPoint in MountPoints)
+				{
+					Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
+				}
 			}
 		}
 
-		/// <summary>
-		/// Function to unmount the mounted virtual file system directories and files pointed at the by the physical path specified and mounted into the mount location specified.
-		/// </summary>
-		/// <param name="physicalPath">Physical file system path.</param>
-		/// <param name="mountLocation">Virtual sub directory that the physical location is mounted under.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.</exception>
-		/// <exception cref="System.IO.IOException">The path was not found.</exception>
-		public void Unmount(string physicalPath, string mountLocation)
+		/// <inheritdoc/>
+		public void Unmount(GorgonFileSystemMountPoint mountPoint)
 		{
-			Unmount(new GorgonFileSystemMountPoint(physicalPath, mountLocation));
+			UnmountMountPoint(mountPoint);
 		}
 
-		/// <summary>
-		/// Function to unmount the mounted virtual file system directories and files pointed at by a physical path.
-		/// </summary>
-		/// <param name="physicalPath">The physical path to unmount.</param>
-		/// <remarks>This overload will unmount all the mounted virtual files/directories for every mount point with the specified <paramref name="physicalPath"/>.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
-        /// <exception cref="System.IO.IOException">The path was not found.</exception>
-        public void Unmount(string physicalPath)
+		/// <inheritdoc/>
+		public void Unmount(string physicalPath, string mountLocation)
 		{
-			var mountPoints =
-				_mountPoints.Where(
-					item =>
-					String.Equals(Path.GetFullPath(physicalPath), Path.GetFullPath(item.PhysicalPath),
-					               StringComparison.OrdinalIgnoreCase));
+			// Find all mount points with the physical and virtual paths supplied.
+			var mountPoints = MountPoints.Where(item =>
+			                                    string.Equals(Path.GetFullPath(physicalPath),
+			                                                  Path.GetFullPath(item.PhysicalPath),
+			                                                  StringComparison.OrdinalIgnoreCase)
+			                                    &&
+			                                    string.Equals(mountLocation.FormatDirectory('/'),
+			                                                  item.MountLocation.FormatDirectory('/'),
+			                                                  StringComparison.OrdinalIgnoreCase))
+			                             .ToArray();
+
+			foreach (GorgonFileSystemMountPoint mountPoint in mountPoints)
+			{
+				UnmountMountPoint(mountPoint);
+			}
+		}
+
+		/// <inheritdoc/>
+		public void Unmount(string physicalPath)
+		{
+			var mountPoints = MountPoints.Where(item =>
+			                                    string.Equals(Path.GetFullPath(physicalPath),
+			                                                  Path.GetFullPath(item.PhysicalPath),
+			                                                  StringComparison.OrdinalIgnoreCase))
+			                             .ToArray();
 
 			foreach (var mountPoint in mountPoints)
 			{
 				UnmountMountPoint(mountPoint);				
 			}
-
-			Refresh();
-		}		
-
-		/// <summary>
-		/// Function to mount a physical file system into the virtual file system.
-		/// </summary>
-		/// <param name="mountPoint">The mount point containing the physical path and the virtual file system location.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the physical path in the <paramref name="mountPoint"/> parameter is not valid.
-		/// <para>-or-</para><para>Thrown when the file in the mountPoint parameter cannot be read by any of the file system providers.</para>
-		/// </exception>
-		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
-		/// <remarks>
-		/// <para>
-		/// This method is used to mount the contents of a physical file system object (such as a folder, or a zip file if the appropriate provider is installed) into a virtual folder in the 
-		/// file system. All folders and files in the physical file system object will be made available under the virtual folder specified by the <see cref="GorgonFileSystemMountPoint.MountLocation"/> 
-		/// property of the <paramref name="mountPoint"/> parameter..
-		/// </para>
-		/// </remarks>
-		public void Mount(GorgonFileSystemMountPoint mountPoint)
-		{
-			Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
 		}
 
-		/// <summary>
-		/// Function to mount a physical file system into the virtual file system.
-		/// </summary>
-		/// <param name="physicalPath">Path to the directory or file that contains the files/directories to enumerate.</param>
-		/// <param name="mountPath">[Optional] Folder path to mount into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
-		/// <exception cref="System.IO.DirectoryNotFoundException">Thrown when the directory specified by <paramref name="physicalPath"/> was not found.</exception>
-        /// <exception cref="System.IO.FileNotFoundException">Thrown if a file was specified by <paramref name="physicalPath"/> and was not found.</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
-		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
-		/// <remarks>
-		/// <para>
-		/// This method is used to mount the contents of a physical file system object (such as a folder, or a zip file if the appropriate provider is installed) into a virtual folder in the 
-		/// file system. All folders and files in the physical file system object will be made available under the virtual folder specified by the <paramref name="mountPath"/> parameter.
-		/// </para>
-		/// <para>
-		/// The <paramref name="mountPath"/> parameter is optional, and if omitted, the contents of the physical file system object will be mounted into the root of the virtual file system. If the 
-		/// <paramref name="mountPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) or empty, then the mount point will be at the root.
-		/// </para>
-		/// </remarks>
+		/// <inheritdoc/>
 		public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null)
 		{
 			if (physicalPath == null)
@@ -1274,83 +679,30 @@ namespace Gorgon.IO
 
 			lock(_syncLock)
 			{
-				// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
-				if ((!string.IsNullOrWhiteSpace(WriteLocation)) &&
-				    (String.Equals(physicalPath, WriteLocation, StringComparison.OrdinalIgnoreCase)))
-				{
-					// Requery the write location if it exists.
-					QueryWriteLocation();
-
-					return new GorgonFileSystemMountPoint(physicalPath, "/");
-				}
-
 				physicalPath = Path.GetFullPath(physicalPath);
-				string fileName = Path.GetFileName(physicalPath);
-				string directory = Path.GetDirectoryName(physicalPath);
+				string fileName = Path.GetFileName(physicalPath).FormatFileName();
+				string directory = Path.GetDirectoryName(physicalPath)?.FormatDirectory(Path.DirectorySeparatorChar);
 
-				// If we have no file name, assume we're mounting a folder from the OS filesystem.
-				GorgonFileSystemMountPoint mountPoint;
-
-				if (string.IsNullOrWhiteSpace(fileName))
+				// If we have a file, then mount the file using a provider.
+				if (!string.IsNullOrWhiteSpace(fileName))
 				{
+					// If we omitted a directory, then assume we're using the current directory.
 					if (string.IsNullOrWhiteSpace(directory))
 					{
-						throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+						directory = Directory.GetCurrentDirectory().FormatDirectory(Path.DirectorySeparatorChar);
 					}
 
-					directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
-
-					// Use the default folder provider.
-					if (!Directory.Exists(directory))
-					{
-						throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directory));
-					}
-
-					GetFileSystemObjects(_defaultProvider, physicalPath, mountPath);
-
-					mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
-					if (!_mountPoints.Contains(mountPoint))
-					{
-						_mountPoints.Add(mountPoint);
-						_mountListChanged = true;
-					}
-
-					QueryWriteLocation();
-					return mountPoint;
+					return MountFile(directory + fileName, mountPath);
 				}
 
-				fileName = fileName.FormatFileName();
-				if (!string.IsNullOrWhiteSpace(directory))
+				// Ensure that our directory name is not empty or null.
+				// We can't mount that.
+				if (string.IsNullOrWhiteSpace(directory))
 				{
-					directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
+					throw new ArgumentException(string.Format(Resources.GORFS_ERR_ILLEGAL_PATH, physicalPath), nameof(physicalPath));
 				}
 
-				// Rebuild the file path.
-				fileName = directory + fileName;
-
-				if (!File.Exists(fileName))
-				{
-					throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, fileName));
-				}
-
-				GorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFile(fileName)).Value;
-
-				if (provider == null)
-				{
-					throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, fileName));
-				}
-
-				GetFileSystemObjects(provider, physicalPath, mountPath);
-
-				mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
-				if (!_mountPoints.Contains(mountPoint))
-				{
-					_mountPoints.Add(mountPoint);
-					_mountListChanged = true;
-				}
-
-				QueryWriteLocation();
-				return mountPoint;
+				return MountDirectory(physicalPath, mountPath);
 			}
 		}
 		#endregion
@@ -1402,17 +754,15 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(providers));
 			}
 
+			_mountProviders = new HashSet<GorgonFileSystemMountPoint>();
 			_log = log ?? new GorgonLogDummy();
 
-			_mountListChanged = true;
-			_mountPoints = new List<GorgonFileSystemMountPoint>();
-			_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
-			_providers = new Dictionary<string, GorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
+			DefaultProvider = new GorgonFileSystemProvider();
+			
+			_providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
 
-			RootDirectory = new GorgonFileSystemDirectory(this, "/", null);
-
-			WriteLocation = string.Empty;
-
+			_rootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
+			
 			// Get all the providers in the parameter.
 			foreach (GorgonFileSystemProvider provider in providers)
 			{

@@ -111,7 +111,6 @@ namespace Gorgon.IO.Providers
 			Name = file.Name;
 			CreateDate = file.CreationTime;
 			LastModifiedDate = file.LastWriteTime;
-			Offset = 0;
 			Length = file.Length;
 			VirtualPath = virtualPath;
 		}

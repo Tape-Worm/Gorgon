@@ -49,16 +49,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GorgonFileSystem.cs" />
-    <Compile Include="GorgonFileSystemDirectory.cs" />
-    <Compile Include="GorgonFileSystemDirectoryCollection.cs" />
-    <Compile Include="GorgonFileSystemFileEntry.cs" />
-    <Compile Include="GorgonFileSystemFileEntryCollection.cs" />
+    <Compile Include="GorgonFileSystemWriteArea.cs" />
+    <Compile Include="_Interfaces\IGorgonVirtualFile.cs" />
+    <Compile Include="_Internal\FileSystemWriteStream.cs" />
+    <Compile Include="_Internal\VirtualDirectory.cs" />
+    <Compile Include="_Internal\VirtualDirectoryCollection.cs" />
+    <Compile Include="_Internal\VirtualFile.cs" />
+    <Compile Include="_Internal\VirtualFileCollection.cs" />
     <Compile Include="GorgonFileSystemMountPoint.cs" />
+    <Compile Include="_Interfaces\IGorgonFileSystem.cs" />
+    <Compile Include="_Interfaces\IGorgonFileSystemWriteArea.cs" />
+    <Compile Include="_Interfaces\IGorgonVirtualDirectory.cs" />
     <Compile Include="Providers\GorgonFileSystemProvider.cs" />
     <Compile Include="Providers\GorgonPhysicalFileSystemData.cs" />
     <Compile Include="Providers\_Interfaces\IGorgonFileSystemProvider.cs" />
     <Compile Include="Providers\_Interfaces\IGorgonPhysicalFileInfo.cs" />
-    <Compile Include="Providers\_Interfaces\IGorgonPhysicalFileSystemData.cs" />
     <Compile Include="_Osboleted\GorgonFileSystemProviderPlugIn.cs" />
     <Compile Include="Providers\GorgonFileSystemProviderFactory.cs" />
     <Compile Include="GorgonFileSystemStream.cs" />
@@ -86,9 +91,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="_Interfaces\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

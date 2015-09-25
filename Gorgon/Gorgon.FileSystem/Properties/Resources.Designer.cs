@@ -79,15 +79,6 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A directory with the path &apos;{0}&apos; already exists..
-        /// </summary>
-        internal static string GORFS_DIRECTORY_EXISTS {
-            get {
-                return ResourceManager.GetString("GORFS_DIRECTORY_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist..
         /// </summary>
         internal static string GORFS_DIRECTORY_NOT_FOUND {
@@ -97,11 +88,38 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A directory with the path &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string GORFS_ERR_DIRECTORY_EXISTS {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_DIRECTORY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file entry &apos;{0}&apos; already belongs to the directory &apos;{1}&apos;..
         /// </summary>
         internal static string GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY {
             get {
                 return ResourceManager.GetString("GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file system is read only..
+        /// </summary>
+        internal static string GORFS_ERR_FILESYSTEM_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_FILESYSTEM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not legal..
+        /// </summary>
+        internal static string GORFS_ERR_ILLEGAL_PATH {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_ILLEGAL_PATH", resourceCulture);
             }
         }
         

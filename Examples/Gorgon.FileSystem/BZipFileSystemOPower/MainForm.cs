@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -180,6 +181,30 @@ namespace Gorgon.Examples
 		    }
 	    }
 
+		/// <summary>
+		/// Function to load a sprite from the file system.
+		/// </summary>
+		/// <param name="path">Path to the file to load.</param>
+		/// <returns>A byte array containing the data for a file from the file system.</returns>
+	    private byte[] LoadFile(string path)
+		{
+			IGorgonVirtualFile file = _fileSystem.GetFile(path);
+
+			if (file == null)
+			{
+				throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
+			}
+			
+			using (Stream stream = file.OpenStream())
+			{
+				byte[] result = new byte[stream.Length];
+
+				stream.Read(result, 0, result.Length);
+
+				return result;
+			}
+		}
+
         /// <summary>
         /// Function called to initialize the application.
         /// </summary>
@@ -225,20 +250,20 @@ namespace Gorgon.Examples
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
 
 			// Get the sprite image.            
-			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("/Images/0_HardVacuum.png", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", LoadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
             // Get the sprites.
             // The sprites in the file system are from version 1.0 of Gorgon.
             // This version is backwards compatible and can load any version
             // of the sprites produced by older versions of Gorgon.
             _sprites = new GorgonSprite[3];
-            _sprites[0] = _2D.Renderables.FromMemory<GorgonSprite>("Base", _fileSystem.ReadFile("/Sprites/base.gorSprite"));
-            _sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", _fileSystem.ReadFile("/Sprites/Mother.gorSprite"));
-            _sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
+            _sprites[0] = _2D.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
+            _sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
+            _sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
 
             // Get poetry.            
             _textPosition = new Vector2(0, ClientSize.Height + _textFont.LineHeight);
-            _poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);
+            _poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(LoadFile("/SomeText.txt")), Color.Black);
             _poetry.Position = _textPosition;
 
             // Set up help text.

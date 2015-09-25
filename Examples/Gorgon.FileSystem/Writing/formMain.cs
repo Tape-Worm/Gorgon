@@ -45,7 +45,7 @@ namespace Gorgon.Examples
 	/// able to write data into it.  The problem is that the file system data could be on read only media like a DVD or CD.  Gorgon's 
 	/// virtual file system is based on PhysicsFS (http://icculus.org/physfs/), it uses the concept of a write directory.
 	/// This means when you update a file or add one, it will get rerouted to the write directory.  The write directory MUST be a 
-	/// physical directory on your harddrive and must be able to be written into.
+	/// physical directory on your hard drive and must be able to be written into.
 	/// 
 	/// Setting up a write directory is fairly simple:  Just set the WriteLocation property on your file system object.  Once this is
 	/// done the directory is automatically mounted into the file system.  Once a write location is set, the files in it will take precedence
@@ -60,6 +60,8 @@ namespace Gorgon.Examples
 		#region Variables.
 		// Our file system.
 		private GorgonFileSystem _fileSystem;
+		// The file system writer.
+		private GorgonFileSystemWriteArea _writer;
 		// Write path.
 		private string _writePath = string.Empty;
 		// Original text.
@@ -94,14 +96,17 @@ namespace Gorgon.Examples
 
 				if (string.IsNullOrEmpty(textDisplay.Text))
 				{
-					_fileSystem.DeleteFile("/SomeText.txt");
+					_writer.DeleteFile("/SomeText.txt");
 					LoadText();
 					return;
 				}
 
-				byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
-				_fileSystem.WriteFile("/SomeText.txt", data);
-				_changedText = textDisplay.Text;
+				using (Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create))
+				{
+					 byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
+					stream.Write(data, 0, data.Length);
+					_changedText = textDisplay.Text;
+				}
 			}
 			catch (Exception ex)
 			{
@@ -189,21 +194,40 @@ namespace Gorgon.Examples
 		/// </summary>
 		private void LoadText()
 		{
-		    _fileSystem.Clear();
-			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
+			string physicalPath = Program.GetResourcePath(@"FolderSystem\");
+
+			// Unload the mounted files.
+			_writer.Unmount();
+            _fileSystem.Unmount(physicalPath);
+
+			_fileSystem.Mount(physicalPath);
 
 			// Load the original before we mount the write directory.
-			byte[] textData = _fileSystem.ReadFile("/SomeText.txt");
-			_originalText = Encoding.UTF8.GetString(textData);
+			IGorgonVirtualFile file = _fileSystem.GetFile("/SomeText.txt");
+
+			using (Stream stream = file.OpenStream())
+			{
+				byte[] textData = new byte[stream.Length];
+
+				stream.Read(textData, 0, textData.Length);
+				_originalText = Encoding.UTF8.GetString(textData);
+			}
 
 			// Set the write location to the users app data folder.
-			_fileSystem.WriteLocation = _writePath;
+			_writer.Mount();
 
-			// Load the modified version.			
-			textData = _fileSystem.ReadFile("/SomeText.txt");
-			_changedText = Encoding.UTF8.GetString(textData);
+			// Load the modified version (if it exists, if it doesn't, the original will be loaded instead).
+			file = _fileSystem.GetFile("/SomeText.txt");
 
-			textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
+			using (Stream stream = file.OpenStream())
+			{
+				byte[] textData = new byte[stream.Length];
+
+				stream.Read(textData, 0, textData.Length);
+				_changedText = Encoding.UTF8.GetString(textData);
+
+				textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
+			}
 		}
 
 		/// <summary>
@@ -222,6 +246,7 @@ namespace Gorgon.Examples
 
 				// Create our virtual file system.
 				_fileSystem = new GorgonFileSystem(GorgonApplication.Log);
+				_writer = new GorgonFileSystemWriteArea(_fileSystem, _writePath);
 
 				LoadText();
 

@@ -26,7 +26,6 @@
 
 using System;
 using System.IO;
-using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -54,7 +53,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the file being read/written.
 		/// </summary>
-		protected GorgonFileSystemFileEntry FileEntry
+		protected IGorgonVirtualFile FileEntry
 		{
 			get;
 		}
@@ -135,10 +134,10 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
-		/// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out.
+		/// Gets or sets a value, in milliseconds, that determines how long the stream will attempt to write before timing out.
 		/// </summary>
 		/// <value></value>
-		/// <returns>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</returns>
+		/// <returns>A value, in milliseconds, that determines how long the stream will attempt to write before timing out.</returns>
 		/// <exception cref="T:System.InvalidOperationException">The <see cref="P:System.IO.Stream.WriteTimeout"/> method always throws an <see cref="T:System.InvalidOperationException"/>. </exception>
 		public override int WriteTimeout
 		{
@@ -155,30 +154,6 @@ namespace Gorgon.IO
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the file information for a file.
-		/// </summary>
-		/// <param name="fileInfo">The information about the physical file.</param>
-		/// <param name="provider">A new file system provider for the file.</param>
-		protected void UpdateFileInfo(IGorgonPhysicalFileInfo fileInfo, GorgonFileSystemProvider provider)
-		{
-			FileEntry?.Update(fileInfo, null, provider);
-		}
-
-		/// <summary>
-		/// Function to update the file entry associated with this stream.
-		/// </summary>
-		protected virtual void OnUpdateFileEntry()
-		{
-			if ((FileEntry == null) || (!File.Exists(FileEntry.PhysicalFile.FullPath)))
-			{
-				return;
-			}
-
-			var info = new FileInfo(FileEntry.PhysicalFile.FullPath);
-			UpdateFileInfo(new PhysicalFileInfo(info, FileEntry.FullPath), FileEntry.Provider);
-		}
-
-		/// <summary>
 		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
 		/// </summary>
 		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -192,8 +167,6 @@ namespace Gorgon.IO
 					{
 						_baseStream.Dispose();
 					}
-
-					OnUpdateFileEntry();
 				}
 				_baseStream = null;
 			}
@@ -383,7 +356,7 @@ namespace Gorgon.IO
 		/// <param name="file">File being read/written.</param>
 		/// <param name="baseStream">The underlying stream to use for this stream.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		protected internal GorgonFileSystemStream(GorgonFileSystemFileEntry file, Stream baseStream)
+		protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
 		{
 			if (file == null)
 			{

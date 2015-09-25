@@ -158,7 +158,7 @@ namespace Gorgon.IO.Zip
 		/// </summary>
 		/// <param name="file">File in the zip file to read.</param>
 		/// <param name="stream">Stream to the zip file.</param>
-		private void GetZipEntryStream(GorgonFileSystemFileEntry file, Stream stream)
+		private void GetZipEntryStream(IGorgonVirtualFile file, Stream stream)
 		{
 			ZipEntry entry;
 			
@@ -192,14 +192,6 @@ namespace Gorgon.IO.Zip
 			_zipStream?.Dispose();
 
 			throw new FileNotFoundException(string.Format(Resources.GORFS_ZIP_ERR_FILE_NOT_FOUND, file.PhysicalFile.FullPath));
-		}
-
-		/// <summary>
-		/// Function to update the file entry associated with this stream.
-		/// </summary>
-		protected override void OnUpdateFileEntry()
-		{
-			// Do nothing since we can't alter these files.
 		}
 
 		/// <summary>
@@ -411,7 +403,7 @@ namespace Gorgon.IO.Zip
 		/// </summary>
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
-		internal ZipFileStream(GorgonFileSystemFileEntry file, Stream stream)
+		internal ZipFileStream(IGorgonVirtualFile file, Stream stream)
 			: base(file, stream)
 		{
 			GetZipEntryStream(file, stream);

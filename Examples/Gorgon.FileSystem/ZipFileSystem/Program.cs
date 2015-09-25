@@ -248,7 +248,7 @@ namespace Gorgon.Examples
 
 			    for (int i = -1; i < directoryList.Length; i++)
 			    {
-				    GorgonFileSystemDirectory directory = _fileSystem.RootDirectory;
+				    IGorgonVirtualDirectory directory = _fileSystem.RootDirectory;
 
 				    // Go into the sub directories under root.
 				    if (i > -1)

@@ -94,7 +94,7 @@ namespace Gorgon.IO.Providers
 		/// Property to return the virtual path for the file.
 		/// </summary>
 		/// <remarks>
-		/// This is the path to the file within a <see cref="GorgonFileSystem"/>. For example, the file <c>c:\Mount\MyFile.txt</c> would be mapped to <c>/Mount/MyFile.txt</c>.
+		/// This is the path to the file within a <see cref="IGorgonFileSystem"/>. For example, the file <c>c:\Mount\MyFile.txt</c> would be mapped to <c>/Mount/MyFile.txt</c>.
 		/// </remarks>
 		string VirtualPath
 		{

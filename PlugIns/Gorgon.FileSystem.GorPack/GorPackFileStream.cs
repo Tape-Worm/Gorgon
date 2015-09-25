@@ -155,14 +155,6 @@ namespace Gorgon.IO.GorPack
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the file entry associated with this stream.
-		/// </summary>
-		protected override void OnUpdateFileEntry()
-		{
-			// Do nothing since we can't alter these files.
-		}
-
-		/// <summary>
 		/// Releases the unmanaged resources used by the <see cref="T:System.IO.Stream"/> and optionally releases the managed resources.
 		/// </summary>
 		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -374,7 +366,7 @@ namespace Gorgon.IO.GorPack
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
 		/// <param name="compressedSize">Compression size for the file.</param>
-		internal GorPackFileStream(GorgonFileSystemFileEntry file, Stream stream, long? compressedSize)
+		internal GorPackFileStream(IGorgonVirtualFile file, Stream stream, long? compressedSize)
 			: base(file, stream)
 		{
 			stream.Position = file.PhysicalFile.Offset;		// Set the offset here.

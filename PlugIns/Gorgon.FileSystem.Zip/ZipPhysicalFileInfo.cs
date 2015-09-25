@@ -92,7 +92,7 @@ namespace Gorgon.IO.Zip
 		/// <param name="entry">The entry.</param>
 		/// <param name="physicalLocation">The physical location of the zip file.</param>
 		/// <param name="mountPoint">Mount point path.</param>
-		public ZipPhysicalFileInfo(ZipEntry entry, string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		public ZipPhysicalFileInfo(ZipEntry entry, string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			string directory = Path.GetDirectoryName(entry.Name);
 

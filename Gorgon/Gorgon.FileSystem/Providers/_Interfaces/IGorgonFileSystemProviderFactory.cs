@@ -37,7 +37,7 @@ namespace Gorgon.IO.Providers
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// This will generate providers that will allow access to different types of file systems. For example, a user may create a file system provider that will open 7-zip files, but the <see cref="GorgonFileSystem"/> 
+	/// This will generate providers that will allow access to different types of file systems. For example, a user may create a file system provider that will open 7-zip files, but the <see cref="IGorgonFileSystem"/> 
 	/// will not know how to read those files without the appropriate provider. This object would be used to load that 7-zip provider, and add it to the file system object so that it will know how to mount those 
 	/// file types.
 	/// </para>

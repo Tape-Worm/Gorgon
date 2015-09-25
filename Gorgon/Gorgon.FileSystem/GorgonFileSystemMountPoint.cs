@@ -27,6 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
@@ -37,6 +38,10 @@ namespace Gorgon.IO
 		: IEquatable<GorgonFileSystemMountPoint>
 	{
 		#region Variables.
+		/// <summary>
+		/// The provider for this mount point.
+		/// </summary>
+		public readonly IGorgonFileSystemProvider Provider;
 		/// <summary>
 		/// The physical location of the mount point.
 		/// </summary>
@@ -56,7 +61,8 @@ namespace Gorgon.IO
 		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
-			return (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
+			return (left.Provider == right.Provider)
+					&& (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
 					&& (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 		}
 
@@ -96,7 +102,12 @@ namespace Gorgon.IO
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(PhysicalPath).GenerateHash(MountLocation);
+			if ((Provider == null) || (PhysicalPath == null) || (MountLocation == null))
+			{
+				return 0;
+			}
+
+			return 281.GenerateHash(Provider).GenerateHash(PhysicalPath).GenerateHash(MountLocation);
 		}
 
 		/// <summary>
@@ -126,19 +137,26 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
 		/// </summary>
+		/// <param name="provider">The provider for this mount point.</param>
 		/// <param name="physicalPath">The physical path.</param>
 		/// <param name="mountLocation">[Optional] The mount location.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
-		/// <remarks>
-		/// The <paramref name="mountLocation"/> is optional, if omitted then the phsyical file system object will be mounted under the root directory of the virtual file system. Passing <b>null</b> (<i>Nothing</i> in VB.Net) 
-		/// or an empty string to this parameter will default the mount location to the root.
-		/// </remarks>
-		public GorgonFileSystemMountPoint(string physicalPath, string mountLocation = null)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <param name="mountLocation"></param> parameter is empty.</exception>
+		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation)
 		{
+			if (provider == null)
+			{
+				throw new ArgumentNullException(nameof(provider));
+			}
+
 			if (physicalPath == null)
 			{
 				throw new ArgumentNullException(nameof(physicalPath));
+			}
+
+			if (mountLocation == null)
+			{
+				throw new ArgumentNullException(nameof(mountLocation));
 			}
 
 			if (string.IsNullOrWhiteSpace(physicalPath))
@@ -148,9 +166,10 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(mountLocation))
 			{
-				mountLocation = "/";
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(mountLocation));
 			}
-			
+
+			Provider = provider;
 			PhysicalPath = physicalPath;
 			MountLocation = mountLocation;
 		}

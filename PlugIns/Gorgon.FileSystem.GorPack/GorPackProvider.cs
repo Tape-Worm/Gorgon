@@ -76,7 +76,7 @@ namespace Gorgon.IO.GorPack
 		/// <param name="index">The XML file containing the index of files and directories.</param>
 		/// <param name="mountPoint">The mount point to map into.</param>
 		/// <returns>A read only list of directory paths mapped to the virtual file system.</returns>
-		private static IReadOnlyList<string> EnumerateDirectories(XDocument index, GorgonFileSystemDirectory mountPoint)
+		private static IReadOnlyList<string> EnumerateDirectories(XDocument index, IGorgonVirtualDirectory mountPoint)
 		{
 			var result = new List<string>();
 			IEnumerable<XElement> directories = index.Descendants("Path");
@@ -105,9 +105,9 @@ namespace Gorgon.IO.GorPack
 		/// <param name="physicalLocation">Physical location of the packed file.</param>
 		/// <param name="mountPoint">The mount point to map into.</param>
 		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> objects mapped to the virtual file system.</returns>
-		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(XDocument index, long offset, string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
-			IEnumerable<XElement> files = index.Elements("File");
+			IEnumerable<XElement> files = index.Descendants("File");
 			var result = new List<IGorgonPhysicalFileInfo>();
 
 			foreach (XElement file in files)
@@ -200,7 +200,7 @@ namespace Gorgon.IO.GorPack
 		}
 
 		/// <inheritdoc/>
-		protected override IGorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         {
             using (var reader = new GorgonBinaryReader(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read)))
             {
@@ -219,10 +219,10 @@ namespace Gorgon.IO.GorPack
         }
 
 		/// <inheritdoc/>
-		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
+		protected override GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file)
 		{
 			return new GorPackFileStream(file,
-			                                   File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read),
+			                                   File.Open(file.MountPoint.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read),
 			                                   file.PhysicalFile.CompressedLength);
 		} 
 

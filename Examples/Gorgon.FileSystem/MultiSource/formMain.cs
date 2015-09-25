@@ -95,7 +95,7 @@ namespace Gorgon.Examples
 
 			try
 			{                
-				if (!(e.Node?.Tag is GorgonFileSystemFileEntry))
+				if (!(e.Node?.Tag is IGorgonVirtualFile))
 				{
 					splitFileSystem.Panel2.Controls.Add(_instructions);
 					return;
@@ -103,12 +103,12 @@ namespace Gorgon.Examples
 
 				_picture.Image = null;
 				_textDisplay.Text = string.Empty;
-				var file = (GorgonFileSystemFileEntry)e.Node.Tag;
+				var file = (IGorgonVirtualFile)e.Node.Tag;
 
 				// Here we load the image from the file system.
 				// Note that we don't care if it's from the zip file
 				// or the folder.  It's all the same to us.
-				using (Stream fileStream = file.OpenStream(false))
+				using (Stream fileStream = file.OpenStream())
 				{
 					// If it's a picture, then load it.
 					switch (file.Extension.ToLower())
@@ -161,7 +161,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
-			var directory = e.Node.Tag as GorgonFileSystemDirectory;
+			var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -186,7 +186,7 @@ namespace Gorgon.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
-			var directory = e.Node.Tag as GorgonFileSystemDirectory;
+			var directory = e.Node.Tag as IGorgonVirtualDirectory;
 
 			try
 			{
@@ -231,7 +231,7 @@ namespace Gorgon.Examples
 		/// Function to fill the file system tree view.
 		/// </summary>
 		/// <param name="directory">Parent directory to fill, or NULL (<i>Nothing</i> in VB.Net) to fill the root directory.</param>
-		private void FillTree(GorgonFileSystemDirectory directory)
+		private void FillTree(IGorgonVirtualDirectory directory)
 		{
 			TreeNodeCollection nodes;
 			TreeNode parentNode;

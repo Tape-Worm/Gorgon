@@ -54,7 +54,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="physicalLocation">The physical file system location to enumerate.</param>
 		/// <param name="mountPoint">The mount point to remap the file paths to.</param>
 		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
-		private IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		private IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			var directoryInfo = new DirectoryInfo(physicalLocation);
 
@@ -81,7 +81,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="physicalLocation">The physical file system location to enumerate.</param>
 		/// <param name="mountPoint">The mount point to remap the directory paths to.</param>
 		/// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
-		private IReadOnlyList<string> EnumerateDirectories(string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		private IReadOnlyList<string> EnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			var directoryInfo = new DirectoryInfo(physicalLocation);
 
@@ -113,7 +113,7 @@ namespace Gorgon.IO.Providers
 		/// return a stream into the zip file positioned at the location of the compressed file within the zip file).
 		/// </para>
 		/// </remarks>
-		protected virtual GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
+		protected virtual GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file)
 		{
 			return !File.Exists(file.PhysicalFile.FullPath) ? null : new GorgonFileSystemStream(file, File.Open(file.PhysicalFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 		}
@@ -183,13 +183,13 @@ namespace Gorgon.IO.Providers
 		/// The default functionality will only enumerate directories and files from the operating system file system.
 		/// </para>
 		/// </remarks>
-		protected virtual IGorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		protected virtual GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			return new GorgonPhysicalFileSystemData(EnumerateDirectories(physicalLocation, mountPoint), EnumerateFiles(physicalLocation, mountPoint));
 		}
 
 		/// <inheritdoc/>
-		public IGorgonPhysicalFileSystemData Enumerate(string physicalLocation, GorgonFileSystemDirectory mountPoint)
+		public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			if (physicalLocation == null)
 			{
@@ -210,7 +210,7 @@ namespace Gorgon.IO.Providers
 		}
 
 		/// <inheritdoc/>
-		public Stream OpenFileStream(GorgonFileSystemFileEntry file)
+		public Stream OpenFileStream(IGorgonVirtualFile file)
 		{
 			if (file == null)
 			{
@@ -252,7 +252,7 @@ namespace Gorgon.IO.Providers
 		/// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class.
 		/// </summary>
 		/// <remarks>
-		/// Every copy of the <see cref="GorgonFileSystem"/> automatically creates an instance of this type as a default provider.
+		/// Every copy of the <see cref="IGorgonFileSystem"/> automatically creates an instance of this type as a default provider.
 		/// </remarks>
 		internal GorgonFileSystemProvider()
 			: this(Resources.GORFS_FOLDER_FS_DESC)

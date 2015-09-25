@@ -49,7 +49,7 @@ namespace Gorgon.IO.Zip
 
 		#region Methods.
 		/// <inheritdoc/>
-		protected override IGorgonPhysicalFileSystemData OnEnumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint)
+		protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalMountPoint, IGorgonVirtualDirectory mountPoint)
 		{
             var directories = new List<string>();
             var files = new List<IGorgonPhysicalFileInfo>();
@@ -90,9 +90,9 @@ namespace Gorgon.IO.Zip
 		}
 
 		/// <inheritdoc/>
-		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
+		protected override GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file)
 		{
-			return new ZipFileStream(file, File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read));
+			return new ZipFileStream(file, File.Open(file.MountPoint.PhysicalPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 		} 
 
 		/// <inheritdoc/>
