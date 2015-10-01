@@ -94,10 +94,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamingDeviceDrivers", "..\E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.DirectInput", "..\PlugIns\Gorgon.Input.DirectInput\Gorgon.Input.DirectInput.csproj", "{FDC64B93-133D-4875-A31E-A60FD58EE1D8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{66EC8A16-400F-412A-B1BC-8BC1F0F924B2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileSystemDesign", "..\Test\FileSystemDesign\FileSystemDesign.csproj", "{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -240,10 +236,6 @@ Global
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -279,6 +271,5 @@ Global
 		{9524F1F2-8260-4203-AF0A-5457053F6BEE} = {2E124B08-EECF-44F6-9175-1580FF0BFFA8}
 		{58398BDA-7076-410A-B73C-928E79EAE8A9} = {2E124B08-EECF-44F6-9175-1580FF0BFFA8}
 		{26B09EBD-0140-4274-92EF-6E674FBDBB22} = {E110A495-36C7-44AB-9748-A8C29EFA276C}
-		{B1E195D4-92E5-4DCA-AD4A-3BF997CA8F0B} = {66EC8A16-400F-412A-B1BC-8BC1F0F924B2}
 	EndGlobalSection
 EndGlobal
