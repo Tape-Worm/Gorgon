@@ -121,7 +121,10 @@ namespace Gorgon.IO.Zip
 		public ZipProvider()
 			: base(Resources.GORFS_ZIP_DESC)
 		{
-            PreferredExtensions.Add(new GorgonFileExtension("Zip", Resources.GORFS_ZIP_FILE_DESC));
+			PreferredExtensions = new GorgonFileExtensionCollection
+			                      {
+				                      new GorgonFileExtension("Zip", Resources.GORFS_ZIP_FILE_DESC)
+			                      };
 		}
 		#endregion
     }

@@ -44,8 +44,6 @@ namespace Gorgon.IO.Providers
 		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
 		private readonly IGorgonLog _log = new GorgonLogDummy();
-		// The type for the default file system provider.
-		private readonly Type _baseType = typeof(GorgonFileSystemProvider);
 		#endregion
 
 		#region Methods.
@@ -78,7 +76,7 @@ namespace Gorgon.IO.Providers
 
 			if (plugin == null)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerPluginName));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPluginName));
 			}
 
 			return plugin;

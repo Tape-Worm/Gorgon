@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Collections;
+using Gorgon.IO.Properties;
 
 namespace Gorgon.IO
 {
@@ -103,7 +104,7 @@ namespace Gorgon.IO
 		#endregion
 
         #region Methods.
-		/// <inheritdoc/>
+		/// <inheritdoc cref="IGorgonVirtualDirectory.GetParents"/>
 		public IEnumerable<IGorgonVirtualDirectory> GetParents()
 		{
 			IGorgonVirtualDirectory parent = Parent;
@@ -119,39 +120,47 @@ namespace Gorgon.IO
 		/// <inheritdoc/>
 		public int GetDirectoryCount()
 		{
-			int count = Directories.Count;
-
-			if (count > 0)
-			{
-				count += Directories.Sum(item => item.GetDirectoryCount());
-			}
-
-			return count;
+			return Directories.Count == 0 ? 0 : GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Count();
 		}
 
 		/// <inheritdoc/>
-		public int GetFileCount(bool includeChildren = true)
+		public int GetFileCount()
 		{
-			int count = Files.Count;
-
-			if ((includeChildren) && (Directories.Count > 0))
-			{
-				count += Directories.Sum(item => item.GetFileCount());
-			}
-
-			return count;
+			return GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Sum(item => item.Files.Count) + Files.Count;
 		}
 
 		/// <inheritdoc/>
-		public bool ContainsFile(IGorgonVirtualFile file, bool searchChildren = true)
+		public bool ContainsFile(IGorgonVirtualFile file)
 		{
 			if (file == null)
 			{
 				throw new ArgumentNullException(nameof(file));
 			}
 
-			return Files.Any(item => item == file)
-				   || ((searchChildren) && (Directories.Any(directory => directory.ContainsFile(file))));
+			return ContainsFile(file.Name);
+		}
+
+		/// <inheritdoc/>
+		public bool ContainsFile(string fileName)
+		{
+			if (fileName == null)
+			{
+				throw new ArgumentNullException(nameof(fileName));
+			}
+
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+			}
+
+			if (Files.Contains(fileName))
+			{
+				return true;
+			}
+
+			IEnumerable<VirtualDirectory> directories = GorgonFileSystem.FlattenDirectoryHierarchy(this, "*");
+
+			return directories.Any(item => item.Files.Contains(fileName));
 		}
 		#endregion
 

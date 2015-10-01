@@ -35,26 +35,72 @@ using Gorgon.Plugins;
 namespace Gorgon.IO.Providers
 {
 	/// <inheritdoc cref="IGorgonFileSystemProvider"/>
+	/// <remarks>
+	/// <para>
+	/// <see cref="IGorgonFileSystemProvider"/> implementors must inherit from this type to create a provider plug in. 
+	/// </para>
+	/// <inheritdoc cref="IGorgonFileSystemProvider"/> 
+	/// <para>
+	/// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>.
+	/// </para>
+	/// </remarks>
 	[ExcludeAsPlugin]
 	public class GorgonFileSystemProvider
 		: GorgonPlugin, IGorgonFileSystemProvider
 	{
 		#region Properties.
 		/// <inheritdoc/>
-		public IGorgonNamedObjectDictionary<GorgonFileExtension> PreferredExtensions
+		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
 		{
 			get;
+			protected set;
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to return the virtual file system path from a physical file system path.
+		/// </summary>
+		/// <param name="physicalPath">Physical path to the file/folder.</param>
+		/// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
+		/// <param name="mountPoint">Path to the mount point.</param>
+		/// <returns>The virtual file system path.</returns>
+		private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
+		{
+			if ((string.IsNullOrWhiteSpace(physicalPath))
+				|| (string.IsNullOrWhiteSpace(physicalRoot))
+				|| (string.IsNullOrWhiteSpace(mountPoint)))
+			{
+				return string.Empty;
+			}
+
+			if (!Path.IsPathRooted(physicalPath))
+			{
+				physicalPath = Path.GetFullPath(physicalPath);
+			}
+
+			physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty);
+
+			if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator))
+			{
+				physicalPath = physicalPath.FormatDirectory('/');
+			}
+			else
+			{
+				physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory('/') +
+							   Path.GetFileName(physicalPath).FormatFileName();
+			}
+
+			return physicalPath;
+		}
+
 		/// <summary>
 		/// Function to enumerate files from the file system.
 		/// </summary>
 		/// <param name="physicalLocation">The physical file system location to enumerate.</param>
 		/// <param name="mountPoint">The mount point to remap the file paths to.</param>
 		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
-		private IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+		private static IReadOnlyList<IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			var directoryInfo = new DirectoryInfo(physicalLocation);
 
@@ -81,7 +127,7 @@ namespace Gorgon.IO.Providers
 		/// <param name="physicalLocation">The physical file system location to enumerate.</param>
 		/// <param name="mountPoint">The mount point to remap the directory paths to.</param>
 		/// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
-		private IReadOnlyList<string> EnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+		private static IReadOnlyList<string> EnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
 		{
 			var directoryInfo = new DirectoryInfo(physicalLocation);
 
@@ -132,42 +178,6 @@ namespace Gorgon.IO.Providers
 		protected virtual bool OnCanReadFile(string physicalPath)
 		{
 			return false;
-		}
-
-		/// <summary>
-		/// Function to return the virtual file system path from a physical file system path.
-		/// </summary>
-		/// <param name="physicalPath">Physical path to the file/folder.</param>
-		/// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
-		/// <param name="mountPoint">Path to the mount point.</param>
-		/// <returns>The virtual file system path.</returns>
-		public string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
-		{
-			if ((string.IsNullOrWhiteSpace(physicalPath))
-				|| (string.IsNullOrWhiteSpace(physicalRoot))
-				|| (string.IsNullOrWhiteSpace(mountPoint)))
-			{
-				return string.Empty;
-			}
-
-			if (!Path.IsPathRooted(physicalPath))
-			{
-				physicalPath = Path.GetFullPath(physicalPath);
-			}
-
-			physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty);
-
-			if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator))
-			{
-				physicalPath = physicalPath.FormatDirectory('/');
-			}
-			else
-			{
-				physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory('/') +
-				               Path.GetFileName(physicalPath).FormatFileName();
-			}
-
-			return physicalPath;
 		}
 
 		/// <summary>

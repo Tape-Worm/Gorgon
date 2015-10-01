@@ -64,7 +64,6 @@
     <Compile Include="Providers\GorgonPhysicalFileSystemData.cs" />
     <Compile Include="Providers\_Interfaces\IGorgonFileSystemProvider.cs" />
     <Compile Include="Providers\_Interfaces\IGorgonPhysicalFileInfo.cs" />
-    <Compile Include="_Osboleted\GorgonFileSystemProviderPlugIn.cs" />
     <Compile Include="Providers\GorgonFileSystemProviderFactory.cs" />
     <Compile Include="GorgonFileSystemStream.cs" />
     <Compile Include="Providers\_Internal\PhysicalFileInfo.cs" />

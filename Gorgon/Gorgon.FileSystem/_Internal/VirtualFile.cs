@@ -30,9 +30,7 @@ using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
-	/// <summary>
-	/// A file entry corresponding to a file on the physical file system.
-	/// </summary>
+	/// <inheritdoc cref="IGorgonVirtualFile"/>
 	class VirtualFile
 		: IGorgonVirtualFile
 	{
@@ -91,24 +89,16 @@ namespace Gorgon.IO
 			set;
 		}
 
-		/// <summary>
-		/// Property to return the uncompressed size of the file in bytes.
-		/// </summary>
+		/// <inheritdoc/>
 		public long Size => PhysicalFile.Length;
 
-		/// <summary>
-		/// Property to return the file creation date.
-		/// </summary>
+		/// <inheritdoc/>
 		public DateTime CreateDate => PhysicalFile.CreateDate;
 
-		/// <summary>
-		/// Property to return the last modified date.
-		/// </summary>
+		/// <inheritdoc/>
 		public DateTime LastModifiedDate => PhysicalFile.LastModifiedDate;
 
-		/// <summary>
-		/// Property to return the filename and extension for this virtual file.
-		/// </summary>
+		/// <inheritdoc/>
 		public string Name => PhysicalFile.Name;
 		#endregion
 

@@ -91,14 +91,14 @@ namespace Gorgon.IO
 			// Rebuild the file path.
 			if (!File.Exists(physicalPath))
 			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, physicalPath));
+				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, physicalPath));
 			}
 
 			IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFile(physicalPath)).Value;
 
 			if (provider == null)
 			{
-				throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, physicalPath));
+				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, physicalPath));
 			}
 
 			var mountPoint = new GorgonFileSystemMountPoint(provider, physicalPath, mountPath);
@@ -127,13 +127,13 @@ namespace Gorgon.IO
 
 			if (string.IsNullOrWhiteSpace(physicalPath))
 			{
-				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, physicalPath));
 			}
 			
 			// Use the default folder provider.
 			if (!Directory.Exists(physicalPath))
 			{
-				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, physicalPath));
 			}
 
 			var mountPoint = new GorgonFileSystemMountPoint(DefaultProvider, physicalPath, mountPath);
@@ -219,7 +219,7 @@ namespace Gorgon.IO
 
 				if (directory == null)
 				{
-					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryName));
+					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 				}
 
 				VirtualFile virtualFile;
@@ -270,7 +270,7 @@ namespace Gorgon.IO
 		/// <param name="directory">The directory to start searching in.</param>
 		/// <param name="searchMask">The pattern mask to search on.</param>
 		/// <returns>An enumerable containing the flattened list.</returns>
-		private static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
+		internal static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
 		{
 			IEnumerable<VirtualDirectory> directories = directory.Directories.InternalEnumerable();
 
@@ -322,93 +322,6 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <summary>
-		/// Function to unmount the mounted virtual file system directories and files pointed at by a mount point.
-		/// </summary>
-		/// <param name="mountPoint">Mount point to unmount.</param>
-		/// <exception cref="IOException">The path was not found.</exception>
-		private void UnmountMountPoint(GorgonFileSystemMountPoint mountPoint)
-		{
-			lock (_syncLock)
-			{
-				if (!_mountProviders.Contains(mountPoint))
-				{
-					throw new IOException(string.Format(Resources.GORGFS_MOUNTPOINT_NOT_FOUND,
-					                                    mountPoint.MountLocation,
-					                                    mountPoint.PhysicalPath));
-				}
-
-				// Find the directory for the mount point.
-				VirtualDirectory mountPointDirectory = InternalGetDirectory(mountPoint.MountLocation);
-
-				// If we don't have the directory in the file system, then we have nothing to remove.
-				if (mountPointDirectory == null)
-				{
-					return;
-				}
-
-				IEnumerable<VirtualFile> files = InternalFindFiles(mountPoint.MountLocation, "*", true)
-					.Where(item => item.MountPoint.Equals(mountPoint))
-					.ToArray();
-
-				foreach (VirtualFile file in files)
-				{
-					file.Directory.Files.Remove(file);
-				}
-
-				// Find all directories and files that are related to the provider.
-				IEnumerable<VirtualDirectory> directories = InternalFindDirectories(mountPoint.MountLocation, "*", true)
-					.Where(item => item.MountPoint.Equals(mountPoint))
-					.OrderByDescending(item => item.FullPath)
-					.ThenByDescending(item => item.FullPath.Length)
-					.ToArray();
-
-				GorgonFileSystemMountPoint newMountPoint;
-
-				foreach (VirtualDirectory directory in directories)
-				{
-					if ((directory.Files.Count == 0) && (directory.Directories.Count == 0))
-					{
-						directory.Parent?.Directories.Remove(directory);
-					}
-					else
-					{
-						newMountPoint = directory.Directories.Count > 0
-							             ? directory.Directories.First().MountPoint
-							             : (directory.Files.Count > 0
-								                ? directory.Files.First().MountPoint
-								                : new GorgonFileSystemMountPoint(DefaultProvider, directory.MountPoint.PhysicalPath, directory.MountPoint.MountLocation));
-						// If there are still files or sub directories in the directory, then keep it around, and 
-						// set its provider back to the first provider in the list of directories, files or the 
-						// default.
-						directory.MountPoint = newMountPoint;
-					}
-				}
-
-				_mountProviders.Remove(mountPoint);
-
-				// If there's nothing left under this mount point, and it's not the root, then dump the directory.
-				if ((mountPointDirectory.Parent == null) 
-					|| (mountPointDirectory.Directories.Count != 0) 
-					|| (mountPointDirectory.Files.Count != 0))
-				{
-					newMountPoint = mountPointDirectory.Directories.Count > 0
-						                ? mountPointDirectory.Directories.First().MountPoint
-						                : (mountPointDirectory.Files.Count > 0
-							                   ? mountPointDirectory.Files.First().MountPoint
-							                   : new GorgonFileSystemMountPoint(DefaultProvider,
-							                                                    mountPointDirectory.MountPoint.PhysicalPath,
-							                                                    mountPointDirectory.MountPoint.MountLocation));
-
-
-					mountPointDirectory.MountPoint = newMountPoint;
-					return;
-				}
-
-				mountPointDirectory.Parent.Directories.Remove(mountPointDirectory);
-			}
-		}
-
 		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories"/>
 		internal IEnumerable<VirtualDirectory> InternalFindDirectories(string path, string directoryMask, bool recursive)
 		{
@@ -425,7 +338,7 @@ namespace Gorgon.IO
 			VirtualDirectory startDirectory = InternalGetDirectory(path);
 			if (startDirectory == null)
 			{
-				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 			}
 
 			return !recursive
@@ -435,25 +348,6 @@ namespace Gorgon.IO
 					                          .Where(item => IsPatternMatch(item, directoryMask)))
 				       : FlattenDirectoryHierarchy(startDirectory, directoryMask);
 		}
-
-		/// <inheritdoc/>
-		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string path, string directoryMask, bool recursive = true) => InternalFindDirectories(path, directoryMask, recursive);
-
-		/// <summary>
-		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
-		/// </summary>
-		/// <param name="directoryMask"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
-		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
-		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
-		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
-		/// <remarks>
-		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
-		/// </remarks>
-		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string directoryMask, bool recursive = true) => InternalFindDirectories("/", directoryMask, recursive);
-
-		/// <inheritdoc/>
-		public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
 
 		/// <inheritdoc cref="IGorgonFileSystem.FindFiles"/>
 		internal IEnumerable<VirtualFile> InternalFindFiles(string path, string fileMask, bool recursive)
@@ -472,7 +366,7 @@ namespace Gorgon.IO
 
 		    if (start == null)
 		    {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
+                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 		    }
 
 			return !recursive
@@ -481,19 +375,6 @@ namespace Gorgon.IO
 					          : start.Files.InternalEnumerable().Where(item => IsPatternMatch(item, fileMask)))
 				       : FlattenFileHierarchy(start, fileMask);
 		}
-
-		/// <summary>
-		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
-		/// </summary>
-		/// <param name="fileMask"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
-		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
-		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
-		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
-		/// <remarks>
-		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
-		/// </remarks>
-		public IEnumerable<IGorgonVirtualFile> FindFiles(string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
 
 		/// <inheritdoc cref="IGorgonFileSystem.GetFile"/>
 		internal VirtualFile InternalGetFile(string path)
@@ -520,7 +401,7 @@ namespace Gorgon.IO
 			// Check for file name.
 			if (string.IsNullOrWhiteSpace(filename))
 			{
-				throw new ArgumentException(string.Format(Resources.GORFS_NO_FILENAME, path), nameof(path));
+				throw new ArgumentException(string.Format(Resources.GORFS_ERR_NO_FILENAME, path), nameof(path));
 			}
 
 			// Start search.
@@ -533,9 +414,6 @@ namespace Gorgon.IO
 
 			return search.Files.Contains(filename) ? search.Files[filename] : null;
 		}
-
-		/// <inheritdoc/>
-		public IGorgonVirtualFile GetFile(string path) => InternalGetFile(path);
 
 		/// <inheritdoc cref="IGorgonFileSystem.GetDirectory"/>
 		internal VirtualDirectory InternalGetDirectory(string path)
@@ -594,6 +472,43 @@ namespace Gorgon.IO
 		}
 
 		/// <inheritdoc/>
+		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string path, string directoryMask, bool recursive = true) => InternalFindDirectories(path, directoryMask, recursive);
+
+		/// <summary>
+		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
+		/// </summary>
+		/// <param name="directoryMask"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
+		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></exception>
+		/// <returns><inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/></returns>
+		/// <remarks>
+		/// <inheritdoc cref="IGorgonFileSystem.FindDirectories(string, string, bool)"/>
+		/// </remarks>
+		public IEnumerable<IGorgonVirtualDirectory> FindDirectories(string directoryMask, bool recursive = true) => InternalFindDirectories("/", directoryMask, recursive);
+
+		/// <inheritdoc/>
+		public IEnumerable<IGorgonVirtualFile> FindFiles(string path, string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
+
+		/// <summary>
+		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
+		/// </summary>
+		/// <param name="fileMask"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
+		/// <param name="recursive"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></param>
+		/// <exception cref="ArgumentNullException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <exception cref="ArgumentException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <exception cref="DirectoryNotFoundException"><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></exception>
+		/// <returns><inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/></returns>
+		/// <remarks>
+		/// <inheritdoc cref="IGorgonFileSystem.FindFiles(string, string, bool)"/>
+		/// </remarks>
+		public IEnumerable<IGorgonVirtualFile> FindFiles(string fileMask, bool recursive = true) => InternalFindFiles("/", fileMask, recursive);
+
+		/// <inheritdoc/>
+		public IGorgonVirtualFile GetFile(string path) => InternalGetFile(path);
+
+		/// <inheritdoc/>
 		public IGorgonVirtualDirectory GetDirectory(string path) => InternalGetDirectory(path);
 
 		/// <inheritdoc/>
@@ -602,15 +517,12 @@ namespace Gorgon.IO
 			// Don't allow multiple threads to refresh this file system more than once.
 			lock (_syncLock)
 			{
+				// Unload everything at once.
 				_rootDirectory.Directories.Clear();
 				_rootDirectory.Files.Clear();
 				_mountProviders.Clear();
 
-				// This isn't the most efficient way, but it works.
-				// Since the directories don't track which physical location they're in
-				// and files only track the last mounted physical location, we have no way
-				// to selectively exclude files.  The best approach at this point is to 
-				// just clear it all out, and start over.
+				// Refresh the mount points so we can capture the most up to date data.
 				foreach (GorgonFileSystemMountPoint mountPoint in MountPoints)
 				{
 					Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
@@ -621,7 +533,85 @@ namespace Gorgon.IO
 		/// <inheritdoc/>
 		public void Unmount(GorgonFileSystemMountPoint mountPoint)
 		{
-			UnmountMountPoint(mountPoint);
+			lock (_syncLock)
+			{
+				if (!_mountProviders.Contains(mountPoint))
+				{
+					throw new ArgumentException(string.Format(Resources.GORFS_ERR_MOUNTPOINT_NOT_FOUND,
+					                                          mountPoint.MountLocation,
+					                                          mountPoint.PhysicalPath),
+					                            nameof(mountPoint));
+				}
+
+				// Find the directory for the mount point.
+				VirtualDirectory mountPointDirectory = InternalGetDirectory(mountPoint.MountLocation);
+
+				// If we don't have the directory in the file system, then we have nothing to remove.
+				if (mountPointDirectory == null)
+				{
+					return;
+				}
+
+				IEnumerable<VirtualFile> files = InternalFindFiles(mountPoint.MountLocation, "*", true)
+					.Where(item => item.MountPoint.Equals(mountPoint))
+					.ToArray();
+
+				foreach (VirtualFile file in files)
+				{
+					file.Directory.Files.Remove(file);
+				}
+
+				// Find all directories and files that are related to the provider.
+				IEnumerable<VirtualDirectory> directories = InternalFindDirectories(mountPoint.MountLocation, "*", true)
+					.Where(item => item.MountPoint.Equals(mountPoint))
+					.OrderByDescending(item => item.FullPath)
+					.ThenByDescending(item => item.FullPath.Length)
+					.ToArray();
+
+				GorgonFileSystemMountPoint newMountPoint;
+
+				foreach (VirtualDirectory directory in directories)
+				{
+					if ((directory.Files.Count == 0) && (directory.Directories.Count == 0))
+					{
+						directory.Parent?.Directories.Remove(directory);
+					}
+					else
+					{
+						newMountPoint = directory.Directories.Count > 0
+										 ? directory.Directories.First().MountPoint
+										 : (directory.Files.Count > 0
+												? directory.Files.First().MountPoint
+												: new GorgonFileSystemMountPoint(DefaultProvider, directory.MountPoint.PhysicalPath, directory.MountPoint.MountLocation));
+						// If there are still files or sub directories in the directory, then keep it around, and 
+						// set its provider back to the first provider in the list of directories, files or the 
+						// default.
+						directory.MountPoint = newMountPoint;
+					}
+				}
+
+				_mountProviders.Remove(mountPoint);
+
+				// If there's nothing left under this mount point, and it's not the root, then dump the directory.
+				if ((mountPointDirectory.Parent == null)
+					|| (mountPointDirectory.Directories.Count != 0)
+					|| (mountPointDirectory.Files.Count != 0))
+				{
+					newMountPoint = mountPointDirectory.Directories.Count > 0
+										? mountPointDirectory.Directories.First().MountPoint
+										: (mountPointDirectory.Files.Count > 0
+											   ? mountPointDirectory.Files.First().MountPoint
+											   : new GorgonFileSystemMountPoint(DefaultProvider,
+																				mountPointDirectory.MountPoint.PhysicalPath,
+																				mountPointDirectory.MountPoint.MountLocation));
+
+
+					mountPointDirectory.MountPoint = newMountPoint;
+					return;
+				}
+
+				mountPointDirectory.Parent.Directories.Remove(mountPointDirectory);
+			}
 		}
 
 		/// <inheritdoc/>
@@ -640,7 +630,7 @@ namespace Gorgon.IO
 
 			foreach (GorgonFileSystemMountPoint mountPoint in mountPoints)
 			{
-				UnmountMountPoint(mountPoint);
+				Unmount(mountPoint);
 			}
 		}
 
@@ -655,7 +645,7 @@ namespace Gorgon.IO
 
 			foreach (var mountPoint in mountPoints)
 			{
-				UnmountMountPoint(mountPoint);				
+				Unmount(mountPoint);				
 			}
 		}
 
@@ -667,17 +657,17 @@ namespace Gorgon.IO
                 throw new ArgumentNullException(nameof(physicalPath));
             }
 
-            if (string.IsNullOrWhiteSpace(mountPath))
-            {
-	            mountPath = "/";
-            }
-
             if (string.IsNullOrWhiteSpace(physicalPath))
             {
                 throw new ArgumentException(Resources.GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(physicalPath));
             }
 
-			lock(_syncLock)
+			if (string.IsNullOrWhiteSpace(mountPath))
+			{
+				mountPath = "/";
+			}
+
+			lock (_syncLock)
 			{
 				physicalPath = Path.GetFullPath(physicalPath);
 				string fileName = Path.GetFileName(physicalPath).FormatFileName();
@@ -715,15 +705,10 @@ namespace Gorgon.IO
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="provider" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
-		/// <para>
-		/// To mount other file system object types (e.g. zip files), a <see cref="GorgonFileSystemProvider"/> is necessary and must be passed into this constructor. 
-		/// </para> 
-		/// <para>
-		/// To retrieve a provider, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
-		/// </para>
+		/// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
 		/// </remarks>
 		public GorgonFileSystem(GorgonFileSystemProvider provider, IGorgonLog log = null)
-			: this(new GorgonFileSystemProvider[0], log)
+			: this(log)
 		{
 			if (provider == null)
 			{
@@ -736,35 +721,22 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
 		/// </summary>
-		/// <param name="providers">[Optional] The providers available to this file system.</param>
+		/// <param name="providers">The providers available to this file system.</param>
 		/// <param name="log">[Optional] The application log file.</param>
 		/// <remarks>
-		/// <para>
-		/// To mount other file system object types (e.g. zip files), a <see cref="GorgonFileSystemProvider"/> is necessary and must be passed into this constructor. 
-		/// </para>
-		/// <para>
 		/// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
-		/// </para>
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public GorgonFileSystem(IEnumerable<GorgonFileSystemProvider> providers, IGorgonLog log = null)
+			: this(log)
 		{
 			if (providers == null)
 			{
 				throw new ArgumentNullException(nameof(providers));
 			}
-
-			_mountProviders = new HashSet<GorgonFileSystemMountPoint>();
-			_log = log ?? new GorgonLogDummy();
-
-			DefaultProvider = new GorgonFileSystemProvider();
-			
-			_providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
-
-			_rootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
 			
 			// Get all the providers in the parameter.
-			foreach (GorgonFileSystemProvider provider in providers)
+			foreach (GorgonFileSystemProvider provider in providers.Where(item => item != null))
 			{
 				_providers[provider.Name] = provider;
 			}
@@ -778,8 +750,15 @@ namespace Gorgon.IO
 		/// This will create a file system without any providers. Because of this, the only physical file system objects that can be mounted are folders.
 		/// </remarks>
 		public GorgonFileSystem(IGorgonLog log = null)
-			: this(new GorgonFileSystemProvider[0], log)
 		{
+			_log = log ?? new GorgonLogDummy();
+
+			_providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
+			_mountProviders = new HashSet<GorgonFileSystemMountPoint>();
+
+			DefaultProvider = new GorgonFileSystemProvider();
+
+			_rootDirectory = new VirtualDirectory(default(GorgonFileSystemMountPoint), this, null, "/");
 		}
 		#endregion
 	}

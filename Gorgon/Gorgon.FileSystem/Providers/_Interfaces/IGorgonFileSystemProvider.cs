@@ -36,23 +36,20 @@ namespace Gorgon.IO.Providers
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// File system providers provide access to a physical file system, and allows the communications necessary to read the data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
-	/// object, a provider enables access to multiple types of physical file systems so that seamlessly appear to be a single file system. The underlying system has no idea if the file is a standard file system file, 
-	/// or a file inside of a zip archive.  
+	/// File system providers provide access to a physical file system, and provides the communications necessary to read data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
+	/// object, a provider enables access to multiple types of physical file systems so they seamlessly appear to be from a single file system. The underlying system has no idea if the file is a standard 
+	/// file system file, or a file inside of a zip archive.  
 	/// </para>
 	/// <para>
 	/// <note type="important">
 	/// <para>
-	/// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriteArea"/> 
-	/// type allows writing to a file system via a predefined directory on the operating system physical file system. 
+	/// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriteArea{T}"/> 
+	/// type allows writing to a file system via a predefined area in a physical file system. 
 	/// </para>
 	/// </note>
 	/// </para>
 	/// <para>
-	/// This unmodified type allows for the mounting of a directory on a physical disk so that data can be read from the native Windows file system. This is the default provider for any <see cref="IGorgonFileSystem"/>.
-	/// </para>
-	/// <para>
-	/// When this type is overridden, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugin"/>, 
+	/// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugin"/>, 
 	/// the file system provider can be loaded dynamically through Gorgon's plug in system.
 	/// </para>
 	/// </remarks>
@@ -66,7 +63,7 @@ namespace Gorgon.IO.Providers
 		/// that physical file system type. This list can then be then used in an application to filter the types of files to open with a <see cref="IGorgonFileSystem"/>. If the file system reads directories on 
 		/// the native file system, then this collection should remain empty.
 		/// </remarks>
-		IGorgonNamedObjectDictionary<GorgonFileExtension> PreferredExtensions
+		IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
 		{
 			get;
 		}
@@ -82,16 +79,17 @@ namespace Gorgon.IO.Providers
 		/// <summary>
 		/// Function to enumerate the files and directories from a physical location and map it to a virtual location.
 		/// </summary>
-		/// <param name="physicalLocation">Mount point being enumerated.</param>
-		/// <param name="mountPoint">Directory to hold the sub directories and files.</param>		
-		/// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> objects.</returns>
+		/// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
+		/// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
+		/// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
-		/// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and files under the virtual file system. Each file system file and directory is mapped from its 
-		/// <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the mount point is set to <c>/MyMount/</c>, and the 
-		/// physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value would be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
+		/// This will return a <see cref="GorgonPhysicalFileSystemData"/> representing the paths to directories and <see cref="IGorgonPhysicalFileInfo"/> objects under the virtual file system. Each file 
+		/// system file and directory is mapped from its <paramref name="physicalLocation"/> on the physical file system to a <paramref name="mountPoint"/> on the virtual file system. For example, if the 
+		/// mount point is set to <c>/MyMount/</c>, and the physical location of a file is <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be 
+		/// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
 		/// </para>
 		/// <para>
 		/// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
@@ -100,14 +98,14 @@ namespace Gorgon.IO.Providers
 		GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint);
 
 		/// <summary>
-		/// Function to open a stream to a file on the physical file system from the virtual file passed in.
+		/// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
 		/// </summary>
-		/// <param name="file">The virtual file that will be used to locate the file that will be opened on the physical file system.</param>
+		/// <param name="file">The <see cref="IGorgonVirtualFile"/> that will be used to locate the file that will be opened on the physical file system.</param>
 		/// <returns>A <see cref="Stream"/> to the file, or <b>null</b> (<i>Nothing</i> in VB.Net) if the file does not exist.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <remarks>
 		/// <para>
-		/// This will take the virtual <paramref name="file"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
+		/// This will take the <see cref="IGorgonVirtualFile"/> and open its corresponding physical file location as a stream for reading. The stream that is returned will be opened, and as such, it is the 
 		/// responsibility of the user to close the stream when finished.
 		/// </para>
 		/// </remarks>

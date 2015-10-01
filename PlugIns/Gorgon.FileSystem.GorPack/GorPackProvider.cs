@@ -254,7 +254,10 @@ namespace Gorgon.IO.GorPack
 		public GorPackProvider()
 			: base(Resources.GORFS_GORPACK_DESC)
 		{
-		    PreferredExtensions.Add(new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC));
+			PreferredExtensions = new GorgonFileExtensionCollection
+			                      {
+				                      new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
+			                      };
 		}
 		#endregion
 	}

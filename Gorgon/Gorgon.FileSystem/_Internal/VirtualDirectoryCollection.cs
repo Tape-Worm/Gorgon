@@ -61,7 +61,7 @@ namespace Gorgon.IO
 
 				if (!_directories.TryGetValue(name, out directory))
 				{
-					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, name));
+					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name));
 				}
 
 				return directory;
@@ -215,7 +215,7 @@ namespace Gorgon.IO
 
 			if (directories.Length == 0)
 			{
-				throw new ArgumentException(string.Format(Resources.GORFS_PATH_INVALID, path), nameof(path));
+				throw new ArgumentException(string.Format(Resources.GORFS_ERR_PATH_INVALID, path), nameof(path));
 			}
 
 			VirtualDirectory directory = _parent;
@@ -226,7 +226,7 @@ namespace Gorgon.IO
 				// This should never happen, but if an archive is corrupt, there's always a weird possibility that this could become an issue.
 				if (directory.Files.Contains(item))
 				{
-					throw new IOException(string.Format(Resources.GORFS_FILE_EXISTS, directory.Files[item].FullPath));
+					throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, directory.Files[item].FullPath));
 				}
 
 				if (directory.Directories.Contains(item))

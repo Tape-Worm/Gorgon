@@ -41,6 +41,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// The provider for this mount point.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
 		public readonly IGorgonFileSystemProvider Provider;
 		/// <summary>
 		/// The physical location of the mount point.
@@ -91,7 +92,7 @@ namespace Gorgon.IO
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORFS_MOUNTPOINT_TOSTRING, MountLocation, PhysicalPath);
+			return string.Format(Resources.GORFS_TOSTR_MOUNTPOINT, MountLocation, PhysicalPath);
 		}
 
 		/// <summary>
@@ -141,7 +142,7 @@ namespace Gorgon.IO
 		/// <param name="physicalPath">The physical path.</param>
 		/// <param name="mountLocation">[Optional] The mount location.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <param name="mountLocation"></param> parameter is empty.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
 		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation)
 		{
 			if (provider == null)

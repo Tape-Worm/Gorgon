@@ -58,36 +58,20 @@
     </ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.dll" />
-<DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.xml" />
-<DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll" />
-<DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Core\bin\Debug\Gorgon.Core.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Input\bin\Debug\Gorgon.Input.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.Native\Gorgon.Native.xml" />
+      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll" />
+      <DocumentationSource sourceFile="..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.xml" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.dll" />
+      <DocumentationSource sourceFile="..\Gorgon\Gorgon.FileSystem\bin\Debug\Gorgon.FileSystem.xml" />
+    </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
-      <NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Dialogs.Properties" isDocumented="False" />
-      <NamespaceSummaryItem name="GorgonLibrary" isDocumented="False">This is the primary namespace for Gorgon.  It contains the core functionality for the library.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.FileSystems" isDocumented="False">This namespace contains objects dealing with virtual file systems.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.FileSystems.Design" isDocumented="False">This namespace contains objects dealing with virtual file interfaces for use with the File System Editor.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Framework" isDocumented="False">This namespace contains an application framework for Gorgon to help get things up and running as quickly as possible.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Framework.Properties" isDocumented="False" />
-      <NamespaceSummaryItem name="GorgonLibrary.Graphics" isDocumented="False">This namespace contains graphics related objects such as sprites, text &amp;amp; font functionality, and more.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Graphics.Utilities" isDocumented="False">This namespace contains various high level graphics objects and utilities.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.GUI" isDocumented="False">This namespace contains a (very) minimal skinnable GUI system.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.InputDevices" isDocumented="False">This namespace contains objects relating to user input devices such as keyboards, mice and joysticks/joypads</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Internal" isDocumented="False">"These aren't the droids you're looking for.  He can move along." 
-
-"These aren't the droids we're looking for.  Move along.  Move along." 
-
-But really, these are internal functions for use by Gorgon only.  They should rarely, if ever, be needed by the user.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Internal.Native" isDocumented="False" />
-      <NamespaceSummaryItem name="GorgonLibrary.PlugIns" isDocumented="False">This namespace contains functionality for use in building and using plug-ins.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="GorgonLibrary.Properties" isDocumented="False" />
-      <NamespaceSummaryItem name="GorgonLibrary.Serialization" isDocumented="False">This namespace contains objects to serialize and/or deserialize objects to and from a storage medium.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="SlimMath" isDocumented="True">&lt;para&gt;
+<NamespaceSummaryItem name="Dialogs" isDocumented="True">This namespace contains a static class used to display enhanced dialog boxes (windows forms).</NamespaceSummaryItem>
+<NamespaceSummaryItem name="SlimMath" isDocumented="True">&lt;para&gt;
 SlimMath is a mathematics API used extensively by Gorgon. It contains many useful functions to perform various calculations for linear algebra and beyond.
 &lt;/para&gt;
 &lt;para&gt;
@@ -96,8 +80,8 @@ SlimMath was created by Mike Popoloski and is located at &lt;a href="https://cod
 &lt;para&gt;
 (Please note, at the time of this writing, Google is shutting down Google Code. Therefore, this URL may not be valid upon release).
 &lt;/para&gt;</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="SlimMath.Design" isDocumented="True">This namespace contains design time functionality for the various types in the SlimMath API.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="Gorgon.Native" isDocumented="True">&lt;para&gt;
+<NamespaceSummaryItem name="SlimMath.Design" isDocumented="True">This namespace contains design time functionality for the various types in the SlimMath API.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="Gorgon.Native" isDocumented="True">&lt;para&gt;
 This contains functionality for access to native (unmanaged) memory. 
 &lt;/para&gt;
 &lt;para&gt;
@@ -106,8 +90,7 @@ While .NET has a fairly comprehensive set of tools to access native memory, and 
 &lt;para&gt;
 &lt;h2&gt;Disclaimer time&lt;/h2&gt;
 The types in here are inherently dangerous to use because they offer little in the way of protection from poor memory management habits. Buffer overruns, memory leaks, etc.. are all possible with these types. &lt;b&gt;USE AT YOUR OWN RISK&lt;/b&gt;. The garbage collector will not save you. If you have no idea how to use native memory, pointers, etc... then it's recommended that you do not use these types.
-&lt;/para&gt;</NamespaceSummaryItem>
-    </NamespaceSummaries>
+&lt;/para&gt;</NamespaceSummaryItem></NamespaceSummaries>
     <PlugInConfigurations>
     </PlugInConfigurations>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>

@@ -51,6 +51,9 @@ namespace Gorgon.IO
 	/// the data in the physical file systems. There is no actual change to the original files and they will remain in their original location, untouched. Only the files in the directory designated to be the writable 
 	/// area for a file system will be used for write operations.
 	/// </para>
+	/// <para>
+	/// Because the type parameter <typeparamref name="T"/> is based on <see cref="Stream"/>, we can use this interface to build an object that can write into anything that supports a stream, including memory.
+	/// </para>
 	/// <para> 
 	/// <note type="tip">
 	/// <para>
@@ -67,6 +70,35 @@ namespace Gorgon.IO
 	/// </note>
 	/// </para>
 	/// </remarks>
+	/// <example>
+	/// This example shows how to create a file system with the default provider, mount a directory to the root, and create a new file:
+	/// <code language="csharp">
+	/// <![CDATA[
+	/// IGorgonFileSystem fileSystem = new GorgonFileSystem();
+	/// IGorgonFileSystemWriteArea writeArea = new GorgonFileSystemWriteArea(fileSystem, @"C:\MyWritingSpot\");
+	/// 
+	/// // Mount a directory for this file system.
+	/// fileSystem.Mount(@"C:\MyDirectory\", "/"); 
+	/// 
+	/// // Ensure that we mount the write area to ensure that the files in the write directory 
+	/// // are available.
+	/// writeArea.Mount();
+	/// 
+	/// // Create a text file.
+	/// using (Stream stream = writeArea.OpenStream("/AFile.txt", FileMode.Create))
+	/// {
+	///		using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8))
+	///		{
+	///			writer.WriteLine("This is a line of text.");
+	///		}
+	/// }
+	/// 
+	/// // This should retrieve the updated file.
+	/// IGorgonVirtualFile file = fileSystem.GetFile("/AFile.txt");
+	/// 
+	/// ]]>
+	/// </code>
+	/// </example>
 	public interface IGorgonFileSystemWriteArea<out T>
 		where T : Stream
 	{
@@ -74,13 +106,16 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Property to return the location on the physical file system to use as the writable area for a <see cref="IGorgonFileSystem"/>.
 		/// </summary>
+		/// <remarks>
+		/// This value may return <b>null</b> (<i>Nothing</i> in VB.Net) or an empty string if there's no actual location on a physical file system (e.g. the file system is located in memory).
+		/// </remarks>
 		string WriteLocation
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return the file system to use when writing.
+		/// Property to return the file system linked to this writable area.
 		/// </summary>
 		IGorgonFileSystem FileSystem
 		{

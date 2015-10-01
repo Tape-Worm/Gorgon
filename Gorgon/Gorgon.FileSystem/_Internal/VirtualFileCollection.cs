@@ -66,7 +66,7 @@ namespace Gorgon.IO
 
 				if (!_files.ContainsKey(fileName))
 				{
-					throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, fileName));
+					throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName));
 				}
 
 				return _files[fileName];
@@ -133,7 +133,7 @@ namespace Gorgon.IO
 		{
 			if (_files.ContainsKey(fileInfo.Name))
 			{
-				throw new IOException(string.Format(Resources.GORFS_FILE_EXISTS, fileInfo.FullPath));
+				throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, fileInfo.FullPath));
 			}
 
 			// Create the entry.

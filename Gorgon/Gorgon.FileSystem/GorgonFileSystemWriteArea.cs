@@ -188,7 +188,7 @@ namespace Gorgon.IO
 
 				if (directory == null)
 				{
-					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, path));
+					throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 				}
 
 				directory.Parent.Directories.Remove(directory);
@@ -246,7 +246,7 @@ namespace Gorgon.IO
 			// We're opening an existing file, so check it if we require the file to be present.
 			if ((file == null) && ((mode == FileMode.Truncate) || (mode == FileMode.Open)))
 			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, path));
+				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 			}
 
 			if (file != null)
@@ -264,7 +264,7 @@ namespace Gorgon.IO
 
 			if (directory == null)
 			{
-				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryPath));
+				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
 			}
 
 			file = new VirtualFile(_mountPoint, new PhysicalFileInfo(GetWriteFilePath(path), DateTime.Now, 0, path), directory);
@@ -289,7 +289,7 @@ namespace Gorgon.IO
 
 			if (file == null)
 			{
-				throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, path));
+				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 			}
 
 			file.Directory.Files.Remove(file);

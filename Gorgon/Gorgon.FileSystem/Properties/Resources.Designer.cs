@@ -63,27 +63,9 @@ namespace Gorgon.IO.Properties {
         /// <summary>
         ///   Looks up a localized string similar to The file system &apos;{0}&apos; could not be read by any of the available providers..
         /// </summary>
-        internal static string GORFS_CANNOT_READ_FILESYSTEM {
+        internal static string GORFS_ERR_CANNOT_READ_FILESYSTEM {
             get {
-                return ResourceManager.GetString("GORFS_CANNOT_READ_FILESYSTEM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot use a directory from another file system in this operation..
-        /// </summary>
-        internal static string GORFS_DIR_FILESYSTEM_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORFS_DIR_FILESYSTEM_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist..
-        /// </summary>
-        internal static string GORFS_DIRECTORY_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORFS_DIRECTORY_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORFS_ERR_CANNOT_READ_FILESYSTEM", resourceCulture);
             }
         }
         
@@ -97,20 +79,29 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file entry &apos;{0}&apos; already belongs to the directory &apos;{1}&apos;..
+        ///   Looks up a localized string similar to The directory &apos;{0}&apos; does not exist..
         /// </summary>
-        internal static string GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY {
+        internal static string GORFS_ERR_DIRECTORY_NOT_FOUND {
             get {
-                return ResourceManager.GetString("GORFS_ERR_FILE_BELONGS_TO_ANOTHER_DIRECTORY", resourceCulture);
+                return ResourceManager.GetString("GORFS_ERR_DIRECTORY_NOT_FOUND", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The file system is read only..
+        ///   Looks up a localized string similar to A file with the path &apos;{0}&apos; already exists..
         /// </summary>
-        internal static string GORFS_ERR_FILESYSTEM_READ_ONLY {
+        internal static string GORFS_ERR_FILE_EXISTS {
             get {
-                return ResourceManager.GetString("GORFS_ERR_FILESYSTEM_READ_ONLY", resourceCulture);
+                return ResourceManager.GetString("GORFS_ERR_FILE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; does not exist..
+        /// </summary>
+        internal static string GORFS_ERR_FILE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_FILE_NOT_FOUND", resourceCulture);
             }
         }
         
@@ -124,6 +115,33 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The mount point &apos;{0}&apos; with physical location &apos;{1}&apos; was not found..
+        /// </summary>
+        internal static string GORFS_ERR_MOUNTPOINT_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_MOUNTPOINT_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not contain a file name..
+        /// </summary>
+        internal static string GORFS_ERR_NO_FILENAME {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_NO_FILENAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file system provider plug-in &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string GORFS_ERR_NO_PROVIDER_PLUGIN {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_NO_PROVIDER_PLUGIN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
@@ -133,29 +151,11 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A file with the path &apos;{0}&apos; already exists..
+        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not valid..
         /// </summary>
-        internal static string GORFS_FILE_EXISTS {
+        internal static string GORFS_ERR_PATH_INVALID {
             get {
-                return ResourceManager.GetString("GORFS_FILE_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot use a file from another file system in this operation..
-        /// </summary>
-        internal static string GORFS_FILE_FILESYSTEM_MISMATCH {
-            get {
-                return ResourceManager.GetString("GORFS_FILE_FILESYSTEM_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file &apos;{0}&apos; does not exist..
-        /// </summary>
-        internal static string GORFS_FILE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORFS_FILE_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORFS_ERR_PATH_INVALID", resourceCulture);
             }
         }
         
@@ -169,83 +169,11 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The index [{0}] must be 0 or be less than {1}..
+        ///   Looks up a localized string similar to Mount Point Virtual Location: {0}, Physical Location: {1}.
         /// </summary>
-        internal static string GORFS_INDEX_OUT_OF_RANGE {
+        internal static string GORFS_TOSTR_MOUNTPOINT {
             get {
-                return ResourceManager.GetString("GORFS_INDEX_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mount Point  Virtual Location: {0}, Physical Location: {1}.
-        /// </summary>
-        internal static string GORFS_MOUNTPOINT_TOSTRING {
-            get {
-                return ResourceManager.GetString("GORFS_MOUNTPOINT_TOSTRING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; does not contain a file name..
-        /// </summary>
-        internal static string GORFS_NO_FILENAME {
-            get {
-                return ResourceManager.GetString("GORFS_NO_FILENAME", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file system provider plug-in &apos;{0}&apos; was not found..
-        /// </summary>
-        internal static string GORFS_NO_PROVIDER_PLUGIN {
-            get {
-                return ResourceManager.GetString("GORFS_NO_PROVIDER_PLUGIN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot write to &apos;{0}&apos; because the there is no write path set..
-        /// </summary>
-        internal static string GORFS_NO_WRITE_LOCATION {
-            get {
-                return ResourceManager.GetString("GORFS_NO_WRITE_LOCATION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path &apos;{0}&apos; is not valid..
-        /// </summary>
-        internal static string GORFS_PATH_INVALID {
-            get {
-                return ResourceManager.GetString("GORFS_PATH_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file system provider &apos;{0}&apos; is not valid..
-        /// </summary>
-        internal static string GORFS_PROVIDER_INVALID {
-            get {
-                return ResourceManager.GetString("GORFS_PROVIDER_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The provider &apos;{0}&apos; is not present in this file system..
-        /// </summary>
-        internal static string GORFS_PROVIDER_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORFS_PROVIDER_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The mount point &apos;{0}&apos; with physical location &apos;{1}&apos; was not found..
-        /// </summary>
-        internal static string GORGFS_MOUNTPOINT_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFS_MOUNTPOINT_NOT_FOUND", resourceCulture);
+                return ResourceManager.GetString("GORFS_TOSTR_MOUNTPOINT", resourceCulture);
             }
         }
     }
