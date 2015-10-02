@@ -39,6 +39,11 @@ namespace Gorgon.IO
 	{
 		#region Variables.
 		/// <summary>
+		/// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
+		/// </summary>
+		internal readonly bool IsFakeMount;
+
+		/// <summary>
 		/// The provider for this mount point.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Nothing can change this object outside of the API.")]
@@ -63,6 +68,7 @@ namespace Gorgon.IO
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
 			return (left.Provider == right.Provider)
+					&& (left.IsFakeMount == right.IsFakeMount)
 					&& (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
 					&& (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 		}
@@ -141,9 +147,10 @@ namespace Gorgon.IO
 		/// <param name="provider">The provider for this mount point.</param>
 		/// <param name="physicalPath">The physical path.</param>
 		/// <param name="mountLocation">[Optional] The mount location.</param>
+		/// <param name="isFakeMountPoint">[Optional] <b>true</b> if the mount point doesn't use a real physical location, or <b>false</b> if it does.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/>, <paramref name="provider"/>, or <paramref name="mountLocation"/> parameters are NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
-		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation)
+		internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
 		{
 			if (provider == null)
 			{
@@ -173,6 +180,7 @@ namespace Gorgon.IO
 			Provider = provider;
 			PhysicalPath = physicalPath;
 			MountLocation = mountLocation;
+			IsFakeMount = isFakeMountPoint;
 		}
 		#endregion
 

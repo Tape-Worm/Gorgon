@@ -66,6 +66,8 @@ namespace Gorgon.IO
         private long _currentPosition;
 		// The length of this child stream.
 		private long _streamLength;
+		// Flag to indicate whether the read can be written to or not.
+	    private bool _readWrite;
         #endregion
 
         #region Properties.
@@ -87,7 +89,7 @@ namespace Gorgon.IO
 		public override bool CanSeek => true;
 
 	    /// <inheritdoc/>
-		public override bool CanWrite => ParentStream.CanWrite;
+		public override bool CanWrite => ParentStream.CanWrite && _readWrite;
 
 	    /// <inheritdoc/>
 		public override long Length => _streamLength;
@@ -411,13 +413,17 @@ namespace Gorgon.IO
         /// <param name="parentStream">The parent of this stream.</param>
         /// <param name="streamStart">The position in the parent stream to start at, in bytes.</param>
         /// <param name="streamSize">The number of bytes to partition from the parent stream.</param>
+        /// <param name="allowWrite">[Optional] <b>true</b> to allow writing to the stream, <b>false</b> to make the stream read-only.</param>
         /// <remarks>
         /// If writing to the stream, the <paramref name="streamSize"/> is ignored.
         /// </remarks>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="parentStream"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="streamStart"/> or the <paramref name="streamSize"/> parameters are less than 0</exception>
-        /// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
-        public GorgonStreamWrapper(Stream parentStream, long streamStart, long streamSize)
+        /// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="parentStream"/> is read only and the <paramref name="allowWrite"/> flag is set to <b>true</b>.</para>
+        /// </exception>
+        public GorgonStreamWrapper(Stream parentStream, long streamStart, long streamSize, bool allowWrite = true)
         {
 	        if (parentStream == null)
 	        {
@@ -434,6 +440,12 @@ namespace Gorgon.IO
 		        throw new ArgumentException(Resources.GOR_ERR_STREAM_PARENT_NEEDS_SEEK, nameof(parentStream));
 	        }
 
+	        if ((!parentStream.CanWrite) && (_readWrite))
+	        {
+		        throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(parentStream));
+	        }
+
+	        _readWrite = allowWrite;
 			_streamLength = streamSize;
             ParentStream = parentStream;
             _parentOffset = ParentStream.Position + streamStart;

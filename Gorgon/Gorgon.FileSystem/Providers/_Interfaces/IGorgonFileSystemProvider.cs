@@ -52,9 +52,38 @@ namespace Gorgon.IO.Providers
 	/// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugin"/>, 
 	/// the file system provider can be loaded dynamically through Gorgon's plug in system.
 	/// </para>
+	/// <para>
+	/// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical location 
+	/// (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). This prefix is specific to the provider and should be made available via 
+	/// the <see cref="Prefix"/> property. The prefix must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
+	/// </para>
 	/// </remarks>
 	public interface IGorgonFileSystemProvider
 	{
+		/// <summary>
+		/// Property to return the provider specific prefix for a physical location.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Some providers may not use a physical location on the operating system file system. In such cases, implementors of a <see cref="IGorgonFileSystemProvider"/> must provide a prefix for a physical 
+		/// location (e.g. <c>Mount("::\\Prefix\DirectoryName", "/");</c>, <c>Mount("::\\Prefix", "/")</c>, or whatever else the provider chooses). 
+		/// </para>
+		/// <para>
+		/// This value must <u>always</u> begin with the characters <c>::\\</c>. Otherwise, the <see cref="IGorgonFileSystem"/> will not know how to parse the physical location.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// If the provider accesses a physical file system directory or file for its information, then this value should always return <see cref="string.Empty"/> or <b>null</b> (<i>Nothing</i> in VB.Net).
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		string Prefix
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return a list of preferred file extensions (if applicable).
 		/// </summary>
@@ -112,7 +141,7 @@ namespace Gorgon.IO.Providers
 		Stream OpenFileStream(IGorgonVirtualFile file);
 
 		/// <summary>
-		/// Function to determine if a packed physical file system can be read by this provider.
+		/// Function to determine if a physical file system can be read by this provider.
 		/// </summary>
 		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
 		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
@@ -120,10 +149,14 @@ namespace Gorgon.IO.Providers
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <remarks>
 		/// <para>
-		/// This will test a packed file (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method will always 
-		/// return <b>false</b>.
+		/// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 
+		/// <b>false</b>.
+		/// </para>
+		/// <para>
+		/// When used with a <see cref="IGorgonFileSystemProvider"/> that supports a non operating system based physical file system, such as the <see cref="GorgonFileSystemRamDiskProvider"/>, then this 
+		/// method should compare the <paramref name="physicalPath"/> with its <see cref="Prefix"/> to ensure that the <see cref="IGorgonFileSystem"/> requesting the provider is using the correct provider.
 		/// </para>
 		/// </remarks>
-		bool CanReadFile(string physicalPath);
+		bool CanReadFileSystem(string physicalPath);
 	}
 }

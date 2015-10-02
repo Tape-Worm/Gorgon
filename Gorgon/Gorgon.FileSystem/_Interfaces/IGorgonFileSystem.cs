@@ -108,6 +108,15 @@ namespace Gorgon.IO
 	public interface IGorgonFileSystem
 	{
 		#region Properties.
+
+		/// <summary>
+		/// Property to return the <see cref="IGorgonFileSystemProvider"/> installed in this file system.
+		/// </summary>
+		IEnumerable<IGorgonFileSystemProvider> Providers
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the default file system provider for this file system.
 		/// </summary>
@@ -390,7 +399,7 @@ namespace Gorgon.IO
 		/// </para>
 		/// </remarks>
 		void Unmount(string physicalPath);
-		
+
 		/// <summary>
 		/// Function to mount a physical file system into the virtual file system.
 		/// </summary>
@@ -418,6 +427,11 @@ namespace Gorgon.IO
 		/// <para>
 		/// When files (e.g. zip files) are mounted, the appropriate provider must be loaded and installed via the constructor of this object. The providers can be loaded through a 
 		/// <see cref="IGorgonFileSystemProviderFactory"/> instance.
+		/// </para>
+		/// <para>
+		/// The <paramref name="physicalPath"/> is usually a file or a directory on the operating system file system. But in some cases, this physical location may point to somewhere completely virtual 
+		/// (e.g. <see cref="GorgonFileSystemRamDiskProvider"/>). In order to mount data from those file systems, a provider-specific prefix must be prefixed to the parameter (see provider documentation 
+		/// for the correct prefix). This prefix must always begin with <c>::\\</c>.
 		/// </para>
 		/// <para>
 		/// The <paramref name="mountPath"/> parameter is optional, and if omitted, the contents of the physical file system object will be mounted into the root (<c>/</c>) of the virtual file system. If 

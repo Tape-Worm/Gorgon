@@ -61,6 +61,9 @@ namespace Gorgon.IO
 
 		#region Properties.
 		/// <inheritdoc/>
+		public IEnumerable<IGorgonFileSystemProvider> Providers => _providers.Select(item => item.Value);
+
+		/// <inheritdoc/>
 		/// <remarks>
 		/// This is the default folder file system provider.
 		/// </remarks>
@@ -94,7 +97,7 @@ namespace Gorgon.IO
 				throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, physicalPath));
 			}
 
-			IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFile(physicalPath)).Value;
+			IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(physicalPath)).Value;
 
 			if (provider == null)
 			{
@@ -152,22 +155,55 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
+		/// Function to mount a non physical location in the file system.
+		/// </summary>
+		/// <param name="location">The non physical location to mount.</param>
+		/// <param name="mountDirectory">The virtual directory to mount in.</param>
+		/// <returns>A <see cref="GorgonFileSystemMountPoint"/>.</returns>
+		private GorgonFileSystemMountPoint MountNonPhysicalLocation(string location, string mountDirectory)
+		{
+			IGorgonFileSystemProvider provider = _providers.FirstOrDefault(item => item.Value.CanReadFileSystem(location)).Value;
+
+			if (provider == null)
+			{
+				throw new IOException(string.Format(Resources.GORFS_ERR_CANNOT_READ_FILESYSTEM, location));
+			}
+
+			var mountPoint = new GorgonFileSystemMountPoint(provider, location, mountDirectory, true);
+
+			GetFileSystemObjects(mountPoint);
+
+			if (_mountProviders.Contains(mountPoint))
+			{
+				_mountProviders.Remove(mountPoint);
+			}
+
+			// Assign the default provider to the mount point.
+			_mountProviders.Add(mountPoint);
+
+			return mountPoint;
+		}
+
+		/// <summary>
 		/// Function to retrieve the file system objects from the physical file system.
 		/// </summary>
 		/// <param name="mountPoint">The mount point to link the physical file system with the virtual file system.</param>
 		private void GetFileSystemObjects(GorgonFileSystemMountPoint mountPoint)
         {
-	        string physicalPath = Path.GetFullPath(mountPoint.PhysicalPath);
-            string fileName = Path.GetFileName(physicalPath);
+	        string physicalPath = mountPoint.IsFakeMount ? mountPoint.PhysicalPath : Path.GetFullPath(mountPoint.PhysicalPath);
+            string fileName = mountPoint.IsFakeMount ? null : Path.GetFileName(physicalPath);
 
-            physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory(Path.DirectorySeparatorChar);
+			if (!mountPoint.IsFakeMount)
+			{
+				physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory(Path.DirectorySeparatorChar);
 
-            if (!string.IsNullOrWhiteSpace(fileName))
-            {
-                physicalPath += fileName.FormatFileName();
-            }
+				if (!string.IsNullOrWhiteSpace(fileName))
+				{
+					physicalPath += fileName.FormatFileName();
+				}
+			}
 
-            // Find existing mount point.
+			// Find existing mount point.
 			VirtualDirectory mountDirectory = InternalGetDirectory(mountPoint.MountLocation);
 
 			if (mountDirectory == null)
@@ -395,7 +431,10 @@ namespace Gorgon.IO
 			}
 
 			// Get path parts.
-			string directory = Path.GetDirectoryName(path).FormatDirectory('/');
+			string directory = Path.GetDirectoryName(path);
+
+			directory = string.IsNullOrWhiteSpace(directory) ? "/" : directory.FormatDirectory('/');
+
 			string filename = Path.GetFileName(path).FormatFileName();
 
 			// Check for file name.
@@ -669,6 +708,11 @@ namespace Gorgon.IO
 
 			lock (_syncLock)
 			{
+				if (physicalPath.StartsWith(@"::\\", StringComparison.OrdinalIgnoreCase))
+				{
+					return MountNonPhysicalLocation(physicalPath, mountPath);
+				}
+
 				physicalPath = Path.GetFullPath(physicalPath);
 				string fileName = Path.GetFileName(physicalPath).FormatFileName();
 				string directory = Path.GetDirectoryName(physicalPath)?.FormatDirectory(Path.DirectorySeparatorChar);
@@ -707,7 +751,7 @@ namespace Gorgon.IO
 		/// <remarks>
 		/// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
 		/// </remarks>
-		public GorgonFileSystem(GorgonFileSystemProvider provider, IGorgonLog log = null)
+		public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
 			: this(log)
 		{
 			if (provider == null)
@@ -715,7 +759,7 @@ namespace Gorgon.IO
 				throw new ArgumentNullException(nameof(provider));
 			}
 
-			_providers[provider.Name] = provider;
+			_providers[provider.GetType().FullName] = provider;
 		}
 
 		/// <summary>
@@ -727,7 +771,7 @@ namespace Gorgon.IO
 		/// To get a list of providers to pass in, use the <see cref="GorgonFileSystemProviderFactory"/> object to create the providers.
 		/// </remarks>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonFileSystem(IEnumerable<GorgonFileSystemProvider> providers, IGorgonLog log = null)
+		public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
 			: this(log)
 		{
 			if (providers == null)
@@ -736,9 +780,9 @@ namespace Gorgon.IO
 			}
 			
 			// Get all the providers in the parameter.
-			foreach (GorgonFileSystemProvider provider in providers.Where(item => item != null))
+			foreach (IGorgonFileSystemProvider provider in providers.Where(item => item != null))
 			{
-				_providers[provider.Name] = provider;
+				_providers[provider.GetType().FullName] = provider;
 			}
 		}
 

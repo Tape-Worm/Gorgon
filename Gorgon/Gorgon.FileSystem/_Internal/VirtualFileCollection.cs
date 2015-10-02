@@ -129,15 +129,20 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="mountPoint">The mount point for the file.</param>
 		/// <param name="fileInfo">The physical file information.</param>
-		public void Add(GorgonFileSystemMountPoint mountPoint, IGorgonPhysicalFileInfo fileInfo)
+		/// <returns>A new virtual file.</returns>
+		public VirtualFile Add(GorgonFileSystemMountPoint mountPoint, IGorgonPhysicalFileInfo fileInfo)
 		{
 			if (_files.ContainsKey(fileInfo.Name))
 			{
 				throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, fileInfo.FullPath));
 			}
 
+			VirtualFile result = new VirtualFile(mountPoint, fileInfo, _parent);
+
 			// Create the entry.
-			_files.Add(fileInfo.Name, new VirtualFile(mountPoint, fileInfo, _parent));
+			_files.Add(fileInfo.Name, result);
+
+			return result;
 		}
 
 		/// <summary>

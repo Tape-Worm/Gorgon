@@ -50,6 +50,9 @@ namespace Gorgon.IO.Providers
 	{
 		#region Properties.
 		/// <inheritdoc/>
+		public string Prefix => null;
+
+		/// <inheritdoc/>
 		public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
 		{
 			get;
@@ -165,12 +168,12 @@ namespace Gorgon.IO.Providers
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="CanReadFile"/>
+		/// <inheritdoc cref="CanReadFileSystem"/>
 		/// </summary>
-		/// <param name="physicalPath"><inheritdoc cref="CanReadFile"/></param>
-		/// <returns><inheritdoc cref="CanReadFile"/></returns>
+		/// <param name="physicalPath"><inheritdoc cref="CanReadFileSystem"/></param>
+		/// <returns><inheritdoc cref="CanReadFileSystem"/></returns>
 		/// <remarks>
-		/// <inheritdoc cref="CanReadFile"/>
+		/// <inheritdoc cref="CanReadFileSystem"/>
 		/// <para>
 		/// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to determine if a packed file can be read by reading the header of the file specified in <paramref name="physicalPath"/>.
 		/// </para>
@@ -231,7 +234,7 @@ namespace Gorgon.IO.Providers
 		}
 
 		/// <inheritdoc/>
-		public bool CanReadFile(string physicalPath)
+		public bool CanReadFileSystem(string physicalPath)
 		{
 			if (physicalPath == null)
 			{

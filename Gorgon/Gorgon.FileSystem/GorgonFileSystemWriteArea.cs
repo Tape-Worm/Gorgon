@@ -106,24 +106,12 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to return the write area path for a given virtual file.
 		/// </summary>
-		/// <param name="path">The path to evaluate.</param>
+		/// <param name="directoryName">Formatted directory name.</param>
+		/// <param name="fileName">Formatted file name.</param>
 		/// <returns>The location to write.</returns>
-		private string GetWriteFilePath(string path)
+		private string GetWriteFilePath(string directoryName, string fileName)
 		{
-			if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-			{
-				path = "/" + path;
-			}
-
-			string directory = Path.GetDirectoryName(path);
-			string fileName = Path.GetFileName(path);
-
-			if (string.IsNullOrWhiteSpace(fileName))
-			{
-				throw new IOException(string.Format(Resources.GORFS_ERR_ILLEGAL_PATH, path));
-			}
-
-			return GetWriteDirectoryPath(string.IsNullOrWhiteSpace(directory) ? "/" : directory.FormatDirectory('/')) + fileName.FormatFileName();
+			return GetWriteDirectoryPath(directoryName) + fileName;
 		}
 
 		/// <inheritdoc/>
@@ -251,12 +239,18 @@ namespace Gorgon.IO
 
 			if (file != null)
 			{
-				return new FileSystemWriteStream(_mountPoint, GetWriteFilePath(file.FullPath), file, mode);
+				return new FileSystemWriteStream(_mountPoint, GetWriteFilePath(file.Directory.FullPath, file.Name), file, mode);
 			}
 
 			PrepareWriteArea();
 
 			string directoryPath = Path.GetDirectoryName(path);
+			string fileName = Path.GetFileName(path);
+
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				throw new ArgumentException(string.Format(Resources.GORFS_ERR_NO_FILENAME, path), nameof(path));
+			}
 
 			directoryPath = string.IsNullOrWhiteSpace(directoryPath) ? "/" : directoryPath.FormatDirectory('/');
 
@@ -267,9 +261,26 @@ namespace Gorgon.IO
 				throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
 			}
 
-			file = new VirtualFile(_mountPoint, new PhysicalFileInfo(GetWriteFilePath(path), DateTime.Now, 0, path), directory);
+			FileStream result = null;
 
-			return new FileSystemWriteStream(_mountPoint, file.PhysicalFile.FullPath, file, mode);
+			try
+			{
+				file = directory.Files.Add(_mountPoint, new PhysicalFileInfo(GetWriteFilePath(directoryPath, fileName), DateTime.Now, 0, directory.FullPath + fileName.FormatFileName()));
+				result = new FileSystemWriteStream(_mountPoint, file.PhysicalFile.FullPath, file, mode);
+			}
+			catch
+			{
+				// If we've got an error, and the file's been added, then get rid of it.
+				if ((file != null) && (directory.Files.Contains(file.FullPath)))
+				{
+					directory.Files.Remove(file);
+				}
+
+				result?.Dispose();
+				throw;
+			}
+
+			return result;
 		}
 
 		/// <inheritdoc/>
@@ -303,14 +314,14 @@ namespace Gorgon.IO
 				return;
 			}
 
-			string writePath = GetWriteFilePath(path);
+			string writePath = GetWriteFilePath(file.Directory.FullPath, file.Name);
 
 			if (!File.Exists(writePath))
 			{
 				return;
 			}
 
-			File.Delete(GetWriteFilePath(path));
+			File.Delete(writePath);
 		}
 		#endregion
 

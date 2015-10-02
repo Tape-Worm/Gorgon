@@ -191,7 +191,10 @@ namespace Gorgon.IO
 		/// <param name="mode">The mode to determine how to read/write the file.</param>
 		/// <returns>An open <see cref="FileStream"/> to the file.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
+		/// </exception>
 		/// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found and the <paramref name="mode"/> is set to <see cref="FileMode.Open"/> or <see cref="FileMode.Truncate"/>.</exception>
 		/// <exception cref="DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> was not found.</exception>
 		/// <remarks>

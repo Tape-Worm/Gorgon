@@ -49,9 +49,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GorgonFileSystem.cs" />
+    <Compile Include="GorgonFileSystemRamDiskWriter.cs" />
     <Compile Include="GorgonFileSystemWriteArea.cs" />
+    <Compile Include="Providers\GorgonFileSystemRamDiskProvider.cs" />
     <Compile Include="_Interfaces\IGorgonVirtualFile.cs" />
     <Compile Include="_Internal\FileSystemWriteStream.cs" />
+    <Compile Include="_Internal\RamDiskFileSystem.cs" />
+    <Compile Include="_Internal\RamDiskWriterStream.cs" />
     <Compile Include="_Internal\VirtualDirectory.cs" />
     <Compile Include="_Internal\VirtualDirectoryCollection.cs" />
     <Compile Include="_Internal\VirtualFile.cs" />

@@ -142,6 +142,15 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ram disk writer needs a file system that contains a ram disk provider..
+        /// </summary>
+        internal static string GORFS_ERR_NO_RAMDISK_PROVIDER {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_NO_RAMDISK_PROVIDER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORFS_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
@@ -160,11 +169,56 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot write to an existing file with a file mode of CreateNew..
+        /// </summary>
+        internal static string GORFS_ERR_RAMDISK_FILE_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_RAMDISK_FILE_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file stream is read only..
+        /// </summary>
+        internal static string GORFS_ERR_RAMDISK_FILE_IS_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_RAMDISK_FILE_IS_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file stream is write only..
+        /// </summary>
+        internal static string GORFS_ERR_RAMDISK_FILE_IS_WRITE_ONLY {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_RAMDISK_FILE_IS_WRITE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file stream is unable to seek..
+        /// </summary>
+        internal static string GORFS_ERR_RAMDISK_FILE_NOT_SEEKABLE {
+            get {
+                return ResourceManager.GetString("GORFS_ERR_RAMDISK_FILE_NOT_SEEKABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A provider to mount a physical directory as a file system..
         /// </summary>
         internal static string GORFS_FOLDER_FS_DESC {
             get {
                 return ResourceManager.GetString("GORFS_FOLDER_FS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A provider that will use memory to hold files and directories..
+        /// </summary>
+        internal static string GORFS_RAMDISK_FS_DESC {
+            get {
+                return ResourceManager.GetString("GORFS_RAMDISK_FS_DESC", resourceCulture);
             }
         }
         

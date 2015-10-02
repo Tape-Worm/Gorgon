@@ -83,7 +83,7 @@ namespace Gorgon.IO.Providers
 		public bool IsEncrypted => false;
 		#endregion
 
-		#region Methods.
+		#region Constructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="PhysicalFileInfo" /> class.
 		/// </summary>
@@ -91,11 +91,15 @@ namespace Gorgon.IO.Providers
 		/// <param name="createDate">The create date.</param>
 		/// <param name="length">The length.</param>
 		/// <param name="virtualPath">The virtual path.</param>
-		public PhysicalFileInfo(string fullPhysicalPath, DateTime createDate, long length, string virtualPath)
+		/// <param name="offset">[Optional] Offset of the file within a packed file system.</param>
+		/// <param name="lastModDate">[Optional] The last modified date.</param>
+		public PhysicalFileInfo(string fullPhysicalPath, DateTime createDate, long length, string virtualPath, long offset = 0, DateTime? lastModDate = null)
 		{
 			FullPath = fullPhysicalPath;
 			Name = Path.GetFileName(fullPhysicalPath).FormatFileName();
-			CreateDate = LastModifiedDate = createDate;
+			Offset = offset;
+			CreateDate = createDate;
+			LastModifiedDate = lastModDate ?? createDate;
 			Length = length;
 			VirtualPath = virtualPath;
 		}
