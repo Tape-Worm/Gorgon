@@ -26,6 +26,8 @@
 
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Gorgon.IO
 {
@@ -37,7 +39,7 @@ namespace Gorgon.IO
 	/// <para>
 	/// The <see cref="IGorgonFileSystem"/> is a read only object that is only capable of returning existing files and directories from a physical file system. This is by design in order to keep the integrity 
 	/// and security of the original file system intact. However, in some cases, the need to write data is required by the application, and that data should be reflected in the current file system. Thus, we 
-	/// have the <see cref="IGorgonFileSystemWriteArea{T}"/> interface.
+	/// have the <see cref="IGorgonFileSystemWriter{T}"/> interface.
 	/// </para>
 	/// <para>
 	/// This object will allow applications to define an area on a physical file system that can be written to by the application. This provides isolation from the main file system and gives a degree of security 
@@ -57,7 +59,7 @@ namespace Gorgon.IO
 	/// <para> 
 	/// <note type="tip">
 	/// <para>
-	/// When attaching a <see cref="IGorgonFileSystemWriteArea{T}"/> to a <see cref="IGorgonFileSystem"/>, the write area location is <u>always</u> mounted to the root of the virtual file system.
+	/// When attaching a <see cref="IGorgonFileSystemWriter{T}"/> to a <see cref="IGorgonFileSystem"/>, the write area location is <u>always</u> mounted to the root of the virtual file system.
 	/// </para>
 	/// </note> 
 	/// </para>
@@ -75,7 +77,7 @@ namespace Gorgon.IO
 	/// <code language="csharp">
 	/// <![CDATA[
 	/// IGorgonFileSystem fileSystem = new GorgonFileSystem();
-	/// IGorgonFileSystemWriteArea writeArea = new GorgonFileSystemWriteArea(fileSystem, @"C:\MyWritingSpot\");
+	/// IGorgonFileSystemWriter writeArea = new GorgonFileSystemWriter(fileSystem, @"C:\MyWritingSpot\");
 	/// 
 	/// // Mount a directory for this file system.
 	/// fileSystem.Mount(@"C:\MyDirectory\", "/"); 
@@ -99,7 +101,7 @@ namespace Gorgon.IO
 	/// ]]>
 	/// </code>
 	/// </example>
-	public interface IGorgonFileSystemWriteArea<out T>
+	public interface IGorgonFileSystemWriter<out T>
 		where T : Stream
 	{
 		#region Properties.
@@ -124,6 +126,59 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to copy the contents of a file system to the writable area.
+		/// </summary> 
+		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
+		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
+		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
+		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> (<i>Nothing</i> in VB.Net) if the operation was cancelled.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="sourceFileSystem"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="IOException">Thrown when the a file exists in <see cref="FileSystem"/>, and the <paramref name="allowOverwrite"/> parameter is set to <b>false</b>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This copies all the file and directory information from one file system, into the <see cref="FileSystem"/> linked to this writer. 
+		/// </para>
+		/// <para>
+		/// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
+		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
+		/// </para>
+		/// </remarks>
+		Tuple<int, int> CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
+
+		/// <summary>
+		/// Function to asynchronously copy the contents of a file system to the writable area.
+		/// </summary>
+		/// <param name="sourceFileSystem"><inheritdoc cref="CopyFrom"/></param>
+		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
+		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
+		/// <param name="allowOverwrite"><inheritdoc cref="CopyFrom"/></param>
+		/// <returns><inheritdoc cref="CopyFrom"/></returns>
+		/// <remarks>
+		/// <inheritdoc cref="CopyFrom"/>
+		/// <para>
+		/// This version of the copy method allows for an asynchronous copy of a set of a files and directories from another <see cref="IGorgonFileSystem"/>. This method should be used when there is a large 
+		/// amount of data to transfer between the file systems.
+		/// </para>
+		/// <para>
+		/// Unlike the <see cref="CopyFrom"/> method, this method will report the progress of the copy through the <paramref name="copyProgress"/> callback. This callback is a method that takes a 
+		/// <see cref="GorgonWriterCopyProgress"/> value as a parameter that will report the current state, and will return a <see cref="bool"/> to indicate whether to continue the copy or not (<b>true</b> to 
+		/// continue, <b>false</b> to stop). 
+		/// </para>
+		/// <para>
+		/// <note type="warning">
+		/// <para>
+		/// The <paramref name="copyProgress"/> method does not switch back to the UI context. Ensure that you invoke any operations that update a UI on the appropriate thread (e.g <c>BeginInvoke</c> on a 
+		/// WinForms UI element or <c>Dispatcher</c> on a WPF element).
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// This method also allows for cancellation of the copy operation by passing a <see cref="CancellationToken"/> to the <paramref name="cancelToken"/> parameter.
+		/// </para>
+		/// </remarks>
+		Task<Tuple<int, int>> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true);
+
 		/// <summary>
 		/// Function to create a new directory in the writable area on the physical file system.
 		/// </summary>

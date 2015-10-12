@@ -50,7 +50,8 @@
   <ItemGroup>
     <Compile Include="GorgonFileSystem.cs" />
     <Compile Include="GorgonFileSystemRamDiskWriter.cs" />
-    <Compile Include="GorgonFileSystemWriteArea.cs" />
+    <Compile Include="GorgonFileSystemWriter.cs" />
+    <Compile Include="GorgonWriterCopyProgress.cs" />
     <Compile Include="Providers\GorgonFileSystemRamDiskProvider.cs" />
     <Compile Include="_Interfaces\IGorgonVirtualFile.cs" />
     <Compile Include="_Internal\FileSystemWriteStream.cs" />
@@ -62,7 +63,7 @@
     <Compile Include="_Internal\VirtualFileCollection.cs" />
     <Compile Include="GorgonFileSystemMountPoint.cs" />
     <Compile Include="_Interfaces\IGorgonFileSystem.cs" />
-    <Compile Include="_Interfaces\IGorgonFileSystemWriteArea.cs" />
+    <Compile Include="_Interfaces\IGorgonFileSystemWriter.cs" />
     <Compile Include="_Interfaces\IGorgonVirtualDirectory.cs" />
     <Compile Include="Providers\GorgonFileSystemProvider.cs" />
     <Compile Include="Providers\GorgonPhysicalFileSystemData.cs" />

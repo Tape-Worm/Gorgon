@@ -1024,6 +1024,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rational number: {0}/{1} ({2})..
+        /// </summary>
+        internal static string GOR_TOSTR_RATIONAL {
+            get {
+                return ResourceManager.GetString("GOR_TOSTR_RATIONAL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to bytes.
         /// </summary>
         internal static string GOR_UNIT_MEM_BYTES {

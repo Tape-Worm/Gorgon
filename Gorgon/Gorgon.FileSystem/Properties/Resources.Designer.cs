@@ -214,11 +214,29 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A file system writer that stores directories and file data in an operating system directory..
+        /// </summary>
+        internal static string GORFS_FOLDER_WRITER_FS_DESC {
+            get {
+                return ResourceManager.GetString("GORFS_FOLDER_WRITER_FS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A provider that will use memory to hold files and directories..
         /// </summary>
         internal static string GORFS_RAMDISK_FS_DESC {
             get {
                 return ResourceManager.GetString("GORFS_RAMDISK_FS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A file system writer that stores directories and file data in memory..
+        /// </summary>
+        internal static string GORFS_RAMDISK_WRITER_FS_DESC {
+            get {
+                return ResourceManager.GetString("GORFS_RAMDISK_WRITER_FS_DESC", resourceCulture);
             }
         }
         

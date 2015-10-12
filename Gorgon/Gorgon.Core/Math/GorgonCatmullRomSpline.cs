@@ -42,7 +42,7 @@ namespace Gorgon.Math
     {
         #region Variables.
 		// Spline coefficients.
-        private Matrix4x4 _coefficients = Matrix4x4.Identity;
+        private readonly Matrix4x4 _coefficients = Matrix4x4.Identity;
 		// Tangents.
         private Vector4[] _tangents;
         #endregion

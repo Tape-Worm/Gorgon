@@ -43,7 +43,7 @@ namespace Gorgon.IO.Providers
 	/// <para>
 	/// <note type="important">
 	/// <para>
-	/// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriteArea{T}"/> 
+	/// As the documentation states, providers can read data from a file system. However, no mechanism is available to write to a file system through a provider. This is by design. The <see cref="IGorgonFileSystemWriter{T}"/> 
 	/// type allows writing to a file system via a predefined area in a physical file system. 
 	/// </para>
 	/// </note>

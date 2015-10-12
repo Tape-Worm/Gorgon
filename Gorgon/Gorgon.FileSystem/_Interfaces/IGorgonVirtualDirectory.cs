@@ -40,8 +40,8 @@ namespace Gorgon.IO
 	/// A virtual directory is a container for sub directories and files. 
 	/// </para>
 	/// <para>
-	/// Directories can be created by creating a <see cref="IGorgonFileSystemWriteArea{T}"/> instance and calling its <see cref="IGorgonFileSystemWriteArea{T}.CreateDirectory"/>. Likewise, if you wish to delete 
-	/// a directory, call the <see cref="IGorgonFileSystemWriteArea{T}.DeleteDirectory"/> method on the <see cref="IGorgonFileSystemWriteArea{T}"/> object.
+	/// Directories can be created by creating a <see cref="IGorgonFileSystemWriter{T}"/> instance and calling its <see cref="IGorgonFileSystemWriter{T}.CreateDirectory"/>. Likewise, if you wish to delete 
+	/// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> object.
 	/// </para>
 	/// </remarks>
 	public interface IGorgonVirtualDirectory

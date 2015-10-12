@@ -28,14 +28,18 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
+using Gorgon.Plugins;
 
 namespace Gorgon.IO
 {
-	/// <inheritdoc cref="IGorgonFileSystemWriteArea{T}"/>
-	public class GorgonFileSystemWriteArea
-		: IGorgonFileSystemWriteArea<FileStream>
+	/// <inheritdoc cref="IGorgonFileSystemWriter{T}"/>
+	[ExcludeAsPlugin]
+	public class GorgonFileSystemWriter
+		: GorgonPlugin, IGorgonFileSystemWriter<FileStream>
 	{
 		#region Variables.
 		// Locking synchronization for multiple threads.
@@ -112,6 +116,107 @@ namespace Gorgon.IO
 		private string GetWriteFilePath(string directoryName, string fileName)
 		{
 			return GetWriteDirectoryPath(directoryName) + fileName;
+		}
+
+		/// <summary>
+		/// Function to copy data from a file system to the file system linked to this writer.
+		/// </summary>
+		/// <param name="sourceFileSystem">The file system to copy from.</param>
+		/// <param name="progress">The callback for copy progress.</param>
+		/// <param name="token">The cancellation token for asynchronous copy.</param>
+		/// <param name="allowOverwrite">Flag to indicate whether to allow overwriting files or not.</param>
+		/// <returns>A tuple containing the count of the directories and files copied.</returns>
+		private Tuple<int, int> CopyInternal(IGorgonFileSystem sourceFileSystem,
+		                                     Func<GorgonWriterCopyProgress, bool> progress,
+		                                     CancellationToken token,
+		                                     bool allowOverwrite)
+		{
+			int directoryCount = 0;
+			int fileCount = 0;
+
+			// Enumerate files and directories from the source.
+			IGorgonVirtualFile[] files = sourceFileSystem.FindFiles("/", "*").ToArray();
+			IGorgonVirtualDirectory[] directories = sourceFileSystem.FindDirectories("/", "*").ToArray();
+
+			if ((files.Length == 0) && (directories.Length == 0))
+			{
+				return new Tuple<int, int>(0, 0);
+			}
+
+			// Create all the directories.
+			foreach (IGorgonVirtualDirectory directory in directories)
+			{
+				if (token.IsCancellationRequested)
+				{
+					return null;
+				}
+
+				CreateDirectory(directory.FullPath);
+				++directoryCount;
+			}
+
+			foreach (IGorgonVirtualFile file in files)
+			{
+				IGorgonVirtualFile destFile = FileSystem.GetFile(file.FullPath);
+
+				if (token.IsCancellationRequested)
+				{
+					return null;
+				}
+
+				// Do not allow overwrite if the user requested it.
+				if ((destFile != null) && (!allowOverwrite))
+				{
+					throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, destFile.FullPath));
+				}
+
+				// Copy the file.
+				using (Stream sourceStream = file.OpenStream())
+				{
+					using (Stream destStream = OpenStream(file.FullPath, FileMode.Create))
+					{
+						sourceStream.CopyTo(destStream, 80000);
+					}
+				}
+
+				++fileCount;
+
+				if (progress == null)
+				{
+					continue;
+				}
+
+				if (!progress(new GorgonWriterCopyProgress(file, fileCount, files.Length, directories.Length)))
+				{
+					return null;
+				}
+			}
+
+			return new Tuple<int, int>(directoryCount, fileCount);
+		}
+
+		/// <inheritdoc/>
+		public Tuple<int, int> CopyFrom(IGorgonFileSystem sourceFileSystem, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		{
+			if (sourceFileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(sourceFileSystem));
+			}
+			
+			return CopyInternal(sourceFileSystem, copyProgress, new CancellationToken(false), allowOverwrite);
+		}
+
+		/// <inheritdoc/>
+		public Task<Tuple<int, int>> CopyFromAsync(IGorgonFileSystem sourceFileSystem, CancellationToken cancelToken, Func<GorgonWriterCopyProgress, bool> copyProgress = null, bool allowOverwrite = true)
+		{
+			if (sourceFileSystem == null)
+			{
+				throw new ArgumentNullException(nameof(sourceFileSystem));
+			}
+
+			// ReSharper disable MethodSupportsCancellation
+			return Task.Run(() => CopyInternal(sourceFileSystem, copyProgress, cancelToken, allowOverwrite));
+			// ReSharper restore MethodSupportsCancellation
 		}
 
 		/// <inheritdoc/>
@@ -327,13 +432,14 @@ namespace Gorgon.IO
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFileSystemWriteArea"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileSystemWriter"/> class.
 		/// </summary>
 		/// <param name="fileSystem">A file system used to track the updates when writing.</param>
 		/// <param name="writeLocation">The directory on the physical file system to actually write data into.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, or the <paramref name="writeLocation"/> parameters are <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="writeLocation"/> is empty.</exception>
-		public GorgonFileSystemWriteArea(GorgonFileSystem fileSystem, string writeLocation)
+		public GorgonFileSystemWriter(GorgonFileSystem fileSystem, string writeLocation)
+			: base(Resources.GORFS_FOLDER_WRITER_FS_DESC)
 		{
 			if (fileSystem == null)
 			{

@@ -199,6 +199,11 @@ namespace Gorgon.IO
 				file.PhysicalFile = new PhysicalFileInfo(file.PhysicalFile.FullPath, file.CreateDate, 0, file.Directory.FullPath, 0, DateTime.Now);
 			}
 
+			if (fileMode == FileMode.Append)
+			{
+				_blobStream.Position = _blobStream.Length;
+			}
+
 			_mountPoint = mountPoint;
 			_virtualFile = file;
 			_fileMode = fileMode;

@@ -42,7 +42,7 @@ namespace Gorgon.IO
 	/// </para>
 	/// <para>
 	/// The virtual file system is a read only file system. This is done by design so that the integrity of the original physical file systems can be preserved. If your application needs to write data into 
-	/// the file system, then the <see cref="IGorgonFileSystemWriteArea{T}"/> has been provided to give access to a writable area that will integrate with this object.
+	/// the file system, then the <see cref="IGorgonFileSystemWriter{T}"/> has been provided to give access to a writable area that will integrate with this object.
 	/// </para>
 	/// <para>
 	/// Physical file systems (such as a windows directory or a Zip file) are "mounted" into this object. When a physical file system is mounted, all of the file names (and other info) and directory names 
@@ -73,7 +73,7 @@ namespace Gorgon.IO
 	/// When a file system provider is added to the virtual file system object upon creation, the object will contain 2 providers, the default provider is always available with any additional providers.
 	/// </para>
 	/// </remarks>
-	/// <seealso cref="IGorgonFileSystemWriteArea{T}"/>
+	/// <seealso cref="IGorgonFileSystemWriter{T}"/>
 	/// <seealso cref="GorgonFileSystemProvider"/>
 	/// <example>
 	/// This example shows how to create a file system with the default provider, and mount a directory to the root:
@@ -303,7 +303,7 @@ namespace Gorgon.IO
 		/// This will unmount and re-mount all the known mount points for the file system, effectively rebuilding the file system file/directory tree.
 		/// </para>
 		/// <para>
-		/// Any files or directories sharing the same path as those in the <see cref="IGorgonFileSystemWriteArea{T}"/> will be restored if they were deleted. This is because the physical file systems (other 
+		/// Any files or directories sharing the same path as those in the <see cref="IGorgonFileSystemWriter{T}"/> will be restored if they were deleted. This is because the physical file systems (other 
 		/// than the write area) are never changed. For example:
 		/// <para>
 		/// <code language="csharp">

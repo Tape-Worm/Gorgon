@@ -168,8 +168,14 @@
   <data name="GORFS_FOLDER_FS_DESC" xml:space="preserve">
     <value>A provider to mount a physical directory as a file system.</value>
   </data>
+  <data name="GORFS_FOLDER_WRITER_FS_DESC" xml:space="preserve">
+    <value>A file system writer that stores directories and file data in an operating system directory.</value>
+  </data>
   <data name="GORFS_RAMDISK_FS_DESC" xml:space="preserve">
     <value>A provider that will use memory to hold files and directories.</value>
+  </data>
+  <data name="GORFS_RAMDISK_WRITER_FS_DESC" xml:space="preserve">
+    <value>A file system writer that stores directories and file data in memory.</value>
   </data>
   <data name="GORFS_TOSTR_MOUNTPOINT" xml:space="preserve">
     <value>Mount Point Virtual Location: {0}, Physical Location: {1}</value>

@@ -987,4 +987,7 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_GORGONCHUNK" xml:space="preserve">
     <value>Chunk: 0x{0}. Offset: 0x{1}. Size: 0x{2}</value>
   </data>
+  <data name="GOR_TOSTR_RATIONAL" xml:space="preserve">
+    <value>Rational number: {0}/{1} ({2}).</value>
+  </data>
 </root>

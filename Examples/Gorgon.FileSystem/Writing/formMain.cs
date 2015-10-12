@@ -61,7 +61,7 @@ namespace Gorgon.Examples
 		// Our file system.
 		private GorgonFileSystem _fileSystem;
 		// The file system writer.
-		private GorgonFileSystemWriteArea _writer;
+		private GorgonFileSystemWriter _writer;
 		// Write path.
 		private string _writePath = string.Empty;
 		// Original text.
@@ -246,7 +246,7 @@ namespace Gorgon.Examples
 
 				// Create our virtual file system.
 				_fileSystem = new GorgonFileSystem(GorgonApplication.Log);
-				_writer = new GorgonFileSystemWriteArea(_fileSystem, _writePath);
+				_writer = new GorgonFileSystemWriter(_fileSystem, _writePath);
 
 				LoadText();
 

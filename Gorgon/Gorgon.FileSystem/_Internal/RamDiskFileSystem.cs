@@ -232,9 +232,8 @@ namespace Gorgon.IO
 		/// Function to open a writable stream to the file.
 		/// </summary>
 		/// <param name="path">The path to the file.</param>
-		/// <param name="fileMode">The mode for the file.</param>
 		/// <returns>A stream to the file.</returns>
-		public MemoryStream OpenForWrite(string path, FileMode fileMode)
+		public MemoryStream OpenForWrite(string path)
 		{
 			MemoryStream stream;
 
@@ -270,12 +269,24 @@ namespace Gorgon.IO
 				return;
 			}
 
-			var fileInfo = GetFileInfo(path);
+			RamDiskFileInfo fileInfo;
+
+			if (!_fileInfos.TryGetValue(path, out fileInfo))
+			{
+				return;
+			}
+
+			_fileInfos.Remove(path);
+
+			MemoryStream stream;
+
+			if (!_fileData.TryGetValue(fileInfo, out stream))
+			{
+				return;
+			}
 
 			_fileData[fileInfo]?.Dispose();
-
 			_fileData.Remove(fileInfo);
-			_fileInfos.Remove(path);
 		}
 
 		/// <summary>

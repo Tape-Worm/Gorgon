@@ -44,8 +44,8 @@ namespace Gorgon.IO
 	/// method to read the contents of the file.
 	/// </para>
 	/// <para>
-	/// To create, update or delete a file from the <see cref="IGorgonFileSystem"/>, use an instance of the <see cref="IGorgonFileSystemWriteArea{T}"/> object and call the <see cref="IGorgonFileSystemWriteArea{T}.OpenStream"/> 
-	/// method to create or update a file. Use the <see cref="IGorgonFileSystemWriteArea{T}.DeleteFile"/> method to delete a file.
+	/// To create, update or delete a file from the <see cref="IGorgonFileSystem"/>, use an instance of the <see cref="IGorgonFileSystemWriter{T}"/> object and call the <see cref="IGorgonFileSystemWriter{T}.OpenStream"/> 
+	/// method to create or update a file. Use the <see cref="IGorgonFileSystemWriter{T}.DeleteFile"/> method to delete a file.
 	/// </para>
 	/// </remarks>
 	/// <example>

@@ -154,6 +154,7 @@
     <Compile Include="IO\GorgonChunkFileWriter.cs" />
     <Compile Include="IO\GorgonStreamWrapper.cs" />
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
+    <Compile Include="Math\GorgonRationalNumber.cs" />
     <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
     <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
     <Compile Include="Native\GorgonPointerTyped.cs" />
