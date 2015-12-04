@@ -70,7 +70,7 @@ namespace Gorgon.Core
 		/// Initializes a new instance of the <see cref="GorgonNamedObject"/> class.
 		/// </summary>
 		/// <param name="name">The name of this object.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
 		{
@@ -89,9 +89,11 @@ namespace Gorgon.Core
 		#endregion
 
 		#region IGorgonNamedObject Members
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
 		/// <remarks>
-		/// Unlike the interface this property is derived from, it has a protected setter to assign the name at a later stage during an objects initialization. 
+		/// Unlike the interface this property is derived from, this property has a protected setter to assign the name at a later stage during an objects initialization. 
 		/// </remarks>
 		public virtual string Name
 		{

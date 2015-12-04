@@ -77,7 +77,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to call when the <see cref="IGorgonPointer" /> needs to deallocate memory or release handles.
 		/// </summary>
-		protected unsafe override void Cleanup()
+		protected override unsafe void Cleanup()
 		{
 			if (DataPointer == null)
 			{

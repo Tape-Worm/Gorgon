@@ -888,7 +888,7 @@ namespace Gorgon.UI
 		/// Function to save this theme as XML data into a stream.
 		/// </summary>
 		/// <param name="stream">Stream to fill with the data.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the stream is read-only.</exception>
 		public void Save(Stream stream)
 		{

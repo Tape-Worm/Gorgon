@@ -214,7 +214,11 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return the index of a chunk by its name.
+		/// </summary>
+		/// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
+		/// <returns>The index of the chunk with the specific <paramref name="chunkName"/>, or -1 if not found.</returns>
 		public int IndexOf(string chunkName)
 		{
 			if (string.IsNullOrEmpty(chunkName))
@@ -227,13 +231,21 @@ namespace Gorgon.IO
 			return IndexOf(id);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return whether a chunk exists in this collection or not.
+		/// </summary>
+		/// <param name="chunkName">A text representation of the <see cref="ulong"/> chunk ID.</param>
+		/// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkName"/>, <b>false</b> if not.</returns>
 		public bool Contains(string chunkName)
 		{
 			return IndexOf(chunkName) != -1;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return the index of a chunk by its name.
+		/// </summary>
+		/// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
+		/// <returns>The index of the chunk with the specific <paramref name="chunkID"/>, or -1 if not found.</returns>
 		public int IndexOf(ulong chunkID)
 		{
 			for (int i = 0; i < _list.Count; ++i)
@@ -247,7 +259,11 @@ namespace Gorgon.IO
 			return -1;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return whether a chunk exists in this collection or not.
+		/// </summary>
+		/// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
+		/// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkID"/>, <b>false</b> if not.</returns>
 		public bool Contains(ulong chunkID)
 		{
 			return IndexOf(chunkID) != -1;

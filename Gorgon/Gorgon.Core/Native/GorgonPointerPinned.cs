@@ -108,7 +108,9 @@ namespace Gorgon.Native
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to call when the <see cref="IGorgonPointer"/> needs to deallocate memory or release handles.
+		/// </summary>
 		protected override unsafe void Cleanup()
 		{
 			if (DataPointer != null)

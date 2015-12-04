@@ -66,7 +66,13 @@ namespace Gorgon.Math
 			       && left.Denominator == right.Denominator;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Returns a string that represents the current object.
+		/// </summary>
+		/// <returns>
+		/// A string that represents the current object.
+		/// </returns>
+		/// <filterpriority>2</filterpriority>
 		public override string ToString()
 		{
 			return Denominator == 0
@@ -74,13 +80,26 @@ namespace Gorgon.Math
 				       : string.Format(Resources.GOR_TOSTR_RATIONAL, Numerator, Denominator, (decimal)Numerator / Denominator);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Serves as the default hash function. 
+		/// </summary>
+		/// <returns>
+		/// A hash code for the current object.
+		/// </returns>
+		/// <filterpriority>2</filterpriority>
 		public override int GetHashCode()
 		{
 			return 281.GenerateHash(Numerator).GenerateHash(Denominator);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Determines whether the specified object is equal to the current object.
+		/// </summary>
+		/// <returns>
+		/// true if the specified object  is equal to the current object; otherwise, false.
+		/// </returns>
+		/// <param name="obj">The object to compare with the current object. </param>
+		/// <filterpriority>2</filterpriority>
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonRationalNumber)
@@ -90,13 +109,22 @@ namespace Gorgon.Math
 			return base.Equals(obj);
 		}
 
-		/// <inheritdoc/>
-		public bool Equals(GorgonRationalNumber other)
-		{
-			return Equals(ref this, ref other);
-		}
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		/// <param name="other">An object to compare with this object.</param>
+		public bool Equals(GorgonRationalNumber other) => Equals(ref this, ref other);
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. 
+		/// </summary>
+		/// <returns>
+		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other"/> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other"/>. Greater than zero This instance follows <paramref name="other"/> in the sort order. 
+		/// </returns>
+		/// <param name="other">An object to compare with this instance. </param>
 		public int CompareTo(GorgonRationalNumber other)
 		{
 			if (Equals(ref this, ref other))

@@ -191,7 +191,9 @@ namespace Gorgon.IO
 			throw new NotSupportedException();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read in the header information from the chunk file and validate it.
+		/// </summary>
 		/// <exception cref="GorgonException">Thrown when the chunked file format header ID does not match.
 		/// <para>-or-</para>
 		/// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor.</para>
@@ -243,7 +245,9 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function called when a chunk file is closing.
+		/// </summary>
 		/// <returns>The total number of bytes read from the stream.</returns>
 		protected override long OnClose()
 		{

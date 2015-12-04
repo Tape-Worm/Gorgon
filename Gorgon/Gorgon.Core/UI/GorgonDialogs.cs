@@ -201,13 +201,13 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/>
+		/// Function to display the enhanced error dialog.
 		/// </summary>
-		/// <param name="owner"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
-		/// <param name="message"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="message">The error message to display.</param>
 		/// <param name="caption">The caption for the error box.</param>
 		/// <param name="exception">The exception that was thrown.</param>
-		/// <param name="autoShowDetails"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
+		/// <param name="autoShowDetails">[Optional] <b>true</b> to open the details pane when the window is made visible, <b>false</b> to leave it closed.</param>
 		/// <remarks>
 		/// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.
 		/// <para>
@@ -228,10 +228,10 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/>
+		/// Function to display the enhanced error dialog.
 		/// </summary>
-		/// <param name="owner"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,string,bool)"/></param>
-		/// <param name="exception"><inheritdoc cref="ErrorBox(System.Windows.Forms.Form,string,string,System.Exception,bool)"/></param>
+		/// <param name="owner">The owning window of this dialog.</param>
+		/// <param name="exception">The exception that was thrown.</param>
 		/// <remarks>
 		/// <para>
 		/// This will display an enhanced error dialog with a details button that will have <paramref name="exception"/> information in the details pane.

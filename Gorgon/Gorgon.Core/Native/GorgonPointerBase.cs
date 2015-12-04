@@ -105,7 +105,12 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the address represented by the <see cref="IGorgonPointer"/>.
+		/// </summary>
+		/// <remarks>
+		/// This is the address to the unmanaged memory block. It is provided for information only, and should not be manipulated directly as memory corruption could occur.
+		/// </remarks>
 		public long Address
 		{
 			get
@@ -117,7 +122,9 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the size, in bytes, of the unmanaged memory block that is pointed at by this <see cref="IGorgonPointer"/>.
+		/// </summary>
 		public long Size
 		{
 			get;
@@ -143,9 +150,26 @@ namespace Gorgon.Native
 		/// </summary>
 		protected abstract void Cleanup();
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a value from the unmanaged memory at the given offset.
+		/// </summary>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start reading from, in bytes.</param>
+		/// <param name="value">The value retrieved from unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -188,9 +212,26 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a value from the unmanaged memory at the given offset.
+		/// </summary>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start reading from, in bytes.</param>
+		/// <returns>The value from unmanaged memory.</returns>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -215,9 +256,28 @@ namespace Gorgon.Native
 			return value;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a value from the beginning of the unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value retrieved from unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>Read&lt;T&gt;(0, out value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -254,9 +314,28 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a value from the beginning of the unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <returns>The value from unmanaged memory.</returns>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>T value = Read&lt;T&gt;(0)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -297,9 +376,26 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a value to unmanaged memory at the given offset.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start writing into, in bytes.</param>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -342,9 +438,26 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a value to unmanaged memory at the given offset.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start writing into, in bytes.</param>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -365,9 +478,28 @@ namespace Gorgon.Native
 			Write(offset, ref value);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a value into the beginning of the unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -404,9 +536,28 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a value into the beginning of the unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -427,9 +578,34 @@ namespace Gorgon.Native
 			Write(ref value);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a range of values from unmanaged memory, at the specified offset, into an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset within the unmanaged memory to start reading from, in bytes.</param>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <param name="index">The index in the array to start at.</param>
+		/// <param name="count">The number of items to fill the array with.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
+		/// </exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -498,9 +674,32 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a range of values into an array from the beginning of unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <param name="index">The index in the array to start at.</param>
+		/// <param name="count">The number of items to fill the array with.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -562,9 +761,29 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a range of values from unmanaged memory, at the specified offset, into an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset within the unmanaged memory to start reading from, in bytes.</param>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
+		/// </exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -591,9 +810,29 @@ namespace Gorgon.Native
 			ReadRange(offset, array, 0, array.Length);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to read a range of values into an array from the beginning of unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -620,9 +859,34 @@ namespace Gorgon.Native
 			ReadRange(array, 0, array.Length);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset, in bytes, within the unmanaged memory to start writing into.</param>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <param name="index">The index in the array to start copying from.</param>
+		/// <param name="count">The number of items to in the array to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
+		/// </exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -690,9 +954,29 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset, in bytes, within the unmanaged memory to start writing into.</param>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="offset"/> is less than zero.</para>
+		/// </exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -719,9 +1003,33 @@ namespace Gorgon.Native
 			WriteRange(offset, array, 0, array.Length);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -748,9 +1056,35 @@ namespace Gorgon.Native
 			WriteRange(array, 0, array.Length);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
+		/// </summary>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <param name="index">The index in the array to start copying from.</param>
+		/// <param name="count">The number of items to in the array to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
+		/// </exception>
 		/// <remarks>
-		/// <inheritdoc/>
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// <note type="caution">
 		/// <para>
 		/// This method does <b>not</b> support marshalled data (i.e. types with fields decorated with the <see cref="MarshalAsAttribute"/>). Usage of marshalled data with this type will give undefined 
@@ -812,7 +1146,35 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
+		/// </summary>
+		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
+		/// <param name="sourceOffset">The offset, in bytes, within the source to start copying from.</param>
+		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
+		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/>, <paramref name="sourceSize"/>, or the <paramref name="destinationOffset"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the source <paramref name="source"/>.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="sourceSize"/> exceeds the size of the destination pointer.</para>
+		/// </exception>
+		/// <remarks>
+		/// <para>
+		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="sourceOffset"/> and <paramref name="destinationOffset"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0)
 		{
 #if DEBUG
@@ -865,7 +1227,30 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
+		/// </summary>
+		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
+		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
+		/// <remarks>
+		/// <para>
+		/// This performs a straight memory block transfer from one <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/>. 
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="sourceSize"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, see the <see cref="IGorgonPointer.CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/> overload.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void CopyFrom(IGorgonPointer source, int sourceSize)
 		{
 #if DEBUG
@@ -900,7 +1285,40 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to copy data from unmanaged memory pointed at by a <see cref="IntPtr"/> into the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
+		/// </summary>
+		/// <param name="source">The <see cref="IntPtr"/> to unmanaged memory to copy the data from.</param>
+		/// <param name="size">The number of bytes to copy from the source.</param>
+		/// <param name="destinationOffset">[Optional] The offset, in bytes, within this <see cref="IGorgonPointer"/> to start copying to.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <see cref="IntPtr.Zero"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destinationOffset"/> parameter is less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</exception>
+		/// <remarks>
+		/// <para>
+		/// This copies memory directly from unmanaged memory represented by an <see cref="IntPtr"/> into this <see cref="IGorgonPointer"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="destinationOffset"/> and the 
+		/// <paramref name="source"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// The <paramref name="size"/> parameter is provided by the programmer, and should be less than, or equal to (in bytes) the actual size of unmanaged memory pointed at by <paramref name="source"/>. If 
+		/// this value is too large, memory corruption will happen.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public void CopyMemory(IntPtr source, int size, long destinationOffset = 0)
 		{
 #if DEBUG
@@ -938,7 +1356,40 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to copy data from unmanaged memory pointed at by an unsafe pointer into the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
+		/// </summary>
+		/// <param name="source">The unsafe pointer to unmanaged memory to copy the data from.</param>
+		/// <param name="size"><see cref="IGorgonPointer.CopyMemory(System.IntPtr,int,long)"/></param>
+		/// <param name="destinationOffset"><see cref="IGorgonPointer.CopyMemory(System.IntPtr,int,long)"/></param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destinationOffset"/> parameter is less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="destinationOffset"/> plus the <paramref name="size"/> exceeds the size of the destination pointer.</exception>
+		/// <remarks>
+		/// <para>
+		/// This copies memory directly from unmanaged memory represented by an unsafe pointer (<c>void *</c>) into this <see cref="IGorgonPointer"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <paramref name="size"/> is an <see cref="int"/> and not a <see cref="long"/> value (which this object typically supports). This is because the <c>cpblk</c> instruction used to transfer the data is 
+		/// limited to an (unsigned) int value, which is about 2GB. In most cases, this should not be an issue. 
+		/// </para>
+		/// <para>
+		/// To mitigate this problem when dealing with blocks of memory larger than 2GB, try copying the data in batches of 2GB within a loop while incrementing the <paramref name="destinationOffset"/> and the 
+		/// <paramref name="source"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// <para>
+		/// The <paramref name="size"/> parameter is provided by the programmer, and should be less than, or equal to (in bytes) the actual size of unmanaged memory pointed at by <paramref name="source"/>. If 
+		/// this value is too large, memory corruption will happen.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
 		public unsafe void CopyMemory(void* source, int size, long destinationOffset = 0)
 		{
 #if DEBUG
@@ -972,7 +1423,14 @@ namespace Gorgon.Native
 			DirectAccess.MemoryCopy(destPtr, source, size);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to fill the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with the specified byte value.
+		/// </summary>
+		/// <param name="value">The value to fill the unmanaged memory with.</param>
+		/// <param name="size">The number of bytes to fill.</param>
+		/// <param name="offset">[Optional] The offset, in bytes, within unmanaged memory to start filling.</param>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> is less than zero.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> + the <paramref name="size"/> exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/></exception>
 		public void Fill(byte value, int size, long offset = 0)
 		{
 #if DEBUG
@@ -1004,7 +1462,10 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to fill all the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with the specified byte value.
+		/// </summary>
+		/// <param name="value">The value to fill the unmanaged memory with.</param>
 		public void Fill(byte value)
 		{
 			unsafe
@@ -1043,7 +1504,13 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to fill the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with a zero value.
+		/// </summary>
+		/// <param name="size">The number of bytes to fill.</param>
+		/// <param name="offset">[Optional] The offset, in bytes, within unmanaged memory to start filling with zeroes.</param>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="offset"/> is less than zero.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> + the <paramref name="size"/> exceeds the <see cref="IGorgonPointer.Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/></exception>
 		public void Zero(int size, long offset = 0)
 		{
 #if DEBUG
@@ -1075,7 +1542,9 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to fill all the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with a zero value.
+		/// </summary>
 		public void Zero()
 		{
 			unsafe
@@ -1114,7 +1583,10 @@ namespace Gorgon.Native
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to copy the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> into a <see cref="MemoryStream"/>
+		/// </summary>
+		/// <returns>The <see cref="MemoryStream"/> containing a copy of the data in memory that is pointed at by this <see cref="IGorgonPointer"/>.</returns>
 		public MemoryStream CopyToMemoryStream()
 		{
 			if (_notDisposed == 0)

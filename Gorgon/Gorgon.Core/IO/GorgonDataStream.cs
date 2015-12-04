@@ -394,12 +394,13 @@ namespace Gorgon.IO
 			where T : struct
 		{
 			Type type = typeof(T);
-			int count = value.Count();
 
 			if (value == null)
 			{
 				return null;
 			}
+
+			int count = value.Length;
 
 			if (((!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
 			{
@@ -449,7 +450,16 @@ namespace Gorgon.IO
 		/// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
 		/// </returns>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
 		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
@@ -616,7 +626,16 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
@@ -671,7 +690,16 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public override void WriteByte(byte value)
 		{
@@ -706,7 +734,16 @@ namespace Gorgon.IO
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public override int ReadByte()
 		{
@@ -820,7 +857,16 @@ namespace Gorgon.IO
 		/// <para>
 		/// This method, unlike the <see cref="WriteRange{T}(T[],int,int)"/> method will write the entire contents of the <paramref name="buffer"/> to the stream.
 		/// </para>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public void WriteRange<T>(T[] buffer)
 			where T : struct
@@ -842,7 +888,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public void Write<T>(T item)
 			where T : struct
@@ -885,7 +940,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>   
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed.</exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public virtual int ReadRange<T>(T[] buffer, int offset, int count)
 			where T : struct
@@ -948,7 +1012,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>
 		/// <returns>An array of values of type <typeparamref name="T"/> that were deserialized from the stream.</returns>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public T[] ReadRange<T>(int count)
 			where T : struct
@@ -969,7 +1042,16 @@ namespace Gorgon.IO
 		/// <exception cref="EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading.</exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public T Read<T>()
 			where T : struct
@@ -1009,7 +1091,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading. </exception>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// <para>
 		/// <note type="caution">
 		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
@@ -1048,7 +1139,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support reading. </exception>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// <para>
 		/// <note type="caution">
 		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
@@ -1086,7 +1186,16 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(T[],int,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// <para>
 		/// <note type="caution">
 		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
@@ -1124,7 +1233,21 @@ namespace Gorgon.IO
 		/// <exception cref="NotSupportedException">Thrown when the stream does not support writing. </exception>
 		/// <exception cref="ObjectDisposedException">Thrown when methods were called after the stream was closed. </exception>
 		/// <remarks>
-		/// <inheritdoc cref="CopyFromPointer(System.IntPtr,int)"/>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// To improve performance, exceptions will only be thrown for this method if the library is compiled for <b>DEBUG</b> mode.
+		/// </para>
+		/// <para>
+		/// Because of this, undefined behaviour may occur when the <b>RELEASE</b> version of the library is used and the boundaries of the buffer are exceeded.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// <para>
+		/// <note type="caution">
+		/// This method is unsafe, there is no bounds checking on the <paramref name="pointer"/> parameter and therefore a buffer overrun is possible. Use this method with care.
+		/// </note>
+		/// </para>
 		/// </remarks>
 		public void CopyFromPointer(void* pointer, int size)
 		{

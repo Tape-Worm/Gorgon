@@ -253,7 +253,7 @@ namespace Gorgon.Plugins
 		/// </summary>
 		/// <param name="index">The zero-based index at which <paramref name="path" /> should be inserted.</param>
 		/// <param name="path">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
 		public void Insert(int index, string path)
 		{

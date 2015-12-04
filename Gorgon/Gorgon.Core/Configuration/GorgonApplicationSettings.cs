@@ -853,7 +853,7 @@ namespace Gorgon.Configuration
 		/// </summary>
 		/// <param name="section">Section that will contain the new section.</param>
 		/// <param name="name">Name of the section.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
@@ -1068,7 +1068,7 @@ namespace Gorgon.Configuration
 		/// <param name="applicationName">Name of the application.</param>
 		/// <param name="settingsVersion">The version of the settings file.</param>
 		/// <param name="log">The application logging interface.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>

@@ -208,7 +208,7 @@ namespace Gorgon.Core
 		/// <param name="name">The name of the error.</param>
 		/// <param name="code">The numeric code assigned to the error.</param>
 		/// <param name="description">The full description of the error.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET)</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
 		public GorgonResult(string name, int code, string description)
 		{
@@ -246,10 +246,7 @@ namespace Gorgon.Core
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonResult other)
-		{
-			return Equals(ref this, ref other);
-		}
+		public bool Equals(GorgonResult other) => Equals(ref this, ref other);
 		#endregion
 	}
 }

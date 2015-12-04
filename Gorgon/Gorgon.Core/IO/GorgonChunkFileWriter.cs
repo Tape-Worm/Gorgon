@@ -145,8 +145,10 @@ namespace Gorgon.IO
 		{
 			throw new NotSupportedException();
 		}
-		
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Function to write the header information for the chunk file.
+		/// </summary>
 		protected override void WriteHeader()
 		{
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(Stream, true))

@@ -247,8 +247,15 @@ namespace Gorgon.Core
 		/// Function to generate 2 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector2"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
-		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
+		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+		/// <remarks>
+		/// <para>
+		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+		/// </para>
+		/// <para>
+		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
+		/// </para>
+		/// </remarks>
 		public static float SimplexNoise(Vector2 value)
 		{
 			Vector3 noiseContrib = Vector3.Zero;
@@ -328,8 +335,15 @@ namespace Gorgon.Core
 		/// Function to generate 3 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector3"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
-		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
+		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+		/// <remarks>
+		/// <para>
+		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+		/// </para>
+		/// <para>
+		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
+		/// </para>
+		/// </remarks>
 		public static float SimplexNoise(Vector3 value)
 		{
 			Vector4 contrib = Vector4.Zero;			// Noise contributions from the four corners
@@ -483,8 +497,15 @@ namespace Gorgon.Core
 		/// Function to generate 4 dimensional simplex noise.
 		/// </summary>
 		/// <param name="value">The <see cref="Vector4"/> value to use to generate the simplex noise value.</param>
-		/// <returns><inheritdoc cref="SimplexNoise(float)"/></returns>
-		/// <remarks><inheritdoc cref="SimplexNoise(float)"/></remarks>
+		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
+		/// <remarks>
+		/// <para>
+		/// Simplex noise values similar to Perlin noise but with fewer artifacts and better performance. 
+		/// </para>
+		/// <para>
+		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
+		/// </para>
+		/// </remarks>
 		public static float SimplexNoise(Vector4 value)
 		{
 			// Noise contributions from the five corners
@@ -671,8 +692,8 @@ namespace Gorgon.Core
 				       : (float)_rnd.NextDouble() * (start - end) + end;
 		}
 
-	    /// <summary>
-		/// <inheritdoc cref="RandomSingle(float,float)"/>
+		/// <summary>
+		/// Function to return a random <see cref="float"/> number.
 		/// </summary>
 		/// <param name="maxValue">The highest number for random values, this value is inclusive.</param>
 		/// <returns>A random <see cref="float"/> value.</returns>.
@@ -685,7 +706,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="RandomSingle(float,float)"/>
+		/// Function to return a random <see cref="float"/> number.
 		/// </summary>
 		/// <returns>A random <see cref="float"/> value between 0.0f and 1.0f.</returns>
 		public static float RandomSingle()
@@ -708,7 +729,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="RandomInt32(int,int)"/>
+		/// Function to return a non-negative random <see cref="int"/>.
 		/// </summary>
 		/// <param name="maxValue">The highest number for random values, this value is not inclusive.</param>
 		/// <returns>A random number</returns>.
@@ -721,7 +742,7 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="RandomInt32(int,int)"/>
+		/// Function to return a non-negative random <see cref="int"/>.
 		/// </summary>
 		/// <returns>A random <see cref="int"/> value between 0 and <see cref="int.MaxValue"/>-1.</returns>
 		public static int RandomInt32()

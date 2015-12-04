@@ -68,7 +68,9 @@ namespace Gorgon.Native
 		: GorgonPointerBase
 	{
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to call when the <see cref="IGorgonPointer"/> needs to deallocate memory or release handles.
+		/// </summary>
 		protected override unsafe void Cleanup()
 		{
 			// This is just here to shut the compiler up.

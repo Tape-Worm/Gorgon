@@ -109,10 +109,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to shrink a <see cref="GorgonRangeD"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="amount"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>		
+		/// <param name="range">A <see cref="GorgonRangeD"/> to shrink.</param>
+		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeD"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> value, decreased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeD Shrink(GorgonRangeD range, double amount)
 		{
@@ -159,10 +159,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to expand a <see cref="GorgonRangeD"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="amount"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="range">A <see cref="GorgonRangeD"/> to expand.</param>
+		/// <param name="amount">The amount to expand the <see cref="GorgonRangeD"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> value, increased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeD Expand(GorgonRangeD range, double amount)
 		{
@@ -195,10 +195,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to add two <see cref="GorgonRangeD"/> values together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="right"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeD"/> value to add</param>
+		/// <param name="right">The right <see cref="GorgonRangeD"/> value to add.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> representing the total of both ranges.</returns>
 		public static GorgonRangeD Add(GorgonRangeD left, GorgonRangeD right)
 		{
@@ -217,10 +217,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to subtract two <see cref="GorgonRangeD"/> ranges from each other.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="right"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeD"/> value to subtract.</param>
+		/// <param name="right">The right <see cref="GorgonRangeD"/> value to subtract.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> value representing the difference of both ranges.</returns>
 		public static GorgonRangeD Subtract(GorgonRangeD left, GorgonRangeD right)
 		{
@@ -239,10 +239,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to multiply two <see cref="GorgonRangeD"/> ranges together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="right"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeD"/> value to multiply.</param>
+		/// <param name="right">The right <see cref="GorgonRangeD"/> value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> value representing the product of both ranges.</returns>
 		public static GorgonRangeD Multiply(GorgonRangeD left, GorgonRangeD right)
 		{
@@ -261,10 +261,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to multiply a <see cref="GorgonRangeD"/> by a scalar <see cref="double"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeD,ref Gorgon.Core.GorgonRangeD,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="scalar">The <see cref="double"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRangeD Multiply(GorgonRangeD range, double scalar)
 		{
@@ -277,19 +277,19 @@ namespace Gorgon.Core
 		/// <param name="range">The <see cref="GorgonRangeD"/> range value to divide.</param>
 		/// <param name="scalar">The <see cref="double"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static void Divide(ref GorgonRangeD range, double scalar, out GorgonRangeD result)
 		{
 			result = new GorgonRangeD(range.Minimum / scalar, range.Maximum / scalar);
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/>
+		/// Function to divide a <see cref="GorgonRangeD"/> by a <see cref="double"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></param>
+		/// <param name="range">The <see cref="GorgonRangeD"/> range value to divide.</param>
+		/// <param name="scalar">The <see cref="double"/> scalar value to divide by.</param>
 		/// <returns>A new <see cref="GorgonRangeD"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
-		/// <exception cref="System.DivideByZeroException"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeD,double,out Gorgon.Core.GorgonRangeD)"/></exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static GorgonRangeD Divide(GorgonRangeD range, double scalar)
 		{
 			return new GorgonRangeD(range.Minimum / scalar, range.Minimum / scalar);
@@ -549,10 +549,7 @@ namespace Gorgon.Core
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonRangeD other)
-		{
-			return (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-		}
+		public bool Equals(GorgonRangeD other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 		#endregion
 
         #region IComparable<GorgonRangeD> Members
@@ -649,10 +646,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to shrink a <see cref="GorgonRangeM"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="amount"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>		
+		/// <param name="range">A <see cref="GorgonRangeM"/> to shrink.</param>
+		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeM"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> value, decreased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeM Shrink(GorgonRangeM range, decimal amount)
 		{
@@ -699,10 +696,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to expand a <see cref="GorgonRangeM"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="amount"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="range">A <see cref="GorgonRangeM"/> to expand.</param>
+		/// <param name="amount">The amount to expand the <see cref="GorgonRangeM"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> value, increased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeM Expand(GorgonRangeM range, decimal amount)
 		{
@@ -735,10 +732,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to add two <see cref="GorgonRangeM"/> values together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="right"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeM"/> value to add</param>
+		/// <param name="right">The right <see cref="GorgonRangeM"/> value to add.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> representing the total of both ranges.</returns>
 		public static GorgonRangeM Add(GorgonRangeM left, GorgonRangeM right)
 		{
@@ -757,10 +754,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to subtract two <see cref="GorgonRangeM"/> ranges from each other.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="right"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeM"/> value to subtract.</param>
+		/// <param name="right">The right <see cref="GorgonRangeM"/> value to subtract.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> value representing the difference of both ranges.</returns>
 		public static GorgonRangeM Subtract(GorgonRangeM left, GorgonRangeM right)
 		{
@@ -779,10 +776,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to multiply two <see cref="GorgonRangeM"/> ranges together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="right"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeM"/> value to multiply.</param>
+		/// <param name="right">The right <see cref="GorgonRangeM"/> value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> value representing the product of both ranges.</returns>
 		public static GorgonRangeM Multiply(GorgonRangeM left, GorgonRangeM right)
 		{
@@ -801,10 +798,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to multiply a <see cref="GorgonRangeM"/> by a scalar <see cref="decimal"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeM,ref Gorgon.Core.GorgonRangeM,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="scalar">The <see cref="decimal"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRangeM Multiply(GorgonRangeM range, decimal scalar)
 		{
@@ -817,19 +814,19 @@ namespace Gorgon.Core
 		/// <param name="range">The <see cref="GorgonRangeM"/> range value to divide.</param>
 		/// <param name="scalar">The <see cref="decimal"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static void Divide(ref GorgonRangeM range, decimal scalar, out GorgonRangeM result)
 		{
 			result = new GorgonRangeM(range.Minimum / scalar, range.Maximum / scalar);
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/>
+		/// Function to divide a <see cref="GorgonRangeM"/> by a <see cref="decimal"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></param>
+		/// <param name="range">The <see cref="GorgonRangeM"/> range value to divide.</param>
+		/// <param name="scalar">The <see cref="decimal"/> scalar value to divide by.</param>
 		/// <returns>A new <see cref="GorgonRangeM"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
-		/// <exception cref="System.DivideByZeroException"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeM,decimal,out Gorgon.Core.GorgonRangeM)"/></exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static GorgonRangeM Divide(GorgonRangeM range, decimal scalar)
 		{
 			return new GorgonRangeM(range.Minimum / scalar, range.Minimum / scalar);
@@ -1085,14 +1082,11 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonRangeM other)
-		{
-			return Minimum == other.Minimum && Maximum == other.Maximum;
-		}
+		/// <param name="other">An object to compare with this object.</param>
+		public bool Equals(GorgonRangeM other) => Minimum == other.Minimum && Maximum == other.Maximum;
 		#endregion
 
 		#region IComparable<GorgonRangeM> Members
@@ -1189,10 +1183,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to shrink a <see cref="GorgonRangeF"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="amount"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>		
+		/// <param name="range">A <see cref="GorgonRangeF"/> to shrink.</param>
+		/// <param name="amount">The amount to shrink the <see cref="GorgonRangeF"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> value, decreased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeF Shrink(GorgonRangeF range, float amount)
 		{
@@ -1239,10 +1233,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to expand a <see cref="GorgonRangeF"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="amount"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="range">A <see cref="GorgonRangeF"/> to expand.</param>
+		/// <param name="amount">The amount to expand the <see cref="GorgonRangeF"/> by.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> value, increased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRangeF Expand(GorgonRangeF range, float amount)
 		{
@@ -1275,10 +1269,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to add two <see cref="GorgonRangeF"/> values together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="right"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeF"/> value to add</param>
+		/// <param name="right">The right <see cref="GorgonRangeF"/> value to add.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> representing the total of both ranges.</returns>
 		public static GorgonRangeF Add(GorgonRangeF left, GorgonRangeF right)
 		{
@@ -1297,10 +1291,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to subtract two <see cref="GorgonRangeF"/> ranges from each other.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="right"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeF"/> value to subtract.</param>
+		/// <param name="right">The right <see cref="GorgonRangeF"/> value to subtract.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> value representing the difference of both ranges.</returns>
 		public static GorgonRangeF Subtract(GorgonRangeF left, GorgonRangeF right)
 		{
@@ -1319,10 +1313,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to multiply two <see cref="GorgonRangeF"/> ranges together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="right"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="left">The left <see cref="GorgonRangeF"/> value to multiply.</param>
+		/// <param name="right">The right <see cref="GorgonRangeF"/> value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> value representing the product of both ranges.</returns>
 		public static GorgonRangeF Multiply(GorgonRangeF left, GorgonRangeF right)
 		{
@@ -1341,10 +1335,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to multiply a <see cref="GorgonRangeF"/> by a scalar <see cref="float"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRangeF,ref Gorgon.Core.GorgonRangeF,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="scalar">The <see cref="float"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRangeF Multiply(GorgonRangeF range, float scalar)
 		{
@@ -1357,19 +1351,19 @@ namespace Gorgon.Core
 		/// <param name="range">The <see cref="GorgonRangeF"/> range value to divide.</param>
 		/// <param name="scalar">The <see cref="float"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static void Divide(ref GorgonRangeF range, float scalar, out GorgonRangeF result)
 		{
 			result = new GorgonRangeF(range.Minimum / scalar, range.Maximum / scalar);
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/>
+		/// Function to divide a <see cref="GorgonRangeF"/> by a <see cref="float"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></param>
+		/// <param name="range">The <see cref="GorgonRangeF"/> range value to divide.</param>
+		/// <param name="scalar">The <see cref="float"/> scalar value to divide by.</param>
 		/// <returns>A new <see cref="GorgonRangeF"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
-		/// <exception cref="System.DivideByZeroException"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRangeF,float,out Gorgon.Core.GorgonRangeF)"/></exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static GorgonRangeF Divide(GorgonRangeF range, float scalar)
 		{
 			return new GorgonRangeF(range.Minimum / scalar, range.Minimum / scalar);
@@ -1629,10 +1623,8 @@ namespace Gorgon.Core
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonRangeF other)
-		{
-			return (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
-		}
+		public bool Equals(GorgonRangeF other) => (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
+
 		#endregion
 
 		#region IComparable<GorgonRangeF> Members
@@ -1729,10 +1721,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/>
+		/// Function to shrink a <see cref="GorgonRange"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="amount"><inheritdoc cref="Shrink(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>		
+		/// <param name="range">A <see cref="GorgonRange"/> to shrink.</param>
+		/// <param name="amount">The amount to shrink the <see cref="GorgonRange"/> by.</param>
 		/// <returns>A new <see cref="GorgonRange"/> value, decreased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRange Shrink(GorgonRange range, int amount)
 		{
@@ -1779,10 +1771,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Expand(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/>
+		/// Function to expand a <see cref="GorgonRange"/> by a specific amount.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="amount"><inheritdoc cref="Expand(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="range">A <see cref="GorgonRange"/> to expand.</param>
+		/// <param name="amount">The amount to expand the <see cref="GorgonRange"/> by.</param>
 		/// <returns>A new <see cref="GorgonRange"/> value, increased in size by <paramref name="amount"/>.</returns>
 		public static GorgonRange Expand(GorgonRange range, int amount)
 		{
@@ -1815,10 +1807,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Add(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/>
+		/// Function to add two <see cref="GorgonRange"/> values together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="right"><inheritdoc cref="Add(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="left">The left <see cref="GorgonRange"/> value to add</param>
+		/// <param name="right">The right <see cref="GorgonRange"/> value to add.</param>
 		/// <returns>A new <see cref="GorgonRange"/> representing the total of both ranges.</returns>
 		public static GorgonRange Add(GorgonRange left, GorgonRange right)
 		{
@@ -1837,10 +1829,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/>
+		/// Function to subtract two <see cref="GorgonRange"/> ranges from each other.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="right"><inheritdoc cref="Subtract(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="left">The left <see cref="GorgonRange"/> value to subtract.</param>
+		/// <param name="right">The right <see cref="GorgonRange"/> value to subtract.</param>
 		/// <returns>A new <see cref="GorgonRange"/> value representing the difference of both ranges.</returns>
 		public static GorgonRange Subtract(GorgonRange left, GorgonRange right)
 		{
@@ -1859,10 +1851,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/>
+		/// Function to multiply two <see cref="GorgonRange"/> ranges together.
 		/// </summary>
-		/// <param name="left"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="right"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="left">The left <see cref="GorgonRange"/> value to multiply.</param>
+		/// <param name="right">The right <see cref="GorgonRange"/> value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRange"/> value representing the product of both ranges.</returns>
 		public static GorgonRange Multiply(GorgonRange left, GorgonRange right)
 		{
@@ -1881,10 +1873,10 @@ namespace Gorgon.Core
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/>
+		/// Function to multiply a <see cref="GorgonRange"/> by a scalar <see cref="int"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Multiply(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="range"><see cref="Multiply(ref Gorgon.Core.GorgonRange,ref Gorgon.Core.GorgonRange,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="scalar">The <see cref="int"/> scalar value to multiply.</param>
 		/// <returns>A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
 		public static GorgonRange Multiply(GorgonRange range, int scalar)
 		{
@@ -1897,19 +1889,19 @@ namespace Gorgon.Core
 		/// <param name="range">The <see cref="GorgonRange"/> range value to divide.</param>
 		/// <param name="scalar">The <see cref="int"/> scalar value to divide by.</param>
 		/// <param name="result">A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static void Divide(ref GorgonRange range, int scalar, out GorgonRange result)
 		{
 			result = new GorgonRange(range.Minimum / scalar, range.Maximum / scalar);
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Divide(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/>
+		/// Function to divide a <see cref="GorgonRange"/> by a <see cref="int"/> value.
 		/// </summary>
-		/// <param name="range"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
-		/// <param name="scalar"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></param>
+		/// <param name="range">The <see cref="GorgonRange"/> range value to divide.</param>
+		/// <param name="scalar">The <see cref="int"/> scalar value to divide by.</param>
 		/// <returns>A new <see cref="GorgonRange"/> representing the product of the <paramref name="range"/> and the <paramref name="scalar"/>.</returns>
-		/// <exception cref="System.DivideByZeroException"><inheritdoc cref="Divide(ref Gorgon.Core.GorgonRange,int,out Gorgon.Core.GorgonRange)"/></exception>
+		/// <exception cref="DivideByZeroException">Thrown if the <paramref name="scalar"/> value is zero.</exception>
 		public static GorgonRange Divide(GorgonRange range, int scalar)
 		{
 			return new GorgonRange(range.Minimum / scalar, range.Minimum / scalar);
@@ -2170,10 +2162,7 @@ namespace Gorgon.Core
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonRange other)
-		{
-			return Minimum == other.Minimum && Maximum == other.Maximum;
-		}
+		public bool Equals(GorgonRange other) => Minimum == other.Minimum && Maximum == other.Maximum;
 		#endregion
 
 		#region IComparable<GorgonRange> Members

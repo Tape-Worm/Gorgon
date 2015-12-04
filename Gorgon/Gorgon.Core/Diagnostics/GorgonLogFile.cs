@@ -59,7 +59,7 @@ namespace Gorgon.Diagnostics
 	/// <remarks>
 	/// This is a concrete implementation of the <see cref="IGorgonLog"/> interface.
 	/// </remarks>
-	sealed public class GorgonLogFile : 
+	public sealed class GorgonLogFile : 
 		IGorgonThreadedLog, IGorgonLogFile
 	{
 		#region Variables.
@@ -72,7 +72,9 @@ namespace Gorgon.Diagnostics
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the filtering level of this log.
+		/// </summary>
 		public LoggingLevel LogFilterLevel
 		{
 			get
@@ -90,7 +92,9 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the name of the application that is being logged.
+		/// </summary>
 		public string LogApplication
 		{
 			get;
@@ -162,7 +166,16 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to send an exception to the log.
+		/// </summary>
+		/// <param name="ex">The exception to log.</param>
+		/// <remarks>
+		/// <para>
+		/// If the <see cref="GorgonLogFile.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+		/// regardless of filter level.
+		/// </para>
+		/// </remarks>
 		public void LogException(Exception ex)
 		{
 			string indicator = string.Empty; // Inner exception indicator.
@@ -310,7 +323,12 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to print a formatted line of text to the log.
+		/// </summary>
+		/// <param name="formatSpecifier">Format specifier for the line.</param>
+		/// <param name="level">Level that this message falls under.</param>
+		/// <param name="arguments">List of optional arguments.</param>
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
 			if ((LogFilterLevel == LoggingLevel.NoLogging) || 
@@ -328,7 +346,9 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to end logging to the file.
+		/// </summary>
 		public void End()
 		{
 			// Clean up.
@@ -345,7 +365,10 @@ namespace Gorgon.Diagnostics
 			}
 		}
 
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Function to start logging to a new file.
+		/// </summary>
 		/// <remarks>
 		/// If calling this method from a thread that is <b>not</b> the thread that created the object, then no new file will be created.
 		/// </remarks>
@@ -395,7 +418,7 @@ namespace Gorgon.Diagnostics
 		/// </summary>
 		/// <param name="appname">File name for the log file.</param>
 		/// <param name="extraPath">Additional directories for the path.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
 		public GorgonLogFile(string appname, string extraPath)
 		{

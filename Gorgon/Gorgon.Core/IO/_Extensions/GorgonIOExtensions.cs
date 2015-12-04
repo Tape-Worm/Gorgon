@@ -73,7 +73,6 @@ namespace Gorgon.IO
 		/// <para>
 		/// This method is an extension of the <see cref="Stream.CopyTo(System.IO.Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
 		/// </para>
-		/// <inheritdoc cref="Stream.CopyTo(System.IO.Stream,int)"/>
 		/// <para>
 		/// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. It is not recommended that the buffer 
 		/// exceeds than 85,000 bytes. A value under this will ensure that the internal buffer will remain on the small object heap and be collected quickly when done. 

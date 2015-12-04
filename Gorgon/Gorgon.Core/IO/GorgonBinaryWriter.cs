@@ -250,7 +250,7 @@ namespace Gorgon.IO
 		/// </para>
 		/// </note>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
 		/// <para>-or-</para>
 		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -339,7 +339,7 @@ namespace Gorgon.IO
 		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
 		/// </exception>
 		public void WriteRange<T>(T[] value, int count)
@@ -372,7 +372,7 @@ namespace Gorgon.IO
 		/// </note>
 		/// </remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		public void WriteRange<T>(T[] value)
 			where T : struct
 		{

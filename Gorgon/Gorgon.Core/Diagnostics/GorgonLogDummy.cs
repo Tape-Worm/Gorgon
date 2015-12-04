@@ -32,35 +32,55 @@ namespace Gorgon.Diagnostics
 	/// <summary>
 	/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
 	/// </summary>
-	sealed public class GorgonLogDummy
+	public sealed class GorgonLogDummy
 		: IGorgonThreadedLog
 	{
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the ID of the thread that created the log object.
+		/// </summary>
 		public int ThreadID
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the filtering level of this log.
+		/// </summary>
 		public LoggingLevel LogFilterLevel
 		{
 			get;
 			set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the name of the application that is being logged.
+		/// </summary>
 		public string LogApplication => string.Empty;
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to send an exception to the log.
+		/// </summary>
+		/// <param name="ex">The exception to log.</param>
+		/// <remarks>
+		/// <para>
+		/// If the <see cref="GorgonLogFile.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
+		/// regardless of filter level.
+		/// </para>
+		/// </remarks>
 		public void LogException(Exception ex)
 		{
 			// Intentionally left blank.
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to print a formatted line of text to the log.
+		/// </summary>
+		/// <param name="formatSpecifier">Format specifier for the line.</param>
+		/// <param name="level">Level that this message falls under.</param>
+		/// <param name="arguments">List of optional arguments.</param>
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
 			// Intentionally left blank.

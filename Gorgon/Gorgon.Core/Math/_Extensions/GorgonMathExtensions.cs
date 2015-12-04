@@ -351,8 +351,8 @@ namespace Gorgon.Math
 		/// <param name="decimalCount">[Optional] The number of decimal places to round to.</param>
 		/// <param name="rounding">[Optional] The type of rounding to perform.</param>
 		/// <returns>The <see cref="float"/> value rounded to the nearest whole number.</returns>
-		/// <remarks> 
-		/// <inheritdoc cref="System.Math.Round(double,int,System.MidpointRounding)"/>
+		/// <remarks>  
+		/// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
 		/// </remarks>
 		public static float Round(this float value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven)
 		{
@@ -366,8 +366,8 @@ namespace Gorgon.Math
 		/// <param name="decimalCount">[Optional] The number of decimal places to round to.</param>
 		/// <param name="rounding">[Optional] The type of rounding to perform.</param>
 		/// <returns>The <see cref="float"/> value rounded to the nearest whole number.</returns>
-		/// <remarks> 
-		/// <inheritdoc cref="System.Math.Round(decimal,int,System.MidpointRounding)"/>
+		/// <remarks>  
+		/// See <see cref="System.Math.Round(decimal,int,MidpointRounding)"/> for more information.
 		/// </remarks>
 		public static decimal Round(this decimal value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven)
 		{
@@ -381,8 +381,8 @@ namespace Gorgon.Math
 		/// <param name="decimalCount">[Optional] The number of decimal places to round to.</param>
 		/// <param name="rounding">[Optional] The type of rounding to perform.</param>
 		/// <returns>The <see cref="float"/> value rounded to the nearest whole number.</returns>
-		/// <remarks> 
-		/// <inheritdoc cref="System.Math.Round(double,int,System.MidpointRounding)"/>
+		/// <remarks>  
+		/// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
 		/// </remarks>
 		public static double Round(this double value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven)
 		{

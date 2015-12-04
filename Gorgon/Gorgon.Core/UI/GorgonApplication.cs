@@ -132,9 +132,9 @@ namespace Gorgon.UI
 		// The log interface to use.
 		private static IGorgonLog _log;
 		// The dummy log interface.
-		private readonly static GorgonLogDummy _dummyLog = new GorgonLogDummy();
+		private static readonly GorgonLogDummy _dummyLog = new GorgonLogDummy();
 		// A synchronization object for threads.
-		private readonly static object _syncLock = new object();
+		private static readonly object _syncLock = new object();
 		// The number of milliseconds to sleep while the application is unfocused but running in the background.
 		private static int _unfocusedSleepTime = 10;
 		// An atomic to ensure that run is only called by 1 thread at a time.
@@ -681,12 +681,12 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Run(System.Func{bool})"/>
+		/// Function to begin execution of a <see cref="GorgonApplication"/>.
 		/// </summary>
 		/// <param name="context">The <see cref="System.Windows.Forms.ApplicationContext"/> to use for this application.</param>
 		/// <param name="idleMethod">[Optional] A method to execute while the application is idle.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException"><inheritdoc cref="Run(System.Func{bool})"/></exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method begins execution of the application by starting its messaging pump and processing application messages. 
@@ -767,12 +767,12 @@ namespace Gorgon.UI
 		}
 
 		/// <summary>
-		/// <inheritdoc cref="Run(System.Func{bool})"/>
+		/// Function to begin execution of a <see cref="GorgonApplication"/>.
 		/// </summary>
 		/// <param name="mainForm">The main application <see cref="Form"/> to use for this application.</param>
-		/// <param name="idleMethod"><inheritdoc cref="Run(System.Windows.Forms.ApplicationContext,System.Func{bool})"/></param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException"><inheritdoc cref="Run(System.Func{bool})"/></exception>
+		/// <param name="idleMethod">[Optional] A method to execute while the application is idle.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method begins execution of the application by starting its messaging pump and processing application messages. 
@@ -856,8 +856,8 @@ namespace Gorgon.UI
 		/// Function to begin execution of a <see cref="GorgonApplication"/>.
 		/// </summary>
 		/// <param name="idleMethod">A method to execute while the application is idle.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="idleMethod"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="idleMethod"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="InvalidOperationException">Thrown when the application is already executing. Check the <see cref="IsRunning"/> property before calling this method.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method begins execution of the application by starting its messaging pump and processing application messages. 

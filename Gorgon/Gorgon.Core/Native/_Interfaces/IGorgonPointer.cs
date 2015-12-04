@@ -154,15 +154,25 @@ namespace Gorgon.Native
 			where T : struct;
 
 		/// <summary>
-		/// <inheritdoc cref="Read{T}(long,out T)"/>
+		/// Function to read a value from the unmanaged memory at the given offset.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="Read{T}(long,out T)"/></typeparam>
-		/// <param name="offset"><inheritdoc cref="Read{T}(long,out T)"/></param>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start reading from, in bytes.</param>
 		/// <returns>The value from unmanaged memory.</returns>
-		/// <exception cref="InvalidOperationException"><inheritdoc cref="Read{T}(long,out T)"/></exception>
-		/// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="Read{T}(long,out T)"/></exception>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
 		/// <remarks>
-		/// <inheritdoc cref="Read{T}(long,out T)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		T Read<T>(long offset)
 			where T : struct;
@@ -170,15 +180,25 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to read a value from the beginning of the unmanaged memory pointed at by this object.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="Read{T}(long,out T)"/></typeparam>
-		/// <param name="value"><inheritdoc cref="Read{T}(long,out T)"/></param>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value retrieved from unmanaged memory.</param>
 		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>Read&lt;T&gt;(0, out value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="Read{T}(long,out T)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void Read<T>(out T value)
 			where T : struct;
@@ -186,15 +206,25 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to read a value from the beginning of the unmanaged memory pointed at by this object.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="Read{T}(long,out T)"/></typeparam>
-		/// <returns><inheritdoc cref="Read{T}(long)"/></returns>
+		/// <typeparam name="T">Type of value to retrieve. Must be a value or primitive type.</typeparam>
+		/// <returns>The value from unmanaged memory.</returns>
 		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>T value = Read&lt;T&gt;(0)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="Read{T}(long,out T)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		T Read<T>()
 			where T : struct;
@@ -223,27 +253,79 @@ namespace Gorgon.Native
 		void Write<T>(long offset, ref T value)
 			where T : struct;
 
-		/// <inheritdoc cref="Write{T}(long,ref T)"/>
+		/// <summary>
+		/// Function to write a value to unmanaged memory at the given offset.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">The offset within unmanaged memory to start writing into, in bytes.</param>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> value is less than 0.</exception>
+		/// <remarks>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
+		/// </remarks>
 		void Write<T>(long offset, T value)
 			where T : struct;
 
 		/// <summary>
 		/// Function to write a value into the beginning of the unmanaged memory pointed at by this object.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="Write{T}(long,ref T)"/></typeparam>
-		/// <param name="value"><inheritdoc cref="Write{T}(long,ref T)"/></param>
-		/// <exception cref="InvalidOperationException"><inheritdoc cref="Write{T}(long,ref T)"/></exception>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="Write{T}(long,ref T)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void Write<T>(ref T value)
 			where T : struct;
 
-		/// <inheritdoc cref="Write{T}(ref T)"/>
+		/// <summary>
+		/// Function to write a value into the beginning of the unmanaged memory pointed at by this object.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write. Must be a value or primitive type.</typeparam>
+		/// <param name="value">The value to write to unmanaged memory.</param>
+		/// <exception cref="InvalidOperationException">Thrown when the the size of the type exceeds the <see cref="Size"/> of the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
+		/// <remarks>
+		/// <para>
+		/// This is equivalent to calling <c>Write&lt;T&gt;(0, value)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to write, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
+		/// </remarks>
 		void Write<T>(T value)
 			where T : struct;
 
@@ -282,53 +364,83 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to read a range of values into an array from the beginning of unmanaged memory pointed at by this object.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></typeparam>
-		/// <param name="array"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <param name="index"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <param name="count"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
-		/// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
-		/// <exception cref="ArgumentException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <param name="index">The index in the array to start at.</param>
+		/// <param name="count">The number of items to fill the array with.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void ReadRange<T>(T[] array, int index, int count)
 			where T : struct;
 
 		/// <summary>
-		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
+		/// Function to read a range of values from unmanaged memory, at the specified offset, into an array.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></typeparam>
-		/// <param name="offset"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <param name="array"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset within the unmanaged memory to start reading from, in bytes.</param>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than 0.</para>
 		/// </exception>
 		/// <remarks>
-		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void ReadRange<T>(long offset, T[] array)
 			where T : struct;
 
 		/// <summary>
-		/// <inheritdoc cref="ReadRange{T}(T[],int,int)"/>
+		/// Function to read a range of values into an array from the beginning of unmanaged memory pointed at by this object.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></typeparam>
-		/// <param name="array"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="ReadRange{T}(long,T[],int,int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will receive the data from unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>ReadRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="ReadRange{T}(long,T[],int,int)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void ReadRange<T>(T[] array)
 			where T : struct;
@@ -366,31 +478,41 @@ namespace Gorgon.Native
 			where T : struct;
 
 		/// <summary>
-		/// <inheritdoc cref="WriteRange{T}(long,T[],int,int)"/>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></typeparam>
-		/// <param name="offset"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></param>
-		/// <param name="array"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(long,T[],int,int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="offset">Offset, in bytes, within the unmanaged memory to start writing into.</param>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length plus the <paramref name="offset"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="offset"/> is less than zero.</para>
 		/// </exception>
 		/// <remarks>
-		/// <inheritdoc cref="WriteRange{T}(long,T[],int,int)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void WriteRange<T>(long offset, T[] array)
 			where T : struct;
 
 		/// <summary>
-		/// Function to write a range of values into the beginning of unmanaged memory, from an array.
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></typeparam>
-		/// <param name="array"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
-		/// <param name="index"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
-		/// <param name="count"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></exception>
-		/// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="WriteRange{T}(long, T[], int, int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <param name="index">The index in the array to start copying from.</param>
+		/// <param name="count">The number of items to in the array to copy.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameters are less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + the <paramref name="count"/> is larger than the total length of <paramref name="array"/>.
 		/// <para>-or-</para>
 		/// <para>Thrown when a buffer overrun is detected because the size, in bytes, of the <paramref name="count"/> is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</para>
@@ -400,24 +522,48 @@ namespace Gorgon.Native
 		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="WriteRange{T}(long, T[], int, int)"/>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void WriteRange<T>(T[] array, int index, int count)
 			where T : struct;
 
 		/// <summary>
-		/// <inheritdoc cref="WriteRange{T}(T[], int, int)"/>
+		/// Function to write a range of values into unmanaged memory, at the specified offset, from an array.
 		/// </summary>
-		/// <typeparam name="T"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></typeparam>
-		/// <param name="array"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="WriteRange{T}(T[], int, int)"/></exception>
+		/// <typeparam name="T">Type of value in the array. Must be a value or primitive type.</typeparam>
+		/// <param name="array">The array that will be copied into unmanaged memory.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentException">Thrown when a buffer overrun is detected because the size, in bytes, of the array length is too large for the unmanaged memory represented by this <see cref="IGorgonPointer"/>.</exception>
 		/// <remarks>
 		/// <para>
 		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
 		/// efficient.
 		/// </para>
-		/// <inheritdoc cref="WriteRange{T}(T[], int, int)"/>
+		/// <para>
+		/// This is equivalent to calling <c>WriteRange&lt;T&gt;(0, array, index, count)</c>, except that it does not perform any addition to the pointer with an offset. This may make this method <i>slightly</i> more 
+		/// efficient.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T"/> is used to determine the amount of data to read, in bytes. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///		<item><description>The type must be decorated with the <see cref="StructLayoutAttribute"/>.</description></item>
+		///		<item><description>The layout for the value type must be <see cref="LayoutKind.Sequential"/>, or <see cref="LayoutKind.Explicit"/>.</description></item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when 
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
 		/// </remarks>
 		void WriteRange<T>(T[] array)
 			where T : struct;
@@ -454,11 +600,11 @@ namespace Gorgon.Native
 		void CopyFrom(IGorgonPointer source, long sourceOffset, int sourceSize, long destinationOffset = 0);
 
 		/// <summary>
-		/// <inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/>
+		/// Function to copy data from the specified <see cref="IGorgonPointer"/> into this <see cref="IGorgonPointer"/> 
 		/// </summary>
-		/// <param name="source"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></param>
-		/// <param name="sourceSize"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></param>
-		/// <exception cref="ArgumentNullException"><inheritdoc cref="CopyFrom(Gorgon.Native.IGorgonPointer,long,int,long)"/></exception>
+		/// <param name="source">The <see cref="IGorgonPointer"/> to copy data from.</param>
+		/// <param name="sourceSize">The number of bytes to copy from the source.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceSize"/> parameter is less than zero.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="sourceSize"/> will exceeds the size of the source <paramref name="source"/> or the destination pointer.</exception>
 		/// <remarks>
@@ -564,7 +710,7 @@ namespace Gorgon.Native
 		/// <summary>
 		/// Function to fill all the unmanaged memory pointed at by this <see cref="IGorgonPointer"/> with the specified byte value.
 		/// </summary>
-		/// <param name="value"><inheritdoc cref="Fill(byte,int,long)"/></param>
+		/// <param name="value">The value to fill the unmanaged memory with.</param>
 		void Fill(byte value);
 
 		/// <summary>

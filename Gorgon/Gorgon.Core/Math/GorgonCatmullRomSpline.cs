@@ -24,20 +24,64 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Math
 {
-    /// <inheritdoc/>
-    /// <remarks>
-    /// <inheritdoc/>
-    /// <para>
+	/// <summary>
+	/// Returns spline interpolated values across a set of points.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This allows spline interpolation when iterating between points over time. This allows for a nice smoothing effect as a value approaches a node point on the spline. 
+	/// </para>
+	/// <para>
+	/// Because this class provides smoothing between the nodes on the a spline, the result is very different than that of a linear interpolation. A linear interpolation will go in a straight line until 
+	/// the end point is reached. This can give a jagged looking effect when a point moves between several points that are in vastly different places. But the spline will smooth the transition for the 
+	/// value travelling to the destination points, thus giving a curved appearance when a point traverses the spline.
+	/// </para>
+	/// <para>
+	/// When adding or removing <see cref="Points"/> from the spline, remember to call <see cref="UpdateTangents"/> to recalculate the tangents.
+	/// </para>
+	/// <para>
 	/// This spline object uses the <a href="https://en.wikipedia.org/wiki/Centripetal_Catmull%E2%80%93Rom_spline">Catmull-Rom algorithm</a> to perform its work.
-    /// </para>
-    /// </remarks>
-    public class GorgonCatmullRomSpline 
+	/// </para>
+	/// </remarks>
+	/// <example>
+	/// An example on how to use the spline object:
+	/// <code language="csharp">
+	/// <![CDATA[
+	/// IGorgonSpline spline = new GorgonCatmullRomSpline();
+	/// 
+	/// spline.Points.Add(new Vector2(0, 0));
+	/// spline.Points.Add(new Vector2(1, 4.5f));
+	/// spline.Points.Add(new Vector2(7, -2.3f));
+	/// spline.Points.Add(new Vector2(10.2f, 0));
+	/// 
+	/// spline.UpdateTangents();
+	/// 
+	/// 
+	/// float startTime = GorgonTiming.SecondsSinceStart;
+	/// float endTime = GorgonTiming.SecondsSinceStart + 5;
+	/// float currentTime = 0;
+	/// 
+	/// while (currentTime < 1.0f)
+	/// {
+	///		Vector4 result = spline.GetInterpolatedValue(currentTime);
+	/// 
+	///		// Do something with the result... like plot a pixel:
+	///		// e.g PutPixel(result.X, result.Y, Color.Blue); or something.
+	///		// and over 5 seconds, a curved series of points should be plotted.
+	/// 
+	///		currentTime = GorgonTiming.SecondsSinceStart / (endTime - startTime);
+	/// } 
+	/// ]]>
+	/// </code>
+	/// </example>
+	public class GorgonCatmullRomSpline 
 		: IGorgonSpline
     {
         #region Variables.
@@ -48,15 +92,35 @@ namespace Gorgon.Math
         #endregion
 
         #region Properties.
-        /// <inheritdoc/>
-        public IList<Vector4> Points
+		/// <summary>
+		/// Property to return the list of points for the spline.
+		/// </summary>
+		/// <remarks>
+		/// When adding or removing points> from the spline, a call to the <see cref="IGorgonSpline.UpdateTangents"/> method is required to recalculate the tangents. Otherwise, the spline interpolation will be incorrect.
+		/// </remarks>
+		public IList<Vector4> Points
         {
             get;
         }
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return an interpolated point from the spline.
+		/// </summary>
+		/// <param name="startPointIndex">Index in the point list to start from.</param>
+		/// <param name="delta">Delta value to interpolate.</param>
+		/// <returns>The interpolated value at <paramref name="delta"/>.</returns>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startPointIndex"/> parameter is less than 0, or greater than/equal to the number of points in the spline minus 1.</exception>
+		/// <remarks>
+		/// <para>
+		/// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline (relative to <paramref name="startPointIndex"/>) and 1 is the next point from the <paramref name="startPointIndex"/> in the spline.
+		/// </para>
+		/// <para>
+		/// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentOutOfRangeException"><c>[Debug only]</c> Thrown when the <paramref name="startPointIndex"/> is less than 0, or greater than/equal to the number of points - 1 in the <see cref="IGorgonSpline.Points"/> parameter.</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
 		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
@@ -91,8 +155,18 @@ namespace Gorgon.Math
             return Vector4.Transform(result, calculations);
         }
 
-		/// <inheritdoc/>
-        public Vector4 GetInterpolatedValue(float delta)
+		/// <summary>
+		/// Function to return an interpolated point from the spline.
+		/// </summary>
+		/// <param name="delta">Delta value to interpolate.</param>
+		/// <returns>The interpolated value at <paramref name="delta"/>.</returns>
+		/// <remarks>
+		/// The <paramref name="delta"/> parameter is a unit value where 0 is the first point in the spline and 1.0 is the last point in the spline.
+		/// <para>
+		/// If the <paramref name="delta"/> is less than 0, or greater than 1, the value will be wrapped to fit within the 0..1 range.
+		/// </para>
+		/// </remarks>
+		public Vector4 GetInterpolatedValue(float delta)
         {
             // Wrap to 0 and 1.
             while (delta < 0.0f)
@@ -111,8 +185,14 @@ namespace Gorgon.Math
             return GetInterpolatedValue((int)(delta * (Points.Count - 1)), segment - index);
         }
 
-		/// <inheritdoc/>
-        public void UpdateTangents()
+		/// <summary>
+		/// Function to calculate the tangent vectors.
+		/// </summary>
+		/// <remarks>
+		/// This function is used to calculate the tangent vectors from the points provided so that the object can interpolate a point in between the points given. Because this method requires the <see cref="IGorgonSpline.Points"/>, 
+		/// it must be called whenever a change to the <see cref="IGorgonSpline.Points"/> property is made.
+		/// </remarks>
+		public void UpdateTangents()
         {
 	        // Need 2 or more points.
             if (Points.Count < 2)
