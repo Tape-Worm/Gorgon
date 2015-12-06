@@ -39,7 +39,7 @@ namespace Gorgon.Input
 		/// <summary>
 		/// Function to process the Gorgon raw input data into device state data and appropriate events.
 		/// </summary>
-		/// <param name="data">The data to process.</param>
-		void ProcessData(ref T data);
+		/// <param name="rawInputData">The data to process.</param>
+		void ProcessData(ref T rawInputData);
 	}
 }

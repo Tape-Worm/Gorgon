@@ -40,7 +40,9 @@ namespace Gorgon.Input
 		: IGorgonGamingDeviceAxis
 	{
 		#region Variables.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the identifier for the axis.
+		/// </summary>
 		public GamingDeviceAxis Axis
 		{
 			get;

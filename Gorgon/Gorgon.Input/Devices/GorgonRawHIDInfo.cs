@@ -29,60 +29,80 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc cref="IGorgonRawHIDInfo"/>
+	/// <summary>
+	/// Provides capability information about a Raw Input Human Interface Device.
+	/// </summary>
 	public class GorgonRawHIDInfo
 		: IGorgonRawHIDInfo
 	{
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device class name.
+		/// </summary>
 		public string Class
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return a human friendly description of the device.
+		/// </summary>
 		public string Description
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device handle.
+		/// </summary>
 		public IntPtr Handle
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return human interface device path for the device.
+		/// </summary>
 		public string HIDPath
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the product ID for the device.
+		/// </summary>
 		public int ProductID
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the vendor ID for the device.
+		/// </summary>
 		public int VendorID
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the version number for the device.
+		/// </summary>
 		public int Version
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the top level collection usage value for this device.
+		/// </summary>
 		public HIDUsage Usage
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the top level collection usage page value for this device.
+		/// </summary>
 		public HIDUsagePage UsagePage
 		{
 			get;

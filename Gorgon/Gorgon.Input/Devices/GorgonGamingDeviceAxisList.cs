@@ -93,12 +93,25 @@ namespace Gorgon.Input
 			_infoList[axisData.Axis] = axisData;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Returns an enumerator that iterates through the collection.
+		/// </summary>
+		/// <returns>
+		/// An enumerator that can be used to iterate through the collection.
+		/// </returns>
+		/// <filterpriority>1</filterpriority>
 		public IEnumerator<T> GetEnumerator()
 		{
 			return _infoList.Select(item => item.Value).GetEnumerator();
 		}
 
+		/// <summary>
+		/// Returns an enumerator that iterates through a collection.
+		/// </summary>
+		/// <returns>
+		/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
+		/// </returns>
+		/// <filterpriority>2</filterpriority>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return ((IEnumerable)_infoList.Values).GetEnumerator();

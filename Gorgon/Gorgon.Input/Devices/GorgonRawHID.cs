@@ -29,7 +29,19 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc cref="IGorgonRawHID"/>
+	/// <summary>
+	/// Provides state for human interface data returned from Raw Input.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This allows a user to read, and parse human interface device data from an aribtrary device. It is recommended that this object be wrapped by an actual object that will be used to present the data 
+	/// in an easy to manipulate format.
+	/// </para>
+	/// <para>
+	/// This object implements <see cref="IDisposable"/> because it manipulates native memory. It is necessary to call the <see cref="IDisposable.Dispose"/> method in order to ensure there is no memory leak 
+	/// when finished with this object.
+	/// </para>
+	/// </remarks>
 	public class GorgonRawHID
 		: IGorgonRawHID, IGorgonRawInputDeviceData<GorgonRawHIDData>
 	{
@@ -41,48 +53,66 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Events.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when Raw Input receives data from the device.
+		/// </summary>
 		public event EventHandler<GorgonHIDEventArgs> DataReceived;
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the handle for the device.
+		/// </summary>
 		public IntPtr Handle => Info.Handle;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the type of device.
+		/// </summary>
 		public RawInputType DeviceType => RawInputType.HID;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the HID usage code for this device.
+		/// </summary>
 		HIDUsage IGorgonRawInputDevice.DeviceUsage => Info.Usage;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return information about the Raw Input Human Interface Device.
+		/// </summary>
 		public IGorgonRawHIDInfo Info
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return a pointer to the block of memory that stores the HID data.
+		/// </summary>
 		public GorgonPointerAlias Data
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the size of an individual HID input, in bytes.
+		/// </summary>
 		public int HIDSize
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of inputs in the <see cref="IGorgonRawHID.Data"/>.
+		/// </summary>
 		public int Count
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the pre-parsed data for this HID.
+		/// </summary>
 		public GorgonPointer PreParsedData
 		{
 			get
@@ -101,7 +131,11 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Function to process the Gorgon raw input data into device state data and appropriate events.
+		/// </summary>
+		/// <param name="rawInputData">The data to process.</param>
 		void IGorgonRawInputDeviceData<GorgonRawHIDData>.ProcessData(ref GorgonRawHIDData rawInputData)
 		{
 			Data = rawInputData.HidData;
@@ -111,7 +145,9 @@ namespace Gorgon.Input
 			DataReceived?.Invoke(this, new GorgonHIDEventArgs(rawInputData.HidData, rawInputData.HIDDataSize, rawInputData.ItemCount));
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
 		public void Dispose()
 		{
 			_preParsedData?.Dispose();

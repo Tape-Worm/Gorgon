@@ -32,7 +32,9 @@ using Gorgon.Plugins;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc cref="IGorgonGamingDeviceDriverFactory"/>
+	/// <summary>
+	/// A factory used to load gaming device drivers.
+	/// </summary>
 	public sealed class GorgonGamingDeviceDriverFactory 
 		: IGorgonGamingDeviceDriverFactory
 	{
@@ -53,7 +55,16 @@ namespace Gorgon.Input
 			return _plugInService.GetPlugins<GorgonGamingDeviceDriver>();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to load a gaming device driver from any loaded plug in assembly.
+		/// </summary>
+		/// <param name="driverType">The fully qualified type name of the driver to load.</param>
+		/// <returns>The gaming device driver plug in.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="driverType"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="driverType"/> parameter is empty
+		/// <para>-or-</para>
+		/// <para>Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.</para>
+		/// </exception>
 		public IGorgonGamingDeviceDriver LoadDriver(string driverType)
 		{
 			if (driverType == null)

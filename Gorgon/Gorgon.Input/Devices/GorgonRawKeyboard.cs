@@ -43,10 +43,14 @@ namespace Gorgon.Input
 		: IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawKeyboardData>, IGorgonKeyboard
 	{
 		#region Events.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event fired when a key is pressed on the keyboard.
+		/// </summary>
 		public event EventHandler<GorgonKeyboardEventArgs> KeyDown;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event fired when a key is released on the keyboard.
+		/// </summary>
 		public event EventHandler<GorgonKeyboardEventArgs> KeyUp;
 		#endregion
 
@@ -60,22 +64,32 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the handle for the device.
+		/// </summary>
 		IntPtr IGorgonRawInputDevice.Handle => _deviceHandle;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the type of device.
+		/// </summary>
 		RawInputType IGorgonRawInputDevice.DeviceType => RawInputType.Keyboard;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the HID usage code for this device.
+		/// </summary>
 		HIDUsage IGorgonRawInputDevice.DeviceUsage => HIDUsage.Keyboard;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return information about this keyboard.
+		/// </summary>
 		public IGorgonKeyboardInfo Info
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the states for each of the <see cref="Keys"/>.
+		/// </summary>
 		public GorgonKeyStateCollection KeyStates
 		{
 			get;
@@ -215,9 +229,24 @@ namespace Gorgon.Input
 			KeyUp?.Invoke(this, new GorgonKeyboardEventArgs(key, GetModifiers(), scan));
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to convert a keyboard key into a character (if applicable).
+		/// </summary>
+		/// <param name="key">The key to convert into a character.</param>
+		/// <param name="modifier">The modifier for that key.</param>
+		/// <returns>The character representation for the key. If no representation is available, an empty string is returned.</returns>
 		/// <remarks>
-		/// <inheritdoc cref="IGorgonKeyboard.KeyToCharacter"/>
+		/// <para>
+		/// Use this to retrieve the character associated with a keyboard key. For example, if <see cref="Keys.A"/> is pressed, then 'a' will be returned. A <paramref name="modifier"/> can be 
+		/// passed with the <see cref="Keys.ShiftKey"/> to return 'A'. 
+		/// </para>
+		/// <para>
+		/// This method also supports the AltGr key which is represented by a combination of the <see cref="Keys.ControlKey"/> | <see cref="Keys.Menu"/> keys.
+		/// </para>
+		/// <para>
+		/// This method only returns characters for the currently active keyboard layout (i.e. the system keyboard layout). If this keyboard interface represents another keyboard attached to the computer 
+		/// then it will default to using the system keyboard to retrieve the character.
+		/// </para>
 		/// <para>
 		/// This method is not thread safe. Invalid data will be returned if multiple thread access this method.
 		/// </para>
@@ -267,7 +296,10 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to process the Gorgon raw input data into device state data and appropriate events.
+		/// </summary>
+		/// <param name="rawInputData">The data to process.</param>
 		void IGorgonRawInputDeviceData<GorgonRawKeyboardData>.ProcessData(ref GorgonRawKeyboardData rawInputData)
 		{
 			// Get the key code.

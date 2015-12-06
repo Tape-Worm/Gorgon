@@ -87,6 +87,7 @@ namespace Gorgon.Input
 	public interface IGorgonGamingDeviceDriver 
 		: IGorgonNamedObject, IDisposable
 	{
+		#region Properties.
 		/// <summary>
 		/// Property to return a description of the driver.
 		/// </summary>
@@ -94,7 +95,9 @@ namespace Gorgon.Input
 		{
 			get;
 		}
+		#endregion
 
+		#region Methods.
 		/// <summary>
 		/// Function to enumerate the gaming devices supported by this driver.
 		/// </summary>
@@ -131,5 +134,6 @@ namespace Gorgon.Input
 		/// This will create an instance of <see cref="IGorgonGamingDevice"/> for all devices supported by the driver at one time and return a list containing those instances.
 		/// </remarks>
 		IReadOnlyList<IGorgonGamingDevice> CreateGamingDevices(bool connectedOnly = false);
+		#endregion
 	}
 }

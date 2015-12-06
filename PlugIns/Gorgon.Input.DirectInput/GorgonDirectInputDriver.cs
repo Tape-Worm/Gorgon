@@ -122,7 +122,15 @@ namespace Gorgon.Input.DirectInput
 			return false;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to enumerate the gaming devices supported by this driver.
+		/// </summary>
+		/// <param name="connectedOnly">[Optional] <b>true</b> to only enumerate devices that are connected, or <b>false</b> to enumerate all devices.</param>
+		/// <returns>A read only list of gaming device info values.</returns>
+		/// <remarks>
+		/// This will return only the devices supported by the driver. In some cases, the driver may not return a complete listing of all gaming devices attached to the system because the underlying provider 
+		/// may not support those device types.
+		/// </remarks>
 		public override IReadOnlyList<IGorgonGamingDeviceInfo> EnumerateGamingDevices(bool connectedOnly = false)
 		{
 			IList<DI.DeviceInstance> devices = _directInput.Value.GetDevices(DI.DeviceClass.GameControl, DI.DeviceEnumerationFlags.AttachedOnly);
@@ -172,7 +180,20 @@ namespace Gorgon.Input.DirectInput
 			return result;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to create a <see cref="GorgonGamingDevice"/> object.
+		/// </summary>
+		/// <param name="gamingDeviceInfo">The <see cref="IGorgonGamingDeviceInfo"/> used to determine which device to associate with the resulting object.</param>
+		/// <returns>A <see cref="GorgonGamingDevice"/> representing the data from the physical device.</returns>
+		/// <remarks>
+		/// <para>
+		/// This will create a new instance of a <see cref="IGorgonGamingDevice"/> which will relay data from the physical device using the native provider. 
+		/// </para>
+		/// <para>
+		/// Some devices may allocate native resources in order to communicate with the underlying native providers, and because of this, it is important to call the <see cref="IDisposable.Dispose"/> method 
+		/// on the object when you are done with the object so that those resources may be freed.
+		/// </para>
+		/// </remarks>
 		public override IGorgonGamingDevice CreateGamingDevice(IGorgonGamingDeviceInfo gamingDeviceInfo)
 		{
 			DirectInputDeviceInfo deviceInfo = gamingDeviceInfo as DirectInputDeviceInfo;

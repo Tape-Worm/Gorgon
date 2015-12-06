@@ -64,54 +64,81 @@ namespace Gorgon.Input.DirectInput
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
+		/// </summary>
+		/// <remarks>
+		/// Use this value to retrieve the number of axes the gaming device supports by checking its <see cref="GorgonGamingDeviceAxisList{T}.Count"/> property.
+		/// </remarks>
 		public GorgonGamingDeviceAxisList<GorgonGamingDeviceAxisInfo> AxisInfo
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of buttons available on the gaming device.
+		/// </summary>
 		public int ButtonCount
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the capabilities supported by the gaming device.
+		/// </summary>
 		public GamingDeviceCapabilityFlags Capabilities
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return a human readable description for the gaming device.
+		/// </summary>
 		public string Description
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the ID for the manufacturer of the gaming device.
+		/// </summary>
 		public int ManufacturerID
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the ID of the product.
+		/// </summary>
 		public int ProductID
 		{
 			get;
 			private set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the tolerances for each of the vibration motors in the gaming device.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Use this value to retrieve the number of vibration motors the gaming device supports by checking its <see cref="IReadOnlyCollection{T}.Count"/> property.
+		/// </para>
+		/// <para>
+		/// If the device does not support vibration, then this list will be empty.
+		/// </para>
+		/// </remarks>
 		public IReadOnlyList<GorgonRange> VibrationMotorRanges
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of point of view controls on the gaming device.
+		/// </summary>
 		public int POVCount
 		{
 			get;

@@ -36,49 +36,70 @@ namespace Gorgon.Input
 		: IGorgonRawInputDeviceInfo, IGorgonKeyboardInfo
 	{
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return a human friendly description of the device.
+		/// </summary>
 		public string Description
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return human interface device path for the device.
+		/// </summary>
 		public string HIDPath
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device class name.
+		/// </summary>
 		public string Class
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device handle.
+		/// </summary>
 		public IntPtr Handle
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the total number of keys present on the keyboard.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This value may or may not be accurate depending on the implementation. That is, for some systems, this will be an estimate, and for others this will be accurate.
+		/// </para> 
+		/// </remarks>
 		public int KeyCount
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of LED indicators on the keyboard.
+		/// </summary>
 		public int IndicatorCount
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of function keys on the keyboard.
+		/// </summary>
 		public int FunctionKeyCount
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the type of keyboard.
+		/// </summary>
 		public KeyboardType KeyboardType
 		{
 			get;
@@ -107,6 +128,5 @@ namespace Gorgon.Input
 			KeyboardType = (KeyboardType)deviceInfo.dwType;
 		}
 		#endregion
-
 	}
 }

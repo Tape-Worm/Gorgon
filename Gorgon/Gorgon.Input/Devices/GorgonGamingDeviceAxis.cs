@@ -45,7 +45,9 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the identifier for the axis.
+		/// </summary>
 		public GamingDeviceAxis Axis
 		{
 			get;

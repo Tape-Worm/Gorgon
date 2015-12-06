@@ -97,46 +97,62 @@ namespace Gorgon.Input
 		#endregion
 
 		#region Events.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when the mouse is moved.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseMove;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse button is held down.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseButtonDown;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse button is released.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseButtonUp;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a mouse wheel (if present) is moved.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseWheelMove;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Event triggered when a double click is performed on a mouse button.
+		/// </summary>
 		public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the type of device.
+		/// </summary>
 		RawInputType IGorgonRawInputDevice.DeviceType => RawInputType.Mouse;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the handle for the device.
+		/// </summary>
 		IntPtr IGorgonRawInputDevice.Handle => _deviceHandle;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the HID usage code for this device.
+		/// </summary>
 		HIDUsage IGorgonRawInputDevice.DeviceUsage => HIDUsage.Mouse;
 
 		/// <summary>
-		/// <inheritdoc/>
+		/// Property to set or return the last reported relative position movement offset.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// <inheritdoc/>
+		/// This value represents the number of units that the mouse moved since its last <see cref="IGorgonMouse.MouseMove"/> event.
+		/// </para>
+		/// <para>
+		/// Users should reset this value when they are done with it. Otherwise, it will not be reset until the next <see cref="IGorgonMouse.MouseWheelMove"/> event.
 		/// </para>
 		/// <para>
 		/// Raw input devices that use relative tracking will update this value as-is. That is, no calculation from a prior position is done inside of this object except to update the <see cref="Position"/> 
 		/// property. For devices with absolute tracking, this value is calculated from the last known position. Due to this, the relative amount on the first read may be <c>0, 0</c> because there is no 
 		/// point of reference to derive the relative offset from. 
-		/// </para>
-		/// <para>
-		/// <inheritdoc cref="IGorgonMouse.RelativePositionOffset" select="para[last()]"/>
 		/// </para>
 		/// </remarks>
 		public Point RelativePositionOffset
@@ -145,20 +161,34 @@ namespace Gorgon.Input
 			set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the last reported relative wheel movement delta.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This value represents the number of units that the mouse wheel moved since its last <see cref="IGorgonMouse.MouseWheelMove"/> event.
+		/// </para>
+		/// <para>
+		/// Users should reset this value when they are done with it. Otherwise, it will not be reset until the next <see cref="IGorgonMouse.MouseWheelMove"/> event.
+		/// </para>
+		/// </remarks>
 		public int RelativeWheelDelta
 		{
 			get;
 			set;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return information about this mouse.
+		/// </summary>
 		public IGorgonMouseInfo Info
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the delay between button clicks, in milliseconds, for a double click event.
+		/// </summary>
 		public int DoubleClickDelay
 		{
 			get
@@ -206,14 +236,15 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// <inheritdoc/>
+		/// Property to set or return the <see cref="Rectangle"/> used to constrain the mouse <see cref="IGorgonMouse.Position"/>.
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// <inheritdoc/>
+		/// This will constrain the value of the <see cref="IGorgonMouse.Position"/> within the specified <see cref="Rectangle"/>. This means that a cursor positioned at 320x200 with a region located at 330x210 with a width 
+		/// and height of 160x160 will make the <see cref="IGorgonMouse.Position"/> property return 330x210. If the cursor was positioned at 500x400, the <see cref="IGorgonMouse.Position"/> property would return 480x360.
 		/// </para>
 		/// <para>
-		/// <inheritdoc/>
+		/// Passing <see cref="Rectangle.Empty"/> to this property will remove the constraint on the position.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -237,7 +268,18 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="IGorgonMouse.WheelPosition"/>.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// If a mouse wheel exists on the device, this will constrain the value of the <see cref="IGorgonMouse.WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+		/// 160, with a constraint of 180-190 will make the <see cref="IGorgonMouse.WheelPosition"/> property return 180.
+		/// </para>
+		/// <para>
+		/// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+		/// </para>
+		/// </remarks>
 		public GorgonRange WheelConstraint
 		{
 			get
@@ -251,7 +293,19 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the <see cref="Size"/> of the area, in pixels, surrounding the cursor that represents a valid double click area.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// When this value is set, and a mouse button is double clicked, this value is checked to see if the mouse <see cref="IGorgonMouse.Position"/> falls within -<c>value.</c><see cref="Size.Width"/> to <c>value.</c><see cref="Size.Width"/>, 
+		/// and -<c>value.</c><see cref="Size.Height"/> to <c>value.</c><see cref="Size.Height"/> on the second click. If the <see cref="IGorgonMouse.Position"/> is within this area, then the double click event will be triggered. Otherwise, it will 
+		/// not.
+		/// </para>
+		/// <para>
+		/// Passing <see cref="Size.Empty"/> to this property will disable double clicking.
+		/// </para>
+		/// </remarks>
 		public Size DoubleClickSize
 		{
 			get
@@ -265,7 +319,7 @@ namespace Gorgon.Input
 		}
 
 		/// <summary>
-		/// <inheritdoc/>
+		/// Property to set or return the position of the mouse.
 		/// </summary>
 		/// <remarks>
 		/// <para>
@@ -278,7 +332,7 @@ namespace Gorgon.Input
 		/// handle mouse movement tracking.
 		/// </para>
 		/// <para>
-		/// <inheritdoc cref="IGorgonMouse.Position" select="para[first]"/>
+		/// This property is affected by the <see cref="IGorgonMouse.PositionConstraint"/> value.
 		/// </para>
 		/// </remarks>
 		public Point Position
@@ -293,7 +347,12 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the pointing device wheel position.
+		/// </summary>
+		/// <remarks>
+		/// This property is affected by the <see cref="IGorgonMouse.WheelConstraint"/> value.
+		/// </remarks>
 		public int WheelPosition
 		{
 			get
@@ -307,7 +366,9 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to set or return the pointing device button(s) that are currently down.
+		/// </summary>
 		public MouseButtons Buttons
 		{
 			get;
@@ -600,36 +661,39 @@ namespace Gorgon.Input
 			}
 		}
 
-		/// <inheritdoc/>
-		void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref GorgonRawMouseData data)
+		/// <summary>
+		/// Function to process the Gorgon raw input data into device state data and appropriate events.
+		/// </summary>
+		/// <param name="rawInputData">The data to process.</param>
+		void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref GorgonRawMouseData rawInputData)
 		{
 			// Gather the event information.
 			MouseButtons downButtons = MouseButtons.None;
 			MouseButtons upButtons = MouseButtons.None;
 
-			bool wasMoved = HandleMouseMove(data.Position.X, data.Position.Y, data.IsRelative);
+			bool wasMoved = HandleMouseMove(rawInputData.Position.X, rawInputData.Position.Y, rawInputData.IsRelative);
 
-			if (data.MouseWheelDelta != 0)
+			if (rawInputData.MouseWheelDelta != 0)
 			{
-				HandleMouseWheelMove(data.MouseWheelDelta);
+				HandleMouseWheelMove(rawInputData.MouseWheelDelta);
 			}
 
 			// If there's a button event, then process it.
-			if (data.ButtonState != MouseButtonState.None)
+			if (rawInputData.ButtonState != MouseButtonState.None)
 			{
-				downButtons = HandleButtonDownEvents(data.ButtonState);
-				upButtons = HandleButtonUpEvents(data.ButtonState);
+				downButtons = HandleButtonDownEvents(rawInputData.ButtonState);
+				upButtons = HandleButtonUpEvents(rawInputData.ButtonState);
 			}
 
 			// Trigger button events.
 			if (downButtons != MouseButtons.None)
 			{
-				MouseButtonDown?.Invoke(this, new GorgonMouseEventArgs(downButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !data.IsRelative));
+				MouseButtonDown?.Invoke(this, new GorgonMouseEventArgs(downButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative));
 			}
 
 			if (upButtons != MouseButtons.None)
 			{
-				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !data.IsRelative);
+				var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
 
 				MouseButtonUp?.Invoke(this, e);
 
@@ -640,14 +704,14 @@ namespace Gorgon.Input
 			}
 
 			// Trigger move events.
-			if (data.MouseWheelDelta != 0)
+			if (rawInputData.MouseWheelDelta != 0)
 			{
-				MouseWheelMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !data.IsRelative));
+				MouseWheelMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !rawInputData.IsRelative));
 			}
 
 			if (wasMoved)
 			{
-				MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !data.IsRelative));
+				MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !rawInputData.IsRelative));
 			}
 		}
 		#endregion

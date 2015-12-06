@@ -29,54 +29,72 @@ using Gorgon.Native;
 
 namespace Gorgon.Input
 {
-	/// <inheritdoc cref="IGorgonRawInputDeviceInfo"/>
+	/// <summary>
+	/// Provides information about a Raw Input mouse device.
+	/// </summary>
 	class RawMouseInfo
 		: IGorgonMouseInfo, IGorgonRawInputDeviceInfo
 	{
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return a human friendly description of the device.
+		/// </summary>
 		public string Description
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return human interface device path for the device.
+		/// </summary>
 		public string HIDPath
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device class name.
+		/// </summary>
 		public string Class
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the device handle.
+		/// </summary>
 		public IntPtr Handle
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the sampling rate for the mouse.
+		/// </summary>
 		public int SampleRate
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the number of buttons on the mouse.
+		/// </summary>
 		public int ButtonCount
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return whether the mouse supports a horizontal wheel or not.
+		/// </summary>
 		public bool HasHorizontalWheel
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the mouse ID.
+		/// </summary>
 		public int MouseID
 		{
 			get;
