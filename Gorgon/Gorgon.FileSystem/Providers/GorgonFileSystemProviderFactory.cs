@@ -35,7 +35,48 @@ using Gorgon.Plugins;
 
 namespace Gorgon.IO.Providers
 {
-	/// <inheritdoc cref="IGorgonFileSystemProviderFactory"/>
+	/// <summary>
+	/// A factory object used to create file system provider plug ins.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This will generate providers that will allow access to different types of file systems. For example, a user may create a file system provider that will open 7-zip files, but the <see cref="IGorgonFileSystem"/> 
+	/// will not know how to read those files without the appropriate provider. This object would be used to load that 7-zip provider, and add it to the file system object so that it will know how to mount those 
+	/// file types.
+	/// </para>
+	/// <para>
+	/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonPluginAssemblyCache"/> before using this method and a <see cref="GorgonPluginService"/> should be 
+	/// created in order to pass it to this factory.
+	/// </para>
+	/// </remarks>
+	/// <example>
+	/// The following example shows how to use the provider factory:
+	/// <code language="csharp"> 
+	/// <![CDATA[
+	/// using (GorgonPluginAssemblyCache cache = new GorgonPluginAssemblyCache())
+	/// {
+	///		// Load the assembly.
+	///		service.Load("c:\path\to\your\assembly\7zProvider.dll");
+	/// 
+	///		// Get the plug in service.
+	///		GorgonPluginService service = new GorgonPluginService(cache);
+	/// 	
+	///		// Create the provider factory.
+	///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(service);
+	/// 
+	///		// Get our provider from the factory.
+	///		IGorgonFileSystemProvider provider = CreateProvider("Fully.Qualified.TypeName.SevenZipProvider");
+	/// 
+	///		// Mount the file system.
+	///		GorgonFileSystem fileSystem = new GorgonFileSystem(provider);
+	/// 
+	///		fileSystem.Mount("c:\path\to\your\archive\file.7z");
+	///		
+	///		// Do stuff...
+	/// }
+	/// ]]>
+	/// </code>
+	/// </example>
 	public sealed class GorgonFileSystemProviderFactory 
 		: IGorgonFileSystemProviderFactory
 	{
@@ -57,7 +98,14 @@ namespace Gorgon.IO.Providers
 			                     .ToArray();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to create a new file system provider.
+		/// </summary>
+		/// <param name="providerPluginName">The fully qualified type name of the plugin that contains the file system provider.</param>
+		/// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providerPluginName"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="providerPluginName"/> is empty.</exception>
+		/// <exception cref="GorgonException">Thrown when the plugin specified by the <paramref name="providerPluginName"/> parameter was not found.</exception>
 		public GorgonFileSystemProvider CreateProvider(string providerPluginName)
 		{
 			if (providerPluginName == null)
@@ -82,7 +130,16 @@ namespace Gorgon.IO.Providers
 			return plugin;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to retrieve all the file system providers from the available plugins in the plugin service.
+		/// </summary>
+		/// <param name="pluginAssembly">[Optional] The name of the assembly to load file system providers from.</param>
+		/// <returns>A list of file system providers</returns>
+		/// <remarks>
+		/// When the <paramref name="pluginAssembly"/> parameter is set to <b>null</b> (<i>Nothing</i> in VB.Net), then only the file system providers within that assembly will 
+		/// be loaded. Otherwise, all file system providers available in the <see cref="GorgonPluginService"/> passed to the object constructor will be created (or have 
+		/// a previously created instance returned).
+		/// </remarks>
 		public IReadOnlyList<GorgonFileSystemProvider> CreateProviders(AssemblyName pluginAssembly = null)
 		{
 			return pluginAssembly == null

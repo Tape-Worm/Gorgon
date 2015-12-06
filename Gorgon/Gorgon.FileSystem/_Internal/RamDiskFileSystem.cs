@@ -78,8 +78,14 @@ namespace Gorgon.IO
 			: this(file.FullPath, file.Size, file.CreateDate, file.LastModifiedDate)
 		{
 		}
-
-		/// <inheritdoc/>
+		
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		/// <param name="other">An object to compare with this object.</param>
 		public bool Equals(RamDiskFileInfo other)
 		{
 			return string.Equals(other.FullPath, FullPath, StringComparison.OrdinalIgnoreCase);

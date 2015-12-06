@@ -29,10 +29,22 @@ using System.Collections.Generic;
 using System.Linq;
 using Gorgon.Collections;
 using Gorgon.IO.Properties;
+using Gorgon.IO.Providers;
 
 namespace Gorgon.IO
 {
-	/// <inheritdoc/>
+	/// <summary>
+	/// A representation of a virtual directory within a <see cref="IGorgonFileSystem"/>.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A virtual directory is a container for sub directories and files. 
+	/// </para>
+	/// <para>
+	/// Directories can be created by creating a <see cref="IGorgonFileSystemWriter{T}"/> instance and calling its <see cref="IGorgonFileSystemWriter{T}.CreateDirectory"/>. Likewise, if you wish to delete 
+	/// a directory, call the <see cref="IGorgonFileSystemWriter{T}.DeleteDirectory"/> method on the <see cref="IGorgonFileSystemWriter{T}"/> object.
+	/// </para>
+	/// </remarks>
 	class VirtualDirectory
 		: IGorgonVirtualDirectory
 	{
@@ -45,50 +57,80 @@ namespace Gorgon.IO
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the <see cref="IGorgonFileSystem"/> that contains this directory.
+		/// </summary>
 		IGorgonFileSystem IGorgonVirtualDirectory.FileSystem => FileSystem;
 
-		/// <inheritdoc cref="IGorgonVirtualDirectory.FileSystem"/>
+		/// <summary>
+		/// Property to return the <see cref="IGorgonFileSystem"/> that contains this directory.
+		/// </summary>
 		public GorgonFileSystem FileSystem
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the mount point for this directory.
+		/// </summary>
+		/// <remarks>
+		/// This will show where the directory is mounted within the <see cref="IGorgonFileSystem"/>, the physical path to the directory, and the <see cref="IGorgonFileSystemProvider"/> used to import the directory.
+		/// </remarks>
 		public GorgonFileSystemMountPoint MountPoint
 		{
 			get;
 			set;
 		}
-		
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Property to return the list of any child <see cref="IGorgonVirtualDirectory"/> items under this virtual directory.
+		/// </summary>
 		IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory> IGorgonVirtualDirectory.Directories => Directories;
 
-		/// <inheritdoc cref="IGorgonVirtualDirectory.Directories"/>
+		/// <summary>
+		/// Property to return the list of any child <see cref="IGorgonVirtualDirectory"/> items under this virtual directory.
+		/// </summary>
 		public VirtualDirectoryCollection Directories
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
+		/// </summary>
 		IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile> IGorgonVirtualDirectory.Files => Files;
 
-		/// <inheritdoc cref="IGorgonVirtualDirectory.Files"/>
+
+		/// <summary>
+		/// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
+		/// </summary>
 		public VirtualFileCollection Files
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the parent of this directory.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>null</b> (<i>Nothing</i> in VB.Net), then this will be the root directory for the file system.
+		/// </remarks>
 		IGorgonVirtualDirectory IGorgonVirtualDirectory.Parent => Parent;
 
-		/// <inheritdoc cref="IGorgonVirtualDirectory.Parent"/>
+		/// <summary>
+		/// Property to return the parent of this directory.
+		/// </summary>
+		/// <remarks>
+		/// If this value is <b>null</b> (<i>Nothing</i> in VB.Net), then this will be the root directory for the file system.
+		/// </remarks>
 		public VirtualDirectory Parent
 		{
 			get;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return the full path to the directory.
+		/// </summary>
 		public string FullPath
 		{
 			get
@@ -104,7 +146,13 @@ namespace Gorgon.IO
 		#endregion
 
         #region Methods.
-		/// <inheritdoc cref="IGorgonVirtualDirectory.GetParents"/>
+		/// <summary>
+		/// Function to return all the parents up to the root directory.
+		/// </summary>
+		/// <returns>A list of all the parents, up to and including the root.</returns>
+		/// <remarks>
+		/// If this value is empty, then there is no parent for this directory. This indicates that the current directory is the root directory for the file system.
+		/// </remarks>
 		public IEnumerable<IGorgonVirtualDirectory> GetParents()
 		{
 			IGorgonVirtualDirectory parent = Parent;
@@ -117,19 +165,42 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to retrieve the total number of directories in this directory including any directories under this one.
+		/// </summary>
+		/// <returns>The total number of directories.</returns>
+		/// <remarks>
+		/// Use this to retrieve the total number of <see cref="IGorgonVirtualDirectory"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
+		/// the count of the immediate subdirectories, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Directories"/> property.
+		/// </remarks>
 		public int GetDirectoryCount()
 		{
 			return Directories.Count == 0 ? 0 : GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Count();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to retrieve the total number of files in this directory and any directories under this one.
+		/// </summary>
+		/// <returns>The total number of files.</returns>
+		/// <remarks>
+		/// Use this to retrieve the total number of <see cref="IGorgonVirtualFile"/> entries under this directory. This search includes all sub directories for this and child directories. To get 
+		/// the count of the immediate files, use the <see cref="IReadOnlyCollection{T}.Count"/> property on the <see cref="IGorgonVirtualDirectory.Files"/> property.
+		/// </remarks>
 		public int GetFileCount()
 		{
 			return GorgonFileSystem.FlattenDirectoryHierarchy(this, "*").Sum(item => item.Files.Count) + Files.Count;
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to determine if this directory, or optionally, any of the sub directories contains the specified file.
+		/// </summary>
+		/// <param name="file">The <see cref="IGorgonVirtualFile"/> to search for.</param>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <remarks>
+		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
+		/// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+		/// </remarks>
 		public bool ContainsFile(IGorgonVirtualFile file)
 		{
 			if (file == null)
@@ -140,7 +211,17 @@ namespace Gorgon.IO
 			return ContainsFile(file.Name);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to determine if this directory, or optionally, any of the sub directories contains a <see cref="IGorgonVirtualFile"/> with the specified file name.
+		/// </summary>
+		/// <param name="fileName">The name of the file to search for.</param>
+		/// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
+		/// <remarks>
+		/// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
+		/// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+		/// </remarks>
 		public bool ContainsFile(string fileName)
 		{
 			if (fileName == null)

@@ -68,13 +68,22 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return an item in the dictionary by its name.
+		/// </summary>
 		IGorgonVirtualDirectory IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>.this[string name] => this[name];
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return whether the keys are case sensitive.
+		/// </summary>
 		public bool KeysAreCaseSensitive => false;
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Gets the number of elements in the collection.
+		/// </summary>
+		/// <returns>
+		/// The number of elements in the collection. 
+		/// </returns>
 		public int Count => _directories.Count;
 		#endregion
 
@@ -252,7 +261,11 @@ namespace Gorgon.IO
 			_directories.Clear();
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return whether an item with the specified name exists in this collection.
+		/// </summary>
+		/// <param name="name">Name of the item to find.</param>
+		/// <returns><b>true</b>if found, <b>false</b> if not.</returns>
 		public bool Contains(string name)
 		{
 			name = name.FormatPathPart();
@@ -260,7 +273,12 @@ namespace Gorgon.IO
 			return !string.IsNullOrWhiteSpace(name) && _directories.ContainsKey(name);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return an item from the collection.
+		/// </summary>
+		/// <param name="name">The name of the item to look up.</param>
+		/// <param name="value">The item, if found, or the default value for the type if not.</param>
+		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>.TryGetValue(string name, out IGorgonVirtualDirectory value)
 		{
 			VirtualDirectory directory;

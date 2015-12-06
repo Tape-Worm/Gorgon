@@ -439,7 +439,34 @@ namespace Gorgon.IO
 		/// </para>
 		/// </remarks>
 		/// <example>
-		/// <inheritdoc cref="IGorgonFileSystem"/>
+		/// This example shows how to create a file system with the default provider, and mount a directory to the root:
+		/// <code language="csharp">
+		/// <![CDATA[
+		/// IGorgonFileSystem fileSystem = new GorgonFileSystem();
+		/// 
+		/// fileSystem.Mount(@"C:\MyDirectory\", "/"); 
+		/// ]]>
+		/// </code>
+		/// This example shows how to load a provider from the provider factory and use it with the file system:
+		/// <code language="csharp">
+		/// <![CDATA[
+		/// // First we need to load the assembly with the provider plug in.
+		/// using (GorgonPluginAssemblyCache assemblies = new GorgonPluginAssemblyCache())
+		/// {
+		///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
+		///		GorgonPluginService plugInService = new GorgonPluginService(assemblies);
+		/// 
+		///		// We'll use the factory to get the zip plug in provider.
+		///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
+		///		
+		///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");
+		/// 
+		///		// Now create the file system with the zip provider.
+		///		IGorgonFileSystem fileSystem = new GorgonFileSystem(zipProvider);
+		///		fileSystem.Mount(@"C:\ZipFiles\MyFileSystem.zip", "/");
+		/// }  
+		/// ]]>
+		/// </code>
 		/// </example>
 		GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null);
 		#endregion

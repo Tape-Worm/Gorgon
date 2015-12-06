@@ -43,7 +43,10 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Methods.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Releases the unmanaged resources used by the <see cref="T:System.IO.FileStream"/> and optionally releases the managed resources.
+		/// </summary>
+		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
 		protected override void Dispose(bool disposing)
 		{
 			if ((disposing) && (_virtualFile != null) && (CanWrite))
@@ -81,6 +84,5 @@ namespace Gorgon.IO
 			_virtualFile = file;
 		}
 		#endregion
-
 	}
 }

@@ -149,13 +149,19 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to asynchronously copy the contents of a file system to the writable area.
 		/// </summary>
-		/// <param name="sourceFileSystem"><inheritdoc cref="CopyFrom"/></param>
+		/// <param name="sourceFileSystem">The <see cref="IGorgonFileSystem"/> to copy.</param>
 		/// <param name="cancelToken">The <see cref="CancellationToken"/> used to cancel an in progress copy.</param>
 		/// <param name="copyProgress">A method callback used to track the progress of the copy operation.</param>
-		/// <param name="allowOverwrite"><inheritdoc cref="CopyFrom"/></param>
-		/// <returns><inheritdoc cref="CopyFrom"/></returns>
+		/// <param name="allowOverwrite">[Optional] <b>true</b> to allow overwriting of files that already exist in the file system with the same path, <b>false</b> to throw an exception when a file with the same path is encountered.</param>
+		/// <returns>A <see cref="Tuple{T1,T2}"/> containing the number of directories (<c>item1</c>) and the number of files (<c>item2</c>) copied, or <b>null</b> (<i>Nothing</i> in VB.Net) if the operation was cancelled.</returns>
 		/// <remarks>
-		/// <inheritdoc cref="CopyFrom"/>
+		/// <para>
+		/// This copies all the file and directory information from one file system, into the <see cref="FileSystem"/> linked to this writer. 
+		/// </para>
+		/// <para>
+		/// When the <paramref name="allowOverwrite"/> is set to <b>false</b>, and a <see cref="IGorgonVirtualFile"/> already exists with the same path as another <see cref="IGorgonVirtualFile"/> in the 
+		/// <paramref name="sourceFileSystem"/>, then an exception will be raised.
+		/// </para>
 		/// <para>
 		/// This version of the copy method allows for an asynchronous copy of a set of a files and directories from another <see cref="IGorgonFileSystem"/>. This method should be used when there is a large 
 		/// amount of data to transfer between the file systems.

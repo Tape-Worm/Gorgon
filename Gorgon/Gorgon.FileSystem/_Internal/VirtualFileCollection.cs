@@ -49,10 +49,15 @@ namespace Gorgon.IO
 		#endregion
 
 		#region Properties.
-		/// <inheritdoc/>
+		/// <summary>
+		/// Property to return whether the keys are case sensitive.
+		/// </summary>
 		public bool KeysAreCaseSensitive => false;
 
-		/// <inheritdoc/>
+
+		/// <summary>
+		/// Property to return a file system file entry by name.
+		/// </summary>
 		IGorgonVirtualFile IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>.this[string fileName] => this[fileName];
 
 		/// <summary>
@@ -73,7 +78,12 @@ namespace Gorgon.IO
 			}
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Gets the number of elements in the collection.
+		/// </summary>
+		/// <returns>
+		/// The number of elements in the collection. 
+		/// </returns>
 		public int Count => _files.Count;
 		#endregion
 
@@ -92,7 +102,12 @@ namespace Gorgon.IO
 			return !string.IsNullOrWhiteSpace(name) && _files.ContainsKey(name);
 		}
 
-		/// <inheritdoc/>
+		/// <summary>
+		/// Function to return an item from the collection.
+		/// </summary>
+		/// <param name="name">The name of the item to look up.</param>
+		/// <param name="value">The item, if found, or the default value for the type if not.</param>
+		/// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
 		bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>.TryGetValue(string name, out IGorgonVirtualFile value)
 		{
 			VirtualFile file;
