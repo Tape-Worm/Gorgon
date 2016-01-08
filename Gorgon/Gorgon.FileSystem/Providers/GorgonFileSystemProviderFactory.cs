@@ -84,7 +84,7 @@ namespace Gorgon.IO.Providers
 		// A plugin service where instances of the provider plugins can be found.
 		private readonly IGorgonPluginService _pluginService;
 		// The application log file.
-		private readonly IGorgonLog _log = new GorgonLogDummy();
+		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
 		#endregion
 
 		#region Methods.

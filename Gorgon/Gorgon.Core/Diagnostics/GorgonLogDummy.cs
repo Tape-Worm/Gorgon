@@ -35,6 +35,13 @@ namespace Gorgon.Diagnostics
 	public sealed class GorgonLogDummy
 		: IGorgonThreadedLog
 	{
+		#region Variables.
+		/// <summary>
+		/// The default instance of the dummy log used across the Gorgon libraries when no logging is required.
+		/// </summary>
+		public static readonly IGorgonLog DefaultInstance = new GorgonLogDummy();
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the ID of the thread that created the log object.
@@ -91,7 +98,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonLogDummy"/> class.
 		/// </summary>
-		public GorgonLogDummy()
+		private GorgonLogDummy()
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;
 		}

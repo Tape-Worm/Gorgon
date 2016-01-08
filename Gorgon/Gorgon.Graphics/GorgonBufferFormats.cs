@@ -662,15 +662,6 @@ namespace Gorgon.Graphics
 			}
 
 			/// <summary>
-			/// Property to return whether the format is palettized or not.
-			/// </summary>
-			public bool IsPalettized
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
 			/// Property to return the bit depth for the format.
 			/// </summary>
 			public int BitDepth

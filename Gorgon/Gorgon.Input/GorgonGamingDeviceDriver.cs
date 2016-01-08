@@ -182,7 +182,7 @@ namespace Gorgon.Input
 		protected GorgonGamingDeviceDriver(string description)
 			: base(description)
 		{
-			Log = new GorgonLogDummy();
+			Log = GorgonLogDummy.DefaultInstance;
 		}
 		#endregion
 

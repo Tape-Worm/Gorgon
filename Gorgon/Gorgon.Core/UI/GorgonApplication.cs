@@ -132,7 +132,7 @@ namespace Gorgon.UI
 		// The log interface to use.
 		private static IGorgonLog _log;
 		// The dummy log interface.
-		private static readonly GorgonLogDummy _dummyLog = new GorgonLogDummy();
+		private static readonly IGorgonLog _dummyLog = GorgonLogDummy.DefaultInstance;
 		// A synchronization object for threads.
 		private static readonly object _syncLock = new object();
 		// The number of milliseconds to sleep while the application is unfocused but running in the background.
