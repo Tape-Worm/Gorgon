@@ -1095,7 +1095,7 @@ namespace Gorgon.Configuration
 		/// </remarks>
 		protected GorgonApplicationSettings(string applicationName, Version settingsVersion, IGorgonLog log)
 		{
-			Log = log ?? new GorgonLogDummy();
+			Log = log ?? GorgonLogDummy.DefaultInstance;
 
 			if (applicationName == null)
 			{

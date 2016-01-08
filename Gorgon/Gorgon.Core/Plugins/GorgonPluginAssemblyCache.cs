@@ -115,7 +115,7 @@ namespace Gorgon.Plugins
 		// Enumeration synchronization.
 		private static int _enumSync;
 		// Application log file.
-		private readonly IGorgonLog _log = new GorgonLogDummy();
+		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
 		// A resolver function for errant assemblies.
 		private Func<AppDomain, ResolveEventArgs, Assembly> _resolver;
 		// An application domain used for plugin information discovery.

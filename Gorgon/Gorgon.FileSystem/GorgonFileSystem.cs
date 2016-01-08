@@ -1225,7 +1225,7 @@ namespace Gorgon.IO
 		/// </remarks>
 		public GorgonFileSystem(IGorgonLog log = null)
 		{
-			_log = log ?? new GorgonLogDummy();
+			_log = log ?? GorgonLogDummy.DefaultInstance;
 
 			_providers = new Dictionary<string, IGorgonFileSystemProvider>(StringComparer.OrdinalIgnoreCase);
 			_mountProviders = new HashSet<GorgonFileSystemMountPoint>();

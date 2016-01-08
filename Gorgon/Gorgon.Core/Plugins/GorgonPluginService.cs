@@ -162,7 +162,7 @@ namespace Gorgon.Plugins
 		// List of constructors from a specific assembly.
 		private readonly Lazy<ConcurrentDictionary<string, Lazy<ConcurrentDictionary<Type, ObjectActivator<GorgonPlugin>>>>> _assemblyConstructors;
 		// The application log file.
-		private readonly IGorgonLog _log = new GorgonLogDummy();
+		private readonly IGorgonLog _log = GorgonLogDummy.DefaultInstance;
 		// Thread synchronization for the plugin dictionary.
 		private int _pluginSync;
 		#endregion
