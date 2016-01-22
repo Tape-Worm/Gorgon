@@ -183,7 +183,7 @@ namespace Gorgon.Examples
 
 			// Initialize our graphics.
 			_graphics = new GorgonGraphics();			
-			_2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Settings.Default.IsWindowed);
+			_2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm, Settings.Default.IsWindowed);
 
             // Show the logo because I'm insecure.
 			_2D.IsLogoVisible = true;

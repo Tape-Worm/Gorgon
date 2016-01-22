@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -89,13 +90,13 @@ namespace Gorgon.Graphics
 	/// <para>The constructor for this object can take a value known as a device feature level to specify the base line video device capabilities to use.  This feature level value specifies 
 	/// what capabilities we have available. To have Gorgon use the best available feature level for your video device, you may call the GorgonGraphics constructor 
 	/// without any parameters and it will use the best available feature level for your device.</para>
-	/// <para>Along with the feature level, the graphics object can also take a <see cref="Gorgon.Graphics.GorgonVideoDevice">Video Device</see> object as a parameter.  Specifying a 
+	/// <para>Along with the feature level, the graphics object can also take a <see cref="Gorgon.Graphics.VideoDevice">Video Device</see> object as a parameter.  Specifying a 
 	/// video device will force Gorgon to use that video device for rendering. If a video device is not specified, then the first detected video device will be used.</para>
 	/// <para>Please note that graphics objects cannot be shared between devices and must be duplicated.</para>
 	/// <para>Objects created by this interface will be automatically tracked and disposed when this interface is disposed.  This is meant to help handle memory leak problems.  However, 
 	/// it is important to note that this is not a good practice and the developer is responsible for calling Dispose on all objects that they create, graphics or otherwise.</para>
 	/// <para>This object will enumerate video devices, monitor outputs (for multi-head adapters), and video modes for each of the video devices in the system upon creation.  These
-    /// items are accessible from the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> class.</para>
+    /// items are accessible from the <see cref="Gorgon.Graphics.GorgonVideoDeviceList">GorgonVideoDeviceEnumerator</see> class.</para>
     /// <para>These objects can also be used in a deferred context.  This means that when a graphics object is deferred, it can be used in a multi threaded environment to allow set up of 
     /// a scene by recording commands sent to the video device for execution later on the rendering process.  This is handy where multiple passes for the same scene are required (e.g. a deferred renderer).</para>
 	/// <para>Please note that this object requires Direct3D 11 (but not necessarily a Direct3D 11 video card) and at least Windows Vista Service Pack 2 or higher.  
@@ -105,50 +106,41 @@ namespace Gorgon.Graphics
     public sealed class GorgonGraphics
         : IDisposable
     {
-        #region Variables.
-        private readonly GorgonDisposableObjectCollection _trackedObjects;	                // Tracked objects.
-        private static bool _isDWMEnabled;													// Flag to indicate that the desktop window manager compositor is enabled.
-        private static readonly bool _dontEnableDWM;						                // Flag to indicate that we should not enable the DWM.
-        private bool _disposed;                                                             // Flag to indicate that the context was disposed.
-	    private List<GorgonRenderCommands> _commands;                                       // A list of rendering commands for deferred contexts.
+		#region Variables.
+		// Tracked objects.
+		private GorgonDisposableObjectCollection _trackedObjects;
+		// Flag to indicate that the desktop window manager compositor is enabled.
+		private static bool _isDWMEnabled;                                                  
+		// Flag to indicate that we should not enable the DWM.
+		private static readonly bool _dontEnableDWM;                                        
+		// A list of rendering commands for deferred contexts.
+		private List<GorgonRenderCommands> _commands;                                       
+		// The log interface used to log debug messages.
+		private readonly IGorgonLog _log;
+		// The video device to use for this graphics object.
+		private VideoDevice _videoDevice;
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the D3D device context.
-        /// </summary>
-        internal D3D.DeviceContext Context
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Property to set or return the D3D device context.
+		/// </summary>
+		internal D3D.DeviceContext Context => _videoDevice?.Device?.ImmediateContext;
 
-        /// <summary>
-        /// Property to return the Direct3D 11 device object.
-        /// </summary>
-        internal D3D.Device D3DDevice
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Property to return the Direct3D 11 device object.
+		/// </summary>
+		internal D3D.Device D3DDevice => _videoDevice?.Device;
 
-        /// <summary>
-        /// Property to return the DX GI factory.
-        /// </summary>
-        internal GI.Factory1 GIFactory
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Property to return the DXGI adapter to use.
+		/// </summary>
+		internal GI.Adapter1 Adapter => _videoDevice?.Adapter;
 
-        /// <summary>
-        /// Property to return the DXGI adapter to use.
-        /// </summary>
-        internal GI.Adapter1 Adapter
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Property to return the <see cref="IGorgonVideoDevice"/> associated with the graphics object.
+		/// </summary>
+		public IGorgonVideoDevice Device => _videoDevice;
 
         /// <summary>
         /// Property to set or return whether DWM composition is enabled or not.
@@ -265,23 +257,31 @@ namespace Gorgon.Graphics
             get;
             private set;
         }
-        
-        /// <summary>
-        /// Property to set or return the video device to use for this graphics interface.
-        /// </summary>
-        public GorgonVideoDevice VideoDevice
-        {
-            get;
-        }
 
-        /// <summary>
-        /// Property to set or return whether object tracking is disabled.
-        /// </summary>
-        /// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
-        /// <para>The default value for DEBUG mode is <b>true</b>, and for RELEASE it is set to <b>false</b>.  Disabling object tracking will
-        /// give a slight performance increase.</para>
-        /// </remarks>
-        public bool IsObjectTrackingEnabled
+		/// <summary>
+		/// Property to set or return the video device to use for this graphics interface.
+		/// </summary>
+		public IGorgonVideoDevice VideoDevice => _videoDevice;
+
+		/// <summary>
+		/// Property to set or return whether object tracking is disabled.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
+		/// </para>
+		/// <para>
+		/// The default value for DEBUG mode is <b>true</b>, and for RELEASE it is set to <b>false</b>.  Disabling object tracking will give a slight performance increase.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// This flag <i>must</i> be set prior to creating any <see cref="GorgonGraphics"/> object, or else the flag will not take effect.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public static bool IsObjectTrackingEnabled
         {
             get
             {
@@ -292,6 +292,35 @@ namespace Gorgon.Graphics
                 SharpDX.Configuration.EnableObjectTracking = value;
             }
         }
+
+		/// <summary>
+		/// Property to set or return whether debug output is enabled for the underlying graphics API.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This will enable debug output for the underlying graphics API that Gorgon uses to render (Direct 3D 11 at this time). When this is enabled, all functionality will have debugging information that will 
+		/// output to the debug output console (Output window in Visual Studio) if the <c>Debug -> Enable Native Debugging</c> is turned on in the application project settings <i>and</i> the DirectX control panel 
+		/// is set up to debug the application under Direct 3D 10/11(/12 for Windows 10) application list.
+		/// </para>
+		/// <para>
+		/// When Gorgon is compiled in DEBUG mode, this flag defaults to <b>true</b>, otherwise it defaults to <b>false</b>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// This flag <i>must</i> be set prior to creating any <see cref="GorgonGraphics"/> object, or else the flag will not take effect.
+		/// </para>
+		/// <para>
+		/// The D3D11 SDK Layers DLL must be installed in order for this flag to work. If it is not, then the application may crash.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public static bool IsDebugEnabled
+		{
+			get;
+			set;
+		}
 
         /// <summary>
         /// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
@@ -309,43 +338,60 @@ namespace Gorgon.Graphics
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to clean up the categorized interfaces.
-        /// </summary>
-        private void DestroyInterfaces()
+		/// <summary>
+		/// Function to create the video device.
+		/// </summary>
+		/// <param name="deviceInfo">The video device information used to create the device.</param>
+		/// <param name="featureLevel">The requested feature level for the device.</param>
+		private void CreateDevice(GorgonVideoDeviceInfo deviceInfo, DeviceFeatureLevel? featureLevel)
+		{
+			if (deviceInfo == null)
+			{
+				var videoDevices = new GorgonVideoDeviceList(_log);
+				videoDevices.Enumerate();
+
+				_log.Print("No video device specified.", LoggingLevel.Verbose);
+
+				deviceInfo = (from devices in videoDevices
+				              where devices.VideoDeviceType == VideoDeviceType.Hardware
+				                    && ((featureLevel == null)
+				                        || (devices.SupportedFeatureLevel >= featureLevel.Value))
+				              orderby devices.SupportedFeatureLevel descending, devices.Index ascending
+				              select deviceInfo).FirstOrDefault();
+
+				if (deviceInfo == null)
+				{
+					throw new GorgonException(GorgonResult.DriverError, Resources.GORGFX_ERR_NO_SUITABLE_VIDEO_DEVICE_FOUND);
+				}
+			}
+
+			// If we've not specified a feature level, or the feature level exceeds the requested device feature level, then 
+			// fall back to the device feature level.
+			if ((featureLevel == null) || (deviceInfo.SupportedFeatureLevel < featureLevel.Value))
+			{
+				featureLevel = deviceInfo.SupportedFeatureLevel;
+			}
+
+			_log.Print($"Using video device '{deviceInfo.Name}' at feature level [{featureLevel.Value}] for Direct 3D 11.", LoggingLevel.Simple);
+
+			_videoDevice = new VideoDevice(deviceInfo, featureLevel.Value, _log);
+		}
+
+		/// <summary>
+		/// Function to clean up the categorized interfaces.
+		/// </summary>
+		private void DestroyInterfaces()
         {
-            if (Fonts != null)
-            {
-                Fonts.CleanUp();
-            }
-
-            Fonts = null;
-
-            if (Textures != null)
-            {
-                Textures.CleanUp();
-            }
-
-            Textures = null;
-
-            if (Shaders != null)
-            {
-                Shaders.CleanUp();
-            }
-
-            Shaders = null;
-
-            if (Output != null)
-            {
-                Output.CleanUp();
-            }
-
-            Output = null;
-
-            if (Rasterizer != null)
-            {
-                Rasterizer.CleanUp();
-            }
+			Fonts?.CleanUp();
+			Fonts = null;
+			Textures?.CleanUp();
+			Textures = null;
+			Shaders?.CleanUp();
+			Shaders = null;
+			Output?.CleanUp();
+			Output = null;
+			Rasterizer?.CleanUp();
+			Rasterizer = null;
         }
 
         /// <summary>
@@ -541,80 +587,85 @@ namespace Gorgon.Graphics
             Output.Reset();
             Shaders.Reset();
         }
-        #endregion
+		#endregion
 
-        #region Constructor/Destructor.
+		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes the <see cref="GorgonGraphics"/> class.
+		/// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
 		/// </summary>
-		/// <param name="device">[Optional] Video device to use.</param>
-		/// <param name="featureLevel">[Optional] The maximum feature level to support for the devices enumerated.</param>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="featureLevel"/> parameter is invalid.</exception>
-		/// <exception cref="GorgonException">Thrown when Gorgon could not find any video devices that are Shader Model 5, or the down level interfaces (Shader Model 4, and lesser).
-		/// <para>-or-</para>
-		/// <para>Thrown if the operating system version is not supported.  Gorgon Graphics requires at least Windows Vista Service Pack 2 or higher.</para>
-		/// </exception>
+		/// <param name="videoDeviceInfo">[Optional] A <see cref="GorgonVideoDeviceInfo"/> to specify the video device to use for this instance.</param>
+		/// <param name="featureLevel">[Optional] The requested feature level for the video device used with this object.</param>
+		/// <param name="log">[Optional] The log to use for debugging.</param>
+		/// <exception cref="GorgonException">Thrown when the <paramref name="featureLevel"/> is set to <see cref="DeviceFeatureLevel.Unsupported"/>.</exception>
 		/// <remarks>
-		/// The <paramref name="device"/> parameter is the video device that should be used with Gorgon.  If the user passes NULL (<i>Nothing</i> in VB.Net), then the primary device will be used. 
-        /// To determine the devices on the system, check the <see cref="Gorgon.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> class.  The primary device will be the first device in this collection. 
-		/// <para>The user may pass in a feature level to the featureLevel parameter to limit the feature levels available.  Note that the feature levels imply all feature levels up until the feature level passed in, for example, passing <c>DeviceFeatureLevel.SM4</c> will only allow functionality 
-		/// for both Shader Model 4, and Shader Model 2/3 capable video devices, while DeviceFeatureLevel.SM4_1 will include Shader Model 4 with a 4.1 profile and Shader model 2/3 video devices.</para>
-		/// <para>If a feature level is not supported by the hardware, then Gorgon will not use that feature level.  That is, passing a SM5 feature level with a SM4 card will only use a SM4 feature level.  If the user omits the feature level (in one of the constructor 
-		/// overloads), then Gorgon will use the best available feature level for the video device being used.</para>
+		/// <para>
+		/// When the <paramref name="videoDeviceInfo"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net), Gorgon will use the first video device with feature level specified by <paramref name="featureLevel"/>  
+		/// will be used. If the feature level requested is higher than what any device in the system can support, then the first device with the highest feature level will be used.
+		/// </para>
+		/// <para>
+		/// When specifying a feature level, the device with the closest matching feature level will be used. If the <paramref name="videoDeviceInfo"/> is specified, then that device will be used at the 
+		/// requested <paramref name="featureLevel"/>. If the requested <paramref name="featureLevel"/> is higher than what the <paramref name="videoDeviceInfo"/> will support, then Gorgon will use the 
+		/// highest feature of the specified <paramref name="videoDeviceInfo"/>.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The Gorgon Graphics library only works on Windows 7 or better. No other operating system is supported at this time.
+		/// </para>
+		/// </note>
+		/// </para>
 		/// </remarks>
-		public GorgonGraphics(GorgonVideoDevice device = null, DeviceFeatureLevel featureLevel = DeviceFeatureLevel.SM5)
+		/// <example>
+		/// <para>
+		/// The following examples show the various ways the object can be configured:
+		/// </para>
+		/// <code lang="csharp">
+		/// <![CDATA[
+		/// // Create using the first video device with the highest feature level:
+		/// var graphics = new GorgonGraphics();
+		/// 
+		/// // Create using a specific video device and use the highest feature level supported by that device:
+		/// // Get a list of available video devices.
+		/// IGorgonVideoDeviceList videoDevices = new GorgonVideoDeviceList(log);
+		/// videoDevices.Enumerate(true);
+		/// var graphics = new GorgonGraphics(videoDevices[0]);
+		/// 
+		/// // Create using the requested feature level and the first adapter that supports the nearest feature level requested:
+		/// // If the device does not support 11.0, then the device with the nearest feature level (e.g. 10.1) will be used instead.
+		/// var graphics = new GorgonGraphics(null, DeviceFeatureLevel.FeatureLevel11_0);
+		/// 
+		/// // Create using the requested device and the requested feature level:
+		/// // If the device does not support 11.0, then the highest feature level supported by the device will be used (e.g. 10.1).
+		/// IGorgonVideoDeviceList videoDevices = new GorgonVideoDeviceList(log);
+		/// videoDevices.Enumerate(true);
+		/// var graphics = new GorgonGraphics(videoDevices[0], DeviceFeatureLevel.FeatureLevel11_0); 
+		/// ]]>
+		/// </code>
+		/// </example>
+		/// <seealso cref="DeviceFeatureLevel"/>
+		/// <seealso cref="GorgonVideoDeviceInfo"/>
+		public GorgonGraphics(GorgonVideoDeviceInfo videoDeviceInfo = null, DeviceFeatureLevel? featureLevel = null, IGorgonLog log = null)
 		{
-        	ResetFullscreenOnFocus = true;
+			if ((GorgonComputerInfo.OperatingSystemVersion.Major < 6) && (GorgonComputerInfo.OperatingSystemVersion.Minor < 1))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_INVALID_OS);
+			}
+
+			if ((featureLevel != null) && ((featureLevel == DeviceFeatureLevel.Unsupported) || (!Enum.IsDefined(typeof(DeviceFeatureLevel), featureLevel.Value))))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_FEATURE_LEVEL_INVALID, featureLevel));
+			}
+
+			_log = log ?? GorgonLogDummy.DefaultInstance;
+			ResetFullscreenOnFocus = true;
             ImmediateContext = this;
-
-            if (featureLevel == DeviceFeatureLevel.Unsupported)
-            {
-                throw new ArgumentException(Resources.GORGFX_FEATURE_LEVEL_UNKNOWN);
-            }
-
-            if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_INVALID_OS);
-            }
-
-			GorgonApplication.Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
+			
+			_log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
 
             // Track our objects.
             _trackedObjects = new GorgonDisposableObjectCollection();
 
-#if DEBUG
-            if (!SharpDX.Configuration.EnableObjectTracking)
-            {
-                SharpDX.Configuration.EnableObjectTracking = true;
-            }
-#else
-			SharpDX.Configuration.EnableObjectTracking = false;
-#endif
-
-            if (device == null)
-            {
-                if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
-                {
-                    GorgonVideoDeviceEnumerator.Enumerate(false, false);
-                }
-
-                // Use the first device in the list.
-                device = GorgonVideoDeviceEnumerator.VideoDevices[0];
-            }
-
-            VideoDevice = device;
-
-            var D3DDeviceData = VideoDevice.GetDevice(VideoDevice.VideoDeviceType, featureLevel);
-
-            // Create the DXGI factory for the video device.
-            GIFactory = D3DDeviceData.Item1;
-            Adapter = D3DDeviceData.Item2;
-            D3DDevice = D3DDeviceData.Item3;
-
-		    Context = D3DDevice.ImmediateContext;
-            Context.ClearState();
-            VideoDevice.Graphics = ImmediateContext;
-
+			CreateDevice(videoDeviceInfo, featureLevel);
             CreateStates();
 
 			GorgonApplication.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
@@ -649,6 +700,12 @@ namespace Gorgon.Graphics
 			{
 				_dontEnableDWM = true;
 			}
+
+			SharpDX.Configuration.ThrowOnShaderCompileError = false;
+
+#if DEBUG
+			IsDebugEnabled = true;
+#endif
 		}
 
         /// <summary>
@@ -657,123 +714,42 @@ namespace Gorgon.Graphics
         /// <param name="graphics">The immediate graphics context.</param>
         internal GorgonGraphics(GorgonGraphics graphics)
         {
-            // Inherit the object tracker from the immediate context.
-            _trackedObjects = graphics._trackedObjects;
-            
-            Context = new D3D.DeviceContext(graphics.D3DDevice);
-            Context.ClearState();
-            ImmediateContext = graphics;
-
-            VideoDevice = graphics.VideoDevice;
-            GIFactory = graphics.GIFactory;
-            Adapter = graphics.Adapter;
-            D3DDevice = graphics.D3DDevice;
-
-            CreateStates();
-
-            graphics.AddTrackedObject(this);
+			throw new NotSupportedException();
         }
         #endregion
 
         #region IDisposable Members
         /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-        private void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-				GorgonApplication.Log.Print("Gorgon Graphics Context shutting down...", LoggingLevel.Simple);
-
-                if (!IsDeferred)
-                {
-                    _trackedObjects.Clear();
-                }
-                else
-                {
-                    Context.ClearState();
-                }
-
-                DestroyInterfaces();
-                
-                // Only clean up the context if the context is deferred.
-                if (IsDeferred)
-                {
-                    if (_commands != null)
-                    {
-                        // Release any outstanding command lists.
-                        while (_commands.Count > 0)
-                        {
-                            ReleaseCommands(_commands[_commands.Count - 1]);
-                        }
-                    }
-
-                    if (Context != null)
-                    {
-                        Context.Flush();
-                        Context.Dispose();
-                    }
-
-                    Context = null;
-
-                    // Remove us from object tracking.
-                    ImmediateContext.RemoveTrackedObject(this);
-                }
-                else
-                {
-					GorgonApplication.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
-
-                    // Destroy the video device interface.
-                    if (D3DDevice != null)
-                    {
-                        D3DDevice.Dispose();
-                        D3DDevice = null;
-                    }
-
-                    if (Adapter != null)
-                    {
-                        Adapter.Dispose();
-                        Adapter = null;
-                    }
-
-                    if (GIFactory != null)
-                    {
-                        GIFactory.Dispose();
-                        GIFactory = null;
-                    }
-
-                    if (VideoDevice != null)
-                    {
-                        VideoDevice.Graphics = null;
-                    }
-
-					GorgonApplication.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
-                    if (GIFactory != null)
-                    {
-                        GIFactory.Dispose();
-                        GIFactory = null;
-                    }
-                }
-
-				GorgonApplication.Log.Print("Gorgon Graphics Context shut down successfully", LoggingLevel.Simple);
-            }
-            
-            _disposed = true;
-        }
-
-        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            Dispose(true);
-        }
-        #endregion
-    }
+	        GorgonDisposableObjectCollection tracked = Interlocked.Exchange(ref _trackedObjects, null);
+	        VideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
+
+			tracked?.Clear();
+			// TODO: This is not thread-safe.
+			DestroyInterfaces();
+			device?.Dispose();
+
+			// TODO: Find a better way to do this.
+			/*
+			if (!IsDeferred)
+			{
+				
+			}
+			else
+			{
+				
+			}
+
+			// Only clean up the context if the context is deferred.
+			if (IsDeferred)
+			{				
+				return;
+			}
+			*/
+		}
+		#endregion
+	}
 }

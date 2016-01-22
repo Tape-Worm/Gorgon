@@ -54,7 +54,7 @@ namespace Gorgon.Graphics
 		/// Image quality.
 		/// </summary>
 		/// <remarks>There is a performance penalty for setting this value to higher levels.
-		/// <para>This value must be 0 or less than the value returned by <see cref="Gorgon.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
+		/// <para>This value must be 0 or less than the value returned by <see cref="Gorgon.Graphics.VideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
 		/// </remarks>
 		public readonly int Quality;
 		#endregion
@@ -132,14 +132,14 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// Returns a <see cref="string" /> that represents this instance.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.String" /> that represents this instance.
+		/// A <see cref="string" /> that represents this instance.
 		/// </returns>
 		public override string ToString()
 		{
-		    return string.Format(Resources.GORGFX_MULTISAMPLE_TOSTR, Count, Quality);
+		    return string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
 		}
 		#endregion
 

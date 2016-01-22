@@ -537,7 +537,6 @@ namespace Gorgon.Graphics
 						}
 					}
 
-                    data.Buffers[0].Data.Position = 0;
                     texture.UpdateSubResource(data.Buffers[0], new Rectangle(0, 0, bitmap.Width, bitmap.Height));
 				}
 			}
@@ -1411,7 +1410,7 @@ namespace Gorgon.Graphics
 				{
 				Width = Settings.TextureSize.Width,
 				Height = Settings.TextureSize.Height,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Format = BufferFormat.R8G8B8A8_UNorm,
 				ArrayCount = 1,
 				IsTextureCube = false,
 				MipCount = 1,

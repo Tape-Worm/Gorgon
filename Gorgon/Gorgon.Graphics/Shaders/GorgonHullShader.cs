@@ -114,10 +114,10 @@ namespace Gorgon.Graphics
         internal GorgonHullShader(GorgonGraphics graphics, string name, string entryPoint)
 			: base(graphics, name, ShaderType.Hull, entryPoint)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 			}
 		}
         #endregion

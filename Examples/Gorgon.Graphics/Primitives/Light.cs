@@ -81,7 +81,7 @@ namespace Gorgon.Graphics.Example
         // Data to send to the GPU.
 	    private LightData[] _lightData = new LightData[8];
 		// Backing store for lights.
-		private GorgonDataStream _lightStore;
+		private GorgonPointer _lightStore;
 		#endregion
 
         #region Methods.
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics.Example
 		/// <param name="index">Index of the light to update.</param>
 		private unsafe void UpdateIndex(int index)
 		{
-			var data = (LightData*)_lightStore.BasePointer;
+			var data = (LightData*)_lightStore.Address;
 
 			foreach (LightData light in _lightData)
 			{
@@ -163,13 +163,9 @@ namespace Gorgon.Graphics.Example
 				                                                Usage = BufferUsage.Default
 			                                                });
 			
-			_lightStore = new GorgonDataStream(_buffer.SizeInBytes);
-			unsafe
-			{
-				DirectAccess.ZeroMemory(_lightStore.BasePointer, _buffer.SizeInBytes);
-				var data = (LightData*)_lightStore.BasePointer;
-				*data = _lightData[0];
-			}
+			_lightStore = new GorgonPointer(_buffer.SizeInBytes);
+			_lightStore.Zero();
+			_lightStore.Write(_lightData[0]);
 
             _buffer.Update(_lightStore);
 

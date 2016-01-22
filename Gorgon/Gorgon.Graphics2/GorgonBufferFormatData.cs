@@ -383,7 +383,7 @@ namespace Gorgon.Graphics
 				case BufferFormat.G8R8_G8B8_UNorm:
 				case BufferFormat.B8G8R8A8_UNorm:
 				case BufferFormat.B8G8R8X8_UNorm:
-				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.R10G10B10_XR_BIAS_A2_UNorm:
 				case BufferFormat.B8G8R8A8_Typeless:
 				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 				case BufferFormat.B8G8R8X8_Typeless:
@@ -702,7 +702,7 @@ namespace Gorgon.Graphics
 				case BufferFormat.BC3_UNorm_SRgb:
 				case BufferFormat.B5G5R5A1_UNorm:
 				case BufferFormat.B8G8R8A8_UNorm:
-				case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
+				case BufferFormat.R10G10B10_XR_BIAS_A2_UNorm:
 				case BufferFormat.B8G8R8A8_Typeless:
 				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 				case BufferFormat.BC7_Typeless:

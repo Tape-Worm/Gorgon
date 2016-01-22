@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Gorgon.Graphics.Properties;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 
@@ -109,7 +108,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the data stream for the image data.
         /// </summary>
-        public GorgonDataStream Data
+        public GorgonPointerBase Data
         {
             get;
             protected set;
@@ -118,7 +117,7 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return information about the pitch of the data for this buffer.
         /// </summary>
-        public GorgonFormatPitch PitchInformation
+        public GorgonPitchLayout PitchInformation
         {
             get;
             protected set;
@@ -148,17 +147,15 @@ namespace Gorgon.Graphics
 	    public unsafe void CopyTo(GorgonImageBuffer buffer, Rectangle? sourceRegion = null, int destX = 0, int destY = 0)
 	    {
             var sourceBufferDims = new Rectangle(0, 0, Width, Height);
-            Rectangle srcRegion = sourceRegion != null ? sourceRegion.Value : sourceBufferDims;
+            Rectangle srcRegion = sourceRegion ?? sourceBufferDims;
 
-			if ((buffer == null)
-			    || (buffer.Data == null)
-			    || (buffer.Data.Length == 0))
+			if (buffer?.Data == null || (buffer.Data.Size == 0))
 			{
 				throw new ArgumentNullException(nameof(buffer));	
 			}
 
 			if ((buffer == this)
-				|| (buffer.Data.BasePointer == Data.BasePointer))
+				|| (buffer.Data.Address == Data.Address))
 			{
 				throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_CANT_BE_SAME, nameof(buffer));
 			}
@@ -208,10 +205,13 @@ namespace Gorgon.Graphics
 				return;
 			}
 
+			byte* dest = (byte*)buffer.Data.Address;
+			byte* source = (byte*)Data.Address;
+
 			// If the buffers are identical in dimensions and have no offset, then just do a straight copy.
 		    if (srcRegion == dstRegion)
 		    {
-		        DirectAccess.MemoryCopy(buffer.Data.BasePointer, Data.BasePointer, (int)Data.Length);
+		        DirectAccess.MemoryCopy(dest, source, (int)Data.Size);
 		        return;
 		    }
 
@@ -219,10 +219,10 @@ namespace Gorgon.Graphics
 			int dataSize = PitchInformation.RowPitch / Width;
 
 			int srcLineSize = dataSize * srcRegion.Width;	// Number of source bytes/scanline.
-			var srcData = ((byte*)Data.BasePointer) + (srcRegion.Y * PitchInformation.RowPitch) + (srcRegion.X * dataSize);
+			var srcData = source + (srcRegion.Y * PitchInformation.RowPitch) + (srcRegion.X * dataSize);
 
 			int dstLineSize = dataSize * dstRegion.Width;	// Number of dest bytes/scanline.
-			var dstData = ((byte*)buffer.Data.BasePointer) + (dstRegion.Y * buffer.PitchInformation.RowPitch) + (dstRegion.X * dataSize);
+			var dstData = dest + (dstRegion.Y * buffer.PitchInformation.RowPitch) + (dstRegion.X * dataSize);
 
 			// Get the smallest line size.
 			int minLineSize = dstLineSize.Min(srcLineSize);
@@ -280,9 +280,9 @@ namespace Gorgon.Graphics
         /// <param name="height">The height for the buffer.</param>
         /// <param name="depth">The depth for the buffer.</param>
         /// <param name="format">Format of the buffer.</param>
-        internal unsafe GorgonImageBuffer(void* dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
+        internal unsafe GorgonImageBuffer(void* dataStart, GorgonPitchLayout pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
         {
-            Data = new GorgonDataStream(dataStart, pitchInfo.SlicePitch);
+            Data = new GorgonPointerAlias(dataStart, pitchInfo.SlicePitch);
             PitchInformation = pitchInfo;
             MipLevel = mipLevel;
             ArrayIndex = arrayIndex;

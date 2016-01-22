@@ -141,7 +141,7 @@ namespace Gorgon.IO
 		/// </summary>
 		NoR10B10G10A2Fix = 0x4,
 		/// <summary>
-		/// Convert DXGI 1.1 BGR formats to BufferFormat.R8G8B8A8_UIntNormal to avoid use of optional WDDM 1.1 formats
+		/// Convert DXGI 1.1 BGR formats to BufferFormat.R8G8B8A8_UNorm to avoid use of optional WDDM 1.1 formats
 		/// </summary>
 		ForceRGB = 0x8,
 		/// <summary>
@@ -653,38 +653,38 @@ namespace Gorgon.IO
         // Mappings for legacy formats.
 	    private readonly DDSLegacyConversion[] _legacyMapping = 
 		    {
-			    new DDSLegacyConversion(BufferFormat.BC1_UIntNormal, DDSConversionFlags.None, _pfDxt1),
-			    new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt3),
-			    new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt5),
-			    new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt2),
-			    new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt4),
-			    new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, _pfBC4U),
-			    new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC4S),
-			    new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, _pfBC5U),
-			    new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC5S),
-			    new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
-			    new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
-			    new DDSLegacyConversion(BufferFormat.R8G8_B8G8_UIntNormal, DDSConversionFlags.None, _pfR8G8_B8G8),
-			    new DDSLegacyConversion(BufferFormat.G8R8_G8B8_UIntNormal, DDSConversionFlags.None, _pfG8R8_G8B8),
-			    new DDSLegacyConversion(BufferFormat.B8G8R8A8_UIntNormal, DDSConversionFlags.None, _pfA8R8G8B8),
-			    new DDSLegacyConversion(BufferFormat.B8G8R8X8_UIntNormal, DDSConversionFlags.None, _pfX8R8G8B8),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.None, _pfA8B8G8R8),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.NoAlpha, _pfX8B8G8R8),
-			    new DDSLegacyConversion(BufferFormat.R16G16_UIntNormal, DDSConversionFlags.None, _pfG16R16),
-			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.Swizzle, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
-			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB888, _pfR8G8B8),
-			    new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.RGB565, _pfR5G6B5),
-			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551, _pfA1R5G5B5),
-			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551 | DDSConversionFlags.NoAlpha, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB8332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
-			    new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 8, 0xe0, 0x1c, 0x03, 0x00)),
-			    new DDSLegacyConversion(BufferFormat.R8_UIntNormal, DDSConversionFlags.None, _pfL8),
-			    new DDSLegacyConversion(BufferFormat.R16_UIntNormal, DDSConversionFlags.None, _pfL16),
-			    new DDSLegacyConversion(BufferFormat.R8G8_UIntNormal, DDSConversionFlags.None, _pfA8L8),
-			    new DDSLegacyConversion(BufferFormat.A8_UIntNormal, DDSConversionFlags.None, _pfA8),
-			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
-			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_IntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.BC1_UNorm, DDSConversionFlags.None, _pfDxt1),
+			    new DDSLegacyConversion(BufferFormat.BC2_UNorm, DDSConversionFlags.None, _pfDxt3),
+			    new DDSLegacyConversion(BufferFormat.BC3_UNorm, DDSConversionFlags.None, _pfDxt5),
+			    new DDSLegacyConversion(BufferFormat.BC2_UNorm, DDSConversionFlags.None, _pfDxt2),
+			    new DDSLegacyConversion(BufferFormat.BC3_UNorm, DDSConversionFlags.None, _pfDxt4),
+			    new DDSLegacyConversion(BufferFormat.BC4_UNorm, DDSConversionFlags.None, _pfBC4U),
+			    new DDSLegacyConversion(BufferFormat.BC4_SNorm, DDSConversionFlags.None, _pfBC4S),
+			    new DDSLegacyConversion(BufferFormat.BC5_UNorm, DDSConversionFlags.None, _pfBC5U),
+			    new DDSLegacyConversion(BufferFormat.BC4_SNorm, DDSConversionFlags.None, _pfBC5S),
+			    new DDSLegacyConversion(BufferFormat.BC4_UNorm, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.BC5_UNorm, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R8G8_B8G8_UNorm, DDSConversionFlags.None, _pfR8G8_B8G8),
+			    new DDSLegacyConversion(BufferFormat.G8R8_G8B8_UNorm, DDSConversionFlags.None, _pfG8R8_G8B8),
+			    new DDSLegacyConversion(BufferFormat.B8G8R8A8_UNorm, DDSConversionFlags.None, _pfA8R8G8B8),
+			    new DDSLegacyConversion(BufferFormat.B8G8R8X8_UNorm, DDSConversionFlags.None, _pfX8R8G8B8),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.None, _pfA8B8G8R8),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.NoAlpha, _pfX8B8G8R8),
+			    new DDSLegacyConversion(BufferFormat.R16G16_UNorm, DDSConversionFlags.None, _pfG16R16),
+			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UNorm, DDSConversionFlags.Swizzle, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
+			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UNorm, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB888, _pfR8G8B8),
+			    new DDSLegacyConversion(BufferFormat.B5G6R5_UNorm, DDSConversionFlags.RGB565, _pfR5G6B5),
+			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UNorm, DDSConversionFlags.RGB5551, _pfA1R5G5B5),
+			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UNorm, DDSConversionFlags.RGB5551 | DDSConversionFlags.NoAlpha, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.RGB8332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
+			    new DDSLegacyConversion(BufferFormat.B5G6R5_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.RGB332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 8, 0xe0, 0x1c, 0x03, 0x00)),
+			    new DDSLegacyConversion(BufferFormat.R8_UNorm, DDSConversionFlags.None, _pfL8),
+			    new DDSLegacyConversion(BufferFormat.R16_UNorm, DDSConversionFlags.None, _pfL16),
+			    new DDSLegacyConversion(BufferFormat.R8G8_UNorm, DDSConversionFlags.None, _pfA8L8),
+			    new DDSLegacyConversion(BufferFormat.A8_UNorm, DDSConversionFlags.None, _pfA8),
+			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_UNorm, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_SNorm, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
 			    new DDSLegacyConversion(BufferFormat.R16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0)),
 			    new DDSLegacyConversion(BufferFormat.R16G16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0)),
 			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0)),
@@ -692,11 +692,11 @@ namespace Gorgon.IO
 			    new DDSLegacyConversion(BufferFormat.R32G32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
 			    new DDSLegacyConversion(BufferFormat.R32G32B32A32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
 			    new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)), 
-				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444,_pfA4R4G4B4),
-				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
-			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)), 
+				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444,_pfA4R4G4B4),
+				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UNorm, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
         private readonly BufferFormat[] _formats;                       // Buffer formats.
@@ -1000,7 +1000,7 @@ namespace Gorgon.IO
             }
 
             // Don't fix up RGB101010A2.
-            if ((result == BufferFormat.R10G10B10A2_UIntNormal) && ((flags & DDSFlags.NoR10B10G10A2Fix) == DDSFlags.NoR10B10G10A2Fix))
+            if ((result == BufferFormat.R10G10B10A2_UNorm) && ((flags & DDSFlags.NoR10B10G10A2Fix) == DDSFlags.NoR10B10G10A2Fix))
             {
                 conversionFlags ^= DDSConversionFlags.Swizzle;
             }
@@ -1095,7 +1095,7 @@ namespace Gorgon.IO
                 }
             }
 
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -1115,29 +1115,29 @@ namespace Gorgon.IO
             {
                 switch (settings.Format)
                 {
-                    case BufferFormat.B8G8R8A8_UIntNormal:
-                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+                    case BufferFormat.B8G8R8A8_UNorm:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags |= DDSConversionFlags.Swizzle;
                         break;
-                    case BufferFormat.B8G8R8X8_UIntNormal:
-                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+                    case BufferFormat.B8G8R8X8_UNorm:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm;
                         conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
-                    case BufferFormat.B8G8R8A8:
-                        settings.Format = BufferFormat.R8G8B8A8;
+                    case BufferFormat.B8G8R8A8_Typeless:
+                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags  |= DDSConversionFlags.Swizzle;
                         break;
-                    case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
-                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
+                    case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags  |= DDSConversionFlags.Swizzle;
                         break;
 
-                    case BufferFormat.B8G8R8X8:
-                        settings.Format = BufferFormat.R8G8B8A8;
+                    case BufferFormat.B8G8R8X8_Typeless:
+                        settings.Format = BufferFormat.R8G8B8A8_Typeless;
                         conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
-                    case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
-                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
+                    case BufferFormat.B8G8R8X8_UNorm_SRgb:
+                        settings.Format = BufferFormat.R8G8B8A8_UNorm_SRgb;
                         conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
                 }
@@ -1151,11 +1151,11 @@ namespace Gorgon.IO
 
 		    switch (settings.Format)
 		    {
-		        case BufferFormat.B5G6R5_UIntNormal:
-		        case BufferFormat.B5G5R5A1_UIntNormal:
-		            settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+		        case BufferFormat.B5G6R5_UNorm:
+		        case BufferFormat.B5G5R5A1_UNorm:
+		            settings.Format = BufferFormat.R8G8B8A8_UNorm;
 		            conversionFlags |= DDSConversionFlags.Expand;
-		            if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
+		            if (settings.Format == BufferFormat.B5G6R5_UNorm)
 		            {
 		                conversionFlags |= DDSConversionFlags.NoAlpha;
 		            }
@@ -1178,8 +1178,8 @@ namespace Gorgon.IO
 		/// <param name="palette">Palette to assigned to indexed images.</param>
 		private static void ExpandLegacyScanline(void* src, int srcPitch, DDSConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
 		{
-			if (((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UIntNormal))
-				|| ((srcFormat != DDSConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UIntNormal)))
+			if (((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UNorm))
+				|| ((srcFormat != DDSConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UNorm)))
 			{
 				throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, destFormat));
 			}
@@ -1226,7 +1226,7 @@ namespace Gorgon.IO
 
 					switch (destFormat)
 					{
-						case BufferFormat.R8G8B8A8_UIntNormal:
+						case BufferFormat.R8G8B8A8_UNorm:
 							{
 								var destPtr = (uint*)dest;
 
@@ -1243,7 +1243,7 @@ namespace Gorgon.IO
 								}
 							}
 							break;
-						case BufferFormat.B5G6R5_UIntNormal:
+						case BufferFormat.B5G6R5_UNorm:
 							{
 								var destPtr = (ushort*)dest;
 
@@ -1346,7 +1346,7 @@ namespace Gorgon.IO
 			var header = new DDSHeader();
 			DDSPixelFormat? format = null;
 			DDSFlags flags = LegacyConversionFlags;
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(settings.Format);
 
 			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageType.Image2D) || (settings.ImageType != ImageType.ImageCube)))
 			{
@@ -1358,61 +1358,61 @@ namespace Gorgon.IO
 			{
 				switch (settings.Format)
 				{
-					case BufferFormat.R8G8B8A8_UIntNormal:
+					case BufferFormat.R8G8B8A8_UNorm:
 						format = _pfA8B8G8R8;
 						break;
-					case BufferFormat.R16G16_UIntNormal:
+					case BufferFormat.R16G16_UNorm:
 						format = _pfG16R16;
 						break;
-					case BufferFormat.R8G8_UIntNormal:
+					case BufferFormat.R8G8_UNorm:
 						format = _pfA8L8;
 						break;
-					case BufferFormat.R16_UIntNormal:
+					case BufferFormat.R16_UNorm:
 						format = _pfL16;
 						break;
-					case BufferFormat.R8_UIntNormal:
+					case BufferFormat.R8_UNorm:
 						format = _pfL8;
 						break;
-					case BufferFormat.A8_UIntNormal:
+					case BufferFormat.A8_UNorm:
 						format = _pfA8;
 						break;
-					case BufferFormat.R8G8_B8G8_UIntNormal:
+					case BufferFormat.R8G8_B8G8_UNorm:
 						format = _pfR8G8_B8G8;
 						break;
-					case BufferFormat.G8R8_G8B8_UIntNormal:
+					case BufferFormat.G8R8_G8B8_UNorm:
 						format = _pfG8R8_G8B8;
 						break;
-					case BufferFormat.BC1_UIntNormal:
+					case BufferFormat.BC1_UNorm:
 						format = _pfDxt1;
 						break;
-					case BufferFormat.BC2_UIntNormal:
+					case BufferFormat.BC2_UNorm:
 						format = _pfDxt3;
 						break;
-					case BufferFormat.BC3_UIntNormal:
+					case BufferFormat.BC3_UNorm:
 						format = _pfDxt5;
 						break;
-					case BufferFormat.BC4_UIntNormal:
+					case BufferFormat.BC4_UNorm:
 						format = _pfBC4U;
 						break;
-					case BufferFormat.BC4_IntNormal:
+					case BufferFormat.BC4_SNorm:
 						format = _pfBC4S;
 						break;
-					case BufferFormat.BC5_UIntNormal:
+					case BufferFormat.BC5_UNorm:
 						format = _pfBC5U;
 						break;
-					case BufferFormat.BC5_IntNormal:
+					case BufferFormat.BC5_SNorm:
 						format = _pfBC5S;
 						break;
-					case BufferFormat.B5G6R5_UIntNormal:
+					case BufferFormat.B5G6R5_UNorm:
 						format = _pfR5G6B5;
 						break;
-					case BufferFormat.B5G5R5A1_UIntNormal:
+					case BufferFormat.B5G5R5A1_UNorm:
 						format = _pfA1R5G5B5;
 						break;
-					case BufferFormat.B8G8R8A8_UIntNormal:
+					case BufferFormat.B8G8R8A8_UNorm:
 						format = _pfA8R8G8B8;
 						break;
-					case BufferFormat.B8G8R8X8_UIntNormal:
+					case BufferFormat.B8G8R8X8_UNorm:
 						format = _pfX8R8G8B8;
 						break;
 					case BufferFormat.R32G32B32A32_Float:
@@ -1421,10 +1421,10 @@ namespace Gorgon.IO
 					case BufferFormat.R16G16B16A16_Float:
 						format = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0);
 						break;
-					case BufferFormat.R16G16B16A16_UIntNormal:
+					case BufferFormat.R16G16B16A16_UNorm:
 						format = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0);
 						break;
-					case BufferFormat.R16G16B16A16_IntNormal:
+					case BufferFormat.R16G16B16A16_SNorm:
 						format = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0);
 						break;
 					case BufferFormat.R32G32_Float:
@@ -1495,7 +1495,7 @@ namespace Gorgon.IO
 			}
 
 			// Get pitch information.
-			var pitchInfo = formatInfo.GetPitch(settings.Width, settings.Height, PitchFlags.None);
+			var pitchInfo = formatInfo.GetPitchForFormat(settings.Width, settings.Height, PitchFlags.None);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -1541,14 +1541,14 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
-		/// <param name="stream">Stream that contains the image data.</param>
+		/// <param name="data">The pointer to the image data to copy from.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="pitchFlags">Flags used to determine pitch when expanding pixels.</param>
 		/// <param name="conversionFlags">Flags used for conversion between legacy formats and the current format.</param>
 		/// <param name="palette">Palette used in indexed conversion.</param>
-		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
+		private void CopyImageData(GorgonPointerBase data, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
 		{
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(image.Settings.Format);
 
 			// Get copy flag bits per pixel if we have an expansion.
 			if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
@@ -1587,7 +1587,7 @@ namespace Gorgon.IO
 					&& (pitchFlags == PitchFlags.None) && (image.Settings.ArrayCount == _actualArrayCount) && (image.Settings.Depth == _actualDepth))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
-                DirectAccess.MemoryCopy(image.Buffers[0].Data.BasePointer, stream.PositionPointer, sizeInBytes);
+                DirectAccess.MemoryCopy((byte *)image.Buffers[0].Data.Address, (byte *)data.Address, sizeInBytes);
                 return;
 			}
 
@@ -1606,7 +1606,7 @@ namespace Gorgon.IO
 			// Clip the depth.
 			int depth = _actualDepth.Min(image.Settings.Depth);
 			int arrayCount = _actualArrayCount.Min(image.Settings.ArrayCount);
-			var srcPointer = (byte*)stream.PositionPointer;
+			var srcPointer = (byte*)data.Address;
 
 			for (int array = 0; array < arrayCount; array++)
 			{
@@ -1614,8 +1614,8 @@ namespace Gorgon.IO
 				{
 					// Get our destination buffer.
 					var destBuffer = image.Buffers[mipLevel, array];
-					var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
-					var destPointer = (byte*)destBuffer.Data.BasePointer;
+					var pitchInfo = formatInfo.GetPitchForFormat(destBuffer.Width, destBuffer.Height, pitchFlags);		
+					var destPointer = (byte*)destBuffer.Data.Address;
 
 					for (int slice = 0; slice < depth; slice++)
 					{
@@ -1638,7 +1638,7 @@ namespace Gorgon.IO
 									|| ((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551))
 								{
 									Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
-													((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
+													((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UNorm : BufferFormat.B5G6R5_UNorm,
 													destPointer, destBuffer.PitchInformation.RowPitch, expFlags);
 								}
 								else
@@ -1753,7 +1753,7 @@ namespace Gorgon.IO
 			    }
 
 				// Copy the data from the stream to the buffer.
-	            CopyImageData(stream, imageData,
+	            CopyImageData(stream.GetPointer(), imageData,
 	                          ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD)
 		                          ? PitchFlags.LegacyDWORD
 		                          : PitchFlags.None, flags, palette);
@@ -1794,7 +1794,7 @@ namespace Gorgon.IO
 							{
 								var buffer = imageData.Buffers[mipLevel, array];
 								
-								writer.Write(buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+								writer.Write((byte *)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
 							}
 						}
 						break;
@@ -1805,7 +1805,7 @@ namespace Gorgon.IO
 							for (int slice = 0; slice < depth; slice++)
 							{
 								var buffer = imageData.Buffers[mipLevel, slice];
-								writer.Write(buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+								writer.Write((byte *)buffer.Data.Address, buffer.PitchInformation.SlicePitch);
 							}
 
 							if (depth > 1)
@@ -1941,7 +1941,7 @@ namespace Gorgon.IO
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
 		    SupportedFormats = from format in _formats
-		                        let info = GorgonBufferFormatInfo.GetInfo(format)
+		                        let info = new GorgonBufferFormatInfo(format)
 		                        where format != BufferFormat.Unknown && !info.IsTypeless
 		                        select format;
 

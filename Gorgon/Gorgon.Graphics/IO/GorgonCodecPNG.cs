@@ -79,10 +79,10 @@ namespace Gorgon.IO
 		#region Variables.
 		// Supported formats.
 		private readonly BufferFormat[] _supportedFormats = {
-																BufferFormat.R8G8B8A8_UIntNormal,
-																BufferFormat.B8G8R8A8_UIntNormal,
-																BufferFormat.B8G8R8X8_UIntNormal,
-																BufferFormat.R16G16B16A16_UIntNormal
+																BufferFormat.R8G8B8A8_UNorm,
+																BufferFormat.B8G8R8A8_UNorm,
+																BufferFormat.B8G8R8X8_UNorm,
+																BufferFormat.R16G16B16A16_UNorm
 	                                                        };
 		#endregion
 

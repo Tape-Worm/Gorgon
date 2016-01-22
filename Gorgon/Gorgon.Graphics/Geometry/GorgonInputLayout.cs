@@ -57,22 +57,22 @@ namespace Gorgon.Graphics
 					typeof(byte), BufferFormat.R8_UInt
 				},
 				{
-					typeof(sbyte), BufferFormat.R8_Int
+					typeof(sbyte), BufferFormat.R8_SInt
 				},
 				{
-					typeof(Int32), BufferFormat.R32_Int
+					typeof(Int32), BufferFormat.R32_UInt
 				},
 				{
 					typeof(UInt32), BufferFormat.R32_UInt
 				},
 				{
-					typeof(Int16), BufferFormat.R16_Int
+					typeof(Int16), BufferFormat.R16_UInt
 				},
 				{
-					typeof(UInt16), BufferFormat.R16_Int
+					typeof(UInt16), BufferFormat.R16_UInt
 				},
 				{
-					typeof(Int64), BufferFormat.R32G32_Int
+					typeof(Int64), BufferFormat.R32G32_SInt
 				},
 				{
 					typeof(UInt64), BufferFormat.R32G32_UInt
@@ -187,24 +187,22 @@ namespace Gorgon.Graphics
 		    }
 
 		    // Get only properties and fields, and sort by explicit ordering (then by offset).
-		    var propertiesAndFields = (from member in members
-		                              let memberAttribute =
-		                                  member.GetCustomAttributes(typeof(InputElementAttribute), true) as
-		                                  IList<InputElementAttribute>
-		                              where
-		                                  ((member.MemberType == MemberTypes.Property) ||
-		                                   (member.MemberType == MemberTypes.Field)) &&
-		                                  ((memberAttribute != null) && (memberAttribute.Count > 0))
-		                              orderby memberAttribute[0].ExplicitOrder, memberAttribute[0].Offset
-		                              select new
-		                                  {
-		                                      member.Name,
-		                                      ReturnType =
-		                                  (member is FieldInfo
-		                                       ? ((FieldInfo)member).FieldType
-		                                       : ((PropertyInfo)member).PropertyType),
-		                                      Attribute = memberAttribute[0]
-		                                  }).ToArray();
+			var propertiesAndFields = (from member in members
+			                           let memberAttribute =
+				                           member.GetCustomAttributes(typeof(InputElementAttribute), true) as
+				                           IList<InputElementAttribute>
+			                           where
+				                           ((member.MemberType == MemberTypes.Property) ||
+				                            (member.MemberType == MemberTypes.Field)) &&
+				                           ((memberAttribute != null) && (memberAttribute.Count > 0))
+			                           orderby memberAttribute[0].ExplicitOrder, memberAttribute[0].Offset
+			                           select new
+			                                  {
+				                                  member.Name,
+				                                  ReturnType =
+				                           (member as FieldInfo)?.FieldType ?? ((PropertyInfo)member).PropertyType,
+				                                  Attribute = memberAttribute[0]
+			                                  }).ToArray();
 
             _elements = new GorgonInputElement[propertiesAndFields.Length];
 
@@ -367,12 +365,9 @@ namespace Gorgon.Graphics
 
 			if (disposing)
 			{
-			    if (D3DLayout != null)
-			    {
-			        D3DLayout.Dispose();
-			    }
+				D3DLayout?.Dispose();
 
-                Graphics.RemoveTrackedObject(this);
+				Graphics.RemoveTrackedObject(this);
                 GorgonRenderStatistics.InputLayoutCount--;
 			}
 

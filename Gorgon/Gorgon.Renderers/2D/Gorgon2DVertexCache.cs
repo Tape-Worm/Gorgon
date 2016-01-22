@@ -26,7 +26,7 @@
 
 using System;
 using Gorgon.Graphics;
-using Gorgon.IO;
+using Gorgon.Native;
 
 namespace Gorgon.Renderers
 {
@@ -159,10 +159,9 @@ namespace Gorgon.Renderers
                     var flags = BufferLockFlags.Write
                                 | (_currentVertex > 0 ? BufferLockFlags.NoOverwrite : BufferLockFlags.Discard);
 
-                    using(GorgonDataStream stream = binding.VertexBuffer.Lock(flags, _renderer.Graphics))
+                    using(GorgonPointerBase data = binding.VertexBuffer.Lock(flags, _renderer.Graphics))
                     {
-                        stream.Position = _currentVertex * Gorgon2DVertex.SizeInBytes;
-                        stream.WriteRange(_vertices, _currentVertex, _verticesWritten);
+						data.WriteRange(_currentVertex * Gorgon2DVertex.SizeInBytes, _vertices, _currentVertex, _verticesWritten);
                         binding.VertexBuffer.Unlock();
                     }
                     break;

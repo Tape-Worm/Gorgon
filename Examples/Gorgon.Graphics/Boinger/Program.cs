@@ -308,7 +308,7 @@ namespace Gorgon.Graphics.Example
 		/// </summary>
 		private static void Initialize()
 		{
-		    var depthFormat = BufferFormat.D24_UIntNormal_S8_UInt;			// Depth buffer format.
+		    var depthFormat = BufferFormat.D24_UNorm_S8_UInt;			// Depth buffer format.
 
 			// Create our form.
 			_mainForm = new formMain();			
@@ -324,7 +324,7 @@ namespace Gorgon.Graphics.Example
 			// better video card.  Preferably something created after 2005.
 			if (!Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
 			{
-				depthFormat = BufferFormat.D16_UIntNormal;
+				depthFormat = BufferFormat.D16_UNorm;
 
 				if (Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
 				{
@@ -341,7 +341,7 @@ namespace Gorgon.Graphics.Example
 			_swap = Graphics.Output.CreateSwapChain("Main", new GorgonSwapChainSettings
 			    {
 				Window = _mainForm,										// Assign to our form.
-				Format = BufferFormat.R8G8B8A8_UIntNormal,				// Set up for 32 bit RGBA normalized display.
+				Format = BufferFormat.R8G8B8A8_UNorm,				// Set up for 32 bit RGBA normalized display.
 				Size = Settings.Default.Resolution,			// Get the resolution from the config file.
 				DepthStencilFormat = depthFormat,						// Get our depth format.
 				IsWindowed = Settings.Default.IsWindowed		// Set up for windowed or full screen (depending on config file).

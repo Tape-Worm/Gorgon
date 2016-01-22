@@ -50,9 +50,8 @@
     <Reference Include="Gorgon.Native">
       <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX, Version=2.6.2.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_263\SharpDX.dll</HintPath>
+    <Reference Include="SharpDX_300.11">
+      <HintPath>..\..\Dependencies\SharpDX_300\SharpDX_300.11.dll</HintPath>
     </Reference>
     <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
@@ -66,6 +65,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
+    <Compile Include="BufferFormat.cs" />
+    <Compile Include="BufferFormatSupport.cs" />
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs">
       <SubType>Code</SubType>
@@ -82,10 +83,13 @@
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
     <Compile Include="D3DErrors.cs" />
-    <Compile Include="DeviceInfo\GorgonVideoDeviceEnumerator.cs" />
-    <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
-    <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
-    <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
+    <Compile Include="Devices\GorgonVideoDeviceInfo.cs" />
+    <Compile Include="Devices\GorgonVideoDeviceList.cs" />
+    <Compile Include="Devices\_Internal\VideoDevice.cs" />
+    <Compile Include="Devices\GorgonVideoMode.cs" />
+    <Compile Include="Devices\GorgonVideoOutputInfo.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
     <Compile Include="Effects\GorgonEffect.cs" />
     <Compile Include="Effects\GorgonEffectPass.cs" />
     <Compile Include="Effects\GorgonEffectPassArray.cs" />
@@ -111,6 +115,8 @@
     <Compile Include="GorgonBox.cs" />
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="GorgonMultiSampleInfo.cs" />
+    <Compile Include="GorgonPitchLayout.cs" />
     <Compile Include="IO\GorgonCodecPlugIn.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Textures\GorgonImageBufferList.cs" />
@@ -223,6 +229,8 @@
       <DependentUpon>Win32ResStr.resx</DependentUpon>
     </Compile>
     <Compile Include="Textures\ITextureSettings.cs" />
+    <Compile Include="_Internal\BufferFormatEqualityComparer.cs" />
+    <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

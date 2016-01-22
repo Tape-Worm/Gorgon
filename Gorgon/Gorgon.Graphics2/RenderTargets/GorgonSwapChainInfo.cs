@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using Gorgon.Math;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics
@@ -37,65 +38,29 @@ namespace Gorgon.Graphics
 	/// This defines how a <see cref="GorgonSwapChain"/> will present the contents of its back buffers to the front buffer.
 	/// </para>
 	/// <para>
-	/// The primary difference between presentation models is how back buffer contents get to the Desktop Window Manager (DWM) for composition. In the bitblt  model, which is used with the 
-	/// <see cref="Sequential"/> and <see cref="Discard"/> values, the contents of the back buffer get copied into a redirection surface on each call to <see cref="GorgonSwapChain.Present"/>. In the flip 
-	/// model, which is used with the <see cref="Flip"/> value, all back buffers are shared with the DWM. Therefore, the DWM can compose straight from those back buffers without any additional copy 
-	/// operations. In general, the flip model is the more efficient model. The flip model also provides more features, such as enhanced present statistics.
+	/// The primary difference between presentation models is how back buffer contents get to the Desktop Window Manager (DWM) for composition. In the flip model (which is the only model supported by 
+	/// Gorgon), all back buffers are shared with the DWM. Therefore, the DWM can compose straight from those back buffers without any additional copy operations. This model also provides more features, such 
+	/// as enhanced presentation statistics.
 	/// </para>
 	/// <para>
+	/// // TODO: While this is true for IDXGISwapChain1, is this still true with IDXGISwapChain3?
 	/// When you call <see cref="GorgonSwapChain.Present"/> on a flip model swap chain with 0 specified for its parameter, <see cref="GorgonSwapChain.Present"/>'s behavior will not only present the next frame 
 	/// instead of any previously queued frames, it also terminates any remaining time left on the previously queued frames.
 	/// </para>
 	/// <para>
-	/// Regardless of whether the flip model is more efficient, an application still might want to choose the bitblt model because that model is the only way to mix presentation.
-	/// </para> 
+	/// <note type="warning">
 	/// <para>
-	/// <note type="important">
-	/// <para>
-	/// // TODO: This assumes Gorgon would support windows store apps. Probably not, but depending on UWP works with it, it may.
-	/// Windows store applications must use <see cref="Flip"/>.
+	/// The window handles assigned to swap chains cannot be used with GDI functionality, even after the destruction the swap chain.
 	/// </para>
 	/// </note>
-	/// </para>
+	/// </para> 
 	/// </remarks>
 	/// <seealso cref="GorgonSwapChain"/>
 	public enum PresentMode
 	{
 		/// <summary>
 		/// <para>
-		/// This flag specifies that presentation should use the bit-block transfer (bitblt) model and to specify the contents of the back buffer are discarded after a call to <see cref="GorgonSwapChain.Present"/>. 
-		/// </para>
-		/// <para>
-		/// Use this flag to enable the display driver to select the most efficient presentation technique for the <see cref="GorgonSwapChain"/>.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// This flag is only valid for a swap chain with more than one back buffer.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </summary>
-		Discard = DXGI.SwapEffect.Discard,
-		/// <summary>
-		/// <para>
-		/// This flag specifies the bitblt model and also specifies that the contents of the back buffer are persisted after you call <see cref="GorgonSwapChain.Present"/>. 
-		/// </para>
-		/// <para>
-		/// Use this option to present the contents of the swap chain in order, from the first buffer (buffer 0) to the last buffer.
-		/// </para>
-		/// <para>
-		/// <note type="warning">
-		/// <para>
-		/// This flag cannot be used with multisampling.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </summary>
-		Sequential = DXGI.SwapEffect.Sequential,
-		/// <summary>
-		/// <para>
-		/// This flag specifies the flip presentation model and specifies that the contents of the back buffer persists after you call <see cref="GorgonSwapChain.Present"/>.
+		/// This flag specifies the flip presentation model and specifies that the contents of the back buffer persists after a call to <see cref="GorgonSwapChain.Present"/>.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -105,7 +70,16 @@ namespace Gorgon.Graphics
 		/// </note>
 		/// </para>  
 		/// </summary>
-		Flip = DXGI.SwapEffect.FlipSequential
+		Flip = DXGI.SwapEffect.FlipSequential,
+		/// <summary>
+		/// <para>
+		/// This flag specifies the flip presentation model and specifies that the contents of the back buffer should be discarded after a call to <see cref="GorgonSwapChain.Present"/>.
+		/// </para>
+		/// <para>
+		/// This flag cannot be used with multisampling and partial presentation.
+		/// </para>
+		/// </summary>
+		FlipDiscard = DXGI.SwapEffect.FlipDiscard
 	}
 
 	/// <summary>
@@ -184,14 +158,18 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public class GorgonSwapChainInfo
-		: IGorgonSwapChainInfo
 	{
+		#region Variables.
+		// The number of back buffers.
+		private int _backBufferCount;
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the mode used to define how the back buffers are presented to the front buffer.
 		/// </summary>
 		/// <remarks>
-		/// The default value for this property is <see cref="Graphics.PresentMode.Discard"/>.
+		/// The default value for this property is <see cref="Graphics.PresentMode.FlipDiscard"/>.
 		/// </remarks>
 		/// <seealso cref="PresentMode"/>
 		public PresentMode PresentMode
@@ -223,7 +201,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>
 		/// <para>
-		/// If the <see cref="PresentMode"/> is set to <see cref="Graphics.PresentMode.Flip"/>, then this value can only be 1 of the following values:
+		/// This value can only be 1 of the following values:
 		/// <list type="bullet">
 		/// <item>
 		///		<description><see cref="BufferFormat.R8G8B8A8_UNorm"/></description>
@@ -234,7 +212,7 @@ namespace Gorgon.Graphics
 		/// </list>
 		/// </para>
 		/// <para>
-		/// To determine if a format is suitable for display, use the <see cref="IGorgonVideoDevice.SupportsDisplayFormat"/> method for a <see cref="IGorgonVideoDevice"/>.
+		/// To determine if a format is suitable for display, use the <see cref="IGorgonVideoDevice.GetBufferFormatSupport"/> method for a <see cref="IGorgonVideoDevice"/>.
 		/// </para>
 		/// <para>
 		/// The default value for this property is <see cref="BufferFormat.R8G8B8A8_UNorm"/>.
@@ -255,8 +233,7 @@ namespace Gorgon.Graphics
 		/// When using full screen mode, ensure that the front buffer is also included in the count.
 		/// </para>
 		/// <para>
-		/// If the <see cref="PresentMode"/> value is set to <see cref="Graphics.PresentMode.Flip"/>, this value must be set between 2 and 16, otherwise an exception will be raised when the swap chain is 
-		/// initialized.
+		/// This value is limited to values ranging from 2 to 16, any values that fall outside of that range will be clamped.
 		/// </para>
 		/// <para>
 		/// The default value for this property is 3.
@@ -264,34 +241,20 @@ namespace Gorgon.Graphics
 		/// </remarks>
 		public int BackBufferCount
 		{
-			get;
-			set;
+			get
+			{
+				return _backBufferCount;
+			}
+			set
+			{
+				_backBufferCount = value.Max(2).Min(16);
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return the handle to the window bound to the swap chain.
 		/// </summary>
 		public IntPtr WindowHandle
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the multi-sample information for the swap chain.
-		/// </summary>
-		/// <remarks>
-		/// <para>
-		/// Setting this value to another other than <see cref="GorgonMultiSampleInfo.NoMultiSampling"/> (count: 1, quality: 0) requires that the swap chain have a <see cref="PresentMode"/> of 
-		/// <see cref="Graphics.PresentMode.Discard"/> or <see cref="Graphics.PresentMode.Sequential"/>. If the <see cref="Graphics.PresentMode.Flip"/> presentation mode is used, and this value is not set 
-		/// to no multisampling, then an exception will be raised when the swap chain is initialized.
-		/// </para>
-		/// <para>
-		/// The default value is <see cref="GorgonMultiSampleInfo.NoMultiSampling"/>.
-		/// </para> 
-		/// </remarks>
-		/// <seealso cref="GorgonMultiSampleInfo"/>
-		public GorgonMultiSampleInfo MultiSampleInfo
 		{
 			get;
 			set;
@@ -347,10 +310,9 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public GorgonSwapChainInfo()
 		{
-			PresentMode = PresentMode.Discard;
+			PresentMode = PresentMode.FlipDiscard;
 			Format = BufferFormat.R8G8B8A8_UNorm;
 			BackBufferCount = 3;
-			MultiSampleInfo = GorgonMultiSampleInfo.NoMultiSampling;
 			Usage = SwapUsage.RenderTarget;
 			ScalingBehavior = SwapScalingBehavior.Stretch;
 			AlphaMode = SwapAlphaMode.Unspecified;

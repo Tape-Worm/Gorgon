@@ -25,9 +25,8 @@
 #endregion
 
 using System;
-using Gorgon.IO;
+using Gorgon.Native;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
@@ -42,12 +41,14 @@ namespace Gorgon.Graphics
     /// <seealso cref="Gorgon.Graphics.GorgonTexture2D.Lock"/>
     /// <seealso cref="Gorgon.Graphics.GorgonTexture3D.Lock"/>
     /// </remarks>
-    public unsafe class GorgonTextureLockData
+    public class GorgonTextureLockData
         : GorgonImageBuffer, IDisposable
     {
-        #region Variables.
-        private bool _disposed;                     // Flag to indicate that the object was disposed.
-        private GorgonTextureLockCache _cache;      // Cache that contains this lock.
+		#region Variables.
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;                             
+		// Cache that contains this lock.
+		private readonly GorgonTextureLockCache _cache;     
         #endregion
 
         #region Properties.
@@ -106,8 +107,8 @@ namespace Gorgon.Graphics
                 }
             }
 
-			PitchInformation = new GorgonFormatPitch(data.RowPitch, data.SlicePitch);
-            Data = new GorgonDataStream(data.DataPointer.ToPointer(), data.SlicePitch);
+			PitchInformation = new GorgonPitchLayout(data.RowPitch, data.SlicePitch);
+            Data = new GorgonPointerAlias(data.DataPointer, data.SlicePitch);
         }
         #endregion
 
@@ -123,9 +124,9 @@ namespace Gorgon.Graphics
                 return;
             }
 
-            if ((disposing) && (Graphics != null) && (Texture != null) && (_cache != null))
+            if ((disposing) && (Graphics != null) && (Texture != null))
             {
-                _cache.Unlock(this);
+                _cache?.Unlock(this);
             }
 
             _disposed = true;

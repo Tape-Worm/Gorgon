@@ -210,78 +210,78 @@ namespace Gorgon.Graphics
         // Formats for conversion between System.Drawing.Images and WIC.
         private readonly WICPixelFormat[] _wicPixelFormats =                            
         {            
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format48bppBGR, PixelFormat.Format48bppRgb),            
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppPArgb),            
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format32bppBGRA, PixelFormat.Format32bppArgb),
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format24bppBGR, PixelFormat.Format24bppRgb),
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
-            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555)
+            new WICPixelFormat(DX.WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
+            new WICPixelFormat(DX.WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
+            new WICPixelFormat(DX.WIC.PixelFormat.Format48bppBGR, PixelFormat.Format48bppRgb),            
+            new WICPixelFormat(DX.WIC.PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppPArgb),            
+            new WICPixelFormat(DX.WIC.PixelFormat.Format32bppBGRA, PixelFormat.Format32bppArgb),
+            new WICPixelFormat(DX.WIC.PixelFormat.Format24bppBGR, PixelFormat.Format24bppRgb),
+            new WICPixelFormat(DX.WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
+            new WICPixelFormat(DX.WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
+            new WICPixelFormat(DX.WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
+            new WICPixelFormat(DX.WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555)
         };
 
         // Formats for conversion between Gorgon and WIC.
         private readonly WICGorgonFormat[] _wicGorgonFormats = 
 		{
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA1010102XR, BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppGray, BufferFormat.R16_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UIntNormal),
-			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UIntNormal)
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppRGBA1010102XR,BufferFormat.R10G10B10_Xr_BIAS_A2_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format16bppGray, BufferFormat.R16_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UNorm),
+			new WICGorgonFormat(DX.WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UNorm)
 		};
 
         // Best fit for supported format conversions.
         private readonly WICNearest[] _wicBestFitFormat = 
 		{
-            new WICNearest(SharpDX.WIC.PixelFormat.Format1bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format2bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format4bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format8bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format2bppGray, SharpDX.WIC.PixelFormat.Format8bppGray),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format4bppGray, SharpDX.WIC.PixelFormat.Format8bppGray),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format16bppGrayFixedPoint, SharpDX.WIC.PixelFormat.Format16bppGrayHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppGrayFixedPoint, SharpDX.WIC.PixelFormat.Format32bppGrayFloat),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format16bppBGR555, SharpDX.WIC.PixelFormat.Format16bppBGRA5551),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppBGR101010, SharpDX.WIC.PixelFormat.Format32bppRGBA1010102),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format24bppBGR, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format24bppRGB, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppPBGRA, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppPRGBA, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGB, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppBGR, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppBGRA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppPRGBA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppPBGRA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppBGRFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBAFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppBGRAFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBHalf, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGBHalf, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppPRGBAFloat, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBFloat, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBAFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppCMYK, SharpDX.WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppCMYK, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format40bppCMYKAlpha, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(SharpDX.WIC.PixelFormat.Format80bppCMYKAlpha, SharpDX.WIC.PixelFormat.Format64bppRGBA),
-			new WICNearest(SharpDX.WIC.PixelFormat.Format96bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat)
+            new WICNearest(DX.WIC.PixelFormat.Format1bppIndexed, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format2bppIndexed, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format4bppIndexed, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format8bppIndexed, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format2bppGray, DX.WIC.PixelFormat.Format8bppGray),
+            new WICNearest(DX.WIC.PixelFormat.Format4bppGray, DX.WIC.PixelFormat.Format8bppGray),
+            new WICNearest(DX.WIC.PixelFormat.Format16bppGrayFixedPoint, DX.WIC.PixelFormat.Format16bppGrayHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format32bppGrayFixedPoint, DX.WIC.PixelFormat.Format32bppGrayFloat),
+            new WICNearest(DX.WIC.PixelFormat.Format16bppBGR555, DX.WIC.PixelFormat.Format16bppBGRA5551),
+            new WICNearest(DX.WIC.PixelFormat.Format32bppBGR101010, DX.WIC.PixelFormat.Format32bppRGBA1010102),
+            new WICNearest(DX.WIC.PixelFormat.Format24bppBGR, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format24bppRGB, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format32bppPBGRA, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format32bppPRGBA, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format48bppRGB, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format48bppBGR, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppBGRA, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppPRGBA, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppPBGRA, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format48bppRGBFixedPoint, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format48bppBGRFixedPoint, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppRGBAFixedPoint, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppBGRAFixedPoint, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppRGBFixedPoint, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppRGBHalf, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format48bppRGBHalf, DX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(DX.WIC.PixelFormat.Format128bppPRGBAFloat, DX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(DX.WIC.PixelFormat.Format128bppRGBFloat, DX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(DX.WIC.PixelFormat.Format128bppRGBAFixedPoint, DX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(DX.WIC.PixelFormat.Format128bppRGBFixedPoint, DX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(DX.WIC.PixelFormat.Format32bppCMYK, DX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format64bppCMYK, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format40bppCMYKAlpha, DX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(DX.WIC.PixelFormat.Format80bppCMYKAlpha, DX.WIC.PixelFormat.Format64bppRGBA),
+			new WICNearest(DX.WIC.PixelFormat.Format96bppRGBFixedPoint, DX.WIC.PixelFormat.Format128bppRGBAFloat)
 		};
         #endregion
 
@@ -337,7 +337,7 @@ namespace Gorgon.Graphics
                 case PixelFormat.Format4bppIndexed:
                 case PixelFormat.Format8bppIndexed:
                 case PixelFormat.Format32bppRgb:
-                    return SharpDX.WIC.PixelFormat.Format32bppBGRA;
+                    return DX.WIC.PixelFormat.Format32bppBGRA;
                 default:
                     return Guid.Empty;
             }
@@ -360,16 +360,16 @@ namespace Gorgon.Graphics
 
             switch (format)
             {
-                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
-                    return SharpDX.WIC.PixelFormat.Format32bppRGBA;
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                    return DX.WIC.PixelFormat.Format32bppRGBA;
                 case BufferFormat.D32_Float:
-                    return SharpDX.WIC.PixelFormat.Format32bppGrayFloat;
-                case BufferFormat.D16_UIntNormal:
-                    return SharpDX.WIC.PixelFormat.Format16bppGray;
-                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
-                    return SharpDX.WIC.PixelFormat.Format32bppBGRA;
-                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
-                    return SharpDX.WIC.PixelFormat.Format32bppBGR;
+                    return DX.WIC.PixelFormat.Format32bppGrayFloat;
+                case BufferFormat.D16_UNorm:
+                    return DX.WIC.PixelFormat.Format16bppGray;
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                    return DX.WIC.PixelFormat.Format32bppBGRA;
+                case BufferFormat.B8G8R8X8_UNorm_SRgb:
+                    return DX.WIC.PixelFormat.Format32bppBGR;
             }
 
             return Guid.Empty;
@@ -390,9 +390,9 @@ namespace Gorgon.Graphics
 
 			if (result == BufferFormat.Unknown)
 			{
-				if (sourcePixelFormat == SharpDX.WIC.PixelFormat.Format96bppRGBFixedPoint)
+				if (sourcePixelFormat == DX.WIC.PixelFormat.Format96bppRGBFixedPoint)
 				{
-					updatedPixelFormat = SharpDX.WIC.PixelFormat.Format128bppRGBAFloat;
+					updatedPixelFormat = DX.WIC.PixelFormat.Format128bppRGBAFloat;
 					result = BufferFormat.R32G32B32A32_Float;
 				}
 				else
@@ -420,34 +420,34 @@ namespace Gorgon.Graphics
 
 			switch (result)
 			{
-				case BufferFormat.B8G8R8A8_UIntNormal:
-				case BufferFormat.B8G8R8X8_UIntNormal:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm:
 					if ((flags & WICFlags.ForceRGB) == WICFlags.ForceRGB)
 					{
-						result = BufferFormat.R8G8B8A8_UIntNormal;
-						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA;
+						result = BufferFormat.R8G8B8A8_UNorm;
+						updatedPixelFormat = DX.WIC.PixelFormat.Format32bppRGBA;
 					}
 					break;
-				case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+				case BufferFormat.R10G10B10_Xr_BIAS_A2_UNorm:
 					if ((flags & WICFlags.NoX2Bias) == WICFlags.NoX2Bias)
 					{
-						result = BufferFormat.R10G10B10A2_UIntNormal;
-						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA1010102;
+						result = BufferFormat.R10G10B10A2_UNorm;
+						updatedPixelFormat = DX.WIC.PixelFormat.Format32bppRGBA1010102;
 					}
 					break;
-				case BufferFormat.B5G5R5A1_UIntNormal:
-				case BufferFormat.B5G6R5_UIntNormal:
+				case BufferFormat.B5G5R5A1_UNorm:
+				case BufferFormat.B5G6R5_UNorm:
 					if ((flags & WICFlags.No16BPP) == WICFlags.No16BPP)
 					{
-						result = BufferFormat.R8G8B8A8_UIntNormal;
-						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA;
+						result = BufferFormat.R8G8B8A8_UNorm;
+						updatedPixelFormat = DX.WIC.PixelFormat.Format32bppRGBA;
 					}				
 					break;
-				case BufferFormat.R1_UIntNormal:
+				case BufferFormat.R1_UNorm:
 					if ((flags & WICFlags.AllowMono) != WICFlags.AllowMono)
 					{
-						result = BufferFormat.R1_UIntNormal;
-						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format8bppGray;
+						result = BufferFormat.R1_UNorm;
+						updatedPixelFormat = DX.WIC.PixelFormat.Format8bppGray;
 					}
 					break;
 			}
@@ -503,7 +503,7 @@ namespace Gorgon.Graphics
             // Copy to the bitmap.
             foreach (var buffer in data.Buffers)
             {
-                var pointer = new DX.DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
+                var pointer = new DX.DataRectangle(new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch);
                 bitmaps[bitmapIndex] = new Bitmap(Factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
                 bitmapIndex++;
             }
@@ -518,7 +518,7 @@ namespace Gorgon.Graphics
         /// <returns>The WIC bitmap.</returns>
         public Bitmap CreateWICBitmapFromImageBuffer(GorgonImageBuffer buffer)
         {
-            var pointer = new DX.DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
+            var pointer = new DX.DataRectangle(new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch);
 
             Guid bitmapFormat = GetGUID(buffer.Format);
 
@@ -724,7 +724,7 @@ namespace Gorgon.Graphics
                             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_IMAGE_PITCH_TOO_SMALL);
 						}
 					}
-					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+					converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				}
 			}
 			finally
@@ -751,7 +751,7 @@ namespace Gorgon.Graphics
 				using (var scaler = new BitmapScaler(Factory))
 				{
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
-					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+					scaler.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				}
 
 				return true;
@@ -777,7 +777,7 @@ namespace Gorgon.Graphics
 			{
 				clipper.Initialize(bitmap, new DX.Rectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
-				clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+				clipper.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 			}
 		}
 
@@ -817,7 +817,7 @@ namespace Gorgon.Graphics
                 // Just dump without converting because our formats are equal.
 				if ((!needsResize) || (!ResizeBitmap(bitmap, (BitmapInterpolationMode)filter, buffer, clip)))
 				{
-					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				}
             }            
         }
@@ -937,35 +937,12 @@ namespace Gorgon.Graphics
             }
             finally
             {
-                if (converter != null)
-                {
-                    converter.Dispose();
-                }
-
-	            if (sourceContext != null)
-	            {
-		            sourceContext.Dispose();
-	            }
-
-	            if (destContext != null)
-	            {
-		            destContext.Dispose();
-	            }
-
-	            if (sRGBTransform != null)
-	            {
-		            sRGBTransform.Dispose();
-	            }
-
-                if (scaler != null)
-                {
-                    scaler.Dispose();
-                }
-
-                if (clipper != null)
-                {
-                    clipper.Dispose();
-                }
+	            converter?.Dispose();
+	            sourceContext?.Dispose();
+	            destContext?.Dispose();
+	            sRGBTransform?.Dispose();
+	            scaler?.Dispose();
+	            clipper?.Dispose();
             }
         }
         #endregion
@@ -994,10 +971,7 @@ namespace Gorgon.Graphics
 
 	        if (disposing)
 	        {
-		        if (Factory != null)
-		        {
-			        Factory.Dispose();
-		        }
+		        Factory?.Dispose();
 	        }
 
 	        Factory = null;

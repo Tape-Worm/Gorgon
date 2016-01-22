@@ -29,7 +29,6 @@ using System.Diagnostics;
 using System.Drawing;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Properties;
@@ -52,10 +51,10 @@ namespace Gorgon.Renderers
 		private float _blurAmount = 3.0f;											// Amount to blur.
 		private GorgonConstantBuffer _blurBuffer;							        // Buffer for blur data.
 		private GorgonConstantBuffer _blurStaticBuffer;					            // Buffer for blur data that does not change very often.
-		private GorgonDataStream _blurKernelStream;						            // Stream for the kernel buffer.
+		private GorgonPointer _blurKernelStream;						            // Pointer for the kernel buffer.
 		private GorgonRenderTarget2D _hTarget;										// Horizontal blur render target.
 		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
-		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
+		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UNorm;		// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
 		private GorgonSprite _blurSprite;									        // Sprite used to blur.
 		#endregion
@@ -275,7 +274,6 @@ namespace Gorgon.Renderers
 				total += _kernel[index];
 			}
 
-			_blurKernelStream.Position = 0;
 			_blurKernelStream.Write(_blurRadius);
 
 			for (int i = 0; i < blurKernelSize; i++)
@@ -284,7 +282,6 @@ namespace Gorgon.Renderers
 			}
 			
 			// Send to constant buffer.
-			_blurKernelStream.Position = 0;
 			_blurStaticBuffer.Update(_blurKernelStream);
 		}
 
@@ -312,7 +309,7 @@ namespace Gorgon.Renderers
                                                                     SizeInBytes = DirectAccess.SizeOf<Vector4>() * (_kernel.Length + 1)
                                                                 });
 
-            _blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
+            _blurKernelStream = new GorgonPointer(_blurStaticBuffer.SizeInBytes);
 
             Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 

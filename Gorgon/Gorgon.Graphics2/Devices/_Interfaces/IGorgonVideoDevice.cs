@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics
 {
@@ -47,7 +46,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return information about this video device.
 		/// </summary>
-		IGorgonVideoDeviceInfo Info
+		GorgonVideoDeviceInfo Info
 		{
 			get;
 		}
@@ -62,7 +61,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// If the user does not request a feature level, or has specified one higher than what the video device supports, then the highest feature level supported by the video device 
-		/// (indicated by the <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="Info"/> property) will be returned.
+		/// (indicated by the <see cref="GorgonVideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
 		DeviceFeatureLevel RequestedFeatureLevel
@@ -95,18 +94,6 @@ namespace Gorgon.Graphics
 		BufferFormatUavSupport GetBufferFormatUavSupport(BufferFormat format);
 
 		/// <summary>
-		/// Function to determine if a device supports using rendering commands from multiple threads.
-		/// </summary>
-		/// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
-		bool SupportsMultiThreadedCommands();
-
-		/// <summary>
-		/// Function to determine if a device supports creating resources from multiple threads.
-		/// </summary>
-		/// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
-		bool SupportsMultiThreadedCreation();
-
-		/// <summary>
 		/// Function to return the maximum number of quality levels supported by the device for multi sampling.
 		/// </summary>
 		/// <param name="format">A <see cref="BufferFormat"/> to evaluate.</param>
@@ -118,44 +105,6 @@ namespace Gorgon.Graphics
 		/// to this method, and the quality count for that sample count. If the <see cref="GorgonMultiSampleInfo.Quality"/> is less than 1, then the sample count is not supported by this video device.
 		/// </remarks>
 		GorgonMultiSampleInfo GetMultiSampleQuality(BufferFormat format, int count, bool forTiledResources = false);
-
-		/// <summary>
-		/// Function to find the full screen display mode the 
-		/// </summary>
-		/// <param name="output">The output to use when looking for a video mode.</param>
-		/// <param name="videoMode">The <see cref="GorgonVideoMode"/> used to find the closest match.</param>
-		/// <param name="newMode">A <see cref="GorgonVideoMode"/> that is the nearest match for the provided video mode.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>
-		/// <para>
-		/// Users may leave the <see cref="GorgonVideoMode"/> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
-		/// </para>
-		/// <para>
-		/// The following members in <see cref="GorgonVideoMode"/> may be skipped (if not listed, then this member must be specified):
-		/// <list type="bullet">
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.Width"/> and <see cref="GorgonVideoMode.Height"/>.  Both values must be set to 0 if not filtering by width or height.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.RefreshRate"/> should be set to <see cref="GorgonRationalNumber.Empty"/> in order to skip filtering by refresh rate.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.Scaling"/> should be set to <see cref="VideoModeDisplayModeScaling.Unspecified"/> in order to skip filtering by the scaling mode.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.ScanlineOrdering"/> should be set to <see cref="VideoModeScanlineOrder.Unspecified"/> in order to skip filtering by the scanline order.</description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// The <see cref="GorgonVideoMode.Format"/> member must be one of the UNorm format types and cannot be set to <see cref="BufferFormat.Unknown"/>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		void FindClosestMode(IGorgonVideoOutputInfo output, ref GorgonVideoMode videoMode, out GorgonVideoMode newMode);
 		#endregion
 	}
 }

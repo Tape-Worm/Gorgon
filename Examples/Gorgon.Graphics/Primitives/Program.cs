@@ -479,8 +479,8 @@ namespace Gorgon.Graphics.Example
 			                                              {
 															  Window = _form,
 															  IsWindowed = true,
-															  DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt,
-															  Format = BufferFormat.R8G8B8A8_UIntNormal
+															  DepthStencilFormat = BufferFormat.D24_UNorm_S8_UInt,
+															  Format = BufferFormat.R8G8B8A8_UNorm
 			                                              });
 
 			_renderer2D = _graphics.Output.Create2DRenderer(_swapChain);

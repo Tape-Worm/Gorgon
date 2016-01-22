@@ -221,7 +221,7 @@ namespace Gorgon.IO
 		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
 		/// then write-only access will be given to the UAV.</para> 
-		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="Gorgon.Graphics.VideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// Function to determine if the format is supported.</para>
         /// <para>If this value is set to <b>true</b>, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
         /// used with typed texture resources.</para>
@@ -416,7 +416,7 @@ namespace Gorgon.IO
 			var srcPtr = (ushort*)src;
 			var destPtr = (uint*)dest;
 
-			if ((srcFormat != BufferFormat.B5G5R5A1_UIntNormal) && (srcFormat != BufferFormat.B5G6R5_UIntNormal))
+			if ((srcFormat != BufferFormat.B5G5R5A1_UNorm) && (srcFormat != BufferFormat.B5G6R5_UNorm))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_NOT_16BPP, srcFormat), nameof(srcFormat));
 			}
@@ -438,7 +438,7 @@ namespace Gorgon.IO
 
 				switch (srcFormat)
 				{
-					case BufferFormat.B5G6R5_UIntNormal:
+					case BufferFormat.B5G6R5_UNorm:
 						R = (uint)((srcPixel & 0xF800) >> 11);
 						G = (uint)((srcPixel & 0x07E0) >> 5);
 						B = (uint)(srcPixel & 0x001F);
@@ -447,7 +447,7 @@ namespace Gorgon.IO
 						B = ((B << 3) | (B >> 2)) << 16;
 						A = 0xFF000000;
 						break;
-					case BufferFormat.B5G5R5A1_UIntNormal:
+					case BufferFormat.B5G5R5A1_UNorm:
 						R = (uint)((srcPixel & 0x7C00) >> 10);
 						G = (uint)((srcPixel & 0x03E0) >> 5);
 						B = (uint)(srcPixel & 0x001F);
@@ -521,10 +521,10 @@ namespace Gorgon.IO
 
             switch (format)
             {
-                case BufferFormat.R10G10B10A2:
+                case BufferFormat.R10G10B10A2_Typeless:
                 case BufferFormat.R10G10B10A2_UInt:
-                case BufferFormat.R10G10B10A2_UIntNormal:
-                case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+                case BufferFormat.R10G10B10A2_UNorm:
+				case BufferFormat.R10G10B10_Xr_BIAS_A2_UNorm:
                     for (int i = 0; i < size; i += 4)
                     {
                         if (src != dest)
@@ -545,15 +545,15 @@ namespace Gorgon.IO
                         destPtr++;
                     }
                     return;
-                case BufferFormat.R8G8B8A8:
-                case BufferFormat.R8G8B8A8_UIntNormal:
-                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
-                case BufferFormat.B8G8R8A8_UIntNormal:
-                case BufferFormat.B8G8R8X8_UIntNormal:
-                case BufferFormat.B8G8R8A8:
-                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
-                case BufferFormat.B8G8R8X8:
-                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+                case BufferFormat.R8G8B8A8_Typeless:
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8X8_UNorm:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                case BufferFormat.B8G8R8X8_Typeless:
+                case BufferFormat.B8G8R8X8_UNorm_SRgb:
                     for (int i = 0; i < size; i += 4)
                     {
                         if (src != dest)
@@ -621,13 +621,13 @@ namespace Gorgon.IO
 				// Do a straight copy.
 				switch (format)
 				{
-					case BufferFormat.R32G32B32A32:
+					case BufferFormat.R32G32B32A32_Typeless:
 					case BufferFormat.R32G32B32A32_Float:
 					case BufferFormat.R32G32B32A32_UInt:
-					case BufferFormat.R32G32B32A32_Int:
+					case BufferFormat.R32G32B32A32_SInt:
 						{
 							uint alpha = (format == BufferFormat.R32G32B32_Float) ? 0x3F800000
-												: ((format == BufferFormat.R32G32B32_Int) ? 0x7FFFFFFF : 0xFFFFFFFF);
+												: ((format == BufferFormat.R32G32B32_SInt) ? 0x7FFFFFFF : 0xFFFFFFFF);
 
 							var srcPtr = (uint*)src;
 							var destPtr = (uint*)dest;
@@ -646,12 +646,12 @@ namespace Gorgon.IO
 							}
 						}
 						return;
-					case BufferFormat.R16G16B16A16:
+					case BufferFormat.R16G16B16A16_Typeless:
 					case BufferFormat.R16G16B16A16_Float:
-					case BufferFormat.R16G16B16A16_UIntNormal:
+					case BufferFormat.R16G16B16A16_UNorm:
 					case BufferFormat.R16G16B16A16_UInt:
-					case BufferFormat.R16G16B16A16_IntNormal:
-					case BufferFormat.R16G16B16A16_Int:
+					case BufferFormat.R16G16B16A16_SNorm:
+					case BufferFormat.R16G16B16A16_SInt:
 						{
 							ushort alpha = 0xFFFF;
 
@@ -660,8 +660,8 @@ namespace Gorgon.IO
 								case BufferFormat.R16G16B16A16_Float:
 									alpha = 0x3C00;
 									break;
-								case BufferFormat.R16G16B16A16_Int:
-								case BufferFormat.R16G16B16A16_IntNormal:
+								case BufferFormat.R16G16B16A16_SInt:
+								case BufferFormat.R16G16B16A16_SNorm:
 									alpha = 0x7FFF;
 									break;
 							}
@@ -682,10 +682,10 @@ namespace Gorgon.IO
 							}
 						}
 						return;
-					case BufferFormat.R10G10B10A2:
-					case BufferFormat.R10G10B10A2_UIntNormal:
+					case BufferFormat.R10G10B10A2_Typeless:
+					case BufferFormat.R10G10B10A2_UNorm:
 					case BufferFormat.R10G10B10A2_UInt:
-					case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+					case BufferFormat.R10G10B10_Xr_BIAS_A2_UNorm:
 						{
 							var srcPtr = (uint*)src;
 							var destPtr = (uint*)dest;
@@ -703,17 +703,17 @@ namespace Gorgon.IO
 							}
 						}
 						return;
-					case BufferFormat.R8G8B8A8:
-					case BufferFormat.R8G8B8A8_UIntNormal:
-					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+					case BufferFormat.R8G8B8A8_Typeless:
+					case BufferFormat.R8G8B8A8_UNorm:
+					case BufferFormat.R8G8B8A8_UNorm_SRgb:
 					case BufferFormat.R8G8B8A8_UInt:
-					case BufferFormat.R8G8B8A8_IntNormal:
-					case BufferFormat.R8G8B8A8_Int:
-					case BufferFormat.B8G8R8A8_UIntNormal:
-					case BufferFormat.B8G8R8A8:
-					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+					case BufferFormat.R8G8B8A8_SNorm:
+					case BufferFormat.R8G8B8A8_SInt:
+					case BufferFormat.B8G8R8A8_UNorm:
+					case BufferFormat.B8G8R8A8_Typeless:
+					case BufferFormat.B8G8R8A8_UNorm_SRgb:
 						{
-							uint alpha = ((format == BufferFormat.R8G8B8A8_Int) || (format == BufferFormat.R8G8B8A8_IntNormal)) ? 0x7F000000 : 0xFF000000;
+							uint alpha = ((format == BufferFormat.R8G8B8A8_SInt) || (format == BufferFormat.R8G8B8A8_SNorm)) ? 0x7F000000 : 0xFF000000;
 
 							var srcPtr = (uint*)src;
 							var destPtr = (uint*)dest;
@@ -731,7 +731,7 @@ namespace Gorgon.IO
 							}
 						}
 						return;
-					case BufferFormat.B5G5R5A1_UIntNormal:
+					case BufferFormat.B5G5R5A1_UNorm:
 						{
 							var srcPtr = (ushort*)src;
 							var destPtr = (ushort*)dest;
@@ -750,7 +750,7 @@ namespace Gorgon.IO
 							}
 						}
 						return;
-					case BufferFormat.A8_UIntNormal:
+					case BufferFormat.A8_UNorm:
 						DirectAccess.FillMemory(dest, 0xFF, size);
 						return;
 				}
@@ -790,8 +790,8 @@ namespace Gorgon.IO
 			BufferFormat format = (Format != BufferFormat.Unknown) ? Format : data.Settings.Format;
 			Rectangle newSize = Rectangle.Empty;
 			int mipStart = 0;
-			var sourceInfo = GorgonBufferFormatInfo.GetInfo(data.Settings.Format);
-			var destInfo = GorgonBufferFormatInfo.GetInfo(format);
+			var sourceInfo = new GorgonBufferFormatInfo(data.Settings.Format);
+			var destInfo = new GorgonBufferFormatInfo(format);
 
 			// First, confirm whether we can perform format conversions.
 			using (var wic = new GorgonWICImage())
@@ -853,18 +853,18 @@ namespace Gorgon.IO
 								var sourceBuffer = data.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
                                 var destBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-								var dataRect = new DataRectangle(sourceBuffer.Data.BaseIntPtr, sourceBuffer.PitchInformation.RowPitch);
+								var dataRect = new DataRectangle(new IntPtr(sourceBuffer.Data.Address), sourceBuffer.PitchInformation.RowPitch);
 
 								// Create a temporary WIC bitmap to work with.
 								using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 								{
 									wic.TransformImageData(bitmap,
-									                       destBuffer.Data.BaseIntPtr,
+									                       new IntPtr(destBuffer.Data.Address),
 									                       destBuffer.PitchInformation.RowPitch,
 									                       destBuffer.PitchInformation.SlicePitch,
 									                       destPixelFormat,
-									                       sourceInfo.IssRGB,
-									                       destInfo.IssRGB,
+									                       sourceInfo.IsSRgb,
+									                       destInfo.IsSRgb,
 									                       Dithering,
 									                       newSize,
 									                       Clip,
@@ -894,12 +894,12 @@ namespace Gorgon.IO
 								    var sourceBuffer = destData.Buffers[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
 									var destBuffer = destData.Buffers[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
-									var dataRect = new DataRectangle(sourceBuffer.Data.BaseIntPtr, sourceBuffer.PitchInformation.RowPitch);
+									var dataRect = new DataRectangle(new IntPtr(sourceBuffer.Data.Address), sourceBuffer.PitchInformation.RowPitch);
 
 									// Create a temporary WIC bitmap to work with.
 									using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
 									{
-										wic.TransformImageData(bitmap, destBuffer.Data.BaseIntPtr, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
+										wic.TransformImageData(bitmap, new IntPtr(destBuffer.Data.Address), destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
 																Guid.Empty, false, false, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);
 									}
 								}
@@ -950,13 +950,13 @@ namespace Gorgon.IO
 		/// may cause undesirable results.</remarks>
 		public abstract IImageSettings GetMetaData(Stream stream);
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
+		/// <summary>
+		/// Returns a <see cref="string" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="string" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
         {
 	        return string.Format(Resources.GORGFX_IMAGE_CODEC_TOSTR, Codec);
         }

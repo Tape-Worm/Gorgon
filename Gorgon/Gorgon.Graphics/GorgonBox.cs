@@ -146,14 +146,14 @@ namespace Gorgon.Graphics
 
 		#endregion
 
-        #region Methods.
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-	    public override string ToString()
+		#region Methods.
+		/// <summary>
+		/// Returns a <see cref="string" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="string" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
 	    {
 	        return string.Format(Resources.GORGFX_BOX_TOSTR, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
 	    }

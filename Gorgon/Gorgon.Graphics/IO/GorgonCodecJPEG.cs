@@ -44,7 +44,7 @@ namespace Gorgon.IO
         #region Variables.
 		// Supported formats.
 		private readonly BufferFormat[] _supportedFormats = {
-        														BufferFormat.B8G8R8X8_UIntNormal
+        														BufferFormat.B8G8R8X8_UNorm
 	                                                        };
 
 		private float _imageQuality = 1.0f;         // Image quality for lossy compressed images.

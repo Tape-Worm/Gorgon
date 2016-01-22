@@ -44,8 +44,8 @@ namespace Gorgon.IO
 		#region Variables.
 		// Supported formats.
 		private readonly BufferFormat[] _supportedFormats = {
-																BufferFormat.B8G8R8X8_UIntNormal,
-																BufferFormat.B5G6R5_UIntNormal
+																BufferFormat.B8G8R8X8_UNorm,
+																BufferFormat.B5G6R5_UNorm
 	                                                        };
 		#endregion
 

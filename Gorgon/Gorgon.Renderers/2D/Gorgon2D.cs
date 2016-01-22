@@ -293,7 +293,7 @@ namespace Gorgon.Renderers
 			}
 			set
 			{
-				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)
+				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)
 				{
 					_multiSampleEnable = value;
 				}
@@ -643,8 +643,8 @@ namespace Gorgon.Renderers
 
 			if ((!IsMultisamplingEnabled)
 			    && ((target2D.Settings.Multisampling.Count > 1) || (target2D.Settings.Multisampling.Quality > 0))
-			    && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
-			        || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
+			    && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm41)
+			        || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm5)))
 			{
 				_multiSampleEnable = true;
 			}

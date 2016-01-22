@@ -32,7 +32,7 @@
 		/// <summary>
 		/// Property to return information about the view format.
 		/// </summary>
-		public GorgonBufferFormatInfo.FormatData FormatInformation
+		public GorgonBufferFormatInfo FormatInformation
 		{
 			get;
 			private set;
@@ -77,7 +77,7 @@
 		{
 			Resource = resource;
 			Format = format;
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
+			FormatInformation = new GorgonBufferFormatInfo(Format);
 		}
 		#endregion
 	}

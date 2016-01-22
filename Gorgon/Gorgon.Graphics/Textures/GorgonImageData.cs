@@ -81,19 +81,19 @@ namespace Gorgon.Graphics
 	{
 		#region Variables.
 		private bool _disposed;									// Flag to indicate whether the object was disposed.
-        private GorgonDataStream _imageData;					// Base image data buffer.
+        private GorgonPointerBase _imageData;					// Base image data buffer.
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the pointer to the beginning of the internal buffer.
         /// </summary>
-        public IntPtr BufferPointer => _imageData.BaseIntPtr;
+        public IntPtr BufferPointer => new IntPtr(_imageData.Address);
 
 	    /// <summary>
         /// Property to return an unsafe pointer to the beginning of the internal buffer.
         /// </summary>
-        public unsafe void *UnsafePointer => _imageData.BasePointer;
+        public unsafe void *UnsafePointer => (void*)_imageData.Address;
 
 	    /// <summary>
         /// Property to return the settings for the image.
@@ -134,24 +134,24 @@ namespace Gorgon.Graphics
             // Create a buffer large enough to hold our data.
             if (data == null)
             {
-                _imageData = new GorgonDataStream(SizeInBytes);
-				DirectAccess.ZeroMemory(_imageData.BasePointer, SizeInBytes);
+                _imageData = new GorgonPointer(SizeInBytes);
+				DirectAccess.ZeroMemory((void*)_imageData.Address, SizeInBytes);
             }
             else
             {
 	            if (!copy)
 	            {
-		            _imageData = new GorgonDataStream(data, SizeInBytes);
+		            _imageData = new GorgonPointerAlias(data, SizeInBytes);
 	            }
 	            else
 	            {
-		            _imageData = new GorgonDataStream(SizeInBytes);
-					DirectAccess.MemoryCopy(_imageData.BasePointer, data, SizeInBytes);
+		            _imageData = new GorgonPointer(SizeInBytes);
+					DirectAccess.MemoryCopy((byte *)_imageData.Address, data, SizeInBytes);
 	            }
             }
 
 			Buffers = new GorgonImageBufferList(this);
-			Buffers.CreateBuffers((byte *)_imageData.BasePointer);
+			Buffers.CreateBuffers((byte *)_imageData.Address);
         }
 
 		/// <summary>
@@ -355,15 +355,15 @@ namespace Gorgon.Graphics
 						    && (textureData.PitchInformation.SlicePitch == buffer.PitchInformation.SlicePitch)
 						    && (depth == buffer.Depth))
 						{
-							DirectAccess.MemoryCopy(textureData.Data.BasePointer,
-							                        buffer.Data.BasePointer,
+							DirectAccess.MemoryCopy((byte *)textureData.Data.Address,
+							                        (byte *)buffer.Data.Address,
 							                        buffer.PitchInformation.SlicePitch * buffer.Depth);
 						}
 						else
 						{
 							int clipRowPitch = textureData.PitchInformation.RowPitch.Min(buffer.PitchInformation.RowPitch);
-							var destDepthPtr = (byte*)textureData.Data.BasePointer;
-							var srcPtr = (byte*)textureData.Data.BasePointer;
+							var destDepthPtr = (byte*)textureData.Data.Address;
+							var srcPtr = (byte*)textureData.Data.Address;
 
 							// Copy all depth information.
 							for (int i = 0; i < depth; i++)
@@ -655,9 +655,9 @@ namespace Gorgon.Graphics
 	        }
 
 			// If this image is compressed, then use the block height information.
-	        if (destImageBuffer.PitchInformation.BlockCount.Height > 0)
+	        if (destImageBuffer.PitchInformation.VerticalBlockCount > 0)
 	        {
-		        height = destImageBuffer.PitchInformation.BlockCount.Height;
+		        height = destImageBuffer.PitchInformation.HorizontalBlockCount;
 	        }
 
             // Copy the texture data into the buffer.
@@ -686,7 +686,7 @@ namespace Gorgon.Graphics
 
 	        unsafe
 	        {
-				var buffer = (byte*)destImageBuffer.Data.BasePointer;
+				var buffer = (byte*)destImageBuffer.Data.Address;
 
 		        using (textureLock)
 		        {
@@ -695,7 +695,7 @@ namespace Gorgon.Graphics
 			            || (textureLock.PitchInformation.SlicePitch != sliceStride))
 			        {
 				        var destData = buffer;
-				        var sourceData = (byte*)textureLock.Data.BasePointer;
+				        var sourceData = (byte*)textureLock.Data.Address;
 
 				        for (int depth = 0; depth < depthCount; depth++)
 				        {
@@ -715,7 +715,7 @@ namespace Gorgon.Graphics
 			        else
 			        {
 				        // Since we have the same row and slice stride, copy everything in one shot.
-				        DirectAccess.MemoryCopy(buffer, textureLock.Data.BasePointer, sliceStride);
+				        DirectAccess.MemoryCopy(buffer, (byte *)textureLock.Data.Address, sliceStride);
 			        }
 		        }
 	        }
@@ -915,7 +915,7 @@ namespace Gorgon.Graphics
 			height = 1.Max(height);
 			depth = 1.Max(depth);
 			mipCount = 1.Max(mipCount);
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(format);
+			var formatInfo = new GorgonBufferFormatInfo(format);
 			int result = 0;
 
 			if (formatInfo.SizeInBytes == 0)
@@ -929,7 +929,7 @@ namespace Gorgon.Graphics
 
 			for (int mip = 0; mip < mipCount; mip++)
 			{
-				var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, pitchFlags);
+				var pitchInfo = formatInfo.GetPitchForFormat(mipWidth, mipHeight, pitchFlags);
 				result += pitchInfo.SlicePitch * depth;
 
 				if (mipWidth > 1)
@@ -1245,7 +1245,7 @@ namespace Gorgon.Graphics
 			
 			fixed (byte* element = &result[0])
 			{
-				DirectAccess.MemoryCopy(element, _imageData.BasePointer, result.Length);
+				DirectAccess.MemoryCopy(element, (byte *)_imageData.Address, result.Length);
 			}
 
 			return result;
@@ -1273,7 +1273,7 @@ namespace Gorgon.Graphics
 
 			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
-				writer.Write(_imageData.BasePointer, SizeInBytes);
+				writer.Write((byte *)_imageData.Address, SizeInBytes);
 			}
 		}
 
@@ -1384,20 +1384,15 @@ namespace Gorgon.Graphics
 			}
 			catch
 			{
-				if (result != null)
-				{
-                    result.Dispose();
-				}
-
+				result?.Dispose();
 				throw;
 			}
             finally
             {
                 // If we haven't co-opted the pointer, then free the memory we've allocated.
-                if ((stream != gorgonDataStream)
-					&& (gorgonDataStream != null))
+                if (stream != gorgonDataStream)
                 {
-                    gorgonDataStream.Dispose();
+                    gorgonDataStream?.Dispose();
                 }
             }
 
@@ -1630,8 +1625,8 @@ namespace Gorgon.Graphics
 					// Copy the first buffer from the source image to the dest image.
 					for (int array = 0; array < Settings.ArrayCount; array++)
 					{
-						DirectAccess.MemoryCopy(destData.Buffers[0, array].Data.BasePointer,
-						                        Buffers[0, array].Data.BasePointer,
+						DirectAccess.MemoryCopy((byte *)destData.Buffers[0, array].Data.Address,
+						                        (byte *)Buffers[0, array].Data.Address,
 						                        Buffers[0, array].PitchInformation.SlicePitch * Settings.Depth);
 					}
 				}
@@ -1660,13 +1655,13 @@ namespace Gorgon.Graphics
 									var sourceBuffer = destData.Buffers[0, Settings.ImageType == ImageType.Image3D ? (Settings.Depth / mipDepth) * depth : array];
 									var depthBuffer = destData.Buffers[mipLevel, Settings.ImageType == ImageType.Image3D ? depth : array];
 
-									var dataPtr = new DX.DataRectangle(sourceBuffer.Data.BaseIntPtr, sourceBuffer.PitchInformation.RowPitch);
+									var dataPtr = new DX.DataRectangle(new IntPtr(sourceBuffer.Data.Address), sourceBuffer.PitchInformation.RowPitch);
 									// Create a temporary bitmap and resize it.
 									using (var bitmap = new Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
 									{
 										// Scale the image into the next buffer.
 										wic.TransformImageData(bitmap,
-										                       depthBuffer.Data.BaseIntPtr,
+										                       new IntPtr(depthBuffer.Data.Address),
 										                       depthBuffer.PitchInformation.RowPitch,
 										                       depthBuffer.PitchInformation.SlicePitch,
 										                       Guid.Empty,
@@ -1797,13 +1792,13 @@ namespace Gorgon.Graphics
 								// Get the array/mip/depth buffer.
 								var destBuffer = destData.Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
 								var srcBuffer = Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
-								var rect = new DX.DataRectangle(srcBuffer.Data.BaseIntPtr, srcBuffer.PitchInformation.RowPitch);
+								var rect = new DX.DataRectangle(new IntPtr(srcBuffer.Data.Address), srcBuffer.PitchInformation.RowPitch);
 
 								// Create a WIC bitmap so we have a source for conversion.
 								using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch))
 								{
 									wic.TransformImageData(wicBmp,
-									                       destBuffer.Data.BaseIntPtr,
+									                       new IntPtr(destBuffer.Data.Address),
 									                       destBuffer.PitchInformation.RowPitch,
 									                       destBuffer.PitchInformation.SlicePitch,
 									                       Guid.Empty,
@@ -1859,8 +1854,8 @@ namespace Gorgon.Graphics
 
 	        using (var wic = new GorgonWICImage())
 	        {
-		        var sourceInfo = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-		        var destInfo = GorgonBufferFormatInfo.GetInfo(format);
+		        var sourceInfo = new GorgonBufferFormatInfo(Settings.Format);
+		        var destInfo = new GorgonBufferFormatInfo(format);
 		        Guid sourceFormat = wic.GetGUID(Settings.Format);
 		        Guid destFormat = wic.GetGUID(format);
 
@@ -1876,7 +1871,7 @@ namespace Gorgon.Graphics
 
 		        // Well, that was easy...
 		        if ((sourceFormat == destFormat)
-					&& (sourceInfo.IssRGB == destInfo.IssRGB))
+					&& (sourceInfo.IsSRgb == destInfo.IsSRgb))
 		        {
 			        return;
 		        }
@@ -1898,18 +1893,18 @@ namespace Gorgon.Graphics
 						        // Get the array/mip/depth buffer.
 						        var destBuffer = destData.Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
 						        var srcBuffer = Buffers[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
-						        var rect = new DX.DataRectangle(srcBuffer.Data.BaseIntPtr, srcBuffer.PitchInformation.RowPitch);
+						        var rect = new DX.DataRectangle(new IntPtr(srcBuffer.Data.Address), srcBuffer.PitchInformation.RowPitch);
 
 						        // Create a WIC bitmap so we have a source for conversion.
 						        using (var wicBmp = new Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, srcBuffer.PitchInformation.SlicePitch))
 						        {
 							        wic.TransformImageData(wicBmp,
-							                               destBuffer.Data.BaseIntPtr,
+							                               new IntPtr(destBuffer.Data.Address),
 							                               destBuffer.PitchInformation.RowPitch,
 							                               destBuffer.PitchInformation.SlicePitch,
 							                               destFormat,
-														   sourceInfo.IssRGB,
-														   destInfo.IssRGB,
+														   sourceInfo.IsSRgb,
+														   destInfo.IsSRgb,
 							                               ditherMode,
 							                               Rectangle.Empty,
 							                               true,

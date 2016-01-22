@@ -431,9 +431,9 @@ namespace Gorgon.Graphics
                 throw new ArgumentNullException(nameof(settings));
             }
 
-			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 			}
 
 			if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Size == 0)))

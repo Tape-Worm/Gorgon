@@ -330,6 +330,24 @@ namespace Gorgon.IO
 		}
 
 		/// <summary>
+		/// Function to retrieve a <see cref="GorgonPointerAlias"/> set to the position within the stream.
+		/// </summary>
+		/// <returns>A <see cref="GorgonPointerAlias"/> pointing at the data within the stream, at the offset defined by <see cref="Position"/>.</returns>
+		/// <remarks>
+		/// <para>
+		/// The <see cref="GorgonPointerAlias"/> returned by this method will point at the block of memory held by this stream offset by the <see cref="Position"/> within the data 
+		/// stream. The size of the memory being pointed at will be the <see cref="Length"/> - <see cref="Position"/> to ensure that pointer bounds are not exceeded.
+		/// </para>
+		/// <para>
+		/// If a pointer to the beginning of the memory block is desired, then set the <see cref="Position"/> value to 0, and reset it to its original value after calling this method.
+		/// </para>
+		/// </remarks>
+		public GorgonPointerAlias GetPointer()
+		{
+			return new GorgonPointerAlias((byte *)(_pointer.Address + _position), Length - _position);
+		}
+
+		/// <summary>
 		/// Function to marshal an array of value types into a <see cref="GorgonDataStream"/>.
 		/// </summary>
 		/// <typeparam name="T">Type of value to marshal. Must be a value or primitive type.</typeparam>

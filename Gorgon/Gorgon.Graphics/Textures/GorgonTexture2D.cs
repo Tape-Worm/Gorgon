@@ -209,9 +209,9 @@ namespace Gorgon.Graphics
 				throw new NotSupportedException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
 			}
 
-			var srcFormatInfo = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-			var destFormatInfo = GorgonBufferFormatInfo.GetInfo(destination.Settings.Format);
-			var resolveFormatInfo = GorgonBufferFormatInfo.GetInfo(resolveFormat);
+			var srcFormatInfo = new GorgonBufferFormatInfo(Settings.Format);
+			var destFormatInfo = new GorgonBufferFormatInfo(destination.Settings.Format);
+			var resolveFormatInfo = new GorgonBufferFormatInfo(resolveFormat);
 
 			// Ensure that the resource formats and resolve format all match up.
 			if ((!srcFormatInfo.IsTypeless) && (!destFormatInfo.IsTypeless))
@@ -497,7 +497,7 @@ namespace Gorgon.Graphics
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
 	    /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
 	    /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
-	    /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+	    /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UNorm, etc.. are part of the R8G8B8A8 group).  If the 
 	    /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 	    /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
 	    /// <para>Pass NULL (<i>Nothing</i> in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
@@ -559,7 +559,7 @@ namespace Gorgon.Graphics
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
-        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UNorm, etc.. are part of the R8G8B8A8 group).  If the 
         /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (<i>Nothing</i> in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
@@ -599,7 +599,7 @@ namespace Gorgon.Graphics
         /// <param name="unsafeCopy">[Optional] <b>true</b> to disable all range checking for coorindates, <b>false</b> to clip coorindates to safe ranges.</param>
         /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  
-        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UNorm, etc.. are part of the R8G8B8A8 group).  If the 
         /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (<i>Nothing</i> in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>

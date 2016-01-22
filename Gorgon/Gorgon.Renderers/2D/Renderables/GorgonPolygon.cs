@@ -35,6 +35,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
+using Gorgon.Native;
 using Gorgon.Renderers.Properties;
 using SlimMath;
 
@@ -416,7 +417,7 @@ namespace Gorgon.Renderers
         /// </remarks>
         public void SetIndexData(int[] indices)
         {
-            SetIndexData(indices, 0, 0, indices == null ? 0 : indices.Length);
+            SetIndexData(indices, 0, 0, indices?.Length ?? 0);
         }
 
         /// <summary>
@@ -440,7 +441,7 @@ namespace Gorgon.Renderers
         /// </exception>
         public void SetIndexData(int[] indices, int indexListOffset, int offset)
         {
-            SetIndexData(indices, indexListOffset, offset, indices == null ? 0 : indices.Length);
+            SetIndexData(indices, indexListOffset, offset, indices?.Length ?? 0);
         }
 
         /// <summary>
@@ -520,10 +521,9 @@ namespace Gorgon.Renderers
                 {
                     // If we're using a dynamic index buffer, then we need to lock and write our data.
                     BufferLockFlags lockFlags = offset == 0 ? BufferLockFlags.Discard : BufferLockFlags.NoOverwrite;
-                    GorgonDataStream lockStream = IndexBuffer.Lock(lockFlags | BufferLockFlags.Write,
-                        Gorgon2D.Graphics);
+                    GorgonPointerBase lockStream = IndexBuffer.Lock(lockFlags | BufferLockFlags.Write, Gorgon2D.Graphics);
 
-                    var vertexPtr = (int*)lockStream.BasePointer;
+                    var vertexPtr = (int*)lockStream.Address;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -540,7 +540,7 @@ namespace Gorgon.Renderers
                 {
                     fixed (int* ptr = &indices[indexListOffset])
                     {
-                        using (var data = new GorgonDataStream(ptr, count * intSize))
+                        using (var data = new GorgonPointerAlias(ptr, count * intSize))
                         {
                             IndexBuffer.Update(data,
                                 offset * intSize,
@@ -675,10 +675,9 @@ namespace Gorgon.Renderers
                 if (UseDynamicVertexBuffer)
                 {
                     BufferLockFlags lockFlags = offset == 0 ? BufferLockFlags.Discard : BufferLockFlags.NoOverwrite;
-                    GorgonDataStream lockStream = _vertexBuffer.Lock(lockFlags | BufferLockFlags.Write,
-                        Gorgon2D.Graphics);
+                    GorgonPointerBase lockStream = _vertexBuffer.Lock(lockFlags | BufferLockFlags.Write, Gorgon2D.Graphics);
 
-                    var vertexPtr = (Gorgon2DVertex*)lockStream.BasePointer;
+                    var vertexPtr = (Gorgon2DVertex*)lockStream.Address;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -705,9 +704,9 @@ namespace Gorgon.Renderers
                 }
                 else
                 {
-                    using(var data = new GorgonDataStream(Gorgon2DVertex.SizeInBytes * count))
+                    using(var data = new GorgonPointer(Gorgon2DVertex.SizeInBytes * count))
                     {
-                        var ptr = (Gorgon2DVertex *)data.BasePointer;
+                        var ptr = (Gorgon2DVertex *)data.Address;
 
                         // Find the new size if necessary.
                         for (int i = 0; i < count; ++i)
@@ -1575,9 +1574,9 @@ namespace Gorgon.Renderers
 			using (var stagingVertex = _vertexBuffer.GetStagingBuffer())
 			{
 				// Write the contents of the vertex buffer.
-				using (var lockStream = stagingVertex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
+				using (var lockData = stagingVertex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
 				{
-					var vertexPtr = (Gorgon2DVertex*)lockStream.BasePointer;
+					var vertexPtr = (Gorgon2DVertex*)lockData.Address;
 
 					for (int i = 0; i < VertexCount; ++i)
 					{
@@ -1594,9 +1593,9 @@ namespace Gorgon.Renderers
 				// Write index buffer contents.
 				using (var stagingIndex = IndexBuffer.GetStagingBuffer())
 				{
-					using (var lockStream = stagingIndex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
+					using (var lockData = stagingIndex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
 					{
-						var indexPtr = (int*)lockStream.BasePointer;
+						var indexPtr = (int*)lockData.Address;
 
 						for (int i = 0; i < IndexCount; ++i)
 						{

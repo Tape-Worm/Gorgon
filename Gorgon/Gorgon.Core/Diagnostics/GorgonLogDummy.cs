@@ -39,6 +39,7 @@ namespace Gorgon.Diagnostics
 		/// <summary>
 		/// The default instance of the dummy log used across the Gorgon libraries when no logging is required.
 		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "Sure. It's immutable.  Why not.")]
 		public static readonly IGorgonLog DefaultInstance = new GorgonLogDummy();
 		#endregion
 
