@@ -390,7 +390,7 @@ namespace Gorgon.Graphics
         private void SetTargets(D3D.DepthStencilView depthView)
         {
 			// We have UAV views, so we need to use the proper function.
-			if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
+			if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.Sm5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
 			{
 				if ((_unorderedViews != null) && (_unorderedViews.Length != 0))
 				{
@@ -576,12 +576,12 @@ namespace Gorgon.Graphics
             }
 
             // Ensure that we're using SM5 or better hardware if we want an unordered access view to our backbuffer.
-            if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
                 && ((settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView)
                     == SwapChainUsageFlags.AllowUnorderedAccessView))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+                                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
             }
 
             // Default to using the default Gorgon application window.
@@ -863,17 +863,17 @@ namespace Gorgon.Graphics
 			}
 			else
 			{
-                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm4)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm4));
                 }
 
-                if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
+                if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm41)
                     && ((settings.Multisampling.Count > 1) || (settings.Multisampling.Quality > 0)))
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4_1));
+                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm41));
                 }
 
 				if (settings.TextureFormat == BufferFormat.Unknown)
@@ -882,7 +882,7 @@ namespace Gorgon.Graphics
                         string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.TextureFormat));
                 }
 
-				var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.TextureFormat);
+				var formatInfo = new GorgonBufferFormatInfo(settings.TextureFormat);
 
 				if ((!formatInfo.IsTypeless)
                     || (!_graphics.VideoDevice.Supports2DTextureFormat(settings.TextureFormat)))
@@ -900,7 +900,7 @@ namespace Gorgon.Graphics
 		internal void Unbind(GorgonRenderTargetView view)
 		{
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.Sm5))
             {
                 foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
                 {
@@ -942,7 +942,7 @@ namespace Gorgon.Graphics
         internal void Unbind(GorgonUnorderedAccessView view)
         {
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.Sm5))
             {
                 foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
                 {
@@ -992,7 +992,7 @@ namespace Gorgon.Graphics
         internal void UnbindSlots(int startSlot)
         {
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.Sm5))
             {
                 foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
                 {
@@ -1173,9 +1173,9 @@ namespace Gorgon.Graphics
             if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
             {
 #if DEBUG
-                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
                 {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
                 }
 
                 if ((view != null) && (unorderedAccessViews.Length + 1 > MaxRenderTargetViewSlots))
@@ -1271,9 +1271,9 @@ namespace Gorgon.Graphics
             if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
             {
 #if DEBUG
-                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
                 {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));    
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));    
                 }
 
                 if ((views != null) && (views.Length + unorderedAccessViews.Length > MaxRenderTargetViewSlots))
@@ -1502,9 +1502,9 @@ namespace Gorgon.Graphics
 			buffer.ValidateObject("buffer");
 
 #if DEBUG
-            if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
             {
-                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
             }
 
 			if (!buffer.Settings.AllowIndirectArguments)
@@ -1649,7 +1649,7 @@ namespace Gorgon.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// <para>Thrown when the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="VideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
 		/// </exception>
 		/// <exception cref="GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -1663,7 +1663,7 @@ namespace Gorgon.Graphics
 		/// <para>Passing default settings for the <see cref="Gorgon.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (<i>Nothing</i> in VB.Net) to 
 		/// the <see cref="P:Gorgon.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
         /// <para>If the multisampling quality in the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
-        /// what the maximum quality for the sample count for the video device should be, call the <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+        /// what the maximum quality for the sample count for the video device should be, call the <see cref="VideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
 		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
@@ -1810,7 +1810,7 @@ namespace Gorgon.Graphics
 		/// <returns>A new render target object.</returns>
 		/// <remarks>This allows graphics data to be rendered on to a <see cref="Gorgon.Graphics.GorgonTexture2D">2D texture</see>.
 		/// <para>If the multisampling quality in the <see cref="Gorgon.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2D.Multisampling.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
-		/// what the maximum quality for the sample count for the video device should be, call the <see cref="Gorgon.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+		/// what the maximum quality for the sample count for the video device should be, call the <see cref="Gorgon.Graphics.VideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
@@ -1822,7 +1822,7 @@ namespace Gorgon.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
         /// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// <para>Thrown when the <see cref="P:Gorgon.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="VideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>

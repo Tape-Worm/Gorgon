@@ -83,7 +83,7 @@ namespace Gorgon.Graphics.Example
         // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
         private readonly BufferFormat[] _supportedFormats =
         {
-            BufferFormat.R8G8B8A8_UIntNormal
+            BufferFormat.R8G8B8A8_UNorm
         };
         #endregion
 
@@ -171,7 +171,7 @@ namespace Gorgon.Graphics.Example
 
             settings.Width = header.Width;
             settings.Height = header.Height;
-	        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+	        settings.Format = BufferFormat.R8G8B8A8_UNorm;
 
             return settings;
         }
@@ -255,9 +255,9 @@ namespace Gorgon.Graphics.Example
         /// <param name="stream">Stream that will contain the data.</param>
         protected override void SaveToStream(GorgonImageData imageData, Stream stream)
         {
-	        if (imageData.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
+	        if (imageData.Settings.Format != BufferFormat.R8G8B8A8_UNorm)
 	        {
-				throw new ArgumentException(@"The image format must be R8G8B8A8_UIntNormal", nameof(imageData));    
+				throw new ArgumentException(@"The image format must be R8G8B8A8_UNorm", nameof(imageData));    
 	        }
 
 			// First, we'll need to set up our header metadata.

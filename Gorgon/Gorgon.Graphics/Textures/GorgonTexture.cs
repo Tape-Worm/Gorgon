@@ -55,7 +55,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return information about the format for the texture.
 		/// </summary>
-		public GorgonBufferFormatInfo.FormatData FormatInformation
+		public GorgonBufferFormatInfo FormatInformation
 		{
 			get;
 		}
@@ -172,7 +172,7 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
 			}
 
-			var formatInformation = GorgonBufferFormatInfo.GetInfo(format);
+			var formatInformation = new GorgonBufferFormatInfo(format);
 
 			if (formatInformation.IsTypeless)
 			{
@@ -267,7 +267,7 @@ namespace Gorgon.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
             }
 
-	        var formatInformation = GorgonBufferFormatInfo.GetInfo(format);
+	        var formatInformation = new GorgonBufferFormatInfo(format);
 
             if (formatInformation.IsTypeless)
             {
@@ -405,7 +405,7 @@ namespace Gorgon.Graphics
 														Settings.MipCount));
 			}
 
-			var info = GorgonBufferFormatInfo.GetInfo(format);
+			var info = new GorgonBufferFormatInfo(format);
 
 			if (info.IsTypeless)
 			{
@@ -442,9 +442,9 @@ namespace Gorgon.Graphics
 		/// </exception>
 		protected GorgonTextureUnorderedAccessView OnGetUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 			}
 
             if (!Settings.AllowUnorderedAccessViews)
@@ -459,9 +459,9 @@ namespace Gorgon.Graphics
 			}
 			
 			// Ensure the size of the data type fits the requested format.
-			var info = GorgonBufferFormatInfo.GetInfo(format);
+			var info = new GorgonBufferFormatInfo(format);
 
-			if (((info.Group != BufferFormat.R32) && (FormatInformation.Group != info.Group))
+			if (((info.Group != BufferFormat.R32_Typeless) && (FormatInformation.Group != info.Group))
 				|| (info.SizeInBytes != FormatInformation.SizeInBytes))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
@@ -492,10 +492,7 @@ namespace Gorgon.Graphics
 
 			// Release any cached resources.  Otherwise we'll be hold on to invalid resources.
 			// This should only happen when we update a swap chain.
-			if (_viewCache != null)
-			{
-				_viewCache.Clear();
-			}
+			_viewCache?.Clear();
 
 			GorgonRenderStatistics.TextureCount--;
 		    GorgonRenderStatistics.TextureSize -= SizeInBytes;
@@ -508,12 +505,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		protected void ReleaseResourceViews()
 		{
-			if (_viewCache == null)
-			{
-				return;
-			}
-
-			_viewCache.ReleaseResources();
+			_viewCache?.ReleaseResources();
 		}
 
 		/// <summary>
@@ -521,12 +513,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		protected void InitializeResourceViews()
 		{
-			if (_viewCache == null)
-			{
-				return;
-			}
-
-			_viewCache.InitializeResources();
+			_viewCache?.InitializeResources();
 		}
 
 		/// <summary>
@@ -560,7 +547,7 @@ namespace Gorgon.Graphics
         /// <param name="context">The deferred context to use when copying the sub resource.</param>
         /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceBox"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
-        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UNorm, etc.. are part of the R8G8B8A8 group).  If the 
         /// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (<i>Nothing</i> in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
@@ -604,7 +591,7 @@ namespace Gorgon.Graphics
             // If the format is different, then check to see if the format group is the same.
             if ((sourceTexture.Settings.Format != Settings.Format)
                 && ((sourceTexture.FormatInformation.Group != FormatInformation.Group)
-                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)))
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT,
                     sourceTexture.Settings.Format,
@@ -844,8 +831,7 @@ namespace Gorgon.Graphics
 			}
 			catch
 			{
-				if (D3DResource != null)
-					D3DResource.Dispose();
+				D3DResource?.Dispose();
 				D3DResource = null;
 				throw;
 			}
@@ -1042,7 +1028,7 @@ namespace Gorgon.Graphics
 		/// <para>This method will -not- perform stretching, filtering or clipping.</para>
 		/// <para>The <paramref name="texture"/> dimensions must be have the same dimensions as this texture.  If they do not, an exception will be thrown.</para>
 		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters.</para>
-		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UNorm, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
 		/// <para>If <paramref name="deferred"/> is NULL (<i>Nothing</i> in VB.Net), then the immediate context is used to copy the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
@@ -1087,7 +1073,7 @@ namespace Gorgon.Graphics
 			// If the format is different, then check to see if the format group is the same.
 		    if ((texture.Settings.Format != Settings.Format)
 		        && ((texture.FormatInformation.Group != FormatInformation.Group)
-		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)))
 		    {
 		        throw new ArgumentException(
 		            string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT, texture.Settings.Format, Settings.Format),
@@ -1186,7 +1172,7 @@ namespace Gorgon.Graphics
 
             var box = new DX.DataBox
             {
-                DataPointer = buffer.Data.BaseIntPtr,
+                DataPointer = new IntPtr(buffer.Data.Address),
                 RowPitch = buffer.PitchInformation.RowPitch,
                 SlicePitch = buffer.PitchInformation.SlicePitch
             };
@@ -1218,7 +1204,7 @@ namespace Gorgon.Graphics
 		/// <returns>The default shader view for the texture.</returns>
 		public static GorgonTextureShaderView ToShaderView(GorgonTexture texture)
 		{
-			return texture == null ? null : texture._defaultShaderView;
+			return texture?._defaultShaderView;
 		}
 
 		/// <summary>
@@ -1228,7 +1214,7 @@ namespace Gorgon.Graphics
 		/// <returns>The default shader view for the texture.</returns>
 		public static implicit operator GorgonTextureShaderView(GorgonTexture texture)
 		{
-			return texture == null ? null : texture._defaultShaderView;
+			return texture?._defaultShaderView;
 		}
 		#endregion
 
@@ -1245,7 +1231,7 @@ namespace Gorgon.Graphics
 		    Settings = settings;
             _viewCache = new GorgonViewCache(this);
 		    _lockCache = new GorgonTextureLockCache(this);
-            FormatInformation = GorgonBufferFormatInfo.GetInfo(settings.Format);
+            FormatInformation = new GorgonBufferFormatInfo(settings.Format);
 		}
 		#endregion
     }

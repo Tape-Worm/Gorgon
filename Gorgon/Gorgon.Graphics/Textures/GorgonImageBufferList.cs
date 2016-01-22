@@ -122,7 +122,7 @@ namespace Gorgon.Graphics
 		internal unsafe void CreateBuffers(byte* data)
 		{
 			int bufferIndex = 0;
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(_image.Settings.Format);	// Format information.
+			var formatInfo = new GorgonBufferFormatInfo(_image.Settings.Format);	// Format information.
 			
 			// Allocate enough room for the array and mip levels.
 			_buffers = new GorgonImageBuffer[GorgonImageData.GetDepthSliceCount(_image.Settings.Depth, _image.Settings.MipCount) * _image.Settings.ArrayCount];	
@@ -141,7 +141,7 @@ namespace Gorgon.Graphics
 				for (int mip = 0; mip < _image.Settings.MipCount; mip++)
 				{
 					int arrayIndex = mip + (array * _image.Settings.MipCount);
-					var pitchInformation = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+					var pitchInformation = formatInfo.GetPitchForFormat(mipWidth, mipHeight, PitchFlags.None);
 
 					// Get data box for texture upload.
 					DataBoxes[arrayIndex] = new DX.DataBox(new IntPtr(data), pitchInformation.RowPitch, pitchInformation.SlicePitch);

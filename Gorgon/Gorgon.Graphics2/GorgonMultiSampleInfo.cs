@@ -79,7 +79,7 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// <note type="warning">
 		/// <para>
-		/// This value must be 0 or less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality"/>.  Failure to do so will cause an exception for objects that use this type.
+		/// This value must be 0 or less than the value returned by <see cref="VideoDevice.GetMultiSampleQuality"/>.  Failure to do so will cause an exception for objects that use this type.
 		/// </para>
 		/// </note>
 		/// </para>
@@ -88,15 +88,6 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to convert a Gorgon multi-sampling value to a D3D sample description.
-		/// </summary>
-		/// <returns>The D3D sample description.</returns>
-		internal GI.SampleDescription Convert()
-		{
-			return new GI.SampleDescription(Count, Quality);
-		}
-
 		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>

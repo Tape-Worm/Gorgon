@@ -174,7 +174,7 @@ namespace Gorgon.Graphics
 			_graphics = graphics.ImmediateContext;
 			_textureSettings = new GorgonTexture2DSettings
 			                   {
-								   Format = BufferFormat.R8G8B8A8_UIntNormal,
+								   Format = BufferFormat.R8G8B8A8_UNorm,
 								   ArrayCount = 1,
 								   MipCount = 1
 			                   };
@@ -184,7 +184,7 @@ namespace Gorgon.Graphics
 		/// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
 		/// </summary>
 		/// <param name="textureImage">The texture to use.</param>
-		/// <remarks>The texture format for the brush must be R8G8B8A8_UIntNormal, R8G8B8A8_UIntNormal_sRGB, B8G8R8A8_UIntNormal, or B8G8R8A8_UintNormal_sRGB.</remarks>
+		/// <remarks>The texture format for the brush must be R8G8B8A8_UNorm, R8G8B8A8_UNorm_SRgb, B8G8R8A8_UNorm, or B8G8R8A8_UNorm_SRgb.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="textureImage"/> parameter uses an unsupported format.</exception>
 		public GorgonGlyphTextureBrush(GorgonTexture2D textureImage)
@@ -194,10 +194,10 @@ namespace Gorgon.Graphics
 				throw new ArgumentNullException(nameof(textureImage));	
 			}
 
-			if ((textureImage.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB)
-				&& (textureImage.Settings.Format != BufferFormat.R8G8B8A8_UIntNormal)
-				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal)
-				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UIntNormal_sRGB))
+			if ((textureImage.Settings.Format != BufferFormat.R8G8B8A8_UNorm_SRgb)
+				&& (textureImage.Settings.Format != BufferFormat.R8G8B8A8_UNorm)
+				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UNorm)
+				&& (textureImage.Settings.Format != BufferFormat.B8G8R8A8_UNorm_SRgb))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, textureImage.Settings.Format));
 			}

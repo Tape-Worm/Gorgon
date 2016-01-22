@@ -92,8 +92,8 @@ namespace Gorgon.Graphics
 			{
 				switch (_graphics.VideoDevice.SupportedFeatureLevel)
 				{
-					case DeviceFeatureLevel.SM4:
-					case DeviceFeatureLevel.SM4_1:
+					case DeviceFeatureLevel.Sm4:
+					case DeviceFeatureLevel.Sm41:
 						return 8192;
 					default:
 						return 16384;
@@ -110,8 +110,8 @@ namespace Gorgon.Graphics
 			{
 				switch (_graphics.VideoDevice.SupportedFeatureLevel)
 				{
-					case DeviceFeatureLevel.SM4:
-					case DeviceFeatureLevel.SM4_1:
+					case DeviceFeatureLevel.Sm4:
+					case DeviceFeatureLevel.Sm41:
 						return 8192;
 					default:
 						return 16384;
@@ -183,7 +183,7 @@ namespace Gorgon.Graphics
 				settings.MipCount = 0;
 
 			if (settings.Format == BufferFormat.Unknown)
-				settings.Format = BufferFormat.R8G8B8A8_IntNormal;
+				settings.Format = BufferFormat.R8G8B8A8_SNorm;
 
 			if (settings.Width < 0)
 				settings.Width = 0;
@@ -205,14 +205,14 @@ namespace Gorgon.Graphics
 				settings.Depth = newSize.Item3;
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
             }
 
             // Check texture size if using a compressed format.
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -272,7 +272,7 @@ namespace Gorgon.Graphics
 
 			if (settings.IsTextureCube)
 			{
-				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4))
+				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4);
 				}
@@ -296,7 +296,7 @@ namespace Gorgon.Graphics
 				settings.Multisampling = new GorgonMultisampling(1, 0);
 
 			if (settings.Format == BufferFormat.Unknown)
-				settings.Format = BufferFormat.R8G8B8A8_IntNormal;
+				settings.Format = BufferFormat.R8G8B8A8_SNorm;
 
 			if (settings.Width < 0)
 				settings.Width = 0;
@@ -305,7 +305,7 @@ namespace Gorgon.Graphics
 				settings.Height = 0;
 			
 			// Check texture size if using a compressed format.
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -316,7 +316,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
@@ -356,7 +356,7 @@ namespace Gorgon.Graphics
 				settings.MipCount = 0;
 
 			if (settings.Format == BufferFormat.Unknown)
-				settings.Format = BufferFormat.R8G8B8A8_IntNormal;
+				settings.Format = BufferFormat.R8G8B8A8_SNorm;
 
 			if (settings.Width < 0)
 				settings.Width = 0;
@@ -368,7 +368,7 @@ namespace Gorgon.Graphics
 			}
 
 			// Check texture size if using a compressed format.
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
 			{
@@ -378,7 +378,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
@@ -542,7 +542,7 @@ namespace Gorgon.Graphics
             {
                 var settings = (ITextureSettings)data.Settings;
 
-				var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+				var info = new GorgonBufferFormatInfo(settings.Format);
 
                 // If we're using unordered access, then make the format typeless.
 	            if ((info.Group == BufferFormat.Unknown)
@@ -662,7 +662,7 @@ namespace Gorgon.Graphics
                     settings.Multisampling = options.Multisampling;
                 }
 
-	            var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+	            var info = new GorgonBufferFormatInfo(settings.Format);
 
 				// If we're using unordered access, then make the format typeless.
 				if ((info.Group == BufferFormat.Unknown)
@@ -831,7 +831,7 @@ namespace Gorgon.Graphics
                     settings.Multisampling = codec.Multisampling;
                 }
 
-				var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+				var info = new GorgonBufferFormatInfo(settings.Format);
 
 				// If we've opted for unordered access views, then make the current format typeless.
 				if ((info.Group == BufferFormat.Unknown)

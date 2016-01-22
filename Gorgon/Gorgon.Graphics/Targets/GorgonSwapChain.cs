@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
 	/// for the extra video output is located on the monitor attached to that video output.  Failure to do so will keep the mode from switching.
 	/// </para>	
 	/// <para>
-	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="Gorgon.Graphics.GorgonVideoDevice">multiple video devices</see>.  
+	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="Gorgon.Graphics.VideoDevice">multiple video devices</see>.  
 	/// One possible workaround is to create a full screen borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround
 	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
 	/// </para>	

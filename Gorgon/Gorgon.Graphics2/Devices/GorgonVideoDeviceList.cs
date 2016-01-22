@@ -49,7 +49,7 @@ namespace Gorgon.Graphics
 	/// Use this to retrieve a list of video devices available on the system. A video device may be a discreet video card, or a device on the motherboard.
 	/// </para>
 	/// <para>
-	/// This list will contain <see cref="IGorgonVideoDeviceInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which device 
+	/// This list will contain <see cref="GorgonVideoDeviceInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which device 
 	/// they wish to use.
 	/// </para>
 	/// <para>
@@ -58,11 +58,11 @@ namespace Gorgon.Graphics
 	/// </para>
 	/// </remarks>
 	public class GorgonVideoDeviceList
-		: IGorgonNamedObjectReadOnlyList<IGorgonVideoDeviceInfo>
+		: IGorgonVideoDeviceList
 	{
 		#region Variables.
 		// The backing store for the device list.
-		private readonly List<IGorgonVideoDeviceInfo> _devices = new List<IGorgonVideoDeviceInfo>();
+		private readonly List<GorgonVideoDeviceInfo> _devices = new List<GorgonVideoDeviceInfo>();
 		// Log used for debugging info.
 		private readonly IGorgonLog _log;
 		#endregion
@@ -88,12 +88,12 @@ namespace Gorgon.Graphics
 		/// The element at the specified index in the read-only list.
 		/// </returns>
 		/// <param name="index">The zero-based index of the element to get. </param>
-		public IGorgonVideoDeviceInfo this[int index] => _devices[index];
+		public GorgonVideoDeviceInfo this[int index] => _devices[index];
 
 		/// <summary>
 		/// Property to return an item in this list by its name.
 		/// </summary>
-		public IGorgonVideoDeviceInfo this[string name]
+		public GorgonVideoDeviceInfo this[string name]
 		{
 			get
 			{
@@ -114,7 +114,7 @@ namespace Gorgon.Graphics
 		/// Function to print device log information.
 		/// </summary>
 		/// <param name="device">Device to print.</param>
-		private void PrintLog(IGorgonVideoDeviceInfo device)
+		private void PrintLog(GorgonVideoDeviceInfo device)
 		{
 			_log.Print($"Device found: {device.Name}", LoggingLevel.Simple);
 			_log.Print("===================================================================", LoggingLevel.Simple);
@@ -131,7 +131,7 @@ namespace Gorgon.Graphics
 			_log.Print($"Compute Preemption Granularity: {device.ComputePreemptionGranularity}", LoggingLevel.Verbose);
 			_log.Print("===================================================================", LoggingLevel.Simple);
 
-			foreach (IGorgonVideoOutputInfo output in device.Outputs)
+			foreach (GorgonVideoOutputInfo output in device.Outputs)
 			{
 				_log.Print($"Found output '{output.Name}'.", LoggingLevel.Simple);
 				_log.Print("===================================================================", LoggingLevel.Verbose);
@@ -216,9 +216,9 @@ namespace Gorgon.Graphics
 		/// <param name="adapter">Adapter containing the outputs.</param>
 		/// <param name="D3DDevice">D3D device to find closest matching mode.</param>
 		/// <param name="outputCount">The number of outputs attached to the device.</param>
-		private IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> GetOutputs(D3D12.Device D3DDevice, DXGI.Adapter3 adapter, int outputCount)
+		private IGorgonNamedObjectReadOnlyList<GorgonVideoOutputInfo> GetOutputs(D3D12.Device D3DDevice, DXGI.Adapter3 adapter, int outputCount)
 		{
-			var result = new GorgonNamedObjectList<IGorgonVideoOutputInfo>(false);
+			var result = new GorgonNamedObjectList<GorgonVideoOutputInfo>(false);
 
 			// Devices created under RDP/TS do not support output selection.
 			if (SystemInformation.TerminalServerSession)
@@ -235,7 +235,7 @@ namespace Gorgon.Graphics
 					using (DXGI.Output4 giOutput4 = giOutput.QueryInterface<DXGI.Output4>())
 					{
 						IReadOnlyList<GorgonVideoMode> modes = GetVideoModes(D3DDevice, giOutput4);
-						var output = new VideoOutputInfo(i, giOutput4, modes);
+						var output = new GorgonVideoOutputInfo(i, giOutput4, modes);
 						result.Add(output);
 					}
 				}
@@ -334,7 +334,7 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// The index of <paramref name="item"/> if found in the list; otherwise, -1.
 		/// </returns>
-		public int IndexOf(IGorgonVideoDeviceInfo item) => _devices.IndexOf(item);
+		public int IndexOf(GorgonVideoDeviceInfo item) => _devices.IndexOf(item);
 
 		/// <summary>
 		/// Determines whether the list contains a specific value.
@@ -343,7 +343,7 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// true if <paramref name="item"/> is found in the list; otherwise, false.
 		/// </returns>
-		public bool Contains(IGorgonVideoDeviceInfo item) => IndexOf(item) != -1;
+		public bool Contains(GorgonVideoDeviceInfo item) => IndexOf(item) != -1;
 
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
@@ -351,7 +351,7 @@ namespace Gorgon.Graphics
 		/// <returns>
 		/// An enumerator that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<IGorgonVideoDeviceInfo> GetEnumerator() => _devices.GetEnumerator();
+		public IEnumerator<GorgonVideoDeviceInfo> GetEnumerator() => _devices.GetEnumerator();
 
 		/// <summary>
 		/// Returns an enumerator that iterates through a collection.
@@ -420,7 +420,7 @@ namespace Gorgon.Graphics
 
 							D3DDevice.Name = "Output enumerator device.";
 
-							IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs = GetOutputs(D3DDevice, adapter3, adapter3.GetOutputCount());
+							IGorgonNamedObjectReadOnlyList<GorgonVideoOutputInfo> outputs = GetOutputs(D3DDevice, adapter3, adapter3.GetOutputCount());
 
 							// Ensure we actually have outputs to use.
 							if (outputs.Count <= 0)
@@ -428,7 +428,7 @@ namespace Gorgon.Graphics
 								_log.Print($"WARNING: Video device {adapter3.Description2.Description.Replace("\0", string.Empty)} has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
 							}
 
-							var videoDevice = new VideoDeviceInfo(i, adapter3, featureLevel, outputs, VideoDeviceType.Hardware);
+							var videoDevice = new GorgonVideoDeviceInfo(i, adapter3, featureLevel, outputs, VideoDeviceType.Hardware);
 							_devices.Add(videoDevice);
 							PrintLog(videoDevice);
 						}
@@ -448,10 +448,10 @@ namespace Gorgon.Graphics
 								{
 									device.Name = "Output enumerator device.";
 
-									var videoDevice = new VideoDeviceInfo(_devices.Count,
+									var videoDevice = new GorgonVideoDeviceInfo(_devices.Count,
 									                                      adapter3,
 									                                      GetFeatureLevel(device),
-									                                      new GorgonNamedObjectList<IGorgonVideoOutputInfo>(),
+									                                      new GorgonNamedObjectList<GorgonVideoOutputInfo>(),
 									                                      VideoDeviceType.Software);
 									_devices.Add(videoDevice);
 									PrintLog(videoDevice);

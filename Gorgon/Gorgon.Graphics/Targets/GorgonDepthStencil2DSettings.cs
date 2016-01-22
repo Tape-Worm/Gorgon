@@ -220,7 +220,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return the format of the depth/stencil buffer.
 		/// </summary>
 		/// <remarks>
-		/// This value must be set to one of the depth formats (D32_Float_S8X24_UInt, D32_Float, D24_UIntNormal_S8_UInt, D16_UIntNormal).  Any other format type will raise an exception.
+		/// This value must be set to one of the depth formats (D32_Float_S8X24_UInt, D32_Float, D24_UNorm_S8_UInt, D16_UNorm).  Any other format type will raise an exception.
 		/// <para>The defaut value is Unknown.</para>
 		/// </remarks>
 		public BufferFormat Format

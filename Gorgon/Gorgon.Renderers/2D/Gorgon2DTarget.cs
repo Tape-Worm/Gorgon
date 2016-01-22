@@ -123,7 +123,7 @@ namespace Gorgon.Renderers
 			{
 				case ResourceType.Buffer:
 					var buffer = (GorgonBuffer)target.Resource;
-					var info = GorgonBufferFormatInfo.GetInfo(buffer.Settings.DefaultShaderViewFormat);
+					var info = new GorgonBufferFormatInfo(buffer.Settings.DefaultShaderViewFormat);
 
 					Width = buffer.SizeInBytes / info.SizeInBytes;
 					Viewport = new GorgonViewport(0, 0, Width, Height, 0, 1.0f);

@@ -20,30 +20,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, December 18, 2015 7:37:28 PM
+// Created: Wednesday, December 9, 2015 8:35:02 PM
 // 
 #endregion
 
-using SharpDX.DXGI;
-using D3D12 = SharpDX.Direct3D12;
+using System.Collections.Generic;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// SharpDX related functionality for a video device.
+	/// An equality comparer for the <see cref="BufferFormat"/> enumeration.
 	/// </summary>
-	interface ISdxVideoDevice
+	class BufferFormatEqualityComparer
+		: IEqualityComparer<BufferFormat>
 	{
 		/// <summary>
-		/// Function to retrieve the underlying Direct3D 12 device object.
+		/// Equalses the specified x.
 		/// </summary>
-		/// <returns>The underlying Direct3D 12 device object.</returns>
-		D3D12.Device GetD3DDevice();
+		/// <param name="x">The first object of type <see cref="BufferFormat"/> to compare.</param>
+		/// <param name="y">The second object of type <see cref="BufferFormat"/> to compare.</param>
+		/// <returns><b>true</b> if the specified objects are equal; otherwise, <b>false</b> if not.</returns>
+		public bool Equals(BufferFormat x, BufferFormat y)
+		{
+			return x == y;
+		}
 
 		/// <summary>
-		/// Function to retrieve the underlying DXGI adapter object.
+		/// Returns a hash code for this instance.
 		/// </summary>
-		/// <returns>The underlying DXGI adapter object.</returns>
-		Adapter3 GetDXGIAdapter();
+		/// <param name="obj">The object.</param>
+		/// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
+		public int GetHashCode(BufferFormat obj)
+		{
+			return obj.GetHashCode();
+		}
 	}
 }

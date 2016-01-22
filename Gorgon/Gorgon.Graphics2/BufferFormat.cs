@@ -490,7 +490,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// A four-component, 32-bit 2.8-biased fixed-point format that supports 10 bits for each color channel and 2-bit alpha.
 		/// </summary>
-		R10G10B10_Xr_Bias_A2_UNorm = DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm,
+		R10G10B10_XR_BIAS_A2_UNorm = DXGI.Format.R10G10B10_Xr_Bias_A2_UNorm,
 		/// <summary>
 		/// A four-component, 32-bit typeless format that supports 8 bits for each channel including alpha. 4
 		/// </summary>

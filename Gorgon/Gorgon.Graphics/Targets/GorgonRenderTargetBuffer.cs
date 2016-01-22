@@ -59,7 +59,7 @@ namespace Gorgon.Graphics
         /// </summary>
 	    protected override void OnCreateDefaultRenderTargetView()
 	    {
-            var info = GorgonBufferFormatInfo.GetInfo(Settings.DefaultShaderViewFormat);
+            var info = new GorgonBufferFormatInfo(Settings.DefaultShaderViewFormat);
             DefaultRenderTargetView = OnGetRenderTargetView(Settings.Format, Settings.Format, 0, Settings.SizeInBytes / info.SizeInBytes);
         }
 

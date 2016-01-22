@@ -57,21 +57,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BufferFormatSupport.cs" />
-    <Compile Include="Devices\GorgonVideoDevice.cs" />
-    <Compile Include="Devices\_Internal\_Interfaces\ISdxVideoDevice.cs" />
+    <Compile Include="Devices\_Internal\VideoDevice.cs" />
+    <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
-    <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\GorgonVideoDeviceList.cs" />
     <Compile Include="Devices\GorgonVideoMode.cs" />
-    <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
-    <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
-    <Compile Include="Devices\_Internal\_Extensions\SharpDXExtensions.cs" />
+    <Compile Include="Devices\GorgonVideoDeviceInfo.cs" />
+    <Compile Include="Devices\GorgonVideoOutputInfo.cs" />
+    <Compile Include="RenderTargets\_Internal\RtvAllocator.cs" />
+    <Compile Include="TestClass.cs" />
+    <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
     <Compile Include="GorgonBufferFormatData.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="GorgonPitchLayout.cs" />
-    <Compile Include="_Internal\IGorgonGraphicsObject.cs" />
+    <Compile Include="RenderTargets\GorgonSwapChain.cs" />
+    <Compile Include="RenderTargets\GorgonSwapChainInfo.cs" />
+    <Compile Include="Textures\GorgonTexture2D.cs" />
+    <Compile Include="Textures\GorgonTexture2DInfo.cs" />
+    <Compile Include="_Internal\GraphicsCommander.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="_Internal\BufferFormatEqualityComparer.cs" />
@@ -92,7 +96,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="RenderTargets\_Interfaces\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>

@@ -27,9 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Math;
+using SharpDX.Mathematics.Interop;
 using DXGI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;
 
@@ -40,6 +42,37 @@ namespace Gorgon.Graphics
 	/// </summary>
 	static class SharpDXExtensions
 	{
+		/// <summary>
+		/// Function to convert a sharp dx raw color 4 type to a GorgonColor.
+		/// </summary>
+		/// <param name="color">The color type to convert.</param>
+		/// <returns>The new color type.</returns>
+		public static GorgonColor ToGorgonColor(this RawColor4 color)
+		{
+			return new GorgonColor(color.R, color.G, color.B, color.A);	
+		}
+
+		/// <summary>
+		/// Function to convert a GorgonColor to a sharp dx raw color 4 type.
+		/// </summary>
+		/// <param name="color">The color type to convert.</param>
+		/// <returns>The new color type.</returns>
+		public static RawColor4 ToRawColor4(this GorgonColor color)
+		{
+			return new RawColor4(color.Red, color.Green, color.Blue, color.Alpha);
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon multi-sampling value to a D3D sample description.
+		/// </summary>
+		/// <param name="sampleInfo">The multi-sample info to convert.</param>
+		/// <returns>The D3D sample description.</returns>
+		public static DXGI.SampleDescription Convert(this GorgonMultiSampleInfo sampleInfo)
+		{
+			return new DXGI.SampleDescription(sampleInfo.Count, sampleInfo.Quality);
+		}
+
+
 		/// <summary>
 		/// Function to convert a DXGI rational number to a Gorgon rational number.
 		/// </summary>

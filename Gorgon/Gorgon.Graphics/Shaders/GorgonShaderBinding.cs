@@ -306,7 +306,7 @@ namespace Gorgon.Graphics
 		    }
 
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
             {
                 return;
             }
@@ -343,7 +343,7 @@ namespace Gorgon.Graphics
 			}
 
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
 		    {
 		        return;
 		    }
@@ -381,7 +381,7 @@ namespace Gorgon.Graphics
 			}
 
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
             {
                 return;
             }
@@ -406,7 +406,7 @@ namespace Gorgon.Graphics
             ComputeShader.UnorderedAccessViews.Unbind(view);
 
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
             {
                 return;
             }
@@ -443,7 +443,7 @@ namespace Gorgon.Graphics
 			}
 
             // If we have multiple contexts, then we need to unbind from those as well.
-            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
             {
                 return;
             }
@@ -910,7 +910,7 @@ namespace Gorgon.Graphics
 			PixelShader = new GorgonPixelShaderState(graphics);
 		    GeometryShader = new GorgonGeometryShaderState(graphics);
 
-			if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1)
+			if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.Sm41)
             {
                 ComputeShader = new GorgonComputeShaderState(graphics);
 				HullShader = new GorgonHullShaderState(graphics);

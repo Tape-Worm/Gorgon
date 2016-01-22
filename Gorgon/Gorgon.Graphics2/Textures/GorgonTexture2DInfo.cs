@@ -1,7 +1,7 @@
 ﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,23 +20,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, December 18, 2015 7:32:19 PM
+// Created: Thursday, January 14, 2016 7:17:35 PM
 // 
 #endregion
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// An object that is linked to a <see cref="GorgonGraphics"/> object.
+	/// Describes a 2D texture.
 	/// </summary>
-	public interface IGorgonGraphicsObject
+	public class GorgonTexture2DInfo
 	{
 		/// <summary>
-		/// Property to return the <see cref="GorgonGraphics"/> object linked to this object.
+		/// Property to set or return the width of the 2D texture.
 		/// </summary>
-		GorgonGraphics Graphics
+		public long Width
 		{
 			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the 2D texture.
+		/// </summary>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format for the 2D texture.
+		/// </summary>
+		public BufferFormat Format
+		{
+			get;
+			set;
 		}
 	}
 }

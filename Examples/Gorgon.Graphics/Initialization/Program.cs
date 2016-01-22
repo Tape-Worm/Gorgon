@@ -171,12 +171,12 @@ namespace Gorgon.Graphics.Example
 			// Create the main graphics interface for SM 4.0.
 			// This is basically a Direct 3D 10 capable video device.  This is here to illustrate how to 
 			// force a feature level.
-			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM4);
+			Graphics = new GorgonGraphics(DeviceFeatureLevel.Sm4);
 			
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything, and thus 
 			// this is here for illustration on how to determine if a format is OK for display purposes.
-			if (!Graphics.VideoDevice.SupportsDisplayFormat(BufferFormat.R8G8B8A8_UIntNormal))
+			if (!Graphics.VideoDevice.SupportsDisplayFormat(BufferFormat.R8G8B8A8_UNorm))
 			{
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
 				return;

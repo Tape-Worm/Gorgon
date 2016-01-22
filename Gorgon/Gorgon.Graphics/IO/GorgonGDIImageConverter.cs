@@ -47,11 +47,11 @@ namespace Gorgon.IO
 		// Formats that can be converted.
 		private static readonly Tuple<PixelFormat, BufferFormat>[] _formatConversion =
 		{
-		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format64bppArgb, BufferFormat.R16G16B16A16_UIntNormal),
-		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format32bppArgb, BufferFormat.R8G8B8A8_UIntNormal),
-		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppGrayScale, BufferFormat.R16_UIntNormal),
-		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppArgb1555, BufferFormat.B5G5R5A1_UIntNormal),
-		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppRgb565, BufferFormat.B5G6R5_UIntNormal)
+		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format64bppArgb, BufferFormat.R16G16B16A16_UNorm),
+		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format32bppArgb, BufferFormat.R8G8B8A8_UNorm),
+		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppGrayScale, BufferFormat.R16_UNorm),
+		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppArgb1555, BufferFormat.B5G5R5A1_UNorm),
+		    new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppRgb565, BufferFormat.B5G6R5_UNorm)
 		};
 
 		// Best fit format mapping.
@@ -118,11 +118,11 @@ namespace Gorgon.IO
 
             switch (format)
             {
-				case BufferFormat.B8G8R8X8_UIntNormal:
-				case BufferFormat.B8G8R8A8_UIntNormal:
-                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
-                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
-                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8X8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
                     return PixelFormat.Format32bppArgb;
             }
 

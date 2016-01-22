@@ -24,11 +24,11 @@
 // 
 #endregion
 
+using System;
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
-using Gorgon.IO;
 using Gorgon.Native;
 using DX = SharpDX;
 
@@ -89,7 +89,7 @@ namespace Gorgon.Graphics
 		/// <summary>
         /// Function to update the buffer.
         /// </summary>
-        /// <param name="stream">Stream containing the data used to update the buffer.</param>
+        /// <param name="data">Pointer to the data used to update the buffer.</param>
         /// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
         /// <param name="size">The number of bytes to write.</param>
         /// <param name="context">A graphics context to use when updating the buffer.</param>
@@ -97,12 +97,12 @@ namespace Gorgon.Graphics
         /// Use the <paramref name="context" /> parameter to determine the context in which the buffer should be updated. This is necessary to use that context
         /// to update the buffer because 2 threads may not access the same resource at the same time.
         /// </remarks>
-		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
+		protected override void OnUpdate(GorgonPointerBase data, int offset, int size, GorgonGraphics context)
 		{
 			context.Context.UpdateSubresource(
 				new DX.DataBox
 				{
-					DataPointer = stream.PositionIntPtr,
+					DataPointer = new IntPtr(data.Address),
 					RowPitch = 0,
 					SlicePitch = 0
 				}, 

@@ -33,7 +33,6 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Input;
 using Gorgon.Math;
-using Gorgon.Native;
 using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI;
@@ -146,12 +145,7 @@ namespace Gorgon.Examples
 					// Fill the back up image with white.
 					using (var imageLock = _backupImage.Lock(BufferLockFlags.Write))
 					{
-						// We really shouldn't be using DirectAccess here as it's unsupported. 
-						// This will require that the "Lock" method return a pointer instead of a stream, or make the lock
-						// value return functionality to read/write data directly.
-						//DirectAccess.FillMemory(imageLock.Data.BaseIntPtr, 0xff, (int)imageLock.Data.Length);
-						var ptr = new GorgonPointerAlias(imageLock.Data.BaseIntPtr, imageLock.Data.Length);
-						ptr.Fill(0xff);
+						imageLock.Data.Fill(0xff);
 					}
 
 					_backBuffer.CopySubResource(_backupImage,
@@ -434,7 +428,7 @@ namespace Gorgon.Examples
 			{
 				Width = ClientSize.Width,
                 Height = ClientSize.Height,
-				Format = BufferFormat.R8G8B8A8_UIntNormal
+				Format = BufferFormat.R8G8B8A8_UNorm
 			});
 			_backBuffer.Clear(Color.White);
 		    _backBuffer.CopySubResource(_backupImage,
@@ -552,7 +546,7 @@ namespace Gorgon.Examples
 				                                           new GorgonSwapChainSettings
 				                                           {
 					                                           Size = Settings.Default.Resolution,
-					                                           Format = BufferFormat.R8G8B8A8_UIntNormal,
+					                                           Format = BufferFormat.R8G8B8A8_UNorm,
 					                                           IsWindowed = Settings.Default.IsWindowed
 				                                           });
 
@@ -588,7 +582,7 @@ namespace Gorgon.Examples
 				                                                  {
 					                                                  Width = _screen.Settings.Width,
 					                                                  Height = _screen.Settings.Height,
-					                                                  Format = BufferFormat.R8G8B8A8_UIntNormal
+					                                                  Format = BufferFormat.R8G8B8A8_UNorm
 				                                                  });
 				_backBuffer.Clear(Color.White);
 
@@ -596,7 +590,7 @@ namespace Gorgon.Examples
 				               {
 					               Width = currentScreen.Bounds.Width,
 					               Height = currentScreen.Bounds.Height,
-					               Format = BufferFormat.R8G8B8A8_UIntNormal,
+					               Format = BufferFormat.R8G8B8A8_UNorm,
 					               Usage = BufferUsage.Staging
 				               };
 
@@ -604,10 +598,7 @@ namespace Gorgon.Examples
 				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
 				using (var textureData = _backupImage.Lock(BufferLockFlags.Write))
 				{
-					// See the KeyDown event on how this should be implemented in the future.
-					//DirectAccess.FillMemory(textureData.Data.BaseIntPtr, 0xff, (int)textureData.Data.Length);
-					var data = new GorgonPointerAlias(textureData.Data.BaseIntPtr, textureData.Data.Length);
-					data.Fill(0xff);
+					textureData.Data.Fill(0xff);
 				}
 
 				// Set gorgon events.

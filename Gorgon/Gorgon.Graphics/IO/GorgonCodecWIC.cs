@@ -128,15 +128,15 @@ namespace Gorgon.IO
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Loads BGR formats as R8G8B8A8_UintNormal.
+		/// Loads BGR formats as R8G8B8A8_UNorm.
 		/// </summary>
 		ForceRGB = 0x1,
 		/// <summary>
-		/// Loads R10G10B10_XR_BIAS_A2_UIntNormal as R10G10B10A2_UIntNormal.
+		/// Loads R10G10B10_XR_BIAS_A2_UNorm as R10G10B10A2_UNorm.
 		/// </summary>
 		NoX2Bias = 0x2,
 		/// <summary>
-		/// Loads 565, 5551, and 4444 as R8G8B8A8_UIntNormal.
+		/// Loads 565, 5551, and 4444 as R8G8B8A8_UNorm.
 		/// </summary>
 		No16BPP = 0x4,
 		/// <summary>
@@ -160,9 +160,9 @@ namespace Gorgon.IO
 
         // Supported formats.
 	    private readonly BufferFormat[] _supportedFormats = {
-                                                                BufferFormat.R8G8B8A8_UIntNormal,
-																BufferFormat.B8G8R8A8_UIntNormal,
-																BufferFormat.B8G8R8X8_UIntNormal
+                                                                BufferFormat.R8G8B8A8_UNorm,
+																BufferFormat.B8G8R8A8_UNorm,
+																BufferFormat.B8G8R8X8_UNorm
 	                                                        };
 		#endregion
 
@@ -272,7 +272,7 @@ namespace Gorgon.IO
 				// Get the frame data.
 				using (var frame = decoder.GetFrame(array))
 				{
-					IntPtr bufferPointer = buffer.Data.BaseIntPtr;
+					IntPtr bufferPointer = new IntPtr(buffer.Data.Address);
 					Guid frameFormat = frame.PixelFormat;
 					int frameWidth = frame.Size.Width;
 					int frameHeight = frame.Size.Height;
@@ -281,7 +281,7 @@ namespace Gorgon.IO
 					// Calculate the pointer offset if we have an offset from the frame.  Only offset if we're clipping the image though.
 					if (((frameOffset.Y != 0) || (frameOffset.X != 0)) && (Clip))
 					{
-						bufferPointer = buffer.Data.BaseIntPtr + (frameOffset.Y * buffer.PitchInformation.RowPitch) + (frameOffset.X * (buffer.PitchInformation.RowPitch / buffer.Width));
+						bufferPointer = new IntPtr(buffer.Data.Address) + (frameOffset.Y * buffer.PitchInformation.RowPitch) + (frameOffset.X * (buffer.PitchInformation.RowPitch / buffer.Width));
 					}
 
 					// Confirm that we actually need to perform clipping.
@@ -382,7 +382,7 @@ namespace Gorgon.IO
 			// We don't need to convert, so just leave.
 			if ((convertFormat == Guid.Empty) || (srcFormat == convertFormat))
 			{
-				frame.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+				frame.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				return;
 			}
 
@@ -410,7 +410,7 @@ namespace Gorgon.IO
 						{
 							tempBitmap.Palette = paletteInfo.Item1;
 							converter.Initialize(tempBitmap, convertFormat, (BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
-							converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+							converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 						}
 
 						return;
@@ -418,15 +418,12 @@ namespace Gorgon.IO
 
 					// Only apply palettes to indexed image data.
 					converter.Initialize(frame, convertFormat, (BitmapDitherType)Dithering, null, 0.0, BitmapPaletteType.Custom);
-					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BaseIntPtr, buffer.PitchInformation.SlicePitch);
+					converter.CopyPixels(buffer.PitchInformation.RowPitch, new IntPtr(buffer.Data.Address), buffer.PitchInformation.SlicePitch);
 				}
 				finally
 				{
-					if ((paletteInfo != null) && (paletteInfo.Item1 != null))
-					{
-						paletteInfo.Item1.Dispose();
-					}
-				}				
+					paletteInfo?.Item1?.Dispose();
+				}
 			}
 		}
 
@@ -635,7 +632,7 @@ namespace Gorgon.IO
 									// the best format for the codec.
 									if (targetFormat != actualFormat)
 									{
-										var rect = new DataRectangle(buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch);
+										var rect = new DataRectangle(new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch);
 										using (var bitmap = new Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
 										{
 											// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
@@ -670,7 +667,7 @@ namespace Gorgon.IO
 									{
 										// No conversion was needed, just dump as-is.										
 										AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, null);
-										frame.WritePixels(buffer.Height, buffer.Data.BaseIntPtr, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+										frame.WritePixels(buffer.Height, new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
 									}									
 
 									frame.Commit();
@@ -687,7 +684,7 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to read file meta data.
 		/// </summary>
-		/// <param name="stream">Stream used to read the metadata.</param>
+		/// <param name="stream">Stream used to read the meta data.</param>
 		/// <returns>
 		/// The image meta data as a <see cref="Gorgon.Graphics.IImageSettings">IImageSettings</see> value.
 		/// </returns>

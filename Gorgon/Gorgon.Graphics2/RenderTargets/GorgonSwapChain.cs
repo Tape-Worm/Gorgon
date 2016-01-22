@@ -25,16 +25,16 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
-using Gorgon.Math;
 using Gorgon.Native;
+using System.Collections.Generic;
+using Gorgon.Math;
+using D3D12 = SharpDX.Direct3D12;
 
 namespace Gorgon.Graphics
 {
@@ -45,33 +45,137 @@ namespace Gorgon.Graphics
 	/// // TODO: add more information.
 	/// </remarks>
 	public class GorgonSwapChain
-		: IGorgonGraphicsObject, IDisposable
+		: GorgonNamedObject, IDisposable
 	{
+		#region Classes.
+		/// <summary>
+		/// Frame resource for a swap chain.
+		/// </summary>
+		private class SwapFrame
+			: IDisposable
+		{
+			#region Properties.
+			/// <summary>
+			/// Property to return the allocator used for a command list on this frame.
+			/// </summary>
+			public D3D12.CommandAllocator Allocator
+			{
+				get;
+			}
+
+			/// <summary>
+			/// Property to return the command used used for this frame.
+			/// </summary>
+			public D3D12.GraphicsCommandList CommandList
+			{
+				get;
+			}
+
+			/// <summary>
+			/// Property to set or return the fence value for this frame.
+			/// </summary>
+			public long Fence
+			{
+				get;
+				set;
+			}
+
+			/// <summary>
+			/// Property to return the texture for this frame.
+			/// </summary>
+			public GorgonTexture2D Texture
+			{
+				get;
+			}
+
+			/// <summary>
+			/// Property to return the index for this frame.
+			/// </summary>
+			public int Index
+			{
+				get;
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to reset the frame allocator and command list.
+			/// </summary>
+			/// <param name="state">Initial state for the frame.</param>
+			public void Reset(D3D12.PipelineState state = null)
+			{
+				Allocator.Reset();
+				CommandList.Reset(Allocator, state);
+			}
+
+			/// <summary>
+			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+			/// </summary>
+			public void Dispose()
+			{
+				Texture?.Dispose();
+				CommandList?.Dispose();
+				Allocator?.Dispose();	
+			}
+			#endregion
+
+			#region Constructor/Finalizer.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="SwapFrame"/> class.
+			/// </summary>
+			/// <param name="index">The index of the back buffer frame.</param>
+			/// <param name="swapChain">The swap chain containing the back buffer.</param>
+			public SwapFrame(int index, GorgonSwapChain swapChain)
+			{
+				Texture = new GorgonTexture2D(swapChain, index);
+				Index = index;
+				Tuple<D3D12.CommandAllocator, D3D12.GraphicsCommandList> commandTuple = swapChain.Graphics.GraphicsCommander.CreateCommandList();
+				Allocator = commandTuple.Item1;
+				CommandList = commandTuple.Item2;
+			}
+			#endregion
+		}
+		#endregion
+
 		#region Variables.
 		// The DXGI swap chain for this swap chain.
-		private Lazy<DXGI.SwapChain2> _swapChain;
-		// The D3D11 device for the video device.
-		private readonly D3D11.Device2 _d3dDevice;
-		// The DXGI output used for full screen mode.
-		private DXGI.Output3 _output;
-		// The DXGI adapter used by the video device.
-		private readonly DXGI.Adapter2 _adapter;
+		private DXGI.SwapChain3 _swapChain;
+		// Back buffer textures for this swap chain.
+		private SwapFrame[] _backBuffers = new SwapFrame[0];
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the <see cref="IGorgonVideoOutputInfo"/> used for full screen output.
+		/// Property to return the DXGI Swap chain wrapped by this object.
 		/// </summary>
-		public IGorgonVideoOutputInfo FullscreenOutput
+		internal DXGI.SwapChain3 DXGISwapChain => _swapChain;
+
+		/// <summary>
+		/// Property to return the <see cref="GorgonVideoOutputInfo"/> used for full screen output.
+		/// </summary>
+		/// <remarks>
+		/// When the swap chain has its <see cref="IsWindowed"/> flag set to <b>false</b>, this will be set to <b>null</b> (<i>Nothing</i> in VB.Net), otherwise it will return the <see cref="GorgonVideoOutputInfo"/> 
+		/// used to display the swap chain in full screen mode.
+		/// </remarks>
+		public GorgonVideoOutputInfo FullScreenOutput
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
+		/// Property to return the current index of the back buffer that is in use.
+		/// </summary>
+		public int CurrentBackBufferIndex => _swapChain?.CurrentBackBufferIndex ?? 0;
+
+		/// <summary>
 		/// Property to return the current video mode used by the swap chain while in full screen mode.
 		/// </summary>
-		public GorgonVideoMode? FullscreenMode
+		/// <remarks>
+		/// When the swap chain has its <see cref="IsWindowed"/> flag set to <b>false</b>, this will be set to <b>null</b> (<i>Nothing</i> in VB.Net), otherwise it will return the <see cref="GorgonVideoMode"/> 
+		/// used to display the swap chain in full screen mode.
+		/// </remarks>
+		public GorgonVideoMode? FullScreenMode
 		{
 			get;
 			private set;
@@ -80,7 +184,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return information about this swap chain.
 		/// </summary>
-		public IGorgonSwapChainInfo Info
+		public GorgonSwapChainInfo Info
 		{
 			get;
 		}
@@ -96,15 +200,11 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return whether the swap chain is using windowed mode or not.
 		/// </summary>
-		public bool IsWindowed
-		{
-			get;
-			private set;
-		}
+		public bool IsWindowed => !_swapChain.IsFullScreen;
 		#endregion
 
 		#region Methods.
-		/// <summary>
+/*		/// <summary>
 		/// Function to validate the settings for the swap chain.
 		/// </summary>
 		private void ValidateSettings()
@@ -195,17 +295,52 @@ namespace Gorgon.Graphics
 			return (from videoOutput in deviceInfo.Outputs
 			        where videoOutput.MonitorHandle == monitor
 			        select videoOutput).SingleOrDefault();
+		}*/
+
+		/// <summary>
+		/// Function to create the D3D 12 backing resources for this swap chain.
+		/// </summary>
+		private void CreateResources()
+		{
+			long[] fenceValues = null;
+
+			// If we're recreating the resources (e.g after a resize, then dispose of them first).
+			if (_backBuffers != null)
+			{
+				// Store the previous fence values for the buffers.
+				fenceValues = _backBuffers.Select(item => item.Fence).ToArray();
+
+				foreach (SwapFrame buffer in _backBuffers)
+				{
+					buffer.Dispose();
+				}
+			}
+
+			_backBuffers = new SwapFrame[Info.BackBufferCount];
+
+			// Restore the previous fences.
+			if (fenceValues != null)
+			{
+				for (int i = 0; i < fenceValues.Length.Min(Info.BackBufferCount); ++i)
+				{
+					_backBuffers[i].Fence = fenceValues[i];
+				}
+			}
+
+			for (int i = 0; i < _backBuffers.Length; ++i)
+			{
+				_backBuffers[i] = new SwapFrame(i, this);
+			}
 		}
 
 		/// <summary>
 		/// Function used to create the swap chain.
 		/// </summary>
-		/// <returns>A new DXGI swap chain.</returns>
-		private DXGI.SwapChain2 CreateSwapChain()
+		private void CreateSwapChain()
 		{
-			using (DXGI.Factory3 factory3 = _adapter.GetParent<DXGI.Factory3>())
+			using (DXGI.Factory4 factory4 = Graphics.DXGIAdapter.GetParent<DXGI.Factory4>())
 			{
-				factory3.MakeWindowAssociation(Info.WindowHandle, DXGI.WindowAssociationFlags.IgnoreAll);
+				factory4.MakeWindowAssociation(Info.WindowHandle, DXGI.WindowAssociationFlags.IgnoreAll);
 
 				var desc = new DXGI.SwapChainDescription1
 				           {
@@ -215,21 +350,55 @@ namespace Gorgon.Graphics
 					           Usage = (DXGI.Usage)Info.Usage,
 					           Scaling = (DXGI.Scaling)Info.ScalingBehavior,
 					           SwapEffect = (DXGI.SwapEffect)Info.PresentMode,
-					           Flags = DXGI.SwapChainFlags.None,
+					           Flags = DXGI.SwapChainFlags.AllowModeSwitch,
 					           Height = Info.Height,
 					           Width = Info.Width,
-					           SampleDescription = Info.MultiSampleInfo.Convert(),
+					           SampleDescription = GorgonMultiSampleInfo.NoMultiSampling.Convert(),
 					           Stereo = false
 				           };
 
-				using (DXGI.SwapChain1 swap1 = new DXGI.SwapChain1(factory3, _d3dDevice, Info.WindowHandle, ref desc))
+				using (DXGI.SwapChain1 swap1 = new DXGI.SwapChain1(factory4, Graphics.GraphicsCommander.D3DCommandQueue, Info.WindowHandle, ref desc))
 				{
-					return swap1.QueryInterface<DXGI.SwapChain2>();
+					_swapChain = swap1.QueryInterface<DXGI.SwapChain3>();
+					CreateResources();
 				}
 			}
 		}
 
 		/// <summary>
+		/// Function to clear the back buffer to a specific color, and optionally the depth/stencil buffer to a specific value.
+		/// </summary>
+		/// <param name="color">The color to apply to the back buffer.</param>
+		/// <param name="depth">[Optional] The value used to fill the depth buffer.</param>
+		/// <param name="stencil">[Optional] The value used to fill the stencil buffer.</param>
+		public void Clear(GorgonColor color, float depth = 1.0f, int stencil = 0)
+		{
+			SwapFrame frame = _backBuffers[CurrentBackBufferIndex];
+			Graphics.GraphicsCommander.WaitForFence(frame.Fence);
+
+			frame.Reset();
+
+			frame.CommandList.ResourceBarrierTransition(frame.Texture.D3DResource, D3D12.ResourceStates.Present, D3D12.ResourceStates.RenderTarget);
+			frame.CommandList.ClearRenderTargetView(frame.Texture.RTVHandle, color.ToRawColor4());
+		}
+
+		/// <summary>
+		/// Function to present the contents of the current back buffer to the display.
+		/// </summary>
+		/// <param name="interval">VSync interval to use when presenting.</param>
+		public void Present(int interval)
+		{
+			SwapFrame frame = _backBuffers[CurrentBackBufferIndex];
+
+			frame.CommandList.ResourceBarrierTransition(frame.Texture.D3DResource, D3D12.ResourceStates.RenderTarget, D3D12.ResourceStates.Present);
+			frame.CommandList.Close();
+
+			frame.Fence = Graphics.GraphicsCommander.ExecuteCommandList(frame.CommandList);
+
+			DXGISwapChain.Present(interval, 0);
+		}
+
+		/*/// <summary>
 		/// Function to set the swap chain to use windowed mode.
 		/// </summary>
 		public void SetWindowed()
@@ -323,30 +492,31 @@ namespace Gorgon.Graphics
 
 			FullscreenOutput = output;
 			FullscreenMode = new GorgonVideoMode(nearestMode.Width, nearestMode.Height, (BufferFormat)nearestMode.Format, nearestMode.RefreshRate.FromRational());
-		}
-
-		/// <summary>
-		/// Function to copy the contents of a swap chain back buffer to the front buffer using the technique described in the <see cref="PresentMode"/>.
-		/// </summary>
-		public void Present()
-		{
-			DXGI.SwapChain2 test = _swapChain.Value;
-		}
+		}*/
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
-			if (!_swapChain.IsValueCreated)
+			if ((DXGISwapChain != null) && (_backBuffers != null) && (_backBuffers.Length > 0))
 			{
-				return;
+				Graphics?.GraphicsCommander.WaitForFence(_backBuffers[CurrentBackBufferIndex].Fence);
 			}
-
+/*
 			// Set windowed mode before shutting everything down.
 			SetWindowed();
+*/
 
-			_swapChain.Value.Dispose();
+			if (_backBuffers != null)
+			{
+				foreach (SwapFrame frame in _backBuffers)
+				{
+					frame.Dispose();
+				}
+			}
+
+			_swapChain?.Dispose();
 			_swapChain = null;
 		}
 		#endregion
@@ -355,10 +525,12 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSwapChain"/> class.
 		/// </summary>
+		/// <param name="name">The name for this swap chain.</param>
 		/// <param name="graphics">The <see cref="GorgonGraphics"/> interface that is responsible for this swap chain.</param>
-		/// <param name="info">A <see cref="IGorgonSwapChainInfo"/> containing the necessary data used to create the swap chain.</param>
+		/// <param name="info">A <see cref="GorgonSwapChainInfo"/> containing the necessary data used to create the swap chain.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="info"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		public GorgonSwapChain(GorgonGraphics graphics, IGorgonSwapChainInfo info)
+		public GorgonSwapChain(string name, GorgonGraphics graphics, GorgonSwapChainInfo info)
+			: base(name)
 		{
 			if (info == null)
 			{
@@ -370,10 +542,16 @@ namespace Gorgon.Graphics
 				throw new ArgumentNullException(nameof(graphics));
 			}
 
-			IsWindowed = true;
-			Info = info;
 			Graphics = graphics;
-			_swapChain = new Lazy<DXGI.SwapChain2>(CreateSwapChain, true);
+			Info = info;
+
+			CreateSwapChain();
+
+			/*
+			
+			Info = info;
+			
+			
 
 			if (GorgonGraphics.EnableDebug)
 			{
@@ -381,7 +559,7 @@ namespace Gorgon.Graphics
 			}
 
 			_d3dDevice = ((ISdxVideoDevice)graphics.VideoDevice).GetD3DDevice();
-			_adapter = ((ISdxVideoDevice)graphics.VideoDevice).GetDXGIAdapter();
+			_adapter = ((ISdxVideoDevice)graphics.VideoDevice).GetDXGIAdapter();*/
 		}
 		#endregion
 	}

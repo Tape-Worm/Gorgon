@@ -119,7 +119,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the video device for this output.
 		/// </summary>
-		public GorgonVideoDevice VideoDevice
+		public VideoDevice VideoDevice
 		{
 			get;
 		}
@@ -134,12 +134,12 @@ namespace Gorgon.Graphics
 		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
 		internal GorgonVideoMode FindMode(GI.Output output, GorgonVideoMode mode)
 		{
-			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
+			GI.ModeDescription findMode = mode.ToModeDesc();
 			GI.ModeDescription result;
 			
 			output.GetClosestMatchingMode(VideoDevice.Graphics.D3DDevice, findMode, out result);
 
-			return GorgonVideoMode.Convert(result);
+			return new GorgonVideoMode(result);
 		}
 		
 #pragma warning disable 0618
@@ -150,7 +150,7 @@ namespace Gorgon.Graphics
 		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
 		public GorgonVideoMode FindMode(GorgonVideoMode mode)
 		{
-		    if ((VideoDevice.Graphics == null) || (VideoDevice.Graphics.D3DDevice == null))
+		    if (VideoDevice.Graphics?.D3DDevice == null)
 		    {
 		        return mode;
 		    }
@@ -170,7 +170,7 @@ namespace Gorgon.Graphics
 		/// <param name="output">Output to evaluate.</param>
 		/// <param name="device">Video device that owns the output.</param>
 		/// <param name="index">The index of the output.</param>
-		internal GorgonVideoOutput(GI.Output output, GorgonVideoDevice device, int index)
+		internal GorgonVideoOutput(GI.Output output, VideoDevice device, int index)
 		{
 			VideoDevice = device;
 			
@@ -178,10 +178,10 @@ namespace Gorgon.Graphics
 			Handle = output.Description.MonitorHandle;
 			IsAttachedToDesktop = output.Description.IsAttachedToDesktop;
 			Name = output.Description.DeviceName;
-		    OutputBounds = new Rectangle(output.Description.DesktopBounds.Left,
-		                                 output.Description.DesktopBounds.Top,
-		                                 output.Description.DesktopBounds.Width,
-		                                 output.Description.DesktopBounds.Height);
+			OutputBounds = Rectangle.FromLTRB(output.Description.DesktopBounds.Left,
+			                                  output.Description.DesktopBounds.Top,
+			                                  output.Description.DesktopBounds.Right,
+			                                  output.Description.DesktopBounds.Bottom);
 			switch (output.Description.Rotation)
 			{
 				case GI.DisplayModeRotation.Rotate90:
@@ -212,7 +212,7 @@ namespace Gorgon.Graphics
 			Name = Resources.GORGFX_OUTPUT_SOFTWARE_DEV_NAME;
 			OutputBounds = Screen.PrimaryScreen.Bounds;
 			Rotation = 0;
-			DefaultVideoMode = new GorgonVideoMode(area.Width, area.Height, BufferFormat.R8G8B8A8_UIntNormal);
+			DefaultVideoMode = new GorgonVideoMode(area.Width, area.Height, BufferFormat.R8G8B8A8_UNorm);
 		}
 		#endregion
 	}

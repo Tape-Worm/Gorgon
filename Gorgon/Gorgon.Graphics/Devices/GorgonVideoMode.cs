@@ -25,15 +25,62 @@
 #endregion
 
 using System;
-using System.Drawing;
+using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
-using GI = SharpDX.DXGI;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A video mode information record.
+	/// Indicates the method used to create an image on a display surface.
+	/// </summary>
+	public enum VideoModeScanlineOrder
+	{
+		/// <summary>
+		/// No scanline ordering is specified.
+		/// </summary>
+		Unspecified = DXGI.DisplayModeScanlineOrder.Unspecified,
+		/// <summary>
+		/// The image is created from the first scanline to the last without skipping.
+		/// </summary>
+		Progressive = DXGI.DisplayModeScanlineOrder.Progressive,
+		/// <summary>
+		/// The image is created starting with the upper field.
+		/// </summary>
+		UpperFieldFirst = DXGI.DisplayModeScanlineOrder.UpperFieldFirst,
+		/// <summary>
+		/// The image is created starting with the lower field.
+		/// </summary>
+		LowerFieldFirst = DXGI.DisplayModeScanlineOrder.LowerFieldFirst
+	}
+
+	/// <summary>
+	/// Indicates how an image is stretched to fit the specified video mode resolution.
+	/// </summary>
+	public enum VideoModeDisplayModeScaling
+	{
+		/// <summary>
+		/// No scaling was specified.
+		/// </summary>
+		Unspecified = DXGI.DisplayModeScaling.Unspecified,
+		/// <summary>
+		/// <para>
+		/// No scaling is performed. 
+		/// </para>
+		/// <para>
+		/// The image is centered on the display. This is common for fixed dot pitch displays such as LED displays.
+		/// </para>
+		/// </summary>
+		Centered = DXGI.DisplayModeScaling.Centered,
+		/// <summary>
+		/// The image is stretched to fill the display.
+		/// </summary>
+		Stretched = DXGI.DisplayModeScaling.Stretched
+	}
+
+	/// <summary>
+	/// Contains information about a full screen video mode.
 	/// </summary>
 	public struct GorgonVideoMode
 		: IEquatable<GorgonVideoMode>
@@ -54,38 +101,18 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Refresh rate numerator.
 		/// </summary>
-		public readonly int RefreshRateNumerator;						
+		public readonly GorgonRationalNumber RefreshRate;
 		/// <summary>
-		/// Refresh rate denominator.
+		/// The scanline order for this video mode.
 		/// </summary>
-		public readonly int RefreshRateDenominator;
-        /// <summary>
-        /// The size of the video mode.
-        /// </summary>
-	    public readonly Size Size;
+		public readonly VideoModeScanlineOrder ScanlineOrdering;
+		/// <summary>
+		/// The scaling mode for the video mode.
+		/// </summary>
+		public readonly VideoModeDisplayModeScaling Scaling;
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Converts between a DXGI mode description and a GorgonVideoMode.
-		/// </summary>
-		/// <param name="mode">The mode to convert.</param>
-		/// <returns>The DXGI mode.</returns>
-		internal static GI.ModeDescription Convert(GorgonVideoMode mode)
-		{
-			return new GI.ModeDescription(mode.Width, mode.Height, new GI.Rational(mode.RefreshRateNumerator, mode.RefreshRateDenominator), (GI.Format)mode.Format);
-		}
-
-		/// <summary>
-		/// Converts between a DXGI mode description and a GorgonVideoMode.
-		/// </summary>
-		/// <param name="mode">The mode to convert.</param>
-		/// <returns>The DXGI mode.</returns>
-		internal static GorgonVideoMode Convert(GI.ModeDescription mode)
-		{
-			return new GorgonVideoMode(mode.Width, mode.Height, (BufferFormat)mode.Format, mode.RefreshRate.Numerator, mode.RefreshRate.Denominator);
-		}
-
 		/// <summary>
 		/// Implements the operator ==.
 		/// </summary>
@@ -109,18 +136,18 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// Returns a <see cref="string"/> that represents this instance.
 		/// </summary>
 		/// <returns>
-		/// A <see cref="System.String"/> that represents this instance.
+		/// A <see cref="string"/> that represents this instance.
 		/// </returns>
 		public override string ToString()
 		{
-		    return string.Format(Resources.GORGFX_VIDEOMODE_TOSTR,
+		    return string.Format(Resources.GORGFX_TOSTR_VIDEOMODE,
 		                         Width,
 		                         Height,
-		                         RefreshRateNumerator,
-		                         RefreshRateDenominator,
+		                         RefreshRate.Numerator,
+		                         RefreshRate.Denominator,
 		                         Format);
 		}
 
@@ -132,18 +159,15 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				return 281.GenerateHash(Width).GenerateHash(Height).GenerateHash(RefreshRateDenominator).GenerateHash(RefreshRateNumerator).GenerateHash(Format);
-			}
+			return 281.GenerateHash(Width).GenerateHash(Height).GenerateHash(RefreshRate).GenerateHash(Format);
 		}
 
 		/// <summary>
-		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+		/// Determines whether the specified <see cref="object"/> is equal to this instance.
 		/// </summary>
-		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <param name="obj">The <see cref="object"/> to compare with this instance.</param>
 		/// <returns>
-		/// 	<b>true</b> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <b>false</b>.
+		/// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
 		/// </returns>
 		public override bool Equals(object obj)
 		{
@@ -164,7 +188,8 @@ namespace Gorgon.Graphics
 		public static bool Equals(ref GorgonVideoMode left, ref GorgonVideoMode right)
 		{
 			return (left.Width == right.Width) && (left.Height == right.Height) && (left.Format == right.Format) &&
-					(left.RefreshRateDenominator == right.RefreshRateDenominator) && (left.RefreshRateNumerator == right.RefreshRateNumerator);
+			       (left.RefreshRate.Equals(right.RefreshRate) && (left.Scaling == right.Scaling) &&
+			        (left.ScanlineOrdering == right.ScanlineOrdering));
 		}
 		#endregion
 
@@ -172,19 +197,15 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
 		/// </summary>
-		/// <param name="width">The width of the video mode.</param>
-		/// <param name="height">The height of the video mode.</param>
-		/// <param name="format">The format for the video mode.</param>
-		/// <param name="refreshNumerator">The refresh rate numerator.</param>
-		/// <param name="refreshDenominator">The refresh rate denominator.</param>
-		public GorgonVideoMode(int width, int height, BufferFormat format, int refreshNumerator, int refreshDenominator)
+		/// <param name="modeDesc">The DXGI mode description used to initialize this value.</param>
+		internal GorgonVideoMode(DXGI.ModeDescription modeDesc)
 		{
-			Width = width;
-			Height = height;
-			RefreshRateNumerator = refreshNumerator;
-			RefreshRateDenominator = refreshDenominator;
-			Format = format;
-            Size = new Size(width, height);
+			Width = modeDesc.Width;
+			Height = modeDesc.Height;
+			RefreshRate = modeDesc.RefreshRate.FromRational();
+			Format = (BufferFormat)modeDesc.Format;
+			Scaling = (VideoModeDisplayModeScaling)modeDesc.Scaling;
+			ScanlineOrdering = (VideoModeScanlineOrder)modeDesc.ScanlineOrdering;
 		}
 
 		/// <summary>
@@ -193,8 +214,38 @@ namespace Gorgon.Graphics
 		/// <param name="width">The width of the video mode.</param>
 		/// <param name="height">The height of the video mode.</param>
 		/// <param name="format">The format for the video mode.</param>
-		public GorgonVideoMode(int width, int height, BufferFormat format)
-			: this(width, height, format, 0, 0)
+		/// <param name="refreshRate">The refresh rate for the full screen video mode.</param>
+		/// <param name="scaling">[Optional] The type of image scaling to use.</param>
+		/// <param name="scanlineOrder">[Optional] The type of scanline ordering to use.</param>
+		public GorgonVideoMode(int width,
+		                       int height,
+		                       BufferFormat format,
+		                       GorgonRationalNumber refreshRate,
+		                       VideoModeDisplayModeScaling scaling = VideoModeDisplayModeScaling.Unspecified,
+		                       VideoModeScanlineOrder scanlineOrder = VideoModeScanlineOrder.Unspecified)
+		{
+			Width = width;
+			Height = height;
+			RefreshRate = refreshRate;
+			Format = format;
+			ScanlineOrdering = scanlineOrder;
+			Scaling = scaling;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
+		/// </summary>
+		/// <param name="width">The width of the video mode.</param>
+		/// <param name="height">The height of the video mode.</param>
+		/// <param name="format">The format for the video mode.</param>
+		/// <param name="scaling">[Optional] The type of image scaling to use.</param>
+		/// <param name="scanlineOrder">[Optional] The type of scanline ordering to use.</param>
+		public GorgonVideoMode(int width,
+		                       int height,
+		                       BufferFormat format,
+		                       VideoModeDisplayModeScaling scaling = VideoModeDisplayModeScaling.Unspecified,
+		                       VideoModeScanlineOrder scanlineOrder = VideoModeScanlineOrder.Unspecified)
+			: this(width, height, format, GorgonRationalNumber.Empty, scaling, scanlineOrder)
 		{
 		}
 		#endregion

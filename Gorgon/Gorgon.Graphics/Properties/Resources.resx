@@ -120,20 +120,17 @@
   <data name="GORGFX_BUFFER_IMMUTABLE" xml:space="preserve">
     <value>This buffer is immutable and this cannot be updated.</value>
   </data>
-  <data name="GORGFX_FEATURE_LEVEL_UNKNOWN" xml:space="preserve">
-    <value>Must supply a known feature level.</value>
-  </data>
-  <data name="GORGFX_FMTPITCH_COMPRESSED_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_FMTPITCH_COMPRESSED" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}</value>
   </data>
-  <data name="GORGFX_FMTPITCH_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_FMTPITCH" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
   </data>
   <data name="GORGFX_INDEX_OUT_OF_RANGE" xml:space="preserve">
     <value>The index is out of range.  The index value [{0}] must be be {1} or less than {2}.</value>
   </data>
-  <data name="GORGFX_INVALID_OS" xml:space="preserve">
-    <value>The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.</value>
+  <data name="GORGFX_ERR_INVALID_OS" xml:space="preserve">
+    <value>The Gorgon Graphics interface requires Windows 7 or greater.</value>
   </data>
   <data name="GORGFX_NOT_DEFAULT_USAGE" xml:space="preserve">
     <value>The usage for this object must be set to 'Default'.</value>
@@ -178,8 +175,8 @@
   <data name="GORGFX_LAYOUT_ELEMENT_IN_USE" xml:space="preserve">
     <value>The offset [{0}] or context '{1}' is in use by another item with the same index or slot.</value>
   </data>
-  <data name="GORGFX_DEVICE_CANNOT_FIND_DEVICES" xml:space="preserve">
-    <value>Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 2b and a vertex shader model of 2a.</value>
+  <data name="GORGFX_DEVICE_ERR_CANNOT_FIND_DEVICES" xml:space="preserve">
+    <value>Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 4.</value>
   </data>
   <data name="GORGFX_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
@@ -309,7 +306,7 @@
     <value>Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic].</value>
     <comment>Applies to textures/buffers</comment>
   </data>
-  <data name="GORGFX_MULTISAMPLE_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_MULTISAMPLEINFO" xml:space="preserve">
     <value>Multisampling count: {0}, quality: {1}.</value>
   </data>
   <data name="GORGFX_CONSTANTBUFFER_ALREADY_BOUND" xml:space="preserve">
@@ -437,7 +434,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_DEVICE_NAME_WARP" xml:space="preserve">
     <value>WARP software rasterizer</value>
   </data>
-  <data name="GORGFX_DEVICE_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_DEVICE" xml:space="preserve">
     <value>Gorgon Graphics Video Device: {0}</value>
   </data>
   <data name="GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST" xml:space="preserve">
@@ -470,7 +467,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
-  <data name="GORGFX_VIDEOMODE_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_VIDEOMODE" xml:space="preserve">
     <value>Gorgon Video Mode: {0}x{1} Refresh Num/Denom: {2}/{3} Format: {4}</value>
   </data>
   <data name="GORGFX_FONT_GLYPH_NODE_TOO_LARGE" xml:space="preserve">
@@ -742,5 +739,26 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   </data>
   <data name="GORGFX_ERR_FONT_FILE_CORRUPT" xml:space="preserve">
     <value>The font file data is corrupt.</value>
+  </data>
+  <data name="GORGFX_ERR_MISSING_BLOCK_COUNT" xml:space="preserve">
+    <value>The block count must be larger than 0.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME" xml:space="preserve">
+    <value>There is no video device with the name '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_DEVICE_WITH_LUID" xml:space="preserve">
+    <value>There is no video device with a LUID of {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_FEATURE_LEVEL_INVALID" xml:space="preserve">
+    <value>The feature level [{0}] is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_FEATURE_LEVEL_NOT_SUPPORTED" xml:space="preserve">
+    <value>The feature level [{0}] is not supported by the '{1}' video device.</value>
+  </data>
+  <data name="GORGFX_FEATURE_LEVEL_UNKNOWN" xml:space="preserve">
+    <value>Must supply a known feature level.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_SUITABLE_VIDEO_DEVICE_FOUND" xml:space="preserve">
+    <value>Could not use any of the installed video devices on this system. Gorgon requires a video card that supports shader model 4 at minimum.</value>
   </data>
 </root>

@@ -25,19 +25,93 @@
 #endregion
 
 using DXGI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D;
 using Gorgon.Collections;
+using Gorgon.Core;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
+	/// Video device types.
+	/// </summary>
+	public enum VideoDeviceType
+	{
+		/// <summary>
+		/// Hardware video device.
+		/// </summary>
+		Hardware = 0,
+		/// <summary>
+		/// Software video device (WARP).
+		/// </summary>
+		Software = 1,
+		/// <summary>
+		/// Reference rasterizer video device.
+		/// </summary>
+		ReferenceRasterizer = 2
+	}
+
+	/// <summary>
+	/// Available feature levels for the video device.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// Feature levels define what the video device is capable of. If a device supports a feature level of 10, then it means that the device is only capable of supporting features supplied by Direct 3D 10. 
+	/// This allows older video devices to use the Gorgon Graphics library by scaling back functionality. 
+	/// </para>
+	/// <para>
+	/// <note type="important">
+	/// <para>
+	/// Gorgon only supports devices that are feature level 10 or better. Anything less than this will flag the feature level as <see cref="Unsupported"/>. This means if your video card is not capapble of 
+	/// natively working with Direct 3D 10, then it will be unsupported and users of your application must be informed of this prior to running your application.
+	/// </para>  
+	/// </note>
+	/// </para>
+	/// </remarks>
+	public enum DeviceFeatureLevel
+	{
+		/// <summary>
+		/// Gorgon does not support any feature level for the video device.
+		/// </summary>
+		Unsupported = 0,
+		/// <summary>
+		/// <para>
+		/// Shader model 4.0
+		/// </para>
+		/// <para>
+		/// This the equivalent of a Direct 3D 10.0 video device.
+		/// </para>
+		/// </summary>
+		Sm4 = 1,
+		/// <summary>
+		/// <para>
+		/// Shader model 4.0 with a 4.1 profile.
+		/// </para>
+		/// <para>
+		/// This is the equivalent of a Direct 3D 10.1 video device.
+		/// </para>
+		/// </summary>
+		/// <remarks></remarks>
+		Sm41 = 2,
+		/// <summary>
+		/// <para>
+		/// Shader model 5.0.
+		/// </para>
+		/// <para>
+		/// This is the equivalent of a Direct 3D 11 or better video device.
+		/// </para>
+		/// </summary>
+		Sm5 = 3
+	}
+
+	/// <summary>
 	/// Video device information.
 	/// </summary>
-	class VideoDeviceInfo
-		: IGorgonVideoDeviceInfo
+	public class GorgonVideoDeviceInfo
+		: IGorgonNamedObject
 	{
 		#region Variables.
 		// The DXGI adapter description
-		private readonly DXGI.AdapterDescription2 _adapterDesc;
+		private readonly DXGI.AdapterDescription1 _adapterDesc;
 		#endregion
 
 		#region Properties.
@@ -126,39 +200,30 @@ namespace Gorgon.Graphics
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		public IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> Outputs
+		public IGorgonNamedObjectReadOnlyList<GorgonVideoOutputInfo> Outputs
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Property to return the granularity at which the GPU can be preempted from its current graphics rendering task.
-		/// </summary>
-		public GraphicsPreemptionGranularity GraphicsPreemptionGranularity => (GraphicsPreemptionGranularity)_adapterDesc.GraphicsPreemptionGranularity;
-
-		/// <summary>
-		/// Property to return the granularity at which the GPU can be preempted from its current compute task.
-		/// </summary>
-		public ComputePreemptionGranularity ComputePreemptionGranularity => (ComputePreemptionGranularity)_adapterDesc.ComputePreemptionGranularity;
 		#endregion
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VideoDeviceInfo" /> class.
+		/// Initializes a new instance of the <see cref="GorgonVideoDeviceInfo" /> class.
 		/// </summary>
 		/// <param name="index">The index of the video device within a list.</param>
 		/// <param name="adapter">The DXGI adapter from which to retrieve all information.</param>
 		/// <param name="featureLevel">The supported feature level for the video device.</param>
 		/// <param name="outputs">The list of outputs attached to the video device.</param>
 		/// <param name="deviceType">The type of video device.</param>
-		public VideoDeviceInfo(int index,
-		                       DXGI.Adapter3 adapter,
+		internal GorgonVideoDeviceInfo(int index,
+		                       DXGI.Adapter1 adapter,
 		                       DeviceFeatureLevel featureLevel,
-		                       IGorgonNamedObjectReadOnlyList<IGorgonVideoOutputInfo> outputs,
+		                       IGorgonNamedObjectReadOnlyList<GorgonVideoOutputInfo> outputs,
 		                       VideoDeviceType deviceType)
 		{
-			_adapterDesc = adapter.Description2;
-			// For some reason, the description has multiple NULL terminators at the end of the string.
+			_adapterDesc = adapter.Description1;
+			// Ensure that any trailing NULLs are removed. This is unlikely to happen with D3D 11.x, but if we ever jump up to 12, we have to 
+			// watch out for this as SharpDX does not strip the NULLs.
 			Name = _adapterDesc.Description.Replace("\0", string.Empty);
 			Index = index;
 			VideoDeviceType = deviceType;

@@ -387,13 +387,13 @@ namespace Gorgon.Renderers
 			{
 				Width = textureSize,
 				Height = textureSize,
-				Format = BufferFormat.R8_UIntNormal,
+				Format = BufferFormat.R8_UNorm,
 				Usage = BufferUsage.Default
 			}))
 			{
 				unsafe
 				{
-					var dataPtr = (byte*)image.Buffers[0].Data.BasePointer;
+					var dataPtr = (byte*)image.Buffers[0].Data.Address;
 
 					// Write perlin noise to the texture.
 					for (int y = 0; y < textureSize; ++y)
@@ -503,7 +503,7 @@ namespace Gorgon.Renderers
 			{
 				case ResourceType.Buffer:
 					var buffer = (GorgonBuffer)target.Resource;
-					var info = GorgonBufferFormatInfo.GetInfo(buffer.Settings.DefaultShaderViewFormat);
+					var info = new GorgonBufferFormatInfo(buffer.Settings.DefaultShaderViewFormat);
 
 					_currentTargetSize = new Vector2(buffer.SizeInBytes / info.BitDepth, 1);
 					break;

@@ -195,7 +195,9 @@ namespace Gorgon.Graphics
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 15.</exception>
 		public GorgonInputElement(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
-            if (GorgonBufferFormatInfo.GetInfo(format).BitDepth == 0)
+			var formatInfo = new GorgonBufferFormatInfo(format);
+
+            if (formatInfo.BitDepth == 0)
             {
 	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), nameof(format));
             }
@@ -209,7 +211,7 @@ namespace Gorgon.Graphics
 			Index = index;
 			Format = format;
 			Offset = offset;
-			Size = GorgonBufferFormatInfo.GetInfo(format).SizeInBytes;
+			Size = formatInfo.SizeInBytes;
 			Slot = slot;
 			Instanced = instanced;
 			InstanceCount = instanceCount;

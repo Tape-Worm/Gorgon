@@ -452,7 +452,7 @@ namespace Gorgon.Graphics
 			internal VertexBufferBindingList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
-                _bindings = new GorgonVertexBufferBinding[graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
+                _bindings = new GorgonVertexBufferBinding[graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm41 ? 16 : 32];
 				for (int i = 0; i < _bindings.Length; i++)
 				{
 					_bindings[i] = GorgonVertexBufferBinding.Empty;

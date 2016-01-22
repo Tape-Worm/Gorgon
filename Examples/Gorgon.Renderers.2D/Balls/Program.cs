@@ -369,7 +369,7 @@ namespace Gorgon.Examples
 			    {
 					Width = Settings.Default.ScreenWidth,
 					Height = Settings.Default.ScreenHeight,
-					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					Format = BufferFormat.R8G8B8A8_UNorm,
 					Window = _form,
 					IsWindowed = Settings.Default.Windowed
 				});
@@ -410,7 +410,7 @@ namespace Gorgon.Examples
 				DepthStencilFormat = BufferFormat.Unknown,
 				Width = Settings.Default.ScreenWidth,
 				Height = Settings.Default.ScreenHeight,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Format = BufferFormat.R8G8B8A8_UNorm,
 				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
 			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);
@@ -433,7 +433,7 @@ namespace Gorgon.Examples
 					DepthStencilFormat = BufferFormat.Unknown,
 					Width = args.Width,
 					Height = args.Height,
-					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					Format = BufferFormat.R8G8B8A8_UNorm,
 					Multisampling = GorgonMultisampling.NoMultiSampling
 				});
 
@@ -469,7 +469,7 @@ namespace Gorgon.Examples
 			{
 				Width = (int)_2D.Drawing.MeasureString(_ballFont, string.Format(Resources.FPSLine, 999999, 999999.999, _ballCount), false, _form.ClientSize).X,
 				Height = (int)((_ballFont.FontHeight * 4) + _ballFont.Descent),
-				Format = BufferFormat.R8G8B8A8_UIntNormal
+				Format = BufferFormat.R8G8B8A8_UNorm
 			});
 
 			// Draw our stats window frame.

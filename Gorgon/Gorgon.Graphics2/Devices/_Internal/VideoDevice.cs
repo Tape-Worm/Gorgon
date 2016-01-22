@@ -33,7 +33,6 @@ using D3D = SharpDX.Direct3D;
 using DXGI = SharpDX.DXGI;
 using D3D12 = SharpDX.Direct3D12;
 using Gorgon.Graphics.Properties;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics
 {
@@ -49,8 +48,8 @@ namespace Gorgon.Graphics
 	/// video device.
 	/// </para>
 	/// </remarks>
-	public class GorgonVideoDevice
-		: IGorgonVideoDevice, ISdxVideoDevice
+	class VideoDevice
+		: IGorgonVideoDevice
 	{
 		#region Variables.
 		// The SharpDX Direct3D device object.
@@ -59,14 +58,26 @@ namespace Gorgon.Graphics
 		// The SharpDX DXGI adapter for the video device.
 		private DXGI.Adapter3 _adapter;
 		// The log used for debug output.
-		private IGorgonLog _log;
+		private readonly IGorgonLog _log;
 		#endregion
 
 		#region Properties.
 		/// <summary>
+		/// Function to retrieve the underlying Direct3D 12 device object.
+		/// </summary>
+		/// <returns>The underlying Direct3D 12 device object.</returns>
+		internal D3D12.Device D3DDevice => _d3dDevice;
+
+		/// <summary>
+		/// Function to retrieve the underlying DXGI adapter object.
+		/// </summary>
+		/// <returns>The underlying DXGI adapter object.</returns>
+		internal DXGI.Adapter3 DXGIAdapter => _adapter;
+
+		/// <summary>
 		/// Property to return information about this video device.
 		/// </summary>
-		public IGorgonVideoDeviceInfo Info
+		public GorgonVideoDeviceInfo Info
 		{
 			get;
 		}
@@ -81,7 +92,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// <para>
 		/// If the user does not request a feature level, or has specified one higher than what the video device supports, then the highest feature level supported by the video device 
-		/// (indicated by the <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoDevice.Info"/> property) will be returned.
+		/// (indicated by the <see cref="GorgonVideoDeviceInfo.SupportedFeatureLevel"/> property in the <see cref="IGorgonVideoDevice.Info"/> property) will be returned.
 		/// </para>
 		/// </remarks>
 		public DeviceFeatureLevel RequestedFeatureLevel
@@ -159,30 +170,6 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the underlying Direct3D 12 device object.
-		/// </summary>
-		/// <returns>The underlying Direct3D 12 device object.</returns>
-		internal D3D12.Device GetD3DDevice() => _d3dDevice;
-
-		/// <summary>
-		/// Function to retrieve the underlying Direct3D 11 device object.
-		/// </summary>
-		/// <returns>The underlying Direct3D 11 device object.</returns>
-		D3D12.Device ISdxVideoDevice.GetD3DDevice() => _d3dDevice;
-
-		/// <summary>
-		/// Function to retrieve the underlying DXGI adapter object.
-		/// </summary>
-		/// <returns>The underlying DXGI adapter object.</returns>
-		internal DXGI.Adapter2 GetDXGIAdapter() => _adapter;
-
-		/// <summary>
-		/// Function to retrieve the underlying DXGI adapter object.
-		/// </summary>
-		/// <returns>The underlying DXGI adapter object.</returns>
-		DXGI.Adapter3 ISdxVideoDevice.GetDXGIAdapter() => _adapter;
-
-		/// <summary>
 		/// Function to retrieve the supported functionality for a given format.
 		/// </summary>
 		/// <param name="format">The format to evaluate.</param>
@@ -220,7 +207,7 @@ namespace Gorgon.Graphics
 			var support = new D3D12.FeatureDataFormatSupport
 			{
 				Format = (DXGI.Format)format
-			};
+			};			
 
 			if (!_d3dDevice.CheckFeatureSupport(D3D12.Feature.FormatSupport, ref support))
 			{
@@ -228,47 +215,6 @@ namespace Gorgon.Graphics
 			}
 
 			return (BufferFormatUavSupport)support.Support2;
-		}
-
-		/// <summary>
-		/// Function to determine if a device supports using rendering commands from multiple threads.
-		/// </summary>
-		/// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
-		public bool SupportsMultiThreadedCommands()
-		{
-/*			if (RequestedFeatureLevel < DeviceFeatureLevel.FeatureLevel11_0)
-			{
-				return false;
-			}
-
-			bool result;
-			bool dummy;
-
-			_d3dDevice.Value.CheckThreadingSupport(out dummy, out result);*/
-
-			return false;
-		}
-
-		/// <summary>
-		/// Function to determine if a device supports creating resources from multiple threads.
-		/// </summary>
-		/// <returns><b>true</b> if support is available, <b>false</b> if not.</returns>
-		public bool SupportsMultiThreadedCreation()
-		{
-/*
-			if (RequestedFeatureLevel < DeviceFeatureLevel.FeatureLevel11_0)
-			{
-				return false;
-			}
-
-			bool result;
-			bool dummy;
-
-			_d3dDevice.Value.CheckThreadingSupport(out result, out dummy);
-
-			return result;
-			*/
-			return false;
 		}
 
 		/// <summary>
@@ -304,113 +250,23 @@ namespace Gorgon.Graphics
 			adapter?.Dispose();
 		}
 
-		/// <summary>
-		/// Function to find the full screen display mode the 
-		/// </summary>
-		/// <param name="output">The output to use when looking for a video mode.</param>
-		/// <param name="videoMode">The <see cref="GorgonVideoMode"/> used to find the closest match.</param>
-		/// <param name="newMode">A <see cref="GorgonVideoMode"/> that is the nearest match for the provided video mode.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <remarks>
-		/// <para>
-		/// Users may leave the <see cref="GorgonVideoMode"/> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
-		/// </para>
-		/// <para>
-		/// The following members in <see cref="GorgonVideoMode"/> may be skipped (if not listed, then this member must be specified):
-		/// <list type="bullet">
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.Width"/> and <see cref="GorgonVideoMode.Height"/>.  Both values must be set to 0 if not filtering by width or height.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.RefreshRate"/> should be set to <see cref="GorgonRationalNumber.Empty"/> in order to skip filtering by refresh rate.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.Scaling"/> should be set to <see cref="VideoModeDisplayModeScaling.Unspecified"/> in order to skip filtering by the scaling mode.</description>
-		///		</item>
-		///		<item>
-		///			<description><see cref="GorgonVideoMode.ScanlineOrdering"/> should be set to <see cref="VideoModeScanlineOrder.Unspecified"/> in order to skip filtering by the scanline order.</description>
-		///		</item>
-		/// </list>
-		/// </para>
-		/// <para>
-		/// <note type="important">
-		/// <para>
-		/// The <see cref="GorgonVideoMode.Format"/> member must be one of the UNorm format types and cannot be set to <see cref="BufferFormat.Unknown"/>.
-		/// </para>
-		/// </note>
-		/// </para>
-		/// </remarks>
-		public void FindClosestMode(IGorgonVideoOutputInfo output, ref GorgonVideoMode videoMode, out GorgonVideoMode newMode)
-		{
-			if (output == null)
-			{
-				throw new ArgumentNullException(nameof(output));
-			}
-
-			using (DXGI.Output output1 = _adapter.GetOutput(output.Index))
-			{
-				using (DXGI.Output4 output4 = output1.QueryInterface<DXGI.Output4>())
-				{
-					DXGI.ModeDescription1 newModeDesc;
-					DXGI.ModeDescription1 oldModeDesc = videoMode.ToModeDesc();
-
-					output4.FindClosestMatchingMode1(ref oldModeDesc, out newModeDesc, _d3dDevice);
-
-					newMode = new GorgonVideoMode(newModeDesc);
-				}
-			}
-		}
 		#endregion
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoDevice" /> class.
+		/// Initializes a new instance of the <see cref="VideoDevice" /> class.
 		/// </summary>
-		/// <param name="deviceInfo">A <see cref="IGorgonVideoDeviceInfo"/> containing information about which video device to use.</param>
-		/// <param name="requestedFeatureLevel">[Optional] A <see cref="DeviceFeatureLevel"/> representing the highest feature level to use for this video device.</param>
+		/// <param name="deviceInfo">A <see cref="GorgonVideoDeviceInfo"/> containing information about which video device to use.</param>
+		/// <param name="requestedFeatureLevel">The desired feature level for the device.</param>
 		/// <param name="log">[Optional] A <see cref="IGorgonLog"/> used for logging debug output.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the <paramref name="deviceInfo"/> parameter has a <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> that is not supported.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="requestedFeatureLevel"/> is unsupported.</para>
-		/// </exception>
-		/// <remarks>
-		/// <para>
-		/// If the <paramref name="requestedFeatureLevel"/> is set to <b>null</b> (<i>Nothing</i> in VB.Net), then the highest feature level supported by the device will be used.
-		/// </para>
-		/// <para>
-		/// When the <paramref name="requestedFeatureLevel"/> is higher than that is supported by the video device, then the requested feature level will be set to the value specified in the 
-		/// <see cref="IGorgonVideoDeviceInfo.SupportedFeatureLevel"/> of the <paramref name="deviceInfo"/> parameter.
-		/// </para>
-		/// </remarks>
-		public GorgonVideoDevice(IGorgonVideoDeviceInfo deviceInfo, DeviceFeatureLevel? requestedFeatureLevel = null, IGorgonLog log = null)
+		public VideoDevice(GorgonVideoDeviceInfo deviceInfo, DeviceFeatureLevel requestedFeatureLevel, IGorgonLog log = null)
 		{
-			if (deviceInfo == null)
-			{
-				throw new ArgumentNullException(nameof(deviceInfo));
-			}
-
-			if (deviceInfo.SupportedFeatureLevel == DeviceFeatureLevel.Unsupported)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_VIDEO_DEVICE_NOT_SUPPORTED, deviceInfo.Name), nameof(deviceInfo));
-			}
-
-			if (requestedFeatureLevel == null)
-			{
-				requestedFeatureLevel = deviceInfo.SupportedFeatureLevel;
-			}
-
 			if ((requestedFeatureLevel == DeviceFeatureLevel.Unsupported) || (!Enum.IsDefined(typeof(DeviceFeatureLevel), requestedFeatureLevel)))
 			{
 				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FEATURE_LEVEL_INVALID, requestedFeatureLevel), nameof(requestedFeatureLevel));
 			}
 
-			if (deviceInfo.SupportedFeatureLevel < requestedFeatureLevel)
-			{
-				requestedFeatureLevel = deviceInfo.SupportedFeatureLevel;
-			}
-
-			RequestedFeatureLevel = requestedFeatureLevel.Value;
+			RequestedFeatureLevel = requestedFeatureLevel;
 			Info = deviceInfo;
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 

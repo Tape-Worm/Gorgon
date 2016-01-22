@@ -311,13 +311,13 @@ namespace Gorgon.IO
         private readonly BufferFormat[] _supportedFormats =
         {
             // 8 bit grayscale.
-            BufferFormat.R8_UIntNormal,
+            BufferFormat.R8_UNorm,
             // 16 bit.
-            BufferFormat.B5G5R5A1_UIntNormal,
+            BufferFormat.B5G5R5A1_UNorm,
             // 24 bit.
-            BufferFormat.R8G8B8A8_UIntNormal,
-			BufferFormat.B8G8R8A8_UIntNormal,
-			BufferFormat.B8G8R8X8_UIntNormal
+            BufferFormat.R8G8B8A8_UNorm,
+			BufferFormat.B8G8R8A8_UNorm,
+			BufferFormat.B8G8R8X8_UNorm
         };
         #endregion
 
@@ -407,11 +407,11 @@ namespace Gorgon.IO
                     switch (header.BPP)
                     {
                         case 16:
-                            settings.Format = BufferFormat.B5G5R5A1_UIntNormal;
+                            settings.Format = BufferFormat.B5G5R5A1_UNorm;
                             break;
                         case 24:
                         case 32:
-                            settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+                            settings.Format = BufferFormat.R8G8B8A8_UNorm;
                             if (header.BPP == 24)
                             {
                                 conversionFlags |= TGAConversionFlags.Expand;
@@ -428,7 +428,7 @@ namespace Gorgon.IO
                 case TGAImageType.BlackAndWhiteRLE:
                     if (header.BPP == 8)
                     {
-                        settings.Format = BufferFormat.R8_UIntNormal;
+                        settings.Format = BufferFormat.R8_UNorm;
                     }
                     else
                     {
@@ -494,35 +494,35 @@ namespace Gorgon.IO
 
 			switch (settings.Format)
 			{
-				case BufferFormat.R8G8B8A8_UIntNormal:
-				case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+				case BufferFormat.R8G8B8A8_UNorm:
+				case BufferFormat.R8G8B8A8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
 					conversionFlags |= TGAConversionFlags.Swizzle;
 					break;
-				case BufferFormat.B8G8R8A8_UIntNormal:
-				case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+				case BufferFormat.B8G8R8A8_UNorm:
+				case BufferFormat.B8G8R8A8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 32;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB888A8;
 					break;
-				case BufferFormat.B8G8R8X8_UIntNormal:
-				case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+				case BufferFormat.B8G8R8X8_UNorm:
+				case BufferFormat.B8G8R8X8_UNorm_SRgb:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 24;
 					header.Descriptor = TGADescriptor.InvertY;
 					conversionFlags |= TGAConversionFlags.RGB888;
 					break;
 
-				case BufferFormat.R8_UIntNormal:
-				case BufferFormat.A8_UIntNormal:
+				case BufferFormat.R8_UNorm:
+				case BufferFormat.A8_UNorm:
 					header.ImageType = TGAImageType.BlackAndWhite;
 					header.BPP = 8;
 					header.Descriptor = TGADescriptor.InvertY;
 					break;
 
-				case BufferFormat.B5G5R5A1_UIntNormal:
+				case BufferFormat.B5G5R5A1_UNorm:
 					header.ImageType = TGAImageType.TrueColor;
 					header.BPP = 16;
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB555A1;
@@ -579,7 +579,7 @@ namespace Gorgon.IO
 
 			switch (format)
 			{
-				case BufferFormat.R8_UIntNormal:
+				case BufferFormat.R8_UNorm:
 					for (int x = 0; x < width; )
 					{
 						if (src >= end)
@@ -642,7 +642,7 @@ namespace Gorgon.IO
 						}
 					}
 					return false;
-				case BufferFormat.B5G5R5A1_UIntNormal:
+				case BufferFormat.B5G5R5A1_UNorm:
 					{
 						var destPtr = (ushort*)dest;
 
@@ -721,7 +721,7 @@ namespace Gorgon.IO
 						}
 						return setOpaque;
 					}
-				case BufferFormat.R8G8B8A8_UIntNormal:
+				case BufferFormat.R8G8B8A8_UNorm:
 					{
 						var destPtr = (uint*)dest;
 						
@@ -871,7 +871,7 @@ namespace Gorgon.IO
 
 			switch (format)
 			{
-				case BufferFormat.R8_UIntNormal:
+				case BufferFormat.R8_UNorm:
 					for (int x = 0; x < srcPitch; x++)
 					{
 						if (!flipHorizontal)
@@ -884,7 +884,7 @@ namespace Gorgon.IO
 						}						
 					}
 					return false;
-				case BufferFormat.B5G5R5A1_UIntNormal:
+				case BufferFormat.B5G5R5A1_UNorm:
 					{
 						var destPtr = (ushort*)dest;
 
@@ -909,7 +909,7 @@ namespace Gorgon.IO
 
 						return setOpaque;
 					}
-				case BufferFormat.R8G8B8A8_UIntNormal:
+				case BufferFormat.R8G8B8A8_UNorm:
 					{
 						var destPtr = (uint*)dest;
 						int x = 0;
@@ -962,21 +962,21 @@ namespace Gorgon.IO
 		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
-		/// <param name="stream">Stream containing the image data.</param>
+		/// <param name="data">The pointer to the data to copy from.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
-		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
+		private void CopyImageData(GorgonPointerBase data, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
 			var buffer = image.Buffers[0];	        // Get the first buffer only.
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
+			var formatInfo = new GorgonBufferFormatInfo(image.Settings.Format);
 
-			GorgonFormatPitch srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
-				                             ? new GorgonFormatPitch(image.Settings.Width * 3, image.Settings.Width * 3 * image.Settings.Height)
-				                             : formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
+			GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
+				                             ? new GorgonPitchLayout(image.Settings.Width * 3, image.Settings.Width * 3 * image.Settings.Height)
+				                             : formatInfo.GetPitchForFormat(image.Settings.Width, image.Settings.Height, PitchFlags.None);
 
 			// Otherwise, allocate a buffer for conversion.
-			var srcPtr = (byte*)stream.PositionPointer;
-			var destPtr = (byte*)buffer.Data.BasePointer;
+			var srcPtr = (byte*)data.Address;
+			var destPtr = (byte*)buffer.Data.Address;
 
 			// Adjust destination for inverted axes.
 			if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
@@ -990,8 +990,8 @@ namespace Gorgon.IO
 			}
 
 			// Get bounds of image memory.
-			var scanSize = (int)(stream.Length - stream.Position);
-			byte* endScan = (byte*)stream.PositionPointer + scanSize;
+			long scanSize = data.Size - data.Address;
+			byte* endScan = (byte*)(data.Address + scanSize);
 
 			int opaqueLineCount = 0;
 			for (int y = 0; y < image.Settings.Height; y++)
@@ -1029,7 +1029,7 @@ namespace Gorgon.IO
 			}
 
 			// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
-			destPtr = (byte*)buffer.Data.BasePointer;
+			destPtr = (byte*)buffer.Data.Address;
 			for (int y = 0; y < image.Settings.Height; y++)
 			{
 				CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
@@ -1069,15 +1069,12 @@ namespace Gorgon.IO
 			    imageData = new GorgonImageData(settings);
 
 				// Copy the data from the stream to the buffer.
-				CopyImageData(stream, imageData, flags);
+				CopyImageData(stream.GetPointer(), imageData, flags);
 			}
 			catch 
 			{
 				// Clean up any memory allocated if we can't copy the image.
-				if (imageData != null)
-				{
-					imageData.Dispose();
-				}
+				imageData?.Dispose();
 
 				throw;
 			}
@@ -1099,19 +1096,19 @@ namespace Gorgon.IO
 				TGAConversionFlags conversionFlags;
 				WriteHeader(imageData.Settings, writer, out conversionFlags);
 
-				GorgonFormatPitch pitch;
+				GorgonPitchLayout pitch;
 				if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 				{
-					pitch = new GorgonFormatPitch(imageData.Settings.Width * 3, imageData.Settings.Width * 3 * imageData.Settings.Height);
+					pitch = new GorgonPitchLayout(imageData.Settings.Width * 3, imageData.Settings.Width * 3 * imageData.Settings.Height);
 				}
 				else
 				{
-					var formatInfo = GorgonBufferFormatInfo.GetInfo(imageData.Settings.Format);
-					pitch = formatInfo.GetPitch(imageData.Settings.Width, imageData.Settings.Height, PitchFlags.None);
+					var formatInfo = new GorgonBufferFormatInfo(imageData.Settings.Format);
+					pitch = formatInfo.GetPitchForFormat(imageData.Settings.Width, imageData.Settings.Height, PitchFlags.None);
 				}
 
 				// Get the pointer to the first mip/array/depth level.
-				var srcPointer = (byte *)imageData.Buffers[0].Data.BasePointer;
+				var srcPointer = (byte *)imageData.Buffers[0].Data.Address;
 				var srcPitch = imageData.Buffers[0].PitchInformation;
 
 				// If the two pitches are equal, then just write out the buffer.
@@ -1120,11 +1117,11 @@ namespace Gorgon.IO
 					writer.Write(srcPointer, srcPitch.SlicePitch);
 					return;
 				}
-				
+
 				// If we have to do a conversion, create a worker buffer.
-				using (var convertBuffer = new GorgonDataStream(pitch.SlicePitch))
+				using (var convertBuffer = new GorgonPointer(pitch.SlicePitch))
 				{
-					var destPtr = (byte*)convertBuffer.BasePointer;
+					var destPtr = (byte*)convertBuffer.Address;
 
 					// Write out each scan line.					
 					for (int y = 0; y < imageData.Settings.Height; y++)
@@ -1147,7 +1144,7 @@ namespace Gorgon.IO
 					}
 
 					// Persist to the stream.
-					writer.Write(convertBuffer.BasePointer, pitch.SlicePitch);
+					writer.Write((byte *)convertBuffer.Address, pitch.SlicePitch);
 				}
 			}
 		}

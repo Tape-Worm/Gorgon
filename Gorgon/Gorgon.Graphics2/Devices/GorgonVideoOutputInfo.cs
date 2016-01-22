@@ -26,22 +26,47 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using DX = SharpDX;
+using Gorgon.Core;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Provides information about an output on a <see cref="GorgonVideoDevice"/>.
+	/// Values to indicate how the back buffers should be rotated to fit the physical rotation of the monitor.
+	/// </summary>
+	public enum DisplayModeRotation
+	{
+		/// <summary>
+		/// No rotation specified.
+		/// </summary>
+		Unspecified = DXGI.DisplayModeRotation.Unspecified,
+		/// <summary>
+		/// No rotation.
+		/// </summary>
+		Identity = DXGI.DisplayModeRotation.Identity,
+		/// <summary>
+		/// Display is rotated 90 degrees.
+		/// </summary>
+		Rotate90 = DXGI.DisplayModeRotation.Rotate90,
+		/// <summary>
+		/// Display is rotated 180 degrees.
+		/// </summary>
+		Rotate180 = DXGI.DisplayModeRotation.Rotate180,
+		/// <summary>
+		/// Display is rotated 270 degrees.
+		/// </summary>
+		Rotate270 = DXGI.DisplayModeRotation.Rotate270
+	}
+
+	/// <summary>
+	/// Provides information about an output on a <see cref="VideoDevice"/>.
 	/// </summary>
 	/// <remarks>
 	/// An output is typically a physical connection between the video device and another device.
 	/// </remarks>
-	class VideoOutputInfo 
-		: IGorgonVideoOutputInfo
+	public class GorgonVideoOutputInfo 
+		: IGorgonNamedObject
 	{
 		#region Variables.
 		// Output description.
@@ -99,12 +124,12 @@ namespace Gorgon.Graphics
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VideoOutputInfo" /> class.
+		/// Initializes a new instance of the <see cref="GorgonVideoOutputInfo" /> class.
 		/// </summary>
 		/// <param name="index">The index of the output.</param>
 		/// <param name="output">The output used to provide information.</param>
 		/// <param name="modes">The list of full screen display modes supported by this output on the video device.</param>
-		public VideoOutputInfo(int index, DXGI.Output4 output, IReadOnlyList<GorgonVideoMode> modes)
+		internal GorgonVideoOutputInfo(int index, DXGI.Output4 output, IReadOnlyList<GorgonVideoMode> modes)
 		{
 			Index = index;
 			_desc = output.Description;

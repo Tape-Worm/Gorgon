@@ -98,10 +98,10 @@ namespace Gorgon.Graphics
         internal GorgonOutputGeometryShader(GorgonGraphics graphics, string name, string entryPoint, int rasterizedStream, IList<GorgonStreamOutputElement> outputElements, IList<int> bufferStrides)
 			: base(graphics, name, entryPoint)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm4)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm4));
 			}
 
 			// If the stream to be rasterized is outside of the range for stream output, then set it to no rasterization.

@@ -227,9 +227,9 @@ namespace Gorgon.Graphics
 		        return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
 	        }
 
-	        if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+	        if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
 	        {
-		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 	        }
 
 	        if (!Settings.AllowShaderView)

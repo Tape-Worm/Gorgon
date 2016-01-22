@@ -24,10 +24,12 @@
 // 
 #endregion
 
+using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
 using Gorgon.IO;
+using Gorgon.Native;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -84,29 +86,28 @@ namespace Gorgon.Graphics
         /// Use the <paramref name="context" /> parameter to determine the context in which the buffer should be updated. This is necessary to use that context
         /// to update the buffer because 2 threads may not access the same resource at the same time.
         /// </remarks>
-		protected override GorgonDataStream OnLock(BufferLockFlags lockFlags, GorgonGraphics context)
+		protected override GorgonPointerAlias OnLock(BufferLockFlags lockFlags, GorgonGraphics context)
         {
             DX.DataStream lockStream;
 
 			context.Context.MapSubresource(D3DBuffer, GetMapMode(lockFlags), D3D11.MapFlags.None, out lockStream);
 
-            return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
+            return new GorgonPointerAlias(lockStream.DataPointer, lockStream.Length);
 		}
 
-        /// <summary>
-        /// Function to update the buffer.
-        /// </summary>
-        /// <param name="stream">Stream containing the data used to update the buffer.</param>
-        /// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
-        /// <param name="size">The number of bytes to write.</param>
-        /// <param name="context">A graphics context to use when updating the buffer.</param>
-        /// <remarks>
-        /// Use the <paramref name="context" /> parameter to determine the context in which the buffer should be updated. This is necessary to use that context
-        /// to update the buffer because 2 threads may not access the same resource at the same time.
-        /// </remarks>
-		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
+		/// <summary>
+		/// Function to update the buffer.
+		/// </summary>
+		/// <param name="data">Pointer to the data used to update the buffer.</param>
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
+		/// <param name="context">A graphics context to use when updating the buffer.</param>
+		/// <exception cref="GorgonException">Thrown when the <see cref="Settings"/> property has a <see cref="GorgonBufferSettings.Usage"/> not set to <see cref="BufferUsage.Default"/>.</exception>
+		/// <remarks>Use the <paramref name="context" /> parameter to determine the context in which the buffer should be updated. This is necessary to use that context
+		/// to update the buffer because 2 threads may not access the same resource at the same time.</remarks>
+		protected override void OnUpdate(GorgonPointerBase data, int offset, int size, GorgonGraphics context)
 		{
-			stream.ValidateObject("stream");
+			data.ValidateObject("stream");
 
 #if DEBUG
 			if (Settings.Usage != BufferUsage.Default)
@@ -114,24 +115,23 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
 			}
 #endif
-	
-			context.Context.UpdateSubresource(
-				new DX.DataBox
-				    {
-					DataPointer = stream.PositionIntPtr,
-					RowPitch = size
-				},
-				D3DResource,
-				0,
-				new D3D11.ResourceRegion
-				    {
-					Left = offset,
-					Right = offset + size,
-					Top = 0,
-					Bottom = 1,
-					Front = 0,
-					Back = 1
-				});
+
+			context.Context.UpdateSubresource(new DX.DataBox
+			                                  {
+				                                  DataPointer = new IntPtr(data.Address),
+				                                  RowPitch = size
+			                                  },
+			                                  D3DResource,
+			                                  0,
+			                                  new D3D11.ResourceRegion
+			                                  {
+				                                  Left = offset,
+				                                  Right = offset + size,
+				                                  Top = 0,
+				                                  Bottom = 1,
+				                                  Front = 0,
+				                                  Back = 1
+			                                  });
 		}
 
 		/// <summary>
@@ -218,15 +218,12 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to update the buffer.
 		/// </summary>
-		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="data">Stream containing the data used to update the buffer.</param>
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
 		/// <param name="deferred">[Optional] The deferred context used to update the buffer.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
 		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
-		/// <para>This method will respect the <see cref="Gorgon.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
-		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
-		/// to 0.</para>
         /// <para>
         /// If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
         /// will use the specified deferred context.
@@ -234,16 +231,16 @@ namespace Gorgon.Graphics
         /// Passing a separate deferred context will alleviate that.</para>
         /// </para>
         /// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		/// <exception cref="GorgonException">Thrown when the buffer usage is not set to default.</exception>
-        public void Update(GorgonDataStream stream, int offset, int size, GorgonGraphics deferred = null)
+        public void Update(GorgonPointerBase data, int offset, int size, GorgonGraphics deferred = null)
 		{
             if (deferred == null)
             {
                 deferred = Graphics;
             }
 
-			OnUpdate(stream, offset, size, deferred);
+			OnUpdate(data, offset, size, deferred);
 		}
 
 		/// <summary>
