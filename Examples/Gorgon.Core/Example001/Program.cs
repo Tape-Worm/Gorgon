@@ -127,7 +127,7 @@ namespace Gorgon.Examples
 						// Display a bar at the bottom.
 						Console.WriteLine("Type some text to display:".PadRight(Console.WindowWidth - 1));
 						Console.ForegroundColor = ConsoleColor.Gray;
-						Console.Write(new String(' ', Console.WindowWidth - 1));
+						Console.Write(new string(' ', Console.WindowWidth - 1));
 
 						// Reset the cursor so we don't wrap off the end.
 						Console.CursorTop = Console.WindowHeight - 1;
