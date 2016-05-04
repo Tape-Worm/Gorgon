@@ -374,7 +374,7 @@ namespace Gorgon.IO
 		/// </para>
 		/// </note>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">
+		/// <exception cref="ArgumentException">
 		/// Thrown when the type of <paramref name="value"/> is not sequentially/explicitly laid out with the <see cref="StructLayoutAttribute"/>.
 		/// </exception>
 		/// <example>

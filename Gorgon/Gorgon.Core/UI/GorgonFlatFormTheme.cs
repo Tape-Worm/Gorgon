@@ -889,7 +889,7 @@ namespace Gorgon.UI
 		/// </summary>
 		/// <param name="stream">Stream to fill with the data.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the stream is read-only.</exception>
+		/// <exception cref="ArgumentException">Thrown when the stream is read-only.</exception>
 		public void Save(Stream stream)
 		{
 			if (stream == null)

@@ -431,7 +431,7 @@ namespace Gorgon.Input
 		/// Initializes a new instance of the <see cref="GorgonGamingDevice"/> class.
 		/// </summary>
 		/// <param name="deviceInfo">Information about the specific gaming device to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="deviceInfo"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
 		protected GorgonGamingDevice(IGorgonGamingDeviceInfo deviceInfo)
 		{
 			if (deviceInfo == null)

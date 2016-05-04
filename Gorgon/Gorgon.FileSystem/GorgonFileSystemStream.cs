@@ -355,7 +355,7 @@ namespace Gorgon.IO
 		/// </summary>
 		/// <param name="file">File being read/written.</param>
 		/// <param name="baseStream">The underlying stream to use for this stream.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 		protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
 		{
 			if (file == null)

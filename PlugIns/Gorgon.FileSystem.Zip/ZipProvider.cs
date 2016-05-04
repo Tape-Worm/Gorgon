@@ -140,8 +140,8 @@ namespace Gorgon.IO.Zip
 		/// </summary>
 		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
 		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <remarks>
 		/// <para>
 		/// This will test a physical file system (e.g. a Zip file) to see if the provider can open it or not. If used with a directory on an operating system file system, this method should always return 
