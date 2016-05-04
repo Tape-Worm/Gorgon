@@ -459,9 +459,9 @@ namespace Gorgon.Graphics
         {
             int elementCount;
 
-            if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+            if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
             }
 
             if (!Settings.AllowUnorderedAccessViews)
@@ -517,7 +517,7 @@ namespace Gorgon.Graphics
 		        return (GorgonBufferUnorderedAccessView)_viewCache.GetUnorderedAccessView(format, start, count, 0, viewType, isRaw);
 	        }
 
-	        if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+			if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.UnorderedAccess) != BufferFormatSupport.UnorderedAccess)
 	        {
 		        throw new GorgonException(GorgonResult.CannotCreate,
 			        string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
@@ -618,10 +618,10 @@ namespace Gorgon.Graphics
 
                 if (isRaw)
                 {
-                    if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+                    if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
+                                                  string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
                     }
 
                     if (!Settings.AllowRawViews)
@@ -644,10 +644,10 @@ namespace Gorgon.Graphics
             else
             {
                 // We cannot use structured buffers on anything less than a SM5 video device.
-                if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+                if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
+                                              string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
                 }
 
                 elementCount = Settings.SizeInBytes / Settings.StructureSize;

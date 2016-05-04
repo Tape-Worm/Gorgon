@@ -36,10 +36,10 @@ namespace Gorgon.Graphics
 	[Flags]
 	public enum SwapChainUsageFlags
 	{
-        /// <summary>
-        /// No usage flags.
-        /// </summary>
-        None = 0,
+		/// <summary>
+		/// No usage flags.
+		/// </summary>
+		None = 0,
 		/// <summary>
 		/// Specifies that the swap chain is used to display its data.
 		/// </summary>
@@ -48,10 +48,10 @@ namespace Gorgon.Graphics
 		/// Specifies that the swap chain render target texture can be used as a shader view resource.
 		/// </summary>
 		AllowShaderView = 2,
-        /// <summary>
-        /// Specifies that the swap chain render target texture can be used as an unordered access view.
-        /// </summary>
-        AllowUnorderedAccessView = 4
+		/// <summary>
+		/// Specifies that the swap chain render target texture can be used as an unordered access view.
+		/// </summary>
+		AllowUnorderedAccessView = 4
 	}
 
 	/// <summary>
@@ -71,7 +71,7 @@ namespace Gorgon.Graphics
 		Sequential = 1
 	}
 
-	/// <summary>
+	/// <summary> 
 	/// Settings for defining a swap chain.
 	/// </summary>
 	public class GorgonSwapChainSettings
@@ -89,11 +89,11 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				return VideoMode.Size;
+				return new Size(VideoMode.Width, VideoMode.Height);
 			}
 			set
 			{
-                VideoMode = new GorgonVideoMode(value.Width, value.Height, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(value.Width, value.Height, VideoMode.Format, VideoMode.RefreshRate);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics
 			}
 			set
 			{
-                VideoMode = new GorgonVideoMode(VideoMode.Width, VideoMode.Height, value, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(VideoMode.Width, VideoMode.Height, value, VideoMode.RefreshRate);
 			}
 		}
 	
@@ -123,7 +123,7 @@ namespace Gorgon.Graphics
 			}
 			set
 			{
-                VideoMode = new GorgonVideoMode(value, VideoMode.Height, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(value, VideoMode.Height, VideoMode.Format, VideoMode.RefreshRate);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace Gorgon.Graphics
 			}
 			set
 			{
-                VideoMode = new GorgonVideoMode(VideoMode.Width, value, VideoMode.Format, VideoMode.RefreshRateNumerator, VideoMode.RefreshRateDenominator);
+                VideoMode = new GorgonVideoMode(VideoMode.Width, value, VideoMode.Format, VideoMode.RefreshRate);
 			}
 		}
 
@@ -230,7 +230,7 @@ namespace Gorgon.Graphics
 		/// Property to set or return the multisampling count/quality for the render target.
 		/// </summary>
 		/// <remarks>The default is a count of 1 and a quality of 0 (no multisampling).</remarks>
-		public GorgonMultisampling Multisampling
+		public GorgonMultiSampleInfo Multisampling
 		{
 			get;
 			set;
@@ -270,7 +270,7 @@ namespace Gorgon.Graphics
 			IsWindowed = true;			
 			Flags = SwapChainUsageFlags.RenderTarget;
 			SwapEffect = SwapEffect.Discard;
-			Multisampling = new GorgonMultisampling(1, 0);
+			Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 			DepthStencilFormat = BufferFormat.Unknown;			
 		}
 		#endregion

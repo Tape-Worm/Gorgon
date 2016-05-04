@@ -26,6 +26,7 @@
 
 using System.Drawing;
 using Gorgon.Core;
+using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
@@ -226,21 +227,18 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-                // ReSharper disable NonReadonlyFieldInGetHashCode
-				return 281.GenerateHash(CullingMode).
-						GenerateHash(DepthBias).
-						GenerateHash(DepthBiasClamp).
-						GenerateHash(FillMode).
-						GenerateHash(IsAntialiasedLinesEnabled).
-						GenerateHash(IsDepthClippingEnabled).
-						GenerateHash(IsFrontFacingTriangleCounterClockwise).
-						GenerateHash(IsMultisamplingEnabled).
-						GenerateHash(IsScissorTestingEnabled).
-						GenerateHash(SlopeScaledDepthBias);
-                // ReSharper restore NonReadonlyFieldInGetHashCode
-            }
+			// ReSharper disable NonReadonlyFieldInGetHashCode
+			return 281.GenerateHash(CullingMode).
+			           GenerateHash(DepthBias).
+			           GenerateHash(DepthBiasClamp).
+			           GenerateHash(FillMode).
+			           GenerateHash(IsAntialiasedLinesEnabled).
+			           GenerateHash(IsDepthClippingEnabled).
+			           GenerateHash(IsFrontFacingTriangleCounterClockwise).
+			           GenerateHash(IsMultisamplingEnabled).
+			           GenerateHash(IsScissorTestingEnabled).
+			           GenerateHash(SlopeScaledDepthBias);
+			// ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -346,8 +344,8 @@ namespace Gorgon.Graphics
 		#region Variables.
 		private Rectangle[] _clipRects;						// Clipping rectangles for scissor testing.
 		private GorgonViewport[] _viewPorts;				// Viewports.
-		private DX.Rectangle[] _dxRects;					// DirectX rectangles for scissor testing.
-		private DX.ViewportF[] _dxViewports;				// DirectX viewports.
+		private RawRectangle[] _dxRects;					// DirectX rectangles for scissor testing.
+		private RawViewportF[] _dxViewports;				// DirectX viewports.
 		#endregion
 
 		#region Properties.
@@ -367,9 +365,17 @@ namespace Gorgon.Graphics
             base.Reset();
 
             States = GorgonRasterizerStates.CullBackFace;
-            
-            Graphics.Context.Rasterizer.SetViewports(null);
-            Graphics.Context.Rasterizer.SetScissorRectangles(null);
+
+	        Graphics.Context.Rasterizer.SetViewport(new RawViewportF
+	                                                {
+		                                                X = 0,
+		                                                Y = 0,
+		                                                Width = 1,
+		                                                Height = 1,
+		                                                MinDepth = 0,
+		                                                MaxDepth = 1
+	                                                });
+            Graphics.Context.Rasterizer.SetScissorRectangles(new RawRectangle(0, 0, 1, 1));
 
             _dxRects = null;
             _clipRects = null;
@@ -462,7 +468,15 @@ namespace Gorgon.Graphics
 		{
 			if ((viewPorts == null) || (viewPorts.Length == 0))
 			{
-				Graphics.Context.Rasterizer.SetViewports(null);
+				Graphics.Context.Rasterizer.SetViewport(new RawViewportF
+				                                        {
+					                                        X = 0,
+															Y = 0,
+															Width = 1,
+															Height = 1,
+															MinDepth = 0,
+															MaxDepth = 1
+				                                        });
 			    _dxViewports = null;
 			    _viewPorts = null;
 				return;
@@ -473,7 +487,7 @@ namespace Gorgon.Graphics
             if ((_dxViewports == null)
                 || (_dxViewports.Length != viewPorts.Length))
             {
-                _dxViewports = new DX.ViewportF[_viewPorts.Length];
+                _dxViewports = new RawViewportF[viewPorts.Length];
             }
 
             for (int i = 0; i < _viewPorts.Length; i++)
@@ -536,7 +550,7 @@ namespace Gorgon.Graphics
 					};
 			    _dxRects = new[]
 			        {
-                        DX.Rectangle.Empty
+                        new RawRectangle(0, 0, 1, 1)
 			        };
 			}
 			else
@@ -575,7 +589,7 @@ namespace Gorgon.Graphics
 		/// <remarks>This will return a array of all scissor test rectangles currently bound to the pipeline.</remarks>
 		public Rectangle[] GetScissorRectangles()
 		{
-		    var result = new Rectangle[_clipRects == null ? 0 : _clipRects.Length];
+		    var result = new Rectangle[_clipRects?.Length ?? 0];
 
             if ((_clipRects != null)
                 && (_clipRects.Length > 0))
@@ -605,7 +619,7 @@ namespace Gorgon.Graphics
 		{
 			if ((rectangles == null) || (rectangles.Length == 0))
 			{
-				Graphics.Context.Rasterizer.SetScissorRectangles(null);
+				Graphics.Context.Rasterizer.SetScissorRectangles(new RawRectangle(0, 0, 1,1));
 				_clipRects = null;
 				_dxRects = null;
 				return;
@@ -614,13 +628,13 @@ namespace Gorgon.Graphics
 			_clipRects = rectangles;
 			if ((_dxRects == null) || (_dxRects.Length != _clipRects.Length))
 			{
-				_dxRects = new DX.Rectangle[_clipRects.Length];
+				_dxRects = new RawRectangle[_clipRects.Length];
 			}
 
 			for (int i = 0; i < _clipRects.Length; i++)
 			{
 				var clipRect = _clipRects[i];
-				_dxRects[i] = new DX.Rectangle(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
+				_dxRects[i] = new RawRectangle(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
 			}
 
 			Graphics.Context.Rasterizer.SetScissorRectangles(_dxRects);

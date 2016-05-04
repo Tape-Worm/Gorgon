@@ -65,7 +65,7 @@ namespace Gorgon.Graphics
 			Format = BufferFormat.Unknown;
 			MipCount = 1;
 			ArrayCount = 1;
-			Multisampling = new GorgonMultisampling(1, 0);
+			Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 		    ShaderViewFormat = BufferFormat.Unknown;
 			AllowUnorderedAccessViews = false;
 			Usage = BufferUsage.Default;
@@ -204,7 +204,7 @@ namespace Gorgon.Graphics
 		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
 		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.GorgonTexture2DSettings.MipCount">MipCount</see> should be set to 1.</para>
 		/// </remarks>
-		public GorgonMultisampling Multisampling
+		public GorgonMultiSampleInfo Multisampling
 		{
 			get;
 			set;

@@ -41,111 +41,58 @@ using D3D = SharpDX.Direct3D11;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Render target after resized event arguments.
-	/// </summary>
-	public class GorgonAfterSwapChainResizedEventArgs
-		: EventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the new width of the target.
-		/// </summary>
-		public int Width
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the new height of the target.
-		/// </summary>
-		public int Height
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether the swap chain is in full screen or windowed mode.
-		/// </summary>
-		public bool IsWindowed
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonAfterSwapChainResizedEventArgs" /> class.
-		/// </summary>
-		/// <param name="target">Render target that was resized.</param>
-		public GorgonAfterSwapChainResizedEventArgs(GorgonSwapChain target)
-		{
-			Width = target.Settings.Width;
-			Height = target.Settings.Height;
-			IsWindowed = target.Settings.IsWindowed;
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// Event parameters for a full screen/windowed state change.
-	/// </summary>
-	public class GorgonBeforeStateTransitionEventArgs
-		: GorgonCancelEventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the swap chain was previously windowed.
-		/// </summary>
-		public bool WasWindowed
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBeforeStateTransitionEventArgs"/> class.
-		/// </summary>
-		/// <param name="wasWindowed"><b>true</b> if the swap chain was previously windowed, <b>false</b> if it was full screen.</param>
-		public GorgonBeforeStateTransitionEventArgs(bool wasWindowed)
-			: base(false)
-		{
-			WasWindowed = wasWindowed;
-		}
-		#endregion
-	}
-
-	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
-	/// <remarks>The swap chain is used to display data to the <see cref="Gorgon.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
-	/// <para>Swap chains embedded into child controls (a panel, group box, etc...) will not be able to switch to full screen mode and will automatically revert to windowed mode.</para>
-	/// <para>Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window
-	/// for the extra video output is located on the monitor attached to that video output.  Failure to do so will keep the mode from switching.
+	/// <remarks>
+	/// <para>
+	/// The swap chain is used to display data to the display, or it can be used as a shader input. It will allow an application to switch to an exclusive full screen view of the rendering surface, or can 
+	/// be used to display the rendering data in the client area of a window.
+	/// </para> 
+	/// <para>
+	/// <note type="note">
+	/// <para>
+	/// Swap chains embedded into child controls (a panel, group box, etc...) will not be able to switch to full screen mode and will automatically revert to windowed mode.
+	/// </para>
+	/// </note>
+	/// </para>
+	/// <para>
+	/// Multiple swap chains can be set to full screen on different video outputs.  When setting up for multiple video outputs in full screen, ensure that the window for the extra video output is located on 
+	/// the monitor attached to that video output.  Failure to do so will keep the mode from switching.
 	/// </para>	
 	/// <para>
-	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on <see cref="Gorgon.Graphics.VideoDevice">multiple video devices</see>.  
-	/// One possible workaround is to create a full screen borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround
-	/// is applied, then it is suggested to disable the Desktop Windows Compositor.  To disable the compositor, see this link http://msdn.microsoft.com/en-us/library/aa969510.aspx.
+	/// <note type="note">
+	/// <para>
+	/// Note that due to a known limitation on Windows 7, it is not currently possible to switch to full screen on multiple outputs on multiple GPUs. One possible workaround is to create a full screen 
+	/// borderless window on the secondary device and use that as a "fake" full screen mode.  If this workaround is applied, then it is suggested to disable the Desktop Windows Compositor. To disable the 
+	/// compositor, set the <see cref="GorgonGraphics.IsDWMCompositionEnabled"/> property to <b>false</b> or see this link: 
+	/// <a href="http://msdn.microsoft.com/en-us/library/aa969510.aspx">http://msdn.microsoft.com/en-us/library/aa969510.aspx</a> for instructions on doing this manually.
+	/// </para>
+	/// <para>
+	/// This does not apply to full screen modes on multiple outputs for the same video device.
+	/// </para>
+	/// </note>
 	/// </para>	
-	/// <para>If the window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus.  
-	/// This functionality can be disabled with the <see cref="P:Gorgon.Graphics.GorgonGraphics.ResetFullscreenOnFocus">GorgonGraphics.ResetFullscreenOnFocus</see> property if it does not suit the needs of the 
-	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is <b>false</b> in this scenario, then the behaviour when switching between applications will be undefined.  
-	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
+	/// <para>
+	/// If a window loses focus and the swap chain is in full screen, it will revert to windowed mode.  The swap chain will attempt to reacquire full screen mode when it regains focus. This functionality can 
+	/// be disabled with the <see cref="GorgonGraphics.ResetFullscreenOnFocus"/> property if it does not suit the needs of the developer.  This is mandatory in full screen multi-monitor applications, if the 
+	/// <see cref="GorgonGraphics.ResetFullscreenOnFocus"/> flag is <b>false</b> in this scenario, then the behaviour when switching between applications will be undefined. This means that it is the 
+	/// responsibility of the developer to handle task switching in multi-monitor environments.
+	/// </para>
 	/// </remarks>
 	public sealed class GorgonSwapChain
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private GorgonRenderTarget2D _renderTarget;			// The render target bound to this swap chain.
-		private bool _disposed;								// Flag to indicate that the object was disposed.
-		private Control _topLevelControl;					// Top level control.
-		private Form _parentForm;							// Parent form for our window.
-		private bool _isInResize;							// Flag to indicate that we're in the middle of a resizing operation.
+		// The render target bound to this swap chain.
+		private GorgonRenderTarget2D _renderTarget;
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;
+		// Top level control.
+		private Control _topLevelControl;
+		// Parent form for our window.
+		private Form _parentForm;
+		// Flag to indicate that we're in the middle of a resizing operation.
+		private bool _isInResize;							
 		#endregion
 
 		#region Events.
@@ -162,7 +109,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public event EventHandler<GorgonBeforeStateTransitionEventArgs> BeforeStateTransition;
 		/// <summary>
-		/// Event called after the swap chain transiitons to full screen or windowed mode.
+		/// Event called after the swap chain transitions to full screen or windowed mode.
 		/// </summary>
 		public event EventHandler<GorgonAfterSwapChainResizedEventArgs> AfterStateTransition;
 		#endregion
@@ -213,7 +160,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Function to return the video output that the swap chain is operating on.
 		/// </summary>
-		public GorgonVideoOutput VideoOutput
+		public GorgonVideoOutputInfo VideoOutput
 		{
 			get
 			{
@@ -224,14 +171,14 @@ namespace Gorgon.Graphics
 
 				IntPtr handle = Win32API.GetMonitor(Settings.Window);
 
-			    return Graphics.VideoDevice.Outputs.FirstOrDefault(item => item.Handle == handle);
+			    return Graphics.VideoDevice.Info.Outputs.FirstOrDefault(item => item.MonitorHandle == handle);
 			}
 		}
 
 		/// <summary>
-		/// Property to return the default viewport associated with this render target.
+		/// Property to return the default view port associated with this render target.
 		/// </summary>
-		public GorgonViewport Viewport => _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
+		public GorgonViewport Viewport => _renderTarget?.Viewport ?? new GorgonViewport(0, 0, 0, 0, 0, 0);
 
 		/// <summary>
 		/// Property to return the settings for this swap chain.
@@ -537,8 +484,7 @@ namespace Gorgon.Graphics
 		        Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize.Width,
 		                                                 Settings.Window.ClientSize.Height,
 		                                                 Settings.VideoMode.Format,
-		                                                 Settings.VideoMode.RefreshRateNumerator,
-		                                                 Settings.VideoMode.RefreshRateDenominator);
+		                                                 Settings.VideoMode.RefreshRate);
 		        ResizeBuffers();
 		    }
 		    catch (Exception ex)
@@ -560,13 +506,13 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to update the fullscreen/windowed mode state.
+		/// Function to update the full screen/windowed mode state.
 		/// </summary>
 		private void ModeStateUpdate()
 		{
 			var e = new GorgonBeforeStateTransitionEventArgs(!Settings.IsWindowed);
 
-			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
+			GI.ModeDescription mode = Settings.VideoMode.ToModeDesc();
 
 			try
 			{
@@ -636,69 +582,72 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to intialize the swap chain.
+		/// Function to initialize the swap chain.
 		/// </summary>
 		internal void Initialize()
 		{
-			var D3DSettings = new GI.SwapChainDescription();
-
-			// Resize the window to match requested mode size.
-		    if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
-		    {
-		        _parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
-		    }
-
-		    AutoResize = !Settings.NoClientResize;
-			Graphics.GetFullScreenSwapChains();
-			D3DSettings.BufferCount = Settings.BufferCount;
-            D3DSettings.Flags = GI.SwapChainFlags.AllowModeSwitch;
-
-            D3DSettings.IsWindowed = true;
-            D3DSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode);
-            D3DSettings.OutputHandle = Settings.Window.Handle;
-            D3DSettings.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
-            D3DSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
-
-		    if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
-		    {
-                D3DSettings.Usage = GI.Usage.RenderTargetOutput;
-		    }
-
-		    if ((Settings.Flags & SwapChainUsageFlags.AllowShaderView) == SwapChainUsageFlags.AllowShaderView)
-		    {
-                D3DSettings.Usage |= GI.Usage.ShaderInput;
-		    }
-
-		    if ((Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView) == SwapChainUsageFlags.AllowUnorderedAccessView)
-            {
-                D3DSettings.Usage |= GI.Usage.UnorderedAccess;
-            }
-
-			GorgonApplication.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", LoggingLevel.Simple, Name);
-            GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, D3DSettings)
-            {
-                DebugName = Name + " DXGISwapChain"
-            };
-
-		    // Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
-			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
-
-			CreateResources();
-
-			if (!Settings.IsWindowed)
+			using (GI.Factory1 factory = Graphics.Adapter.GetParent<GI.Factory1>())
 			{
-				ModeStateUpdate();
-			}
+				var D3DSettings = new GI.SwapChainDescription();
 
-			Settings.Window.Resize += Window_Resize;
-			
-			if (_parentForm == null)
-			{
-				return;
-			}
+				// Resize the window to match requested mode size.
+				if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
+				{
+					_parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+				}
 
-			_parentForm.ResizeBegin += _parentForm_ResizeBegin;
-			_parentForm.ResizeEnd += _parentForm_ResizeEnd;
+				AutoResize = !Settings.NoClientResize;
+				Graphics.GetFullScreenSwapChains();
+				D3DSettings.BufferCount = Settings.BufferCount;
+				D3DSettings.Flags = GI.SwapChainFlags.AllowModeSwitch;
+
+				D3DSettings.IsWindowed = true;
+				D3DSettings.ModeDescription = Settings.VideoMode.ToModeDesc();
+				D3DSettings.OutputHandle = Settings.Window.Handle;
+				D3DSettings.SampleDescription = Settings.Multisampling.ToSampleDesc();
+				D3DSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
+
+				if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
+				{
+					D3DSettings.Usage = GI.Usage.RenderTargetOutput;
+				}
+
+				if ((Settings.Flags & SwapChainUsageFlags.AllowShaderView) == SwapChainUsageFlags.AllowShaderView)
+				{
+					D3DSettings.Usage |= GI.Usage.ShaderInput;
+				}
+
+				if ((Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView) == SwapChainUsageFlags.AllowUnorderedAccessView)
+				{
+					D3DSettings.Usage |= GI.Usage.UnorderedAccess;
+				}
+
+				GorgonApplication.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", LoggingLevel.Simple, Name);
+				GISwapChain = new GI.SwapChain(factory, Graphics.D3DDevice, D3DSettings)
+				              {
+					              DebugName = Name + " DXGISwapChain"
+				              };
+
+				// Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
+				factory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
+
+				CreateResources();
+
+				if (!Settings.IsWindowed)
+				{
+					ModeStateUpdate();
+				}
+
+				Settings.Window.Resize += Window_Resize;
+
+				if (_parentForm == null)
+				{
+					return;
+				}
+
+				_parentForm.ResizeBegin += _parentForm_ResizeBegin;
+				_parentForm.ResizeEnd += _parentForm_ResizeEnd;
+			}
 		}
 
         /// <summary>

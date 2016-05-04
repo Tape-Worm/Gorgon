@@ -81,7 +81,7 @@ namespace Gorgon.Graphics
 		/// This the equivalent of a Direct 3D 10.0 video device.
 		/// </para>
 		/// </summary>
-		Sm4 = 1,
+		Sm4 = D3D.FeatureLevel.Level_10_0,
 		/// <summary>
 		/// <para>
 		/// Shader model 4.0 with a 4.1 profile.
@@ -91,7 +91,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </summary>
 		/// <remarks></remarks>
-		Sm41 = 2,
+		Sm41 = D3D.FeatureLevel.Level_10_1,
 		/// <summary>
 		/// <para>
 		/// Shader model 5.0.
@@ -100,7 +100,7 @@ namespace Gorgon.Graphics
 		/// This is the equivalent of a Direct 3D 11 or better video device.
 		/// </para>
 		/// </summary>
-		Sm5 = 3
+		Sm5 = D3D.FeatureLevel.Level_11_0
 	}
 
 	/// <summary>

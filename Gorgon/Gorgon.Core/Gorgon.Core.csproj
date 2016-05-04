@@ -295,6 +295,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="app.manifest" />
     <None Include="Resources\SettingsDocVersion.xml" />
     <None Include="Resources\SettingsDocNoVersion.xml" />
     <None Include="Resources\Check_Disabled1.png" />

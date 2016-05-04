@@ -157,13 +157,13 @@ namespace Gorgon.Graphics
 		    if (((ShaderType == ShaderType.Compute)
 		         || (ShaderType == ShaderType.Domain)
 		         || (ShaderType == ShaderType.Hull))
-		        && (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5))
+		        && (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5))
 		    {
 		        throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 		    }
 
 		    if ((ShaderType == ShaderType.Geometry)
-		        && ((Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm4)))
+		        && ((Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm4)))
 		    {
                 throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm4));
 		    }
@@ -382,7 +382,7 @@ namespace Gorgon.Graphics
 			        flags = Shaders.ShaderFlags.Debug;
 			    }
 
-			    if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+			    if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
 				{
 					flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 				}
@@ -575,7 +575,7 @@ namespace Gorgon.Graphics
 			EntryPoint = entryPoint;
 
 			// Determine the version by the supported feature level.
-			switch (Graphics.VideoDevice.SupportedFeatureLevel)
+			switch (Graphics.VideoDevice.RequestedFeatureLevel)
 			{
 				case DeviceFeatureLevel.Sm5:
 					Version = ShaderVersion.Version5;

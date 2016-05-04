@@ -79,7 +79,7 @@ namespace Gorgon.Graphics
 			TextureFormat = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
-			Multisampling = GorgonMultisampling.NoMultiSampling;
+			Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 			AllowUnorderedAccessViews = false;
 		}
 		#endregion
@@ -135,7 +135,7 @@ namespace Gorgon.Graphics
 		/// <remarks>Multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.
 		/// <para>The default is a count of 1 and a quality of 0 (no multisampling).</para>
 		/// </remarks>
-		public GorgonMultisampling Multisampling
+		public GorgonMultiSampleInfo Multisampling
 		{
 			get;
 			set;

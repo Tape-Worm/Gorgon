@@ -222,7 +222,7 @@ namespace Gorgon.Renderers
 				Height = BlurRenderTargetsSize.Height,
 				Format = BlurTargetFormat,
 				DepthStencilFormat = BufferFormat.Unknown,
-				Multisampling = GorgonMultisampling.NoMultiSampling
+				Multisampling = GorgonMultiSampleInfo.NoMultiSampling
 			};
 
 			_hTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Horizontal", settings);

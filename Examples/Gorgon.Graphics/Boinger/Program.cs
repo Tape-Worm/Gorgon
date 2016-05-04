@@ -322,11 +322,13 @@ namespace Gorgon.Graphics.Example
 			// Validate depth buffer for this device.
 			// Odds are good that if this fails, you should probably invest in a
 			// better video card.  Preferably something created after 2005.
-			if (!Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
+			BufferFormatSupport support = Graphics.VideoDevice.GetBufferFormatSupport(depthFormat);
+			if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 			{
 				depthFormat = BufferFormat.D16_UNorm;
+				support = Graphics.VideoDevice.GetBufferFormatSupport(depthFormat);
 
-				if (Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
+				if ((support & BufferFormatSupport.DepthStencil) != BufferFormatSupport.DepthStencil)
 				{
 					return;
 				}

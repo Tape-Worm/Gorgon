@@ -176,17 +176,18 @@ namespace Gorgon.Graphics.Example
 			// Check to ensure that we can support the format required for our swap chain.
 			// If a video device can't support this format, then the odds are good it won't render anything, and thus 
 			// this is here for illustration on how to determine if a format is OK for display purposes.
-			if (!Graphics.VideoDevice.SupportsDisplayFormat(BufferFormat.R8G8B8A8_UNorm))
+			if ((Graphics.VideoDevice.GetBufferFormatSupport(BufferFormat.R8G8B8A8_UNorm) & BufferFormatSupport.Display) != BufferFormatSupport.Display)
 			{
 				GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
 				return;
 			}
 
 			// Create a swap chain as our graphics output to the window.
-			_swap = Graphics.Output.CreateSwapChain("Main", new GorgonSwapChainSettings
-			{
-				Window = _mainForm										// Assign to our form.
-			});
+			_swap = Graphics.Output.CreateSwapChain("Main",
+			                                        new GorgonSwapChainSettings
+			                                        {
+				                                        Window = _mainForm // Assign to our form.
+			                                        });
 		}
 		#endregion
 

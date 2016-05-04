@@ -293,7 +293,7 @@ namespace Gorgon.Renderers
 			}
 			set
 			{
-				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)
+				if (Graphics.VideoDevice.RequestedFeatureLevel == DeviceFeatureLevel.Sm4)
 				{
 					_multiSampleEnable = value;
 				}
@@ -643,8 +643,8 @@ namespace Gorgon.Renderers
 
 			if ((!IsMultisamplingEnabled)
 			    && ((target2D.Settings.Multisampling.Count > 1) || (target2D.Settings.Multisampling.Quality > 0))
-			    && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm41)
-			        || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm5)))
+			    && ((Graphics.VideoDevice.RequestedFeatureLevel == DeviceFeatureLevel.Sm41)
+			        || (Graphics.VideoDevice.RequestedFeatureLevel >= DeviceFeatureLevel.Sm5)))
 			{
 				_multiSampleEnable = true;
 			}
@@ -859,7 +859,7 @@ namespace Gorgon.Renderers
         public T Create2DEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : Gorgon2DEffect
 		{
-            var effectParameters = new GorgonEffectParameter[parameters == null ? 1 : parameters.Length + 1];
+            var effectParameters = new GorgonEffectParameter[parameters?.Length + 1 ?? 1];
 
             effectParameters[0] = new GorgonEffectParameter("Gorgon2D", this);
 

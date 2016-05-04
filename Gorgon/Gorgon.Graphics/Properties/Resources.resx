@@ -761,4 +761,16 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_ERR_NO_SUITABLE_VIDEO_DEVICE_FOUND" xml:space="preserve">
     <value>Could not use any of the installed video devices on this system. Gorgon requires a video card that supports shader model 4 at minimum.</value>
   </data>
+  <data name="GORGFX_ERR_SWAP_TOO_SMALL" xml:space="preserve">
+    <value>The swap chain must be at least 1x1 pixels in width and height.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RESIZE_SWAP_ASSIGNED" xml:space="preserve">
+    <value>The swap chain '{0}' could not resize its back buffers because it is still bound as a render target, or its internal depth buffer is still bound.</value>
+  </data>
+  <data name="GORGFX_ERR_RESOURCE_ID_ALREADY_REGISTERED" xml:space="preserve">
+    <value>The resource '{0}' could not be registered because another resource with the ID of {2} is already registered.</value>
+  </data>
+  <data name="GORGFX_ERR_RESOURCE_NOT_REGISTERED" xml:space="preserve">
+    <value>The resource '{0}' was not registered.</value>
+  </data>
 </root>

@@ -442,7 +442,7 @@ namespace Gorgon.Graphics
 		/// </exception>
 		protected GorgonTextureUnorderedAccessView OnGetUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+			if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 			}
@@ -452,7 +452,7 @@ namespace Gorgon.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
             }
 
-			if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+			if ((Graphics.VideoDevice.GetBufferFormatSupport(format) & BufferFormatSupport.UnorderedAccess) != BufferFormatSupport.UnorderedAccess)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 										  string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
@@ -498,6 +498,8 @@ namespace Gorgon.Graphics
 		    GorgonRenderStatistics.TextureSize -= SizeInBytes;
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+			Graphics.UnregisterResource(this);
 		}
 
 		/// <summary>
@@ -591,7 +593,7 @@ namespace Gorgon.Graphics
             // If the format is different, then check to see if the format group is the same.
             if ((sourceTexture.Settings.Format != Settings.Format)
                 && ((sourceTexture.FormatInformation.Group != FormatInformation.Group)
-                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)))
+                    || (Graphics.VideoDevice.RequestedFeatureLevel == DeviceFeatureLevel.Sm4)))
             {
                 throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT,
                     sourceTexture.Settings.Format,
@@ -1073,7 +1075,7 @@ namespace Gorgon.Graphics
 			// If the format is different, then check to see if the format group is the same.
 		    if ((texture.Settings.Format != Settings.Format)
 		        && ((texture.FormatInformation.Group != FormatInformation.Group)
-		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4)))
+		            || (Graphics.VideoDevice.RequestedFeatureLevel == DeviceFeatureLevel.Sm4)))
 		    {
 		        throw new ArgumentException(
 		            string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT, texture.Settings.Format, Settings.Format),

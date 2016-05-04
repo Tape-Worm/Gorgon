@@ -60,8 +60,18 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the swap chain associated with this depth buffer.
+		/// </summary>
+		public GorgonSwapChainNew SwapChain2
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Property to return the swap chain that owns this depth/stencil buffer.
 		/// </summary>
+		[Obsolete("This is going away. Get rid of it")]
 		public GorgonSwapChain SwapChain
 		{
 			get;
@@ -122,7 +132,7 @@ namespace Gorgon.Graphics
 					Width = Settings.Width,
 					MipLevels = Settings.MipCount,
 					OptionFlags = ResourceOptionFlags.None,
-					SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+					SampleDescription = Settings.Multisampling.ToSampleDesc()
 				};
 
 			GorgonApplication.Log.Print("{0} {1}: Creating 2D depth/stencil texture...", LoggingLevel.Verbose, GetType().Name, Name);
@@ -216,7 +226,7 @@ namespace Gorgon.Graphics
         /// <para>The <paramref name="flags"/> parameter will allow the depth/stencil buffer to be read simultaneously from the depth/stencil view and from a shader view.  It is not normally possible to bind a view of a 
         /// resource to 2 parts of the pipeline at the same time.  However, using the flags provided, read-only access may be granted to a part of the resource (depth or stencil) or all of it for all parts of the pipline.  
         /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
-        /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
+        /// <para>Binding to simultaneous views require a video device with a feature level of SM5 or better.</para>
         /// </remarks>
 		/// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
@@ -227,7 +237,7 @@ namespace Gorgon.Graphics
 		        return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
 	        }
 
-	        if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+	        if (Graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
 	        {
 		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));
 	        }
@@ -296,7 +306,7 @@ namespace Gorgon.Graphics
 		/// <returns>The depth stencil  view for the swap chain.</returns>
 		public static GorgonDepthStencilView ToDepthStencilView(GorgonDepthStencil2D target)
 		{
-			return target == null ? null : target._defaultView;
+			return target?._defaultView;
 		}
 
 		/// <summary>
@@ -306,7 +316,7 @@ namespace Gorgon.Graphics
 		/// <returns>The depth stencil  view for the swap chain.</returns>
 		public static implicit operator GorgonDepthStencilView(GorgonDepthStencil2D target)
 		{
-			return target == null ? null : target._defaultView;
+			return target?._defaultView;
 		}
 		#endregion
 

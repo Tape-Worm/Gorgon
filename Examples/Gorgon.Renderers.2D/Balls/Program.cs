@@ -379,8 +379,8 @@ namespace Gorgon.Examples
 			{
 				_form.Location =
 					new Point(
-						_mainScreen.VideoOutput.OutputBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.OutputBounds.Left,
-						_mainScreen.VideoOutput.OutputBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.OutputBounds.Top);
+						_mainScreen.VideoOutput.DesktopBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.DesktopBounds.Left,
+						_mainScreen.VideoOutput.DesktopBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.DesktopBounds.Top);
 			}
 
 			// Load the ball texture.
@@ -411,7 +411,7 @@ namespace Gorgon.Examples
 				Width = Settings.Default.ScreenWidth,
 				Height = Settings.Default.ScreenHeight,
 				Format = BufferFormat.R8G8B8A8_UNorm,
-				Multisampling = GorgonMultisampling.NoMultiSampling
+				Multisampling = GorgonMultiSampleInfo.NoMultiSampling
 			});
 			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);
 			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
@@ -434,7 +434,7 @@ namespace Gorgon.Examples
 					Width = args.Width,
 					Height = args.Height,
 					Format = BufferFormat.R8G8B8A8_UNorm,
-					Multisampling = GorgonMultisampling.NoMultiSampling
+					Multisampling = GorgonMultiSampleInfo.NoMultiSampling
 				});
 
 				Vector2 newTargetSize;
@@ -483,9 +483,9 @@ namespace Gorgon.Examples
 			_fpsText = new StringBuilder(64);
 			_helpText = new StringBuilder();
 		    _helpText.AppendFormat(Resources.HelpText,
-		                           _graphics.VideoDevice.Name,
-		                           _graphics.VideoDevice.SupportedFeatureLevel,
-		                           _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory());
+		                           _graphics.VideoDevice.Info.Name,
+		                           _graphics.VideoDevice.RequestedFeatureLevel,
+		                           _graphics.VideoDevice.Info.DedicatedVideoMemory.FormatMemory());
 
 			// Create a static text block.  This will perform MUCH better than drawing the text 
 			// every frame with DrawString.

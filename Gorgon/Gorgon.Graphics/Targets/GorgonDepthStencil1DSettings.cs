@@ -152,11 +152,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>This only applies to 2D depth/stencil buffers.  This value will always return a count of 1 and a quality of 0 (no multisampling).</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property is made.</exception>
-		GorgonMultisampling ITextureSettings.Multisampling
+		GorgonMultiSampleInfo ITextureSettings.Multisampling
 		{
 			get
 			{
-				return GorgonMultisampling.NoMultiSampling;
+				return GorgonMultiSampleInfo.NoMultiSampling;
 			}
 			set
 			{

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -119,6 +120,10 @@ namespace Gorgon.Graphics
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
 		private VideoDevice _videoDevice;
+		// Current D3D render targets.
+		private D3D.RenderTargetView[] _currentTargets;
+		// Currently allocated resources.
+		private readonly ConcurrentDictionary<int, GorgonResource> _resources = new ConcurrentDictionary<int, GorgonResource>();
         #endregion
 
         #region Properties.
@@ -348,20 +353,41 @@ namespace Gorgon.Graphics
 			if (deviceInfo == null)
 			{
 				var videoDevices = new GorgonVideoDeviceList(_log);
+#if DEBUG
+				videoDevices.Enumerate(true);
+#else
 				videoDevices.Enumerate();
+#endif
 
 				_log.Print("No video device specified.", LoggingLevel.Verbose);
 
-				deviceInfo = (from devices in videoDevices
-				              where devices.VideoDeviceType == VideoDeviceType.Hardware
+				deviceInfo = (from device in videoDevices
+				              where (device.VideoDeviceType == VideoDeviceType.Hardware)
 				                    && ((featureLevel == null)
-				                        || (devices.SupportedFeatureLevel >= featureLevel.Value))
-				              orderby devices.SupportedFeatureLevel descending, devices.Index ascending
-				              select deviceInfo).FirstOrDefault();
+				                        || (device.SupportedFeatureLevel >= featureLevel.Value))
+				              orderby device.SupportedFeatureLevel descending, device.Index ascending
+				              select device).FirstOrDefault();
 
 				if (deviceInfo == null)
 				{
+					// Fall back to software in DEBUG mode.
+#if DEBUG
+					_log.Print("Unable to find a suitable hardware video device, falling back to software device...", LoggingLevel.Verbose);
+
+					deviceInfo = (from device in videoDevices
+								  where (device.VideoDeviceType == VideoDeviceType.Software)
+										&& ((featureLevel == null)
+											|| (device.SupportedFeatureLevel >= featureLevel.Value))
+								  orderby device.SupportedFeatureLevel descending, device.Index ascending
+								  select device).FirstOrDefault();
+
+					if (deviceInfo == null)
+					{
+						throw new GorgonException(GorgonResult.DriverError, Resources.GORGFX_ERR_NO_SUITABLE_VIDEO_DEVICE_FOUND);
+					}
+#else
 					throw new GorgonException(GorgonResult.DriverError, Resources.GORGFX_ERR_NO_SUITABLE_VIDEO_DEVICE_FOUND);
+#endif
 				}
 			}
 
@@ -439,6 +465,38 @@ namespace Gorgon.Graphics
                     select swap);
         }
 
+		/// <summary>
+		/// Function to register a resource with the library.
+		/// </summary>
+		/// <param name="resource">The resource to register.</param>
+		internal void RegisterResource(GorgonResource resource)
+		{
+			if (resource == null)
+			{
+				return;
+			}
+
+			if (!_resources.TryAdd(resource.ResourceID, resource))
+			{
+				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RESOURCE_ID_ALREADY_REGISTERED, resource.Name, resource.ResourceID));
+			}
+		}
+
+		/// <summary>
+		/// Function to unregister a previously registered resource.
+		/// </summary>
+		/// <param name="resource">The resource to remove.</param>
+		internal void UnregisterResource(GorgonResource resource)
+		{
+			if (resource == null)
+			{
+				return;
+			}
+
+			GorgonResource oldResource;
+			_resources.TryRemove(resource.ResourceID, out oldResource);
+		}
+
         /// <summary>
         /// Function to add an object for tracking by the main Gorgon interface.
         /// </summary>
@@ -483,6 +541,50 @@ namespace Gorgon.Graphics
                     where trackedObject is T
                     select (T)trackedObject).ToArray();
         }
+
+		/// <summary>
+		/// Function to execute a <see cref="GorgonGraphicsCommand"/> on the immediate context for rendering.
+		/// </summary>
+		/// <param name="command">Command to execute.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="command"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		public void ExecuteCommand(GorgonGraphicsCommand command)
+		{
+			if (command == null)
+			{
+				throw new ArgumentNullException(nameof(command));
+			}
+
+			// Bind the render targets on the command.
+			if (command.TargetsSet)
+			{
+				if ((_currentTargets == null) || (_currentTargets.Length != command.RenderTargetCount))
+				{
+					_currentTargets = new D3D.RenderTargetView[command.RenderTargetCount];
+				}
+
+				bool hasChanged = false;
+				for (int i = 0; i < _currentTargets.Length; ++i)
+				{
+					if (command.RenderTargets[i] == _currentTargets[i])
+					{
+						continue;
+					}
+
+					_currentTargets[i] = command.RenderTargets[i];
+					hasChanged = true;
+				}
+
+				if (hasChanged)
+				{
+					D3DDevice.ImmediateContext.OutputMerger.SetRenderTargets(null, _currentTargets);
+				}
+			}
+
+			if (command.ClearTargetState != null)
+			{
+				D3DDevice.ImmediateContext.ClearRenderTargetView(command.ClearTargetState.Value.TargetView.D3DView, command.ClearTargetState.Value.Color.ToRawColor4());
+			}
+		}
 
         /// <summary>
         /// Function to create a deferred graphics context.
@@ -587,9 +689,9 @@ namespace Gorgon.Graphics
             Output.Reset();
             Shaders.Reset();
         }
-		#endregion
+#endregion
 
-		#region Constructor/Destructor.
+#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
 		/// </summary>
@@ -605,7 +707,11 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// When specifying a feature level, the device with the closest matching feature level will be used. If the <paramref name="videoDeviceInfo"/> is specified, then that device will be used at the 
 		/// requested <paramref name="featureLevel"/>. If the requested <paramref name="featureLevel"/> is higher than what the <paramref name="videoDeviceInfo"/> will support, then Gorgon will use the 
-		/// highest feature of the specified <paramref name="videoDeviceInfo"/>.
+		/// highest feature of the specified <paramref name="videoDeviceInfo"/>. 
+		/// </para>
+		/// <para>
+		/// If Gorgon is compiled in DEBUG mode, and <see cref="GorgonVideoDeviceInfo"/> is <b>null</b>, then it will attempt to find the most appropriate hardware video device, and failing that, will fall 
+		/// back to a software device (WARP).
 		/// </para>
 		/// <para>
 		/// <note type="important">
@@ -716,20 +822,19 @@ namespace Gorgon.Graphics
         {
 			throw new NotSupportedException();
         }
-        #endregion
+#endregion
 
-        #region IDisposable Members
+#region IDisposable Members
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-	        GorgonDisposableObjectCollection tracked = Interlocked.Exchange(ref _trackedObjects, null);
-	        VideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
-
-			tracked?.Clear();
-			// TODO: This is not thread-safe.
+			// TODO: This is not thread-safe
+			_trackedObjects.Clear();
 			DestroyInterfaces();
+
+			VideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
 			device?.Dispose();
 
 			// TODO: Find a better way to do this.
@@ -750,6 +855,6 @@ namespace Gorgon.Graphics
 			}
 			*/
 		}
-		#endregion
+#endregion
 	}
 }

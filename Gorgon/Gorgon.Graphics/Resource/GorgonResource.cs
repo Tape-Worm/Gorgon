@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Native;
 using D3D = SharpDX.Direct3D11;
@@ -99,8 +100,12 @@ namespace Gorgon.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-	    private D3D.Resource _resource;                             // Direct 3D resource object.
-		private bool _disposed;				                        // Flag to indicate that the object was disposed.
+		// The ID of this resource.
+		private static int _resourceID = -1;
+		// Direct 3D resource object.
+		private D3D.Resource _resource;
+		// Flag to indicate that the object was disposed.
+		private bool _disposed;				             
 		#endregion
 
 		#region Properties.
@@ -163,6 +168,14 @@ namespace Gorgon.Graphics
 					D3DResource.EvictionPriority = (int)value;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Property to return the ID of this resource.
+		/// </summary>
+		public ushort ResourceID
+		{
+			get;
 		}
 
 		/// <summary>
@@ -283,6 +296,10 @@ namespace Gorgon.Graphics
             }
 
 			Graphics = graphics;
+
+			ResourceID = (ushort)Interlocked.Increment(ref _resourceID);
+
+			Graphics.RegisterResource(this);
 		}
 		#endregion
 
@@ -300,10 +317,11 @@ namespace Gorgon.Graphics
 
 		    if (disposing)
 		    {
-                Graphics.RemoveTrackedObject(this);
+				Graphics.UnregisterResource(this);
+				Graphics.RemoveTrackedObject(this);
 
 		        CleanUpResource();
-		    }
+			}
 
 		    _disposed = true;
 		}

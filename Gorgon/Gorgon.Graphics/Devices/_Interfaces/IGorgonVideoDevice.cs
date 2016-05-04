@@ -28,6 +28,7 @@ using System;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics
 {
@@ -130,6 +131,44 @@ namespace Gorgon.Graphics
 		/// to this method, and the quality count for that sample count. If the <see cref="GorgonMultiSampleInfo.Quality"/> is less than 1, then the sample count is not supported by this video device.
 		/// </remarks>
 		GorgonMultiSampleInfo GetMultiSampleQuality(BufferFormat format, int count);
+
+		/// <summary>
+		/// Function to find a display mode supported by the Gorgon.
+		/// </summary>
+		/// <param name="output">The output to use when looking for a video mode.</param>
+		/// <param name="videoMode">The <see cref="GorgonVideoMode"/> used to find the closest match.</param>
+		/// <returns>A <see cref="GorgonVideoMode"/> that is the nearest match for the provided video mode.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
+		/// <remarks>
+		/// <para>
+		/// Users may leave the <see cref="GorgonVideoMode"/> values at unspecified (either 0, or default enumeration values) to indicate that these values should not be used in the search.
+		/// </para>
+		/// <para>
+		/// The following members in <see cref="GorgonVideoMode"/> may be skipped (if not listed, then this member must be specified):
+		/// <list type="bullet">
+		///		<item>
+		///			<description><see cref="GorgonVideoMode.Width"/> and <see cref="GorgonVideoMode.Height"/>.  Both values must be set to 0 if not filtering by width or height.</description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="GorgonVideoMode.RefreshRate"/> should be set to <see cref="GorgonRationalNumber.Empty"/> in order to skip filtering by refresh rate.</description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="GorgonVideoMode.Scaling"/> should be set to <see cref="VideoModeDisplayModeScaling.Unspecified"/> in order to skip filtering by the scaling mode.</description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="GorgonVideoMode.ScanlineOrdering"/> should be set to <see cref="VideoModeScanlineOrder.Unspecified"/> in order to skip filtering by the scanline order.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// The <see cref="GorgonVideoMode.Format"/> member must be one of the UNorm format types and cannot be set to <see cref="BufferFormat.Unknown"/>.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		GorgonVideoMode FindNearestVideoMode(GorgonVideoOutputInfo output, ref GorgonVideoMode videoMode);
 		#endregion
 	}
 }

@@ -28,8 +28,7 @@ using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 using Gorgon.Math;
-using SharpDX;
-using D3D = SharpDX.Direct3D11;
+using SharpDX.Mathematics.Interop;
 using Rectangle = System.Drawing.Rectangle;
 using RectangleF = System.Drawing.RectangleF;
 
@@ -105,9 +104,17 @@ namespace Gorgon.Graphics
 		/// Function to convert this viewport rectangle into a Direct3D viewport.
 		/// </summary>
 		/// <returns>The Direct3D viewport value type.</returns>		
-		internal ViewportF Convert()
+		internal RawViewportF Convert()
 		{
-			return new ViewportF(Left, Top, Width, Height, MinimumZ, MaximumZ);
+			return new RawViewportF
+			{
+				X = Left,
+				Y = Top,
+				Width = Width,
+				Height = Height,
+				MinDepth = MinimumZ,
+				MaxDepth = MaximumZ
+			};
 		}
 
 		/// <summary>
@@ -175,11 +182,8 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				return 281.GenerateHash(Left).GenerateHash(Left).GenerateHash(Width).GenerateHash(Height).
-						GenerateHash(MinimumZ).GenerateHash(MaximumZ).GenerateHash(IsEmpty);
-			}
+			return 281.GenerateHash(Left).GenerateHash(Left).GenerateHash(Width).GenerateHash(Height).
+			           GenerateHash(MinimumZ).GenerateHash(MaximumZ).GenerateHash(IsEmpty);
 		}
 
 		/// <summary>

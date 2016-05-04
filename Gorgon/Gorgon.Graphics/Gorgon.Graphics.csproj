@@ -113,12 +113,16 @@
     <Compile Include="Geometry\InputElementAttribute.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonBox.cs" />
-    <Compile Include="GorgonBufferFormats.cs" />
+    <Compile Include="GorgonBufferFormatInfo.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="GorgonPitchLayout.cs" />
     <Compile Include="IO\GorgonCodecPlugIn.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
+    <Compile Include="States\GorgonClearTargetState.cs" />
+    <Compile Include="States\GorgonGraphicsCommand.cs" />
+    <Compile Include="Targets\GorgonSwapChainNew.cs" />
+    <Compile Include="Targets\GorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonImageBufferList.cs" />
     <Compile Include="Textures\GorgonTextureLockCache.cs" />
     <Compile Include="GorgonRenderCommands.cs" />
@@ -186,7 +190,6 @@
     <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTarget1D.cs" />
     <Compile Include="Targets\GorgonOutputMerger.cs" />
-    <Compile Include="GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonRenderTarget1DSettings.cs" />
     <Compile Include="Targets\GorgonRenderTarget2D.cs" />
     <Compile Include="Targets\GorgonRenderTarget2DSettings.cs" />

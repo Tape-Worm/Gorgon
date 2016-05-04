@@ -25,7 +25,10 @@
 #endregion
 
 using System;
+using System.Diagnostics.Contracts;
+using DXGI = SharpDX.DXGI;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
@@ -158,9 +161,39 @@ namespace Gorgon.Graphics
 		{
 		    return string.Format(Resources.GORGFX_TOSTR_MULTISAMPLEINFO, Count, Quality);
 		}
+
+		/// <summary>
+		/// Function to convert a Gorgon multi-sampling value to a D3D sample description.
+		/// </summary>
+		/// <returns>The D3D sample description.</returns>
+		[Pure]
+		internal DXGI.SampleDescription ToSampleDesc()
+		{
+			return new DXGI.SampleDescription(Count, Quality);
+		}
+
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="other">Other instance for the equality test.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public bool Equals(GorgonMultiSampleInfo other)
+		{
+			return Equals(ref this, ref other);
+		}
 		#endregion
 
 		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonMultiSampleInfo"/> struct.
+		/// </summary>
+		/// <param name="sampleDesc">The DXGI sample description.</param>
+		internal GorgonMultiSampleInfo(DXGI.SampleDescription sampleDesc)
+		{
+			Count = sampleDesc.Count.Max(1).Min(32);
+			Quality = sampleDesc.Quality;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonMultiSampleInfo"/> struct.
 		/// </summary>
@@ -179,18 +212,6 @@ namespace Gorgon.Graphics
 
 		    Count = count;
 			Quality = quality;
-		}
-		#endregion
-
-		#region IEquatable<GorgonMultisampling> Members
-		/// <summary>
-		/// Function to determine if two instances are equal.
-		/// </summary>
-		/// <param name="other">Other instance for the equality test.</param>
-		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-		public bool Equals(GorgonMultiSampleInfo other)
-		{
-			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

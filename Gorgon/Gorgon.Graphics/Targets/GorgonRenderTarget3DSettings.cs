@@ -138,11 +138,11 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>This is not supported for 3D render targets.  This will always return a count of 1, and a quality of 0 (no multisampling).</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
-		GorgonMultisampling ITextureSettings.Multisampling
+		GorgonMultiSampleInfo ITextureSettings.Multisampling
 		{
 			get
 			{
-				return GorgonMultisampling.NoMultiSampling;
+				return GorgonMultiSampleInfo.NoMultiSampling;
 			}
 			set
 			{

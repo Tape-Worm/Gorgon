@@ -79,7 +79,7 @@ namespace Gorgon.Graphics
 		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
 		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.</para>
 		/// </remarks>
-		GorgonMultisampling Multisampling
+		GorgonMultiSampleInfo Multisampling
 		{
 			get;
 			set;

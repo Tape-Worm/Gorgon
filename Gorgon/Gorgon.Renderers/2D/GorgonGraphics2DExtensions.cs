@@ -127,7 +127,7 @@ namespace Gorgon.Graphics
 		        Format = format,
 		        Height = height,
 		        IsWindowed = isWindowed,
-		        Multisampling = new GorgonMultisampling(1, 0),
+		        Multisampling = GorgonMultiSampleInfo.NoMultiSampling,
 		        SwapEffect = SwapEffect.Discard,
 		        Width = width,
 		        Window = window

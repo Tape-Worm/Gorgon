@@ -163,7 +163,7 @@ namespace Gorgon.Renderers
 				Height = _backgroundTarget.Settings.Height,
 				DepthStencilFormat = BufferFormat.Unknown,
 				Format = format == BufferFormat.Unknown ? _backgroundTarget.Settings.Format : format,
-				Multisampling = GorgonMultisampling.NoMultiSampling
+				Multisampling = GorgonMultiSampleInfo.NoMultiSampling
 			});
 
 			_displacementSprite.Texture = _backgroundTarget;
