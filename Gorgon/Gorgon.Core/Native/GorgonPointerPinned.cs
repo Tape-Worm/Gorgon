@@ -175,12 +175,12 @@ namespace Gorgon.Native
 
 			if (count < 1)
 			{
-				throw new ArgumentOutOfRangeException(nameof(count), String.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 1));
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 1));
 			}
 
 			if (index + count > array.Length)
 			{
-				throw new ArgumentException(String.Format(Resources.GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE, index, count));
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE, index, count));
 			}
 
 			int typeSize = DirectAccess.SizeOf<T>();

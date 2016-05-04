@@ -88,7 +88,7 @@ namespace Gorgon.IO.Zip
 
 						directoryName = mountPoint.FullPath + directoryName;
 
-						if (String.IsNullOrWhiteSpace(directoryName))
+						if (string.IsNullOrWhiteSpace(directoryName))
 						{
 							directoryName = "/";
 						}
