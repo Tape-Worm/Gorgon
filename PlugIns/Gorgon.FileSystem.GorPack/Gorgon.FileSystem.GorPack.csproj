@@ -56,7 +56,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.5.0, Culture=neutral, PublicKeyToken=9dea7c6e17aa31ff, processorArchitecture=MSIL">
-      <HintPath>..\..\Gorgon\packages\ICSharpCode.SharpZipLib.Patched.0.86.5\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\packages\ICSharpCode.SharpZipLib.Patched.0.86.5\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -99,12 +99,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetPath)" "$(SolutionDir)..\PlugIns\Bin\$(ConfigurationName)\"
-copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
-copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
-copy "$(SolutionDir)..\plugins\bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns"
+    <PostBuildEvent>copy "$(TargetDir)ICSharpCode.SharpZipLib.dll" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
+copy "$(TargetPath)" "$(SolutionDir)PlugIns\Bin\$(ConfigurationName)\"
+copy "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
+copy "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns\"
+copy "$(SolutionDir)\plugins\bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll" "$(SolutionDir)Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns"
 </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
