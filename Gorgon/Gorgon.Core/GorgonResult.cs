@@ -209,7 +209,7 @@ namespace Gorgon.Core
 		/// <param name="code">The numeric code assigned to the error.</param>
 		/// <param name="description">The full description of the error.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
 		public GorgonResult(string name, int code, string description)
 		{
 			if (name == null)

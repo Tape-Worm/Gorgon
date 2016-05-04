@@ -419,7 +419,7 @@ namespace Gorgon.Diagnostics
 		/// <param name="appname">File name for the log file.</param>
 		/// <param name="extraPath">Additional directories for the path.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="appname"/> parameter is <b>null</b> (<i>Nothing</i> in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="appname"/> parameter is empty.</exception>
 		public GorgonLogFile(string appname, string extraPath)
 		{
 			ThreadID = Thread.CurrentThread.ManagedThreadId;

@@ -168,8 +168,8 @@ namespace Gorgon.IO.Providers
 		/// </summary>
 		/// <param name="physicalPath">Path to the packed file containing the file system.</param>
 		/// <returns><b>true</b> if the provider can read the packed file, <b>false</b> if not.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		/// <remarks>
 		/// This value will return <b>true</b> when the <paramref name="physicalPath"/> is set to <c>::\\Memory</c> on the <c>physicalLocation</c> parameter for the <see cref="IGorgonFileSystem.Mount"/> method.
 		/// </remarks>

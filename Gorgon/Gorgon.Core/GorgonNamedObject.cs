@@ -71,7 +71,7 @@ namespace Gorgon.Core
 		/// </summary>
 		/// <param name="name">The name of this object.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonNamedObject(string name)
 		{
 			if (name == null)

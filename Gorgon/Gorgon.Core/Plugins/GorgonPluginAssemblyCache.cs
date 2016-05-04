@@ -525,7 +525,7 @@ namespace Gorgon.Plugins
 		/// <param name="assemblyFile">Path to the file containing the plugins.</param>
 		/// <returns>A read-only list of plugin names.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyFile"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
+		/// <exception cref="ArgumentException">Thrown when the assemblyFile parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the assembly file could not be found.</exception>
 		/// <exception cref="BadImageFormatException">Thrown when the assembly pointed to by <paramref name="assemblyFile"/> is not a valid .NET assembly.</exception>
 		/// <remarks>
@@ -615,7 +615,7 @@ namespace Gorgon.Plugins
 		/// <param name="assemblyPath">Path to the assembly file.</param>
 		/// <returns><b>true</b> if this is a plugin assembly, <b>false</b> if it is not.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
+		/// <exception cref="ArgumentException">Thrown when the assemblyPath parameter is an empty string.</exception>
 		/// <remarks>
 		/// <para>
 		/// This method will load the assembly into a separate <see cref="AppDomain"/> and will determine if it contains any types that inherit from 

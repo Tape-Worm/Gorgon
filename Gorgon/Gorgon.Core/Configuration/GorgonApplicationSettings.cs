@@ -854,7 +854,7 @@ namespace Gorgon.Configuration
 		/// <param name="section">Section that will contain the new section.</param>
 		/// <param name="name">Name of the section.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
+		/// <exception cref="ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
 			XElement currentSection = GetSectionElement(section);
@@ -1069,7 +1069,7 @@ namespace Gorgon.Configuration
 		/// <param name="settingsVersion">The version of the settings file.</param>
 		/// <param name="log">The application logging interface.</param>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was <b>null</b> (<i>Nothing</i> in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="applicationName"/> parameter is empty.</exception>
 		/// <remarks>
 		/// <para>
 		/// Upon creation, this object will set its default values to the properties that have the <see cref="GorgonApplicationSettingAttribute"/>. These defaults can easily be overridden in the object 

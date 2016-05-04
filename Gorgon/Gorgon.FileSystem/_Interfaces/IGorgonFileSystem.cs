@@ -263,8 +263,8 @@ namespace Gorgon.IO
 		/// Function to retrieve a directory from the file system.
 		/// </summary>
 		/// <param name="path">Path to the directory to retrieve.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b> (<i>Nothing</i> in VB.Net)</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
 		/// <returns>A <see cref="IGorgonVirtualDirectory"/> if found, <b>null</b> (<i>Nothing</i> in VB.Net) if not.</returns>
 		/// <remarks>
 		/// <para>
