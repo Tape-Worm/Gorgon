@@ -653,7 +653,7 @@ namespace Gorgon.IO
 														frame.Palette = paletteInfo.Item1;
 													}
 
-													AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, paletteInfo.Item1?.Colors);
+													AddCustomMetaData(encoder, frame, frameIndex, imageData.Settings, paletteInfo.Item1?.GetColors<Color>());
 													frame.WriteSource(converter);													
 												}
 											}

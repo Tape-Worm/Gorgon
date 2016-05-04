@@ -244,7 +244,7 @@ namespace Gorgon.IO
         /// <para>This property is for <see cref="Gorgon.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="Gorgon.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
         /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
         /// </remarks>
-        public GorgonMultisampling Multisampling
+        public GorgonMultiSampleInfo Multisampling
         {
             get;
             set;
@@ -980,7 +980,7 @@ namespace Gorgon.IO
 			ViewFormat = BufferFormat.Unknown;
 			AllowUnorderedAccess = false;
 			Usage = BufferUsage.Default;
-		    Multisampling = GorgonMultisampling.NoMultiSampling;
+		    Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 		}
 		#endregion
 

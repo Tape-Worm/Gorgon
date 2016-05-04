@@ -161,7 +161,7 @@ namespace Gorgon.Graphics
 		private D3D.DepthStencilViewDescription GetDesc2D()
 		{
 			var target2D = (GorgonDepthStencil2D)Resource;
-			bool isMultiSampled = target2D.Settings.Multisampling != GorgonMultisampling.NoMultiSampling;
+			bool isMultiSampled = target2D.Settings.Multisampling != GorgonMultiSampleInfo.NoMultiSampling;
 
 			// Set up for arrayed and multisampled texture.
 			if (target2D.Settings.ArrayCount > 1)

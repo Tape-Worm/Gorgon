@@ -40,7 +40,7 @@ namespace Gorgon.Native
 	/// Win 32 API function calls.
 	/// </summary>
 	[SuppressUnmanagedCodeSecurity]
-	unsafe static class Win32API
+	static unsafe class Win32API
 	{
 		#region Variables.
 		private static IntPtr _lasthObj = IntPtr.Zero;				// Last active object handle.
@@ -106,7 +106,7 @@ namespace Gorgon.Native
 		/// <param name="flags">Flags to pass in.</param>
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet=CharSet.Auto)]
-		private static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
+		public static extern IntPtr MonitorFromWindow(IntPtr hwnd, MonitorFlags flags);
 
 		/// <summary>
 		/// Function to enable or disable desktop composition.
@@ -131,9 +131,10 @@ namespace Gorgon.Native
 		/// </summary>
 		/// <param name="window">Window to locate.</param>
 		/// <returns>The handle to the monitor.</returns>
+		[Obsolete("No need for this any more.")]
 		public static IntPtr GetMonitor(Control window)
 		{
-		    return MonitorFromWindow(window != null ? window.Handle : IntPtr.Zero, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+		    return MonitorFromWindow(window?.Handle ?? IntPtr.Zero, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
 		}
 
 	    /// <summary>
@@ -176,9 +177,9 @@ namespace Gorgon.Native
 				SelectObject(_hdc, _lasthObj);
 			}
 
-			if ((_hdc != IntPtr.Zero) && (_lastGraphics != null))
+			if (_hdc != IntPtr.Zero)
 			{
-				_lastGraphics.ReleaseHdc();
+				_lastGraphics?.ReleaseHdc();
 			}
 
 			if (_hFont != IntPtr.Zero)
@@ -186,10 +187,7 @@ namespace Gorgon.Native
 				DeleteObject(_hFont);
 			}
 
-			if (_tempFont != null)
-			{
-				_tempFont.Dispose();
-			}
+			_tempFont?.Dispose();
 
 			_tempFont = null;
 			_hFont = IntPtr.Zero;

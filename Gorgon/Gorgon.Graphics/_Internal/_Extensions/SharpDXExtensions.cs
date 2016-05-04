@@ -62,16 +62,6 @@ namespace Gorgon.Graphics
 			return new RawColor4(color.Red, color.Green, color.Blue, color.Alpha);
 		}
 
-		/// <summary>
-		/// Function to convert a Gorgon multi-sampling value to a D3D sample description.
-		/// </summary>
-		/// <param name="sampleInfo">The multi-sample info to convert.</param>
-		/// <returns>The D3D sample description.</returns>
-		public static DXGI.SampleDescription Convert(this GorgonMultiSampleInfo sampleInfo)
-		{
-			return new DXGI.SampleDescription(sampleInfo.Count, sampleInfo.Quality);
-		}
-
 
 		/// <summary>
 		/// Function to convert a DXGI rational number to a Gorgon rational number.
@@ -91,6 +81,16 @@ namespace Gorgon.Graphics
 		public static DXGI.Rational ToRational(this GorgonRationalNumber rational)
 		{
 			return new DXGI.Rational(rational.Numerator, rational.Denominator);
+		}
+
+		/// <summary>
+		/// Function to convert a Gorgon multi sample info to a DXGI multi sample description.
+		/// </summary>
+		/// <param name="sampleInfo">The Gorgon multi sample info to convert.</param>
+		/// <returns>The DXGI multi sample description.</returns>
+		public static DXGI.SampleDescription ToSampleDesc(this GorgonMultiSampleInfo sampleInfo)
+		{
+			return new DXGI.SampleDescription(sampleInfo.Count, sampleInfo.Quality);
 		}
 
 		/// <summary>

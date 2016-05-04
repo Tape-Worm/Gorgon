@@ -387,6 +387,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The swap chain &apos;{0}&apos; could not resize its back buffers because it is still bound as a render target, or its internal depth buffer is still bound..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_RESIZE_SWAP_ASSIGNED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_RESIZE_SWAP_ASSIGNED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The feature level [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
@@ -455,6 +464,33 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; could not be registered because another resource with the ID of {2} is already registered..
+        /// </summary>
+        internal static string GORGFX_ERR_RESOURCE_ID_ALREADY_REGISTERED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RESOURCE_ID_ALREADY_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; was not registered..
+        /// </summary>
+        internal static string GORGFX_ERR_RESOURCE_NOT_REGISTERED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RESOURCE_NOT_REGISTERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The swap chain must be at least 1x1 pixels in width and height..
+        /// </summary>
+        internal static string GORGFX_ERR_SWAP_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SWAP_TOO_SMALL", resourceCulture);
             }
         }
         

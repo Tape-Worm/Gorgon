@@ -98,7 +98,7 @@ namespace Gorgon.Graphics
         internal GorgonOutputGeometryShader(GorgonGraphics graphics, string name, string entryPoint, int rasterizedStream, IList<GorgonStreamOutputElement> outputElements, IList<int> bufferStrides)
 			: base(graphics, name, entryPoint)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm4)
+			if (graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm4)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm4));

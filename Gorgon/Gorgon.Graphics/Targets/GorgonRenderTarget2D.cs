@@ -49,14 +49,17 @@ namespace Gorgon.Graphics
 		#region Variables.
         private GorgonRenderTargetView _defaultRenderTargetView;    // The default render target view for this render target.
         private bool _disposed;				                        // Flag to indicate that the object was disposed.
+		// TODO: Dump this guy.
         private GorgonSwapChain _swapChain;                         // The swap chain that this target is attached to.
+		// The swap chain that this target is attached to.
+		private GorgonSwapChainNew _swapChain2;                         
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to return whether this target is attached to a swap chain or not.
-        /// </summary>
-        public bool IsSwapChain => _swapChain != null;
+		/// <summary>
+		/// Property to return whether this target is attached to a swap chain or not.
+		/// </summary>
+		public bool IsSwapChain => _swapChain != null;
 
 	    /// <summary>
 	    /// Property to return the settings for this render target.
@@ -197,7 +200,7 @@ namespace Gorgon.Graphics
 				Usage = D3D.ResourceUsage.Default,
 				CpuAccessFlags = D3D.CpuAccessFlags.None,
 				OptionFlags = D3D.ResourceOptionFlags.None,
-				SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+				SampleDescription = Settings.Multisampling.ToSampleDesc()
 			};
 
 			GorgonApplication.Log.Print("{0} {1}: Creating 2D render target texture...", LoggingLevel.Verbose, GetType().Name, Name);
@@ -241,6 +244,7 @@ namespace Gorgon.Graphics
 		/// Function to initialize the texture from a swap chain.
 		/// </summary>
 		/// <param name="swapChain">The swap chain used to initialize the texture.</param>
+		[Obsolete("Get rid of this when GorgonSwapChain is replaced.")]
 		internal void InitializeSwapChain(GorgonSwapChain swapChain)
 		{
 			if (D3DResource != null)
@@ -261,7 +265,7 @@ namespace Gorgon.Graphics
 				                            ? swapChain.Settings.Format
 				                            : BufferFormat.Unknown;
 			Settings.AllowUnorderedAccessViews = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
-			Settings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
+			Settings.Multisampling = new GorgonMultiSampleInfo(desc.SampleDescription);
 			Settings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube) ==
 										  D3D.ResourceOptionFlags.TextureCube;
 			Settings.DepthStencilFormat = swapChain.Settings.DepthStencilFormat;
@@ -301,6 +305,60 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Function to initialize the texture from a swap chain.
+		/// </summary>
+		/// <param name="swapChain">The swap chain used to initialize the texture.</param>
+		internal void InitializeSwapChainNew(GorgonSwapChainNew swapChain)
+		{
+			if (D3DResource != null)
+			{
+				CleanUpResource();
+			}
+
+			D3DResource = D3D.Resource.FromSwapChain<D3D.Texture2D>(swapChain.DXGISwapChain, 0);
+			D3D.Texture2DDescription desc = ((D3D.Texture2D)D3DResource).Description;
+
+			Settings.Width = desc.Width;
+			Settings.Height = desc.Height;
+			Settings.ArrayCount = desc.ArraySize;
+			Settings.Format = (BufferFormat)desc.Format;
+			Settings.MipCount = desc.MipLevels;
+			Settings.ShaderViewFormat = BufferFormat.Unknown;
+			Settings.AllowUnorderedAccessViews = false;
+			Settings.Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
+			Settings.IsTextureCube = false;
+			Settings.DepthStencilFormat = swapChain.Info.DepthStencilFormat;
+			Settings.TextureFormat = swapChain.Info.Format;
+
+			_swapChain2 = swapChain;
+
+#if DEBUG
+			Graphics.Output.ValidateRenderTargetSettings(Settings);
+#endif
+
+			GorgonRenderStatistics.TextureCount++;
+			GorgonRenderStatistics.TextureSize += SizeInBytes;
+			GorgonRenderStatistics.RenderTargetCount++;
+			GorgonRenderStatistics.RenderTargetSize += SizeInBytes * 3;
+
+			// Set default viewport.
+			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
+
+			// Re-initialize any released resource views.
+			InitializeResourceViews();
+
+			CreateDepthStencilBuffer();
+
+			if (DepthStencilBuffer != null)
+			{
+				DepthStencilBuffer.SwapChain2 = swapChain;
+			}
+
+			// Create the default render target view.
+			_defaultRenderTargetView = GetRenderTargetView(Settings.Format, 0, 0, 1);
+		}
+
+		/// <summary>
 		/// Function to retrieve a render target view.
 		/// </summary>
 		/// <param name="format">Format of the new render target view.</param>
@@ -308,12 +366,12 @@ namespace Gorgon.Graphics
 		/// <param name="arrayIndex">Array index to use in the view.</param>
 		/// <param name="arrayCount">Number of array indices to use.</param>
 		/// <returns>A render target view.</returns>
-        /// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
-        /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
-        /// use the format from the texture.</para>
-        /// </remarks>
+		/// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
+		/// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
+		/// use the format from the texture.</para>
+		/// </remarks>
 		/// <exception cref="GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
-        public GorgonRenderTargetTextureView GetRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
+		public GorgonRenderTargetTextureView GetRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
 															   int arrayCount)
 		{
 			return OnGetRenderTargetView(format, mipSlice, arrayIndex, arrayCount);

@@ -100,7 +100,7 @@ namespace Gorgon.Graphics
 			        BindFlags = GetBindFlags(false, false),
 			        Usage = (D3D.ResourceUsage)Settings.Usage,
 			        OptionFlags = Settings.IsTextureCube ? D3D.ResourceOptionFlags.TextureCube : D3D.ResourceOptionFlags.None,
-			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+			        SampleDescription = Settings.Multisampling.ToSampleDesc()
 			    };
 		
 		    switch (Settings.Usage)
@@ -199,7 +199,7 @@ namespace Gorgon.Graphics
 					                                                Settings.MipCount));
 			}
 
-			if (Settings.Multisampling.Equals(GorgonMultisampling.NoMultiSampling))
+			if (Settings.Multisampling.Equals(GorgonMultiSampleInfo.NoMultiSampling))
 			{
 				throw new NotSupportedException(string.Format(Resources.GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED, Name));
 			}

@@ -126,14 +126,6 @@
       <Project>{1f3dd0ef-3ca7-41ff-a451-74fdae5307a2}</Project>
       <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
-      <Project>{ce225f21-fb4d-4cb1-8b5b-48a61b5d0e54}</Project>
-      <Name>Gorgon.Renderers.2D</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

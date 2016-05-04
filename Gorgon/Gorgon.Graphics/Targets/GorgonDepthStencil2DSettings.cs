@@ -45,7 +45,7 @@ namespace Gorgon.Graphics
 			ArrayCount = 1;
 			MipCount = 1;
 			AllowShaderView = false;
-			Multisampling = GorgonMultisampling.NoMultiSampling;
+			Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 		}
 		#endregion
 
@@ -151,7 +151,7 @@ namespace Gorgon.Graphics
 		/// Note that multisampled resources cannot have sub resources (e.g. mipmaps), so the <see cref="Gorgon.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.
 		/// <para>The default value is a count of 1, and a quality of 0 (no multisampling).</para>
 		/// </remarks>
-		public GorgonMultisampling Multisampling
+		public GorgonMultiSampleInfo Multisampling
 		{
 			get;
 			set;

@@ -1414,7 +1414,7 @@ namespace Gorgon.Graphics
 				ArrayCount = 1,
 				IsTextureCube = false,
 				MipCount = 1,
-				Multisampling = new GorgonMultisampling(1, 0),
+				Multisampling = GorgonMultiSampleInfo.NoMultiSampling,
 				Usage = BufferUsage.Default,
 				ShaderViewFormat = BufferFormat.Unknown
 			};

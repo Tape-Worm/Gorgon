@@ -102,7 +102,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Format can be used with automatic generation of mip maps.
 		/// </summary>
-		MipMapAutoGen = D3D11.FormatSupport.Mip,
+		MipMapAutoGen = D3D11.FormatSupport.MipAutogen,
 		/// <summary>
 		/// Format can be used for a render target.
 		/// </summary>
@@ -154,7 +154,23 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Format can be used with the HLSL <c>Gather</c> with comparison method.
 		/// </summary>
-		ShaderGatherCompare = D3D11.FormatSupport.ShaderGatherComparison
+		ShaderGatherCompare = D3D11.FormatSupport.ShaderGatherComparison,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved1 = D3D11.FormatSupport.DecoderOutput,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved2 = D3D11.FormatSupport.VideoProcessorOutput,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved3 = D3D11.FormatSupport.VideoProcessorInput,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved4 = D3D11.FormatSupport.VideoEncoder
 	}
 
 	/// <summary>
@@ -198,6 +214,22 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Format supports a typed store.
 		/// </summary>
-		TypedStore = D3D11.ComputeShaderFormatSupport.TypedStore
+		TypedStore = D3D11.ComputeShaderFormatSupport.TypedStore,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved1 = D3D11.ComputeShaderFormatSupport.OutputMergerLogicOperation,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved2 = D3D11.ComputeShaderFormatSupport.Tiled,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved3 = D3D11.ComputeShaderFormatSupport.Shareable,
+		/// <summary>
+		/// This is not supported by Gorgon.
+		/// </summary>
+		Reserved4 = D3D11.ComputeShaderFormatSupport.MultiplaneOverlay
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -134,17 +134,9 @@
       <Project>{933569ed-52a9-4232-a929-1d4c4489b5a1}</Project>
       <Name>Gorgon.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
-      <Project>{ea4b0a1a-586a-47a4-89c1-3e6a4e821c31}</Project>
-      <Name>Gorgon.Graphics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
       <Project>{780b5b61-77bb-4456-af77-e6681e7e48bf}</Project>
       <Name>Gorgon.Input</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
-      <Project>{ce225f21-fb4d-4cb1-8b5b-48a61b5d0e54}</Project>
-      <Name>Gorgon.Renderers.2D</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -422,7 +422,7 @@ namespace Gorgon.Graphics
 				{
 					var device = GetWARPSoftwareDevice(devices.Count);
 
-					if (device.Outputs.Count > 0)
+					if (device != null)
 					{
 						devices.Add(device);
 					}
@@ -433,7 +433,7 @@ namespace Gorgon.Graphics
 				{
 					var device = GetRefSoftwareDevice(devices.Count);
 
-					if (device.Outputs.Count > 0)
+					if (device != null)
 					{
 						devices.Add(device);
 					}

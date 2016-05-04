@@ -114,7 +114,7 @@ namespace Gorgon.Graphics
         internal GorgonDomainShader(GorgonGraphics graphics, string name, string entryPoint)
 			: base(graphics, name, ShaderType.Domain, entryPoint)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.Sm5)
+			if (graphics.VideoDevice.RequestedFeatureLevel < DeviceFeatureLevel.Sm5)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 				                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.Sm5));

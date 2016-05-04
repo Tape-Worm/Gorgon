@@ -90,7 +90,7 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				switch (_graphics.VideoDevice.SupportedFeatureLevel)
+				switch (_graphics.VideoDevice.RequestedFeatureLevel)
 				{
 					case DeviceFeatureLevel.Sm4:
 					case DeviceFeatureLevel.Sm41:
@@ -108,7 +108,7 @@ namespace Gorgon.Graphics
 		{
 			get
 			{
-				switch (_graphics.VideoDevice.SupportedFeatureLevel)
+				switch (_graphics.VideoDevice.RequestedFeatureLevel)
 				{
 					case DeviceFeatureLevel.Sm4:
 					case DeviceFeatureLevel.Sm41:
@@ -191,10 +191,12 @@ namespace Gorgon.Graphics
 			if (settings.Height < 0)
 				settings.Height = 0;
 
+			BufferFormatSupport support = _graphics.VideoDevice.GetBufferFormatSupport(settings.Format);
+
 			// Mip maps also require power of 2 sizing for volume textures.
 			if (settings.MipCount != 1)
 			{
-				if (!_graphics.VideoDevice.SupportsMipMaps(settings.Format))
+				if ((support & BufferFormatSupport.MipMaps) != BufferFormatSupport.MipMaps)
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
 				}
@@ -205,7 +207,7 @@ namespace Gorgon.Graphics
 				settings.Depth = newSize.Item3;
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
+            if ((_graphics.VideoDevice.RequestedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
@@ -231,7 +233,7 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_DEPTH_INVALID, ImageType.Image3D, settings.Width, MaxDepth));
 
 			// Check the format to see if it's available on this device.
-			if (!_graphics.VideoDevice.Supports3DTextureFormat(settings.Format))
+			if ((support & BufferFormatSupport.Texture3D) != BufferFormatSupport.Texture3D)
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image3D));
 		}
 
@@ -240,12 +242,8 @@ namespace Gorgon.Graphics
 		/// </summary>
 		internal void CleanUp()
 		{
-		    if (_logo != null)
-		    {
-		        _logo.Dispose();
-		    }
-
-		    _logo = null;			
+			_logo?.Dispose();
+			_logo = null;			
 		}
 
 		/// <summary>
@@ -272,7 +270,7 @@ namespace Gorgon.Graphics
 
 			if (settings.IsTextureCube)
 			{
-				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.Sm4))
+				if ((settings.ArrayCount != 6) && (_graphics.VideoDevice.RequestedFeatureLevel == DeviceFeatureLevel.Sm4))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_TEXTURE_CUBE_NEEDS_MAX_SIX_SM4);
 				}
@@ -283,17 +281,19 @@ namespace Gorgon.Graphics
 				}
 			}
 
+			BufferFormatSupport support = _graphics.VideoDevice.GetBufferFormatSupport(settings.Format);
+
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
 			if ((settings.MipCount > 1)
-				&& (!_graphics.VideoDevice.SupportsMipMaps(settings.Format)))
+				&& ((support & BufferFormatSupport.MipMaps) != BufferFormatSupport.MipMaps))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
 			}
 
 			if (settings.Multisampling.Count == 0)
-				settings.Multisampling = new GorgonMultisampling(1, 0);
+				settings.Multisampling = GorgonMultiSampleInfo.NoMultiSampling;
 
 			if (settings.Format == BufferFormat.Unknown)
 				settings.Format = BufferFormat.R8G8B8A8_SNorm;
@@ -316,7 +316,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
+            if ((_graphics.VideoDevice.RequestedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
@@ -328,7 +328,7 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_HEIGHT_INVALID, ImageType.Image2D, settings.Height, MaxHeight));
 
 			// Check the format to see if it's available on this device.
-			if (!_graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
+			if ((_graphics.VideoDevice.GetBufferFormatSupport(settings.Format) & BufferFormatSupport.Texture2D) != BufferFormatSupport.Texture2D)
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image2D));			
 		}
 
@@ -361,8 +361,10 @@ namespace Gorgon.Graphics
 			if (settings.Width < 0)
 				settings.Width = 0;
 
+			BufferFormatSupport support = _graphics.VideoDevice.GetBufferFormatSupport(settings.Format);
+
 			if ((settings.MipCount > 1)
-				&& (!_graphics.VideoDevice.SupportsMipMaps(settings.Format)))
+				&& ((support & BufferFormatSupport.MipMaps) != BufferFormatSupport.MipMaps))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_NO_MIP_SUPPORT, settings.Format));
 			}
@@ -378,7 +380,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.Sm5)
+            if ((_graphics.VideoDevice.RequestedFeatureLevel != DeviceFeatureLevel.Sm5)
                 && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_REQUIRES_SM5);
@@ -390,7 +392,7 @@ namespace Gorgon.Graphics
 			}
 
 			// Check the format to see if it's available on this device.
-			if (!_graphics.VideoDevice.Supports1DTextureFormat(settings.Format))
+			if ((support & BufferFormatSupport.Texture1D) != BufferFormatSupport.Texture1D)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_FORMAT_NOT_SUPPORTED, settings.Format, ImageType.Image1D));
 			}
@@ -504,18 +506,17 @@ namespace Gorgon.Graphics
                 throw new ArgumentNullException(nameof(images));
             }
 
-            if (images.Count == 0)
+            switch (images.Count)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(images));
+	            case 0:
+		            throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(images));
+	            case 1:
+		            return CreateTexture<T>(name, images[0], options);
             }
 
             // If we only have 1 image, then use that one.
-            if (images.Count == 1)
-            {
-                return CreateTexture<T>(name, images[0], options);
-            }
 
-            if (textureType == typeof(GorgonTexture1D))
+	        if (textureType == typeof(GorgonTexture1D))
             {
                 imageType = ImageType.Image1D;
             }
@@ -915,7 +916,7 @@ namespace Gorgon.Graphics
 				Format = format,
 				MipCount = 1,
 				ArrayCount = 1,
-				Multisampling = new GorgonMultisampling(1, 0),
+				Multisampling = GorgonMultiSampleInfo.NoMultiSampling,
 				Usage = usage
 			});
 		}
