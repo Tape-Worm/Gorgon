@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamingDeviceDrivers", "Exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input.DirectInput", "PlugIns\Gorgon.Input.DirectInput\Gorgon.Input.DirectInput.csproj", "{FDC64B93-133D-4875-A31E-A60FD58EE1D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestD3D12", "Test\D3D12\TestD3D12.csproj", "{DDC0A8A6-49FA-4D7B-B1FD-D533274E65B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +149,10 @@ Global
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDC64B93-133D-4875-A31E-A60FD58EE1D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDC0A8A6-49FA-4D7B-B1FD-D533274E65B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDC0A8A6-49FA-4D7B-B1FD-D533274E65B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDC0A8A6-49FA-4D7B-B1FD-D533274E65B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDC0A8A6-49FA-4D7B-B1FD-D533274E65B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
