@@ -157,6 +157,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There must be a minimum of 1 item available to the allocator..
+        /// </summary>
+        internal static string GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The application is already running..
         /// </summary>
         internal static string GOR_ERR_APPLICATION_ALREADY_RUNNING {
@@ -815,6 +824,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot call this method across threads..
+        /// </summary>
+        internal static string GOR_RESULT_CANNOT_CALL_CROSS_THREAD {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_CANNOT_CALL_CROSS_THREAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access is denied..
         /// </summary>
         internal static string GOR_RESULT_DESC_ACCESS_DENIED {
@@ -892,6 +910,15 @@ namespace Gorgon.Core.Properties {
         internal static string GOR_RESULT_DESC_NOT_INITIALIZED {
             get {
                 return ResourceManager.GetString("GOR_RESULT_DESC_NOT_INITIALIZED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file format is not supported..
+        /// </summary>
+        internal static string GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED", resourceCulture);
             }
         }
         

@@ -106,6 +106,14 @@
       <HintPath>..\Gorgon.Native\Gorgon.Native.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpDX.3.0.2\lib\net45\SharpDX.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SharpDX.Mathematics, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpDX.Mathematics.3.0.2\lib\net45\SharpDX.Mathematics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -115,8 +123,6 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors" />
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
@@ -126,8 +132,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\GorgonOptionBag.cs" />
     <Compile Include="Collections\Specialized\GorgonConcurrentDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonNamedObjectDictionary.cs" />
+    <Compile Include="Collections\_Extensions\GorgonArrayExtensions.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyDictionary.cs" />
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectDictionary.cs" />
     <Compile Include="Collections\Specialized\GorgonDisposableObjectCollection.cs" />
@@ -136,6 +144,7 @@
     <Compile Include="Collections\_Interfaces\IGorgonNamedObjectReadOnlyList.cs" />
     <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
     <Compile Include="Configuration\GorgonApplicationSettings.cs" />
+    <Compile Include="Configuration\_Interfaces\IGorgonOptionBag.cs" />
     <Compile Include="Design\LocalCategoryAttribute.cs" />
     <Compile Include="Design\LocalDescriptionAttribute.cs" />
     <Compile Include="Design\LocalDisplayNameAttribute.cs" />
@@ -144,6 +153,7 @@
     <Compile Include="Diagnostics\_Interfaces\IGorgonLog.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonLogFile.cs" />
     <Compile Include="Diagnostics\_Interfaces\IGorgonThreadedLog.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonCancelEventArgs.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
     <Compile Include="Graphics\GorgonColor.cs" />
@@ -156,6 +166,7 @@
     <Compile Include="IO\_Interfaces\IGorgonReadOnlyChunkCollection.cs" />
     <Compile Include="Math\GorgonRationalNumber.cs" />
     <Compile Include="Math\_Interfaces\IGorgonSpline.cs" />
+    <Compile Include="Memory\GorgonLinearAllocatorPool.cs" />
     <Compile Include="Native\GorgonIntPtrEqualityComparer.cs" />
     <Compile Include="Native\GorgonPointerTyped.cs" />
     <Compile Include="Native\GorgonPointerAlias.cs" />
@@ -296,6 +307,7 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <None Include="app.manifest" />
+    <None Include="packages.config" />
     <None Include="Resources\SettingsDocVersion.xml" />
     <None Include="Resources\SettingsDocNoVersion.xml" />
     <None Include="Resources\Check_Disabled1.png" />

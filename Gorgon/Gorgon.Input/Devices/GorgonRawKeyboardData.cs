@@ -36,21 +36,25 @@ namespace Gorgon.Input
 	public enum KeyboardDataFlags
 	{
 		/// <summary>
+		/// No key state.
+		/// </summary>
+		None = 0,
+		/// <summary>
 		/// The key is being held down.
 		/// </summary>
-		KeyDown = 0,
+		KeyDown = 1,
 		/// <summary>
 		/// The key has been released.
 		/// </summary>
-		KeyUp = 1,
+		KeyUp = 2,
 		/// <summary>
 		/// The left version of the key (for Alt, Control, Shift, etc...)
 		/// </summary>
-		LeftKey = 2,
+		LeftKey = 4,
 		/// <summary>
 		/// The right version of the key (for Alt, Control, Shift, etc...)
 		/// </summary>
-		RightKey = 4
+		RightKey = 8
 	}
 
 	/// <summary>

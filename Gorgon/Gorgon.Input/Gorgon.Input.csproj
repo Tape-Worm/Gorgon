@@ -96,6 +96,7 @@
     <Compile Include="Devices\_Interfaces\IGorgonRawInputDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\RawKeyboardInfo.cs" />
     <Compile Include="Devices\_Internal\RawMouseInfo.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonGamingDeviceDriver.cs" />
     <Compile Include="GorgonGamingDeviceFactory.cs" />
     <Compile Include="GorgonKeysEqualityComparer.cs" />
