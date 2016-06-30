@@ -63,6 +63,7 @@ namespace Gorgon.Input
 		// Window to hook.
 		private readonly IntPtr _hwnd;
 		// New window procedure.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
 		private IntPtr _newWndProcPtr;
 		// The new window procedure method.
 		private WndProc _newWndProc;

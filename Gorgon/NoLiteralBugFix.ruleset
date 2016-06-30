@@ -1,11 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Microsoft Extended Correctness Rules no literals" Description="Same as the expanded ruleset, only without literal checking.  It's horrendously broken (and is documented at http://connect.microsoft.com/VisualStudio/feedback/details/521030/).  So it's disabled for now.&#xD;&#xA;It also removes some really annoying warnings about implementing IDisposable properly.  Not even Microsoft does it in the way this thing recommends these days.&#xD;&#xA;&#xD;&#xA;These rules expand on the basic correctness rules to maximize the logic and framework usage errors that are reported. Extra emphasis is placed on specific scenarios such as COM interop and mobile applications. Consider including this rule set if one of these scenarios applies to your project or to find additional problems in your project." ToolsVersion="12.0">
+<RuleSet Name="Code analysis rules for Gorgon" Description="Code analysis rules for Gorgon - Disables CA2213 as it's being deprecated (see https://github.com/dotnet/roslyn-analyzers/issues/310)" ToolsVersion="14.0">
   <Include Path="basiccorrectnessrules.ruleset" Action="Default" />
   <Rules AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis" RuleNamespace="Microsoft.Rules.Managed">
-    <Rule Id="CA1008" Action="None" />
     <Rule Id="CA1032" Action="Warning" />
-    <Rule Id="CA1033" Action="None" />
-    <Rule Id="CA1049" Action="Error" />
     <Rule Id="CA1054" Action="Warning" />
     <Rule Id="CA1055" Action="Warning" />
     <Rule Id="CA1056" Action="Warning" />
@@ -27,7 +24,6 @@
     <Rule Id="CA1824" Action="Warning" />
     <Rule Id="CA2001" Action="Warning" />
     <Rule Id="CA2003" Action="Warning" />
-    <Rule Id="CA2006" Action="None" />
     <Rule Id="CA2135" Action="Warning" />
     <Rule Id="CA2136" Action="Warning" />
     <Rule Id="CA2139" Action="Warning" />
@@ -35,7 +31,9 @@
     <Rule Id="CA2143" Action="Warning" />
     <Rule Id="CA2144" Action="Warning" />
     <Rule Id="CA2145" Action="Warning" />
+    <Rule Id="CA2204" Action="Warning" />
     <Rule Id="CA2211" Action="Warning" />
+    <Rule Id="CA2213" Action="None" />
     <Rule Id="CA2217" Action="Warning" />
     <Rule Id="CA2218" Action="Warning" />
     <Rule Id="CA2219" Action="Warning" />

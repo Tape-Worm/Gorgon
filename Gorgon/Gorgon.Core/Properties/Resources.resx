@@ -990,4 +990,13 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_RATIONAL" xml:space="preserve">
     <value>Rational number: {0}/{1} ({2}).</value>
   </data>
+  <data name="GOR_RESULT_CANNOT_CALL_CROSS_THREAD" xml:space="preserve">
+    <value>Cannot call this method across threads.</value>
+  </data>
+  <data name="GOR_RESULT_FILE_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The file format is not supported.</value>
+  </data>
+  <data name="GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>There must be a minimum of 1 item available to the allocator.</value>
+  </data>
 </root>

@@ -1,0 +1,1721 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WINERR_CLASSFACTORY_E_FIRST" xml:space="preserve">
+    <value> This object does not support aggregation</value>
+  </data>
+  <data name="WINERR_CO_E_ALREADYINITIALIZED" xml:space="preserve">
+    <value> CoInitialize has already been called.</value>
+  </data>
+  <data name="WINERR_CO_E_NOTINITIALIZED" xml:space="preserve">
+    <value> CoInitialize has not been called.</value>
+  </data>
+  <data name="WINERR_D2DERR_BAD_NUMBER" xml:space="preserve">
+    <value> Invalid number.</value>
+  </data>
+  <data name="WINERR_D2DERR_DISPLAY_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value> The display format we need to render is not supported by the hardware device.</value>
+  </data>
+  <data name="WINERR_D2DERR_DISPLAY_STATE_INVALID" xml:space="preserve">
+    <value> A valid display state could not be determined.</value>
+  </data>
+  <data name="WINERR_D2DERR_INCOMPATIBLE_BRUSH_TYPES" xml:space="preserve">
+    <value> The brush types are incompatible for the call.</value>
+  </data>
+  <data name="WINERR_D2DERR_INTERNAL_ERROR" xml:space="preserve">
+    <value>An internal error (D2D bug) occurred. On checked builds	 we would assert.</value>
+  </data>
+  <data name="WINERR_D2DERR_INVALID_CALL" xml:space="preserve">
+    <value> A call to this method is invalid.</value>
+  </data>
+  <data name="WINERR_D2DERR_LAYER_ALREADY_IN_USE" xml:space="preserve">
+    <value> A layer resource can only be in use once at any point in time.</value>
+  </data>
+  <data name="WINERR_D2DERR_MAX_TEXTURE_SIZE_EXCEEDED" xml:space="preserve">
+    <value> Requested DX surface size exceeded maximum texture size.</value>
+  </data>
+  <data name="WINERR_D2DERR_NOT_INITIALIZED" xml:space="preserve">
+    <value> The object has not yet been initialized.</value>
+  </data>
+  <data name="WINERR_D2DERR_NO_HARDWARE_DEVICE" xml:space="preserve">
+    <value> No HW rendering device is available for this operation.</value>
+  </data>
+  <data name="WINERR_D2DERR_POP_CALL_DID_NOT_MATCH_PUSH" xml:space="preserve">
+    <value> The pop call did not match the corresponding push call</value>
+  </data>
+  <data name="WINERR_D2DERR_PUSH_POP_UNBALANCED" xml:space="preserve">
+    <value> The push and pop calls were unbalanced</value>
+  </data>
+  <data name="WINERR_D2DERR_RECREATE_TARGET" xml:space="preserve">
+    <value> here has been a presentation error that may be recoverable. The caller needs to recreate</value>
+    <comment> rerender the entire frame</comment>
+  </data>
+  <data name="WINERR_D2DERR_RENDER_TARGET_HAS_LAYER_OR_CLIPRECT" xml:space="preserve">
+    <value> Attempt to copy from a render target while a layer or clip rect is applied</value>
+  </data>
+  <data name="WINERR_D2DERR_SCANNER_FAILED" xml:space="preserve">
+    <value> The geomery scanner failed to process the data.</value>
+  </data>
+  <data name="WINERR_D2DERR_SCREEN_ACCESS_DENIED" xml:space="preserve">
+    <value> D2D could not access the screen.</value>
+  </data>
+  <data name="WINERR_D2DERR_SHADER_COMPILE_FAILED" xml:space="preserve">
+    <value> Shader compilation failed.</value>
+  </data>
+  <data name="WINERR_D2DERR_TARGET_NOT_GDI_COMPATIBLE" xml:space="preserve">
+    <value> The render target is not compatible with GDI</value>
+  </data>
+  <data name="WINERR_D2DERR_TEXT_EFFECT_IS_WRONG_TYPE" xml:space="preserve">
+    <value> A text client drawing effect object is of the wrong type</value>
+  </data>
+  <data name="WINERR_D2DERR_TEXT_RENDERER_NOT_RELEASED" xml:space="preserve">
+    <value> The application is holding a reference to the IDWriteTextRenderer interface after the corresponding DrawText or DrawTextLayout call has returned. The IDWriteTextRenderer instance will be zombied.</value>
+  </data>
+  <data name="WINERR_D2DERR_TOO_MANY_SHADER_ELEMENTS" xml:space="preserve">
+    <value> Shader construction failed because it was too complex.</value>
+  </data>
+  <data name="WINERR_D2DERR_UNSUPPORTED_OPERATION" xml:space="preserve">
+    <value> The requested opertion is not supported.</value>
+  </data>
+  <data name="WINERR_D2DERR_UNSUPPORTED_PIXEL_FORMAT" xml:space="preserve">
+    <value> The pixel format is not supported.</value>
+  </data>
+  <data name="WINERR_D2DERR_UNSUPPORTED_VERSION" xml:space="preserve">
+    <value> The requested D2D version is not supported.</value>
+  </data>
+  <data name="WINERR_D2DERR_WIN32_ERROR" xml:space="preserve">
+    <value> An unknown win32 failure occurred.</value>
+  </data>
+  <data name="WINERR_D2DERR_WRONG_FACTORY" xml:space="preserve">
+    <value> Objects used together must be created from the same factory instance.</value>
+  </data>
+  <data name="WINERR_D2DERR_WRONG_STATE" xml:space="preserve">
+    <value> The object was not in the correct state to process the method.</value>
+  </data>
+  <data name="WINERR_D2DERR_ZERO_VECTOR" xml:space="preserve">
+    <value> The supplied vector is zero.</value>
+  </data>
+  <data name="WINERR_D3D10_ERROR_FILE_NOT_FOUND" xml:space="preserve">
+    <value> File not found</value>
+  </data>
+  <data name="WINERR_D3D10_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS" xml:space="preserve">
+    <value> There are too many unique state objects.</value>
+  </data>
+  <data name="WINERR_D3D11_ERROR_DEFERRED_CONTEXT_MAP_WITHOUT_INITIAL_DISCARD" xml:space="preserve">
+    <value> Deferred context requires Map-Discard usage pattern</value>
+  </data>
+  <data name="WINERR_D3D11_ERROR_FILE_NOT_FOUND" xml:space="preserve">
+    <value> File not found</value>
+  </data>
+  <data name="WINERR_D3D11_ERROR_TOO_MANY_UNIQUE_STATE_OBJECTS" xml:space="preserve">
+    <value> There are too many unique state objects.</value>
+  </data>
+  <data name="WINERR_D3D11_ERROR_TOO_MANY_UNIQUE_VIEW_OBJECTS" xml:space="preserve">
+    <value> Therea are too many unique view objects.</value>
+  </data>
+  <data name="WINERR_D3DERR_CANNOTPROTECTCONTENT" xml:space="preserve">
+    <value> Contect protection not available</value>
+  </data>
+  <data name="WINERR_D3DERR_CONFLICTINGRENDERSTATE" xml:space="preserve">
+    <value> Conflicting render state</value>
+  </data>
+  <data name="WINERR_D3DERR_CONFLICTINGTEXTUREFILTER" xml:space="preserve">
+    <value> Conflicting texture filter</value>
+  </data>
+  <data name="WINERR_D3DERR_CONFLICTINGTEXTUREPALETTE" xml:space="preserve">
+    <value> Conflicting texture palette</value>
+  </data>
+  <data name="WINERR_D3DERR_DEVICEHUNG" xml:space="preserve">
+    <value> Hardware adapter reset by OS</value>
+  </data>
+  <data name="WINERR_D3DERR_DEVICELOST" xml:space="preserve">
+    <value> Device lost</value>
+  </data>
+  <data name="WINERR_D3DERR_DEVICENOTRESET" xml:space="preserve">
+    <value> Device not reset</value>
+  </data>
+  <data name="WINERR_D3DERR_DEVICEREMOVED" xml:space="preserve">
+    <value> Hardware device was removed</value>
+  </data>
+  <data name="WINERR_D3DERR_DRIVERINTERNALERROR" xml:space="preserve">
+    <value> Driver internal error</value>
+  </data>
+  <data name="WINERR_D3DERR_DRIVERINVALIDCALL" xml:space="preserve">
+    <value> Driver invalid call</value>
+  </data>
+  <data name="WINERR_D3DERR_INVALIDCALL" xml:space="preserve">
+    <value> Invalid call</value>
+  </data>
+  <data name="WINERR_D3DERR_INVALIDDEVICE" xml:space="preserve">
+    <value> Invalid device</value>
+  </data>
+  <data name="WINERR_D3DERR_MOREDATA" xml:space="preserve">
+    <value> More data</value>
+  </data>
+  <data name="WINERR_D3DERR_NOTAVAILABLE" xml:space="preserve">
+    <value> Not available</value>
+  </data>
+  <data name="WINERR_D3DERR_NOTFOUND" xml:space="preserve">
+    <value> Not found</value>
+  </data>
+  <data name="WINERR_D3DERR_OUTOFVIDEOMEMORY" xml:space="preserve">
+    <value> Out of video memory</value>
+  </data>
+  <data name="WINERR_D3DERR_PRESENT_STATISTICS_DISJOINT" xml:space="preserve">
+    <value> Presentation statistics are disjoint</value>
+  </data>
+  <data name="WINERR_D3DERR_TOOMANYOPERATIONS" xml:space="preserve">
+    <value> Too many operations</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDALPHAARG" xml:space="preserve">
+    <value> Unsupported alpha arg</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDALPHAOPERATION" xml:space="preserve">
+    <value> Unsupported alpha operation</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDCOLORARG" xml:space="preserve">
+    <value> Unsupported color arg</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDCOLOROPERATION" xml:space="preserve">
+    <value> Unsupported color operation</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDCRYPTO" xml:space="preserve">
+    <value> Unsupported cryptographic system</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDFACTORVALUE" xml:space="preserve">
+    <value> Unsupported factor value</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDOVERLAY" xml:space="preserve">
+    <value> Overlay is not supported</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDOVERLAYFORMAT" xml:space="preserve">
+    <value> Overlay format is not supported</value>
+  </data>
+  <data name="WINERR_D3DERR_UNSUPPORTEDTEXTUREFILTER" xml:space="preserve">
+    <value> Unsupported texture filter</value>
+  </data>
+  <data name="WINERR_D3DERR_WRONGTEXTUREFORMAT" xml:space="preserve">
+    <value> Wrong texture format</value>
+  </data>
+  <data name="WINERR_D3DOK_NOAUTOGEN" xml:space="preserve">
+    <value> The call succeeded but there won't be any mipmaps generated</value>
+  </data>
+  <data name="WINERR_D3DXERR_CANNOTATTRSORT" xml:space="preserve">
+    <value> Cannot attr sort</value>
+  </data>
+  <data name="WINERR_D3DXERR_CANNOTMODIFYINDEXBUFFER" xml:space="preserve">
+    <value> Can not modify index buffer</value>
+  </data>
+  <data name="WINERR_D3DXERR_CANNOTREMOVELASTITEM" xml:space="preserve">
+    <value> Can Not remove last item</value>
+  </data>
+  <data name="WINERR_D3DXERR_DUPLICATENAMEDFRAGMENT" xml:space="preserve">
+    <value> Duplicate named fragment</value>
+  </data>
+  <data name="WINERR_D3DXERR_INVALIDDATA" xml:space="preserve">
+    <value> Invalid data</value>
+  </data>
+  <data name="WINERR_D3DXERR_INVALIDMESH" xml:space="preserve">
+    <value> Invalid mesh</value>
+  </data>
+  <data name="WINERR_D3DXERR_LOADEDMESHASNODATA" xml:space="preserve">
+    <value> Loaded mesh has no data</value>
+  </data>
+  <data name="WINERR_D3DXERR_SKINNINGNOTSUPPORTED" xml:space="preserve">
+    <value> Skinning not supported</value>
+  </data>
+  <data name="WINERR_D3DXERR_TOOMANYINFLUENCES" xml:space="preserve">
+    <value> Too many influences</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADARRAYSIZE" xml:space="preserve">
+    <value> Bad array size</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADCACHEFILE" xml:space="preserve">
+    <value> Bad cache file</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADDATAREFERENCE" xml:space="preserve">
+    <value> Bad data reference</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADFILE" xml:space="preserve">
+    <value> Bad file</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADFILEFLOATSIZE" xml:space="preserve">
+    <value> Bad file float size</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADFILETYPE" xml:space="preserve">
+    <value> Bad file type</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADFILEVERSION" xml:space="preserve">
+    <value> Bad file version</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADOBJECT" xml:space="preserve">
+    <value> Bad object</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADRESOURCE" xml:space="preserve">
+    <value> Bad resource</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADTYPE" xml:space="preserve">
+    <value> Bad type</value>
+  </data>
+  <data name="WINERR_D3DXFERR_BADVALUE" xml:space="preserve">
+    <value> Bad value</value>
+  </data>
+  <data name="WINERR_D3DXFERR_FILENOTFOUND" xml:space="preserve">
+    <value> File not found</value>
+  </data>
+  <data name="WINERR_D3DXFERR_NOMOREDATA" xml:space="preserve">
+    <value> No more data</value>
+  </data>
+  <data name="WINERR_D3DXFERR_NOMOREOBJECTS" xml:space="preserve">
+    <value> No more objects</value>
+  </data>
+  <data name="WINERR_D3DXFERR_NOTDONEYET" xml:space="preserve">
+    <value> Not done yet</value>
+  </data>
+  <data name="WINERR_D3DXFERR_NOTFOUND" xml:space="preserve">
+    <value> Not found</value>
+  </data>
+  <data name="WINERR_D3DXFERR_PARSEERROR" xml:space="preserve">
+    <value> Parse error</value>
+  </data>
+  <data name="WINERR_D3DXFERR_RESOURCENOTFOUND" xml:space="preserve">
+    <value> Resource not found</value>
+  </data>
+  <data name="WINERR_DDERR_ALREADYINITIALIZED" xml:space="preserve">
+    <value> This object is already initialized</value>
+  </data>
+  <data name="WINERR_DDERR_BLTFASTCANTCLIP" xml:space="preserve">
+    <value> If a clipper object is attached to the source surface passed into a BltFast call.</value>
+  </data>
+  <data name="WINERR_DDERR_CANNOTATTACHSURFACE" xml:space="preserve">
+    <value> This surface can not be attached to the requested surface.</value>
+  </data>
+  <data name="WINERR_DDERR_CANNOTDETACHSURFACE" xml:space="preserve">
+    <value> This surface can not be detached from the requested surface.</value>
+  </data>
+  <data name="WINERR_DDERR_CANTCREATEDC" xml:space="preserve">
+    <value>Windows can not create any more DCs	 or a DC was requested for a paltte-indexed surface when the surface had no palette AND the display mode was not palette-indexed (in this case DirectDraw cannot select a proper palette into the DC).</value>
+  </data>
+  <data name="WINERR_DDERR_CANTDUPLICATE" xml:space="preserve">
+    <value>Can't duplicate primary &amp; 3D surfaces	 or surfaces that are implicitly created.</value>
+  </data>
+  <data name="WINERR_DDERR_CANTLOCKSURFACE" xml:space="preserve">
+    <value> Access to this surface is being refused because no driver exists which can supply a pointer to the surface. This is most likely to happen when attempting to lock the primary surface when no DCI provider is present. Will also happen on attempts to lock an optimized surface.</value>
+  </data>
+  <data name="WINERR_DDERR_CANTPAGELOCK" xml:space="preserve">
+    <value> The attempt to page lock a surface failed.</value>
+  </data>
+  <data name="WINERR_DDERR_CANTPAGEUNLOCK" xml:space="preserve">
+    <value> The attempt to page unlock a surface failed.</value>
+  </data>
+  <data name="WINERR_DDERR_CLIPPERISUSINGHWND" xml:space="preserve">
+    <value> an attempt was made to set a clip list for a clipper objec that is already monitoring an hwnd.</value>
+  </data>
+  <data name="WINERR_DDERR_COLORKEYNOTSET" xml:space="preserve">
+    <value> No src color key specified for this operation.</value>
+  </data>
+  <data name="WINERR_DDERR_CURRENTLYNOTAVAIL" xml:space="preserve">
+    <value> Support is currently not available.</value>
+  </data>
+  <data name="WINERR_DDERR_D3DNOTINITIALIZED" xml:space="preserve">
+    <value> D3D has not yet been initialized.</value>
+  </data>
+  <data name="WINERR_DDERR_DCALREADYCREATED" xml:space="preserve">
+    <value> A DC has already been returned for this surface. Only one DC can be retrieved per surface.</value>
+  </data>
+  <data name="WINERR_DDERR_DDSCAPSCOMPLEXREQUIRED" xml:space="preserve">
+    <value> The specified surface type requires specification of the COMPLEX flag</value>
+  </data>
+  <data name="WINERR_DDERR_DEVICEDOESNTOWNSURFACE" xml:space="preserve">
+    <value> Surfaces created by one direct draw device cannot be used directly by another direct draw device.</value>
+  </data>
+  <data name="WINERR_DDERR_DIRECTDRAWALREADYCREATED" xml:space="preserve">
+    <value> A DirectDraw object representing this driver has already been created for this process.</value>
+  </data>
+  <data name="WINERR_DDERR_EXCEPTION" xml:space="preserve">
+    <value> An exception was encountered while performing the requested operation</value>
+  </data>
+  <data name="WINERR_DDERR_EXCLUSIVEMODEALREADYSET" xml:space="preserve">
+    <value> An attempt was made to set the cooperative level when it was already set to exclusive.</value>
+  </data>
+  <data name="WINERR_DDERR_EXPIRED" xml:space="preserve">
+    <value> The data has expired and is therefore no longer valid.</value>
+  </data>
+  <data name="WINERR_DDERR_HEIGHTALIGN" xml:space="preserve">
+    <value> Height of rectangle provided is not a multiple of reqd alignment</value>
+  </data>
+  <data name="WINERR_DDERR_HWNDALREADYSET" xml:space="preserve">
+    <value> The CooperativeLevel HWND has already been set. It can not be reset while the process has surfaces or palettes created.</value>
+  </data>
+  <data name="WINERR_DDERR_HWNDSUBCLASSED" xml:space="preserve">
+    <value>HWND used by DirectDraw CooperativeLevel has been subclassed	 this prevents DirectDraw from restoring state.</value>
+  </data>
+  <data name="WINERR_DDERR_IMPLICITLYCREATED" xml:space="preserve">
+    <value> This surface can not be restored because it is an implicitly created surface.</value>
+  </data>
+  <data name="WINERR_DDERR_INCOMPATIBLEPRIMARY" xml:space="preserve">
+    <value> Unable to match primary surface creation request with existing primary surface.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDCAPS" xml:space="preserve">
+    <value> One or more of the caps bits passed to the callback are incorrect.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDCLIPLIST" xml:space="preserve">
+    <value> DirectDraw does not support provided Cliplist.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDDIRECTDRAWGUID" xml:space="preserve">
+    <value> The GUID passed to DirectDrawCreate is not a valid DirectDraw driver identifier.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDMODE" xml:space="preserve">
+    <value> DirectDraw does not support the requested mode</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDOBJECT" xml:space="preserve">
+    <value> DirectDraw received a pointer that was an invalid DIRECTDRAW object.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDPIXELFORMAT" xml:space="preserve">
+    <value> pixel format was invalid as specified</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDPOSITION" xml:space="preserve">
+    <value> returned when the position of the overlay on the destionation is no longer legal for that destionation.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDRECT" xml:space="preserve">
+    <value> Rectangle provided was invalid.</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDSTREAM" xml:space="preserve">
+    <value> The specified stream contains invalid data</value>
+  </data>
+  <data name="WINERR_DDERR_INVALIDSURFACETYPE" xml:space="preserve">
+    <value> The requested action could not be performed because the surface was of the wrong type.</value>
+  </data>
+  <data name="WINERR_DDERR_LOCKEDSURFACES" xml:space="preserve">
+    <value> Operation could not be carried out because one or more surfaces are locked</value>
+  </data>
+  <data name="WINERR_DDERR_MOREDATA" xml:space="preserve">
+    <value> There is more data available than the specified buffer size could hold</value>
+  </data>
+  <data name="WINERR_DDERR_NEWMODE" xml:space="preserve">
+    <value> The mode test has switched to a new mode.</value>
+  </data>
+  <data name="WINERR_DDERR_NO3D" xml:space="preserve">
+    <value> There is no 3D present.</value>
+  </data>
+  <data name="WINERR_DDERR_NOALPHAHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no alpha accleration hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOBLTHW" xml:space="preserve">
+    <value> No blter.</value>
+  </data>
+  <data name="WINERR_DDERR_NOCLIPLIST" xml:space="preserve">
+    <value> no clip list available</value>
+  </data>
+  <data name="WINERR_DDERR_NOCLIPPERATTACHED" xml:space="preserve">
+    <value> No clipper object attached to surface object</value>
+  </data>
+  <data name="WINERR_DDERR_NOCOLORCONVHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no color conversion hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOCOLORKEY" xml:space="preserve">
+    <value> Surface doesn't currently have a color key</value>
+  </data>
+  <data name="WINERR_DDERR_NOCOLORKEYHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware support of the dest color key.</value>
+  </data>
+  <data name="WINERR_DDERR_NOCOOPERATIVELEVELSET" xml:space="preserve">
+    <value> Create function called without DirectDraw object method SetCooperativeLevel being called.</value>
+  </data>
+  <data name="WINERR_DDERR_NODC" xml:space="preserve">
+    <value> No DC was ever created for this surface.</value>
+  </data>
+  <data name="WINERR_DDERR_NODDROPSHW" xml:space="preserve">
+    <value> No DirectDraw ROP hardware.</value>
+  </data>
+  <data name="WINERR_DDERR_NODIRECTDRAWHW" xml:space="preserve">
+    <value> A hardware only DirectDraw object creation was attempted but the driver did not support any hardware.</value>
+  </data>
+  <data name="WINERR_DDERR_NODIRECTDRAWSUPPORT" xml:space="preserve">
+    <value> No DirectDraw support possible with current display driver</value>
+  </data>
+  <data name="WINERR_DDERR_NODRIVERSUPPORT" xml:space="preserve">
+    <value> The driver does not enumerate display mode refresh rates.</value>
+  </data>
+  <data name="WINERR_DDERR_NOEMULATION" xml:space="preserve">
+    <value> software emulation not available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOEXCLUSIVEMODE" xml:space="preserve">
+    <value> Operation requires the application to have exclusive mode but the application does not have exclusive mode.</value>
+  </data>
+  <data name="WINERR_DDERR_NOFLIPHW" xml:space="preserve">
+    <value> Flipping visible surfaces is not supported.</value>
+  </data>
+  <data name="WINERR_DDERR_NOFOCUSWINDOW" xml:space="preserve">
+    <value> Attempt was made to create or set a device window without first setting the focus window</value>
+  </data>
+  <data name="WINERR_DDERR_NOGDI" xml:space="preserve">
+    <value> There is no GDI present.</value>
+  </data>
+  <data name="WINERR_DDERR_NOHWND" xml:space="preserve">
+    <value> Clipper notification requires an HWND or no HWND has previously been set as the CooperativeLevel HWND.</value>
+  </data>
+  <data name="WINERR_DDERR_NOMIPMAPHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no mip-map texture mapping hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOMIRRORHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOMONITORINFORMATION" xml:space="preserve">
+    <value> The monitor does not have EDID data.</value>
+  </data>
+  <data name="WINERR_DDERR_NONONLOCALVIDMEM" xml:space="preserve">
+    <value> An attempt was made to allocate non-local video memory from a device that does not support non-local video memory.</value>
+  </data>
+  <data name="WINERR_DDERR_NOOPTIMIZEHW" xml:space="preserve">
+    <value>Device does not support optimized surfaces	 therefore no video memory optimized surfaces.</value>
+  </data>
+  <data name="WINERR_DDERR_NOOVERLAYDEST" xml:space="preserve">
+    <value> returned when GetOverlayPosition is called on a overlay that UpdateOverlay has never been called on to establish a destionation.</value>
+  </data>
+  <data name="WINERR_DDERR_NOOVERLAYHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no overlay hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOPALETTEATTACHED" xml:space="preserve">
+    <value> No palette object attached to this surface.</value>
+  </data>
+  <data name="WINERR_DDERR_NOPALETTEHW" xml:space="preserve">
+    <value> No hardware support for 16 or 256 color palettes.</value>
+  </data>
+  <data name="WINERR_DDERR_NORASTEROPHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no appropriate raster op hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOROTATIONHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no rotation hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOSTEREOHARDWARE" xml:space="preserve">
+    <value> Operation could not be carried out because there is no stereo hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOSTRETCHHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware support for stretching</value>
+  </data>
+  <data name="WINERR_DDERR_NOSURFACELEFT" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware present which supports stereo surfaces</value>
+  </data>
+  <data name="WINERR_DDERR_NOT4BITCOLOR" xml:space="preserve">
+    <value> DirectDrawSurface is not in 4 bit color palette and the requested operation requires 4 bit color palette.</value>
+  </data>
+  <data name="WINERR_DDERR_NOT4BITCOLORINDEX" xml:space="preserve">
+    <value> DirectDrawSurface is not in 4 bit color index palette and the requested operation requires 4 bit color index palette.</value>
+  </data>
+  <data name="WINERR_DDERR_NOT8BITCOLOR" xml:space="preserve">
+    <value> DirectDraw Surface is not in 8 bit color mode and the requested operation requires 8 bit color.</value>
+  </data>
+  <data name="WINERR_DDERR_NOTAOVERLAYSURFACE" xml:space="preserve">
+    <value> returned when an overlay member is called for a non-overlay surface</value>
+  </data>
+  <data name="WINERR_DDERR_NOTEXTUREHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no texture mapping hardware present or available.</value>
+  </data>
+  <data name="WINERR_DDERR_NOTFLIPPABLE" xml:space="preserve">
+    <value> An attempt has been made to flip a surface that is not flippable.</value>
+  </data>
+  <data name="WINERR_DDERR_NOTFOUND" xml:space="preserve">
+    <value> Requested item was not found</value>
+  </data>
+  <data name="WINERR_DDERR_NOTLOADED" xml:space="preserve">
+    <value>Surface is an optimized surface	 but has not yet been allocated any memory.</value>
+  </data>
+  <data name="WINERR_DDERR_NOTLOCKED" xml:space="preserve">
+    <value> Surface was not locked.  An attempt to unlock a surface that was not locked at all</value>
+    <comment> or by this process</comment>
+  </data>
+  <data name="WINERR_DDERR_NOTONMIPMAPSUBLEVEL" xml:space="preserve">
+    <value> Attempt was made to set a palette on a mipmap sublevel</value>
+  </data>
+  <data name="WINERR_DDERR_NOTPAGELOCKED" xml:space="preserve">
+    <value> An attempt was made to page unlock a surface with no outstanding page locks.</value>
+  </data>
+  <data name="WINERR_DDERR_NOTPALETTIZED" xml:space="preserve">
+    <value> The surface being used is not a palette-based surface</value>
+  </data>
+  <data name="WINERR_DDERR_NOVSYNCHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware support for vertical blank synchronized operations.</value>
+  </data>
+  <data name="WINERR_DDERR_NOZBUFFERHW" xml:space="preserve">
+    <value> Operation could not be carried out because there is no hardware support for zbuffer blting.</value>
+  </data>
+  <data name="WINERR_DDERR_NOZOVERLAYHW" xml:space="preserve">
+    <value> Overlay surfaces could not be z layered based on their BltOrder because the hardware does not support z layering of overlays.</value>
+  </data>
+  <data name="WINERR_DDERR_OUTOFCAPS" xml:space="preserve">
+    <value> The hardware needed for the requested operation has already been allocated.</value>
+  </data>
+  <data name="WINERR_DDERR_OVERLAPPINGRECTS" xml:space="preserve">
+    <value> Operation could not be carried out because the source and destination rectangles are on the same surface and overlap each other.</value>
+  </data>
+  <data name="WINERR_DDERR_OVERLAYCANTCLIP" xml:space="preserve">
+    <value> hardware does not support clipped overlays</value>
+  </data>
+  <data name="WINERR_DDERR_OVERLAYCOLORKEYONLYONEACTIVE" xml:space="preserve">
+    <value> Can only have ony color key active at one time for overlays</value>
+  </data>
+  <data name="WINERR_DDERR_OVERLAYNOTVISIBLE" xml:space="preserve">
+    <value> returned when GetOverlayPosition is called on a hidden overlay</value>
+  </data>
+  <data name="WINERR_DDERR_PALETTEBUSY" xml:space="preserve">
+    <value> Access to this palette is being refused because the palette is already locked by another thread.</value>
+  </data>
+  <data name="WINERR_DDERR_PRIMARYSURFACEALREADYEXISTS" xml:space="preserve">
+    <value> this process already has created a primary surface</value>
+  </data>
+  <data name="WINERR_DDERR_REGIONTOOSMALL" xml:space="preserve">
+    <value> region passed to Clipper::GetClipList is too small.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACEALREADYATTACHED" xml:space="preserve">
+    <value> This surface is already attached to the surface it is being attached to.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACEALREADYDEPENDENT" xml:space="preserve">
+    <value> This surface is already a dependency of the surface it is being made a dependency of.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACEBUSY" xml:space="preserve">
+    <value> Access to this surface is being refused because the surface is already locked by another thread.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACEISOBSCURED" xml:space="preserve">
+    <value> Access to Surface refused because Surface is obscured.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACELOST" xml:space="preserve">
+    <value> Access to this surface is being refused because the surface is gone. The DIRECTDRAWSURFACE object representing this surface should have Restore called on it.</value>
+  </data>
+  <data name="WINERR_DDERR_SURFACENOTATTACHED" xml:space="preserve">
+    <value> The requested surface is not attached.</value>
+  </data>
+  <data name="WINERR_DDERR_TESTFINISHED" xml:space="preserve">
+    <value> The mode test has finished executing.</value>
+  </data>
+  <data name="WINERR_DDERR_TOOBIGHEIGHT" xml:space="preserve">
+    <value> Height requested by DirectDraw is too large.</value>
+  </data>
+  <data name="WINERR_DDERR_TOOBIGSIZE" xml:space="preserve">
+    <value> Size requested by DirectDraw is too large --  The individual height and width are OK.</value>
+  </data>
+  <data name="WINERR_DDERR_TOOBIGWIDTH" xml:space="preserve">
+    <value> Width requested by DirectDraw is too large.</value>
+  </data>
+  <data name="WINERR_DDERR_UNSUPPORTEDFORMAT" xml:space="preserve">
+    <value> Pixel format requested is unsupported by DirectDraw</value>
+  </data>
+  <data name="WINERR_DDERR_UNSUPPORTEDMASK" xml:space="preserve">
+    <value> Bitmask in the pixel format requested is unsupported by DirectDraw</value>
+  </data>
+  <data name="WINERR_DDERR_UNSUPPORTEDMODE" xml:space="preserve">
+    <value> The display is currently in an unsupported mode</value>
+  </data>
+  <data name="WINERR_DDERR_VERTICALBLANKINPROGRESS" xml:space="preserve">
+    <value> vertical blank is in progress</value>
+  </data>
+  <data name="WINERR_DDERR_VIDEONOTACTIVE" xml:space="preserve">
+    <value> The video port is not active</value>
+  </data>
+  <data name="WINERR_DDERR_WASSTILLDRAWING" xml:space="preserve">
+    <value> Was still drawing</value>
+  </data>
+  <data name="WINERR_DDERR_WRONGMODE" xml:space="preserve">
+    <value> This surface can not be restored because it was created in a different mode.</value>
+  </data>
+  <data name="WINERR_DDERR_XALIGN" xml:space="preserve">
+    <value> Rectangle provided was not horizontally aligned on reqd. boundary</value>
+  </data>
+  <data name="WINERR_DIERR_BADINF" xml:space="preserve">
+    <value> The INF file for the selected device could not be found or is invalid or is damaged. &amp; The specified purpose ID can't be used for the call.</value>
+  </data>
+  <data name="WINERR_DIERR_CANCELLED" xml:space="preserve">
+    <value> The user cancelled the install operation. &amp; The stream already has allocated samples and the surface doesn't match the sample format.</value>
+  </data>
+  <data name="WINERR_DIERR_DEVICEFULL" xml:space="preserve">
+    <value> The device is full. &amp; An invalid media subtype was specified.</value>
+  </data>
+  <data name="WINERR_DIERR_DRIVERFIRST" xml:space="preserve">
+    <value>Device driver-specific codes. Unless the specific driver has been precisely identified	 no meaning should be attributed to these values other than that the driver originated the error.</value>
+  </data>
+  <data name="WINERR_DIERR_DRIVERLAST" xml:space="preserve">
+    <value> Device installer errors.</value>
+  </data>
+  <data name="WINERR_DIERR_EFFECTPLAYING" xml:space="preserve">
+    <value> An attempt was made to modify parameters of an effect while it is playing.  Not all hardware devices support altering the parameters of an effect while it is playing. &amp; Two pins of the same direction cannot be connected together.</value>
+  </data>
+  <data name="WINERR_DIERR_HASEFFECTS" xml:space="preserve">
+    <value> The device cannot be reinitialized because there are still effects attached to it. &amp; At least one of the pins involved in the operation is already connected.</value>
+  </data>
+  <data name="WINERR_DIERR_INCOMPLETEEFFECT" xml:space="preserve">
+    <value> The effect could not be downloaded because essential information is missing.  For example</value>
+    <comment> no axes have been associated with the effect</comment>
+  </data>
+  <data name="WINERR_DIERR_INSUFFICIENTPRIVS" xml:space="preserve">
+    <value> Unable to IDirectInputJoyConfig_Acquire because the user does not have sufficient privileges to change the joystick configuration. &amp; An invalid media type was specified</value>
+  </data>
+  <data name="WINERR_DIERR_INVALIDCLASSINSTALLER" xml:space="preserve">
+    <value> Registry entry or DLL for class installer invalid or class installer not found.</value>
+  </data>
+  <data name="WINERR_DIERR_MAPFILEFAIL" xml:space="preserve">
+    <value> A mapper file function failed because reading or writing the user or IHV settings file failed. &amp; A run-time error occurred.</value>
+  </data>
+  <data name="WINERR_DIERR_MOREDATA" xml:space="preserve">
+    <value> Not all the requested information fit into the buffer. &amp; This object can only be created as an aggregated object.</value>
+  </data>
+  <data name="WINERR_DIERR_NOTBUFFERED" xml:space="preserve">
+    <value> Attempted to read buffered device data from a device that is not buffered. &amp; There is no common media type between these pins.</value>
+  </data>
+  <data name="WINERR_DIERR_NOTDOWNLOADED" xml:space="preserve">
+    <value> The effect is not downloaded. &amp; The enumerator has become invalid.</value>
+  </data>
+  <data name="WINERR_DIERR_NOTEXCLUSIVEACQUIRED" xml:space="preserve">
+    <value> The operation cannot be performed unless the device is acquired in DISCL_EXCLUSIVE mode. &amp; This operation cannot be performed because the filter is active.</value>
+  </data>
+  <data name="WINERR_DIERR_REPORTFULL" xml:space="preserve">
+    <value>SendDeviceData failed because more information was requested to be sent than can be sent to the device.  Some devices have restrictions on how much data can be sent to them.  (For example	 there might be a limit on the number of buttons that can be pressed at once.) &amp; No sample buffer allocator is available.</value>
+  </data>
+  <data name="WINERR_DIERR_UNPLUGGED" xml:space="preserve">
+    <value> The operation could not be completed because the device is not plugged in. &amp; The operation cannot be performed because the pins are not connected.</value>
+  </data>
+  <data name="WINERR_DSERR_ALLOCATED" xml:space="preserve">
+    <value> The call failed because resources (such as a priority level) were already being used by another caller</value>
+  </data>
+  <data name="WINERR_DSERR_ALREADYINITIALIZED" xml:space="preserve">
+    <value> This object is already initialized</value>
+  </data>
+  <data name="WINERR_DSERR_BADFORMAT" xml:space="preserve">
+    <value> The specified WAVE format is not supported</value>
+  </data>
+  <data name="WINERR_DSERR_BADSENDBUFFERGUID" xml:space="preserve">
+    <value> The GUID specified in an audiopath file does not match a valid MIXIN buffer</value>
+  </data>
+  <data name="WINERR_DSERR_BUFFERLOST" xml:space="preserve">
+    <value>The buffer memory has been lost	 and must be restored</value>
+  </data>
+  <data name="WINERR_DSERR_BUFFERTOOSMALL" xml:space="preserve">
+    <value> Tried to create a DSBCAPS_CTRLFX buffer shorter than DSBSIZE_FX_MIN milliseconds</value>
+  </data>
+  <data name="WINERR_DSERR_CONTROLUNAVAIL" xml:space="preserve">
+    <value> The control (vol</value>
+    <comment> pan</comment>
+  </data>
+  <data name="WINERR_DSERR_DS8_REQUIRED" xml:space="preserve">
+    <value> Attempt to use DirectSound 8 functionality on an older DirectSound object</value>
+  </data>
+  <data name="WINERR_DSERR_FXUNAVAILABLE" xml:space="preserve">
+    <value> Requested effects are not available</value>
+  </data>
+  <data name="WINERR_DSERR_INVALIDCALL" xml:space="preserve">
+    <value> This call is not valid for the current state of this object</value>
+  </data>
+  <data name="WINERR_DSERR_NODRIVER" xml:space="preserve">
+    <value> No sound driver is available for use</value>
+  </data>
+  <data name="WINERR_DSERR_OBJECTNOTFOUND" xml:space="preserve">
+    <value> The object requested was not found (numerically equal to DMUS_E_NOT_FOUND)</value>
+  </data>
+  <data name="WINERR_DSERR_OTHERAPPHASPRIO" xml:space="preserve">
+    <value>Another app has a higher priority level	 preventing this call from succeeding</value>
+  </data>
+  <data name="WINERR_DSERR_PRIOLEVELNEEDED" xml:space="preserve">
+    <value> The caller does not have the priority level required for the function to succeed</value>
+  </data>
+  <data name="WINERR_DSERR_SENDLOOP" xml:space="preserve">
+    <value> A circular loop of send effects was detected</value>
+  </data>
+  <data name="WINERR_DSERR_UNINITIALIZED" xml:space="preserve">
+    <value> This object has not been initialized</value>
+  </data>
+  <data name="WINERR_DS_NO_VIRTUALIZATION" xml:space="preserve">
+    <value>The call succeeded	 but we had to substitute the 3D algorithm</value>
+  </data>
+  <data name="WINERR_DWRITE_E_ALREADYREGISTERED" xml:space="preserve">
+    <value> The given interface is already registered.</value>
+  </data>
+  <data name="WINERR_DWRITE_E_FILEACCESS" xml:space="preserve">
+    <value> A font file exists but could not be opened due to access denied</value>
+    <comment> sharing violation</comment>
+  </data>
+  <data name="WINERR_DWRITE_E_FILEFORMAT" xml:space="preserve">
+    <value> Indicates an error in an input file such as a font file.</value>
+  </data>
+  <data name="WINERR_DWRITE_E_FILENOTFOUND" xml:space="preserve">
+    <value> A font file could not be opened because the file</value>
+    <comment> directory</comment>
+  </data>
+  <data name="WINERR_DWRITE_E_FONTCOLLECTIONOBSOLETE" xml:space="preserve">
+    <value> A font collection is obsolete due to changes in the system.</value>
+  </data>
+  <data name="WINERR_DWRITE_E_NOFONT" xml:space="preserve">
+    <value> Indicates the specified font does not exist.</value>
+  </data>
+  <data name="WINERR_DWRITE_E_UNEXPECTED" xml:space="preserve">
+    <value>Indicates an error originating in DirectWrite code	 which is not expected to occur but is safe to recover from.</value>
+  </data>
+  <data name="WINERR_DXFILEERR_BADARRAYSIZE" xml:space="preserve">
+    <value> Bad array size</value>
+  </data>
+  <data name="WINERR_DXFILEERR_BADCACHEFILE" xml:space="preserve">
+    <value> Bad cache file</value>
+  </data>
+  <data name="WINERR_DXFILEERR_BADDATAREFERENCE" xml:space="preserve">
+    <value> Bad data reference</value>
+  </data>
+  <data name="WINERR_DXFILEERR_BADINTRINSICS" xml:space="preserve">
+    <value> Bad intrinsics</value>
+  </data>
+  <data name="WINERR_DXFILEERR_INTERNALERROR" xml:space="preserve">
+    <value> Internal error</value>
+  </data>
+  <data name="WINERR_DXFILEERR_NOINTERNET" xml:space="preserve">
+    <value> No internet</value>
+  </data>
+  <data name="WINERR_DXFILEERR_NOMOREDATA" xml:space="preserve">
+    <value> No more data</value>
+  </data>
+  <data name="WINERR_DXFILEERR_NOMOREOBJECTS" xml:space="preserve">
+    <value> No more objects</value>
+  </data>
+  <data name="WINERR_DXFILEERR_NOMORESTREAMHANDLES" xml:space="preserve">
+    <value> No more stream handles</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_DEVICE_HUNG" xml:space="preserve">
+    <value> Device hung due to badly formed commands.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_DEVICE_REMOVED" xml:space="preserve">
+    <value> Hardware device removed.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_DEVICE_RESET" xml:space="preserve">
+    <value> Device reset due to a badly formed commant.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_DRIVER_INTERNAL_ERROR" xml:space="preserve">
+    <value> An internal driver error occurred.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_FRAME_STATISTICS_DISJOINT" xml:space="preserve">
+    <value> The requested functionality is not supported by the device or the driver.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_graphics_VIDPN_SOURCE_IN_USE" xml:space="preserve">
+    <value> The requested functionality is not supported by the device or the driver.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_INVALID_CALL" xml:space="preserve">
+    <value> The application has made an erroneous API call that it had enough information to avoid. This error is intended to denote that the application should be altered to avoid the error. Use of the debug version of the DXGI.DLL will provide run-time debug output with further information.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_MORE_DATA" xml:space="preserve">
+    <value> The specified size of the destination buffer is too small to hold the requested data.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_NONEXCLUSIVE" xml:space="preserve">
+    <value> The application attempted to perform an operation on an DXGI output that is only legal after the output has been claimed for exclusive owenership.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_NOT_CURRENTLY_AVAILABLE" xml:space="preserve">
+    <value> The requested functionality is not supported by the device or the driver.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_NOT_FOUND" xml:space="preserve">
+    <value>The item requested was not found. For GetPrivateData calls	 this means that the specified GUID had not been previously associated with the object.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_REMOTE_CLIENT_DISCONNECTED" xml:space="preserve">
+    <value> Remote desktop client disconnected.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_REMOTE_OUTOFMEMORY" xml:space="preserve">
+    <value> Remote desktop client is out of memory.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_UNSUPPORTED" xml:space="preserve">
+    <value> Unsupported.</value>
+  </data>
+  <data name="WINERR_DXGI_ERROR_WAS_STILL_DRAWING" xml:space="preserve">
+    <value> Was still drawing.</value>
+  </data>
+  <data name="WINERR_DXGI_STATUS_CLIPPED" xml:space="preserve">
+    <value> Target window is clipped.</value>
+  </data>
+  <data name="WINERR_DXGI_STATUS_MODE_CHANGED" xml:space="preserve">
+    <value> Display mode has changed</value>
+  </data>
+  <data name="WINERR_DXGI_STATUS_MODE_CHANGE_IN_PROGRESS" xml:space="preserve">
+    <value> Display mode is changing</value>
+  </data>
+  <data name="WINERR_DXGI_STATUS_NO_DESKTOP_ACCESS" xml:space="preserve">
+    <value> No access to desktop.</value>
+  </data>
+  <data name="WINERR_DXGI_STATUS_OCCLUDED" xml:space="preserve">
+    <value> The target window or output has been occluded. The application should suspend rendering operations if possible.</value>
+  </data>
+  <data name="WINERR_DXUTERR_CREATINGDEVICE" xml:space="preserve">
+    <value> An error occurred when attempting to create a device.</value>
+  </data>
+  <data name="WINERR_DXUTERR_CREATINGDEVICEOBJECTS" xml:space="preserve">
+    <value> An error occurred in the device create callback function.</value>
+  </data>
+  <data name="WINERR_DXUTERR_DEVICEREMOVED" xml:space="preserve">
+    <value> The device was removed.</value>
+  </data>
+  <data name="WINERR_DXUTERR_INCORRECTVERSION" xml:space="preserve">
+    <value> Incorrect version of Direct3D or D3DX.</value>
+  </data>
+  <data name="WINERR_DXUTERR_MEDIANOTFOUND" xml:space="preserve">
+    <value> A media file could not be found.</value>
+  </data>
+  <data name="WINERR_DXUTERR_NOCOMPATIBLEDEVICES" xml:space="preserve">
+    <value> No device could be found with the specified device settings.</value>
+  </data>
+  <data name="WINERR_DXUTERR_NODIRECT3D" xml:space="preserve">
+    <value> Could not initialize Direct3D.</value>
+  </data>
+  <data name="WINERR_DXUTERR_NONZEROREFCOUNT" xml:space="preserve">
+    <value>The device interface has a non-zero reference count	 meaning that some objects were not released.</value>
+  </data>
+  <data name="WINERR_DXUTERR_RESETTINGDEVICE" xml:space="preserve">
+    <value> An error occurred when attempting to reset a device.</value>
+  </data>
+  <data name="WINERR_DXUTERR_RESETTINGDEVICEOBJECTS" xml:space="preserve">
+    <value> An error occurred in the device reset callback function.</value>
+  </data>
+  <data name="WINERR_ERROR_ACCESS_DENIED" xml:space="preserve">
+    <value> Access is denied.</value>
+  </data>
+  <data name="WINERR_ERROR_ALREADY_INITIALIZED" xml:space="preserve">
+    <value> This object is already initialized</value>
+  </data>
+  <data name="WINERR_ERROR_BAD_DRIVER_LEVEL" xml:space="preserve">
+    <value> The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.</value>
+  </data>
+  <data name="WINERR_ERROR_BAD_ENVIRONMENT" xml:space="preserve">
+    <value> The environment is incorrect.</value>
+  </data>
+  <data name="WINERR_ERROR_BAD_ENVIRONMENT1" xml:space="preserve">
+    <value> The environment is incorrect.</value>
+  </data>
+  <data name="WINERR_ERROR_BAD_FORMAT" xml:space="preserve">
+    <value> An attempt was made to load a program with an incorrect format.</value>
+  </data>
+  <data name="WINERR_ERROR_BAD_FORMAT1" xml:space="preserve">
+    <value> An attempt was made to load a program with an incorrect format.</value>
+  </data>
+  <data name="WINERR_ERROR_BUSY" xml:space="preserve">
+    <value> The operation cannot be performed while the device is acquired.</value>
+  </data>
+  <data name="WINERR_ERROR_FILE_NOT_FOUND" xml:space="preserve">
+    <value> The system cannot find the file specified.</value>
+  </data>
+  <data name="WINERR_ERROR_FILE_NOT_FOUND1" xml:space="preserve">
+    <value> The system cannot find the file specified.</value>
+  </data>
+  <data name="WINERR_ERROR_INVALID_ACCESS" xml:space="preserve">
+    <value> The operation cannot be performed unless the device is acquired.</value>
+  </data>
+  <data name="WINERR_ERROR_INVALID_BLOCK" xml:space="preserve">
+    <value> The storage control block address is invalid.</value>
+  </data>
+  <data name="WINERR_ERROR_INVALID_BLOCK1" xml:space="preserve">
+    <value> The storage control block address is invalid.</value>
+  </data>
+  <data name="WINERR_ERROR_INVALID_HANDLE" xml:space="preserve">
+    <value> The handle is invalid.</value>
+  </data>
+  <data name="WINERR_ERROR_NOT_ENOUGH_MEMORY" xml:space="preserve">
+    <value> Not enough storage is available to process this command.</value>
+  </data>
+  <data name="WINERR_ERROR_NOT_ENOUGH_MEMORY1" xml:space="preserve">
+    <value> Not enough storage is available to process this command.</value>
+  </data>
+  <data name="WINERR_ERROR_NOT_FOUND" xml:space="preserve">
+    <value> The specified property ID is not supported for the specified property set.</value>
+  </data>
+  <data name="WINERR_ERROR_NOT_READY" xml:space="preserve">
+    <value> This object has not been initialized</value>
+  </data>
+  <data name="WINERR_ERROR_NO_MORE_ITEMS" xml:space="preserve">
+    <value> No more items.</value>
+  </data>
+  <data name="WINERR_ERROR_OLD_WIN_VERSION" xml:space="preserve">
+    <value> The application requires a newer version of DirectInput.</value>
+  </data>
+  <data name="WINERR_ERROR_OUTOFMEMORY" xml:space="preserve">
+    <value> The system cannot find the drive specified.</value>
+  </data>
+  <data name="WINERR_ERROR_PATH_NOT_FOUND" xml:space="preserve">
+    <value> The system cannot find the path specified.</value>
+  </data>
+  <data name="WINERR_ERROR_PATH_NOT_FOUND1" xml:space="preserve">
+    <value> The system cannot find the path specified.</value>
+  </data>
+  <data name="WINERR_ERROR_READ_FAULT" xml:space="preserve">
+    <value> Access to the device has been lost.  It must be re-acquired.</value>
+  </data>
+  <data name="WINERR_ERROR_RMODE_APP" xml:space="preserve">
+    <value> The application was written for an unsupported prerelease version of DirectInput.</value>
+  </data>
+  <data name="WINERR_ERROR_SET_NOT_FOUND" xml:space="preserve">
+    <value> The specified property set is not supported.</value>
+  </data>
+  <data name="WINERR_ERROR_TOO_MANY_OPEN_FILES" xml:space="preserve">
+    <value> The system cannot open the file.</value>
+  </data>
+  <data name="WINERR_ERROR_TOO_MANY_OPEN_FILES1" xml:space="preserve">
+    <value> The system cannot open the file.</value>
+  </data>
+  <data name="WINERR_E_ABORT" xml:space="preserve">
+    <value> Operation aborted</value>
+  </data>
+  <data name="WINERR_E_ACCESSDENIED" xml:space="preserve">
+    <value> Access is denied</value>
+  </data>
+  <data name="WINERR_E_DEBUGGER_PRESENT" xml:space="preserve">
+    <value> Debugger is present.</value>
+  </data>
+  <data name="WINERR_E_FAIL" xml:space="preserve">
+    <value> An undetermined error occurred</value>
+  </data>
+  <data name="WINERR_E_HANDLE" xml:space="preserve">
+    <value> Invalid handle</value>
+  </data>
+  <data name="WINERR_E_INVALIDARG" xml:space="preserve">
+    <value> An invalid parameter was passed to the returning function</value>
+  </data>
+  <data name="WINERR_E_NOINTERFACE" xml:space="preserve">
+    <value> The requested COM interface is not available</value>
+  </data>
+  <data name="WINERR_E_NOTIMPL" xml:space="preserve">
+    <value> The function called is not supported at this time</value>
+  </data>
+  <data name="WINERR_E_OUTOFMEMORY" xml:space="preserve">
+    <value> Ran out of memory</value>
+  </data>
+  <data name="WINERR_E_PENDING" xml:space="preserve">
+    <value> The data necessary to complete this operation is not yet available.</value>
+  </data>
+  <data name="WINERR_E_POINTER" xml:space="preserve">
+    <value> Invalid pointer</value>
+  </data>
+  <data name="WINERR_E_UNEXPECTED" xml:space="preserve">
+    <value> Catastrophic failure</value>
+  </data>
+  <data name="WINERR_MS_E_BUSY" xml:space="preserve">
+    <value> The sample is busy.</value>
+  </data>
+  <data name="WINERR_MS_E_INCOMPATIBLE" xml:space="preserve">
+    <value> The stream formats are not compatible.</value>
+  </data>
+  <data name="WINERR_MS_E_INVALIDSTREAMTYPE" xml:space="preserve">
+    <value> The stream type is not valid for this operation.</value>
+  </data>
+  <data name="WINERR_MS_E_NOSEEKING" xml:space="preserve">
+    <value> Seeking not supported for this object.</value>
+  </data>
+  <data name="WINERR_MS_E_NOSTREAM" xml:space="preserve">
+    <value> No stream can be found with the specified attributes.</value>
+  </data>
+  <data name="WINERR_MS_E_NOTINIT" xml:space="preserve">
+    <value> The object can't accept the call because its initialize function or equivalent has not been called.</value>
+  </data>
+  <data name="WINERR_MS_E_NOTRUNNING" xml:space="preserve">
+    <value> The object is not in running state.</value>
+  </data>
+  <data name="WINERR_MS_E_SOURCEALREADYDEFINED" xml:space="preserve">
+    <value> MS_E_SOURCEALREADYDEFINED</value>
+  </data>
+  <data name="WINERR_MS_S_ENDOFSTREAM" xml:space="preserve">
+    <value> End of stream. Sample not updated.</value>
+  </data>
+  <data name="WINERR_REGDB_E_CLASSNOTREG" xml:space="preserve">
+    <value> Class not registered</value>
+  </data>
+  <data name="WINERR_S_FALSE" xml:space="preserve">
+    <value>Call successful	 but returned <b>false</b></value>
+  </data>
+  <data name="WINERR_S_NOT_RESIDENT" xml:space="preserve">
+    <value> Resource not resident in memory</value>
+  </data>
+  <data name="WINERR_S_OK" xml:space="preserve">
+    <value> The function completed successfully</value>
+  </data>
+  <data name="WINERR_S_PRESENT_MODE_CHANGED" xml:space="preserve">
+    <value> Desktop display mode has changed</value>
+  </data>
+  <data name="WINERR_S_PRESENT_OCCLUDED" xml:space="preserve">
+    <value> Client window is occluded (minimized or other fullscreen)</value>
+  </data>
+  <data name="WINERR_S_RESIDENT_IN_SHARED_MEMORY" xml:space="preserve">
+    <value> Resource resident in shared memory</value>
+  </data>
+  <data name="WINERR_VFW_E_ADVISE_ALREADY_SET" xml:space="preserve">
+    <value> An overlay advise link already exists.</value>
+  </data>
+  <data name="WINERR_VFW_E_ALREADY_CANCELLED" xml:space="preserve">
+    <value> The queued command has already been canceled.</value>
+  </data>
+  <data name="WINERR_VFW_E_ALREADY_COMMITTED" xml:space="preserve">
+    <value> Cannot change allocated memory while the filter is active.</value>
+  </data>
+  <data name="WINERR_VFW_E_BADALIGN" xml:space="preserve">
+    <value> An invalid alignment was specified.</value>
+  </data>
+  <data name="WINERR_VFW_E_BAD_KEY" xml:space="preserve">
+    <value> A registry entry is corrupt.</value>
+  </data>
+  <data name="WINERR_VFW_E_BAD_VIDEOCD" xml:space="preserve">
+    <value> The Video CD can't be read correctly by the device or is the data is corrupt.</value>
+  </data>
+  <data name="WINERR_VFW_E_BUFFERS_OUTSTANDING" xml:space="preserve">
+    <value> One or more buffers are still active.</value>
+  </data>
+  <data name="WINERR_VFW_E_BUFFER_NOTSET" xml:space="preserve">
+    <value> No buffer space has been set</value>
+  </data>
+  <data name="WINERR_VFW_E_BUFFER_OVERFLOW" xml:space="preserve">
+    <value> The buffer is not big enough.</value>
+  </data>
+  <data name="WINERR_VFW_E_BUFFER_UNDERFLOW" xml:space="preserve">
+    <value> The buffer is not full enough.</value>
+  </data>
+  <data name="WINERR_VFW_E_CANNOT_CONNECT" xml:space="preserve">
+    <value> No combination of intermediate filters could be found to make the connection.</value>
+  </data>
+  <data name="WINERR_VFW_E_CANNOT_LOAD_SOURCE_FILTER" xml:space="preserve">
+    <value> The source filter for this file could not be loaded.</value>
+  </data>
+  <data name="WINERR_VFW_E_CANNOT_RENDER" xml:space="preserve">
+    <value> No combination of filters could be found to render the stream.</value>
+  </data>
+  <data name="WINERR_VFW_E_CERTIFICATION_FAILURE" xml:space="preserve">
+    <value> An operation failed due to a certification failure.</value>
+  </data>
+  <data name="WINERR_VFW_E_CHANGING_FORMAT" xml:space="preserve">
+    <value> Could not change formats dynamically.</value>
+  </data>
+  <data name="WINERR_VFW_E_CIRCULAR_GRAPH" xml:space="preserve">
+    <value> The filter graph is circular.</value>
+  </data>
+  <data name="WINERR_VFW_E_COLOR_KEY_SET" xml:space="preserve">
+    <value> Setting a palette would conflict with the color key already set.</value>
+  </data>
+  <data name="WINERR_VFW_E_COPYPROT_FAILED" xml:space="preserve">
+    <value> Copy protection cannot be enabled. Please make sure any other copy protected content is not being shown now.</value>
+  </data>
+  <data name="WINERR_VFW_E_CORRUPT_GRAPH_FILE" xml:space="preserve">
+    <value> Cannot render the file because it is corrupt.</value>
+  </data>
+  <data name="WINERR_VFW_E_DDRAW_CAPS_NOT_SUITABLE" xml:space="preserve">
+    <value> Either DirectDraw has not been installed or the Video Card capabilities are not suitable. Make sure the display is not in 16 color mode.</value>
+  </data>
+  <data name="WINERR_VFW_E_DDRAW_VERSION_NOT_SUITABLE" xml:space="preserve">
+    <value> Version number of DirectDraw not suitable. Make sure to install dx5 or higher version.</value>
+  </data>
+  <data name="WINERR_VFW_E_DUPLICATE_NAME" xml:space="preserve">
+    <value> An attempt to add a filter with a duplicate name failed.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_CMD_CANCELLED" xml:space="preserve">
+    <value> The specified command was either cancelled or no longer exists.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_DECNOTENOUGH" xml:space="preserve">
+    <value> DVD-Video playback graph could not be built due to insufficient decoders.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_GRAPHNOTREADY" xml:space="preserve">
+    <value> DVD-Video playback graph has not been built yet.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_INCOMPATIBLE_REGION" xml:space="preserve">
+    <value> The region was not compatible with the current drive.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_INVALIDDOMAIN" xml:space="preserve">
+    <value> This Operation is not permitted in the current domain.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_INVALID_DISC" xml:space="preserve">
+    <value> The specified path does not point to a valid DVD disc.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_LOW_PARENTAL_LEVEL" xml:space="preserve">
+    <value> The current parental level was too low.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_MENU_DOES_NOT_EXIST" xml:space="preserve">
+    <value> The specified menu doesn't exist.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_NOT_IN_KARAOKE_MODE" xml:space="preserve">
+    <value> The current audio is not karaoke content.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_NO_ATTRIBUTES" xml:space="preserve">
+    <value> The requested DVD stream attribute does not exist.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_NO_BUTTON" xml:space="preserve">
+    <value>The specified button is invalid or is not present at the current time	 or there is no button present at the specified location.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_NO_GOUP_PGC" xml:space="preserve">
+    <value> Currently there is no GoUp (Annex J user function) program chain (PGC).</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_NO_RESUME_INFORMATION" xml:space="preserve">
+    <value> There is currently no resume information.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_OPERATION_INHIBITED" xml:space="preserve">
+    <value> This User Operation is inhibited by DVD Content at this time.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_RENDERFAIL" xml:space="preserve">
+    <value> DVD-Video playback graph building failed.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_STATE_CORRUPT" xml:space="preserve">
+    <value> The state data was corrupt.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_STATE_WRONG_DISC" xml:space="preserve">
+    <value> The state data is from a different disc.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_STATE_WRONG_VERSION" xml:space="preserve">
+    <value> The data did not contain a recognized version.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_STREAM_DISABLED" xml:space="preserve">
+    <value> The specified stream is disabled and cannot be selected.</value>
+  </data>
+  <data name="WINERR_VFW_E_DVD_TITLE_UNKNOWN" xml:space="preserve">
+    <value> The operation depends on the current title number</value>
+    <comment> however the navigator has not yet entered the VTSM or the title domains</comment>
+  </data>
+  <data name="WINERR_VFW_E_DVD_WRONG_SPEED" xml:space="preserve">
+    <value> The operation cannot be performed at the current playback speed.</value>
+  </data>
+  <data name="WINERR_VFW_E_ENUM_OUT_OF_RANGE" xml:space="preserve">
+    <value> The list has already been exhausted.</value>
+  </data>
+  <data name="WINERR_VFW_E_FILE_TOO_SHORT" xml:space="preserve">
+    <value> A file appeared to be incomplete.</value>
+  </data>
+  <data name="WINERR_VFW_E_FRAME_STEP_UNSUPPORTED" xml:space="preserve">
+    <value> Frame step is not supported on this configuration.</value>
+  </data>
+  <data name="WINERR_VFW_E_INVALID_CLSID" xml:space="preserve">
+    <value> This file is corrupt: it contains an invalid class identifier.</value>
+  </data>
+  <data name="WINERR_VFW_E_INVALID_FILE_FORMAT" xml:space="preserve">
+    <value> The file format is invalid.</value>
+  </data>
+  <data name="WINERR_VFW_E_INVALID_FILE_VERSION" xml:space="preserve">
+    <value> The version number of the file is invalid.</value>
+  </data>
+  <data name="WINERR_VFW_E_INVALID_MEDIA_TYPE" xml:space="preserve">
+    <value> This file is corrupt: it contains an invalid media type.</value>
+  </data>
+  <data name="WINERR_VFW_E_INVALID_RECT" xml:space="preserve">
+    <value> The supplied rectangle is invalid.</value>
+  </data>
+  <data name="WINERR_VFW_E_IN_FULLSCREEN_MODE" xml:space="preserve">
+    <value> Cannot call IVideoWindow methods while in full-screen mode.</value>
+  </data>
+  <data name="WINERR_VFW_E_MEDIA_TIME_NOT_SET" xml:space="preserve">
+    <value> No media time stamp has been set for this sample.</value>
+  </data>
+  <data name="WINERR_VFW_E_MONO_AUDIO_HW" xml:space="preserve">
+    <value> Cannot change balance because audio device is mono only.</value>
+  </data>
+  <data name="WINERR_VFW_E_MPEG_NOT_CONSTRAINED" xml:space="preserve">
+    <value> ActiveMovie cannot play this video stream because it falls outside the constrained standard.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_ALLOWED_TO_SAVE" xml:space="preserve">
+    <value> Updates are not allowed in this state.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_COMMITTED" xml:space="preserve">
+    <value> Cannot allocate a sample when the allocator is not active.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_FOUND" xml:space="preserve">
+    <value> An object or name was not found.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_IN_GRAPH" xml:space="preserve">
+    <value> Cannot perform the requested function on an object that is not in the filter graph.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_OVERLAY_CONNECTION" xml:space="preserve">
+    <value> Current pin connection is not using the IOverlay transport.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_PAUSED" xml:space="preserve">
+    <value> The operation could not be performed because the filter is not paused.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_RUNNING" xml:space="preserve">
+    <value> The operation could not be performed because the filter is not running.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_SAMPLE_CONNECTION" xml:space="preserve">
+    <value> Current pin connection is not using the IMemInputPin transport.</value>
+  </data>
+  <data name="WINERR_VFW_E_NOT_STOPPED" xml:space="preserve">
+    <value> The operation could not be performed because the filter is not stopped.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_ADVISE_SET" xml:space="preserve">
+    <value> This Advise cannot be canceled because it was not successfully set.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_AUDIO_HARDWARE" xml:space="preserve">
+    <value>Cannot play back the audio stream: no audio hardware is available	 or the hardware is not responding.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_CAPTURE_HARDWARE" xml:space="preserve">
+    <value>No Capture hardware is available	 or the hardware is not responding.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_CLOCK" xml:space="preserve">
+    <value> Cannot lock for synchronization because no clock has been defined.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_COLOR_KEY_FOUND" xml:space="preserve">
+    <value> No matching color key is available.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_COLOR_KEY_SET" xml:space="preserve">
+    <value> No color key has been set.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_DECOMPRESSOR" xml:space="preserve">
+    <value> Cannot play back the video stream: no suitable decompressor could be found.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_DISPLAY_PALETTE" xml:space="preserve">
+    <value> Display does not use a palette.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_FULLSCREEN" xml:space="preserve">
+    <value> A full-screen mode is not available.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_INTERFACE" xml:space="preserve">
+    <value> A required interface has not been implemented.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_MODEX_AVAILABLE" xml:space="preserve">
+    <value> No full-screen modes are available.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_PALETTE_AVAILABLE" xml:space="preserve">
+    <value> No palette is available.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_SINK" xml:space="preserve">
+    <value> Quality messages could not be sent because no quality sink has been defined.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_TIME_FORMAT" xml:space="preserve">
+    <value> Cannot get or set time related information on an object that is using a time format of TIME_FORMAT_NONE.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_TIME_FORMAT_SET" xml:space="preserve">
+    <value> No media time format has been selected.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_TRANSPORT" xml:space="preserve">
+    <value> Pins cannot connect due to not supporting the same transport.</value>
+  </data>
+  <data name="WINERR_VFW_E_NO_VP_HARDWARE" xml:space="preserve">
+    <value>No VideoPort hardware is available	 or the hardware is not responding.</value>
+  </data>
+  <data name="WINERR_VFW_E_OUT_OF_VIDEO_MEMORY" xml:space="preserve">
+    <value> There is not enough Video Memory at this display resolution and number of colors. Reducing resolution might help.</value>
+  </data>
+  <data name="WINERR_VFW_E_PALETTE_SET" xml:space="preserve">
+    <value> Setting a color key would conflict with the palette already set.</value>
+  </data>
+  <data name="WINERR_VFW_E_PIN_ALREADY_BLOCKED" xml:space="preserve">
+    <value> IPinFlowControl::Block() has been called on another thread.  The current thread cannot make any assumptions about this pin's block state.</value>
+  </data>
+  <data name="WINERR_VFW_E_PIN_ALREADY_BLOCKED_ON_THIS_THREAD" xml:space="preserve">
+    <value> This thread has already blocked this output pin.  There is no need to call IPinFlowControl::Block() again.</value>
+  </data>
+  <data name="WINERR_VFW_E_PROCESSOR_NOT_SUITABLE" xml:space="preserve">
+    <value> ActiveMovie cannot play MPEG movies on this processor.</value>
+  </data>
+  <data name="WINERR_VFW_E_READ_ONLY" xml:space="preserve">
+    <value> The connection cannot be made because the stream is read only and the filter alters the data.</value>
+  </data>
+  <data name="WINERR_VFW_E_RPZA" xml:space="preserve">
+    <value> Cannot play back the video stream: format 'RPZA' is not supported.</value>
+  </data>
+  <data name="WINERR_VFW_E_SAMPLE_REJECTED" xml:space="preserve">
+    <value> This sample cannot be rendered.</value>
+  </data>
+  <data name="WINERR_VFW_E_SAMPLE_REJECTED_EOS" xml:space="preserve">
+    <value> This sample cannot be rendered because the end of the stream has been reached.</value>
+  </data>
+  <data name="WINERR_VFW_E_SAMPLE_TIME_NOT_SET" xml:space="preserve">
+    <value> No time stamp has been set for this sample.</value>
+  </data>
+  <data name="WINERR_VFW_E_SIZENOTSET" xml:space="preserve">
+    <value> Cannot allocate memory because no size has been set.</value>
+  </data>
+  <data name="WINERR_VFW_E_START_TIME_AFTER_END" xml:space="preserve">
+    <value> The sample start time is after the sample end time.</value>
+  </data>
+  <data name="WINERR_VFW_E_STATE_CHANGED" xml:space="preserve">
+    <value> The state changed while waiting to process the sample.</value>
+  </data>
+  <data name="WINERR_VFW_E_TIMEOUT" xml:space="preserve">
+    <value> A time-out has expired.</value>
+  </data>
+  <data name="WINERR_VFW_E_TIME_ALREADY_PASSED" xml:space="preserve">
+    <value> An attempt was made to queue a command for a time in the past.</value>
+  </data>
+  <data name="WINERR_VFW_E_TIME_EXPIRED" xml:space="preserve">
+    <value> This object cannot be used anymore as its time has expired.</value>
+  </data>
+  <data name="WINERR_VFW_E_TOO_MANY_COLORS" xml:space="preserve">
+    <value> Too many colors for the current display settings.</value>
+  </data>
+  <data name="WINERR_VFW_E_TYPE_NOT_ACCEPTED" xml:space="preserve">
+    <value> This pin cannot use the supplied media type.</value>
+  </data>
+  <data name="WINERR_VFW_E_UNKNOWN_FILE_TYPE" xml:space="preserve">
+    <value> The media type of this file is not recognized.</value>
+  </data>
+  <data name="WINERR_VFW_E_UNSUPPORTED_AUDIO" xml:space="preserve">
+    <value> Cannot play back the audio stream: the audio format is not supported.</value>
+  </data>
+  <data name="WINERR_VFW_E_UNSUPPORTED_STREAM" xml:space="preserve">
+    <value> Cannot play back the file.  The format is not supported.</value>
+  </data>
+  <data name="WINERR_VFW_E_UNSUPPORTED_VIDEO" xml:space="preserve">
+    <value> Cannot play back the video stream: the video format is not supported.</value>
+  </data>
+  <data name="WINERR_VFW_E_VP_NEGOTIATION_FAILED" xml:space="preserve">
+    <value> The VideoPort connection negotiation process has failed.</value>
+  </data>
+  <data name="WINERR_VFW_E_WRONG_STATE" xml:space="preserve">
+    <value> The operation could not be performed because the filter is in the wrong state.</value>
+  </data>
+  <data name="WINERR_VFW_S_AUDIO_NOT_RENDERED" xml:space="preserve">
+    <value> Cannot play back the audio stream: no audio hardware is available.</value>
+  </data>
+  <data name="WINERR_VFW_S_CANT_CUE" xml:space="preserve">
+    <value> The graph can't be cued because of lack of or corrupt data.</value>
+  </data>
+  <data name="WINERR_VFW_S_CONNECTIONS_DEFERRED" xml:space="preserve">
+    <value> Some connections have failed and have been deferred.</value>
+  </data>
+  <data name="WINERR_VFW_S_DUPLICATE_NAME" xml:space="preserve">
+    <value> An attempt to add a filter with a duplicate name succeeded with a modified name.</value>
+  </data>
+  <data name="WINERR_VFW_S_DVD_CHANNEL_CONTENTS_NOT_AVAILABLE" xml:space="preserve">
+    <value> The audio stream did not contain sufficient information to determine the contents of each channel.</value>
+  </data>
+  <data name="WINERR_VFW_S_DVD_NON_ONE_SEQUENTIAL" xml:space="preserve">
+    <value>The current title was not a sequential set of chapters (PGC)	 and the returned timing information might not be continuous.</value>
+  </data>
+  <data name="WINERR_VFW_S_DVD_NOT_ACCURATE" xml:space="preserve">
+    <value> The seek into the movie was not frame accurate.</value>
+  </data>
+  <data name="WINERR_VFW_S_ESTIMATED" xml:space="preserve">
+    <value> The value returned had to be estimated.  It's accuracy can not be guaranteed.</value>
+  </data>
+  <data name="WINERR_VFW_S_MEDIA_TYPE_IGNORED" xml:space="preserve">
+    <value>A connection could not be made with the media type in the persistent graph	 but has been made with a negotiated media type.</value>
+  </data>
+  <data name="WINERR_VFW_S_NOPREVIEWPIN" xml:space="preserve">
+    <value>There was no preview pin available	 so the capture pin output is being split to provide both capture and preview.</value>
+  </data>
+  <data name="WINERR_VFW_S_NO_MORE_ITEMS" xml:space="preserve">
+    <value> The end of the list has been reached.</value>
+  </data>
+  <data name="WINERR_VFW_S_NO_STOP_TIME" xml:space="preserve">
+    <value> The stop time for the sample was not set.</value>
+  </data>
+  <data name="WINERR_VFW_S_PARTIAL_RENDER" xml:space="preserve">
+    <value> Some of the streams in this movie are in an unsupported format.</value>
+  </data>
+  <data name="WINERR_VFW_S_RESERVED" xml:space="preserve">
+    <value> This success code is reserved for internal purposes within ActiveMovie.</value>
+  </data>
+  <data name="WINERR_VFW_S_RESOURCE_NOT_NEEDED" xml:space="preserve">
+    <value> The resource specified is no longer needed.</value>
+  </data>
+  <data name="WINERR_VFW_S_RPZA" xml:space="preserve">
+    <value> Cannot play back the video stream: format 'RPZA' is not supported.</value>
+  </data>
+  <data name="WINERR_VFW_S_SOME_DATA_IGNORED" xml:space="preserve">
+    <value> The file contained some property settings that were not used.</value>
+  </data>
+  <data name="WINERR_VFW_S_STATE_INTERMEDIATE" xml:space="preserve">
+    <value> The state transition has not completed.</value>
+  </data>
+  <data name="WINERR_VFW_S_STREAM_OFF" xml:space="preserve">
+    <value> The stream has been turned off.</value>
+  </data>
+  <data name="WINERR_VFW_S_VIDEO_NOT_RENDERED" xml:space="preserve">
+    <value> Cannot play back the video stream: no suitable decompressor could be found.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_ALREADYINITIALIZED" xml:space="preserve">
+    <value> The engine is already initialized.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_CREATEDIRECTORYFAILED" xml:space="preserve">
+    <value> Failed to create a directory for streaming wavebank data.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_INVALIDDSPINDEX" xml:space="preserve">
+    <value> Missing a DSP parameter.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_INVALIDRPCINDEX" xml:space="preserve">
+    <value> Missing an RPC curve.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_INVALIDSESSION" xml:space="preserve">
+    <value> Invalid audition session.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_MISSINGDATA" xml:space="preserve">
+    <value> Missing data for an audition command.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_MISSINGWAVE" xml:space="preserve">
+    <value> Wave does not exist in auditioned wavebank.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_NOSOUNDBANK" xml:space="preserve">
+    <value> Missing a soundbank.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_UNKNOWNCOMMAND" xml:space="preserve">
+    <value> Unknown command.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_AUDITION_WRITEFILE" xml:space="preserve">
+    <value> Error writing a file during auditioning.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_EXPIRED" xml:space="preserve">
+    <value> The engine has expired (demo or pre-release version).</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INCALLBACK" xml:space="preserve">
+    <value> Invalid call of method of function from callback.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INSTANCELIMITFAILTOPLAY" xml:space="preserve">
+    <value> Fail to play due to instance limit.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDCATEGORY" xml:space="preserve">
+    <value> Invalid category.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDCUEINDEX" xml:space="preserve">
+    <value> Invalid cue index.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDDATA" xml:space="preserve">
+    <value> Invalid data.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDENTRYCOUNT" xml:space="preserve">
+    <value> Invalid entry count for channel maps.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDSOUNDOFFSETORINDEX" xml:space="preserve">
+    <value> Invalid sound offset or index.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDTRACKINDEX" xml:space="preserve">
+    <value> Invalid track index.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDUSAGE" xml:space="preserve">
+    <value> Invalid usage.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDVARIABLEINDEX" xml:space="preserve">
+    <value> Invalid variable index.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_INVALIDWAVEINDEX" xml:space="preserve">
+    <value> Invalid wave index.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_MULTIPLEAUDITIONENGINES" xml:space="preserve">
+    <value> There can be only one audition engine.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NOFRIENDLYNAMES" xml:space="preserve">
+    <value> Friendly names are not included in the bank.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NOGLOBALSETTINGS" xml:space="preserve">
+    <value> Global Settings not loaded.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NONOTIFICATIONCALLBACK" xml:space="preserve">
+    <value> No notification callback.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NORENDERER" xml:space="preserve">
+    <value> No audio device found.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NOTIFICATIONREGISTERED" xml:space="preserve">
+    <value> Notification already registered.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NOTINITIALIZED" xml:space="preserve">
+    <value> The engine has not been initialized.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_NOWAVEBANK" xml:space="preserve">
+    <value> No wavebank exists for desired operation.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_READFILE" xml:space="preserve">
+    <value> Error reading a file.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_SEEKTIMEBEYONDCUEEND" xml:space="preserve">
+    <value> Time offset for seeking is beyond the cue end.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_SEEKTIMEBEYONDWAVEEND" xml:space="preserve">
+    <value> Time offset for seeking is beyond the wave end.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_SELECTVARIATION" xml:space="preserve">
+    <value> Unable to select a variation.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_UNKNOWNEVENT" xml:space="preserve">
+    <value> Unknown event type.</value>
+  </data>
+  <data name="WINERR_XACTENGINE_E_WAVEBANKNOTPREPARED" xml:space="preserve">
+    <value> The wavebank is not prepared.</value>
+  </data>
+  <data name="WINERR_XAPO_E_FORMAT_UNSUPPORTED" xml:space="preserve">
+    <value> Requested audio format unsupported.</value>
+  </data>
+  <data name="WINERR_XAUDIO2_E_DEVICE_INVALIDATED" xml:space="preserve">
+    <value> Device invalidated (unplugged</value>
+    <comment> disabled</comment>
+  </data>
+  <data name="WINERR_XAUDIO2_E_INVALID_CALL" xml:space="preserve">
+    <value> Invalid XAudio2 API call or arguments</value>
+  </data>
+  <data name="WINERR_XAUDIO2_E_XAPO_CREATION_FAILED" xml:space="preserve">
+    <value> Failed to create an audio effect</value>
+  </data>
+  <data name="WINERR_XAUDIO2_E_XMA_DECODER_ERROR" xml:space="preserve">
+    <value> Hardware XMA decoder error</value>
+  </data>
+  <data name="WINERR_XML_ATTRIBUTE_FIXED" xml:space="preserve">
+    <value> Attribute '%1' has a value that does not match the fixed value defined in the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_ATTRIBUTE_NOT_DEFINED" xml:space="preserve">
+    <value> The attribute '%1' on this element is not defined in the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_ATTRIBUTE_VALUE" xml:space="preserve">
+    <value> Attribute '%1' has an invalid value according to the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_DTD_EXPECTING" xml:space="preserve">
+    <value> Expecting: %1.</value>
+  </data>
+  <data name="WINERR_XML_ELEMENT_ID_NOT_FOUND" xml:space="preserve">
+    <value>The attribute '%1' references the ID '%2'	 which is not defined in the document.</value>
+  </data>
+  <data name="WINERR_XML_ELEMENT_NOT_COMPLETE" xml:space="preserve">
+    <value> Element content is incomplete according to the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_ELEMENT_UNDECLARED" xml:space="preserve">
+    <value> The element '%1' is used but not declared in the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_ELEMENT_UNDEFINED" xml:space="preserve">
+    <value> Reference to undeclared element: '%1'.</value>
+  </data>
+  <data name="WINERR_XML_EMPTY_NOT_ALLOWED" xml:space="preserve">
+    <value> Element cannot be empty according to the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_ENTITY_UNDEFINED" xml:space="preserve">
+    <value> Reference to undefined entity '%1'.</value>
+  </data>
+  <data name="WINERR_XML_EXTENT_IN_ATTR" xml:space="preserve">
+    <value> Cannot reference an external general parsed entity '%1' in an attribute value.</value>
+  </data>
+  <data name="WINERR_XML_E_NODTD" xml:space="preserve">
+    <value> The validate method failed because a DTD or schema was not specified in the document.</value>
+  </data>
+  <data name="WINERR_XML_E_NOTWF" xml:space="preserve">
+    <value> The validate method failed because the document does not contain exactly one root node.</value>
+  </data>
+  <data name="WINERR_XML_ILLEGAL_TEXT" xml:space="preserve">
+    <value> Text is not allowed in this element according to the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_INFINITE_ENTITY_LOOP" xml:space="preserve">
+    <value> Entity '%1' contains an infinite entity reference loop.</value>
+  </data>
+  <data name="WINERR_XML_INVALID_CONTENT" xml:space="preserve">
+    <value> Element content is invalid according to the DTD or schema.</value>
+  </data>
+  <data name="WINERR_XML_MULTI_FIXED_VALUES" xml:space="preserve">
+    <value> An attribute declaration cannot contain multiple fixed values: '%1'.</value>
+  </data>
+  <data name="WINERR_XML_NDATA_INVALID_PE" xml:space="preserve">
+    <value> Cannot use the NDATA keyword in a parameter entity declaration.</value>
+  </data>
+  <data name="WINERR_XML_NDATA_INVALID_REF" xml:space="preserve">
+    <value> Cannot use unparsed entity '%1' in an entity reference.</value>
+  </data>
+  <data name="WINERR_XML_REQUIRED_ATTRIBUTE_MISSING" xml:space="preserve">
+    <value> Required attribute '%1' is missing.</value>
+  </data>
+  <data name="WINERR_XML_REQUIRED_NDATA" xml:space="preserve">
+    <value> Cannot use a general parsed entity '%1' as the value for attribute '%2'.</value>
+  </data>
+  <data name="WINERR_XML_ROOT_NAME_MISMATCH" xml:space="preserve">
+    <value> The name of the top-most element must match the name of the DOCTYPE declaration.</value>
+  </data>
+  <data name="WINERR_XML_XMLNS_FIXED" xml:space="preserve">
+    <value> Attribute '%1' must be a #FIXED attribute.</value>
+  </data>
+</root>

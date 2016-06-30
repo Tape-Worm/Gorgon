@@ -107,6 +107,8 @@ namespace Gorgon.Native
 		: ushort
 	{
 		/// <summary></summary>
+		None = 0,
+		/// <summary></summary>
 		Pointer = 0x01,
 		/// <summary></summary>
 		Mouse = 0x02,

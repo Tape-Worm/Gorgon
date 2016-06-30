@@ -29,7 +29,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Numerics;
+using DX = SharpDX;
 using Gorgon.Math;
 
 namespace Gorgon.Core
@@ -76,24 +76,24 @@ namespace Gorgon.Core
 
         #region Variables.
 		// 1D and 2D and 3D gradient vectors.
-		private static readonly Vector3[] _grad3 = 
+		private static readonly DX.Vector3[] _grad3 = 
 		{
-			new Vector3(1,1,0),new Vector3(-1,1,0),new Vector3(1,-1,0),new Vector3(-1,-1,0),
-			new Vector3(1,0,1),new Vector3(-1,0,1),new Vector3(1,0,-1),new Vector3(-1,0,-1),
-			new Vector3(0,1,1),new Vector3(0,-1,1),new Vector3(0,1,-1),new Vector3(0,-1,-1)
+			new DX.Vector3(1,1,0),new DX.Vector3(-1,1,0),new DX.Vector3(1,-1,0),new DX.Vector3(-1,-1,0),
+			new DX.Vector3(1,0,1),new DX.Vector3(-1,0,1),new DX.Vector3(1,0,-1),new DX.Vector3(-1,0,-1),
+			new DX.Vector3(0,1,1),new DX.Vector3(0,-1,1),new DX.Vector3(0,1,-1),new DX.Vector3(0,-1,-1)
 		};
 
 		// 4D hypercube gradient vectors.
-		private static readonly Vector4[] _grad4 =
+		private static readonly DX.Vector4[] _grad4 =
 		{
-			new Vector4(0, 1, 1, 1), new Vector4(0, 1, 1, -1), new Vector4(0, 1, -1, 1), new Vector4(0, 1, -1, -1),
-			new Vector4(0, -1, 1, 1), new Vector4(0, -1, 1, -1), new Vector4(0, -1, -1, 1), new Vector4(0, -1, -1, -1),
-			new Vector4(1, 0, 1, 1), new Vector4(1, 0, 1, -1), new Vector4(1, 0, -1, 1), new Vector4(1, 0, -1, -1),
-			new Vector4(-1, 0, 1, 1), new Vector4(-1, 0, 1, -1), new Vector4(-1, 0, -1, 1), new Vector4(-1, 0, -1, -1),
-			new Vector4(1, 1, 0, 1), new Vector4(1, 1, 0, -1), new Vector4(1, -1, 0, 1), new Vector4(1, -1, 0, -1),
-			new Vector4(-1, 1, 0, 1), new Vector4(-1, 1, 0, -1), new Vector4(-1, -1, 0, 1), new Vector4(-1, -1, 0, -1),
-			new Vector4(1, 1, 1, 0), new Vector4(1, 1, -1, 0), new Vector4(1, -1, 1, 0), new Vector4(1, -1, -1, 0),
-			new Vector4(-1, 1, 1, 0), new Vector4(-1, 1, -1, 0), new Vector4(-1, -1, 1, 0), new Vector4(-1, -1, -1, 0)
+			new DX.Vector4(0, 1, 1, 1), new DX.Vector4(0, 1, 1, -1), new DX.Vector4(0, 1, -1, 1), new DX.Vector4(0, 1, -1, -1),
+			new DX.Vector4(0, -1, 1, 1), new DX.Vector4(0, -1, 1, -1), new DX.Vector4(0, -1, -1, 1), new DX.Vector4(0, -1, -1, -1),
+			new DX.Vector4(1, 0, 1, 1), new DX.Vector4(1, 0, 1, -1), new DX.Vector4(1, 0, -1, 1), new DX.Vector4(1, 0, -1, -1),
+			new DX.Vector4(-1, 0, 1, 1), new DX.Vector4(-1, 0, 1, -1), new DX.Vector4(-1, 0, -1, 1), new DX.Vector4(-1, 0, -1, -1),
+			new DX.Vector4(1, 1, 0, 1), new DX.Vector4(1, 1, 0, -1), new DX.Vector4(1, -1, 0, 1), new DX.Vector4(1, -1, 0, -1),
+			new DX.Vector4(-1, 1, 0, 1), new DX.Vector4(-1, 1, 0, -1), new DX.Vector4(-1, -1, 0, 1), new DX.Vector4(-1, -1, 0, -1),
+			new DX.Vector4(1, 1, 1, 0), new DX.Vector4(1, 1, -1, 0), new DX.Vector4(1, -1, 1, 0), new DX.Vector4(1, -1, -1, 0),
+			new DX.Vector4(-1, 1, 1, 0), new DX.Vector4(-1, 1, -1, 0), new DX.Vector4(-1, -1, 1, 0), new DX.Vector4(-1, -1, -1, 0)
 		};
 		
 		// Simplex noise permutations for gradients.
@@ -203,7 +203,7 @@ namespace Gorgon.Core
 		/// </remarks>
 		public static float SimplexNoise(float value)
 		{
-			Vector2 noiseContrib = Vector2.Zero;
+			DX.Vector2 noiseContrib = DX.Vector2.Zero;
 
 			// Skew the input space to determine which simplex cell we're in
 			var i = (int)value.FastFloor();
@@ -246,7 +246,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to generate 2 dimensional simplex noise.
 		/// </summary>
-		/// <param name="value">The <see cref="Vector2"/> value to use to generate the simplex noise value.</param>
+		/// <param name="value">The <see cref="DX.Vector2"/> value to use to generate the simplex noise value.</param>
 		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
 		/// <remarks>
 		/// <para>
@@ -256,9 +256,9 @@ namespace Gorgon.Core
 		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
 		/// </para>
 		/// </remarks>
-		public static float SimplexNoise(Vector2 value)
+		public static float SimplexNoise(DX.Vector2 value)
 		{
-			Vector3 noiseContrib = Vector3.Zero;
+			DX.Vector3 noiseContrib = DX.Vector3.Zero;
 
 			// Skew the input space to determine which simplex cell we're in
 			float simplex = (value.X + value.Y) * F2;			
@@ -267,9 +267,9 @@ namespace Gorgon.Core
 
 			float t = (i + j) * G2;								
 
-			var unskew = new Vector2(i - t, j - t);				
+			var unskew = new DX.Vector2(i - t, j - t);				
 
-			Vector2 distance = value - unskew;
+			DX.Vector2 distance = value - unskew;
 
 			int offset1 = 0;  // upper triangle, YX order: (0,0)->(0,1)->(1,1)
 			int offset2 = 1;
@@ -284,8 +284,8 @@ namespace Gorgon.Core
 			}
 			
 			// Create corner offsets.
-			var corner1 = new Vector2(distance.X - offset1 + G2, distance.Y - offset2 + G2);
-			var corner2 = new Vector2(distance.X + OffsetAmount2D, distance.Y + OffsetAmount2D);
+			var corner1 = new DX.Vector2(distance.X - offset1 + G2, distance.Y - offset2 + G2);
+			var corner2 = new DX.Vector2(distance.X + OffsetAmount2D, distance.Y + OffsetAmount2D);
 
 			// Wrap the integer indices at 256, to avoid indexing _permutations[] out of bounds
 			int index0 = i & 255;
@@ -297,20 +297,20 @@ namespace Gorgon.Core
 			float t2 = (0.5f - corner2.X * corner2.X - corner2.Y * corner2.Y);
 			float dot;
 
-			Vector3 vec3Value;
+			DX.Vector3 vec3Value;
             if (t0 > 0.0f)
             {
 	            vec3Value = _grad3[_permMod12[index0 + _permutations[index1]]];
-                var gradIndex0 = new Vector2(vec3Value.X, vec3Value.Y);
-				dot = Vector2.Dot(gradIndex0, distance);
+                var gradIndex0 = new DX.Vector2(vec3Value.X, vec3Value.Y);
+				DX.Vector2.Dot(ref gradIndex0, ref distance, out dot);
 				noiseContrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
 				vec3Value = _grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2]]];
-                var gradIndex1 = new Vector2(vec3Value.X, vec3Value.Y);
-				dot = Vector2.Dot(gradIndex1, corner1);
+                var gradIndex1 = new DX.Vector2(vec3Value.X, vec3Value.Y);
+				DX.Vector2.Dot(ref gradIndex1, ref corner1, out dot);
 				noiseContrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
@@ -321,8 +321,8 @@ namespace Gorgon.Core
 			}
 
 			vec3Value = _grad3[_permMod12[index0 + 1 + _permutations[index1 + 1]]];
-            var gradIndex2 = new Vector2(vec3Value.X, vec3Value.Y);
-			dot = Vector2.Dot(gradIndex2, corner2);
+            var gradIndex2 = new DX.Vector2(vec3Value.X, vec3Value.Y);
+			DX.Vector2.Dot(ref gradIndex2, ref corner2, out dot);
 			noiseContrib.Z = t2 * t2 * t2 * t2 * dot;
 
 			// Add contributions from each corner to get the final noise value.
@@ -334,7 +334,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to generate 3 dimensional simplex noise.
 		/// </summary>
-		/// <param name="value">The <see cref="Vector3"/> value to use to generate the simplex noise value.</param>
+		/// <param name="value">The <see cref="DX.Vector3"/> value to use to generate the simplex noise value.</param>
 		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
 		/// <remarks>
 		/// <para>
@@ -344,9 +344,9 @@ namespace Gorgon.Core
 		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
 		/// </para>
 		/// </remarks>
-		public static float SimplexNoise(Vector3 value)
+		public static float SimplexNoise(DX.Vector3 value)
 		{
-			Vector4 contrib = Vector4.Zero;			// Noise contributions from the four corners
+			DX.Vector4 contrib = DX.Vector4.Zero;			// Noise contributions from the four corners
 			
 			// Skew the input space to determine which simplex cell we're in
 			float s = (value.X + value.Y + value.Z) * F3; // Very nice and simple skew factor for 3D
@@ -357,10 +357,10 @@ namespace Gorgon.Core
 			float t = (i + j + k) * G3;
 
 			// Unskew the cell origin back to (x,y,z) space
-			var unskew = new Vector3(i - t, j - t, k - t);
+			var unskew = new DX.Vector3(i - t, j - t, k - t);
 
 			// The x,y,z distances from the cell origin
-			Vector3 distance = value - unskew;
+			DX.Vector3 distance = value - unskew;
 
 			// For the 3D case, the simplex shape is a slightly irregular tetrahedron.
 			// Determine which simplex we are in.
@@ -436,14 +436,14 @@ namespace Gorgon.Core
 			// c = 1/6.
 
 			// Offsets for second corner in (x,y,z) coordinates
-			var corner1 = new Vector3(distance.X - offset1 + G3, distance.Y - offset2 + G3, distance.Z - offset3 + G3);
+			var corner1 = new DX.Vector3(distance.X - offset1 + G3, distance.Y - offset2 + G3, distance.Z - offset3 + G3);
 
 			// Offsets for third corner in (x,y,z) coordinates
-			var corner2 = new Vector3(distance.X - offset4 + OffsetAmount3D1, distance.Y - offset5 + OffsetAmount3D1,
+			var corner2 = new DX.Vector3(distance.X - offset4 + OffsetAmount3D1, distance.Y - offset5 + OffsetAmount3D1,
 				distance.Z - offset6 + OffsetAmount3D1);
 
 			// Offsets for last corner in (x,y,z) coordinates
-			var corner3 = new Vector3(distance.X + OffsetAmount3D2, distance.Y + OffsetAmount3D2, distance.Z + OffsetAmount3D2);
+			var corner3 = new DX.Vector3(distance.X + OffsetAmount3D2, distance.Y + OffsetAmount3D2, distance.Z + OffsetAmount3D2);
 
 			// Work out the hashed gradient indices of the four simplex corners
 			int index0 = i & 255;
@@ -456,26 +456,26 @@ namespace Gorgon.Core
 			float t2 = 0.5f - corner2.X * corner2.X - corner2.Y * corner2.Y - corner2.Z * corner2.Z;
 			float t3 = 0.5f - corner3.X * corner3.X - corner3.Y * corner3.Y - corner3.Z * corner3.Z;
 			float dot;
-			Vector3 grad;
+			DX.Vector3 grad;
 
 			if (t0 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + _permutations[index1 + _permutations[index2]]]];
-				dot = Vector3.Dot(grad, distance);
+				DX.Vector3.Dot(ref grad, ref distance, out dot);
 				contrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2 + _permutations[index2 + offset3]]]];
-				dot = Vector3.Dot(grad, corner1);
+				DX.Vector3.Dot(ref grad, ref corner1, out dot);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset4 + _permutations[index1 + offset5 + _permutations[index2 + offset6]]]];
-				dot = Vector3.Dot(grad, corner2);
+				DX.Vector3.Dot(ref grad, ref corner2, out dot);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
@@ -485,7 +485,7 @@ namespace Gorgon.Core
 			}
 
 			grad = _grad3[_permMod12[index0 + 1 + _permutations[index1 + 1 + _permutations[index2 + 1]]]];
-			dot = Vector3.Dot(grad, corner3);
+			DX.Vector3.Dot(ref grad, ref corner3, out dot);
 			contrib.W = t3 * t3 * t3 * t3 * dot;
 
 			// Add contributions from each corner to get the final noise value.
@@ -496,7 +496,7 @@ namespace Gorgon.Core
 		/// <summary>
 		/// Function to generate 4 dimensional simplex noise.
 		/// </summary>
-		/// <param name="value">The <see cref="Vector4"/> value to use to generate the simplex noise value.</param>
+		/// <param name="value">The <see cref="DX.Vector4"/> value to use to generate the simplex noise value.</param>
 		/// <returns>A <see cref="float"/> representing the simplex noise value.</returns>
 		/// <remarks>
 		/// <para>
@@ -506,10 +506,10 @@ namespace Gorgon.Core
 		/// This produces predictable random numbers based on the seed <paramref name="value"/> passed to the method. 
 		/// </para>
 		/// </remarks>
-		public static float SimplexNoise(Vector4 value)
+		public static float SimplexNoise(DX.Vector4 value)
 		{
 			// Noise contributions from the five corners
-			Vector4 contrib = Vector4.Zero;
+			DX.Vector4 contrib = DX.Vector4.Zero;
 
 			// Skew the (x,y,z,w) space to determine which cell of 24 simplices we're in
 			float s = (value.X + value.Y + value.Z + value.W) * F4; // Factor for 4D skewing
@@ -522,10 +522,11 @@ namespace Gorgon.Core
 			float t = (i + j + k + l) * G4; // Factor for 4D unskewing
 
 			// Unskew the cell origin back to (x,y,z,w) space
-			var unskew = new Vector4(i - t, j - t, k - t, l - t);
+			var unskew = new DX.Vector4(i - t, j - t, k - t, l - t);
 
 			// The x,y,z,w distances from the cell origin
-			Vector4 distance = value - unskew;
+			DX.Vector4 distance;
+			DX.Vector4.Subtract(ref value, ref unskew, out distance);
 
 			// For the 4D case, the simplex is a 4D shape I won't even try to describe.
 			// To find out which of the 24 possible simplices we're in, we need to
@@ -611,13 +612,13 @@ namespace Gorgon.Core
 			// The fifth corner has all coordinate offsets = 1, so no need to compute that.
 
 			// Offsets for second corner in (x,y,z,w) coordinates
-			var corner1 = new Vector4(distance.X - offset1 + G4, distance.Y - offset2 + G4, distance.Z - offset3 + G4, distance.W - offset4 + G4);
+			var corner1 = new DX.Vector4(distance.X - offset1 + G4, distance.Y - offset2 + G4, distance.Z - offset3 + G4, distance.W - offset4 + G4);
 			// Offsets for third corner in (x,y,z,w) coordinates
-			var corner2 = new Vector4(distance.X - offset5 + OffsetAmount4D1, distance.Y - offset6 + OffsetAmount4D1, distance.Z - offset7 + OffsetAmount4D1, distance.W - offset8 + OffsetAmount4D1);
+			var corner2 = new DX.Vector4(distance.X - offset5 + OffsetAmount4D1, distance.Y - offset6 + OffsetAmount4D1, distance.Z - offset7 + OffsetAmount4D1, distance.W - offset8 + OffsetAmount4D1);
 			// Offsets for fourth corner in (x,y,z,w) coordinates
-			var corner3 = new Vector4(distance.X - offset9 + OffsetAmount4D2, distance.Y - offset10 + OffsetAmount4D2, distance.Z - offset11 + OffsetAmount4D2, distance.W - offset12 + OffsetAmount4D2);
+			var corner3 = new DX.Vector4(distance.X - offset9 + OffsetAmount4D2, distance.Y - offset10 + OffsetAmount4D2, distance.Z - offset11 + OffsetAmount4D2, distance.W - offset12 + OffsetAmount4D2);
 			// Offsets for last corner in (x,y,z,w) coordinates
-			var corner4 = new Vector4(distance.X + OffsetAmount4D3, distance.Y + OffsetAmount4D3, distance.Z + OffsetAmount4D3, distance.W + OffsetAmount4D3);
+			var corner4 = new DX.Vector4(distance.X + OffsetAmount4D3, distance.Y + OffsetAmount4D3, distance.Z + OffsetAmount4D3, distance.W + OffsetAmount4D3);
 
 			// Work out the hashed gradient indices of the five simplex corners
 			int index1 = i & 255;
@@ -630,35 +631,35 @@ namespace Gorgon.Core
 			float t2 = 0.5f - corner2.X * corner2.X - corner2.Y * corner2.Y - corner2.Z * corner2.Z - corner2.W * corner2.W;
 			float t3 = 0.5f - corner3.X * corner3.X - corner3.Y * corner3.Y - corner3.Z * corner3.Z - corner3.W * corner3.W;
 			float t4 = 0.5f - corner4.X * corner4.X - corner4.Y * corner4.Y - corner4.Z * corner4.Z - corner4.W * corner4.W;
-			Vector4 grad;
+			DX.Vector4 grad;
 			float dot;
 
 			// Calculate the contribution from the five corners
 			if (t0 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + _permutations[index2 + _permutations[index3 + _permutations[index4]]]]];
-				dot = Vector4.Dot(grad, distance);
+				DX.Vector4.Dot(ref grad, ref distance, out dot);
 				contrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset1 + _permutations[index2 + offset2 + _permutations[index3 + offset3 + _permutations[index4 + offset4]]]]];
-				dot = Vector4.Dot(grad, corner1);
+				DX.Vector4.Dot(ref grad, ref corner1, out dot);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset5 + _permutations[index2 + offset6 + _permutations[index3 + offset7 + _permutations[index4 + offset8]]]]];
-				dot = Vector4.Dot(grad, corner2);
+				DX.Vector4.Dot(ref grad, ref corner2, out dot);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
 			if (t3 > 0.0f)
 			{
 				grad = _grad4[_permMod32[index1 + offset9 + _permutations[index2 + offset10 + _permutations[index3 + offset11 + _permutations[index4 + offset12]]]]];
-				dot = Vector4.Dot(grad, corner3);
+				DX.Vector4.Dot(ref grad, ref corner3, out dot);
 				contrib.W = t3 * t3 * t3 * t3 * dot;
 			}
 
@@ -668,7 +669,7 @@ namespace Gorgon.Core
 			}
 
 			grad = _grad4[_permutations[index1 + 1 + _permutations[index2 + 1 + _permutations[index3 + 1 + _permutations[index4 + 1]]]] % 32];
-			dot = Vector4.Dot(grad, corner4);
+			DX.Vector4.Dot(ref grad, ref corner4, out dot);
 			float contrib5 = t4 * t4 * t4 * t4 * dot;
 
 			// Sum up and scale the result to cover the range [-1,1]

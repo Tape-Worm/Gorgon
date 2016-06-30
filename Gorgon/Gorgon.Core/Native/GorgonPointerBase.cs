@@ -60,8 +60,6 @@ namespace Gorgon.Native
 		: IGorgonPointer
 	{
 		#region Variables.
-		// The pointer to the memory.
-		private unsafe byte* _pointer;
 		// Flag to indicate that the object is not disposed.
 		private int _notDisposed = -1;
 		#endregion
@@ -76,21 +74,8 @@ namespace Gorgon.Native
 		/// </remarks>
 		protected unsafe byte* DataPointer
 		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get
-			{
-				return _pointer;
-			}
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set
-			{
-				if (_notDisposed == 0)
-				{
-					return;
-				}
-
-				_pointer = value;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -101,7 +86,7 @@ namespace Gorgon.Native
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				return _notDisposed == 0 || DataPointer != null;
+				return _notDisposed == 0 || DataPointer == null;
 			}
 		}
 
@@ -207,7 +192,7 @@ namespace Gorgon.Native
 #endif
 			unsafe
 			{
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 				DirectAccess.ReadValue(ptr, out value);
 			}
 		}
@@ -310,7 +295,7 @@ namespace Gorgon.Native
 #endif
 			unsafe
 			{
-				DirectAccess.ReadValue(_pointer, out value);
+				DirectAccess.ReadValue(DataPointer, out value);
 			}
 		}
 
@@ -370,7 +355,7 @@ namespace Gorgon.Native
 			{
 				T value;
 
-				DirectAccess.ReadValue(_pointer, out value);
+				DirectAccess.ReadValue(DataPointer, out value);
 
 				return value;
 			}
@@ -433,7 +418,7 @@ namespace Gorgon.Native
 #endif
 			unsafe
 			{
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 				DirectAccess.WriteValue(ptr, ref value);
 			}
 		}
@@ -532,7 +517,7 @@ namespace Gorgon.Native
 #endif
 			unsafe
 			{
-				DirectAccess.WriteValue(_pointer, ref value);
+				DirectAccess.WriteValue(DataPointer, ref value);
 			}
 		}
 
@@ -668,7 +653,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 
 				DirectAccess.ReadArray(ptr, array, index, arrayByteSize);
 			}
@@ -757,7 +742,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.ReadArray(_pointer, array, index, arrayByteSize);
+				DirectAccess.ReadArray(DataPointer, array, index, arrayByteSize);
 			}
 		}
 
@@ -949,7 +934,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 				DirectAccess.WriteArray(ptr, array, index, arrayByteSize);
 			}
 		}
@@ -1142,7 +1127,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.WriteArray(_pointer, array, index, arrayByteSize);
+				DirectAccess.WriteArray(DataPointer, array, index, arrayByteSize);
 			}
 		}
 
@@ -1221,7 +1206,7 @@ namespace Gorgon.Native
 				}
 
 				byte* srcPtr = (byte *)(source.Address + sourceOffset);
-				byte* destPtr = _pointer + destinationOffset;
+				byte* destPtr = DataPointer + destinationOffset;
 
 				DirectAccess.MemoryCopy(destPtr, srcPtr, sourceSize);
 			}
@@ -1281,7 +1266,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.MemoryCopy(_pointer, (byte *)source.Address, sourceSize);
+				DirectAccess.MemoryCopy(DataPointer, (byte *)source.Address, sourceSize);
 			}
 		}
 
@@ -1350,7 +1335,7 @@ namespace Gorgon.Native
 				}
 
 				byte* srcPtr = (byte *)source.ToPointer();
-				byte* destPtr = _pointer + destinationOffset;
+				byte* destPtr = DataPointer + destinationOffset;
 
 				DirectAccess.MemoryCopy(destPtr, srcPtr, size);
 			}
@@ -1418,7 +1403,7 @@ namespace Gorgon.Native
 				return;
 			}
 
-			byte* destPtr = _pointer + destinationOffset;
+			byte* destPtr = DataPointer + destinationOffset;
 
 			DirectAccess.MemoryCopy(destPtr, source, size);
 		}
@@ -1457,7 +1442,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 				DirectAccess.FillMemory(ptr, value, size);
 			}
 		}
@@ -1480,7 +1465,7 @@ namespace Gorgon.Native
 				// If the buffer is larger than what we can accommodate, then we'll fill it in chunks.
 				if (Size > int.MaxValue)
 				{
-					byte* ptr = _pointer;
+					byte* ptr = DataPointer;
 					long size = Size;
 					int fillAmount = int.MaxValue;
 
@@ -1500,7 +1485,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.FillMemory(_pointer, value, (int)Size);
+				DirectAccess.FillMemory(DataPointer, value, (int)Size);
 			}
 		}
 
@@ -1537,7 +1522,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				byte* ptr = _pointer + offset;
+				byte* ptr = DataPointer + offset;
 				DirectAccess.ZeroMemory(ptr, size);
 			}
 		}
@@ -1559,7 +1544,7 @@ namespace Gorgon.Native
 				// If the buffer is larger than what we can accommodate, then we'll fill it in chunks.
 				if (Size > int.MaxValue)
 				{
-					byte* ptr = _pointer;
+					byte* ptr = DataPointer;
 					long size = Size;
 					int fillAmount = int.MaxValue;
 
@@ -1579,7 +1564,7 @@ namespace Gorgon.Native
 					return;
 				}
 
-				DirectAccess.ZeroMemory(_pointer, (int)Size);
+				DirectAccess.ZeroMemory(DataPointer, (int)Size);
 			}
 		}
 
