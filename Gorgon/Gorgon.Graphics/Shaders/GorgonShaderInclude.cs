@@ -65,7 +65,7 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORGFX_SHADER_INCLUDE_TOSTR, Name);
+			return string.Format(Resources.GORGFX_TOSTR_SHADER_INCLUDE, Name);
 		}
 
 		/// <summary>
@@ -148,7 +148,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(includeName))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(includeName));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(includeName));
 			}
 
 			if (includeSourceFile == null)

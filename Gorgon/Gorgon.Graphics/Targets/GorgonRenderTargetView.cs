@@ -42,6 +42,7 @@ namespace Gorgon.Graphics
     /// This allows the resource to be bound to the pipeline directly via a cast operation.  However, in some instances, only a section of the resource may need to be assigned to the pipeline (e.g. 
     /// a particular array index in a 2D array texture).  In this case, the user can define a render target view to only use that one array index and bind that to the pipeline.</remarks>
     public class GorgonRenderTargetView
+		: IDisposable
     {
 		#region Variables.
 		// Log interface for debugging.
@@ -292,12 +293,12 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public void Dispose()
 		{
-			if (D3DRenderTargetView == null)
+			if (D3DRenderTargetView != null)
 			{
-				return;
+				_log.Print($"Render Target View '{Resource.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
 			}
 
-			_log.Print($"Render Target View '{Resource.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
+			D3DRenderTargetView?.Dispose();
 		}
         #endregion
 

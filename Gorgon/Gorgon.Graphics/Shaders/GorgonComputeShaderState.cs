@@ -245,7 +245,7 @@ namespace Gorgon.Graphics
 
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                    throw new ArgumentException(Properties.Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
                 }
 
                 for (int i = 0; i < _unorderedViews.Length; i++)

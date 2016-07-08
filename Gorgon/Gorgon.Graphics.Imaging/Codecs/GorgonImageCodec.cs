@@ -34,26 +34,6 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Imaging.Codecs
 {
 	/// <summary>
-	/// Flags to control how pixel conversion should be handled.
-	/// </summary>
-	[Flags]
-	public enum ImageBitFlags
-	{
-		/// <summary>
-		/// No modifications to conversion process.
-		/// </summary>
-		None = 0,
-		/// <summary>
-		/// Set a known opaque alpha value in the alpha channel.
-		/// </summary>
-		OpaqueAlpha = 1,
-		/// <summary>
-		/// Enables specific legacy format conversion cases.
-		/// </summary>
-		Legacy = 2
-	}
-
-	/// <summary>
 	/// A codec to reading and/or writing image data.
 	/// </summary>
 	/// <remarks>
@@ -214,7 +194,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a <see cref="GorgonImageCodecPlugIn"/> if the supplied formats are too limited or do not 
 	/// support a necessary feature.
 	/// </para>
-	/// </para>
 	/// </remarks>
 	public abstract class GorgonImageCodec
 		: IGorgonNamedObject
@@ -259,17 +238,9 @@ namespace Gorgon.Graphics.Imaging.Codecs
 	    }
 
         /// <summary>
-        /// Property to return whether the image codec supports a depth component for volume textures.
+        /// Property to return whether the image codec supports a depth component for volume (3D) images.
         /// </summary>
 	    public abstract bool SupportsDepth
-	    {
-	        get;
-	    }
-
-        /// <summary>
-        /// Property to return whether the image codec supports image arrays.
-        /// </summary>
-	    public abstract bool SupportsArray
 	    {
 	        get;
 	    }
@@ -289,15 +260,20 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			get;
 		}
-	    #endregion
+
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		string IGorgonNamedObject.Name => Codec;
+		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">The stream containing the image data to read.</param>
-        /// <param name="size">The size of the image within the stream, in bytes.</param>
-        /// <param name="options">[Optional] Options used for decoding the image data.</param>
+		/// <param name="size">The size of the image within the stream, in bytes.</param>
+		/// <param name="options">[Optional] Options used for decoding the image data.</param>
 		/// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>NULL</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write only.</exception>
@@ -446,13 +422,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		{
 			CodecCommonExtensions = new string[] { };
 		}
-		#endregion
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		string IGorgonNamedObject.Name => Codec;
 		#endregion
 	}
 }

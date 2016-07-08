@@ -24,101 +24,69 @@
 // 
 #endregion
 
-using Gorgon.Core;
-using SharpDX.Direct3D11;
+using System;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
+	/// Defines what has been changed on the vertex shader state.
+	/// </summary>
+	[Flags]
+	public enum VertexShaderStateChangedFlags
+		: ulong
+	{
+		/// <summary>
+		/// No changes.
+		/// </summary>
+		None = 0,
+		/// <summary> 
+		/// The shader itself has been changed.
+		/// </summary>
+		Shader = 0x1
+	}
+
+	/// <summary>
 	/// Vertex shader states.
 	/// </summary>
 	public class GorgonVertexShaderState
-		: GorgonShaderState<GorgonVertexShader>
 	{
-		#region Methods.
-		/// <summary>
-		/// Function to reset the internal shader states.
-		/// </summary>
-		internal override void Reset()
-		{
-			TextureSamplers.Reset();
-			ConstantBuffers.Reset();
-			Resources.Reset();
-		}
-
-		/// <summary>
-		/// Property to set or return the current shader.
-		/// </summary>
-		protected override void SetCurrent()
-		{
-			Graphics.VideoDevice.D3DDeviceContext().VertexShader.Set(Current == null ? null : Current.D3DShader);
-		}
-
-		/// <summary>
-		/// Function to set resources for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="resources">Resources to update.</param>
-		/// <exception cref="GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetResources(int slot, int count, ShaderResourceView[] resources)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetShaderResource(slot, resources[0]);
-		    }
-		    else
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetShaderResources(slot, count, resources);
-		    }
-		}
-
-		/// <summary>
-		/// Function to set the texture samplers for a shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="samplers">Samplers to update.</param>
-        /// <exception cref="GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetSamplers(int slot, int count, SamplerState[] samplers)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetSampler(slot, samplers[0]);
-		    }
-		    else
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetSamplers(slot, count, samplers);
-		    }
-		}
-
-		/// <summary>
-		/// Function to set constant buffers for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, Buffer[] buffers)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetConstantBuffer(slot, buffers[0]);
-		    }
-		    else
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().VertexShader.SetConstantBuffers(slot, count, buffers);
-		    }
-		}
+		#region Variables.
+		// The vertex shader.
+		private GorgonVertexShader _shader;
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Properties.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexShaderState"/> class.
+		/// Property to return the vertex shader state as a <see cref="VertexShaderStateChangedFlags"/> value to determine state change.
 		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this object.</param>
-		protected internal GorgonVertexShaderState(GorgonGraphics graphics)
-			: base(graphics)
+		/// <remarks>
+		/// This is used to determine what states have changed since the last vertex shader state state was set. This is used to reduce overhead when changing states during a frame.
+		/// </remarks>
+		public VertexShaderStateChangedFlags VertexShaderStateChangedFlags
 		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current vertex shader.
+		/// </summary>
+		public GorgonVertexShader Shader
+		{
+			get
+			{
+				return _shader;
+			}
+			set
+			{
+				if (_shader == value)
+				{
+					return;
+				}
+
+				_shader = value;
+				VertexShaderStateChangedFlags |= VertexShaderStateChangedFlags.Shader;
+			}
 		}
 		#endregion
 	}

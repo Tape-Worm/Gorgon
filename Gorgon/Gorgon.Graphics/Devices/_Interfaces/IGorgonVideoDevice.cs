@@ -87,6 +87,22 @@ namespace Gorgon.Graphics
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Property to return the Direct 3D 11.1 device context.
+		/// </summary>
+		D3D11.DeviceContext1 D3DDeviceContext
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the Direct 3D 11.1 device object
+		/// </summary>
+		D3D11.Device1 D3DDevice
+		{
+			get;
+		}
 		#endregion
 
 		#region Methods.

@@ -172,16 +172,16 @@
   <data name="GORGFX_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not supported.</value>
   </data>
-  <data name="GORGFX_LAYOUT_ELEMENT_IN_USE" xml:space="preserve">
+  <data name="GORGFX_ERR_LAYOUT_ELEMENT_IN_USE" xml:space="preserve">
     <value>The offset [{0}] or context '{1}' is in use by another item with the same index or slot.</value>
   </data>
   <data name="GORGFX_DEVICE_ERR_CANNOT_FIND_DEVICES" xml:space="preserve">
     <value>Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 4.</value>
   </data>
-  <data name="GORGFX_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+  <data name="GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GORGFX_SHADER_INCLUDE_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_SHADER_INCLUDE" xml:space="preserve">
     <value>Gorgon Shader Include '{0}'</value>
   </data>
   <data name="GORGFX_VALUE_OUT_OF_RANGE" xml:space="preserve">
@@ -390,8 +390,8 @@
   <data name="GORGFX_BUFFER_NOT_INDIRECT" xml:space="preserve">
     <value>The buffer '{0}' was not created as an indirect argument buffer.</value>
   </data>
-  <data name="GORGFX_SHADER_UNKNOWN_TYPE" xml:space="preserve">
-    <value>The shader type [{0}] is not a valid type.</value>
+  <data name="GORGFX_ERR_SHADER_UNKNOWN_TYPE" xml:space="preserve">
+    <value>The shader type '{0}' is not a valid type.</value>
   </data>
   <data name="GORGFX_SHADER_NO_SO" xml:space="preserve">
     <value>Cannot create a stream output shader with this method.</value>
@@ -530,7 +530,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_IMAGE_VOLUME_NOT_POWER_OF_TWO" xml:space="preserve">
     <value>Cannot create a volume texture mip chain unless the dimensions are powers of 2.</value>
   </data>
-  <data name="GORGFX_LAYOUT_INVALID_ELEMENT_TYPE" xml:space="preserve">
+  <data name="GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE" xml:space="preserve">
     <value>The type '{0}' is not a valid type for an input element.</value>
   </data>
   <data name="GORGFX_STREAM_EOF" xml:space="preserve">
@@ -545,10 +545,10 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found.</value>
   </data>
-  <data name="GORGFX_SHADER_INCLUDE_NOT_FOUND" xml:space="preserve">
+  <data name="GORGFX_ERR_SHADER_INCLUDE_NOT_FOUND" xml:space="preserve">
     <value>The include file in line '{0}' was not found in the include list.</value>
   </data>
-  <data name="GORGFX_SHADER_INCLUDE_PATH_INVALID" xml:space="preserve">
+  <data name="GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID" xml:space="preserve">
     <value>The include line '{0}' is not valid.</value>
   </data>
   <data name="GORGFX_INVALID_SETTINGS" xml:space="preserve">
@@ -644,7 +644,7 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_TEXTURE_DISCARD_NEEDS_DYNAMIC" xml:space="preserve">
     <value>Cannot use [Discard] with a texture that has not been created with a [Dynamic] usage.</value>
   </data>
-  <data name="GORGFX_SHADER_MACRO_TOSTR" xml:space="preserve">
+  <data name="GORGFX_TOSTR_SHADER_MACRO" xml:space="preserve">
     <value>Gorgon Shader Macro Definition '{0}'.</value>
   </data>
   <data name="GORGFX_TARGET_IS_NOT_SWAPCHAIN" xml:space="preserve">
@@ -814,5 +814,10 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   </data>
   <data name="GORGFX_ERR_RTV_RESOURCE_MISMATCH" xml:space="preserve">
     <value>The render target views do not have the same width, height, or array count/depth count.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COMPILE_SHADER" xml:space="preserve">
+    <value>Could not compile the shader source code.
+Errors:
+{0}</value>
   </data>
 </root>

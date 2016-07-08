@@ -24,88 +24,69 @@
 // 
 #endregion
 
-using D3D = SharpDX.Direct3D11;
+using System;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
+	/// Defines what has been changed on the pixel shader state.
+	/// </summary>
+	[Flags]
+	public enum PixelShaderStateChangedFlags
+		: ulong
+	{
+		/// <summary>
+		/// No changes.
+		/// </summary>
+		None = 0,
+		/// <summary> 
+		/// The shader itself has been changed.
+		/// </summary>
+		Shader = 0x1
+	}
+
+	/// <summary>
 	/// Pixel shader states.
 	/// </summary>
 	public class GorgonPixelShaderState
-		: GorgonShaderState<GorgonPixelShader>
     {
-        #region Methods.
-        /// <summary>
-		/// Property to set or return the current shader.
-		/// </summary>
-		protected override void SetCurrent()
-        {
-	        Graphics.VideoDevice.D3DDeviceContext().PixelShader.Set(Current == null ? null : Current.D3DShader);
-        }
-
-		/// <summary>
-		/// Function to set resources for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetShaderResource(slot, resources[0]);
-		    }
-		    else
-            {
-                Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetShaderResources(slot, count, resources);
-            }
-		}
-
-		/// <summary>
-		/// Function to set the texture samplers for a shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="samplers">Samplers to update.</param>
-		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetSampler(slot, samplers[0]);
-		    }
-		    else
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetSamplers(slot, count, samplers);
-		    }
-		}
-
-		/// <summary>
-		/// Function to set constant buffers for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
-		{
-		    if (count == 1)
-		    {
-		        Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetConstantBuffer(slot, buffers[0]);
-		    }
-		    else
-            {
-                Graphics.VideoDevice.D3DDeviceContext().PixelShader.SetConstantBuffers(slot, count, buffers);
-            }
-		}
+		#region Variables.
+		// The vertex shader.
+		private GorgonPixelShader _shader;
 		#endregion
 
-		#region Constructor/Destructor.
+		#region Properties.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPixelShaderState"/> class.
+		/// Property to return the vertex shader state as a <see cref="VertexShaderStateChangedFlags"/> value to determine state change.
 		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this object.</param>
-		protected internal GorgonPixelShaderState(GorgonGraphics graphics)
-			: base(graphics)
+		/// <remarks>
+		/// This is used to determine what states have changed since the last vertex shader state state was set. This is used to reduce overhead when changing states during a frame.
+		/// </remarks>
+		public PixelShaderStateChangedFlags PixelShaderStateChangedFlags
 		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return the current vertex shader.
+		/// </summary>
+		public GorgonPixelShader Shader
+		{
+			get
+			{
+				return _shader;
+			}
+			set
+			{
+				if (_shader == value)
+				{
+					return;
+				}
+
+				_shader = value;
+				PixelShaderStateChangedFlags |= PixelShaderStateChangedFlags.Shader;
+			}
 		}
 		#endregion
 	}

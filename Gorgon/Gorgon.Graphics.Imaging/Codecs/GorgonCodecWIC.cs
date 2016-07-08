@@ -117,11 +117,6 @@ namespace Gorgon.Graphics.Imaging.Codecs
 		public override bool SupportsBlockCompression => false;
 
 		/// <summary>
-        /// Property to return whether the image codec supports image arrays.
-        /// </summary>
-	    public override bool SupportsArray => false;
-
-		/// <summary>
         /// Property to return whether the image codec supports mip maps.
         /// </summary>
 	    public override bool SupportsMipMaps => false;

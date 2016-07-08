@@ -30,85 +30,94 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Defines the layout of an item in a buffer.
+	/// Defines the layout of an input item within a buffer.
 	/// </summary>
-	/// <remarks>This is a collection of input elements used to describe the layout of an input object.  The user can create this by hand using explicit element types, or 
-	/// by passing the type of .
+	/// <remarks>
+	/// <para>
+	/// This defines the layout of a piece of data within a buffer, specifically, a vertex within a vertex buffer. The layout is defined by a list of <see cref="GorgonInputElement"/> values that determine 
+	/// how the data within the layout is arranged.
+	/// </para>
+	/// <para>
+	/// Users may create a layout manually, or, derive it from a value type (<c>struct</c>). If deriving from a value type, then the members of the value type must be decorated with a 
+	/// <see cref="InputElementAttribute"/> to define where the member is located within the layout data structure.
+	/// </para>
 	/// </remarks>
 	public class GorgonInputLayout
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-	    private GorgonInputElement[] _elements;                 // Elements used to build the layout.
-		private bool _disposed;									// Flag to indicate that the object was disposed.
-		private IDictionary<int, int> _slotSizes;				// List of slot sizes.
-
 		// Type mapping for types.
-		private static readonly Dictionary<Type, BufferFormat> _typeMapping = new Dictionary<Type, BufferFormat>
+		private static readonly Dictionary<Type, DXGI.Format> _typeMapping = new Dictionary<Type, DXGI.Format>
 			{
 				{
-					typeof(byte), BufferFormat.R8_UInt
+					typeof(byte), DXGI.Format.R8_UInt
 				},
 				{
-					typeof(sbyte), BufferFormat.R8_SInt
+					typeof(sbyte), DXGI.Format.R8_SInt
 				},
 				{
-					typeof(Int32), BufferFormat.R32_UInt
+					typeof(int), DXGI.Format.R32_UInt
 				},
 				{
-					typeof(UInt32), BufferFormat.R32_UInt
+					typeof(uint), DXGI.Format.R32_UInt
 				},
 				{
-					typeof(Int16), BufferFormat.R16_UInt
+					typeof(short), DXGI.Format.R16_UInt
 				},
 				{
-					typeof(UInt16), BufferFormat.R16_UInt
+					typeof(ushort), DXGI.Format.R16_UInt
 				},
 				{
-					typeof(Int64), BufferFormat.R32G32_SInt
+					typeof(long), DXGI.Format.R32G32_SInt
 				},
 				{
-					typeof(UInt64), BufferFormat.R32G32_UInt
+					typeof(ulong), DXGI.Format.R32G32_UInt
 				},
 				{
-					typeof(float), BufferFormat.R32_Float
+					typeof(float), DXGI.Format.R32_Float
 				},
 				{
-					typeof(DX.Vector2), BufferFormat.R32G32_Float
+					typeof(DX.Vector2), DXGI.Format.R32G32_Float
 				},
 				{
-					typeof(DX.Vector3), BufferFormat.R32G32B32_Float
+					typeof(DX.Vector3), DXGI.Format.R32G32B32_Float
 				},
 				{
-					typeof(DX.Vector4), BufferFormat.R32G32B32A32_Float
+					typeof(DX.Vector4), DXGI.Format.R32G32B32A32_Float
 				},
 				{
-					typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
+					typeof(GorgonColor), DXGI.Format.R32G32B32A32_Float
 				}
 			};
+
+		// Elements used to build the layout.
+		private GorgonInputElement[] _elements;
+		// List of slot sizes.
+		private IDictionary<int, int> _slotSizes;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct3D input layout.
 		/// </summary>
-		internal D3D.InputLayout D3DLayout
+		internal D3D11.InputLayout D3DLayout
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the graphics interface that created this object.
+		/// Property to return the video device that created this object.
 		/// </summary>
-		public GorgonGraphics Graphics
+		public IGorgonVideoDevice VideoDevice
 		{
 			get;
 		}
@@ -124,7 +133,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the input object size in bytes.
 		/// </summary>
-		public int Size
+		public int SizeInBytes
 		{
 			get;
 			private set;
@@ -133,27 +142,56 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Property to return the input elements for this layout.
         /// </summary>
-        public IEnumerable<GorgonInputElement> Elements => _elements;
-
+        public IReadOnlyList<GorgonInputElement> Elements => _elements;
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to determine if an element already exists with the same context, index and slot.
-        /// </summary>
-        /// <param name="element"></param>
-        private void FindDuplicateElements(GorgonInputElement element)
+		/// <summary>
+		/// Function to convert this input layout into a Direct3D input layout.
+		/// </summary>
+		private void BuildD3DLayout()
+		{
+			D3DLayout?.Dispose();
+
+			var elements = new D3D11.InputElement[_elements.Length];
+
+			for (int i = 0; i < _elements.Length; ++i)
+			{
+				elements[i] = _elements[i].D3DInputElement;
+			}
+
+			D3DLayout = new D3D11.InputLayout(VideoDevice.D3DDevice(), Shader.D3DByteCode, elements)
+			{
+				DebugName = Name + " D3D11InputLayout"
+			};
+		}
+
+		/// <summary>
+		/// Function to determine if an element already exists with the same context, index and slot.
+		/// </summary>
+		/// <param name="elements">The list of elements to compare against.</param>
+		/// <param name="element">The element to search for.</param>
+		/// <param name="index">The index of the current element.</param>
+		/// <param name="parameterName">The name of the parameter being validated.</param>
+		private static void FindDuplicateElements(IList<GorgonInputElement> elements, GorgonInputElement element, int index, string parameterName)
         {
-            if (_elements.Any(
-		            elementItem =>
-		            !string.IsNullOrWhiteSpace(elementItem.Context) &&
-		            ((element.Offset == elementItem.Offset) ||
-		             (string.Equals(element.Context, elementItem.Context, StringComparison.OrdinalIgnoreCase))) &&
-		            element.Index == elementItem.Index && element.Slot == elementItem.Slot))
-            {
-				throw new ArgumentException(
-					string.Format(Resources.GORGFX_LAYOUT_ELEMENT_IN_USE, element.Offset, element.Context), nameof(element));
-            }
+	        for (int i = 0; i < elements.Count; ++i)
+	        {
+				// Skip the element that we're testing against.
+				if (index == i)
+				{
+					continue;
+				}
+
+				GorgonInputElement currentElement = elements[i];
+
+		        if ((string.Equals(currentElement.Context, element.Context, StringComparison.OrdinalIgnoreCase))
+		            && (currentElement.Index == element.Index) && (currentElement.Slot == element.Slot))
+		        {
+					throw new ArgumentException(
+						string.Format(Resources.GORGFX_ERR_LAYOUT_ELEMENT_IN_USE, element.Offset, element.Context), parameterName);
+				}
+			}
         }
 
 		/// <summary>
@@ -161,163 +199,208 @@ namespace Gorgon.Graphics
 		/// </summary>
 		private void UpdateVertexSize()
 		{
-			Size = _elements.Sum(item => item.Size);
+			int size = 0;
+			_slotSizes = new Dictionary<int, int>();
 
-		    _slotSizes = (from slot in _elements
-		                  group slot by slot.Slot).ToDictionary(key => key.Key, value => value.Sum(item => item.Size));
+			// ReSharper disable once ForCanBeConvertedToForeach
+			for (int i = 0; i < _elements.Length; ++i)
+			{
+				GorgonInputElement element = _elements[i];
+				size += element.SizeInBytes;
+
+				int slotSize;
+
+				// Calculate the individual slot sizes.
+				if (_slotSizes.TryGetValue(element.Slot, out slotSize))
+				{
+					slotSize += element.SizeInBytes;
+				}
+				else
+				{
+					slotSize = element.SizeInBytes;
+				}
+
+				_slotSizes[element.Slot] = slotSize;
+			}
+
+			SizeInBytes = size;
 		}
 
 		/// <summary>
-        /// Function to retrieve the input layout from a specific type.
-        /// </summary>
-        /// <param name="type">Type of retrieve layout info from.</param>
-        /// <remarks>Use this to create an input element layout from a type.  Properties and fields in this type must be marked with the <see cref="Gorgon.Graphics.InputElementAttribute">GorgonInputElementAttribute</see> in order for the element list to consider it and those fields or properties must be public.
-        /// <para>Fields/properties marked with the attribute must be either a (u)byte, (u)short, (u)int, (u)long, float or one of the DX.Vector2/3/4D types.</para>
-        /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="type"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <exception cref="GorgonException">Thrown if a field/property type cannot be mapped to a <see cref="Gorgon.Graphics.BufferFormat">GorgonBufferFormat</see>.</exception>
-        internal void InitializeFromType(Type type)
-		{
-			IList<MemberInfo> members = type.GetMembers();
-			int byteOffset = 0;
-
-		    if (type == null)
-		    {
-		        throw new ArgumentNullException(nameof(type));
-		    }
-
-		    // Get only properties and fields, and sort by explicit ordering (then by offset).
-			var propertiesAndFields = (from member in members
-			                           let memberAttribute =
-				                           member.GetCustomAttributes(typeof(InputElementAttribute), true) as
-				                           IList<InputElementAttribute>
-			                           where
-				                           ((member.MemberType == MemberTypes.Property) ||
-				                            (member.MemberType == MemberTypes.Field)) &&
-				                           ((memberAttribute != null) && (memberAttribute.Count > 0))
-			                           orderby memberAttribute[0].ExplicitOrder, memberAttribute[0].Offset
-			                           select new
-			                                  {
-				                                  member.Name,
-				                                  ReturnType =
-				                           (member as FieldInfo)?.FieldType ?? ((PropertyInfo)member).PropertyType,
-				                                  Attribute = memberAttribute[0]
-			                                  }).ToArray();
-
-            _elements = new GorgonInputElement[propertiesAndFields.Length];
-
-            for (int i = 0; i < _elements.Length; i++)
-            {
-                var item = propertiesAndFields[i];
-
-                BufferFormat format = item.Attribute.Format;
-                string contextName = item.Attribute.Context;
-
-                // Try to determine the format from the type.
-                if (format == BufferFormat.Unknown)
-                {
-					if (!_typeMapping.ContainsKey(item.ReturnType))
-					{
-						throw new GorgonException(GorgonResult.CannotCreate,
-												  string.Format(Resources.GORGFX_LAYOUT_INVALID_ELEMENT_TYPE,
-																item.ReturnType.FullName));
-					}
-
-					format = _typeMapping[item.ReturnType];
-                }
-
-                // Determine the context name from the field name.
-                if (string.IsNullOrEmpty(contextName))
-                {
-                    contextName = item.Name;
-                }
-
-                var element = new GorgonInputElement(contextName, format,
-                                                     (item.Attribute.AutoOffset ? byteOffset : item.Attribute.Offset),
-                                                     item.Attribute.Index, item.Attribute.Slot, item.Attribute.Instanced,
-                                                     item.Attribute.InstanceCount);
-
-                FindDuplicateElements(element);
-
-                _elements[i] = element;
-                byteOffset += element.Size;
-            }
-
-			UpdateVertexSize();
-		}
-
-        /// <summary>
-        /// Function to initialize the elements from a list of elements.
-        /// </summary>
-        /// <param name="elements">Elements used to initialize the layout.</param>
-        internal void InitializeFromList(IList<GorgonInputElement> elements)
-        {
-            _elements = new GorgonInputElement[elements.Count];
-
-            // Copy the list into our internal element list.
-            for (int i = 0; i < _elements.Length; i++)
-            {
-                var element = elements[i];
-
-                FindDuplicateElements(element);
-
-                _elements[i] = element;
-            }
-
-			UpdateVertexSize();
-        }
-        
-        /// <summary>
-		/// Function to convert this input layout into a Direct3D input layout.
+		/// Function to build a list of fields from the given type.
 		/// </summary>
-		/// <param name="device">Direct 3D device object.</param>
-		/// <returns>The Direct 3D 11 input layout.</returns>
-		internal D3D.InputLayout Convert(D3D.Device device)
+		/// <param name="type">The type to evaluate.</param>
+		/// <returns>The list of field info values for the members of the type.</returns>
+		private static List<Tuple<FieldInfo, InputElementAttribute>> GetFieldInfoList(Type type)
 		{
-		    if (D3DLayout != null)
-		    {
-		        return D3DLayout;
-		    }
+			FieldInfo[] members = type.GetFields();
+			var result = new List<Tuple<FieldInfo, InputElementAttribute>>();
 
-			// If the shader that's linked to this layout is gone, then don't bother with a new layout object.
-	        if (Shader.D3DByteCode == null)
-	        {
-		        return null;
-	        }
+			for (int i = 0; i < members.Length; ++i)
+			{
+				FieldInfo member = members[i];
+				InputElementAttribute attribute = member.GetCustomAttribute<InputElementAttribute>();
 
-		    var elements = new D3D.InputElement[_elements.Length];
+				if (attribute == null)
+				{
+					continue;
+				}
 
-		    for (int i = 0; i < elements.Length; i++)
-		    {
-		        elements[i] = _elements[i].Convert();
-		    }
-			
-		    D3DLayout = new D3D.InputLayout(device, Shader.D3DByteCode, elements)
-		        {
-		            DebugName = "Gorgon Input Layout '" + Name + "'"
-		        };
+				Type returnType = member.FieldType;
 
-		    return D3DLayout;
+				if (!_typeMapping.ContainsKey(returnType))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, returnType.FullName));
+				}
+
+				result.Add(new Tuple<FieldInfo, InputElementAttribute>(member, attribute));
+			}
+
+			return result;
 		}
 
+		/// <summary>
+		/// Function to build an input layout using the fields from a value type.
+		/// </summary>
+		/// <typeparam name="T">The type to evaluate. This must be a value type.</typeparam>
+		/// <param name="videoDevice">The video device used to create the input layout.</param>
+		/// <param name="shader">Vertex shader to bind the layout with.</param>
+		/// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="videoDevice"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
+		/// <exception cref="GorgonException">Thrown when one of the members of the type <typeparamref name="T"/> is not supported.</exception>
+		/// <remarks>
+		/// <para>
+		/// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
+		/// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
+		/// </para>
+		/// <para>
+		/// The type parameter <typeparamref name="T"/> must be a value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+		/// supported.
+		/// </para>
+		/// <para>
+		/// The types of the fields must be one of the following types:
+		/// <para>
+		/// <list type="bullet">
+		///		<item>
+		///			<description><see cref="byte"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="sbyte"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="short"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="ushort"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="int"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="uint"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="long"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="ulong"/></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="float"/></description>
+		///		</item>
+		///		<item>
+		///			<description><c>Vector2</c></description>
+		///		</item>
+		///		<item>
+		///			<description><c>Vector3</c></description>
+		///		</item>
+		///		<item>
+		///			<description><c>Vector4</c></description>
+		///		</item>
+		///		<item>
+		///			<description><see cref="GorgonColor"/></description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// If the type of the member does not match, an exception will be thrown.
+		/// </para>
+		/// </remarks>
+		public static GorgonInputLayout CreateUsingType<T>(IGorgonVideoDevice videoDevice, GorgonVertexShader shader)
+			where T : struct
+		{
+			Type type = typeof(T);
+			int byteOffset = 0;
+			List<Tuple<FieldInfo, InputElementAttribute>> members = GetFieldInfoList(type);
+
+			var elements = new GorgonInputElement[members.Count];
+
+			for (int i = 0; i < elements.Length; i++)
+			{
+				Tuple<FieldInfo, InputElementAttribute> item = members[i];
+
+				DXGI.Format format = item.Item2.Format;
+				string contextName = item.Item2.Context;
+
+				// Try to determine the format from the type.
+				if ((format == DXGI.Format.Unknown) && (!_typeMapping.TryGetValue(item.Item1.FieldType, out format)))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE, item.Item1.FieldType.FullName));
+				}
+
+				var element = new GorgonInputElement(contextName, format,
+													 (item.Item2.AutoOffset ? byteOffset : item.Item2.Offset),
+													 item.Item2.Index, item.Item2.Slot, item.Item2.Instanced,
+													 item.Item2.Instanced ? item.Item2.InstanceCount : 0);
+
+				FindDuplicateElements(elements, element, i, nameof(element));
+
+				elements[i] = element;
+				byteOffset += element.SizeInBytes;
+			}
+
+			return new GorgonInputLayout(type.Name, videoDevice, shader, elements);
+		}
+        
 		/// <summary>
 		/// Function to normalize the offsets in the element list.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// This is used to rebuild the offsets for the elements assigned to this layout. Ensure that this input layout is not bound to the pipeline before normalizing. Otherwise, an invalid binding will 
+		/// occur. 
+		/// </para>
+		/// <para>
+		/// This will use the order of the elements as they appear in the list passed to this object to determine the offsets.
+		/// </para>
+		/// </remarks>
 		public void NormalizeOffsets()
 		{
 			int lastOffset = 0;
 
+			var elements = new D3D11.InputElement[_elements.Length];
+
 			for (int i = 0; i < _elements.Length - 1; i++)
 			{
-				_elements[i] = new GorgonInputElement(_elements[i], lastOffset);
-				lastOffset += _elements[i].Size;
+				GorgonInputElement oldElement = _elements[i];
+				_elements[i] = new GorgonInputElement(oldElement.Context,
+				                                      oldElement.Format,
+				                                      lastOffset,
+				                                      oldElement.Index,
+				                                      oldElement.Slot,
+				                                      oldElement.Instanced,
+				                                      oldElement.InstanceCount);
+				lastOffset += oldElement.SizeInBytes;
+				elements[i] = _elements[i].D3DInputElement;
 			}
+
+			BuildD3DLayout();
 		}
 
 		/// <summary>
-		/// Property to return the size of the elements for a given slot in an input element.
+		/// Property to return the size, in bytes, of the elements for a given slot.
 		/// </summary>
-		/// <param name="slot">Slot to count.</param>
+		/// <param name="slot">The slot index assigned to the elements.</param>
 		/// <returns>The size of the elements in the slot, in bytes.</returns>
 		public int GetSlotSize(int slot)
 		{
@@ -332,56 +415,70 @@ namespace Gorgon.Graphics
 
 		    return _slotSizes[slot];
 		}
-
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.
 		/// </summary>
-		/// <param name="graphics">Graphics interface that created this object.</param>
 		/// <param name="name">Name of the object.</param>
+		/// <param name="videoDevice">The video device interface used to create this input layout.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
-		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)
+		/// <param name="elements">The input elements to assign to this layout.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoDevice"/>, <paramref name="shader"/>, or the <paramref name="elements"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/>, or the <paramref name="elements"/> parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when an element with the same context, slot and index appears more than once in the <paramref name="elements"/> parameter.</para>
+		/// </exception>
+		public GorgonInputLayout(string name, IGorgonVideoDevice videoDevice, GorgonVertexShader shader, IEnumerable<GorgonInputElement> elements)
             : base(name)
 		{
-			Graphics = graphics;
+			if (videoDevice == null)
+			{
+				throw new ArgumentNullException(nameof(videoDevice));
+			}
+
+			if (shader == null)
+			{
+				throw new ArgumentNullException(nameof(shader));
+			}
+
+			if (elements == null)
+			{
+				throw new ArgumentNullException(nameof(elements));
+			}
+
+			// Make a copy so we don't allow changing of the original reference.
+			_elements = elements.ToArray();
+
+			if (_elements.Length == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(elements));
+			}
+
+			_slotSizes = new Dictionary<int, int>();
+
+			// Check for duplicated elements.
+			for (int i = 0; i < _elements.Length; ++i)
+			{
+				FindDuplicateElements(_elements, _elements[i], i, nameof(elements));
+			}
+
+			VideoDevice = videoDevice;
 			Shader = shader;
-		    GorgonRenderStatistics.InputLayoutCount++;
+
+			UpdateVertexSize();
+			BuildD3DLayout();
 		}
 		#endregion
 
 		#region IDisposable Members
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				D3DLayout?.Dispose();
-
-				Graphics.RemoveTrackedObject(this);
-                GorgonRenderStatistics.InputLayoutCount--;
-			}
-
-			D3DLayout = null;
-			_disposed = true;
-		}
-
-		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			D3DLayout?.Dispose();
 		}
 		#endregion
 	}

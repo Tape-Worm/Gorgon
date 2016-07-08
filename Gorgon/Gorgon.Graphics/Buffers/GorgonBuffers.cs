@@ -170,7 +170,7 @@ namespace Gorgon.Graphics
 
             if (values.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
             }
             
             using(IGorgonPointer pointer = new GorgonPointerPinned<T>(values))
@@ -221,7 +221,7 @@ namespace Gorgon.Graphics
 
             if (name.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Size == 0)))
@@ -369,7 +369,7 @@ namespace Gorgon.Graphics
 
             if (values.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(values));
             }
 
             using (IGorgonPointer pointer = new GorgonPointerPinned<T>(values))
@@ -464,7 +464,7 @@ namespace Gorgon.Graphics
 
             if (data.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
             }
 
             int size = data.Length * DirectAccess.SizeOf<T>();
@@ -548,7 +548,7 @@ namespace Gorgon.Graphics
 
             if (data.Length == 0)
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
             }
 
             int size = data.Length * DirectAccess.SizeOf<T>();

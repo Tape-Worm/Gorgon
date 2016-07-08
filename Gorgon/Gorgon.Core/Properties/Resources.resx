@@ -999,4 +999,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL" xml:space="preserve">
     <value>There must be a minimum of 1 item available to the allocator.</value>
   </data>
+  <data name="GOR_RESULT_CANNOT_COMPILE" xml:space="preserve">
+    <value>There were errors compiling the source code.</value>
+  </data>
 </root>

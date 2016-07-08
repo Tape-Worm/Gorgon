@@ -197,7 +197,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(context))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(context));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(context));
 			}
 
             if ((slot < 0) || (slot > 3))

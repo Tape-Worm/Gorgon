@@ -27,7 +27,7 @@
 using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
-using D3DCommon = SharpDX.Direct3D;
+using D3D = SharpDX.Direct3D;
 
 namespace Gorgon.Graphics
 {
@@ -38,23 +38,24 @@ namespace Gorgon.Graphics
 		: IGorgonNamedObject, IEquatable<GorgonShaderMacro>
 	{
 		/// <summary>
-		/// Name of the macro.
+		/// The Direct 3D shader macro wrapped by this type.
 		/// </summary>
-		public readonly string Name;
+		internal readonly D3D.ShaderMacro D3DShaderMacro;
 
 		/// <summary>
-		/// Value for the macro.
+		/// Property to return the name of the macro.
 		/// </summary>
-		public readonly object Value;
+		public string Name => D3DShaderMacro.Name;
 
 		/// <summary>
-		/// Function to convert this macro object into a D3D macro object.
+		/// Property to return the value for the macro.
 		/// </summary>
-		/// <returns>The D3D macro object.</returns>
-		internal D3DCommon.ShaderMacro Convert()
-		{
-			return new D3DCommon.ShaderMacro(Name, Value);
-		}
+		public object Value => D3DShaderMacro.Definition;
+
+		/// <summary>
+		/// Property to return the name of the named object.
+		/// </summary>
+		string IGorgonNamedObject.Name => Name;
 
 		/// <summary>
 		/// Returns a <see cref="string" /> that represents this instance.
@@ -64,7 +65,7 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORGFX_SHADER_MACRO_TOSTR, Name);
+			return string.Format(Resources.GORGFX_TOSTR_SHADER_MACRO, Name);
 		}
 
 		/// <summary>
@@ -128,6 +129,18 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonShaderMacro other)
+		{
+			return Equals(ref this, ref other);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonShaderMacro"/> struct.
 		/// </summary>
 		/// <param name="name">The name of the macro.</param>
@@ -143,33 +156,10 @@ namespace Gorgon.Graphics
 
 			if (name.Length == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
-			Name = name;
-			Value = value;
+			D3DShaderMacro = new D3D.ShaderMacro(name, value);
 		}
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of the named object.
-		/// </summary>
-		string IGorgonNamedObject.Name => Name;
-
-		#endregion
-
-		#region IEquatable<GorgonShaderMacro> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonShaderMacro other)
-		{
-			return Equals(ref this, ref other);
-		}
-		#endregion
 	}
 }

@@ -833,6 +833,15 @@ namespace Gorgon.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There were errors compiling the source code..
+        /// </summary>
+        internal static string GOR_RESULT_CANNOT_COMPILE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_CANNOT_COMPILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access is denied..
         /// </summary>
         internal static string GOR_RESULT_DESC_ACCESS_DENIED {

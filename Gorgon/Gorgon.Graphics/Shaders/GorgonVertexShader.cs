@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using SharpDX.D3DCompiler;
+using D3DCompiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
@@ -35,10 +35,6 @@ namespace Gorgon.Graphics
 	public class GorgonVertexShader
 		: GorgonShader
 	{
-		#region Variables.
-		private bool _disposed;					// Flag to indicate that the object was disposed.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct 3D vertex shader.
@@ -46,69 +42,40 @@ namespace Gorgon.Graphics
 		internal D3D.VertexShader D3DShader
 		{
 			get;
-			private set;
 		}
+
+		/// <summary>
+		/// Property to return the type of shader.
+		/// </summary>
+		public override ShaderType ShaderType => ShaderType.Vertex;
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to compile the shader.
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <param name="byteCode">Byte code for the shader.</param>
-		protected override void CreateShader(ShaderBytecode byteCode)
+		public override void Dispose()
 		{
-		    if (D3DShader != null)
-		    {
-		        D3DShader.Dispose();
-		    }
-
-		    D3DShader = new D3D.VertexShader(Graphics.VideoDevice.D3DDevice(), byteCode)
-			{
-			    DebugName = "Gorgon Vertex Shader '" + Name + "'"
-			};
-		}
-
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><b>true</b> to release both managed and unmanaged resources; <b>false</b> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-				    if (Graphics.Shaders.VertexShader.Current == this)
-				    {
-				        Graphics.Shaders.VertexShader.Current = null;
-				    }
-
-				    if (D3DShader != null)
-				    {
-				        D3DShader.Dispose();
-				    }
-				}
-
-				D3DShader = null;
-
-				_disposed = true;
-			}
-
-			base.Dispose(disposing);
+			D3DShader?.Dispose();
+			base.Dispose();
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexShader"/> class.
+		/// Initializes a new instance of the <see cref="GorgonShader" /> class.
 		/// </summary>
-		/// <param name="graphics">The graphics interface that created this vertex shader.</param>
-		/// <param name="name">The name of the vertex shader.</param>
-		/// <param name="entryPoint">Entry point for the vertex shader.</param>
-		internal GorgonVertexShader(GorgonGraphics graphics, string name, string entryPoint)
-			: base(graphics, name, ShaderType.Vertex, entryPoint)	
+		/// <param name="videoDevice">The video device used to create the shader.</param>
+		/// <param name="name">The name for this shader.</param>
+		/// <param name="isDebug"><b>true</b> if debug information is included in the byte code, <b>false</b> if not.</param>
+		/// <param name="byteCode">The byte code for the shader..</param>
+		internal GorgonVertexShader(IGorgonVideoDevice videoDevice, string name, bool isDebug, D3DCompiler.ShaderBytecode byteCode)
+			: base(videoDevice, name, isDebug, byteCode)
 		{
-
+			D3DShader = new D3D.VertexShader(videoDevice.D3DDevice, byteCode)
+			            {
+				            DebugName = name + " D3D11VertexShader"
+			            };
 		}
 		#endregion
 	}
