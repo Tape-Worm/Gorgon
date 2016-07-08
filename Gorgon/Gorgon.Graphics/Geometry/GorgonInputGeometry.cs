@@ -320,7 +320,7 @@ namespace Gorgon.Graphics
 
 				if (string.IsNullOrWhiteSpace(name))
 				{
-					throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+					throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 				}
 
 				for (int i = 0; i < _bindings.Length; i++)
@@ -674,11 +674,14 @@ namespace Gorgon.Graphics
 					return;
 				}
 
-				_inputLayout = value;
+				return;
+#warning NOPE
+				/*
+								_inputLayout = value;
 
-				_graphics.VideoDevice.D3DDeviceContext().InputAssembler.InputLayout = _inputLayout != null
-					                                               ? _inputLayout.Convert(_graphics.VideoDevice.D3DDevice())
-					                                               : null;
+								_graphics.VideoDevice.D3DDeviceContext().InputAssembler.InputLayout = _inputLayout != null
+																				   ? _inputLayout.Convert(_graphics.VideoDevice.D3DDevice())
+																				   : null;*/
 			}
 		}
 		#endregion
@@ -729,92 +732,6 @@ namespace Gorgon.Graphics
 			}
 
 			_indexBuffer = buffer;
-		}
-
-		/// <summary>
-		/// Function to create an input layout object from a predefined type.
-		/// </summary>
-        /// <param name="name">The name of the input layout.</param>
-        /// <param name="type">Type to evaluate.</param>
-		/// <param name="shader">The shader that holds the input layout signature.</param>
-		/// <returns>The input layout object to create.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when then <paramref name="name"/> parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (<i>Nothing</i> in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="type"/> parameter is NULL.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the name parameter is NULL.</para>
-		/// </exception>
-        /// <exception cref="GorgonException">Thrown when the graphics context is deferred.</exception>
-		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
-		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
-        /// <para>This function should not be called from a deferred context.</para>
-		/// </remarks>
-		public GorgonInputLayout CreateInputLayout(string name, Type type, GorgonShader shader)
-		{
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-
-            if (shader == null)
-            {
-                throw new ArgumentNullException(nameof(shader));
-            }
-
-            var layout = new GorgonInputLayout(_graphics, name, shader);
-			layout.InitializeFromType(type);
-
-            _graphics.AddTrackedObject(layout);
-
-			return layout;
-		}
-
-		/// <summary>
-		/// Function to create an input layout object.
-		/// </summary>
-        /// <param name="name">The name of the input layout.</param>
-        /// <param name="elements">The input elements to assign to the layout.</param>
-		/// <param name="shader">The shader that holds the input layout signature.</param>
-		/// <returns>The input layout object to create.</returns> 
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when then <paramref name="name"/> parameter is an empty string.
-		/// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="elements"/> parameter is empty.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (<i>Nothing</i> in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="elements"/> parameter is NULL.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="GorgonException">Thrown when the graphics context is deferred.</exception>
-		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
-		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
-		/// <para>This function should not be called from a deferred context.</para>
-		/// </remarks>
-		public GorgonInputLayout CreateInputLayout(string name, IList<GorgonInputElement> elements, GorgonShader shader)
-		{
-            if (shader == null)
-            {
-                throw new ArgumentNullException(nameof(shader));
-            }
-
-			if (elements == null)
-			{
-				throw new ArgumentNullException(nameof(elements));
-			}
-
-			if (elements.Count == 0)
-			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(elements));	
-			}
-
-			var layout = new GorgonInputLayout(_graphics, name, shader);
-			layout.InitializeFromList(elements);
-
-			_graphics.AddTrackedObject(layout);
-			return layout;
 		}
 		#endregion
 

@@ -257,6 +257,7 @@ namespace Gorgon.Graphics
         /// </returns>
 	    public override bool Equals(object obj)
 	    {
+	        // ReSharper disable once UseNullPropagation
 	        if (obj is GorgonBox)
 	        {
 	            ((GorgonBox)obj).Equals(ref this);

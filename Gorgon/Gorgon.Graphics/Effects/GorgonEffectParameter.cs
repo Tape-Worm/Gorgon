@@ -176,7 +176,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(parameterName))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(parameterName));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(parameterName));
 			}
 
 			Name = parameterName;

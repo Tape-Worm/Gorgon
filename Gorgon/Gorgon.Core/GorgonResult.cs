@@ -93,6 +93,11 @@ namespace Gorgon.Core
 		/// Cannot make this call across threads.
 		/// </summary>
 		public static GorgonResult CrossThreadCall => new GorgonResult(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_CANNOT_CALL_CROSS_THREAD);
+
+		/// <summary>
+		/// Cannot compile the source code.
+		/// </summary>
+		public static GorgonResult CannotCompile => new GorgonResult(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_CANNOT_COMPILE);
 		#endregion
 
 		#region Variables.

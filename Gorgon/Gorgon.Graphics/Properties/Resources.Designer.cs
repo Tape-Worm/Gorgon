@@ -367,6 +367,17 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not compile the shader source code.
+        ///Errors:
+        ///{0}.
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_COMPILE_SHADER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_COMPILE_SHADER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use a multi-sampled texture as a texture cube..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_MULTISAMPLE_CUBE {
@@ -441,6 +452,24 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The offset [{0}] or context &apos;{1}&apos; is in use by another item with the same index or slot..
+        /// </summary>
+        internal static string GORGFX_ERR_LAYOUT_ELEMENT_IN_USE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_LAYOUT_ELEMENT_IN_USE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid type for an input element..
+        /// </summary>
+        internal static string GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_LAYOUT_INVALID_ELEMENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The block count must be larger than 0..
         /// </summary>
         internal static string GORGFX_ERR_MISSING_BLOCK_COUNT {
@@ -482,6 +511,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter must not be empty..
+        /// </summary>
+        internal static string GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
             }
         }
         
@@ -617,6 +655,33 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_RTV_RESOURCE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_RTV_RESOURCE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The include file in line &apos;{0}&apos; was not found in the include list..
+        /// </summary>
+        internal static string GORGFX_ERR_SHADER_INCLUDE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SHADER_INCLUDE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The include line &apos;{0}&apos; is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shader type &apos;{0}&apos; is not a valid type..
+        /// </summary>
+        internal static string GORGFX_ERR_SHADER_UNKNOWN_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_SHADER_UNKNOWN_TYPE", resourceCulture);
             }
         }
         
@@ -1080,24 +1145,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The offset [{0}] or context &apos;{1}&apos; is in use by another item with the same index or slot..
-        /// </summary>
-        internal static string GORGFX_LAYOUT_ELEMENT_IN_USE {
-            get {
-                return ResourceManager.GetString("GORGFX_LAYOUT_ELEMENT_IN_USE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid type for an input element..
-        /// </summary>
-        internal static string GORGFX_LAYOUT_INVALID_ELEMENT_TYPE {
-            get {
-                return ResourceManager.GetString("GORGFX_LAYOUT_INVALID_ELEMENT_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot lock a buffer for reading if the resource does not have a usage of [Staging]..
         /// </summary>
         internal static string GORGFX_LOCK_CANNOT_READ_NON_STAGING {
@@ -1157,15 +1204,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_OUTPUTBUFFER_BINDING_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_OUTPUTBUFFER_BINDING_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The parameter must not be empty..
-        /// </summary>
-        internal static string GORGFX_PARAMETER_MUST_NOT_BE_EMPTY {
-            get {
-                return ResourceManager.GetString("GORGFX_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
             }
         }
         
@@ -1350,42 +1388,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The include file in line &apos;{0}&apos; was not found in the include list..
-        /// </summary>
-        internal static string GORGFX_SHADER_INCLUDE_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_SHADER_INCLUDE_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The include line &apos;{0}&apos; is not valid..
-        /// </summary>
-        internal static string GORGFX_SHADER_INCLUDE_PATH_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_SHADER_INCLUDE_PATH_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gorgon Shader Include &apos;{0}&apos;.
-        /// </summary>
-        internal static string GORGFX_SHADER_INCLUDE_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_SHADER_INCLUDE_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Gorgon Shader Macro Definition &apos;{0}&apos;..
-        /// </summary>
-        internal static string GORGFX_SHADER_MACRO_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_SHADER_MACRO_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot save the shader as a source code file.  There was no source code found for the this shader..
         /// </summary>
         internal static string GORGFX_SHADER_NO_CODE {
@@ -1400,15 +1402,6 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_SHADER_NO_SO {
             get {
                 return ResourceManager.GetString("GORGFX_SHADER_NO_SO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The shader type [{0}] is not a valid type..
-        /// </summary>
-        internal static string GORGFX_SHADER_UNKNOWN_TYPE {
-            get {
-                return ResourceManager.GetString("GORGFX_SHADER_UNKNOWN_TYPE", resourceCulture);
             }
         }
         
@@ -1805,6 +1798,24 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_TOSTR_MULTISAMPLEINFO {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_MULTISAMPLEINFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Shader Include &apos;{0}&apos;.
+        /// </summary>
+        internal static string GORGFX_TOSTR_SHADER_INCLUDE {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_SHADER_INCLUDE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Shader Macro Definition &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_TOSTR_SHADER_MACRO {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_SHADER_MACRO", resourceCulture);
             }
         }
         

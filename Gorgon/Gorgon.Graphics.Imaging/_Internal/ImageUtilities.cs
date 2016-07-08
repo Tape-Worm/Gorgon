@@ -26,13 +26,32 @@
 
 using System;
 using DXGI = SharpDX.DXGI;
-using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging
 {
+	/// <summary>
+	/// Flags to control how pixel conversion should be handled.
+	/// </summary>
+	[Flags]
+	public enum ImageBitFlags
+	{
+		/// <summary>
+		/// No modifications to conversion process.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Set a known opaque alpha value in the alpha channel.
+		/// </summary>
+		OpaqueAlpha = 1,
+		/// <summary>
+		/// Enables specific legacy format conversion cases.
+		/// </summary>
+		Legacy = 2
+	}
+
 	/// <summary>
 	/// Utilities to facilitate in manipulating image data.
 	/// </summary>

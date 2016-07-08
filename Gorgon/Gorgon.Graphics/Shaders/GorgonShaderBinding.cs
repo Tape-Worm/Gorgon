@@ -42,29 +42,6 @@ using Shaders = SharpDX.D3DCompiler;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Version for the shaders.
-	/// </summary>
-	public enum ShaderVersion
-	{
-		/// <summary>
-		/// Shader model 5.
-		/// </summary>
-		Version5 = 0,
-		/// <summary>
-		/// Shader model 4.
-		/// </summary>
-		Version4 = 1,
-		/// <summary>
-		/// Shader model 4, profile 1.
-		/// </summary>
-		Version4_1 = 2,
-		/// <summary>
-		/// Shader model 2, vertex shader profile a, pixel shader profile b.
-		/// </summary>
-		Version2A_B = 3
-	}
-
-	/// <summary>
 	/// Shader types.
 	/// </summary>
 	public enum ShaderType
@@ -100,6 +77,8 @@ namespace Gorgon.Graphics
 	/// </summary>
 	public sealed class GorgonShaderBinding
 	{
+		/*
+
 		#region Constants.
 		/// <summary>
 		/// Header for Gorgon binary shaders.
@@ -433,7 +412,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
 			// Create the effect.
@@ -539,12 +518,12 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace("name"))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (string.IsNullOrWhiteSpace("entryPoint"))
             {
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
             }           
 			
 			long streamPosition = stream.Position;
@@ -616,7 +595,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
             }
 
 			try
@@ -688,12 +667,12 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(entryPoint))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(entryPoint));
 			}
 			
 			if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (typeof(T) == typeof(GorgonOutputGeometryShader))
@@ -772,12 +751,12 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (streamOutputElements.Count == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(streamOutputElements));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(streamOutputElements));
 			}
 
             if (autoStride)
@@ -828,6 +807,7 @@ namespace Gorgon.Graphics
 			return result;
 		}
 		#endregion
+		*/
 
 		#region Constructor/Destructor.
 		/// <summary>
@@ -836,7 +816,7 @@ namespace Gorgon.Graphics
 		/// <param name="graphics">The graphics.</param>
 		internal GorgonShaderBinding(GorgonGraphics graphics)
 		{
-			IncludeFiles = new GorgonNamedObjectDictionary<GorgonShaderInclude>(false);
+			/*IncludeFiles = new GorgonNamedObjectDictionary<GorgonShaderInclude>(false);
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
 		    GeometryShader = new GorgonGeometryShaderState(graphics);
@@ -847,7 +827,7 @@ namespace Gorgon.Graphics
 				HullShader = new GorgonHullShaderState(graphics);
 				DomainShader = new GorgonDomainShaderState(graphics);
             }
-		    _graphics = graphics;
+		    _graphics = graphics;*/
 		}
 		#endregion
 	}

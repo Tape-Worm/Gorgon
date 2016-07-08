@@ -15,6 +15,8 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\Gorgon\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -111,9 +113,6 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
-    <Compile Include="Effects\GorgonEffect.cs" />
-    <Compile Include="Effects\GorgonEffectPass.cs" />
-    <Compile Include="Effects\GorgonEffectPassArray.cs" />
     <Compile Include="Fonts\GorgonGlyphBrushInterpolator.cs" />
     <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
     <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
@@ -136,11 +135,12 @@
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
+    <Compile Include="Pipeline\GorgonPipelineState.cs" />
+    <Compile Include="Shaders\GorgonShaderCompiler.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
+    <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
     <Compile Include="States\GorgonClearTargetState.cs" />
-    <Compile Include="States\GorgonPipelineStateInfo.cs" />
-    <Compile Include="States\_Interfaces\IGorgonPipelineState.cs" />
-    <Compile Include="States\_Internal\PipelineState.cs" />
+    <Compile Include="Targets\GorgonRenderTargetViews.cs" />
     <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
@@ -161,16 +161,6 @@
     <Compile Include="Resource\GorgonView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />
     <Compile Include="Resource\GorgonShaderView.cs" />
-    <Compile Include="Shaders\GorgonOutputGeometryShader.cs" />
-    <Compile Include="Shaders\GorgonHullShader.cs" />
-    <Compile Include="Shaders\GorgonHullShaderState.cs" />
-    <Compile Include="Shaders\GorgonDomainShader.cs" />
-    <Compile Include="Shaders\GorgonDomainShaderState.cs" />
-    <Compile Include="Shaders\GorgonComputeShader.cs" />
-    <Compile Include="Shaders\GorgonComputeShaderState.cs" />
-    <Compile Include="Shaders\GorgonGeometryShaderState.cs" />
-    <Compile Include="Effects\GorgonEffectParameter.cs" />
-    <Compile Include="Shaders\GorgonGeometryShader.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonPixelShaderState.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
@@ -178,7 +168,6 @@
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
-    <Compile Include="Shaders\GorgonOutputBufferBinding.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Shaders\GorgonVertexShaderState.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
@@ -272,6 +261,13 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\..\packages\Microsoft.HLSL.CSharpVB.1.0.1\build\Microsoft.HLSL.CSharpVB.targets" Condition="Exists('..\..\packages\Microsoft.HLSL.CSharpVB.1.0.1\build\Microsoft.HLSL.CSharpVB.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\Microsoft.HLSL.CSharpVB.1.0.1\build\Microsoft.HLSL.CSharpVB.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.HLSL.CSharpVB.1.0.1\build\Microsoft.HLSL.CSharpVB.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

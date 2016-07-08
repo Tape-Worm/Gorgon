@@ -62,6 +62,7 @@ namespace Gorgon.Graphics
             set;
         }
 
+		/*
         /// <summary>
         /// Property to return the geometry shader for this pass.
         /// </summary>
@@ -96,7 +97,7 @@ namespace Gorgon.Graphics
         {
             get;
             set;
-        }
+        }*/
 
         /// <summary>
         /// Property to return the index of this pass.

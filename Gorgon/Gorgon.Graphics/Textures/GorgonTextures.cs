@@ -976,7 +976,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
@@ -1025,7 +1025,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
@@ -1074,7 +1074,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (settings == null)
@@ -1128,7 +1128,7 @@ namespace Gorgon.Graphics
 
 			if (string.IsNullOrWhiteSpace(name))
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
 			}
 
 			if (data == null)
@@ -1138,7 +1138,7 @@ namespace Gorgon.Graphics
 
 			if (data.Buffers.Count == 0)
 			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(data));
 			}
 
 			// Get the settings from the image data.

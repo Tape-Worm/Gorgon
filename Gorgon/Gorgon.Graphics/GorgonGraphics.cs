@@ -140,18 +140,14 @@ namespace Gorgon.Graphics
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
 		private IGorgonVideoDevice _videoDevice;
-		// The currently active list of render targets.
-		private List<GorgonRenderTargetView> _currentRenderTargets;
 		// The currently active list of unordered access views.
 		private List<GorgonUnorderedAccessView> _currentUavs;
 		// Offsets for consume/append buffers.
 		private List<int> _offsets;
-		// The list of D3D render targets to use.
-		private D3D11.RenderTargetView[] _D3DRenderTargets;
-		// The list of D3D unordered access views to use.
-		private D3D11.UnorderedAccessView[] _D3DUavs;
-		// The currently active depth/stencil view.
-		private GorgonDepthStencilView _currentDepthStencilView;
+		// The current pipeline state.
+		private readonly GorgonPipelineState _currentState = new GorgonPipelineState();
+		// The default pipeline state.
+		private readonly GorgonPipelineState _defaultState = new GorgonPipelineState();
         #endregion
 
         #region Properties.
@@ -219,16 +215,6 @@ namespace Gorgon.Graphics
         /// Property to return the interface for buffers.
         /// </summary>
         public GorgonBuffers Buffers
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the shader interface.
-        /// </summary>
-        /// <remarks>This is used to create shaders, create constant buffers and bind them to the pipeline.</remarks>
-        public GorgonShaderBinding Shaders
         {
             get;
             private set;
@@ -352,127 +338,23 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the active list of render targets.
 		/// </summary>
-		public IReadOnlyList<GorgonRenderTargetView> RenderTargets => _currentRenderTargets;
+		public IReadOnlyList<GorgonRenderTargetView> RenderTargets
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Property to return the active depth/stencil view.
 		/// </summary>
-		public GorgonDepthStencilView DepthStencilView => _currentDepthStencilView;
-        #endregion
+		public GorgonDepthStencilView DepthStencilView
+		{
+			get;
+			private set;
+		}
+		#endregion
 
         #region Methods.
-
-		/// <summary>
-		/// Function to validate the render target views and depth/stencil view being assigned.
-		/// </summary>
-		/// <param name="renderTargetViews">The render target views to evaluate.</param>
-		/// <param name="depthStencilView">The depth/stencil view to evaluate.</param>
-		private void ValidateRenderTargetDepthStencilViews(GorgonRenderTargetView[] renderTargetViews, GorgonDepthStencilView depthStencilView)
-		{
-#if DEBUG
-			GorgonRenderTargetView startView = renderTargetViews?.FirstOrDefault(item => item != null);
-
-			if (startView == null)
-			{
-				return;
-			}
-
-			IEnumerable<GorgonRenderTargetView> otherViews = renderTargetViews.Where(item => item != startView && item != null);
-
-			// ReSharper disable PossibleMultipleEnumeration
-			// If we don't have a render target view, we don't need to check anything, even if we have a depth/stencil.
-			// Begin checking resource data.
-			var rtvTexture = startView.Resource as GorgonTexture;
-
-			Debug.Assert(rtvTexture != null, "Render target view resource is not a texture.");
-
-			// Compare the depth/stencil view against the first view (all views and their resources should have the same properties).
-			if (depthStencilView != null) 
-			{
-				// Ensure all resources are the same type.
-				if (depthStencilView.Resource.ResourceType != startView.Resource.ResourceType)
-				{
-					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, depthStencilView.Resource.ResourceType),
-					                            nameof(depthStencilView));
-				}
-
-				// Ensure the depth stencil array/depth counts match for all resources.
-				if (depthStencilView.ArrayCount != startView.ArrayOrDepthCount)
-				{
-					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, depthStencilView.Resource.Name),
-					                            nameof(depthStencilView));
-				}
-
-				var dsTexture = depthStencilView.Resource as GorgonTexture;
-
-				Debug.Assert(dsTexture != null, "Depth/stencil view not bound to a texture.");
-
-				// Check to ensure that multisample info matches.
-				if (dsTexture.Info.MultiSampleInfo.Equals(rtvTexture.Info.MultiSampleInfo))
-				{
-					throw new ArgumentException(
-						string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, dsTexture.Info.MultiSampleInfo.Quality, dsTexture.Info.MultiSampleInfo.Count),
-						nameof(depthStencilView));
-				}
-
-				if ((dsTexture.Info.Width != rtvTexture.Info.Width)
-				    || (dsTexture.Info.Height != rtvTexture.Info.Height)
-				    || ((dsTexture.Info.TextureType != TextureType.Texture3D) && (dsTexture.Info.ArrayCount != rtvTexture.Info.ArrayCount))
-				    || ((dsTexture.Info.TextureType == TextureType.Texture3D) && (dsTexture.Info.Depth != rtvTexture.Info.Depth)))
-				{
-					throw new ArgumentException(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH, nameof(depthStencilView));
-				}
-			}
-
-			// Only check if we have more than 1 render target view being applied.
-			if (renderTargetViews.Length < 2)
-			{
-				return;
-			}
-
-			// Check for duplicates.
-			if (renderTargetViews.Count(item => item == startView) > 1)
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RTV_ALREADY_BOUND, startView.Resource.Name), nameof(renderTargetViews));
-			}
-
-			// Check for type mismatch.
-			if (otherViews.Any(item => item.Resource.ResourceType != startView.Resource.ResourceType))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RTV_NOT_SAME_TYPE, startView.Resource.Name), nameof(renderTargetViews));
-			}
-
-			IEnumerable<GorgonTexture> otherTextures = from otherRtv in otherViews
-			                                           let otherTexture = otherRtv.Resource as GorgonTexture
-			                                           where otherTexture != null && otherTexture != rtvTexture
-			                                           select otherTexture;
-
-			// Check multisampling info.
-			if (otherTextures.Any(item => !item.Info.MultiSampleInfo.Equals(rtvTexture.Info.MultiSampleInfo)))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RTV_MULTISAMPLE_MISMATCH,
-				                                          rtvTexture.Info.MultiSampleInfo.Quality,
-				                                          rtvTexture.Info.MultiSampleInfo.Count),
-				                            nameof(renderTargetViews));
-			}
-
-			//  Check for mismatch in size, array or depth.
-			otherTextures = from otherTexture in otherTextures
-			                where ((rtvTexture.Info.TextureType != TextureType.Texture3D && otherTexture.Info.ArrayCount != rtvTexture.Info.ArrayCount)
-			                       || ((rtvTexture.Info.TextureType == TextureType.Texture2D && otherTexture.Info.Depth != rtvTexture.Info.Depth))
-			                       || (rtvTexture.Info.Width != otherTexture.Info.Width)
-			                       || (rtvTexture.Info.Height != otherTexture.Info.Height))
-			                select otherTexture;
-
-
-			if (otherTextures.Any())
-			{
-				throw new ArgumentException(Resources.GORGFX_ERR_RTV_RESOURCE_MISMATCH, nameof(renderTargetViews));
-			}
-			// ReSharper restore PossibleMultipleEnumeration
-#endif
-		}
-
 		/// <summary>
 		/// Function to clean up the categorized interfaces.
 		/// </summary>
@@ -482,8 +364,6 @@ namespace Gorgon.Graphics
 			Fonts = null;
 			Textures?.CleanUp();
 			Textures = null;
-			Shaders?.CleanUp();
-			Shaders = null;
 			Output?.CleanUp();
 			Output = null;
 			Rasterizer?.CleanUp();
@@ -495,16 +375,12 @@ namespace Gorgon.Graphics
         /// </summary>
         private void CreateStates()
         {
-			_currentRenderTargets = new List<GorgonRenderTargetView>(VideoDevice.MaxRenderTargetViewSlots);
-			_D3DRenderTargets = new D3D11.RenderTargetView[VideoDevice.MaxRenderTargetViewSlots];
 			_currentUavs = new List<GorgonUnorderedAccessView>(VideoDevice.MaxRenderTargetViewSlots);
-			_D3DUavs = new D3D11.UnorderedAccessView[VideoDevice.MaxRenderTargetViewSlots];
 			_offsets = new List<int>(VideoDevice.MaxRenderTargetViewSlots);
 
             // Create interfaces.
             Rasterizer = new GorgonRasterizerRenderState(this);
             Input = new GorgonInputGeometry(this);
-            Shaders = new GorgonShaderBinding(this);
             Output = new GorgonOutputMerger(this);
             Textures = new GorgonTextures(this);
             Fonts = new GorgonFonts(this);
@@ -513,11 +389,93 @@ namespace Gorgon.Graphics
             ClearState();
         }
 
-        /// <summary>
-        /// Function to retrieve a list of all swap chains that are currently full screen.
-        /// </summary>
-        /// <returns>The list of full screen swap chains.</returns>
-        internal IEnumerable<GorgonSwapChain> GetFullScreenSwapChains()
+		/// <summary>
+		/// Function to bind the vertex shader state to the pipeline.
+		/// </summary>
+		/// <param name="shaderState">The state to bind to the pipeline.</param>
+		private void BindVertexShaderState(GorgonVertexShaderState shaderState)
+		{
+			if (shaderState?.VertexShaderStateChangedFlags == _currentState.VertexShader?.VertexShaderStateChangedFlags)
+			{
+				return;
+			}
+
+			if (shaderState == null)
+			{
+				D3DDeviceContext.VertexShader.Set(null);
+				return;
+			}
+
+			if ((shaderState.VertexShaderStateChangedFlags & VertexShaderStateChangedFlags.Shader) == VertexShaderStateChangedFlags.Shader)
+			{
+				D3DDeviceContext.VertexShader.Set(shaderState.Shader.D3DShader);
+			}
+		}
+
+		/// <summary>
+		/// Function to bind the pixel shader state to the pipeline.
+		/// </summary>
+		/// <param name="shaderState">The state to bind to the pipeline.</param>
+		private void BindPixelShaderState(GorgonPixelShaderState shaderState)
+		{
+			if (shaderState?.PixelShaderStateChangedFlags == _currentState.PixelShader?.PixelShaderStateChangedFlags)
+			{
+				return;
+			}
+
+			if (_currentState.PixelShader == shaderState)
+			{
+				return;
+			}
+
+			if (shaderState == null)
+			{
+				D3DDeviceContext.PixelShader.Set(null);
+				return;
+			}
+
+			if ((shaderState.PixelShaderStateChangedFlags & PixelShaderStateChangedFlags.Shader) == PixelShaderStateChangedFlags.Shader)
+			{
+				D3DDeviceContext.PixelShader.Set(shaderState.Shader.D3DShader);
+			}
+		}
+
+		/// <summary>
+		/// Function to bind the render target views and depth/stencil view to the pipeline.
+		/// </summary>
+		/// <param name="views">The render target views and depth/stencil view to apply.</param>
+		private void BindRtvs(GorgonRenderTargetViews views)
+		{
+			if (_currentState.RenderTargetViews == views)
+			{
+				return;
+			}
+
+			// Disable the render targets if we have none.
+			if (views == null)
+			{
+				D3DDeviceContext.OutputMerger.SetTargets();
+				_currentState.RenderTargetViews = null;
+				return;
+			}
+
+			// Only set the depth/stencil.
+			if (views.D3DRenderTargetViewBindCount == 0)
+			{
+				D3DDeviceContext.OutputMerger.SetTargets(views.DepthStencilView?.D3DView);
+				_currentState.RenderTargetViews = views;
+				return;
+			}
+
+			D3DDeviceContext.OutputMerger.SetTargets(views.DepthStencilView?.D3DView, views.D3DRenderTargetViewBindCount, views.D3DRenderTargetViews);
+			_currentState.RenderTargetViews = views;
+		}
+
+		/// <summary>
+		/// Function to retrieve a list of all swap chains that are currently full screen.
+		/// </summary>
+		/// <returns>The list of full screen swap chains.</returns>
+		internal IEnumerable<GorgonSwapChain> GetFullScreenSwapChains()
         {
 	        return new GorgonSwapChain[0];
 	        /*
@@ -534,13 +492,91 @@ namespace Gorgon.Graphics
 			D3DDeviceContext.UpdateSubresource1(resource.D3DResource, destSubResourceIndex, region, new IntPtr(data.Address), srcRowPitch, srcDepthSlicePitch, (int)flags);
 		}
 
-        /// <summary>
-        /// Function to add an object for tracking by the main Gorgon interface.
-        /// </summary>
-        /// <param name="trackedObject">Object to add.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-        /// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
-        public void AddTrackedObject(IDisposable trackedObject)
+		/// <summary>
+		/// Function to apply a pipeline state to the pipeline.
+		/// </summary>
+		/// <param name="state">A <see cref="GorgonPipelineState"/> to apply to the pipeline.</param>
+		/// <remarks>
+		/// <para>
+		/// This is responsible for setting all the states for a pipeline at once. This has the advantage of ensuring that duplicate states do not get set so that performance is not impacted, but most importantly, 
+		/// it also responsible for ensuring the state leakage does not occur. 
+		/// </para>
+		/// <para>
+		/// An application may experience state leakage in the following scenario:
+		/// <para>
+		/// <list type="number">
+		///		<item>
+		///			<description>The initial scene state is set. For example, alpha blending is enabled, a pixel shader view for a texture is set.</description>
+		///		</item>
+		///		<item>
+		///			<description>Objects that need alpha blending are rendered.</description>
+		///		</item>
+		///		<item>
+		///			<description>A new pixel shader view for the texture is set.</description>
+		///		</item>
+		/// </list>
+		/// </para>
+		/// </para>
+		/// </remarks>
+		public void ApplyPipelineState(GorgonPipelineState state)
+		{
+			state.ValidateObject(nameof(state));
+
+			// No change since the last state, so leave.
+			if (state.PipelineStateChangeFlags == _currentState.PipelineStateChangeFlags)
+			{
+				return;
+			}
+			
+			SetStates(state.PipelineStateChangeFlags, state);
+
+			// Reset unused states.
+			PipelineStateChangeFlags resetFlags = _defaultState.PipelineStateChangeFlags & ~state.PipelineStateChangeFlags;
+
+			SetStates(resetFlags, _defaultState);
+		}
+
+		/// <summary>
+		/// Function to bind various states to the pipeline.
+		/// </summary>
+		/// <param name="stateChange">The type of state change taking place.</param>
+		/// <param name="state">The state to apply.</param>
+		private void SetStates(PipelineStateChangeFlags stateChange, GorgonPipelineState state)
+		{
+			// Change render target views and/or the depth stencil view.
+			if ((stateChange & PipelineStateChangeFlags.RenderTargetViews) == PipelineStateChangeFlags.RenderTargetViews)
+			{
+				BindRtvs(state.RenderTargetViews);
+			}
+
+			if ((stateChange & PipelineStateChangeFlags.InputLayout) == PipelineStateChangeFlags.InputLayout)
+			{
+				D3DDeviceContext.InputAssembler.InputLayout = state.InputLayout?.D3DLayout;
+			}
+
+			if ((stateChange & PipelineStateChangeFlags.PrimitiveTopology) == PipelineStateChangeFlags.PrimitiveTopology)
+			{
+				D3DDeviceContext.InputAssembler.PrimitiveTopology = state.PrimitiveTopology;
+			}
+
+			if ((stateChange & PipelineStateChangeFlags.VertexShader) == PipelineStateChangeFlags.VertexShader)
+			{
+				BindVertexShaderState(state.VertexShader);
+			}
+
+			if ((stateChange & PipelineStateChangeFlags.PixelShader) == PipelineStateChangeFlags.PixelShader)
+			{
+				BindPixelShaderState(state.PixelShader);
+			}
+		}
+
+		/// <summary>
+		/// Function to add an object for tracking by the main Gorgon interface.
+		/// </summary>
+		/// <param name="trackedObject">Object to add.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
+		/// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonApplication.Quit">termination</see>.</remarks>
+		public void AddTrackedObject(IDisposable trackedObject)
         {
             if (trackedObject == null)
             {
@@ -579,11 +615,10 @@ namespace Gorgon.Graphics
                     select (T)trackedObject).ToArray();
         }
 
-		/// <summary>
+/*		/// <summary>
 		/// Function to bind the currently active render target views and any applicable depth/stencil view to the pipeline.
 		/// </summary>
-		/// <param name="renderTargetViews">An array of <see cref="GorgonRenderTargetView"/> objects to bind to the pipeline.</param>
-		/// <param name="depthStencilView">[Optional] The current depth/stencil view to bind to the pipeline</param>
+		/// <param name="views">A <see cref="GorgonRenderTargetViews"/> that contains the render target views and depth/stencil buffer to bind to the pipeline.</param>
 		/// <exception cref="ArgumentException">Thrown when a <see cref="GorgonRenderTargetView"/> is already bound to a slot. 
 		/// <para>-or-</para>
 		/// <para>Thrown when any of the render target views and/or depth stencil view do not have the same array/depth count.</para>
@@ -597,21 +632,20 @@ namespace Gorgon.Graphics
 		/// </exception>
 		/// <remarks>
 		/// <para>
-		/// This will bind <see cref="GorgonRenderTargetView"/> objects and an optional <see cref="GorgonDepthStencilView"/> to the pipeline when rendering. Users should bind a minimum of a single render target 
-		/// (e.g. a <see cref="GorgonSwapChain"/>) to be able to visualize graphical data. 
+		/// This will bind <see cref="GorgonRenderTargetView"/> objects and an optional <see cref="GorgonDepthStencilView"/> to the pipeline when rendering. Users should bind a minimum of a single render 
+		/// target (e.g. a <see cref="GorgonSwapChain"/>) to be able to visualize graphical data. 
 		/// </para>
 		/// <para>
-		/// The number of render targets passed to the <paramref name="renderTargetViews"/> parameter will be limited to the number of render target slots for the device. The total number of available slots 
-		/// is available through the <see cref="IGorgonVideoDevice.MaxRenderTargetViewSlots"/> value on the <see cref="VideoDevice"/> property. If the number of render target views passed exceeds this value, 
-		/// then Gorgon will only set up to the maximum value and no more. No exception will be thrown. If the number of render targets is less than the maximum, then the remaining slots will be set to 
-		/// <b>null</b>.
+		/// The number of render targets passed to the <paramref name="views"/> parameter will be limited to the number of render target slots for the device. The total number of available slots is 
+		/// available through the <see cref="IGorgonVideoDevice.MaxRenderTargetViewSlots"/> value on the <see cref="VideoDevice"/> property. If the number of render target views passed exceeds this value, then 
+		/// Gorgon will only set up to the maximum value and no more. No exception will be thrown. If the number of render targets is less than the maximum, then the remaining slots will be set to <b>null</b>.
 		/// </para> 
 		/// <para>
-		/// If <b>null</b> is passed to the <paramref name="renderTargetViews"/> parameter, then all render targets are unbound. However, if the <paramref name="depthStencilView"/> is specified, it will be 
-		/// bound regardless of whether there are render target views to bind or not.
+		/// If <b>null</b> is passed to the <paramref name="views"/> parameter, then all render targets and the depth/stencil view are unbound. However, if the <paramref name="views"/> contains a depth/stencil 
+		/// view and no render target views, the only the depth/stencil view will be bound.
 		/// </para>
 		/// <para>
-		/// All resources bound to the views passed to <paramref name="renderTargetViews"/> (and <paramref name="depthStencilView"/>) must meet the following criteria:
+		/// All resources bound to the views in the <paramref name="views"/> parameter must meet the following criteria:
 		/// <list type="bullet">
 		///		<item>
 		///			<description>Share the same type. That is one of <see cref="TextureType.Texture1D"/>, <see cref="TextureType.Texture2D"/> or <see cref="TextureType.Texture3D"/>.</description>
@@ -630,46 +664,20 @@ namespace Gorgon.Graphics
 		/// simultaneous multiple render targets. 
 		/// </para>
 		/// <para>
-		/// If the <paramref name="renderTargetViews"/> (and <paramref name="depthStencilView"/>) uses an array count, then all views must have the same array count.
+		/// If the resources in the <paramref name="views"/> parameters use an array count, then all views must have the same array count.
 		/// </para>
 		/// <para>
 		/// Because unordered access views (UAVs) share the same slots as render target views, calling this method will unbind any existing unordered access views.
 		/// </para>
 		/// </remarks>
-		public void SetRenderTargets(GorgonRenderTargetView[] renderTargetViews, GorgonDepthStencilView depthStencilView = null)
+		public void SetRenderTargets(GorgonRenderTargetViews views)
 		{
-#if DEBUG
-			ValidateRenderTargetDepthStencilViews(renderTargetViews, depthStencilView);
-#endif
+			// Bind the views to the pipeline right away.
+			views.BindRtvs(D3DDeviceContext);
 
-			_currentRenderTargets.Clear();
-			_currentUavs.Clear();
-			_currentDepthStencilView = null;
-
-			// If we've cleared the state, then clear our underlying state and leave.
-			if (((renderTargetViews == null) || (renderTargetViews.Length == 0))
-				&& (depthStencilView == null))
-			{
-				D3DDeviceContext.OutputMerger.SetTargets();
-				return;
-			}
-
-			_currentDepthStencilView = depthStencilView;
-
-			// If we've set a list of render targets, then record the state for those.
-			if ((renderTargetViews != null) && (renderTargetViews.Length > 0))
-			{
-				for (int i = 0; i < renderTargetViews.Length.Min(_D3DRenderTargets.Length); ++i)
-				{
-					GorgonRenderTargetView rtv = renderTargetViews[i];
-
-					_currentRenderTargets.Add(rtv);
-					_D3DRenderTargets[i] = rtv?.D3DRenderTargetView;
-				}
-			}
-
-			D3DDeviceContext.OutputMerger.SetTargets(_currentDepthStencilView?.D3DView, _currentRenderTargets.Count, _D3DRenderTargets);
+			RenderTargets = views;
 		}
+		*/
 
 		/// <summary>
 		/// Function to clear a specific render target view.
@@ -696,26 +704,17 @@ namespace Gorgon.Graphics
 				VideoDevice.D3DDeviceContext().Flush();
             }
 
-	        _currentRenderTargets.Clear();
-	        _currentDepthStencilView = null;
+	        RenderTargets = null;
+	        DepthStencilView = null;
 	        _currentUavs.Clear();
-
-			for (int i = 0; i < _D3DRenderTargets.Length; ++i)
-	        {
-		        _D3DRenderTargets[i] = null;
-	        }
-
-	        for (int i = 0; i < _D3DUavs.Length; ++i)
-	        {
-		        _D3DUavs[i] = null;
-	        }
 
             // Set default states.
             Input?.Reset();
             Rasterizer?.Reset();
             Output?.Reset();
-            Shaders?.Reset();
-        }
+
+			VideoDevice.D3DDeviceContext.ClearState();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -810,7 +809,7 @@ namespace Gorgon.Graphics
 
 			CreateStates();
 
-			GorgonApplication.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
+			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
 		/// <summary>
@@ -857,12 +856,9 @@ namespace Gorgon.Graphics
 
 			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
 			device.D3DDeviceContext().ClearState();
-
-			_currentRenderTargets.Clear();
-			_currentDepthStencilView = null;
+			RenderTargets = null;
+			DepthStencilView = null;
 			_currentUavs.Clear();
-			_D3DRenderTargets = null;
-			_D3DUavs = null;
 
 			_trackedObjects.Clear();
 			DestroyInterfaces();

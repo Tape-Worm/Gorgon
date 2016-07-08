@@ -38,7 +38,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A wrapper for a Direct 3D 11 device object and adapter.
 	/// </summary>
-	public class VideoDevice
+	class VideoDevice
 		: IGorgonVideoDevice
 	{
 		#region Variables.

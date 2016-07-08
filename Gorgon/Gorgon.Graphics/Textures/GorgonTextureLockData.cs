@@ -128,7 +128,7 @@ namespace Gorgon.Graphics
 			}
 		}
 
-		public GorgonPointerAlias Data
+		public IGorgonPointer Data
 		{
 			get
 			{

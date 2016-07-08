@@ -494,7 +494,7 @@ namespace Gorgon.Graphics
 				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.Activated), ParentForm_Activated);
 				WeakEventManager<Form, EventArgs>.RemoveHandler(_parentForm, nameof(_parentForm.Deactivate), ParentForm_Deactivated);
 			}
-
+			
 			ReleaseResources();
 
 			if ((GISwapChain != null) && (!IsWindowed))

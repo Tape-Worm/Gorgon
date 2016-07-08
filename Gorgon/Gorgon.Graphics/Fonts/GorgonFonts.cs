@@ -123,7 +123,7 @@ namespace Gorgon.Graphics
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (stream == null)
@@ -133,7 +133,7 @@ namespace Gorgon.Graphics
 
             if (stream.Length == 0)
             {
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(stream));
+				throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(stream));
             }
 
 			var font = new GorgonFont(_graphics, name, new GorgonFontSettings());
@@ -213,7 +213,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fileName));
             }
             
             try
@@ -383,7 +383,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace("fontName"))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fontName));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(fontName));
             }
 
             if (settings == null)

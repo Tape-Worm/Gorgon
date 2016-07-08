@@ -315,7 +315,7 @@ namespace Gorgon.Graphics
             {
                 return;
             }
-
+			/*
 			if (_graphics.Shaders.ComputeShader.UnorderedAccessViews.IndexOf(view) != -1)
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
@@ -382,7 +382,7 @@ namespace Gorgon.Graphics
 																typeof(GorgonRenderTargetView).FullName));
 					}
 				}
-			}
+			}*/
         }
 #endif
 
@@ -474,8 +474,10 @@ namespace Gorgon.Graphics
 
                 _D3DUnorderedViews[0] = view.D3DView;
 
+				/*
                 // Ensure this view is not bound to another part of the pipeline.
 	            _graphics.Shaders.UnbindResource(view.Resource);
+				*/
 
 	            return true;
             }
@@ -516,8 +518,10 @@ namespace Gorgon.Graphics
                     _unorderedViews[i] = view;
                     _D3DUnorderedViews[i] = view.D3DView;
 
+					/*
                     // Ensure this view is not bound to another part of the pipeline.
                     _graphics.Shaders.UnbindResource(view.Resource);
+					*/
                 }
 
                 hasChanged = true;
@@ -1356,7 +1360,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
@@ -1407,7 +1411,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
@@ -1453,7 +1457,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
@@ -1505,7 +1509,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
@@ -1550,7 +1554,7 @@ namespace Gorgon.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
+                throw new ArgumentException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_EMPTY, nameof(name));
             }
 
             if (settings == null)
