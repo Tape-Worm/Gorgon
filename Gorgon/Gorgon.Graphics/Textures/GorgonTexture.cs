@@ -72,7 +72,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the size, in bytes, of the resource.
 		/// </summary>
-		public override int SizeInBytes
+		public new int SizeInBytes
 		{
 			get
 			{

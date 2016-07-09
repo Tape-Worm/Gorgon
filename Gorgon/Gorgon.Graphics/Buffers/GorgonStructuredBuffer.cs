@@ -31,7 +31,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A structured buffer for shaders.
 	/// </summary>
-	/// <remarks>Structured buffers are similar to <see cref="Gorgon.Graphics.GorgonConstantBuffer">constant buffers</see> in that they're used to convey data to 
+	/// <remarks>Structured buffers are similar to <see cref="Gorgon.Graphics.GorgonConstantBuffer_OLDEN">constant buffers</see> in that they're used to convey data to 
 	/// a shader.  However, unlike constant buffers, these buffers allow for unordered access and are meant as containers for structured data (hence, structured buffers).
 	/// <para>Structured buffers are only available to SM5 and above.</para>
 	/// </remarks>

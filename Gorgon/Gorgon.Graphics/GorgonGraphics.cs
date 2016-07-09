@@ -403,12 +403,23 @@ namespace Gorgon.Graphics
 			if (shaderState == null)
 			{
 				D3DDeviceContext.VertexShader.Set(null);
+
+				for (int i = 0; i < D3D11.CommonShaderStage.ConstantBufferApiSlotCount; ++i)
+				{
+					D3DDeviceContext.VertexShader.SetConstantBuffer(i, null);
+				}
+				
 				return;
 			}
 
 			if ((shaderState.VertexShaderStateChangedFlags & VertexShaderStateChangedFlags.Shader) == VertexShaderStateChangedFlags.Shader)
 			{
 				D3DDeviceContext.VertexShader.Set(shaderState.Shader.D3DShader);
+			}
+
+			if ((shaderState.VertexShaderStateChangedFlags & VertexShaderStateChangedFlags.ConstantBuffers) == VertexShaderStateChangedFlags.ConstantBuffers)
+			{
+				D3DDeviceContext.VertexShader.SetConstantBuffers(0, shaderState.ConstantBuffers.D3DConstantBufferBindCount, shaderState.ConstantBuffers.D3DConstantBuffers);
 			}
 		}
 
@@ -437,6 +448,11 @@ namespace Gorgon.Graphics
 			if ((shaderState.PixelShaderStateChangedFlags & PixelShaderStateChangedFlags.Shader) == PixelShaderStateChangedFlags.Shader)
 			{
 				D3DDeviceContext.PixelShader.Set(shaderState.Shader.D3DShader);
+			}
+
+			if ((shaderState.PixelShaderStateChangedFlags & PixelShaderStateChangedFlags.ConstantBuffers) == PixelShaderStateChangedFlags.ConstantBuffers)
+			{
+				D3DDeviceContext.VertexShader.SetConstantBuffers(0, shaderState.ConstantBuffers.D3DConstantBufferBindCount, shaderState.ConstantBuffers.D3DConstantBuffers);
 			}
 		}
 

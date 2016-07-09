@@ -149,9 +149,10 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the size, in bytes, of the resource.
 		/// </summary>
-		public abstract int SizeInBytes
+		public int SizeInBytes
 		{
 			get;
+			protected set;
 		}
 		#endregion
 

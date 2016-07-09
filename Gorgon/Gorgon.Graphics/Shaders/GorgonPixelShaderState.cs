@@ -42,7 +42,11 @@ namespace Gorgon.Graphics
 		/// <summary> 
 		/// The shader itself has been changed.
 		/// </summary>
-		Shader = 0x1
+		Shader = 0x1,
+		/// <summary>
+		/// The list of constant buffers has been changed.
+		/// </summary>
+		ConstantBuffers = 0x2
 	}
 
 	/// <summary>
@@ -53,6 +57,8 @@ namespace Gorgon.Graphics
 		#region Variables.
 		// The vertex shader.
 		private GorgonPixelShader _shader;
+		// The constant buffers for the pixel shader.
+		private GorgonConstantBufferList _constantBuffers;
 		#endregion
 
 		#region Properties.
@@ -86,6 +92,27 @@ namespace Gorgon.Graphics
 
 				_shader = value;
 				PixelShaderStateChangedFlags |= PixelShaderStateChangedFlags.Shader;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the constant buffers for the pixel shader.
+		/// </summary>
+		public GorgonConstantBufferList ConstantBuffers
+		{
+			get
+			{
+				return _constantBuffers;
+			}
+			set
+			{
+				if (_constantBuffers == value)
+				{
+					return;
+				}
+
+				_constantBuffers = value;
+				PixelShaderStateChangedFlags |= PixelShaderStateChangedFlags.ConstantBuffers;
 			}
 		}
 		#endregion

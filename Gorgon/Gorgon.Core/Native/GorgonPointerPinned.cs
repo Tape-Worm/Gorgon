@@ -104,6 +104,7 @@ namespace Gorgon.Native
 		public long PinnedOffset
 		{
 			get;
+			private set;
 		}
 		#endregion
 
@@ -113,15 +114,162 @@ namespace Gorgon.Native
 		/// </summary>
 		protected override unsafe void Cleanup()
 		{
-			if (DataPointer != null)
+			if (DataPointer == null)
 			{
 				return;
 			}
 
 			_pinHandle.Free();
-			
+
 			DataPointer = null;
 			Size = 0;
+		}
+
+		/// <summary>
+		/// Function to unpin the pinned data.
+		/// </summary>
+		public void Unpin()
+		{
+			Cleanup();
+		}
+
+		/// <summary>
+		/// Function to pin another object with the same pointer.
+		/// </summary>
+		/// <param name="value">The object to pin.</param>
+		/// <remarks>
+		/// <para>
+		/// This method takes a <paramref name="value"/> and pins it to a fixed location to allow reading/writing via a pointer. The size of the memory pointed at will be dependant upon the the size, in bytes, of 
+		/// the generic type parameter, <typeparamref name="T" />.
+		/// </para>
+		/// <para>
+		/// When the <see cref="GorgonPointerPinned{T}" /> type pins a value, it takes that value type and locks it down so the garbage collector cannot move the item around in memory. If unmanaged access to the value 
+		/// was taking place, and the value was not pinned, then the value could be freed while accessing it. By locking it down, we ensure that there's a fixed address for that data so that we can dereference it and 
+		/// access it via a pointer.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T" /> is used to determine the amount of memory used by the type. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///   <item>
+		///     <description>The type must be decorated with the <see cref="LayoutKind" />.</description>
+		///   </item>
+		///   <item>
+		///     <description>The layout for the value type must be <see cref="LayoutKind.Explicit" />, or <see cref="MarshalAsAttribute" />.</description>
+		///   </item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
+		/// <para>
+		///   <note type="important">
+		///     <para>
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		</para>
+		///   </note>
+		/// </para>
+		/// </remarks>
+		public void Pin(ref T value)
+		{
+			Unpin();
+
+			_pinHandle = GCHandle.Alloc(value, GCHandleType.Pinned);
+			PinnedOffset = 0;
+			Size = DirectAccess.SizeOf<T>();
+
+			unsafe
+			{
+				DataPointer = ((byte*)_pinHandle.AddrOfPinnedObject().ToPointer()) + PinnedOffset;
+			}
+		}
+
+		/// <summary>
+		/// Function to pin another object with the same pointer.
+		/// </summary>
+		public void Pin(T[] array)
+		{
+#if DEBUG
+			if (array == null)
+			{
+				throw new ArgumentNullException(nameof(array));
+			}
+#endif
+
+			Pin(array, 0, array.Length);
+		}
+
+		/// <summary>
+		/// Function to pin another object with the same pointer.
+		/// </summary>
+		/// <param name="array">Array containing the items to pin.</param>
+		/// <param name="index">Index within the array to pin.</param>
+		/// <param name="count">The number of items in the array to pin.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="array" /> parameter is <b>null</b> (<i>Nothing</i> in VB.Net) (Only when Gorgon is compiled in DEBUG mode).</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count" /> parameter is less than zero. (Only when Gorgon is compiled in DEBUG mode)
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="count" /> parameter is less than one. (Only when Gorgon is compiled in DEBUG mode)</para>
+		/// </exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="count" /> parameter plus the <paramref name="array" /> parameter exceeds the total length of the <paramref name="count" />. (Only when Gorgon is compiled in DEBUG mode)</exception>
+		/// <remarks>
+		/// <para>
+		/// This constructor takes an array of items and pins the array to a fixed location to allow reading/writing that array via a pointer. The size of the memory pointed at will be dependant upon the number of items 
+		/// specified in the <paramref name="count" /> parameter, and the size, in bytes, of the generic type parameter, <typeparamref name="T" />.
+		/// </para>
+		/// <para>
+		/// When the <see cref="GorgonPointerPinned{T}" /> type pins a value, it takes that value type and locks it down so the garbage collector cannot move the item around in memory. If unmanaged access to the value 
+		/// was taking place, and the value was not pinned, then the value could be freed while accessing it. By locking it down, we ensure that there's a fixed address for that data so that we can dereference it and 
+		/// access it via a pointer.
+		/// </para>
+		/// <para>
+		///   <note type="important">
+		///     <para>
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		</para>
+		///   </note>
+		/// </para>
+		/// </remarks>
+		public void Pin(T[] array, int index, int count)
+		{
+			Unpin();
+
+#if DEBUG
+			if (array == null)
+			{
+				throw new ArgumentNullException(nameof(array));
+			}
+
+			if (array.Length == 0)
+			{
+				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_PINNED_ARRAY_NO_ELEMENTS, nameof(array));
+			}
+
+			if (index < 0)
+			{
+				throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_INDEX_LESS_THAN_ZERO);
+			}
+
+			if (count < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(count), string.Format(Resources.GOR_ERR_DATABUFF_COUNT_TOO_SMALL, 1));
+			}
+
+			if (index + count > array.Length)
+			{
+				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE, index, count));
+			}
+#endif
+
+			int typeSize = DirectAccess.SizeOf<T>();
+
+			_pinHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
+			PinnedOffset = typeSize * index;
+			Size = typeSize * count;
+
+			unsafe
+			{
+				DataPointer = ((byte*)_pinHandle.AddrOfPinnedObject().ToPointer()) + PinnedOffset;
+			}
 		}
 		#endregion
 
@@ -183,16 +331,7 @@ namespace Gorgon.Native
 				throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_INDEX_COUNT_TOO_LARGE, index, count));
 			}
 
-			int typeSize = DirectAccess.SizeOf<T>();
-
-			_pinHandle = GCHandle.Alloc(array, GCHandleType.Pinned);
-			PinnedOffset = typeSize * index;
-			Size = typeSize * count;
-
-			unsafe
-			{
-				DataPointer = ((byte*)_pinHandle.AddrOfPinnedObject().ToPointer()) + PinnedOffset;
-			}
+			Pin(array, index, count);
 		}
 
 		/// <summary>
@@ -278,16 +417,7 @@ namespace Gorgon.Native
 		/// </remarks>
 		public GorgonPointerPinned(ref T value)
 		{
-			int typeSize = DirectAccess.SizeOf<T>();
-
-			_pinHandle = GCHandle.Alloc(value, GCHandleType.Pinned);
-			PinnedOffset = 0;
-			Size = typeSize;
-
-			unsafe
-			{
-				DataPointer = ((byte*)_pinHandle.AddrOfPinnedObject().ToPointer()) + PinnedOffset;
-			}
+			Pin(ref value);
 		}
 
 		/// <summary>
@@ -330,6 +460,46 @@ namespace Gorgon.Native
 		public GorgonPointerPinned(T value)
 			: this(ref value)
 		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonPointerPinned{T}"/> class.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Use this constructor to create an empty pointer that will be used to pin data later by using one of the <see cref="O:Gorgon.Core.GorgonPointerPinned`T.Pin"/> methods.
+		/// </para>
+		/// <para>
+		/// When the <see cref="GorgonPointerPinned{T}" /> type pins a value, it takes that value type and locks it down so the garbage collector cannot move the item around in memory. If unmanaged access to the value 
+		/// was taking place, and the value was not pinned, then the value could be freed while accessing it. By locking it down, we ensure that there's a fixed address for that data so that we can dereference it and 
+		/// access it via a pointer.
+		/// </para>
+		/// <para>
+		/// The type indicated by <typeparamref name="T" /> is used to determine the amount of memory used by the type. This type is subject to the following constraints:
+		/// </para>
+		/// <list type="bullet">
+		///   <item>
+		///     <description>The type must be decorated with the <see cref="LayoutKind" />.</description>
+		///   </item>
+		///   <item>
+		///     <description>The layout for the value type must be <see cref="LayoutKind.Explicit" />, or <see cref="MarshalAsAttribute" />.</description>
+		///   </item>
+		/// </list>
+		/// <para>
+		/// Failure to adhere to these criteria will result in undefined behavior. This must be done because the .NET memory management system may rearrange members of the type for optimal layout, and as such when
+		/// reading/writing from the raw memory behind the type, the values may not be the expected places.
+		/// </para>
+		/// <para>
+		///   <note type="important">
+		///     <para>
+		///		A call to <see cref="GorgonPointerBase.Dispose()" /> is required when finished with this pointer. Failure to do so can lead to memory leaks.
+		///		</para>
+		///   </note>
+		/// </para>
+		/// </remarks>
+		public GorgonPointerPinned()
+		{
+			
 		}
 
 		/// <summary>

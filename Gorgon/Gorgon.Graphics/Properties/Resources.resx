@@ -820,4 +820,10 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
 Errors:
 {0}</value>
   </data>
+  <data name="GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE" xml:space="preserve">
+    <value>The offset: {0} and count: {1} are too large for the source data.</value>
+  </data>
+  <data name="GORGFX_ERR_NOT_A_CONSTANT_BUFFER" xml:space="preserve">
+    <value>The buffer '{0}' is not a constant buffer.</value>
+  </data>
 </root>
