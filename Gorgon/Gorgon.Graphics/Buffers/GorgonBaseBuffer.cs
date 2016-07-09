@@ -116,7 +116,7 @@ namespace Gorgon.Graphics
 	    /// <summary>
         /// Property to return the size of the resource, in bytes.
         /// </summary>
-        public override int SizeInBytes => Settings.SizeInBytes;
+        public new int SizeInBytes => Settings.SizeInBytes;
 
 	    /// <summary>
         /// Property to return the type of buffer.

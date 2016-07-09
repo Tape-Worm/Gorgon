@@ -416,6 +416,15 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The offset: {0} and count: {1} are too large for the source data..
+        /// </summary>
+        internal static string GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DATA_OFFSET_COUNT_IS_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The feature level [{0}] is not valid..
         /// </summary>
         internal static string GORGFX_ERR_FEATURE_LEVEL_INVALID {
@@ -511,6 +520,15 @@ namespace Gorgon.Graphics.Properties {
         internal static string GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_VIDEO_DEVICE_WITH_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; is not a constant buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_NOT_A_CONSTANT_BUFFER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NOT_A_CONSTANT_BUFFER", resourceCulture);
             }
         }
         

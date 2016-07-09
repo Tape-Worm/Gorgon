@@ -125,7 +125,7 @@ namespace Gorgon.Graphics
         /// Property to set or return the size of the buffer, in bytes.
         /// </summary>
         /// <remarks>
-        /// For a <see cref="Gorgon.Graphics.GorgonConstantBuffer">constant buffer</see>, this value must be a multiple of 16.
+        /// For a <see cref="Gorgon.Graphics.GorgonConstantBuffer_OLDEN">constant buffer</see>, this value must be a multiple of 16.
         /// <para>The default value is 0.</para>
         /// </remarks>
         int SizeInBytes

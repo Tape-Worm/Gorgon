@@ -262,7 +262,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="System.DataMisalignedException">Thrown when the <see cref="Gorgon.Graphics.GorgonConstantBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is not a multiple of 16.</exception>
         /// <exception cref="GorgonException">Thrown when the buffer size is less than 16 bytes.</exception>
-        public GorgonConstantBuffer CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, IGorgonPointer data = null)
+        public GorgonConstantBuffer_OLDEN CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, IGorgonPointer data = null)
         {
             if (settings == null)
             {
@@ -276,7 +276,7 @@ namespace Gorgon.Graphics
 
             ValidateConstantBufferSettings(settings);
 
-            var buffer = new GorgonConstantBuffer(_graphics, name, settings);
+            var buffer = new GorgonConstantBuffer_OLDEN(_graphics, name, settings);
 
             buffer.Initialize(data);
 
@@ -296,7 +296,7 @@ namespace Gorgon.Graphics
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="GorgonException">Thrown when the buffer could not be created.</exception>
-        public GorgonConstantBuffer CreateConstantBuffer<T>(string name, ref T value, BufferUsage usage)
+        public GorgonConstantBuffer_OLDEN CreateConstantBuffer<T>(string name, ref T value, BufferUsage usage)
             where T : struct
         {
             int size = DirectAccess.SizeOf<T>();

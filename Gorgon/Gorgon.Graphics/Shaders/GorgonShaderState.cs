@@ -570,10 +570,10 @@ namespace Gorgon.Graphics
 		/// A list of constant buffers.
 		/// </summary>
 		public sealed class ShaderConstantBuffers
-			: IList<GorgonConstantBuffer>
+			: IList<GorgonConstantBuffer_OLDEN>
 		{
 			#region Variables.
-			private readonly GorgonConstantBuffer[] _buffers;
+			private readonly GorgonConstantBuffer_OLDEN[] _buffers;
 			private readonly GorgonShaderState<T> _shader;
 			private readonly D3D.Buffer[] _D3DBufferArray;
 			#endregion
@@ -588,7 +588,7 @@ namespace Gorgon.Graphics
 			/// Property to set or return a constant buffer at the specified index.
 			/// </summary>
 			/// <exception cref="GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
-			public GorgonConstantBuffer this[int index]
+			public GorgonConstantBuffer_OLDEN this[int index]
 			{
 				get
 				{
@@ -644,7 +644,7 @@ namespace Gorgon.Graphics
 			/// Function to unbind a constant buffer.
 			/// </summary>
 			/// <param name="buffer">Buffer to unbind.</param>
-			internal void Unbind(GorgonConstantBuffer buffer)
+			internal void Unbind(GorgonConstantBuffer_OLDEN buffer)
 			{
 				for (int i = 0; i < _buffers.Length; i++)
 				{
@@ -711,7 +711,7 @@ namespace Gorgon.Graphics
 			/// </remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
 			/// <exception cref="GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
-			public void SetRange(int slot, GorgonConstantBuffer[] buffers)
+			public void SetRange(int slot, GorgonConstantBuffer_OLDEN[] buffers)
 			{
 			    int count = _buffers.Length - slot;
 
@@ -724,7 +724,7 @@ namespace Gorgon.Graphics
 
 				for (int i = 0; i < count; i++)
 				{
-                    GorgonConstantBuffer buffer = null;
+                    GorgonConstantBuffer_OLDEN buffer = null;
 					var bufferIndex = i + slot;
 					
 
@@ -759,7 +759,7 @@ namespace Gorgon.Graphics
 			/// <param name="shader">Shader stage state.</param>
 			internal ShaderConstantBuffers(GorgonShaderState<T> shader)
 			{
-				_buffers = new GorgonConstantBuffer[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
+				_buffers = new GorgonConstantBuffer_OLDEN[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
 				_shader = shader;
 				_D3DBufferArray = new D3D.Buffer[_buffers.Length];
 			}
@@ -774,7 +774,7 @@ namespace Gorgon.Graphics
 			/// The index of <paramref name="item" /> if found in the list; otherwise, -1.
 			/// </returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-			public int IndexOf(GorgonConstantBuffer item)
+			public int IndexOf(GorgonConstantBuffer_OLDEN item)
 			{
 				if (item == null)
 				{
@@ -790,7 +790,7 @@ namespace Gorgon.Graphics
 			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
 			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
 			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
-			void IList<GorgonConstantBuffer>.Insert(int index, GorgonConstantBuffer item)
+			void IList<GorgonConstantBuffer_OLDEN>.Insert(int index, GorgonConstantBuffer_OLDEN item)
 			{
 				throw new NotSupportedException();
 			}
@@ -800,7 +800,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="index">The zero-based index of the item to remove.</param>
 			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
-			void IList<GorgonConstantBuffer>.RemoveAt(int index)
+			void IList<GorgonConstantBuffer_OLDEN>.RemoveAt(int index)
 			{
 				throw new NotSupportedException();
 			}
@@ -821,7 +821,7 @@ namespace Gorgon.Graphics
 			/// </summary>
 			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
-			void ICollection<GorgonConstantBuffer>.Add(GorgonConstantBuffer item)
+			void ICollection<GorgonConstantBuffer_OLDEN>.Add(GorgonConstantBuffer_OLDEN item)
 			{
 				throw new NotSupportedException();
 			}
@@ -830,7 +830,7 @@ namespace Gorgon.Graphics
 			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
 			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
-			void ICollection<GorgonConstantBuffer>.Clear()
+			void ICollection<GorgonConstantBuffer_OLDEN>.Clear()
 			{
 				throw new NotSupportedException();
 			}
@@ -843,7 +843,7 @@ namespace Gorgon.Graphics
 			/// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
 			/// </returns>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item" /> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
-			public bool Contains(GorgonConstantBuffer item)
+			public bool Contains(GorgonConstantBuffer_OLDEN item)
 			{
 				if (item == null)
 				{
@@ -860,7 +860,7 @@ namespace Gorgon.Graphics
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
-			public void CopyTo(GorgonConstantBuffer[] array, int arrayIndex)
+			public void CopyTo(GorgonConstantBuffer_OLDEN[] array, int arrayIndex)
 			{
 				if (array == null)
 				{
@@ -888,7 +888,7 @@ namespace Gorgon.Graphics
 			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </returns>
 			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
-			bool ICollection<GorgonConstantBuffer>.Remove(GorgonConstantBuffer item)
+			bool ICollection<GorgonConstantBuffer_OLDEN>.Remove(GorgonConstantBuffer_OLDEN item)
 			{
 				throw new NotSupportedException();
 			}
@@ -900,7 +900,7 @@ namespace Gorgon.Graphics
 			/// Function to return an enumerator for the list.
 			/// </summary>
 			/// <returns>The enumerator for the list.</returns>
-			public IEnumerator<GorgonConstantBuffer> GetEnumerator()
+			public IEnumerator<GorgonConstantBuffer_OLDEN> GetEnumerator()
 			{
 				// ReSharper disable LoopCanBeConvertedToQuery
 			    // ReSharper disable ForCanBeConvertedToForeach

@@ -67,7 +67,7 @@ namespace Gorgon.Graphics
 		/// </summary>
 		/// <remarks>This will take into account whether the texture is a packed format, or compressed.</remarks>
 #warning This needs fixing.
-		public override int SizeInBytes => GorgonImage.CalculateSizeInBytes(null);
+		public new int SizeInBytes => GorgonImage.CalculateSizeInBytes(null);
 
 		/// <summary>
 		/// Property to set or return the settings for the texture.

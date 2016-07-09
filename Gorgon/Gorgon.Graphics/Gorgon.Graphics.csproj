@@ -89,6 +89,7 @@
     <Compile Include="BufferFormat.cs" />
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs" />
+    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonBufferInfo.cs" />
     <Compile Include="Buffers\GorgonBuffer_OLDEN.cs">
       <SubType>Code</SubType>
@@ -101,7 +102,7 @@
     <Compile Include="Buffers\GorgonStructuredBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
-    <Compile Include="Buffers\GorgonConstantBuffer.cs" />
+    <Compile Include="Buffers\GorgonConstantBuffer_OLDEN.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
     <Compile Include="D3DErrors.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
     <Compile Include="Pipeline\GorgonPipelineState.cs" />
+    <Compile Include="Shaders\GorgonConstantBufferList.cs" />
     <Compile Include="Shaders\GorgonShaderCompiler.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
