@@ -79,15 +79,6 @@ namespace Gorgon.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8}).
-        /// </summary>
-        internal static string GORGFX_BOX_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_BOX_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A generic dynamic buffer must be accessible via a shader view..
         /// </summary>
         internal static string GORGFX_BUFFER_DYNAMIC_NEEDS_SHADER_VIEW {

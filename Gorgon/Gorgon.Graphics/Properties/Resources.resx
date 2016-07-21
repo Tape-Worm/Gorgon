@@ -638,9 +638,6 @@ Please report this error by pasting the details to the bug tracker in Gorgon's g
   <data name="GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING" xml:space="preserve">
     <value>Feature level SM2_a_b video devices cannot copy non-staging textures.</value>
   </data>
-  <data name="GORGFX_BOX_TOSTR" xml:space="preserve">
-    <value>Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8})</value>
-  </data>
   <data name="GORGFX_TEXTURE_DISCARD_NEEDS_DYNAMIC" xml:space="preserve">
     <value>Cannot use [Discard] with a texture that has not been created with a [Dynamic] usage.</value>
   </data>

@@ -135,7 +135,7 @@ namespace Gorgon.Graphics
 
 			if (image == null)
 			{
-				D3DResource = new D3D11.Texture2D(VideoDevice.D3DDevice, desc);
+				D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice, desc);
 				DefaultView = new GorgonTextureShaderView(this, Info.Format, 0, Info.MipLevels, 0, Info.ArrayCount);
 				return;
 			}
@@ -153,7 +153,7 @@ namespace Gorgon.Graphics
 				}
 			}
 
-			D3DResource = new D3D11.Texture2D(VideoDevice.D3DDevice, desc, dataBoxes);
+			D3DResource = new D3D11.Texture2D(Graphics.VideoDevice.D3DDevice, desc, dataBoxes);
 		}
 
 		/// <summary>
@@ -176,14 +176,6 @@ namespace Gorgon.Graphics
 			}
 
 			DefaultView = new GorgonTextureShaderView(this);
-		}
-
-		/// <summary>
-		/// Function to clean up the resource object.
-		/// </summary>
-		protected override void CleanUpResource()
-		{
-			// Not used.
 		}
 		
 		/// <summary>
@@ -217,7 +209,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </remarks>
 		internal GorgonTexture(GorgonSwapChain swapChain, int index, IGorgonLog log)
-			: base(swapChain.VideoDevice, $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.")
+			: base(swapChain.Graphics, $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.")
 		{
 			_log = log;
 
@@ -262,7 +254,7 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </remarks>
 		internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, GorgonImageToTextureInfo info, IGorgonLog log)
-			: base(graphics?.VideoDevice, name)
+			: base(graphics, name)
 		{
 			_log = log ?? GorgonLogDummy.DefaultInstance;
 
@@ -323,13 +315,8 @@ namespace Gorgon.Graphics
 		/// </para>
 		/// </remarks>
 		public GorgonTexture(string name, GorgonGraphics graphics, GorgonTextureInfo textureInfo, IGorgonLog log = null)
-			: base(graphics?.VideoDevice, name)
+			: base(graphics, name)
 		{
-			if (graphics == null)
-			{
-				throw new ArgumentNullException(nameof(graphics));
-			}
-
 			if (textureInfo == null)
 			{
 				throw new ArgumentNullException(nameof(textureInfo));

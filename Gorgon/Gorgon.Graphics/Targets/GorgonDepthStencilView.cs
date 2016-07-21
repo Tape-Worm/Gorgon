@@ -24,58 +24,50 @@
 // 
 #endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Properties;
-using Gorgon.UI;
-using D3D = SharpDX.Direct3D11;
-using GI = SharpDX.DXGI;
+using D3D11 = SharpDX.Direct3D11;
+using DXGI = SharpDX.DXGI;
 
 
 namespace Gorgon.Graphics
 {
-    /// <summary>
-    /// Flags to determine how the view will be handled.
-    /// </summary>
-    [Flags]
-    public enum DepthStencilViewFlags
-    {
-        /// <summary>
-        /// No view flags.
-        /// </summary>
-        /// <remarks>This will make it so the depth/stencil view can't be bound to a shader view simultaneously.</remarks>
-        None = D3D.DepthStencilViewFlags.None,
-        /// <summary>
-        /// Allow read-only access to the depth portion of the resource.
-        /// </summary>
-        /// <remarks>This will allow the depth/stencil buffer to be bound as a depth buffer and as a shader view at the same time.</remarks>
-        DepthReadOnly = D3D.DepthStencilViewFlags.ReadOnlyDepth,
-        /// <summary>
-        /// Allow read-only access to the stencil porition of the resource.
-        /// </summary>
-        /// <remarks>This will allow the depth/stencil buffer to be bound as a stencil buffer and as a shader view at the same time.</remarks>
-        StencilReadOnly = D3D.DepthStencilViewFlags.ReadOnlyStencil
-    }
+#warning TODO: Clean this up to be like TextureShaderView.
 	/// <summary>
 	/// A depth/stencil view to allow a texture to be bound to the pipeline as a depth/stencil buffer.
 	/// </summary>
 	public class GorgonDepthStencilView
-		: GorgonView
     {
         #region Variables.
-	    private GorgonDepthStencil1D _depth1D;             // 1D depth/stencil attached to this view.
-	    private GorgonDepthStencil2D _depth2D;             // 2D depth/stencil attached to this view.
+		// A log for debug logging.
+		private readonly IGorgonLog _log;
         #endregion
 
         #region Properties.
         /// <summary>
 		/// Property to return the Direct3D depth/stencil view.
 		/// </summary>
-		internal D3D.DepthStencilView D3DView
+		internal D3D11.DepthStencilView D3DView
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the texture bound to this view.
+		/// </summary>
+		public GorgonTexture Texture
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the format for this view.
+		/// </summary>
+		public DXGI.Format Format
+		{
+			get;
 		}
 
         /// <summary>
@@ -87,7 +79,7 @@ namespace Gorgon.Graphics
         /// <para>This is only valid if the resource allows shader access.</para>
         /// <para>This is only valid on video devices with a feature level of SM5 or better.</para>
         /// </remarks>
-        public DepthStencilViewFlags Flags
+        public D3D11.DepthStencilViewFlags Flags
         {
             get;
             private set;
@@ -123,17 +115,15 @@ namespace Gorgon.Graphics
 		/// Function to retrieve the description for a 1D depth/stencil view.
 		/// </summary>
 		/// <returns>The direct 3D 1D depth/stencil view description.</returns>
-		private D3D.DepthStencilViewDescription GetDesc1D()
+		private D3D11.DepthStencilViewDescription GetDesc1D()
 		{
-			var target1D = (GorgonDepthStencil1D)Resource;
-
 			// Set up for arrayed and multisampled texture.
-			if (target1D.Settings.ArrayCount > 1)
+			if (Texture.Info.ArrayCount > 1)
 			{
-				return new D3D.DepthStencilViewDescription
+				return new D3D11.DepthStencilViewDescription
 				{
-					Format = (GI.Format)Format,
-					Dimension = D3D.DepthStencilViewDimension.Texture1DArray,
+					Format = Format,
+					Dimension = D3D11.DepthStencilViewDimension.Texture1DArray,
 					Texture1DArray =
 					{
 						MipSlice = MipSlice,
@@ -143,10 +133,10 @@ namespace Gorgon.Graphics
 				};
 			}
 
-			return new D3D.DepthStencilViewDescription
+			return new D3D11.DepthStencilViewDescription
 			{
-				Format = (GI.Format)Format,
-				Dimension = D3D.DepthStencilViewDimension.Texture1D,
+				Format = Format,
+				Dimension = D3D11.DepthStencilViewDimension.Texture1D,
 				Texture1D =
 				{
 					MipSlice = MipSlice
@@ -158,20 +148,19 @@ namespace Gorgon.Graphics
 		/// Function to retrieve the description for a 2D depth/stencil view.
 		/// </summary>
 		/// <returns>The direct 3D 2D depth/stencil view description.</returns>
-		private D3D.DepthStencilViewDescription GetDesc2D()
+		private D3D11.DepthStencilViewDescription GetDesc2D()
 		{
-			var target2D = (GorgonDepthStencil2D)Resource;
-			bool isMultiSampled = target2D.Settings.Multisampling != GorgonMultiSampleInfo.NoMultiSampling;
+			bool isMultiSampled = Texture.Info.MultiSampleInfo != GorgonMultiSampleInfo.NoMultiSampling;
 
 			// Set up for arrayed and multisampled texture.
-			if (target2D.Settings.ArrayCount > 1)
+			if (Texture.Info.ArrayCount > 1)
 			{
-				return new D3D.DepthStencilViewDescription
+				return new D3D11.DepthStencilViewDescription
 				{
-					Format = (GI.Format)Format,
+					Format = Format,
 					Dimension = isMultiSampled
-									? D3D.DepthStencilViewDimension.Texture2DMultisampledArray
-									: D3D.DepthStencilViewDimension.Texture2DArray,
+									? D3D11.DepthStencilViewDimension.Texture2DMultisampledArray
+									: D3D11.DepthStencilViewDimension.Texture2DArray,
 					Texture2DArray =
 					{
 						MipSlice = isMultiSampled ? FirstArrayIndex : MipSlice,
@@ -181,12 +170,12 @@ namespace Gorgon.Graphics
 				};
 			}
 
-			return new D3D.DepthStencilViewDescription
+			return new D3D11.DepthStencilViewDescription
 			{
-				Format = (GI.Format)Format,
+				Format = Format,
 				Dimension = isMultiSampled
-								? D3D.DepthStencilViewDimension.Texture2DMultisampled
-								: D3D.DepthStencilViewDimension.Texture2D,
+								? D3D11.DepthStencilViewDimension.Texture2DMultisampled
+								: D3D11.DepthStencilViewDimension.Texture2D,
 				Texture2D =
 				{
 					MipSlice = isMultiSampled ? 0 : MipSlice
@@ -195,34 +184,15 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Function to perform clean up of the resources used by the view.
-		/// </summary>
-		protected override void OnCleanUp()
-		{
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public override void Dispose()
-		{
-			GorgonApplication.Log.Print("Destroying depth/stencil view for {0}.",
-							 LoggingLevel.Verbose,
-							 Resource.Name);
-			D3DView?.Dispose();
-			D3DView = null;
-		}
-
-		/// <summary>
 		/// Function to perform initialization of the view.
 		/// </summary>
-		protected override void OnInitialize()
+		private void Initialize()
 		{
-			D3D.DepthStencilViewDescription desc = default(D3D.DepthStencilViewDescription);
+			D3D11.DepthStencilViewDescription desc = default(D3D11.DepthStencilViewDescription);
 
-			desc.Dimension = D3D.DepthStencilViewDimension.Unknown;
+			desc.Dimension = D3D11.DepthStencilViewDimension.Unknown;
 
-			switch (Resource.ResourceType)
+			switch (Texture.ResourceType)
 			{
 				case ResourceType.Texture1D:
 					desc = GetDesc1D();
@@ -232,170 +202,26 @@ namespace Gorgon.Graphics
 					break;
 			}
 
-			if (desc.Dimension == D3D.DepthStencilViewDimension.Unknown)
+			if (desc.Dimension == D3D11.DepthStencilViewDimension.Unknown)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
 			}
 
-			D3DView = new D3D.DepthStencilView(Resource.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
-			{
-				DebugName = $"{Resource.ResourceType} '{Resource.Name}' Depth Stencil View"
-			};
-		}
-
-        /// <summary>
-        /// Function to clear the depth portion of the depth/stencil buffer.
-        /// </summary>
-        /// <param name="depthValue">Value to fill the depth buffer with.</param>
-        /// <param name="stencil">Value to fill the stencil buffer with.</param>
-        /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
-        /// <remarks>
-        /// This method will clear both the stencil and depth buffer.
-        /// <para>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
-        /// will use the specified deferred context to clear the depth/stencil buffer.
-        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
-        /// Passing a separate deferred context will alleviate that.</para></para>
-        /// </remarks>
-        public void Clear(float depthValue, byte stencil, GorgonGraphics deferred = null)
-        {
-            var flags = (D3D.DepthStencilClearFlags)0;
-
-            if (FormatInformation.HasDepth)
-            {
-                flags |= D3D.DepthStencilClearFlags.Depth;
-            }
-
-            if (FormatInformation.HasStencil)
-            {
-                flags |= D3D.DepthStencilClearFlags.Stencil;
-            }
-
-            if (deferred != null)
-            {
-                deferred.D3DDeviceContext.ClearDepthStencilView(D3DView, flags, depthValue, stencil);
-                return;
-            }
-
-            Resource.VideoDevice.D3DDeviceContext().ClearDepthStencilView(D3DView, flags, depthValue, stencil);
-        }
-        
-		/// <summary>
-		/// Function to clear the depth portion of the depth/stencil buffer.
-		/// </summary>
-		/// <param name="depthValue">Value to fill the depth buffer with.</param>
-		/// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
-		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
-        /// will use the specified deferred context to clear the depth/stencil buffer.
-        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
-        /// Passing a separate deferred context will alleviate that.</para>
-        /// </remarks>
-		public void ClearDepth(float depthValue, GorgonGraphics deferred = null)
-		{
-		    if (!FormatInformation.HasDepth)
-		    {
-		        return;
-		    }
-
-		    if (deferred != null)
-		    {
-		        deferred.D3DDeviceContext.ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Depth, depthValue, 0);
-		        return;
-		    }
-
-		    Resource.VideoDevice.D3DDeviceContext().ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Depth, depthValue, 0);
-		}
-
-	    /// <summary>
-		/// Function to clear the stencil portion of the depth/stencil buffer.
-		/// </summary>
-		/// <param name="stencilValue">Value to fill the stencil buffer with.</param>
-        /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
-        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (<i>Nothing</i> in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
-        /// will use the specified deferred context to clear the depth/stencil buffer.
-        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil buffer because 2 threads may not access the same resource at the same time.  
-        /// Passing a separate deferred context will alleviate that.</para>
-        /// </remarks>
-        public void ClearStencil(byte stencilValue, GorgonGraphics deferred = null)
-		{
-	        if (!FormatInformation.HasStencil)
-	        {
-	            return;
-	        }
-
-	        if (deferred != null)
-	        {
-	            deferred.D3DDeviceContext.ClearDepthStencilView(D3DView,
-	                                                   D3D.DepthStencilClearFlags.Stencil,
-	                                                   1.0f,
-                                                       stencilValue);
-	            return;
-	        }
-
-	        Resource.VideoDevice.D3DDeviceContext().ClearDepthStencilView(D3DView,
-	                                                        D3D.DepthStencilClearFlags.Stencil,
-	                                                        1.0f,
-	                                                        stencilValue);
+			D3DView = new D3D11.DepthStencilView(Texture.Graphics.VideoDevice.D3DDevice, Texture.D3DResource, desc)
+			          {
+				          DebugName = $"'{Texture.Name}': D3D11 Depth/stencil view"
+			          };
 		}
 
 		/// <summary>
-		/// Explicit operator to retrieve the 1D depth/stencil buffer associated with this view.
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <param name="view">The view to evaluate.</param>
-		/// <returns>The 1D depth/stencil buffer associated with this view.</returns>
-		public static explicit operator GorgonDepthStencil1D(GorgonDepthStencilView view)
+		public void Dispose()
 		{
-		    if (view._depth1D == null)
-		    {
-		        throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "1D"));
-		    }
-
-		    return view._depth1D;
+			_log.Print($"Destroying depth/stencil view for {Texture.Name}.", LoggingLevel.Verbose);
+			D3DView?.Dispose();
+			D3DView = null;
 		}
-
-		/// <summary>
-		/// Explicit operator to retrieve the 2D depth/stencil buffer associated with this view.
-		/// </summary>
-		/// <param name="view">The view to evaluate.</param>
-		/// <returns>The 2D depth/stencil buffer associated with this view.</returns>
-		public static explicit operator GorgonDepthStencil2D(GorgonDepthStencilView view)
-		{
-            if (view._depth2D == null)
-            {
-                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "2D"));
-            }
-
-            return view._depth2D;
-        }
-
-        /// <summary>
-        /// Function to retrieve the 1D depth/stencil buffer associated with this view.
-        /// </summary>
-        /// <param name="view">The view to evaluate.</param>
-        /// <returns>The 1D depth/stencil buffer associated with this view.</returns>
-        public static GorgonDepthStencil1D ToDepthStencil1D(GorgonDepthStencilView view)
-        {
-            if (view._depth1D == null)
-            {
-                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "1D"));
-            }
-
-            return view._depth1D;
-        }
-
-        /// <summary>
-        /// Function to retrieve the 2D depth/stencil buffer associated with this view.
-        /// </summary>
-        /// <param name="view">The view to evaluate.</param>
-        /// <returns>The 2D depth/stencil buffer associated with this view.</returns>
-        public static GorgonDepthStencil2D ToDepthStencil2D(GorgonDepthStencilView view)
-        {
-            if (view._depth2D == null)
-            {
-                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "2D"));
-            }
-
-            return view._depth2D;
-        }
         #endregion
 
 		#region Constructor/Destructor.
@@ -408,23 +234,15 @@ namespace Gorgon.Graphics
 		/// <param name="firstArrayIndex">The first array index to use for the view.</param>
 		/// <param name="arrayCount">The number of array indices to use for the view.</param>
 		/// <param name="flags">Depth/stencil view flags.</param>
-		internal GorgonDepthStencilView(GorgonResource resource, BufferFormat format, int mipSlice, int firstArrayIndex, int arrayCount, DepthStencilViewFlags flags)
-			: base(resource, format)
+		internal GorgonDepthStencilView(GorgonTexture resource, DXGI.Format format, int mipSlice, int firstArrayIndex, int arrayCount, D3D11.DepthStencilViewFlags flags)
 		{
+			Format = format;
+			Texture = resource;
 			MipSlice = mipSlice;
 			FirstArrayIndex = firstArrayIndex;
 			ArrayCount = arrayCount;
 		    Flags = flags;
-
-		    switch (resource.ResourceType)
-		    {
-		        case ResourceType.Texture1D:
-		            _depth1D = (GorgonDepthStencil1D)resource;
-		            break;
-                case ResourceType.Texture2D:
-		            _depth2D = (GorgonDepthStencil2D)resource;
-		            break;
-		    }
+			Initialize();
 		}
 		#endregion
 	}

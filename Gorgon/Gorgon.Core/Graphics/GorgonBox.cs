@@ -25,15 +25,19 @@
 #endregion
 
 using Gorgon.Core;
-using Gorgon.Graphics.Properties;
+using Gorgon.Core.Properties;
 using Gorgon.Math;
-using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A box structure with width, height and depth.
+	/// A structure with a width, height and depth.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// This value type merely represents the dimensions of a box, it does not draw a box. 
+	/// </para>
+	/// </remarks>
 	public struct GorgonBox
         : IGorgonEquatableByRef<GorgonBox>
     {
@@ -76,7 +80,6 @@ namespace Gorgon.Graphics
 		/// </summary>
 		public int Depth;
         #endregion
-
 
         #region Properties.
         /// <summary>
@@ -155,7 +158,7 @@ namespace Gorgon.Graphics
 		/// </returns>
 		public override string ToString()
 	    {
-	        return string.Format(Resources.GORGFX_BOX_TOSTR, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
+	        return string.Format(Resources.GOR_TOSTR_BOX, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
 	    }
 
         // ReSharper disable once InconsistentNaming
@@ -257,10 +260,9 @@ namespace Gorgon.Graphics
         /// </returns>
 	    public override bool Equals(object obj)
 	    {
-	        // ReSharper disable once UseNullPropagation
 	        if (obj is GorgonBox)
 	        {
-	            ((GorgonBox)obj).Equals(ref this);
+	            return ((GorgonBox)obj).Equals(ref this);
 	        }
 
 	        return base.Equals(obj);
@@ -305,48 +307,29 @@ namespace Gorgon.Graphics
                     .GenerateHash(Front);
         }
 
-	    /// <summary>
-		/// Property to retrieve the resource region.
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
-		/// <returns>The D3D resource region.</returns>
-		internal D3D.ResourceRegion Convert => new D3D.ResourceRegion
-		                                       {
-			                                       Front = Front,
-			                                       Back = Back,
-			                                       Top = Top,
-			                                       Left = Left,
-			                                       Right = Right,
-			                                       Bottom = Bottom
-		                                       };
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the other parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonBox other)
+		{
+			return Equals(ref this, ref other);
+		}
 
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the other parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(ref GorgonBox other)
+		{
+			return Equals(ref this, ref other);
+		}
 		#endregion
-
-        #region IEquatable<GorgonBox> Members
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// true if the current object is equal to the other parameter; otherwise, false.
-        /// </returns>
-        public bool Equals(GorgonBox other)
-        {
-            return Equals(ref this, ref other);
-        }
-        #endregion
-
-        #region IEquatableByRef<GorgonBox> Members
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// true if the current object is equal to the other parameter; otherwise, false.
-        /// </returns>
-        public bool Equals(ref GorgonBox other)
-        {
-            return Equals(ref this, ref other);
-        }
-        #endregion
-    }
+	}
 }

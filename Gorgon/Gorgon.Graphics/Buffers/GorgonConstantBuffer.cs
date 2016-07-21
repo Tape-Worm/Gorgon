@@ -71,9 +71,9 @@ namespace Gorgon.Graphics
 			// If the buffer is not aligned to 16 bytes, then increase its size.
 			SizeInBytes = (Info.SizeInBytes + 15) & ~15;
 
-			if (SizeInBytes > VideoDevice.MaxConstantBufferSize)
+			if (SizeInBytes > Graphics.VideoDevice.MaxConstantBufferSize)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE, SizeInBytes, VideoDevice.MaxConstantBufferSize));
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_TOO_LARGE, SizeInBytes, Graphics.VideoDevice.MaxConstantBufferSize));
 			}
 
 			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
@@ -102,11 +102,11 @@ namespace Gorgon.Graphics
 
 			if ((initialData != null) && (initialData.Size > 0))
 			{
-				D3DResource = D3DBuffer = new D3D11.Buffer(VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc);
+				D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), new IntPtr(initialData.Address), desc);
 			}
 			else
 			{
-				D3DResource = D3DBuffer = new D3D11.Buffer(VideoDevice.D3DDevice(), desc);
+				D3DResource = D3DBuffer = new D3D11.Buffer(Graphics.VideoDevice.D3DDevice(), desc);
 			}
 		}
 

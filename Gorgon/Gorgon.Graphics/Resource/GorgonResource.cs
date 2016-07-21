@@ -91,9 +91,13 @@ namespace Gorgon.Graphics
 	}
 
 	/// <summary>
-	/// Used to define an object as a resource.
+	/// A base resource class for resource objects such as textures and buffers.
 	/// </summary>
-	/// <remarks>Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.</remarks>
+	/// <remarks>
+	/// <para>
+	/// Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.
+	/// </para>
+	/// </remarks>
 	public abstract class GorgonResource
 		: GorgonNamedObject, IDisposable
 	{
@@ -108,9 +112,9 @@ namespace Gorgon.Graphics
 		}
         
 		/// <summary>
-		/// Property to return the video device interface that owns this object.
+		/// Property to return the graphics interface used to create this object.
 		/// </summary>
-		public IGorgonVideoDevice VideoDevice
+		public GorgonGraphics Graphics
 		{
 			get;
 		}
@@ -157,16 +161,6 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
-
-		/// <summary>
-		/// Function to clean up the resource object.
-		/// </summary>
-#warning REMOVE THIS: This is no longer needed after we get rid of the types that inherit from this object.
-		protected virtual void CleanUpResource()
-		{
-			throw new NotSupportedException("GET RID OF THIS!");
-		}
-
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
@@ -258,20 +252,24 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonResource" /> class.
 		/// </summary>
-		/// <param name="videoDevice">The video device interface that owns this object.</param>
-        /// <param name="name">Name of this resource.</param>
-        /// <remarks>Names for the resource are required, but do not need to be unique.  Names provide a way to organize the objects and can be ignored.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception> 
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        protected GorgonResource(IGorgonVideoDevice videoDevice, string name)
+		/// <param name="graphics">The graphics interface used to create this resource.</param>
+		/// <param name="name">Name of this resource.</param>
+		/// <remarks>
+		/// <para>
+		/// Names for the resource are required, but do not need to be unique. These are used to help with debugging and can be used for managing resources in an application.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (<i>Nothing</i> in VB.Net).</exception> 
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		protected GorgonResource(GorgonGraphics graphics, string name)
             : base(name)
 		{
-            if (videoDevice == null)
+            if (graphics == null)
             {
-                throw new ArgumentNullException(nameof(videoDevice));
+                throw new ArgumentNullException(nameof(graphics));
             }
 
-			VideoDevice = videoDevice;
+			Graphics = graphics;
 		}
 		#endregion
 	}

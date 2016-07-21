@@ -42,37 +42,6 @@ using Shaders = SharpDX.D3DCompiler;
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Shader types.
-	/// </summary>
-	public enum ShaderType
-	{
-		/// <summary>
-		/// Vertex shader.
-		/// </summary>
-		Vertex = 0,
-		/// <summary>
-		/// Pixel shader.
-		/// </summary>
-		Pixel = 1,
-		/// <summary>
-		/// Geometry shader.
-		/// </summary>
-		Geometry = 2,
-		/// <summary>
-		/// Compute shader.
-		/// </summary>
-		Compute = 3,
-		/// <summary>
-		/// Domain shader.
-		/// </summary>
-		Domain = 4,
-		/// <summary>
-		/// Hull shader.
-		/// </summary>
-		Hull = 5
-	}
-
-	/// <summary>
 	/// Used to manage shader bindings and shader buffers.
 	/// </summary>
 	public sealed class GorgonShaderBinding
