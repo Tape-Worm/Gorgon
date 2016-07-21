@@ -27,7 +27,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
@@ -217,32 +216,28 @@ namespace Gorgon.Graphics
 			}
 
 			// Ensure all resources are the same type.
-			if (view.Resource.ResourceType != firstTarget.Texture.ResourceType)
+			if (view.Texture.ResourceType != firstTarget.Texture.ResourceType)
 			{
-				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Resource.ResourceType));
+				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_TYPE_MISMATCH, view.Texture.ResourceType));
 			}
 
 			// Ensure the depth stencil array/depth counts match for all resources.
 			if (view.ArrayCount != firstTarget.ArrayOrDepthCount)
 			{
-				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, view.Resource.Name));
+				throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_ARRAYCOUNT_MISMATCH, view.Texture.Name));
 			}
-
-			var dsTexture = view.Resource as GorgonTexture;
-
-			Debug.Assert(dsTexture != null, "Depth/stencil view not bound to a texture.");
 
 			// Check to ensure that multisample info matches.
-			if (dsTexture.Info.MultiSampleInfo.Equals(firstTarget.Texture.Info.MultiSampleInfo))
+			if (view.Texture.Info.MultiSampleInfo.Equals(firstTarget.Texture.Info.MultiSampleInfo))
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
-					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, dsTexture.Info.MultiSampleInfo.Quality, dsTexture.Info.MultiSampleInfo.Count));
+					string.Format(Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_MULTISAMPLE_MISMATCH, view.Texture.Info.MultiSampleInfo.Quality, view.Texture.Info.MultiSampleInfo.Count));
 			}
 
-			if ((dsTexture.Info.Width != firstTarget.Texture.Info.Width)
-				|| (dsTexture.Info.Height != firstTarget.Texture.Info.Height)
-				|| ((dsTexture.Info.TextureType != TextureType.Texture3D) && (dsTexture.Info.ArrayCount != firstTarget.Texture.Info.ArrayCount))
-				|| ((dsTexture.Info.TextureType == TextureType.Texture3D) && (dsTexture.Info.Depth != firstTarget.Texture.Info.Depth)))
+			if ((view.Texture.Info.Width != firstTarget.Texture.Info.Width)
+				|| (view.Texture.Info.Height != firstTarget.Texture.Info.Height)
+				|| ((view.Texture.Info.TextureType != TextureType.Texture3D) && (view.Texture.Info.ArrayCount != firstTarget.Texture.Info.ArrayCount))
+				|| ((view.Texture.Info.TextureType == TextureType.Texture3D) && (view.Texture.Info.Depth != firstTarget.Texture.Info.Depth)))
 			{
 				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_RTV_DEPTHSTENCIL_RESOURCE_MISMATCH);
 			}

@@ -32,7 +32,6 @@ namespace Gorgon.Graphics
 	/// Settings for defining the set up for a swap chain.
 	/// </summary>
 	public class GorgonSwapChainInfo 
-		: IGorgonSwapChainInfo
 	{
 		#region Properties.
 		/// <summary>

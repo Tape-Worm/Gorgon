@@ -138,10 +138,6 @@ namespace Gorgon.Graphics
 		private readonly IGorgonLog _log;
 		// The video device to use for this graphics object.
 		private IGorgonVideoDevice _videoDevice;
-		// The currently active list of unordered access views.
-		private List<GorgonUnorderedAccessView> _currentUavs;
-		// Offsets for consume/append buffers.
-		private List<int> _offsets;
 		// Previously changed states.
 		private PipelineStateChangeFlags _previousStates;
 		// The current pipeline state.
@@ -208,6 +204,7 @@ namespace Gorgon.Graphics
             }
         }
 
+		/*
 		/// <summary>
         /// Property to return the input geometry interface.
         /// </summary>
@@ -219,7 +216,7 @@ namespace Gorgon.Graphics
             get;
             private set;
         }
-
+		
         /// <summary>
         /// Property to return the interface for buffers.
         /// </summary>
@@ -265,6 +262,7 @@ namespace Gorgon.Graphics
             get;
             private set;
         }
+		*/
 
 		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
@@ -346,40 +344,6 @@ namespace Gorgon.Graphics
 		#endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to clean up the categorized interfaces.
-		/// </summary>
-		private void DestroyInterfaces()
-        {
-			Fonts?.CleanUp();
-			Fonts = null;
-			Textures?.CleanUp();
-			Textures = null;
-			Output?.CleanUp();
-			Output = null;
-			Rasterizer?.CleanUp();
-			Rasterizer = null;
-        }
-
-        /// <summary>
-        /// Function to create and initialize the various state objects.
-        /// </summary>
-        private void CreateStates()
-        {
-			_currentUavs = new List<GorgonUnorderedAccessView>(VideoDevice.MaxRenderTargetViewSlots);
-			_offsets = new List<int>(VideoDevice.MaxRenderTargetViewSlots);
-
-            // Create interfaces.
-            Rasterizer = new GorgonRasterizerRenderState(this);
-            Input = new GorgonInputGeometry(this);
-            Output = new GorgonOutputMerger(this);
-            Textures = new GorgonTextures(this);
-            Fonts = new GorgonFonts(this);
-            Buffers = new GorgonBuffers(this);
-
-            ClearState();
-        }
-
 		/// <summary>
 		/// Function to bind the vertex shader state to the pipeline.
 		/// </summary>
@@ -813,15 +777,29 @@ namespace Gorgon.Graphics
 				VideoDevice.D3DDeviceContext().Flush();
             }
 
-	        _currentUavs.Clear();
-			ApplyPipelineState(_defaultState);
-
-            // Set default states.
-            Input?.Reset();
-            Rasterizer?.Reset();
-            Output?.Reset();
-
+			// Set default states.
 			VideoDevice.D3DDeviceContext.ClearState();
+
+			ApplyPipelineState(_defaultState);
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			IGorgonVideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
+
+			if (device == null)
+			{
+				return;
+			}
+
+			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
+			device.D3DDeviceContext().ClearState();
+
+			_trackedObjects.Clear();
+			device.Dispose();
 		}
 		#endregion
 
@@ -916,8 +894,6 @@ namespace Gorgon.Graphics
 
 			_videoDevice = new VideoDevice(videoDeviceInfo, featureLevel.Value, _log);
 
-			CreateStates();
-
 			_log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
@@ -949,28 +925,5 @@ namespace Gorgon.Graphics
 #endif
 		}
 		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			IGorgonVideoDevice device = Interlocked.Exchange(ref _videoDevice, null);
-			
-			if (device == null)
-			{
-				return;
-			}
-
-			// Reset the state for the context. This will ensure we don't have anything bound to the pipeline when we shut down.
-			device.D3DDeviceContext().ClearState();
-			_currentUavs.Clear();
-
-			_trackedObjects.Clear();
-			DestroyInterfaces();
-			device.Dispose();
-		}
-#endregion
 	}
 }

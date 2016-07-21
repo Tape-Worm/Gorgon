@@ -119,7 +119,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the video device used to create this swap chain.
 		/// </summary>
-		public IGorgonVideoDevice VideoDevice
+		public GorgonGraphics Graphics
 		{
 			get;
 		}
@@ -245,7 +245,7 @@ namespace Gorgon.Graphics
 		/// <summary>
 		/// Property to return the settings used to create this swap chain.
 		/// </summary>
-		public IGorgonSwapChainInfo Info => _info;
+		public GorgonSwapChainInfo Info => _info;
 
 		/// <summary>
 		/// Property to return whether the swap chain is in windowed mode or not.
@@ -298,7 +298,7 @@ namespace Gorgon.Graphics
 		private void Initialize()
 		{
 			// Ensure that we can use this format for display.
-			if ((VideoDevice.GetBufferFormatSupport(Info.Format) & D3D11.FormatSupport.Display) != D3D11.FormatSupport.Display)
+			if ((Graphics.VideoDevice.GetBufferFormatSupport(Info.Format) & D3D11.FormatSupport.Display) != D3D11.FormatSupport.Display)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, Info.Format));
 			}
@@ -308,11 +308,11 @@ namespace Gorgon.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SWAP_BACKBUFFER_TOO_SMALL, Info.Width, Info.Height));
 			}
 
-			using (DXGI.Factory2 factory = VideoDevice.DXGIAdapter().GetParent<DXGI.Factory2>())
+			using (DXGI.Factory2 factory = Graphics.VideoDevice.DXGIAdapter().GetParent<DXGI.Factory2>())
 			{
 				DXGI.SwapChainDescription1 swapDesc = _info.ToSwapChainDesc();
 
-				GISwapChain = new DXGI.SwapChain1(factory, VideoDevice.D3DDevice(), Window.Handle, ref swapDesc)
+				GISwapChain = new DXGI.SwapChain1(factory, Graphics.VideoDevice.D3DDevice(), Window.Handle, ref swapDesc)
 				              {
 					              DebugName = Name + " DXGISwapChain"
 				              };
@@ -654,13 +654,13 @@ namespace Gorgon.Graphics
 			{
 				_log.Print($"SwapChain '{Name}': Entering full screen mode.  Requested mode {desiredMode} on output {output.Name}.", LoggingLevel.Verbose);
 
-				dxgiOutput = VideoDevice.DXGIAdapter().GetOutput(output.Index);
+				dxgiOutput = Graphics.VideoDevice.DXGIAdapter().GetOutput(output.Index);
 				dxgiOutput1 = dxgiOutput.QueryInterface<DXGI.Output1>();
 
 				DXGI.ModeDescription1 actualMode;
 
 				// Try to find something resembling the video mode we asked for.
-				dxgiOutput1.FindClosestMatchingMode1(ref desiredMode, out actualMode, VideoDevice.D3DDevice());
+				dxgiOutput1.FindClosestMatchingMode1(ref desiredMode, out actualMode, Graphics.VideoDevice.D3DDevice());
 
 				DXGI.ModeDescription resizeMode = actualMode.ToModeDesc();
 
@@ -777,11 +777,11 @@ namespace Gorgon.Graphics
 		/// Initializes a new instance of the <see cref="GorgonSwapChain"/> class.
 		/// </summary>
 		/// <param name="name">The name of the swap chain.</param>
-		/// <param name="videoDevice">The video device interface used to create this swap chain.</param>
+		/// <param name="graphics">The graphics interface used to create this swap chain.</param>
 		/// <param name="window">The window that should be bound with the swap chain.</param>
 		/// <param name="info">Settings for the swap chain.</param>
 		/// <param name="log">[Optional] The log used for debug output.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="videoDevice"/>, <paramref name="window"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, <paramref name="window"/>, or the <paramref name="info"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		/// <exception cref="GorgonException">Thrown when the <see cref="GorgonSwapChainInfo.Width"/>, or <see cref="GorgonSwapChainInfo.Height"/> values of the <see cref="GorgonSwapChainInfo"/> passed to the <paramref name="info"/> parameter 
 		/// are less than 1.
@@ -804,7 +804,7 @@ namespace Gorgon.Graphics
 		/// <para>
 		/// When choosing a buffer format in the <see cref="GorgonSwapChainInfo.Format"/> passed by the <paramref name="info"/> property, it is important to choose a format that can be used as a display format. 
 		/// Failure to do so will result in an exception. Users may determine if a format is supported for display by using the <see cref="IGorgonVideoDevice.GetBufferFormatSupport"/> method on the the 
-		/// <see cref="GorgonGraphics.VideoDevice"/> property of the <see cref="GorgonGraphics"/> instance passed to this method in the <paramref name="videoDevice"/> property.
+		/// <see cref="GorgonGraphics.VideoDevice"/> property of the <see cref="GorgonGraphics"/> instance passed to this method.
 		/// </para>
 		/// <para>
 		/// <note type="warning">
@@ -818,12 +818,12 @@ namespace Gorgon.Graphics
 		/// <seealso cref="Present"/>
 		/// <seealso cref="DoNotAutoResizeBackBuffer"/>
 		/// <seealso cref="GorgonSwapChainInfo"/>
-		public GorgonSwapChain(string name, IGorgonVideoDevice videoDevice, Control window, GorgonSwapChainInfo info, IGorgonLog log = null)
+		public GorgonSwapChain(string name, GorgonGraphics graphics, Control window, GorgonSwapChainInfo info, IGorgonLog log = null)
 			: base(name)
 		{
-			if (videoDevice == null)
+			if (graphics == null)
 			{
-				throw new ArgumentNullException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL, nameof(videoDevice));
+				throw new ArgumentNullException(Resources.GORGFX_ERR_PARAMETER_MUST_NOT_BE_NULL, nameof(graphics));
 			}
 
 			if (window == null)
@@ -843,7 +843,7 @@ namespace Gorgon.Graphics
 			ExitFullScreenModeOnFocusLoss = true;
 			Window = window;
 			_parentForm = window as Form ?? window.FindForm();
-			VideoDevice = videoDevice;
+			Graphics = graphics;
 			
 			// Clone the info so that changes to the source won't be reflected back here and cause us grief.
 			_info = new GorgonSwapChainInfo

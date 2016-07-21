@@ -288,10 +288,10 @@ namespace Gorgon.Graphics
 	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
-            D3DRenderTargetView = new D3D.RenderTargetView(Texture.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
-            {
-                DebugName = $"Render Target View '{Texture.Name}': D3D 11 Render target view"
-            };
+	        D3DRenderTargetView = new D3D.RenderTargetView(Texture.Graphics.VideoDevice.D3DDevice, Texture.D3DResource, desc)
+	                              {
+		                              DebugName = $"'{Texture.Name}': D3D 11 Render target view"
+	                              };
         }
 
 		/// <summary>

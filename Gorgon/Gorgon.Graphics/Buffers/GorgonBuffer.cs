@@ -139,7 +139,7 @@ namespace Gorgon.Graphics
 		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="name"/> parameters are <b>null</b>.</exception>
 		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		protected GorgonBuffer(GorgonGraphics graphics, string name, IGorgonLog log)
-			: base(graphics.VideoDevice, name)
+			: base(graphics, name)
 		{
 			Graphics = graphics;
 			Log = log ?? GorgonLogDummy.DefaultInstance;

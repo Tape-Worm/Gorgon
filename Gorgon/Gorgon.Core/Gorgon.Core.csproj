@@ -156,6 +156,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonCancelEventArgs.cs" />
     <Compile Include="GorgonHandledEventArgs.cs" />
+    <Compile Include="Graphics\GorgonBox.cs" />
     <Compile Include="Graphics\GorgonColor.cs" />
     <Compile Include="IO\GorgonChunk.cs" />
     <Compile Include="IO\GorgonChunkCollection.cs" />

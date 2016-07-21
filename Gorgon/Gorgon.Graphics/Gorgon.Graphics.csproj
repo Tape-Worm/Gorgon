@@ -85,27 +85,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Animation\AnimatedPropertyAttribute.cs" />
-    <Compile Include="BufferFormat.cs" />
-    <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBufferInfo.cs" />
-    <Compile Include="Buffers\GorgonBuffer_OLDEN.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Buffers\GorgonBuffers.cs" />
-    <Compile Include="Buffers\GorgonBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonConstantBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonIndexBufferSettings.cs" />
-    <Compile Include="Buffers\IBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonStructuredBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
-    <Compile Include="Buffers\GorgonIndexBuffer.cs" />
-    <Compile Include="Buffers\GorgonConstantBuffer_OLDEN.cs" />
-    <Compile Include="Buffers\GorgonVertexBuffer.cs" />
-    <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
-    <Compile Include="D3DErrors.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceInfo.cs" />
     <Compile Include="Devices\_Internal\VideoDeviceInfo.cs" />
@@ -114,25 +96,9 @@
     <Compile Include="Devices\_Internal\VideoOutputInfo.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDevice.cs" />
     <Compile Include="Devices\_Interfaces\IGorgonVideoDeviceList.cs" />
-    <Compile Include="Fonts\GorgonGlyphBrushInterpolator.cs" />
-    <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphTextureBrush.cs" />
-    <Compile Include="Fonts\GorgonFont.cs" />
-    <Compile Include="Fonts\GorgonFontGlyphCollection.cs" />
-    <Compile Include="Fonts\GorgonFonts.cs" />
-    <Compile Include="Fonts\GorgonFontSettings.cs" />
-    <Compile Include="Fonts\GorgonGlyph.cs" />
-    <Compile Include="Fonts\GorgonGlyphBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphLinearGradientBrush.cs" />
-    <Compile Include="Fonts\GorgonGlyphPacker.cs" />
-    <Compile Include="Fonts\GorgonGlyphPathGradientBrush.cs" />
-    <Compile Include="Fonts\GorgonKerningPair.cs" />
-    <Compile Include="Geometry\GorgonInputGeometry.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />
     <Compile Include="Geometry\InputElementAttribute.cs" />
-    <Compile Include="GorgonBox.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonMultiSampleInfo.cs" />
     <Compile Include="Native\Win32 Structs\OSVERSIONINFOEX.cs" />
@@ -146,91 +112,31 @@
     <Compile Include="Shaders\GorgonShaderFactory.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Shaders\_Internal\ShaderProcessor.cs" />
-    <Compile Include="States\GorgonClearTargetState.cs" />
     <Compile Include="Pipeline\GorgonRenderTargetViews.cs" />
-    <Compile Include="Targets\_Interfaces\IGorgonSwapChainInfo.cs" />
+    <Compile Include="Targets\GorgonDepthStencilView.cs" />
+    <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTextureInfo.cs" />
-    <Compile Include="Textures\GorgonTextureLockCache.cs" />
-    <Compile Include="GorgonRenderStatistics.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resource\GorgonBufferUnorderAccessView.cs" />
-    <Compile Include="Resource\GorgonStructuredBufferUnorderedAccessView.cs" />
-    <Compile Include="Resource\GorgonTextureUnorderAccessView.cs" />
-    <Compile Include="Resource\GorgonUnorderedAccessView.cs" />
-    <Compile Include="Resource\GorgonBufferShaderView.cs" />
     <Compile Include="Resource\GorgonResource.cs" />
     <Compile Include="Textures\GorgonTextureShaderView.cs" />
-    <Compile Include="Resource\GorgonView.cs" />
-    <Compile Include="Resource\GorgonViewCache.cs" />
-    <Compile Include="Resource\GorgonShaderView.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Pipeline\GorgonPixelShaderState.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
-    <Compile Include="Shaders\GorgonShaderBinding.cs" />
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
-    <Compile Include="Shaders\GorgonShaderState.cs" />
-    <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Pipeline\GorgonVertexShaderState.cs" />
-    <Compile Include="States\GorgonBlendState.cs" />
-    <Compile Include="States\GorgonDepthStencilState.cs" />
-    <Compile Include="States\GorgonRasterizerState.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="States\GorgonState.cs" />
-    <Compile Include="States\GorgonStateCache.cs" />
-    <Compile Include="States\GorgonTextureSamplerState.cs" />
-    <Compile Include="Targets\GorgonDepthStencil1D.cs" />
-    <Compile Include="Targets\GorgonDepthStencil1DSettings.cs" />
-    <Compile Include="Targets\GorgonDepthStencil2D.cs" />
-    <Compile Include="Targets\GorgonDepthStencil2DSettings.cs" />
-    <Compile Include="Targets\GorgonDepthStencilView.cs" />
-    <Compile Include="Targets\GorgonRenderTarget1D.cs" />
-    <Compile Include="Targets\GorgonOutputMerger.cs" />
-    <Compile Include="Targets\GorgonRenderTarget1DSettings.cs" />
-    <Compile Include="Targets\GorgonRenderTarget2D.cs" />
-    <Compile Include="Targets\GorgonRenderTarget2DSettings.cs" />
-    <Compile Include="Targets\GorgonRenderTarget3D.cs" />
-    <Compile Include="Targets\GorgonRenderTarget3DSettings.cs" />
-    <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
-    <Compile Include="Targets\IDepthStencilSettings.cs" />
-    <Compile Include="Targets\IRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonSwapChainInfo.cs" />
-    <Compile Include="Targets\GorgonViewport.cs" />
-    <Compile Include="Textures\GorgonTextureLockData.cs" />
-    <Compile Include="Textures\GorgonTexture_OLDEN.cs" />
-    <Compile Include="Textures\GorgonTexture1D.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Textures\GorgonTexture1DSettings.cs" />
-    <Compile Include="Textures\GorgonTexture2D.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Textures\GorgonTexture3D.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Textures\GorgonTexture3DSettings.cs" />
-    <Compile Include="Textures\GorgonTextures.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Textures\GorgonTexture2DSettings.cs" />
-    <Compile Include="Textures\IImageSettings.cs" />
-    <Compile Include="Properties\Win32ResStr.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Win32ResStr.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Textures\ITextureSettings.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageTextureExtensions.cs" />
     <Compile Include="Textures\_Extensions\GorgonImageToTextureInfo.cs" />
-    <Compile Include="_Internal\BufferFormatEqualityComparer.cs" />
     <Compile Include="_Internal\_Extensions\SharpDXExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -245,11 +151,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Win32ResStr.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Win32ResStr.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj">
@@ -262,8 +163,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resource\_Interfaces\" />
-    <Folder Include="Resource\_Internal\" />
+    <Folder Include="States\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
