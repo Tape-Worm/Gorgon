@@ -184,7 +184,7 @@ namespace Gorgon.Graphics
 
 			return new DXGI.SwapChainDescription1
 			       {
-				       BufferCount = 3,
+				       BufferCount = 2,
 				       AlphaMode = DXGI.AlphaMode.Unspecified,
 				       Flags = DXGI.SwapChainFlags.AllowModeSwitch,
 				       Format = swapChainInfo.Format,

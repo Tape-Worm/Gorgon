@@ -447,13 +447,14 @@ namespace Gorgon.Graphics
 					return;
 				}
 
-				// If we're entering/exiting full screen, or not at the end of a resize operation, or the window client size is invalid, or the window is in a minimized state, then 
-				// do nothing.
+				// If we're entering/exiting full screen, or not at the end of a resize operation, or the window client size is invalid, or the window is in a minimized state, 
+				// or the window size has not changed (can occur when the window is moved) then do nothing.
 				if (!_screenStateTransition)
 				{
 					if ((!_resized)
 					    || (Window.ClientSize.Width < 1)
 					    || (Window.ClientSize.Height < 1)
+						|| ((Window.ClientSize.Width == _info.Width) && (Window.ClientSize.Height == _info.Height))
 					    || (_parentForm.WindowState == FormWindowState.Minimized))
 					{
 						return;
@@ -541,7 +542,7 @@ namespace Gorgon.Graphics
 
 			ReleaseResources();
 
-			GISwapChain.ResizeBuffers(3, newWidth, newHeight, Info.Format, DXGI.SwapChainFlags.AllowModeSwitch);
+			GISwapChain.ResizeBuffers(IsWindowed ? 2 : 3, newWidth, newHeight, Info.Format, DXGI.SwapChainFlags.AllowModeSwitch);
 
 			_info.Width = newWidth;
 			_info.Height = newHeight;
@@ -571,17 +572,12 @@ namespace Gorgon.Graphics
 		/// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Present(int interval = 0)
 		{
-			DXGI.PresentFlags flags = DXGI.PresentFlags.None;
+			DXGI.PresentFlags flags = !IsInStandBy ? DXGI.PresentFlags.None : DXGI.PresentFlags.Test;
 
 			interval.ValidateRange(nameof(interval), 0, 4, true, true);
 
 			try
 			{
-				if (IsInStandBy)
-				{
-					flags = DXGI.PresentFlags.Test;
-				}
-
 				IsInStandBy = false;
 				GISwapChain.Present(interval, flags);
 			}

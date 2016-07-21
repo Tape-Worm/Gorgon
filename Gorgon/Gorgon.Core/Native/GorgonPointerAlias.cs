@@ -77,6 +77,81 @@ namespace Gorgon.Native
 			DataPointer = null;
 			Size = 0;
 		}
+
+		/// <summary>
+		/// Function to alias a pointer.
+		/// </summary>
+		/// <param name="pointer">The pointer to alias.</param>
+		/// <param name="size">The size of the data being pointed at, in bytes.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to re-alias a new pointer without having to recreate an instance of this object.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Care must be taken to ensure that the <paramref name="size"/> is less than, or equal to the amount of memory being pointed at by the <paramref name="pointer"/>. If the size is larger, memory could 
+		/// be corrupted.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public unsafe void AliasPointer(void* pointer, long size)
+		{
+			if (pointer == null)
+			{
+				throw new ArgumentNullException(nameof(pointer));
+			}
+
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+			}
+
+			DataPointer = (byte*)pointer;
+			Size = size;
+		}
+
+		/// <summary>
+		/// Function to alias a pointer.
+		/// </summary>
+		/// <param name="pointer">The pointer to alias.</param>
+		/// <param name="size">The size of the data being pointed at, in bytes.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
+		/// <remarks>
+		/// <para>
+		/// Use this method to re-alias a new pointer without having to recreate an instance of this object.
+		/// </para>
+		/// <para>
+		/// <note type="important">
+		/// <para>
+		/// Care must be taken to ensure that the <paramref name="size"/> is less than, or equal to the amount of memory being pointed at by the <paramref name="pointer"/>. If the size is larger, memory could 
+		/// be corrupted.
+		/// </para>
+		/// </note>
+		/// </para>
+		/// </remarks>
+		public void AliasPointer(IntPtr pointer, long size)
+		{
+			if (pointer == IntPtr.Zero)
+			{
+				throw new ArgumentNullException(nameof(pointer));
+			}
+
+			if (size < 1)
+			{
+				throw new ArgumentOutOfRangeException(nameof(size), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
+			}
+
+			unsafe
+			{
+				DataPointer = (byte*)pointer;
+				Size = size;
+			}
+		}
 		#endregion
 
 		#region Constructor/Finalizer.
@@ -119,8 +194,7 @@ namespace Gorgon.Native
 				throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(size));
 			}
 
-			DataPointer = (byte*)pointer;
-			Size = size;
+			AliasPointer(pointer, size);
 		}
 
 		/// <summary>
@@ -162,11 +236,7 @@ namespace Gorgon.Native
 				throw new ArgumentOutOfRangeException(nameof(size), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
 			}
 			
-			unsafe
-			{
-				DataPointer = (byte*)pointer.ToPointer();
-				Size = size;
-			}
+			AliasPointer(pointer, size);
 		}
 		#endregion
 	}

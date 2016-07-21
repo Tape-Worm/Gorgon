@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿#region MIT
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +20,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, March 18, 2012 11:24:50 AM
+// Created: July 20, 2016 11:17:52 PM
 // 
 #endregion
 
 using System;
+using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Properties;
 
@@ -33,15 +34,36 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// An include file for a shader.
 	/// </summary>
-	/// <remarks>Use this object to load in included external functions for a shader.  If the shader source contains an #include, it will try to locate that include file on the file system.  However, this does not work 
-	/// when the files are loaded from a stream object (it wouldn't know where to find the include file).  So to facilitate this, this object will contain the source for the include file and will be looked up 
-	/// -before- the file system is checked for the include file.
-	/// <para>Gorgon does not use the #include keyword for HLSL, so it will not interfere with it and it will operate as expected.  However a new keyword must be used: 
-	/// '#GorgonInclude "&lt;include name&gt;"[, "&lt;include path&gt;"]'.  This keyword takes 2 parameters unlike the 1 parameter for #include.  The first parameter is the name of the include file, this is defined by 
-	/// the user and is the name of the include file in the <see cref="GorgonShaderBinding.IncludeFiles">include collection</see>. The second parameter is the path to the include file.  The first parameter is required, 
-	/// but the second is optional.</para>
-	/// <para>The include object is only for shaders with source code, therefore, the objects will be ignored when used with a binary shader.  Binary shaders should already have the required information in them.</para>
+	/// <remarks>
+	/// <para>
+	/// Use this object to load in included external functions for a shader.  If the shader source contains an HLSL <c>#include</c> directive, the shader compiler will try to locate that include file on 
+	/// the file system.  However, this does not work when the files are loaded from a <see cref="Stream"/> (it wouldn't know where to find the include file).  So to facilitate this, this object will 
+	/// contain the source for the include file and will be looked up <i>before</i> the file system is checked for the include file.
+	/// </para>
+	/// <para>
+	/// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL 
+	/// <c>#include</c> keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included 
+	/// source code in the <c>#GorgonInclude</c> keyword, and adding the <see cref="GorgonShaderInclude"/> containing the source to the <see cref="GorgonShaderFactory.Includes"/> property on the 
+	/// <see cref="GorgonShaderFactory"/> class. When the include is loaded from a file, then it will automatically be added to the <see cref="GorgonShaderFactory.Includes"/> property.
+	/// </para>
+	/// <para>
+	/// The parameters for the <c>#GorgonInclude</c>keyword are: 
+	/// <list type="bullet">
+	///		<item>
+	///			<term>Name</term>
+	///			<description>The path name of the included source. This must be unique, and assigned to the <see cref="GorgonShaderFactory.Includes"/> property.</description>
+	///		</item>
+	///		<item>
+	///			<term>(Optional) Path</term>
+	///			<description>The path to the shader source file to include. This may be omitted if the include is assigned from memory in the <see cref="GorgonShaderFactory.Includes"/> property.</description>
+	///		</item>
+	/// </list>
+	/// </para>
+	/// <para>
+	/// These include objects are ignored with binary shader data loaded from a <see cref="Stream"/> or file as those will aready contain the included source compiled into bytecode.
+	/// </para>
 	/// </remarks>
+	/// <seealso cref="GorgonShaderFactory"/>
 	public struct GorgonShaderInclude
 		: IGorgonNamedObject, IEquatable<GorgonShaderInclude>
 	{
@@ -54,6 +76,13 @@ namespace Gorgon.Graphics
 		/// The source code for the shader include file.
 		/// </summary>
 		public readonly string SourceCodeFile;
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the name of the include file.
+		/// </summary>
+		string IGorgonNamedObject.Name => Name;
 		#endregion
 
 		#region Methods.
@@ -128,6 +157,18 @@ namespace Gorgon.Graphics
 		{
 			return !Equals(ref left, ref right);
 		}
+
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonShaderInclude other)
+		{
+			return Equals(ref this, ref other);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -158,28 +199,6 @@ namespace Gorgon.Graphics
 
 			Name = includeName;
 			SourceCodeFile = includeSourceFile;
-		}
-		#endregion
-
-		#region IGorgonNamedObject Members
-		/// <summary>
-		/// Property to return the name of the include file.
-		/// </summary>
-		string IGorgonNamedObject.Name => Name;
-
-		#endregion
-
-		#region IEquatable<GorgonShaderInclude> Members
-		/// <summary>
-		/// Indicates whether the current object is equal to another object of the same type.
-		/// </summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>
-		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
-		/// </returns>
-		public bool Equals(GorgonShaderInclude other)
-		{
-			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

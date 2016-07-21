@@ -24,14 +24,24 @@
 // 
 #endregion
 
+using System.IO;
 using D3DCompiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// A pixel shader object.
+	/// A shader that operates on a single pixel (fragment) at a time on the GPU.
 	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A pixel shader is a program that is used to modify the color of a single pixel (aka fragment) at a time on the GPU. This allows for effects like blurring, or sampling texel data for display.
+	/// </para>
+	/// <para>
+	/// In Gorgon, shaders can be compiled from a string containing source code via the <see cref="GorgonShaderFactory"/>, or loaded from a <see cref="Stream"/> or file for quicker access. The 
+	/// <see cref="GorgonShaderFactory"/> is required to compile or read shaders, they cannot be created via the <c>new</c> keyword.
+	/// </para>
+	/// </remarks>
 	public class GorgonPixelShader
 		: GorgonShader
 	{

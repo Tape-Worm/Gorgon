@@ -24,75 +24,13 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using D3D11 = SharpDX.Direct3D11;
-
 namespace Gorgon.Graphics
 {
 	/// <summary>
-	/// Buffer usage types.
-	/// </summary>
-	public enum BufferUsage
-	{
-		/// <summary>
-		/// Allows read/write access to the buffer from the GPU.
-		/// </summary>
-		Default = D3D11.ResourceUsage.Default,
-		/// <summary>
-		/// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
-		/// </summary>
-		/// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
-		Immutable = D3D11.ResourceUsage.Immutable,
-		/// <summary>
-		/// Allows read access by the GPU and write access by the CPU.
-		/// </summary>
-		Dynamic = D3D11.ResourceUsage.Dynamic,
-		/// <summary>
-		/// Allows reading/writing by the CPU and can be copied to a GPU compatible buffer (but not used directly by the GPU).
-		/// </summary>
-		Staging = D3D11.ResourceUsage.Staging
-	}
-
-	/// <summary>
-	/// The type of data to be stored in the buffer.
-	/// </summary>
-	public enum BufferType
-	{
-		/// <summary>
-		/// A generic raw buffer filled with byte data.
-		/// </summary>
-		Generic = 0,
-		/// <summary>
-		/// A constant buffer used to send data to a shader.
-		/// </summary>
-		Constant = 1,
-		/// <summary>
-		/// A vertex buffer used to hold vertex information.
-		/// </summary>
-		Vertex = 2,
-		/// <summary>
-		/// An index buffer used to hold index information.
-		/// </summary>
-		Index = 3,
-		/// <summary>
-		/// A structured buffer used to hold structured data.
-		/// </summary>
-		Structured = 4
-	}
-
-	/// <summary>
 	/// Provides information on how to set up a buffer.
 	/// </summary>
-	public class GorgonBufferInfo
+	public class GorgonConstantBufferInfo
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the intended usage flags for this texture.
@@ -101,15 +39,6 @@ namespace Gorgon.Graphics
 		/// This value is defaulted to <see cref="BufferUsage.Default"/>.
 		/// </remarks>
 		public BufferUsage Usage
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of data to be stored in this buffer.
-		/// </summary>
-		public BufferType BufferType
 		{
 			get;
 			set;
@@ -139,9 +68,9 @@ namespace Gorgon.Graphics
 
 		#region Constructor/Finalizer.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
+		/// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
 		/// </summary>
-		public GorgonBufferInfo()
+		public GorgonConstantBufferInfo()
 		{
 			Usage = BufferUsage.Default;
 		}

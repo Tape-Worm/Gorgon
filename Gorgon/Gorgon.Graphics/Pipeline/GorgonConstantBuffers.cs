@@ -35,7 +35,7 @@ namespace Gorgon.Graphics
 	/// <summary>
 	/// A list of constant buffers used for shaders.
 	/// </summary>
-	public class GorgonConstantBufferList
+	public class GorgonConstantBuffers
 		: IList<GorgonConstantBuffer>, IReadOnlyList<GorgonConstantBuffer>
 	{
 		#region Variables.
@@ -80,6 +80,7 @@ namespace Gorgon.Graphics
 
 				_buffers[index] = value;
 				D3DConstantBuffers[index] = value?.D3DBuffer;
+				D3DConstantBufferBindCount = 0;
 
 				for (int i = 0; i < _buffers.Length; ++i)
 				{
@@ -108,6 +109,30 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+		public static bool Equals(GorgonConstantBuffers left, GorgonConstantBuffers right)
+		{
+			if ((left == null) || (right == null) || (left.D3DConstantBufferBindCount != right.D3DConstantBufferBindCount))
+			{
+				return false;
+			}
+
+			for (int i = 0; i < left.D3DConstantBufferBindCount; ++i)
+			{
+				if (left[i] != right[i])
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		/// <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
 		/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
 		/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
@@ -207,18 +232,18 @@ namespace Gorgon.Graphics
 
 		#region Constructor
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBufferList"/> class.
+		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
-		public GorgonConstantBufferList()
+		public GorgonConstantBuffers()
 		{
 			D3DConstantBuffers = new D3D11.Buffer[_buffers.Length];			
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonConstantBufferList"/> class.
+		/// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
 		/// </summary>
 		/// <param name="buffers">The buffers.</param>
-		public GorgonConstantBufferList(IEnumerable<GorgonConstantBuffer> buffers)
+		public GorgonConstantBuffers(IEnumerable<GorgonConstantBuffer> buffers)
 			: this()
 		{
 			if (buffers == null)
@@ -230,7 +255,7 @@ namespace Gorgon.Graphics
 
 			foreach (GorgonConstantBuffer buffer in buffers)
 			{
-				if (index > _buffers.Length)
+				if (index >= _buffers.Length)
 				{
 					break;
 				}

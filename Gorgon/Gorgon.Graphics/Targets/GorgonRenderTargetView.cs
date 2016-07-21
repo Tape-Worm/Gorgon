@@ -35,13 +35,19 @@ using D3D = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics
 {
-    /// <summary>
-    /// A view to allow texture based render targets to be bound to the pipeline.
-    /// </summary>
-    /// <remarks>A render target view is what allows a render target to be bound to the pipeline.  By default, every render target has a default view assigned which encompasses the entire resource.  
-    /// This allows the resource to be bound to the pipeline directly via a cast operation.  However, in some instances, only a section of the resource may need to be assigned to the pipeline (e.g. 
-    /// a particular array index in a 2D array texture).  In this case, the user can define a render target view to only use that one array index and bind that to the pipeline.</remarks>
-    public class GorgonRenderTargetView
+	/// <summary>
+	/// A view to allow texture based render targets to be bound to the pipeline.
+	/// </summary>
+	/// <remarks>
+	/// <para>
+	/// A render target view allows a render target (such as a <see cref="GorgonSwapChain"/>) to be bound to the GPU pipeline as a render target resource.
+	/// </para>
+	/// <para>
+	/// The view can bind the entire resource, or a sub section of the resource as required. It will also allow for casting of the format to allow for reinterpreting the data stored within the the render 
+	/// target. 
+	/// </para>
+	/// </remarks>
+	public class GorgonRenderTargetView
 		: IDisposable
     {
 		#region Variables.
@@ -68,7 +74,7 @@ namespace Gorgon.Graphics
 		/// that this key be left alone, and never altered after it's been applied to a cache since it should be a unique value.
 		/// </para>
 		/// <para>
-		/// By default, Gorgon will set the render target as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
+		/// By default, Gorgon will set the view parameters as a 64 bit unsigned integer value when the view is created. This key is composed of the following bits:
 		/// <para>
 		/// <list type="table">
 		///		<listheader>
@@ -108,9 +114,9 @@ namespace Gorgon.Graphics
 	    }
 
 	    /// <summary>
-	    /// Property to return the resource that is bound to this view.
+	    /// Property to return the texture that is bound to this view.
 	    /// </summary>
-	    public GorgonResource Resource
+	    public GorgonTexture Texture
 	    {
 		    get;
 	    }
@@ -257,11 +263,11 @@ namespace Gorgon.Graphics
         {
             D3D.RenderTargetViewDescription desc = default(D3D.RenderTargetViewDescription);
 
-			_log.Print($"Render Target View '{Resource.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
+			_log.Print($"Render Target View '{Texture.Name}': Creating D3D11 render target view.", LoggingLevel.Simple);
 
 			desc.Dimension = D3D.RenderTargetViewDimension.Unknown;
 
-            switch (Resource.ResourceType)
+            switch (Texture.ResourceType)
             {
                 case ResourceType.Texture1D:
                     desc = GetDesc1D();
@@ -279,12 +285,12 @@ namespace Gorgon.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
             }
 
-	        _log.Print($"Render Target View '{Resource.Name}': {Resource.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
+	        _log.Print($"Render Target View '{Texture.Name}': {Texture.ResourceType} -> Mip slice: {MipSlice}, Array/Depth Index: {FirstArrayOrDepthIndex}, Array/Depth Count: {ArrayOrDepthCount}",
 	                   LoggingLevel.Verbose);
 
-            D3DRenderTargetView = new D3D.RenderTargetView(Resource.VideoDevice.D3DDevice(), Resource.D3DResource, desc)
+            D3DRenderTargetView = new D3D.RenderTargetView(Texture.VideoDevice.D3DDevice(), Texture.D3DResource, desc)
             {
-                DebugName = $"Render Target View '{Resource.Name}': D3D 11 Render target view"
+                DebugName = $"Render Target View '{Texture.Name}': D3D 11 Render target view"
             };
         }
 
@@ -295,7 +301,7 @@ namespace Gorgon.Graphics
 		{
 			if (D3DRenderTargetView != null)
 			{
-				_log.Print($"Render Target View '{Resource.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
+				_log.Print($"Render Target View '{Texture.Name}': Releasing D3D11 render target view.", LoggingLevel.Simple);
 			}
 
 			D3DRenderTargetView?.Dispose();
@@ -306,34 +312,27 @@ namespace Gorgon.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
         /// </summary>
-        /// <param name="target">The render target to bind.</param>
+        /// <param name="texture">The render target texture to bind.</param>
         /// <param name="format">[Optional] The format of the render target view.</param>
-        /// <param name="mipSlice">The mip slice to use in the view.</param>
-        /// <param name="arrayOrDepthIndex">The first array index to use in the view.</param>
-        /// <param name="arrayOrDepthCount">The number of array indices to use in the view.</param>
+        /// <param name="mipSlice">[Optional] The mip slice to use in the view.</param>
+        /// <param name="arrayOrDepthIndex">[Optional] The first array index to use in the view.</param>
+        /// <param name="arrayOrDepthCount">[Optional] The number of array indices to use in the view.</param>
         /// <param name="log">[Optional] Logging interface for debugging.</param>
-        public GorgonRenderTargetView(GorgonResource target, DXGI.Format format = DXGI.Format.Unknown, int mipSlice = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = -1, IGorgonLog log = null)
+        public GorgonRenderTargetView(GorgonTexture texture, DXGI.Format format = DXGI.Format.Unknown, int mipSlice = 0, int arrayOrDepthIndex = 0, int arrayOrDepthCount = 0, IGorgonLog log = null)
         {
 	        _log = log ?? GorgonLogDummy.DefaultInstance;
 
-			if (target == null)
+			if (texture == null)
 	        {
-		        throw new ArgumentNullException(nameof(target));
-	        }
-
-			var texture = target as GorgonTexture;
-
-	        if (texture == null)
-	        {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RESOURCE_IS_NOT_TEXTURE_OR_BUFFER, target.Name), nameof(target));
+		        throw new ArgumentNullException(nameof(texture));
 	        }
 
 	        if ((texture.Info.Binding & TextureBinding.RenderTarget) != TextureBinding.RenderTarget)
 	        {
-		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RESOURCE_IS_NOT_RENDERTARGET, target.Name), nameof(target));
+		        throw new ArgumentException(string.Format(Resources.GORGFX_ERR_RESOURCE_IS_NOT_RENDERTARGET, texture.Name), nameof(texture));
 	        }
 			
-	        Resource = texture;
+	        Texture = texture;
 
 	        if (format == DXGI.Format.Unknown)
 	        {
@@ -351,12 +350,12 @@ namespace Gorgon.Graphics
 			MipSlice = texture.Info.MipLevels <= 0 ? 0 : mipSlice.Max(0).Min(texture.Info.MipLevels - 1);
             FirstArrayOrDepthIndex = arrayOrDepthIndex.Max(0).Min(texture.Info.ArrayCount - 1);
 
-	        if (arrayOrDepthCount == -1)
+	        if (arrayOrDepthCount == 0)
 	        {
-		        arrayOrDepthCount = texture.Info.ArrayCount;
+		        arrayOrDepthCount = texture.Info.TextureType == TextureType.Texture3D ? texture.Info.Depth : texture.Info.ArrayCount;
 	        }
 			
-            ArrayOrDepthCount = arrayOrDepthCount.Min(texture.Info.ArrayCount - FirstArrayOrDepthIndex).Max(1);
+            ArrayOrDepthCount = arrayOrDepthCount.Min(arrayOrDepthCount - FirstArrayOrDepthIndex).Max(1);
 
 			Initialize(!texture.Info.MultiSampleInfo.Equals(GorgonMultiSampleInfo.NoMultiSampling));
 

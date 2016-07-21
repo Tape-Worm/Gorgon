@@ -31,6 +31,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics.Properties;
+using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -48,6 +51,15 @@ namespace Gorgon.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the information about the format of the texture.
+		/// </summary>
+		public GorgonFormatInfo FormatInformation
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the type of data in the resource.
 		/// </summary>
@@ -70,15 +82,12 @@ namespace Gorgon.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the size, in bytes, of the resource.
+		/// Property to return the default shader view for this texture.
 		/// </summary>
-		public new int SizeInBytes
+		public GorgonTextureShaderView DefaultView
 		{
-			get
-			{
-				// Temporary.
-				return 0;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -92,11 +101,81 @@ namespace Gorgon.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to initialize a 2D image.
+		/// </summary>
+		/// <param name="image">The image data used to populate the texture.</param>
+		private void Initialize2D(IGorgonImage image)
+		{
+			// TODO: Validate the settings.
+			D3D11.CpuAccessFlags cpuFlags = D3D11.CpuAccessFlags.None;
+
+			if (Info.Usage == D3D11.ResourceUsage.Staging)
+			{
+				cpuFlags = D3D11.CpuAccessFlags.Read | D3D11.CpuAccessFlags.Write;
+			}
+
+			if (Info.Usage == D3D11.ResourceUsage.Dynamic)
+			{
+				cpuFlags = D3D11.CpuAccessFlags.Write;
+			}
+
+			var desc = new D3D11.Texture2DDescription
+			           {
+				           Format = Info.Format,
+				           Width = Info.Width,
+				           Height = Info.Height,
+				           ArraySize = Info.ArrayCount,
+				           Usage = Info.Usage,
+				           BindFlags = (D3D11.BindFlags)Info.Binding,
+				           CpuAccessFlags = cpuFlags,
+				           OptionFlags = Info.IsCubeMap ? D3D11.ResourceOptionFlags.TextureCube : D3D11.ResourceOptionFlags.None,
+						   SampleDescription = Info.MultiSampleInfo.ToSampleDesc(),
+						   MipLevels = Info.MipLevels
+			           };
+
+			if (image == null)
+			{
+				D3DResource = new D3D11.Texture2D(VideoDevice.D3DDevice, desc);
+				DefaultView = new GorgonTextureShaderView(this, Info.Format, 0, Info.MipLevels, 0, Info.ArrayCount);
+				return;
+			}
+
+			// Upload the data to the texture.
+			DX.DataBox[] dataBoxes = new DX.DataBox[Info.ArrayCount * Info.MipLevels];
+
+			int boxIndex = 0;
+			for (int arrayIndex = 0; arrayIndex < Info.ArrayCount; ++arrayIndex)
+			{
+				for (int mipIndex = 0; mipIndex < Info.MipLevels; ++mipIndex)
+				{
+					IGorgonImageBuffer buffer = image.Buffers[mipIndex, arrayIndex];
+					dataBoxes[boxIndex++] = new DX.DataBox(new IntPtr(buffer.Data.Address), buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+				}
+			}
+
+			D3DResource = new D3D11.Texture2D(VideoDevice.D3DDevice, desc, dataBoxes);
+		}
+
+		/// <summary>
 		/// Function to initialize the texture.
 		/// </summary>
-		private void Initialize()
+		/// <param name="image">The image used to initialize the texture.</param>
+		private void Initialize(IGorgonImage image)
 		{
-			// TODO: Validation for parameters.
+			FormatInformation = new GorgonFormatInfo(Info.Format);
+
+			switch (Info.TextureType)
+			{
+				case TextureType.Texture1D:
+					break;
+				case TextureType.Texture2D:
+					Initialize2D(image);
+					break;
+				case TextureType.Texture3D:
+					break;
+			}
+
+			DefaultView = new GorgonTextureShaderView(this);
 		}
 
 		/// <summary>
@@ -106,12 +185,14 @@ namespace Gorgon.Graphics
 		{
 			// Not used.
 		}
-
+		
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public override void Dispose()
 		{
+			DefaultView?.Dispose();
+
 			if (D3DResource == null)
 			{
 				return;
@@ -130,6 +211,11 @@ namespace Gorgon.Graphics
 		/// <param name="swapChain">The swap chain that holds the back buffers to retrieve.</param>
 		/// <param name="index">The index of the back buffer to retrieve.</param>
 		/// <param name="log">The log used for debug output.</param>
+		/// <remarks>
+		/// <para>
+		/// This constructor is used internally to create a render target texture from a swap chain.
+		/// </para>
+		/// </remarks>
 		internal GorgonTexture(GorgonSwapChain swapChain, int index, IGorgonLog log)
 			: base(swapChain.VideoDevice, $"Swap Chain '{swapChain.Name}': Back buffer texture #{index}.")
 		{
@@ -150,7 +236,7 @@ namespace Gorgon.Graphics
 				       Width = texture.Description.Width,
 				       Height = texture.Description.Height,
 				       TextureType = TextureType.Texture2D,
-				       Usage = (BufferUsage)texture.Description.Usage,
+				       Usage = texture.Description.Usage,
 				       ArrayCount = texture.Description.ArraySize,
 				       MipLevels = texture.Description.MipLevels,
 				       Depth = 0,
@@ -158,21 +244,90 @@ namespace Gorgon.Graphics
 				       MultiSampleInfo = GorgonMultiSampleInfo.NoMultiSampling,
 				       Binding = (TextureBinding)texture.Description.BindFlags
 			       };
+
+			FormatInformation = new GorgonFormatInfo(Info.Format);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture"/> class.
 		/// </summary>
-		/// <param name="name">The name.</param>
-		/// <param name="videoDevice">The graphics.</param>
-		/// <param name="textureInfo">The texture information.</param>
-		/// <param name="log">The log.</param>
-		public GorgonTexture(string name, IGorgonVideoDevice videoDevice, GorgonTextureInfo textureInfo, IGorgonLog log = null)
-			: base(videoDevice, name)
+		/// <param name="name">The name of the texture.</param>
+		/// <param name="graphics">The graphics interface used to create this texture.</param>
+		/// <param name="image">The image to copy into the texture.</param>
+		/// <param name="info">The information used to define how the texture should be created.</param>
+		/// <param name="log">The log interface used for debugging.</param>
+		/// <remarks>
+		/// <para>
+		/// This constructor is used when converting an image to a texture.
+		/// </para>
+		/// </remarks>
+		internal GorgonTexture(string name, GorgonGraphics graphics, IGorgonImage image, GorgonImageToTextureInfo info, IGorgonLog log)
+			: base(graphics?.VideoDevice, name)
 		{
-			if (videoDevice == null)
+			_log = log ?? GorgonLogDummy.DefaultInstance;
+
+			TextureType type;
+
+			switch (image.Info.ImageType)
 			{
-				throw new ArgumentNullException(nameof(videoDevice));
+				case ImageType.Image1D:
+					type = TextureType.Texture1D;
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					type = TextureType.Texture2D;
+					break;
+				case ImageType.Image3D:
+					type = TextureType.Texture3D;
+					break;
+				default:
+					throw new ArgumentException(string.Format(Resources.GORGFX_ERR_IMAGE_TYPE_UNSUPPORTED, image.Info.ImageType), nameof(image));
+			}
+
+			Info = new GorgonTextureInfo
+			       {
+				       Format = image.Info.Format,
+				       Width = image.Info.Width,
+				       Height = image.Info.Height,
+				       TextureType = type,
+				       Usage = info.Usage,
+				       ArrayCount = image.Info.ArrayCount,
+				       Binding = info.Binding,
+				       Depth = image.Info.Depth,
+				       IsCubeMap = image.Info.ImageType == ImageType.ImageCube,
+				       MipLevels = image.Info.MipCount,
+				       MultiSampleInfo = info.MultiSampleInfo
+			       };
+
+			Initialize(image);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonTexture"/> class.
+		/// </summary>
+		/// <param name="name">The name of the texture.</param>
+		/// <param name="graphics">The <see cref="GorgonGraphics"/> interface that created this texture.</param>
+		/// <param name="textureInfo">A <see cref="GorgonTextureInfo"/> object describing the properties of this texture.</param>
+		/// <param name="log">[Optional] The logging interface used for debugging.</param>
+		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="graphics"/>, or the <paramref name="textureInfo"/> parameter is <b>null</b>.</exception>
+		/// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="GorgonTextureInfo.Usage"/> is set to <c>Immutable</c>.</para>
+		/// </exception>
+		/// <exception cref="GorgonException">Thrown when the texture could not be created due to misconfiguration.</exception>
+		/// <remarks>
+		/// <para>
+		/// This constructor creates an empty texture. Data may be uploaded to the texture at a later time if its <see cref="GorgonTextureInfo.Usage"/> is not set to <c>Immutable</c>. If the 
+		/// <see cref="GorgonTextureInfo.Usage"/> is set to <c>immutable</c> with this constructor, then an exception will be thrown. To use an immutable texture, use the 
+		/// <see cref="GorgonImageTextureExtensions.ToTexture"/> extension method on the <see cref="IGorgonImage"/> type.
+		/// </para>
+		/// </remarks>
+		public GorgonTexture(string name, GorgonGraphics graphics, GorgonTextureInfo textureInfo, IGorgonLog log = null)
+			: base(graphics?.VideoDevice, name)
+		{
+			if (graphics == null)
+			{
+				throw new ArgumentNullException(nameof(graphics));
 			}
 
 			if (textureInfo == null)
@@ -197,7 +352,7 @@ namespace Gorgon.Graphics
 				       MultiSampleInfo = textureInfo.MultiSampleInfo
 			       };
 
-			Initialize();
+			Initialize(null);
 		}
 		#endregion
 	}
